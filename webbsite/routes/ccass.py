@@ -491,3 +491,205 @@ def chistory():
                          a=a,
                          p=p,
                          o=o)
+
+
+@bp.route('/CCASSnotes.asp')
+def ccass_notes():
+    """CCASS system notes and explanations"""
+    return render_template('ccass/ccass_notes.html')
+
+
+@bp.route('/cconchist.asp')
+def cconchist():
+    """
+    CCASS concentration history with chart
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+
+    Tables used: ccass.dailylog
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+
+    # TODO: Query concentration history (top 5, top 10 over time)
+    # TODO: Generate Highstock chart
+    history = []
+
+    return render_template('ccass/cconchist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         history=history)
+
+
+@bp.route('/ctothist.asp')
+def ctothist():
+    """
+    CCASS total holdings history
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+
+    Tables used: ccass.dailylog, issue
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+
+    # TODO: Query total CIP/NCIP holdings over time
+    history = []
+
+    return render_template('ccass/ctothist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         history=history)
+
+
+@bp.route('/custhist.asp')
+def custhist():
+    """
+    Custodian holdings history
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+
+    Tables used: ccass.dailylog
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+
+    # TODO: Query custodian holdings over time
+    history = []
+
+    return render_template('ccass/custhist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         history=history)
+
+
+@bp.route('/ncipchg.asp')
+def ncipchg():
+    """
+    Non-CIP holding changes
+
+    Query params:
+    - d: date
+    - sort: sorting column
+
+    Tables used: ccass.holdings (NCIP category)
+    """
+    d = request.args.get('d', '')
+    sort_param = request.args.get('sort', 'chgdn')
+
+    if not d:
+        d = '2025-10-17'  # Placeholder
+
+    # TODO: Query NCIP changes
+    changes = []
+
+    return render_template('ccass/ncipchg.html',
+                         d=d,
+                         sort=sort_param,
+                         changes=changes)
+
+
+@bp.route('/nciphist.asp')
+def nciphist():
+    """
+    Non-CIP holdings history for a stock
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+
+    Tables used: ccass.dailylog
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+
+    # TODO: Query NCIP holdings over time
+    history = []
+
+    return render_template('ccass/nciphist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         history=history)
+
+
+@bp.route('/portchg.asp')
+def portchg():
+    """
+    Portfolio changes for a participant
+
+    Query params:
+    - part: partID
+    - d: date
+
+    Tables used: ccass.holdings
+    """
+    part_id = get_int('part', 0)
+    d = request.args.get('d', '')
+
+    if not d:
+        d = '2025-10-17'  # Placeholder
+
+    # TODO: Query portfolio changes
+    changes = []
+
+    return render_template('ccass/portchg.html',
+                         part_id=part_id,
+                         d=d,
+                         changes=changes)
+
+
+@bp.route('/reghist.asp')
+def reghist():
+    """
+    Regional trading history (Connect schemes)
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+
+    Tables used: ccass.holdings (Connect participants)
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+
+    # TODO: Query holdings by Shanghai/Shenzhen Connect
+    # partID 1323 = Shanghai-HK Connect
+    # partID 1456 = Shenzhen-HK Connect
+    history = []
+
+    return render_template('ccass/reghist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         history=history)
+
+
+@bp.route('/brokhist.asp')
+def brokhist():
+    """
+    Broker holdings history
+
+    Query params:
+    - i: issueID
+    - sc: stock code
+    - part: partID (specific broker)
+
+    Tables used: ccass.holdings (broker category)
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+    part_id = get_int('part', 0)
+
+    # TODO: Query broker holdings over time
+    history = []
+
+    return render_template('ccass/brokhist.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         part_id=part_id,
+                         history=history)

@@ -16,12 +16,29 @@ def create_app(config_class=Config):
 
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site
-    from webbsite.routes import search, quotes, events, dbpub, ccass
+    from webbsite.routes import (search, quotes, events, dbpub, ccass,
+                                  articles, webbmail, vote, pollman,
+                                  mailman, contact, dbeditor)
+
+    # Main database query pages
     app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
     app.register_blueprint(search.bp, url_prefix='/dbpub')
     app.register_blueprint(quotes.bp, url_prefix='/dbpub')
     app.register_blueprint(events.bp, url_prefix='/dbpub')
     app.register_blueprint(ccass.bp, url_prefix='/ccass')
+
+    # Articles (729 routes via stories table)
+    app.register_blueprint(articles.bp, url_prefix='/articles')
+
+    # User features
+    app.register_blueprint(webbmail.bp, url_prefix='/webbmail')
+    app.register_blueprint(vote.bp, url_prefix='/vote')
+    app.register_blueprint(pollman.bp, url_prefix='/pollman')
+    app.register_blueprint(mailman.bp, url_prefix='/mailman')
+    app.register_blueprint(contact.bp, url_prefix='/contact')
+
+    # Database editor (requires authentication)
+    app.register_blueprint(dbeditor.bp, url_prefix='/dbeditor')
 
     # Home page - news feed (mirrors webb-site.com root)
     @app.route('/')
