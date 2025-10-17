@@ -1,0 +1,2340 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<title>People born on 17 October</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>People born on 17 October</h2>
+<form method="get" action="bornday.asp">
+	Day <select name='d' onchange='this.form.submit()'><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17' selected>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option><option value='21'>21</option><option value='22'>22</option><option value='23'>23</option><option value='24'>24</option><option value='25'>25</option><option value='26'>26</option><option value='27'>27</option><option value='28'>28</option><option value='29'>29</option><option value='30'>30</option><option value='31'>31</option></select>
+	Month <select name='m' onchange='this.form.submit()'><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10' selected>10</option><option value='11'>11</option><option value='12'>12</option></select>
+	<input type="hidden" name="sort" value="yearup">
+	<input type="submit" value="Go">
+</Form>
+<table class="numtable">
+	<tr>
+		<th class="left"><a href='/dbpub/bornday.asp?d=17&amp;m=10&amp;sort=nameup'><b>Name</b></a></th>
+		<th><a href='/dbpub/bornday.asp?d=17&amp;m=10&amp;sort=yeardn'><b>Year of birth</b></a></th>
+		<th><a href='/dbpub/bornday.asp?d=17&amp;m=10&amp;sort=yeardn'><b>Age in 2025</b></a></th>
+		<th>Date of death</th>
+	</tr>
+	
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27365325'>St John, Henry (1652-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1652&amp;m=10">1652</a></td>
+			<td>373</td>
+			<td>1742-04-08</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=59926'>Cholmondeley, George (1724)</a></td>
+			<td><a href="bornyear.asp?y=1724&amp;m=10">1724</a></td>
+			<td>301</td>
+			<td>1764-03-15</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22697503'>Bertie, Robert (1756)</a></td>
+			<td><a href="bornyear.asp?y=1756&amp;m=10">1756</a></td>
+			<td>269</td>
+			<td>1779-07-08</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2646063'>Lumley, Frederick</a></td>
+			<td><a href="bornyear.asp?y=1761&amp;m=10">1761</a></td>
+			<td>264</td>
+			<td>1831-09-20</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=57205'>Byng, Lucy Elizabeth</a></td>
+			<td><a href="bornyear.asp?y=1766&amp;m=10">1766</a></td>
+			<td>259</td>
+			<td>1844-09-20</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2092190'>Bowring, John (1792)</a></td>
+			<td><a href="bornyear.asp?y=1792&amp;m=10">1792</a></td>
+			<td>233</td>
+			<td>1872-11-23</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=1266'>Matheson, James Nicolas Sutherland</a></td>
+			<td><a href="bornyear.asp?y=1796&amp;m=10">1796</a></td>
+			<td>229</td>
+			<td>1878-12-31</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=60730'>Charteris, Evelyn</a></td>
+			<td><a href="bornyear.asp?y=1851&amp;m=10">1851</a></td>
+			<td>174</td>
+			<td>1939-06-18</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28127'>Getty, George Franklin</a></td>
+			<td><a href="bornyear.asp?y=1855&amp;m=10">1855</a></td>
+			<td>170</td>
+			<td>1930-05-31</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22610357'>Palmer, William Waldegrave</a></td>
+			<td><a href="bornyear.asp?y=1859&amp;m=10">1859</a></td>
+			<td>166</td>
+			<td>1942-02-26</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=54905'>Hay, Victor Alexander Sereld</a></td>
+			<td><a href="bornyear.asp?y=1876&amp;m=10">1876</a></td>
+			<td>149</td>
+			<td>1928-02-20</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=4353'>Ramsay, Simon (1914-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1914&amp;m=10">1914</a></td>
+			<td>111</td>
+			<td>1999-07-15</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=61004'>Yarde-Buller, Lydia</a></td>
+			<td><a href="bornyear.asp?y=1917&amp;m=10">1917</a></td>
+			<td>108</td>
+			<td>2006-07-25</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=7469'>Zhao, Ziyang 赵紫阳</a></td>
+			<td><a href="bornyear.asp?y=1919&amp;m=10">1919</a></td>
+			<td>106</td>
+			<td>2005-01-17</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=67663'>Baillieu, Edward Latham (1919-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1919&amp;m=10">1919</a></td>
+			<td>106</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22470608'>Kennard, Georgina</a></td>
+			<td><a href="bornyear.asp?y=1919&amp;m=10">1919</a></td>
+			<td>106</td>
+			<td>2011-04-28</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22695665'>Pelham, Janet Marcia Rose</a></td>
+			<td><a href="bornyear.asp?y=1923&amp;m=10">1923</a></td>
+			<td>102</td>
+			<td>1997</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=1479'>Ma, John Kin Kai 馬健啟</a></td>
+			<td><a href="bornyear.asp?y=1929&amp;m=10">1929</a></td>
+			<td>96</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=19541366'>Hills, Shirley Ann</a></td>
+			<td><a href="bornyear.asp?y=1931&amp;m=10">1931</a></td>
+			<td>94</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2346114'>Swire, Humphrey Roger</a></td>
+			<td><a href="bornyear.asp?y=1934&amp;m=10">1934</a></td>
+			<td>91</td>
+			<td>2004-01-03</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16428398'>Newcombe, Leslie Kenneth</a></td>
+			<td><a href="bornyear.asp?y=1940&amp;m=10">1940</a></td>
+			<td>85</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14534791'>Garnett, Amaryllis Virginia</a></td>
+			<td><a href="bornyear.asp?y=1943&amp;m=10">1943</a></td>
+			<td>82</td>
+			<td>1973-05-06</td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22814556'>Beresford, Charles Richard de la Poer (1943-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1943&amp;m=10">1943</a></td>
+			<td>82</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25312148'>Donald, Stewart (1943-10)</a></td>
+			<td><a href="bornyear.asp?y=1943&amp;m=10">1943</a></td>
+			<td>82</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2083285'>Grauer, Peter T</a></td>
+			<td><a href="bornyear.asp?y=1945&amp;m=10">1945</a></td>
+			<td>80</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16984439'>Adam, Andrew (1945-10)</a></td>
+			<td><a href="bornyear.asp?y=1945&amp;m=10">1945</a></td>
+			<td>80</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18893023'>Madoff, Peter Barnet</a></td>
+			<td><a href="bornyear.asp?y=1945&amp;m=10">1945</a></td>
+			<td>80</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15459601'>Antoniou, Peter (1946-10)</a></td>
+			<td><a href="bornyear.asp?y=1946&amp;m=10">1946</a></td>
+			<td>79</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18789284'>Cummings, Robert Alan</a></td>
+			<td><a href="bornyear.asp?y=1946&amp;m=10">1946</a></td>
+			<td>79</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26194'>Chan, Andrew Ka Ching 陳嘉正</a></td>
+			<td><a href="bornyear.asp?y=1949&amp;m=10">1949</a></td>
+			<td>76</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=20548854'>Martin, Beatrice Muriel</a></td>
+			<td><a href="bornyear.asp?y=1949&amp;m=10">1949</a></td>
+			<td>76</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22528068'>Babidorych, Pavlo</a></td>
+			<td><a href="bornyear.asp?y=1949&amp;m=10">1949</a></td>
+			<td>76</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=36315'>Keswick, Emma Bridget</a></td>
+			<td><a href="bornyear.asp?y=1950&amp;m=10">1950</a></td>
+			<td>75</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=19709285'>Pattison, Ronald Spicer Ryder</a></td>
+			<td><a href="bornyear.asp?y=1950&amp;m=10">1950</a></td>
+			<td>75</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17113884'>Marlow, Richard (1951-10)</a></td>
+			<td><a href="bornyear.asp?y=1951&amp;m=10">1951</a></td>
+			<td>74</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18879281'>Domingo, Lawrence Samuel</a></td>
+			<td><a href="bornyear.asp?y=1951&amp;m=10">1951</a></td>
+			<td>74</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=20657514'>Mallon, Peter (1951-10)</a></td>
+			<td><a href="bornyear.asp?y=1951&amp;m=10">1951</a></td>
+			<td>74</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18647625'>Bishop, Patrick Joseph</a></td>
+			<td><a href="bornyear.asp?y=1952&amp;m=10">1952</a></td>
+			<td>73</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16297874'>Elfman, Holly Zagor</a></td>
+			<td><a href="bornyear.asp?y=1953&amp;m=10">1953</a></td>
+			<td>72</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17832870'>Malins, Anthony Edward</a></td>
+			<td><a href="bornyear.asp?y=1953&amp;m=10">1953</a></td>
+			<td>72</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17755721'>Edwick, Paul Andrew</a></td>
+			<td><a href="bornyear.asp?y=1954&amp;m=10">1954</a></td>
+			<td>71</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=20914180'>Williams, Jane Lanyon</a></td>
+			<td><a href="bornyear.asp?y=1954&amp;m=10">1954</a></td>
+			<td>71</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22074116'>Edwick, Paul</a></td>
+			<td><a href="bornyear.asp?y=1954&amp;m=10">1954</a></td>
+			<td>71</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22876510'>Cole-Hamilton, William Mervyn John</a></td>
+			<td><a href="bornyear.asp?y=1954&amp;m=10">1954</a></td>
+			<td>71</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13361201'>Deruyck, Bruno Guy Charles</a></td>
+			<td><a href="bornyear.asp?y=1955&amp;m=10">1955</a></td>
+			<td>70</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15771500'>Mirza, Jaweed Ali</a></td>
+			<td><a href="bornyear.asp?y=1955&amp;m=10">1955</a></td>
+			<td>70</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18454901'>Buckley, Kay Wilma (1955-10)</a></td>
+			<td><a href="bornyear.asp?y=1955&amp;m=10">1955</a></td>
+			<td>70</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13391165'>Sunter, Cameron Beresford</a></td>
+			<td><a href="bornyear.asp?y=1956&amp;m=10">1956</a></td>
+			<td>69</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16449618'>Chance, Martyn Brian Charles</a></td>
+			<td><a href="bornyear.asp?y=1956&amp;m=10">1956</a></td>
+			<td>69</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16658232'>Murray, Alexander David Mungo</a></td>
+			<td><a href="bornyear.asp?y=1956&amp;m=10">1956</a></td>
+			<td>69</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17210287'>Giscard D'Estaing, Henri</a></td>
+			<td><a href="bornyear.asp?y=1956&amp;m=10">1956</a></td>
+			<td>69</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28005752'>Budding, June</a></td>
+			<td><a href="bornyear.asp?y=1956&amp;m=10">1956</a></td>
+			<td>69</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22307'>Lin, Jacob Jui Hsien 林瑞賢</a></td>
+			<td><a href="bornyear.asp?y=1957&amp;m=10">1957</a></td>
+			<td>68</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23394147'>Rowe, Karen (1957-10)</a></td>
+			<td><a href="bornyear.asp?y=1957&amp;m=10">1957</a></td>
+			<td>68</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13002146'>Patel, Nagin (1958-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13334646'>Mayanja, Robert</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14357810'>Joyner, Gene Austin</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16707449'>Carragher, Patrick James (1958-10)</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26758909'>Joyner, Gene</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27151069'>Panayi, Paul (1958-10)</a></td>
+			<td><a href="bornyear.asp?y=1958&amp;m=10">1958</a></td>
+			<td>67</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=43439'>Lee, Angelina On Kay</a></td>
+			<td><a href="bornyear.asp?y=1959&amp;m=10">1959</a></td>
+			<td>66</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=43578'>Ma, Lai Fang</a></td>
+			<td><a href="bornyear.asp?y=1959&amp;m=10">1959</a></td>
+			<td>66</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=44444'>Roy, Philip Graham</a></td>
+			<td><a href="bornyear.asp?y=1959&amp;m=10">1959</a></td>
+			<td>66</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23666621'>Adam, David (1959-10)</a></td>
+			<td><a href="bornyear.asp?y=1959&amp;m=10">1959</a></td>
+			<td>66</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24140357'>Clark, Gordon (1959-10)</a></td>
+			<td><a href="bornyear.asp?y=1959&amp;m=10">1959</a></td>
+			<td>66</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2923'>Chung, Mico Cho Yee 鍾楚義</a></td>
+			<td><a href="bornyear.asp?y=1960&amp;m=10">1960</a></td>
+			<td>65</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26601605'>MacEr, Jeanette</a></td>
+			<td><a href="bornyear.asp?y=1960&amp;m=10">1960</a></td>
+			<td>65</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13563205'>Jones, Kirk David</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14128578'>Smith, Stephen John (1961-10)</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14922839'>Parry, Gwendoline</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16703403'>Blackstock, Douglas (1961-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22138036'>Corson, Joe</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22312288'>Krasteva, Adelina</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27848132'>Symes, Norma</a></td>
+			<td><a href="bornyear.asp?y=1961&amp;m=10">1961</a></td>
+			<td>64</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25447'>Leung, Kenneth Kai Cheong 梁繼昌</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13604341'>Israel, Christina</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14089413'>Lowndes, Hazel Ann</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15691244'>Creane, Stephen Anthony (1962-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17094983'>Hendrikus Maria Johannes, Janken</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25844204'>MacKenzie, Christine (1962-10)</a></td>
+			<td><a href="bornyear.asp?y=1962&amp;m=10">1962</a></td>
+			<td>63</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14267282'>Tierney, Philip</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15173405'>Faal, Alieu (1963-10)</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17045104'>Hendy, Philip Gerhard</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17142826'>Taylor, Deborah (1963-10)</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18670532'>Edison, Paul Richard</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=20606680'>Duan, Hongwei (1963-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23596825'>Hockley, Russell</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=30064591'>McKee, Michele Frances (1963-10)</a></td>
+			<td><a href="bornyear.asp?y=1963&amp;m=10">1963</a></td>
+			<td>62</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=43310'>Kwong, Denise W M</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13548116'>Radcliffe, Nigel Anthony</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15600186'>Brown, Sandra (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16477615'>Biddulph, Richard Noel</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21007665'>Abdelaziz, Hanan</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24298463'>Cousins, John (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25467936'>Walker, Andrew (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26836200'>Sharma, Mala (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27529321'>Gordon, Ray (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=33291771'>Fomenko, Oleksandr (1964-10)</a></td>
+			<td><a href="bornyear.asp?y=1964&amp;m=10">1964</a></td>
+			<td>61</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15091833'>Willis, Graham Michael</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15535165'>Urbinati, Gabriele</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16393968'>Davies, Michael Peter (1965-10)</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17104238'>Woods, Clive (1965-10)</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=19871081'>Todd, Sally Ann (1965-10)</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21913145'>Adetona, Adetokunbo</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28018235'>Pettifer, Harriet</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28106493'>Finlayson, Toni</a></td>
+			<td><a href="bornyear.asp?y=1965&amp;m=10">1965</a></td>
+			<td>60</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13422680'>Rutland, Michael Raymond</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13719600'>Rutland, Mike Raymond</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15295750'>Voysey, Stephen</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15460899'>Bohman Amador, Monika Johanna</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18436196'>Harper, Kate Emma</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23252395'>Kelly, Claire (1966-10)</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28359666'>Warburton, Susan (1966-10)</a></td>
+			<td><a href="bornyear.asp?y=1966&amp;m=10">1966</a></td>
+			<td>59</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=2050838'>Chow, Roland Ngai Chiu</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13043328'>Parkinson, Paul (1967-10)</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13304080'>Chakwesha, Bernard</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16601105'>Molinari, Maurizio (1967-10)</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16873934'>Bootland, Scott</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18399335'>Wright, Linda Michelle</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23273841'>Thomas, Sarah (1967-10)</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23690387'>Stubbins, Paul (1967-10)</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25821645'>Tsoukala, Richard</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27628898'>Bunyan, Brenda Lorraine</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=31400551'>Mussett, Matthew</a></td>
+			<td><a href="bornyear.asp?y=1967&amp;m=10">1967</a></td>
+			<td>58</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15411769'>Shakeshaft, Paul Henry</a></td>
+			<td><a href="bornyear.asp?y=1968&amp;m=10">1968</a></td>
+			<td>57</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16300964'>Allpress, Julian William</a></td>
+			<td><a href="bornyear.asp?y=1968&amp;m=10">1968</a></td>
+			<td>57</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=20561194'>Yusuf, Burhan Farah</a></td>
+			<td><a href="bornyear.asp?y=1968&amp;m=10">1968</a></td>
+			<td>57</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25562839'>Ozdemir, Aysen</a></td>
+			<td><a href="bornyear.asp?y=1968&amp;m=10">1968</a></td>
+			<td>57</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=33912434'>Burrill, Freyja Kate</a></td>
+			<td><a href="bornyear.asp?y=1968&amp;m=10">1968</a></td>
+			<td>57</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14332595'>Khan, Faria Amara Naveed</a></td>
+			<td><a href="bornyear.asp?y=1969&amp;m=10">1969</a></td>
+			<td>56</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21991608'>Price, Nigel (1969-10)</a></td>
+			<td><a href="bornyear.asp?y=1969&amp;m=10">1969</a></td>
+			<td>56</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23463484'>Hamilton, Donnel</a></td>
+			<td><a href="bornyear.asp?y=1969&amp;m=10">1969</a></td>
+			<td>56</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26615814'>Bukan, Neslihan</a></td>
+			<td><a href="bornyear.asp?y=1969&amp;m=10">1969</a></td>
+			<td>56</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26714420'>Balogun, Anthony (1969-10)</a></td>
+			<td><a href="bornyear.asp?y=1969&amp;m=10">1969</a></td>
+			<td>56</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13850477'>Davidson, Dean (1970-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1970&amp;m=10">1970</a></td>
+			<td>55</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16274195'>Danac, Dumitru</a></td>
+			<td><a href="bornyear.asp?y=1970&amp;m=10">1970</a></td>
+			<td>55</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21179955'>Carlsosn, Brian</a></td>
+			<td><a href="bornyear.asp?y=1970&amp;m=10">1970</a></td>
+			<td>55</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22932529'>Duo, Roberto</a></td>
+			<td><a href="bornyear.asp?y=1970&amp;m=10">1970</a></td>
+			<td>55</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25485365'>Howell, Mark (1970-10)</a></td>
+			<td><a href="bornyear.asp?y=1970&amp;m=10">1970</a></td>
+			<td>55</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=42709'>Bong, Boris Ding Yue 龐定宇</a></td>
+			<td><a href="bornyear.asp?y=1971&amp;m=10">1971</a></td>
+			<td>54</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18370635'>Ko, Kenneth Fuk Yuen</a></td>
+			<td><a href="bornyear.asp?y=1971&amp;m=10">1971</a></td>
+			<td>54</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24173897'>Cruz, Isidro</a></td>
+			<td><a href="bornyear.asp?y=1971&amp;m=10">1971</a></td>
+			<td>54</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25261792'>Poenaru, Liviu Mihail</a></td>
+			<td><a href="bornyear.asp?y=1971&amp;m=10">1971</a></td>
+			<td>54</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13773054'>Kisembo, Grace</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15819274'>Dineen, Liam (1972-10)</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21618541'>Cheriton, Darren</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22626483'>Chaudhry, Muhammad Jamil (1972-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23411809'>Evans, Andy (1972-10)</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23861225'>Parker, James (1972-10)</a></td>
+			<td><a href="bornyear.asp?y=1972&amp;m=10">1972</a></td>
+			<td>53</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=88950'>Gong, Jie (SFC:ARO415) 龔潔</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=12983960'>Evans, Matthew Shaun</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13650905'>Knighton, Claire</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15821485'>Mellis, Adele Louise Suzanne</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22999909'>Southcott, Nicholas</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23434157'>Leroux, Petrus</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26473165'>Hardingham, Samantha Jane</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27050552'>Stanchev, Aleksandar (1973-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1973&amp;m=10">1973</a></td>
+			<td>52</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14143862'>Munro-Price, Elspie Fionn</a></td>
+			<td><a href="bornyear.asp?y=1974&amp;m=10">1974</a></td>
+			<td>51</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15352060'>Kwade, Tameran Joy</a></td>
+			<td><a href="bornyear.asp?y=1974&amp;m=10">1974</a></td>
+			<td>51</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15586612'>Fox, James Edward Slater</a></td>
+			<td><a href="bornyear.asp?y=1974&amp;m=10">1974</a></td>
+			<td>51</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21820631'>Asantewaa, Nana Yaa</a></td>
+			<td><a href="bornyear.asp?y=1974&amp;m=10">1974</a></td>
+			<td>51</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24331645'>Wylie, Kerry (1974-10)</a></td>
+			<td><a href="bornyear.asp?y=1974&amp;m=10">1974</a></td>
+			<td>51</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15841320'>Chisanga, Lewis</a></td>
+			<td><a href="bornyear.asp?y=1975&amp;m=10">1975</a></td>
+			<td>50</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21808727'>McKay, Philip Gerald</a></td>
+			<td><a href="bornyear.asp?y=1975&amp;m=10">1975</a></td>
+			<td>50</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23832824'>Stewart, Gordon Gordon</a></td>
+			<td><a href="bornyear.asp?y=1975&amp;m=10">1975</a></td>
+			<td>50</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24335791'>Smith, Karen (1975-10)</a></td>
+			<td><a href="bornyear.asp?y=1975&amp;m=10">1975</a></td>
+			<td>50</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27970748'>Timmins, Steve (1975-10)</a></td>
+			<td><a href="bornyear.asp?y=1975&amp;m=10">1975</a></td>
+			<td>50</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14827803'>Burgess, David Kevin</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15356633'>Henson, Sara Kate</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15576173'>Stirling, Christopher Graham</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17136876'>Fraser, Peter (1976-10)</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18236339'>Chisirimunhu, Gladys</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=30195718'>Li, Hong (1976-10)</a></td>
+			<td><a href="bornyear.asp?y=1976&amp;m=10">1976</a></td>
+			<td>49</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=44111'>Wang, Brian (1977-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15148346'>Sun, Tao (1977-10)</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18123408'>Downes, Terry James (1977-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21339232'>Sathyaseelan, Vanniasingham</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23943641'>Wall, Alison (1977-10)</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24917186'>Bewley, Katie Marie</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24965183'>Boateng, Akwasi</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25121680'>Eaton, Antony</a></td>
+			<td><a href="bornyear.asp?y=1977&amp;m=10">1977</a></td>
+			<td>48</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=12988645'>Chan, Yipseng</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16368572'>Thornhill, Emma</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16624421'>Umunna, Chuka Harrison</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22018014'>Pimbley, Matthew Raymond</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22371083'>Alexandru-Bogdan, Bria</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23634974'>Hetherington, Peter (1978-10)</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24660568'>Pelham-Wright, Christopher</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25845240'>Entwistle, Melanie</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26764433'>Kingham, Karen (1978-10)</a></td>
+			<td><a href="bornyear.asp?y=1978&amp;m=10">1978</a></td>
+			<td>47</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14413699'>Vitez, Andras</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16470563'>Hance, Lesley John</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17596013'>Murphy, Nigel (1979-10)</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22221691'>Wang, Lei (1979-10)</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24448666'>Loczi, Peter</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25809053'>Sheppard, Natalie (1979-10)</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25918653'>Kaziboni, Tawanda</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26562541'>Zhong, Jinfang</a></td>
+			<td><a href="bornyear.asp?y=1979&amp;m=10">1979</a></td>
+			<td>46</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=12943578'>Taylor, Carl David (1980-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15488614'>Jennings, Emily</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18382229'>Lennon, Christopher (1980-10)</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23778101'>Nkengla, Elias Penn</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24628288'>Glancy, Ryan Peter Alan</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25318773'>Preston, Anna (1980-10)</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27675567'>Rich, Bobby</a></td>
+			<td><a href="bornyear.asp?y=1980&amp;m=10">1980</a></td>
+			<td>45</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13020734'>Ranyard, Wezley</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14377004'>Chima, Jasvinder Singh</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16291636'>Pilsniak, Katarzyna Maria</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21896545'>Minto, Richard (1981-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22183650'>Magee, Zara</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23242809'>Sadiq, Sofia Bi</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23463204'>Bishop, Emily (1981-10)</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27369902'>Barbour, Amanda Grace</a></td>
+			<td><a href="bornyear.asp?y=1981&amp;m=10">1981</a></td>
+			<td>44</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=43668'>Morrison, Graeme Alexander</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16539368'>Kapadia, Rajen Pravin</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25028177'>Paterson, Neil (1982-10)</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25028627'>Warriner, Rachel</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25373281'>Odo, Adewale</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27125872'>Gibbs, Carly (1982-10)</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28739144'>Harden, Laurence John Stephen</a></td>
+			<td><a href="bornyear.asp?y=1982&amp;m=10">1982</a></td>
+			<td>43</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13159919'>Nicholls, Daniel William</a></td>
+			<td><a href="bornyear.asp?y=1983&amp;m=10">1983</a></td>
+			<td>42</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16340450'>Duroi, Virginia</a></td>
+			<td><a href="bornyear.asp?y=1983&amp;m=10">1983</a></td>
+			<td>42</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22150414'>Walker, Laura Anne (1983-10)</a></td>
+			<td><a href="bornyear.asp?y=1983&amp;m=10">1983</a></td>
+			<td>42</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13052110'>Smith, Michael Ian (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13077568'>Hanington, Mark Alexander</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13368945'>Hanington, Mark</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13952009'>Samples, Dawn</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14550267'>Kaitese, Irene</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16389185'>Subotic, Dejan (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17024054'>Liu, Jia (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18399098'>Mukoriro, Annert Zita</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21473116'>Curtis, Hayley (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22849787'>Priell, Nimrod</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24249790'>Buratti, Marco (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24552334'>Langfield, Andrew David</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27303360'>Momoh, Suleman</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28253307'>Marin, Robert (1984-10)</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=31060281'>Harvey, Michael Clive</a></td>
+			<td><a href="bornyear.asp?y=1984&amp;m=10">1984</a></td>
+			<td>41</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15310699'>Moupondo, Mohombi</a></td>
+			<td><a href="bornyear.asp?y=1985&amp;m=10">1985</a></td>
+			<td>40</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16260598'>Nagy, Gabor (1985-10)</a></td>
+			<td><a href="bornyear.asp?y=1985&amp;m=10">1985</a></td>
+			<td>40</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16519707'>Kenny, Michael (1985-10)</a></td>
+			<td><a href="bornyear.asp?y=1985&amp;m=10">1985</a></td>
+			<td>40</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28016135'>Thorne, Sam (1985-10)</a></td>
+			<td><a href="bornyear.asp?y=1985&amp;m=10">1985</a></td>
+			<td>40</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13874568'>Smith, Katherine Margaret</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16507213'>Day, Simon (1986-10)</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24927938'>Watkins, David John Brian</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25856500'>Roberts, Christopher (1986-10)</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25900662'>Marquez, Zara-Leigh</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28047996'>Turner, Hayley (1986-10)</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=30973114'>McMahon, Matthew (1986-10)</a></td>
+			<td><a href="bornyear.asp?y=1986&amp;m=10">1986</a></td>
+			<td>39</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15433614'>Starr, Dean</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15699250'>Nelson, Ryan (1987-10)</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22531819'>Bercoviz, Dar</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23727746'>Kidd, Kerry (1987-10)</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26619061'>Steinbruch, Guilherme</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27034075'>Ali, Shamila (1987-10)</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=30742749'>Rutherford-Orrock, Stuart John</a></td>
+			<td><a href="bornyear.asp?y=1987&amp;m=10">1987</a></td>
+			<td>38</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=12919977'>Hall, Stuart (1988-10)</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13781632'>Hasan, Syed Shahnawaz</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16396008'>Serban, Daniel (1988-10)</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17115588'>Santha, Balint</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23461564'>Arise, Adeseye</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27061162'>Owusu-Boakye, Jojo</a></td>
+			<td><a href="bornyear.asp?y=1988&amp;m=10">1988</a></td>
+			<td>37</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13013264'>Patel, Vinesh Dhansukh</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=13595595'>Tame, Daniel (1989-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15417596'>Hardman, Matthew (1989-10)</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16184716'>Bahraynian, Amir-Hami</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17068082'>Marinka, Szilvia Noemi</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17082600'>Shehan, Darryl</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24620003'>Wythe, Verity Alice</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25150847'>Anderson, Joe (1989-10)</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25409586'>Rawson-Higgins, Adam</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26740099'>Mohamed Wazeer, Mohamed</a></td>
+			<td><a href="bornyear.asp?y=1989&amp;m=10">1989</a></td>
+			<td>36</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16525207'>Iweh, Jefferson</a></td>
+			<td><a href="bornyear.asp?y=1990&amp;m=10">1990</a></td>
+			<td>35</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=17026423'>Wheeler, Matthew (1990-10)</a></td>
+			<td><a href="bornyear.asp?y=1990&amp;m=10">1990</a></td>
+			<td>35</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23450312'>Metcalfe, Zachary</a></td>
+			<td><a href="bornyear.asp?y=1990&amp;m=10">1990</a></td>
+			<td>35</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=32453260'>Dodwell-Scott, Joshua</a></td>
+			<td><a href="bornyear.asp?y=1990&amp;m=10">1990</a></td>
+			<td>35</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=14510387'>Dhaliwal, Pritpal Singh</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16266808'>Ciubotariu, Marius-George</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18145859'>Preston, Youcef</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18408057'>Maclean, Gregor Kyle</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24186746'>Deighton, Jack Alexander</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25830386'>Holden, Craig (1991-10)</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26969709'>Keeble, Jeffrey Michael</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27642861'>Fisher, Bethany Jo</a></td>
+			<td><a href="bornyear.asp?y=1991&amp;m=10">1991</a></td>
+			<td>34</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=18319426'>Barrett, Laura Jayne</a></td>
+			<td><a href="bornyear.asp?y=1992&amp;m=10">1992</a></td>
+			<td>33</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=21682514'>Finley, Kane</a></td>
+			<td><a href="bornyear.asp?y=1992&amp;m=10">1992</a></td>
+			<td>33</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25403292'>Meynell, Hayley</a></td>
+			<td><a href="bornyear.asp?y=1992&amp;m=10">1992</a></td>
+			<td>33</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15658660'>Tala Atungsiri, Afuogang</a></td>
+			<td><a href="bornyear.asp?y=1993&amp;m=10">1993</a></td>
+			<td>32</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26532728'>Lalu, Virgil-Valentin</a></td>
+			<td><a href="bornyear.asp?y=1993&amp;m=10">1993</a></td>
+			<td>32</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=29606225'>Sakalauskaite, Dovile</a></td>
+			<td><a href="bornyear.asp?y=1993&amp;m=10">1993</a></td>
+			<td>32</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15706419'>Jones, Cameron John</a></td>
+			<td><a href="bornyear.asp?y=1994&amp;m=10">1994</a></td>
+			<td>31</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16482814'>Wright, Oliver Peter James</a></td>
+			<td><a href="bornyear.asp?y=1994&amp;m=10">1994</a></td>
+			<td>31</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24185768'>Olver, Samuel Thomas</a></td>
+			<td><a href="bornyear.asp?y=1994&amp;m=10">1994</a></td>
+			<td>31</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=31281070'>Stankler, Claudia</a></td>
+			<td><a href="bornyear.asp?y=1994&amp;m=10">1994</a></td>
+			<td>31</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15732611'>McDowell, Stephanie (1995-10)</a></td>
+			<td><a href="bornyear.asp?y=1995&amp;m=10">1995</a></td>
+			<td>30</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=16343077'>Ford, Thomas (1995-10)</a></td>
+			<td><a href="bornyear.asp?y=1995&amp;m=10">1995</a></td>
+			<td>30</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23314585'>Poudy, Jessica</a></td>
+			<td><a href="bornyear.asp?y=1995&amp;m=10">1995</a></td>
+			<td>30</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23494324'>Wilson, Josh (1995-10)</a></td>
+			<td><a href="bornyear.asp?y=1995&amp;m=10">1995</a></td>
+			<td>30</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24723268'>Axhami, Artion</a></td>
+			<td><a href="bornyear.asp?y=1995&amp;m=10">1995</a></td>
+			<td>30</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=51806'>Harmsworth, Eleanor Patricia Margaret</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15533870'>Hussein, Hani</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=15778029'>Bakare, Abiodun (1996-10-17)</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22304791'>Turver, Edward David</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23272324'>Hurst, Brandon (1996-10)</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25680461'>Duffy, Eoin (1996-10)</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25854110'>Pink, Hannah</a></td>
+			<td><a href="bornyear.asp?y=1996&amp;m=10">1996</a></td>
+			<td>29</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=24959251'>Galbraith, Calum Thomas</a></td>
+			<td><a href="bornyear.asp?y=1997&amp;m=10">1997</a></td>
+			<td>28</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26465528'>Maddick, Connery James</a></td>
+			<td><a href="bornyear.asp?y=1997&amp;m=10">1997</a></td>
+			<td>28</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=23003370'>Moulds, Simon John</a></td>
+			<td><a href="bornyear.asp?y=1998&amp;m=10">1998</a></td>
+			<td>27</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=26859578'>Williams, Dillan</a></td>
+			<td><a href="bornyear.asp?y=1998&amp;m=10">1998</a></td>
+			<td>27</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=28739143'>Daryanani, Mahesh</a></td>
+			<td><a href="bornyear.asp?y=1998&amp;m=10">1998</a></td>
+			<td>27</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=25038505'>Usmani, Sufyaan</a></td>
+			<td><a href="bornyear.asp?y=1999&amp;m=10">1999</a></td>
+			<td>26</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22815728'>Hepburne-Scott, Jemima Ann</a></td>
+			<td><a href="bornyear.asp?y=2000&amp;m=10">2000</a></td>
+			<td>25</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=27133950'>Saucedo, David</a></td>
+			<td><a href="bornyear.asp?y=2000&amp;m=10">2000</a></td>
+			<td>25</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=22695815'>Boscawen, Cecilia Rose</a></td>
+			<td><a href="bornyear.asp?y=2001&amp;m=10">2001</a></td>
+			<td>24</td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td class="left"><a href='natperson.asp?p=32115905'>Ross, Cormack Harry</a></td>
+			<td><a href="bornyear.asp?y=2001&amp;m=10">2001</a></td>
+			<td>24</td>
+			<td></td>
+		</tr>
+		
+</table>
+<p>Note: the list may include dead people. If a person is known to be dead but 
+we do not know when he/she died, then this is indicated by a (d) against their 
+name.</p>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

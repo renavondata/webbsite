@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <script type="text/javascript">
+	google.load("visualization", "1", {packages:["corechart"]});
+	google.setOnLoadCallback(drawChart);
+	function drawChart() {
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Date');
+		data.addColumn('number', 'Licensees');
+		data.addRows(21);
+		
+	        data.setValue(0,0,'2005-12-31');
+	        data.setValue(0,1,0);
+        
+	        data.setValue(1,0,'2006-12-31');
+	        data.setValue(1,1,3);
+        
+	        data.setValue(2,0,'2007-12-31');
+	        data.setValue(2,1,7);
+        
+	        data.setValue(3,0,'2008-12-31');
+	        data.setValue(3,1,8);
+        
+	        data.setValue(4,0,'2009-12-31');
+	        data.setValue(4,1,6);
+        
+	        data.setValue(5,0,'2010-12-31');
+	        data.setValue(5,1,9);
+        
+	        data.setValue(6,0,'2011-12-31');
+	        data.setValue(6,1,0);
+        
+	        data.setValue(7,0,'2012-12-31');
+	        data.setValue(7,1,0);
+        
+	        data.setValue(8,0,'2013-12-31');
+	        data.setValue(8,1,0);
+        
+	        data.setValue(9,0,'2014-12-31');
+	        data.setValue(9,1,0);
+        
+	        data.setValue(10,0,'2015-12-31');
+	        data.setValue(10,1,0);
+        
+	        data.setValue(11,0,'2016-12-31');
+	        data.setValue(11,1,0);
+        
+	        data.setValue(12,0,'2017-12-31');
+	        data.setValue(12,1,0);
+        
+	        data.setValue(13,0,'2018-12-31');
+	        data.setValue(13,1,0);
+        
+	        data.setValue(14,0,'2019-12-31');
+	        data.setValue(14,1,0);
+        
+	        data.setValue(15,0,'2020-12-31');
+	        data.setValue(15,1,0);
+        
+	        data.setValue(16,0,'2021-12-31');
+	        data.setValue(16,1,0);
+        
+	        data.setValue(17,0,'2022-12-31');
+	        data.setValue(17,1,0);
+        
+	        data.setValue(18,0,'2023-12-31');
+	        data.setValue(18,1,0);
+        
+	        data.setValue(19,0,'2024-12-31');
+	        data.setValue(19,1,0);
+        
+	        data.setValue(20,0,'2025-10-17');
+	        data.setValue(20,1,0);
+        
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, {
+	    	chartArea: {width:'85%',height:'75%',left:'10%'},
+        	title: 'Number of licensees: All activities',titleTextStyle:{fontSize:18},
+        	backgroundColor: {strokeWidth:2,stroke:'blue'},
+        	vAxis: {baseline:0},
+			legend:'none'
+			}
+		);
+	}
+    </script>
+
+<title>SFC licensee history of:&nbsp;PERRY CAPITAL (ASIA) LIMITED</title>
+</head>
+<body onresize="drawChart();">
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+	<h2>PERRY CAPITAL (ASIA) LIMITED</h2>
+	<ul class="navlist">
+		<li><a href='/dbpub/orgdata.asp?p=67419'>Key Data</a></li><li class='livebutton'>Officers</li><li><a href='/dbpub/overlap.asp?p=67419'>Overlaps</a></li><li><a href='/dbpub/SFColicrec.asp?p=67419'>SFC licenses</a></li><li><a href='/dbpub/articles.asp?p=67419'>Webb-site Reports</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	<ul class="navlist">
+		<li><a href='../dbpub/officers.asp?p=67419'>All ranks</a></li><li><a href='../dbpub/offsum.asp?p=67419'>Main board summary</a></li><li class='livebutton'>Licensee stats</li><li><a href='../dbpub/SFClicensees.asp?p=67419'>Licensees</a></li>		
+			<li><a target="_blank" href="http://apps.sfc.hk/publicregWeb/corp/ANJ166/ro">SFC web</a></li>
+		
+		<li><a target="_blank" href="FAQWWW.asp">FAQ</a></li>
+	</ul>
+	<div class="clear"></div>
+	<ul class='navlist'><li><a href='/dbpub/SFChistfirm.asp?p=67419&amp;f=m'>Monthly</a></li><li class='livebutton'>Yearly</li></ul><div class='clear'></div>
+<form method="get" action="SFChistfirm.asp">
+	<input type="hidden" name="f" value="y">
+	<input type="hidden" name="p" value="67419">
+	<div class="inputs">
+		Activity type: <select name='a' onchange="this.form.submit()"><option value='0' selected>All</option><option value='6'>Advising on corporate finance</option><option value='5'>Advising on futures contracts</option><option value='4'>Advising on securities</option><option value='9'>Asset management</option><option value='7'>Automated trading services</option><option value='12'>Client clearing services for OTC derivative transactions</option><option value='10'>Credit rating services</option><option value='2'>Dealing in futures contracts</option><option value='11'>Dealing in or advising on OTC derivative products</option><option value='1'>Dealing in securities</option><option value='13'>Depositary services for relevant CISs</option><option value='3'>Leveraged foreign exchange trading</option><option value='8'>Securities margin financing</option></select>
+	</div>
+	<div class="clear"></div>
+</form>
+
+<p>This page shows the historic number of SFC licensees for a firm. Licensees 
+are either Responsible Officers (<strong>ROs</strong>) or Representatives (<strong>Reps</strong>). 
+When Activity is set to "All", we treat a person who holds both roles (in different 
+activities) as 
+an RO. The Reps v total is a measure of how bottom-heavy a firm is, because the 
+ROs are supposed to supervise the Reps. For other firms,
+<a href="SFClicount.asp?a=0">click here</a>. For the total in all firms,
+<a href="SFChistall.asp?a=0">click here</a>. Note that due to a 
+transitional period which ended on 31-Mar-2005, many licenses in some activities 
+were surrendered or not extended beyond that date.</p>
+<div class="chart" id="chart_div"></div>
+<p></p>
+<table class="numtable center">
+	<tr>
+		<th>Date</th>
+		<th>ROs</th>
+		<th>Reps</th>
+		<th>Total</th>
+		<th>Reps v total</th>
+	</tr>
+	
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2025-10-17">2025-10-17</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2024-12-31">2024-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2023-12-31">2023-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2022-12-31">2022-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2021-12-31">2021-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2020-12-31">2020-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2019-12-31">2019-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2018-12-31">2018-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2017-12-31">2017-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2016-12-31">2016-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2015-12-31">2015-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2014-12-31">2014-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2013-12-31">2013-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2012-12-31">2012-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2011-12-31">2011-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2010-12-31">2010-12-31</a></td>
+				<td>2</td>
+				<td>7</td>
+				<td>9</td>
+				<td>77.78%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2009-12-31">2009-12-31</a></td>
+				<td>2</td>
+				<td>4</td>
+				<td>6</td>
+				<td>66.67%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2008-12-31">2008-12-31</a></td>
+				<td>2</td>
+				<td>6</td>
+				<td>8</td>
+				<td>75.00%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2007-12-31">2007-12-31</a></td>
+				<td>2</td>
+				<td>5</td>
+				<td>7</td>
+				<td>71.43%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2006-12-31">2006-12-31</a></td>
+				<td>2</td>
+				<td>1</td>
+				<td>3</td>
+				<td>33.33%</td>
+			</tr>
+		
+			<tr>
+				<td><a href="SFClicensees.asp?p=67419&a=0&d=2005-12-31">2005-12-31</a></td>
+				<td>0</td>
+				<td>0</td>
+				<td>0</td>
+				<td>0.00%</td>
+			</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

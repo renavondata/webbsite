@@ -1,0 +1,1444 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Short positions disclosed to SFC at 2014-04-17</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Short positions disclosed to SFC at 2014-04-17</h2>
+<ul class="navlist">
+	<li class="livebutton">Short postions</li>
+	<li><a href="shortsum.asp">Weekly summary</a></li>
+	<li><a href="shortnotes.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+<form name="myform" method="get" action="shortdate.asp">
+	<input type="hidden" name="sort" value="stakdn">
+	<div class="inputs">
+		<select name='d' onchange="this.form.submit()"><option value='2025-10-03'>2025-10-03</option><option value='2025-09-26'>2025-09-26</option><option value='2025-09-19'>2025-09-19</option><option value='2025-09-12'>2025-09-12</option><option value='2025-09-05'>2025-09-05</option><option value='2025-08-29'>2025-08-29</option><option value='2025-08-22'>2025-08-22</option><option value='2025-08-15'>2025-08-15</option><option value='2025-08-08'>2025-08-08</option><option value='2025-08-01'>2025-08-01</option><option value='2025-07-25'>2025-07-25</option><option value='2025-07-18'>2025-07-18</option><option value='2025-07-11'>2025-07-11</option><option value='2025-07-04'>2025-07-04</option><option value='2025-06-27'>2025-06-27</option><option value='2025-06-20'>2025-06-20</option><option value='2025-06-13'>2025-06-13</option><option value='2025-06-06'>2025-06-06</option><option value='2025-05-30'>2025-05-30</option><option value='2025-05-23'>2025-05-23</option><option value='2025-05-16'>2025-05-16</option><option value='2025-05-09'>2025-05-09</option><option value='2025-05-02'>2025-05-02</option><option value='2025-04-25'>2025-04-25</option><option value='2025-04-17'>2025-04-17</option><option value='2025-04-11'>2025-04-11</option><option value='2025-04-03'>2025-04-03</option><option value='2025-03-28'>2025-03-28</option><option value='2025-03-21'>2025-03-21</option><option value='2025-03-14'>2025-03-14</option><option value='2025-03-07'>2025-03-07</option><option value='2025-02-28'>2025-02-28</option><option value='2025-02-21'>2025-02-21</option><option value='2025-02-14'>2025-02-14</option><option value='2025-02-07'>2025-02-07</option><option value='2025-01-28'>2025-01-28</option><option value='2025-01-24'>2025-01-24</option><option value='2025-01-17'>2025-01-17</option><option value='2025-01-10'>2025-01-10</option><option value='2025-01-03'>2025-01-03</option><option value='2024-12-27'>2024-12-27</option><option value='2024-12-20'>2024-12-20</option><option value='2024-12-13'>2024-12-13</option><option value='2024-12-06'>2024-12-06</option><option value='2024-11-29'>2024-11-29</option><option value='2024-11-22'>2024-11-22</option><option value='2024-11-15'>2024-11-15</option><option value='2024-11-08'>2024-11-08</option><option value='2024-11-01'>2024-11-01</option><option value='2024-10-25'>2024-10-25</option><option value='2024-10-18'>2024-10-18</option><option value='2024-10-10'>2024-10-10</option><option value='2024-10-04'>2024-10-04</option><option value='2024-09-27'>2024-09-27</option><option value='2024-09-20'>2024-09-20</option><option value='2024-09-13'>2024-09-13</option><option value='2024-09-06'>2024-09-06</option><option value='2024-08-30'>2024-08-30</option><option value='2024-08-23'>2024-08-23</option><option value='2024-08-16'>2024-08-16</option><option value='2024-08-09'>2024-08-09</option><option value='2024-08-02'>2024-08-02</option><option value='2024-07-26'>2024-07-26</option><option value='2024-07-19'>2024-07-19</option><option value='2024-07-12'>2024-07-12</option><option value='2024-07-05'>2024-07-05</option><option value='2024-06-28'>2024-06-28</option><option value='2024-06-21'>2024-06-21</option><option value='2024-06-14'>2024-06-14</option><option value='2024-06-07'>2024-06-07</option><option value='2024-05-31'>2024-05-31</option><option value='2024-05-24'>2024-05-24</option><option value='2024-05-17'>2024-05-17</option><option value='2024-05-10'>2024-05-10</option><option value='2024-05-03'>2024-05-03</option><option value='2024-04-26'>2024-04-26</option><option value='2024-04-19'>2024-04-19</option><option value='2024-04-12'>2024-04-12</option><option value='2024-04-05'>2024-04-05</option><option value='2024-03-28'>2024-03-28</option><option value='2024-03-22'>2024-03-22</option><option value='2024-03-15'>2024-03-15</option><option value='2024-03-08'>2024-03-08</option><option value='2024-03-01'>2024-03-01</option><option value='2024-02-23'>2024-02-23</option><option value='2024-02-16'>2024-02-16</option><option value='2024-02-09'>2024-02-09</option><option value='2024-02-02'>2024-02-02</option><option value='2024-01-26'>2024-01-26</option><option value='2024-01-19'>2024-01-19</option><option value='2024-01-12'>2024-01-12</option><option value='2024-01-05'>2024-01-05</option><option value='2023-12-29'>2023-12-29</option><option value='2023-12-22'>2023-12-22</option><option value='2023-12-15'>2023-12-15</option><option value='2023-12-08'>2023-12-08</option><option value='2023-12-01'>2023-12-01</option><option value='2023-11-24'>2023-11-24</option><option value='2023-11-17'>2023-11-17</option><option value='2023-11-10'>2023-11-10</option><option value='2023-11-03'>2023-11-03</option><option value='2023-10-27'>2023-10-27</option><option value='2023-10-20'>2023-10-20</option><option value='2023-10-13'>2023-10-13</option><option value='2023-10-06'>2023-10-06</option><option value='2023-09-29'>2023-09-29</option><option value='2023-09-22'>2023-09-22</option><option value='2023-09-15'>2023-09-15</option><option value='2023-09-08'>2023-09-08</option><option value='2023-09-01'>2023-09-01</option><option value='2023-08-25'>2023-08-25</option><option value='2023-08-18'>2023-08-18</option><option value='2023-08-11'>2023-08-11</option><option value='2023-08-04'>2023-08-04</option><option value='2023-07-28'>2023-07-28</option><option value='2023-07-21'>2023-07-21</option><option value='2023-07-14'>2023-07-14</option><option value='2023-07-07'>2023-07-07</option><option value='2023-06-30'>2023-06-30</option><option value='2023-06-23'>2023-06-23</option><option value='2023-06-16'>2023-06-16</option><option value='2023-06-09'>2023-06-09</option><option value='2023-06-02'>2023-06-02</option><option value='2023-05-25'>2023-05-25</option><option value='2023-05-19'>2023-05-19</option><option value='2023-05-12'>2023-05-12</option><option value='2023-05-05'>2023-05-05</option><option value='2023-04-28'>2023-04-28</option><option value='2023-04-21'>2023-04-21</option><option value='2023-04-14'>2023-04-14</option><option value='2023-04-06'>2023-04-06</option><option value='2023-03-31'>2023-03-31</option><option value='2023-03-24'>2023-03-24</option><option value='2023-03-17'>2023-03-17</option><option value='2023-03-10'>2023-03-10</option><option value='2023-03-03'>2023-03-03</option><option value='2023-02-24'>2023-02-24</option><option value='2023-02-17'>2023-02-17</option><option value='2023-02-10'>2023-02-10</option><option value='2023-02-03'>2023-02-03</option><option value='2023-01-27'>2023-01-27</option><option value='2023-01-20'>2023-01-20</option><option value='2023-01-13'>2023-01-13</option><option value='2023-01-06'>2023-01-06</option><option value='2022-12-30'>2022-12-30</option><option value='2022-12-23'>2022-12-23</option><option value='2022-12-16'>2022-12-16</option><option value='2022-12-09'>2022-12-09</option><option value='2022-12-02'>2022-12-02</option><option value='2022-11-25'>2022-11-25</option><option value='2022-11-18'>2022-11-18</option><option value='2022-11-11'>2022-11-11</option><option value='2022-11-04'>2022-11-04</option><option value='2022-10-28'>2022-10-28</option><option value='2022-10-21'>2022-10-21</option><option value='2022-10-14'>2022-10-14</option><option value='2022-10-07'>2022-10-07</option><option value='2022-09-30'>2022-09-30</option><option value='2022-09-23'>2022-09-23</option><option value='2022-09-16'>2022-09-16</option><option value='2022-09-09'>2022-09-09</option><option value='2022-09-02'>2022-09-02</option><option value='2022-08-26'>2022-08-26</option><option value='2022-08-19'>2022-08-19</option><option value='2022-08-12'>2022-08-12</option><option value='2022-08-05'>2022-08-05</option><option value='2022-07-29'>2022-07-29</option><option value='2022-07-22'>2022-07-22</option><option value='2022-07-15'>2022-07-15</option><option value='2022-07-08'>2022-07-08</option><option value='2022-06-30'>2022-06-30</option><option value='2022-06-24'>2022-06-24</option><option value='2022-06-17'>2022-06-17</option><option value='2022-06-10'>2022-06-10</option><option value='2022-06-02'>2022-06-02</option><option value='2022-05-27'>2022-05-27</option><option value='2022-05-20'>2022-05-20</option><option value='2022-05-13'>2022-05-13</option><option value='2022-05-06'>2022-05-06</option><option value='2022-04-29'>2022-04-29</option><option value='2022-04-22'>2022-04-22</option><option value='2022-04-14'>2022-04-14</option><option value='2022-04-08'>2022-04-08</option><option value='2022-04-01'>2022-04-01</option><option value='2022-03-25'>2022-03-25</option><option value='2022-03-18'>2022-03-18</option><option value='2022-03-11'>2022-03-11</option><option value='2022-03-04'>2022-03-04</option><option value='2022-02-25'>2022-02-25</option><option value='2022-02-18'>2022-02-18</option><option value='2022-02-11'>2022-02-11</option><option value='2022-02-04'>2022-02-04</option><option value='2022-01-28'>2022-01-28</option><option value='2022-01-21'>2022-01-21</option><option value='2022-01-14'>2022-01-14</option><option value='2022-01-07'>2022-01-07</option><option value='2021-12-31'>2021-12-31</option><option value='2021-12-24'>2021-12-24</option><option value='2021-12-17'>2021-12-17</option><option value='2021-12-10'>2021-12-10</option><option value='2021-12-03'>2021-12-03</option><option value='2021-11-26'>2021-11-26</option><option value='2021-11-19'>2021-11-19</option><option value='2021-11-12'>2021-11-12</option><option value='2021-11-05'>2021-11-05</option><option value='2021-10-29'>2021-10-29</option><option value='2021-10-22'>2021-10-22</option><option value='2021-10-15'>2021-10-15</option><option value='2021-10-08'>2021-10-08</option><option value='2021-09-30'>2021-09-30</option><option value='2021-09-24'>2021-09-24</option><option value='2021-09-17'>2021-09-17</option><option value='2021-09-10'>2021-09-10</option><option value='2021-09-03'>2021-09-03</option><option value='2021-08-27'>2021-08-27</option><option value='2021-08-20'>2021-08-20</option><option value='2021-08-13'>2021-08-13</option><option value='2021-08-06'>2021-08-06</option><option value='2021-07-30'>2021-07-30</option><option value='2021-07-23'>2021-07-23</option><option value='2021-07-16'>2021-07-16</option><option value='2021-07-09'>2021-07-09</option><option value='2021-07-02'>2021-07-02</option><option value='2021-06-25'>2021-06-25</option><option value='2021-06-18'>2021-06-18</option><option value='2021-06-11'>2021-06-11</option><option value='2021-06-04'>2021-06-04</option><option value='2021-05-28'>2021-05-28</option><option value='2021-05-21'>2021-05-21</option><option value='2021-05-14'>2021-05-14</option><option value='2021-05-07'>2021-05-07</option><option value='2021-04-30'>2021-04-30</option><option value='2021-04-23'>2021-04-23</option><option value='2021-04-16'>2021-04-16</option><option value='2021-04-09'>2021-04-09</option><option value='2021-04-01'>2021-04-01</option><option value='2021-03-26'>2021-03-26</option><option value='2021-03-19'>2021-03-19</option><option value='2021-03-12'>2021-03-12</option><option value='2021-03-05'>2021-03-05</option><option value='2021-02-26'>2021-02-26</option><option value='2021-02-19'>2021-02-19</option><option value='2021-02-11'>2021-02-11</option><option value='2021-02-05'>2021-02-05</option><option value='2021-01-29'>2021-01-29</option><option value='2021-01-22'>2021-01-22</option><option value='2021-01-15'>2021-01-15</option><option value='2021-01-08'>2021-01-08</option><option value='2020-12-31'>2020-12-31</option><option value='2020-12-24'>2020-12-24</option><option value='2020-12-18'>2020-12-18</option><option value='2020-12-11'>2020-12-11</option><option value='2020-12-04'>2020-12-04</option><option value='2020-11-27'>2020-11-27</option><option value='2020-11-20'>2020-11-20</option><option value='2020-11-13'>2020-11-13</option><option value='2020-11-06'>2020-11-06</option><option value='2020-10-30'>2020-10-30</option><option value='2020-10-23'>2020-10-23</option><option value='2020-10-16'>2020-10-16</option><option value='2020-10-09'>2020-10-09</option><option value='2020-09-30'>2020-09-30</option><option value='2020-09-25'>2020-09-25</option><option value='2020-09-18'>2020-09-18</option><option value='2020-09-11'>2020-09-11</option><option value='2020-09-04'>2020-09-04</option><option value='2020-08-28'>2020-08-28</option><option value='2020-08-21'>2020-08-21</option><option value='2020-08-14'>2020-08-14</option><option value='2020-08-07'>2020-08-07</option><option value='2020-07-31'>2020-07-31</option><option value='2020-07-24'>2020-07-24</option><option value='2020-07-17'>2020-07-17</option><option value='2020-07-10'>2020-07-10</option><option value='2020-07-03'>2020-07-03</option><option value='2020-06-26'>2020-06-26</option><option value='2020-06-19'>2020-06-19</option><option value='2020-06-12'>2020-06-12</option><option value='2020-06-05'>2020-06-05</option><option value='2020-05-29'>2020-05-29</option><option value='2020-05-22'>2020-05-22</option><option value='2020-05-15'>2020-05-15</option><option value='2020-05-08'>2020-05-08</option><option value='2020-04-29'>2020-04-29</option><option value='2020-04-24'>2020-04-24</option><option value='2020-04-17'>2020-04-17</option><option value='2020-04-09'>2020-04-09</option><option value='2020-04-03'>2020-04-03</option><option value='2020-03-27'>2020-03-27</option><option value='2020-03-20'>2020-03-20</option><option value='2020-03-13'>2020-03-13</option><option value='2020-03-06'>2020-03-06</option><option value='2020-02-28'>2020-02-28</option><option value='2020-02-21'>2020-02-21</option><option value='2020-02-14'>2020-02-14</option><option value='2020-02-07'>2020-02-07</option><option value='2020-01-31'>2020-01-31</option><option value='2020-01-24'>2020-01-24</option><option value='2020-01-17'>2020-01-17</option><option value='2020-01-10'>2020-01-10</option><option value='2020-01-03'>2020-01-03</option><option value='2019-12-27'>2019-12-27</option><option value='2019-12-20'>2019-12-20</option><option value='2019-12-13'>2019-12-13</option><option value='2019-12-06'>2019-12-06</option><option value='2019-11-29'>2019-11-29</option><option value='2019-11-22'>2019-11-22</option><option value='2019-11-15'>2019-11-15</option><option value='2019-11-08'>2019-11-08</option><option value='2019-11-01'>2019-11-01</option><option value='2019-10-25'>2019-10-25</option><option value='2019-10-18'>2019-10-18</option><option value='2019-10-11'>2019-10-11</option><option value='2019-10-04'>2019-10-04</option><option value='2019-09-27'>2019-09-27</option><option value='2019-09-20'>2019-09-20</option><option value='2019-09-13'>2019-09-13</option><option value='2019-09-06'>2019-09-06</option><option value='2019-08-30'>2019-08-30</option><option value='2019-08-23'>2019-08-23</option><option value='2019-08-16'>2019-08-16</option><option value='2019-08-09'>2019-08-09</option><option value='2019-08-02'>2019-08-02</option><option value='2019-07-26'>2019-07-26</option><option value='2019-07-19'>2019-07-19</option><option value='2019-07-12'>2019-07-12</option><option value='2019-07-05'>2019-07-05</option><option value='2019-06-28'>2019-06-28</option><option value='2019-06-21'>2019-06-21</option><option value='2019-06-14'>2019-06-14</option><option value='2019-06-06'>2019-06-06</option><option value='2019-05-31'>2019-05-31</option><option value='2019-05-24'>2019-05-24</option><option value='2019-05-17'>2019-05-17</option><option value='2019-05-10'>2019-05-10</option><option value='2019-05-03'>2019-05-03</option><option value='2019-04-26'>2019-04-26</option><option value='2019-04-18'>2019-04-18</option><option value='2019-04-12'>2019-04-12</option><option value='2019-04-04'>2019-04-04</option><option value='2019-03-29'>2019-03-29</option><option value='2019-03-22'>2019-03-22</option><option value='2019-03-15'>2019-03-15</option><option value='2019-03-08'>2019-03-08</option><option value='2019-03-01'>2019-03-01</option><option value='2019-02-22'>2019-02-22</option><option value='2019-02-15'>2019-02-15</option><option value='2019-02-08'>2019-02-08</option><option value='2019-02-01'>2019-02-01</option><option value='2019-01-25'>2019-01-25</option><option value='2019-01-18'>2019-01-18</option><option value='2019-01-11'>2019-01-11</option><option value='2019-01-04'>2019-01-04</option><option value='2018-12-28'>2018-12-28</option><option value='2018-12-21'>2018-12-21</option><option value='2018-12-14'>2018-12-14</option><option value='2018-12-07'>2018-12-07</option><option value='2018-11-30'>2018-11-30</option><option value='2018-11-23'>2018-11-23</option><option value='2018-11-16'>2018-11-16</option><option value='2018-11-09'>2018-11-09</option><option value='2018-11-02'>2018-11-02</option><option value='2018-10-26'>2018-10-26</option><option value='2018-10-19'>2018-10-19</option><option value='2018-10-12'>2018-10-12</option><option value='2018-10-05'>2018-10-05</option><option value='2018-09-28'>2018-09-28</option><option value='2018-09-21'>2018-09-21</option><option value='2018-09-14'>2018-09-14</option><option value='2018-09-07'>2018-09-07</option><option value='2018-08-31'>2018-08-31</option><option value='2018-08-24'>2018-08-24</option><option value='2018-08-17'>2018-08-17</option><option value='2018-08-10'>2018-08-10</option><option value='2018-08-03'>2018-08-03</option><option value='2018-07-27'>2018-07-27</option><option value='2018-07-20'>2018-07-20</option><option value='2018-07-13'>2018-07-13</option><option value='2018-07-06'>2018-07-06</option><option value='2018-06-29'>2018-06-29</option><option value='2018-06-22'>2018-06-22</option><option value='2018-06-15'>2018-06-15</option><option value='2018-06-08'>2018-06-08</option><option value='2018-06-01'>2018-06-01</option><option value='2018-05-25'>2018-05-25</option><option value='2018-05-18'>2018-05-18</option><option value='2018-05-11'>2018-05-11</option><option value='2018-05-04'>2018-05-04</option><option value='2018-04-27'>2018-04-27</option><option value='2018-04-20'>2018-04-20</option><option value='2018-04-13'>2018-04-13</option><option value='2018-04-06'>2018-04-06</option><option value='2018-03-29'>2018-03-29</option><option value='2018-03-23'>2018-03-23</option><option value='2018-03-16'>2018-03-16</option><option value='2018-03-09'>2018-03-09</option><option value='2018-03-02'>2018-03-02</option><option value='2018-02-23'>2018-02-23</option><option value='2018-02-15'>2018-02-15</option><option value='2018-02-09'>2018-02-09</option><option value='2018-02-02'>2018-02-02</option><option value='2018-01-26'>2018-01-26</option><option value='2018-01-19'>2018-01-19</option><option value='2018-01-12'>2018-01-12</option><option value='2018-01-05'>2018-01-05</option><option value='2017-12-29'>2017-12-29</option><option value='2017-12-22'>2017-12-22</option><option value='2017-12-15'>2017-12-15</option><option value='2017-12-08'>2017-12-08</option><option value='2017-12-01'>2017-12-01</option><option value='2017-11-24'>2017-11-24</option><option value='2017-11-17'>2017-11-17</option><option value='2017-11-10'>2017-11-10</option><option value='2017-11-03'>2017-11-03</option><option value='2017-10-27'>2017-10-27</option><option value='2017-10-20'>2017-10-20</option><option value='2017-10-13'>2017-10-13</option><option value='2017-10-06'>2017-10-06</option><option value='2017-09-29'>2017-09-29</option><option value='2017-09-22'>2017-09-22</option><option value='2017-09-15'>2017-09-15</option><option value='2017-09-08'>2017-09-08</option><option value='2017-09-01'>2017-09-01</option><option value='2017-08-25'>2017-08-25</option><option value='2017-08-18'>2017-08-18</option><option value='2017-08-11'>2017-08-11</option><option value='2017-08-04'>2017-08-04</option><option value='2017-07-28'>2017-07-28</option><option value='2017-07-21'>2017-07-21</option><option value='2017-07-14'>2017-07-14</option><option value='2017-07-07'>2017-07-07</option><option value='2017-06-30'>2017-06-30</option><option value='2017-06-23'>2017-06-23</option><option value='2017-06-16'>2017-06-16</option><option value='2017-06-09'>2017-06-09</option><option value='2017-06-02'>2017-06-02</option><option value='2017-05-26'>2017-05-26</option><option value='2017-05-19'>2017-05-19</option><option value='2017-05-12'>2017-05-12</option><option value='2017-05-05'>2017-05-05</option><option value='2017-04-28'>2017-04-28</option><option value='2017-04-21'>2017-04-21</option><option value='2017-04-13'>2017-04-13</option><option value='2017-04-07'>2017-04-07</option><option value='2017-03-31'>2017-03-31</option><option value='2017-03-24'>2017-03-24</option><option value='2017-03-17'>2017-03-17</option><option value='2017-03-10'>2017-03-10</option><option value='2017-03-03'>2017-03-03</option><option value='2017-02-24'>2017-02-24</option><option value='2017-02-17'>2017-02-17</option><option value='2017-02-10'>2017-02-10</option><option value='2017-02-03'>2017-02-03</option><option value='2017-01-27'>2017-01-27</option><option value='2017-01-20'>2017-01-20</option><option value='2017-01-13'>2017-01-13</option><option value='2017-01-06'>2017-01-06</option><option value='2016-12-30'>2016-12-30</option><option value='2016-12-23'>2016-12-23</option><option value='2016-12-16'>2016-12-16</option><option value='2016-12-09'>2016-12-09</option><option value='2016-12-02'>2016-12-02</option><option value='2016-11-25'>2016-11-25</option><option value='2016-11-18'>2016-11-18</option><option value='2016-11-11'>2016-11-11</option><option value='2016-11-04'>2016-11-04</option><option value='2016-10-28'>2016-10-28</option><option value='2016-10-20'>2016-10-20</option><option value='2016-10-14'>2016-10-14</option><option value='2016-10-07'>2016-10-07</option><option value='2016-09-30'>2016-09-30</option><option value='2016-09-23'>2016-09-23</option><option value='2016-09-15'>2016-09-15</option><option value='2016-09-09'>2016-09-09</option><option value='2016-09-02'>2016-09-02</option><option value='2016-08-26'>2016-08-26</option><option value='2016-08-19'>2016-08-19</option><option value='2016-08-12'>2016-08-12</option><option value='2016-08-05'>2016-08-05</option><option value='2016-07-29'>2016-07-29</option><option value='2016-07-22'>2016-07-22</option><option value='2016-07-15'>2016-07-15</option><option value='2016-07-08'>2016-07-08</option><option value='2016-06-30'>2016-06-30</option><option value='2016-06-24'>2016-06-24</option><option value='2016-06-17'>2016-06-17</option><option value='2016-06-10'>2016-06-10</option><option value='2016-06-03'>2016-06-03</option><option value='2016-05-27'>2016-05-27</option><option value='2016-05-20'>2016-05-20</option><option value='2016-05-13'>2016-05-13</option><option value='2016-05-06'>2016-05-06</option><option value='2016-04-29'>2016-04-29</option><option value='2016-04-22'>2016-04-22</option><option value='2016-04-15'>2016-04-15</option><option value='2016-04-08'>2016-04-08</option><option value='2016-04-01'>2016-04-01</option><option value='2016-03-24'>2016-03-24</option><option value='2016-03-18'>2016-03-18</option><option value='2016-03-11'>2016-03-11</option><option value='2016-03-04'>2016-03-04</option><option value='2016-02-26'>2016-02-26</option><option value='2016-02-19'>2016-02-19</option><option value='2016-02-12'>2016-02-12</option><option value='2016-02-05'>2016-02-05</option><option value='2016-01-29'>2016-01-29</option><option value='2016-01-22'>2016-01-22</option><option value='2016-01-15'>2016-01-15</option><option value='2016-01-08'>2016-01-08</option><option value='2015-12-31'>2015-12-31</option><option value='2015-12-24'>2015-12-24</option><option value='2015-12-18'>2015-12-18</option><option value='2015-12-11'>2015-12-11</option><option value='2015-12-04'>2015-12-04</option><option value='2015-11-27'>2015-11-27</option><option value='2015-11-20'>2015-11-20</option><option value='2015-11-13'>2015-11-13</option><option value='2015-11-06'>2015-11-06</option><option value='2015-10-30'>2015-10-30</option><option value='2015-10-23'>2015-10-23</option><option value='2015-10-16'>2015-10-16</option><option value='2015-10-09'>2015-10-09</option><option value='2015-10-02'>2015-10-02</option><option value='2015-09-25'>2015-09-25</option><option value='2015-09-18'>2015-09-18</option><option value='2015-09-11'>2015-09-11</option><option value='2015-09-04'>2015-09-04</option><option value='2015-08-28'>2015-08-28</option><option value='2015-08-21'>2015-08-21</option><option value='2015-08-14'>2015-08-14</option><option value='2015-08-07'>2015-08-07</option><option value='2015-07-31'>2015-07-31</option><option value='2015-07-24'>2015-07-24</option><option value='2015-07-17'>2015-07-17</option><option value='2015-07-10'>2015-07-10</option><option value='2015-07-03'>2015-07-03</option><option value='2015-06-26'>2015-06-26</option><option value='2015-06-19'>2015-06-19</option><option value='2015-06-12'>2015-06-12</option><option value='2015-06-05'>2015-06-05</option><option value='2015-05-29'>2015-05-29</option><option value='2015-05-22'>2015-05-22</option><option value='2015-05-15'>2015-05-15</option><option value='2015-05-08'>2015-05-08</option><option value='2015-04-30'>2015-04-30</option><option value='2015-04-24'>2015-04-24</option><option value='2015-04-17'>2015-04-17</option><option value='2015-04-10'>2015-04-10</option><option value='2015-04-02'>2015-04-02</option><option value='2015-03-27'>2015-03-27</option><option value='2015-03-20'>2015-03-20</option><option value='2015-03-13'>2015-03-13</option><option value='2015-03-06'>2015-03-06</option><option value='2015-02-27'>2015-02-27</option><option value='2015-02-18'>2015-02-18</option><option value='2015-02-13'>2015-02-13</option><option value='2015-02-06'>2015-02-06</option><option value='2015-01-30'>2015-01-30</option><option value='2015-01-23'>2015-01-23</option><option value='2015-01-16'>2015-01-16</option><option value='2015-01-09'>2015-01-09</option><option value='2015-01-02'>2015-01-02</option><option value='2014-12-24'>2014-12-24</option><option value='2014-12-19'>2014-12-19</option><option value='2014-12-12'>2014-12-12</option><option value='2014-12-05'>2014-12-05</option><option value='2014-11-28'>2014-11-28</option><option value='2014-11-21'>2014-11-21</option><option value='2014-11-14'>2014-11-14</option><option value='2014-11-07'>2014-11-07</option><option value='2014-10-31'>2014-10-31</option><option value='2014-10-24'>2014-10-24</option><option value='2014-10-17'>2014-10-17</option><option value='2014-10-10'>2014-10-10</option><option value='2014-10-03'>2014-10-03</option><option value='2014-09-26'>2014-09-26</option><option value='2014-09-19'>2014-09-19</option><option value='2014-09-12'>2014-09-12</option><option value='2014-09-05'>2014-09-05</option><option value='2014-08-29'>2014-08-29</option><option value='2014-08-22'>2014-08-22</option><option value='2014-08-15'>2014-08-15</option><option value='2014-08-08'>2014-08-08</option><option value='2014-08-01'>2014-08-01</option><option value='2014-07-25'>2014-07-25</option><option value='2014-07-18'>2014-07-18</option><option value='2014-07-11'>2014-07-11</option><option value='2014-07-04'>2014-07-04</option><option value='2014-06-27'>2014-06-27</option><option value='2014-06-20'>2014-06-20</option><option value='2014-06-13'>2014-06-13</option><option value='2014-06-06'>2014-06-06</option><option value='2014-05-30'>2014-05-30</option><option value='2014-05-16'>2014-05-16</option><option value='2014-05-09'>2014-05-09</option><option value='2014-05-02'>2014-05-02</option><option value='2014-04-25'>2014-04-25</option><option value='2014-04-17' selected>2014-04-17</option><option value='2014-04-11'>2014-04-11</option><option value='2014-04-04'>2014-04-04</option><option value='2014-03-28'>2014-03-28</option><option value='2014-03-21'>2014-03-21</option><option value='2014-03-14'>2014-03-14</option><option value='2014-03-07'>2014-03-07</option><option value='2014-02-28'>2014-02-28</option><option value='2014-02-21'>2014-02-21</option><option value='2014-02-14'>2014-02-14</option><option value='2014-02-07'>2014-02-07</option><option value='2014-01-30'>2014-01-30</option><option value='2014-01-24'>2014-01-24</option><option value='2014-01-17'>2014-01-17</option><option value='2014-01-10'>2014-01-10</option><option value='2014-01-03'>2014-01-03</option><option value='2013-12-27'>2013-12-27</option><option value='2013-12-20'>2013-12-20</option><option value='2013-12-13'>2013-12-13</option><option value='2013-12-06'>2013-12-06</option><option value='2013-11-29'>2013-11-29</option><option value='2013-11-22'>2013-11-22</option><option value='2013-11-15'>2013-11-15</option><option value='2013-11-08'>2013-11-08</option><option value='2013-11-01'>2013-11-01</option><option value='2013-10-25'>2013-10-25</option><option value='2013-10-18'>2013-10-18</option><option value='2013-10-11'>2013-10-11</option><option value='2013-10-04'>2013-10-04</option><option value='2013-09-27'>2013-09-27</option><option value='2013-09-19'>2013-09-19</option><option value='2013-09-13'>2013-09-13</option><option value='2013-09-06'>2013-09-06</option><option value='2013-08-30'>2013-08-30</option><option value='2013-08-23'>2013-08-23</option><option value='2013-08-16'>2013-08-16</option><option value='2013-08-09'>2013-08-09</option><option value='2013-08-02'>2013-08-02</option><option value='2013-07-26'>2013-07-26</option><option value='2013-07-19'>2013-07-19</option><option value='2013-07-12'>2013-07-12</option><option value='2013-07-05'>2013-07-05</option><option value='2013-06-28'>2013-06-28</option><option value='2013-06-21'>2013-06-21</option><option value='2013-06-14'>2013-06-14</option><option value='2013-06-07'>2013-06-07</option><option value='2013-05-31'>2013-05-31</option><option value='2013-05-24'>2013-05-24</option><option value='2013-05-16'>2013-05-16</option><option value='2013-05-10'>2013-05-10</option><option value='2013-05-03'>2013-05-03</option><option value='2013-04-26'>2013-04-26</option><option value='2013-04-19'>2013-04-19</option><option value='2013-04-12'>2013-04-12</option><option value='2013-04-05'>2013-04-05</option><option value='2013-03-28'>2013-03-28</option><option value='2013-03-22'>2013-03-22</option><option value='2013-03-15'>2013-03-15</option><option value='2013-03-08'>2013-03-08</option><option value='2013-03-01'>2013-03-01</option><option value='2013-02-22'>2013-02-22</option><option value='2013-02-15'>2013-02-15</option><option value='2013-02-08'>2013-02-08</option><option value='2013-02-01'>2013-02-01</option><option value='2013-01-25'>2013-01-25</option><option value='2013-01-18'>2013-01-18</option><option value='2013-01-11'>2013-01-11</option><option value='2013-01-04'>2013-01-04</option><option value='2012-12-28'>2012-12-28</option><option value='2012-12-21'>2012-12-21</option><option value='2012-12-14'>2012-12-14</option><option value='2012-12-07'>2012-12-07</option><option value='2012-11-30'>2012-11-30</option><option value='2012-11-23'>2012-11-23</option><option value='2012-11-16'>2012-11-16</option><option value='2012-11-09'>2012-11-09</option><option value='2012-11-02'>2012-11-02</option><option value='2012-10-26'>2012-10-26</option><option value='2012-10-19'>2012-10-19</option><option value='2012-10-12'>2012-10-12</option><option value='2012-10-05'>2012-10-05</option><option value='2012-09-28'>2012-09-28</option><option value='2012-09-21'>2012-09-21</option><option value='2012-09-14'>2012-09-14</option><option value='2012-09-07'>2012-09-07</option><option value='2012-08-31'>2012-08-31</option></select>
+	</div>
+	<div class="clear"></div>
+</form>
+<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide1">Row</th>
+		<th class="left"><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=codeup'><b>Stock<br/>Code</b></a></th>
+		<th class="left colHide2"><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=typeup'><b>Type</b></a></th>
+		<th class="left"><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=nameup'><b>Issuer</b></a></th>
+		<th class="colHide1">Shares</th>
+		<th class="colHide3"><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=valudn'><b>Value HK$m</b></a></th>
+		<th><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=stakup'><b>Stake %</b></a></th>
+		<th><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=mcapdn'><b>Market<br>cap HK$m</b></a></th>
+		<th class="colHide2"><a href='/dbpub/shortdate.asp?d=2014-04-17&amp;sort=diffdn'><b>Stake<br>change</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide1">1</td>
+			<td class="left">00914</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=946">Anhui Conch Cement Company Limited</a></td>
+			<td class="colHide1">277,533,389</td>
+			<td class="colHide3">8,561.91</td>
+			<td>21.355</td>
+			<td>40,093</td>
+			<td class="colHide2">1.295</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">2</td>
+			<td class="left">01988</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=5487">China Minsheng Banking Corp., Ltd.</a></td>
+			<td class="colHide1">997,747,070</td>
+			<td class="colHide3">8,041.84</td>
+			<td>17.268</td>
+			<td>46,571</td>
+			<td class="colHide2">-1.444</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">3</td>
+			<td class="left">01898</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4797">China Coal Energy Company Limited</a></td>
+			<td class="colHide1">678,102,196</td>
+			<td class="colHide3">2,929.40</td>
+			<td>16.512</td>
+			<td>17,741</td>
+			<td class="colHide2">0.494</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">4</td>
+			<td class="left">02338</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3490">WEICHAI POWER CO., LTD.</a></td>
+			<td class="colHide1">72,036,506</td>
+			<td class="colHide3">2,053.04</td>
+			<td>14.830</td>
+			<td>13,844</td>
+			<td class="colHide2">-0.576</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">5</td>
+			<td class="left">01171</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=1363">Yankuang Energy Group Company Limited</a></td>
+			<td class="colHide1">269,113,050</td>
+			<td class="colHide3">1,673.88</td>
+			<td>13.741</td>
+			<td>12,181</td>
+			<td class="colHide2">-0.011</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">6</td>
+			<td class="left">02899</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3411">ZIJIN MINING GROUP CO., LTD.</a></td>
+			<td class="colHide1">792,623,310</td>
+			<td class="colHide3">1,498.06</td>
+			<td>13.192</td>
+			<td>11,355</td>
+			<td class="colHide2">-0.782</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">7</td>
+			<td class="left">02318</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3606">PING AN INSURANCE (GROUP) COMPANY OF CHINA, LTD.</a></td>
+			<td class="colHide1">405,881,869</td>
+			<td class="colHide3">24,373.21</td>
+			<td>12.969</td>
+			<td>187,940</td>
+			<td class="colHide2">-0.108</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">8</td>
+			<td class="left">03323</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4711">China National Building Material Company Limited</a></td>
+			<td class="colHide1">326,591,140</td>
+			<td class="colHide3">2,602.93</td>
+			<td>11.343</td>
+			<td>22,947</td>
+			<td class="colHide2">-0.632</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">9</td>
+			<td class="left">06030</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=6378">CITIC Securities Company Limited</a></td>
+			<td class="colHide1">129,633,690</td>
+			<td class="colHide3">2,167.48</td>
+			<td>11.001</td>
+			<td>19,702</td>
+			<td class="colHide2">-0.523</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">10</td>
+			<td class="left">02333</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3413">GREAT WALL MOTOR COMPANY LIMITED (CN)</a></td>
+			<td class="colHide1">78,268,211</td>
+			<td class="colHide3">3,122.90</td>
+			<td>7.575</td>
+			<td>41,224</td>
+			<td class="colHide2">0.593</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">11</td>
+			<td class="left">00992</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1134">LENOVO GROUP LIMITED</a></td>
+			<td class="colHide1">691,495,206</td>
+			<td class="colHide3">6,417.08</td>
+			<td>6.645</td>
+			<td>96,571</td>
+			<td class="colHide2">0.152</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">12</td>
+			<td class="left">01211</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3452">BYD COMPANY LIMITED</a></td>
+			<td class="colHide1">51,308,066</td>
+			<td class="colHide3">2,439.70</td>
+			<td>6.469</td>
+			<td>37,712</td>
+			<td class="colHide2">0.038</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">13</td>
+			<td class="left">00267</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=51">CITIC Limited (HK)</a></td>
+			<td class="colHide1">200,500,226</td>
+			<td class="colHide3">2,778.93</td>
+			<td>5.494</td>
+			<td>50,581</td>
+			<td class="colHide2">0.435</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">14</td>
+			<td class="left">03968</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4766">CHINA MERCHANTS BANK CO., LTD.</a></td>
+			<td class="colHide1">251,221,431</td>
+			<td class="colHide3">3,522.12</td>
+			<td>5.472</td>
+			<td>64,364</td>
+			<td class="colHide2">0.059</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">15</td>
+			<td class="left">03618</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=6474">Chongqing Rural Commercial Bank Co., Ltd.</a></td>
+			<td class="colHide1">136,459,182</td>
+			<td class="colHide3">468.05</td>
+			<td>5.429</td>
+			<td>8,621</td>
+			<td class="colHide2">0.096</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">16</td>
+			<td class="left">00494</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1137">LI & FUNG LIMITED</a></td>
+			<td class="colHide1">438,980,910</td>
+			<td class="colHide3">5,267.77</td>
+			<td>5.251</td>
+			<td>100,325</td>
+			<td class="colHide2">-0.005</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">17</td>
+			<td class="left">00358</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=1107">Jiangxi Copper Company Limited</a></td>
+			<td class="colHide1">72,412,797</td>
+			<td class="colHide3">981.92</td>
+			<td>5.219</td>
+			<td>18,814</td>
+			<td class="colHide2">0.021</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">18</td>
+			<td class="left">01099</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=5221">SINOPHARM GROUP CO. LTD.</a></td>
+			<td class="colHide1">51,358,351</td>
+			<td class="colHide3">1,055.41</td>
+			<td>5.167</td>
+			<td>20,427</td>
+			<td class="colHide2">0.265</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">19</td>
+			<td class="left">00916</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=5515">China Longyuan Power Group Corporation Limited</a></td>
+			<td class="colHide1">152,166,089</td>
+			<td class="colHide3">1,308.63</td>
+			<td>4.556</td>
+			<td>28,724</td>
+			<td class="colHide2">0.140</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">20</td>
+			<td class="left">00390</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4935">CHINA RAILWAY GROUP LIMITED</a></td>
+			<td class="colHide1">188,430,987</td>
+			<td class="colHide3">702.85</td>
+			<td>4.479</td>
+			<td>15,694</td>
+			<td class="colHide2">0.120</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">21</td>
+			<td class="left">02238</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=6044">Guangzhou Automobile Group Co., Ltd.</a></td>
+			<td class="colHide1">93,091,776</td>
+			<td class="colHide3">808.04</td>
+			<td>4.206</td>
+			<td>19,211</td>
+			<td class="colHide2">0.113</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">22</td>
+			<td class="left">01066</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3485">Shandong Weigao Group Medical Polymer Company Limited</a></td>
+			<td class="colHide1">78,655,621</td>
+			<td class="colHide3">643.40</td>
+			<td>4.176</td>
+			<td>15,409</td>
+			<td class="colHide2">-0.015</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">23</td>
+			<td class="left">01359</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=2653">CHINA CINDA ASSET MANAGEMENT CO., LTD.</a></td>
+			<td class="colHide1">483,396,004</td>
+			<td class="colHide3">2,044.77</td>
+			<td>4.146</td>
+			<td>49,321</td>
+			<td class="colHide2">0.074</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">24</td>
+			<td class="left">01088</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4595">China Shenhua Energy Company Limited</a></td>
+			<td class="colHide1">133,874,046</td>
+			<td class="colHide3">2,958.62</td>
+			<td>3.939</td>
+			<td>75,109</td>
+			<td class="colHide2">0.113</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">25</td>
+			<td class="left">01800</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4794">China Communications Construction Company Limited</a></td>
+			<td class="colHide1">168,741,071</td>
+			<td class="colHide3">901.08</td>
+			<td>3.811</td>
+			<td>23,643</td>
+			<td class="colHide2">-0.130</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">26</td>
+			<td class="left">06837</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=5491">Haitong Securities Co., Ltd.</a></td>
+			<td class="colHide1">56,023,138</td>
+			<td class="colHide3">636.42</td>
+			<td>3.753</td>
+			<td>16,956</td>
+			<td class="colHide2">-0.181</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">27</td>
+			<td class="left">00168</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=1286">TSINGTAO BREWERY COMPANY LIMITED</a></td>
+			<td class="colHide1">22,437,736</td>
+			<td class="colHide3">1,303.63</td>
+			<td>3.425</td>
+			<td>38,060</td>
+			<td class="colHide2">0.021</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">28</td>
+			<td class="left">02328</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3327">PICC PROPERTY AND CASUALTY COMPANY LIMITED</a></td>
+			<td class="colHide1">136,017,180</td>
+			<td class="colHide3">1,449.94</td>
+			<td>3.223</td>
+			<td>44,983</td>
+			<td class="colHide2">0.011</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">29</td>
+			<td class="left">00902</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=1332">HUA NENG POWER INTERNATIONAL, INC.</a></td>
+			<td class="colHide1">105,885,264</td>
+			<td class="colHide3">836.49</td>
+			<td>2.978</td>
+			<td>28,088</td>
+			<td class="colHide2">-0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">30</td>
+			<td class="left">01880</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=4863">BELLE INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide1">221,813,075</td>
+			<td class="colHide3">1,878.76</td>
+			<td>2.630</td>
+			<td>71,438</td>
+			<td class="colHide2">-0.091</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">31</td>
+			<td class="left">00151</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=4973">Want Want China Holdings Limited</a></td>
+			<td class="colHide1">327,301,022</td>
+			<td class="colHide3">4,065.08</td>
+			<td>2.477</td>
+			<td>164,095</td>
+			<td class="colHide2">-0.005</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">32</td>
+			<td class="left">00998</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4846">China CITIC Bank Corporation Limited</a></td>
+			<td class="colHide1">365,628,947</td>
+			<td class="colHide3">1,707.49</td>
+			<td>2.457</td>
+			<td>69,500</td>
+			<td class="colHide2">-0.057</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">33</td>
+			<td class="left">02628</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3412">CHINA LIFE INSURANCE COMPANY LIMITED</a></td>
+			<td class="colHide1">180,181,456</td>
+			<td class="colHide3">3,810.84</td>
+			<td>2.421</td>
+			<td>157,381</td>
+			<td class="colHide2">-0.023</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">34</td>
+			<td class="left">02601</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=5549">China Pacific Insurance (Group) Co., Ltd.</a></td>
+			<td class="colHide1">66,350,288</td>
+			<td class="colHide3">1,698.57</td>
+			<td>2.391</td>
+			<td>71,048</td>
+			<td class="colHide2">0.077</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">35</td>
+			<td class="left">00017</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3">NEW WORLD DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide1">139,609,578</td>
+			<td class="colHide3">1,135.03</td>
+			<td>2.167</td>
+			<td>52,385</td>
+			<td class="colHide2">-0.147</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">36</td>
+			<td class="left">02883</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3445">China Oilfield Services Limited</a></td>
+			<td class="colHide1">38,721,661</td>
+			<td class="colHide3">713.25</td>
+			<td>2.138</td>
+			<td>33,361</td>
+			<td class="colHide2">-0.238</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">37</td>
+			<td class="left">00388</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2516">HONG KONG EXCHANGES AND CLEARING LIMITED</a></td>
+			<td class="colHide1">24,356,267</td>
+			<td class="colHide3">3,514.61</td>
+			<td>2.096</td>
+			<td>167,658</td>
+			<td class="colHide2">-0.098</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">38</td>
+			<td class="left">00753</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4544">Air China Limited</a></td>
+			<td class="colHide1">94,937,944</td>
+			<td class="colHide3">433.87</td>
+			<td>2.081</td>
+			<td>20,851</td>
+			<td class="colHide2">0.020</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">39</td>
+			<td class="left">01044</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1893">HENGAN INTERNATIONAL GROUP COMPANY LIMITED</a></td>
+			<td class="colHide1">25,502,147</td>
+			<td class="colHide3">2,119.23</td>
+			<td>2.071</td>
+			<td>102,328</td>
+			<td class="colHide2">-0.016</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">40</td>
+			<td class="left">00728</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=3310">CHINA TELECOM CORPORATION LIMITED</a></td>
+			<td class="colHide1">282,603,450</td>
+			<td class="colHide3">1,006.07</td>
+			<td>2.036</td>
+			<td>49,404</td>
+			<td class="colHide2">0.081</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">41</td>
+			<td class="left">00688</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=293">CHINA OVERSEAS LAND & INVESTMENT LIMITED</a></td>
+			<td class="colHide1">165,635,753</td>
+			<td class="colHide3">3,321.00</td>
+			<td>2.027</td>
+			<td>163,861</td>
+			<td class="colHide2">-0.204</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">42</td>
+			<td class="left">00700</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3601">TENCENT HOLDINGS LIMITED</a></td>
+			<td class="colHide1">35,393,833</td>
+			<td class="colHide3">18,599.46</td>
+			<td>1.898</td>
+			<td>979,867</td>
+			<td class="colHide2">-0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">43</td>
+			<td class="left">00002</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=63">CLP HOLDINGS LIMITED</a></td>
+			<td class="colHide1">46,991,442</td>
+			<td class="colHide3">2,901.72</td>
+			<td>1.860</td>
+			<td>156,008</td>
+			<td class="colHide2">-0.148</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">44</td>
+			<td class="left">01288</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=6068">AGRICULTURAL BANK OF CHINA LIMITED</a></td>
+			<td class="colHide1">567,002,850</td>
+			<td class="colHide3">1,888.12</td>
+			<td>1.845</td>
+			<td>102,360</td>
+			<td class="colHide2">-0.009</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">45</td>
+			<td class="left">06881</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=10813">China Galaxy Securities Co., Ltd.</a></td>
+			<td class="colHide1">29,925,264</td>
+			<td class="colHide3">150.52</td>
+			<td>1.770</td>
+			<td>8,506</td>
+			<td class="colHide2">-0.100</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">46</td>
+			<td class="left">00857</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=2755">PETROCHINA COMPANY LIMITED</a></td>
+			<td class="colHide1">352,071,550</td>
+			<td class="colHide3">3,091.19</td>
+			<td>1.669</td>
+			<td>185,248</td>
+			<td class="colHide2">0.007</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">47</td>
+			<td class="left">00023</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=27">BANK OF EAST ASIA, LIMITED (THE)</a></td>
+			<td class="colHide1">38,827,090</td>
+			<td class="colHide3">1,252.17</td>
+			<td>1.668</td>
+			<td>75,085</td>
+			<td class="colHide2">-0.023</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">48</td>
+			<td class="left">00291</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=349">China Resources Beer (Holdings) Company Limited</a></td>
+			<td class="colHide1">39,521,855</td>
+			<td class="colHide3">903.07</td>
+			<td>1.644</td>
+			<td>54,925</td>
+			<td class="colHide2">-0.022</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">49</td>
+			<td class="left">00386</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=2651">CHINA PETROLEUM & CHEMICAL CORPORATION</a></td>
+			<td class="colHide1">409,483,303</td>
+			<td class="colHide3">2,866.38</td>
+			<td>1.605</td>
+			<td>178,594</td>
+			<td class="colHide2">-0.179</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">50</td>
+			<td class="left">00489</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4675">DongFeng Motor Group Company Limited (CN)</a></td>
+			<td class="colHide1">45,684,918</td>
+			<td class="colHide3">497.97</td>
+			<td>1.600</td>
+			<td>31,127</td>
+			<td class="colHide2">0.014</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">51</td>
+			<td class="left">00003</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=348">HONG KONG AND CHINA GAS COMPANY LIMITED (THE)</a></td>
+			<td class="colHide1">143,828,306</td>
+			<td class="colHide3">2,565.90</td>
+			<td>1.505</td>
+			<td>170,545</td>
+			<td class="colHide2">-0.030</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">52</td>
+			<td class="left">03988</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4744">BANK OF CHINA LIMITED</a></td>
+			<td class="colHide1">1,214,947,192</td>
+			<td class="colHide3">4,240.17</td>
+			<td>1.453</td>
+			<td>291,842</td>
+			<td class="colHide2">0.042</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">53</td>
+			<td class="left">00135</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=229">KUNLUN ENERGY COMPANY LIMITED</a></td>
+			<td class="colHide1">114,628,037</td>
+			<td class="colHide3">1,451.19</td>
+			<td>1.420</td>
+			<td>102,196</td>
+			<td class="colHide2">-0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">54</td>
+			<td class="left">01339</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=10165">People's Insurance Company (Group) of China Limited (The)</a></td>
+			<td class="colHide1">123,213,628</td>
+			<td class="colHide3">384.43</td>
+			<td>1.412</td>
+			<td>27,226</td>
+			<td class="colHide2">0.024</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">55</td>
+			<td class="left">01109</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=995">CHINA RESOURCES LAND LIMITED</a></td>
+			<td class="colHide1">74,209,401</td>
+			<td class="colHide3">1,243.75</td>
+			<td>1.273</td>
+			<td>97,728</td>
+			<td class="colHide2">-0.064</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">56</td>
+			<td class="left">00101</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=59">HANG LUNG PROPERTIES LIMITED</a></td>
+			<td class="colHide1">56,132,348</td>
+			<td class="colHide3">1,330.34</td>
+			<td>1.253</td>
+			<td>106,157</td>
+			<td class="colHide2">-0.089</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">57</td>
+			<td class="left">00322</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1279">TINGYI (CAYMAN ISLANDS) HOLDING CORP.</a></td>
+			<td class="colHide1">64,612,043</td>
+			<td class="colHide3">1,444.08</td>
+			<td>1.155</td>
+			<td>125,082</td>
+			<td class="colHide2">-0.026</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">58</td>
+			<td class="left">01398</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4784">Industrial and Commercial Bank of China Limited</a></td>
+			<td class="colHide1">998,086,564</td>
+			<td class="colHide3">4,800.80</td>
+			<td>1.150</td>
+			<td>417,479</td>
+			<td class="colHide2">0.022</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">59</td>
+			<td class="left">00011</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=14">HANG SENG BANK, LIMITED</a></td>
+			<td class="colHide1">19,500,895</td>
+			<td class="colHide3">2,462.96</td>
+			<td>1.020</td>
+			<td>241,466</td>
+			<td class="colHide2">-0.035</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">60</td>
+			<td class="left">02319</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3597">CHINA MENGNIU DAIRY COMPANY LIMITED</a></td>
+			<td class="colHide1">19,866,484</td>
+			<td class="colHide3">813.53</td>
+			<td>1.015</td>
+			<td>80,150</td>
+			<td class="colHide2">-0.166</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">61</td>
+			<td class="left">00144</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=362">China Merchants Port Holdings Company Limited</a></td>
+			<td class="colHide1">25,161,712</td>
+			<td class="colHide3">641.62</td>
+			<td>0.996</td>
+			<td>64,439</td>
+			<td class="colHide2">-0.071</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">62</td>
+			<td class="left">02388</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3299">BOC HONG KONG (HOLDINGS) LIMITED (HK)</a></td>
+			<td class="colHide1">94,089,659</td>
+			<td class="colHide3">2,131.13</td>
+			<td>0.890</td>
+			<td>239,473</td>
+			<td class="colHide2">-0.048</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">63</td>
+			<td class="left">00012</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=182">HENDERSON LAND DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide1">23,471,649</td>
+			<td class="colHide3">1,089.08</td>
+			<td>0.870</td>
+			<td>125,233</td>
+			<td class="colHide2">0.022</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">64</td>
+			<td class="left">03698</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=11473">Huishang Bank Corporation Limited</a></td>
+			<td class="colHide1">26,075,663</td>
+			<td class="colHide3">92.05</td>
+			<td>0.825</td>
+			<td>11,164</td>
+			<td class="colHide2">-0.023</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">65</td>
+			<td class="left">01336</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=7240">New China Life Insurance Company Ltd.</a></td>
+			<td class="colHide1">8,124,088</td>
+			<td class="colHide3">188.07</td>
+			<td>0.786</td>
+			<td>23,940</td>
+			<td class="colHide2">-0.047</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">66</td>
+			<td class="left">00083</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=39">SINO LAND COMPANY LIMITED</a></td>
+			<td class="colHide1">46,569,579</td>
+			<td class="colHide3">556.97</td>
+			<td>0.774</td>
+			<td>71,959</td>
+			<td class="colHide2">-0.026</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">67</td>
+			<td class="left">00016</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=9">SUN HUNG KAI PROPERTIES LIMITED</a></td>
+			<td class="colHide1">20,240,900</td>
+			<td class="colHide3">2,018.02</td>
+			<td>0.743</td>
+			<td>271,613</td>
+			<td class="colHide2">-0.035</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">68</td>
+			<td class="left">00293</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=23">CATHAY PACIFIC AIRWAYS LIMITED</a></td>
+			<td class="colHide1">28,479,746</td>
+			<td class="colHide3">428.34</td>
+			<td>0.724</td>
+			<td>59,165</td>
+			<td class="colHide2">0.014</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">69</td>
+			<td class="left">01199</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=360">COSCO SHIPPING Ports Limited</a></td>
+			<td class="colHide1">21,027,423</td>
+			<td class="colHide3">223.73</td>
+			<td>0.722</td>
+			<td>30,987</td>
+			<td class="colHide2">0.042</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">70</td>
+			<td class="left">00027</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1112">GALAXY ENTERTAINMENT GROUP LIMITED</a></td>
+			<td class="colHide1">29,579,548</td>
+			<td class="colHide3">2,017.33</td>
+			<td>0.698</td>
+			<td>289,055</td>
+			<td class="colHide2">0.011</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">71</td>
+			<td class="left">00019</td>
+			<td class="left colHide2"><span class="info">A<span>A-share</span></span></td>
+			<td class="left"><a href="short.asp?i=24">SWIRE PACIFIC LIMITED</a></td>
+			<td class="colHide1">6,076,435</td>
+			<td class="colHide3">554.78</td>
+			<td>0.671</td>
+			<td>82,679</td>
+			<td class="colHide2">0.017</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">72</td>
+			<td class="left">01299</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=6325">AIA Group Limited</a></td>
+			<td class="colHide1">76,951,800</td>
+			<td class="colHide3">3,004.97</td>
+			<td>0.639</td>
+			<td>470,318</td>
+			<td class="colHide2">0.050</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">73</td>
+			<td class="left">00665</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1263">Haitong International Securities Group Limited</a></td>
+			<td class="colHide1">8,632,917</td>
+			<td class="colHide3">36.26</td>
+			<td>0.618</td>
+			<td>5,863</td>
+			<td class="colHide2">-0.007</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">74</td>
+			<td class="left">03328</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4596">Bank of Communications Co., Ltd.</a></td>
+			<td class="colHide1">203,589,655</td>
+			<td class="colHide3">1,017.95</td>
+			<td>0.581</td>
+			<td>175,059</td>
+			<td class="colHide2">0.006</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">75</td>
+			<td class="left">00165</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=195">CHINA EVERBRIGHT LIMITED (HK)</a></td>
+			<td class="colHide1">9,558,476</td>
+			<td class="colHide3">104.95</td>
+			<td>0.567</td>
+			<td>18,504</td>
+			<td class="colHide2">-0.093</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">76</td>
+			<td class="left">00806</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=4930">Value Partners Group Limited</a></td>
+			<td class="colHide1">9,618,829</td>
+			<td class="colHide3">48.48</td>
+			<td>0.548</td>
+			<td>8,846</td>
+			<td class="colHide2">-0.033</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">77</td>
+			<td class="left">00004</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1">Wharf (Holdings) Limited (The)</a></td>
+			<td class="colHide1">15,717,350</td>
+			<td class="colHide3">884.10</td>
+			<td>0.519</td>
+			<td>170,445</td>
+			<td class="colHide2">-0.039</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">78</td>
+			<td class="left">00001</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=44">CK Hutchison Holdings Limited</a></td>
+			<td class="colHide1">11,893,323</td>
+			<td class="colHide3">1,628.20</td>
+			<td>0.513</td>
+			<td>317,083</td>
+			<td class="colHide2">0.056</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">79</td>
+			<td class="left">00941</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=998">China Mobile Limited (HK)</a></td>
+			<td class="colHide1">100,517,424</td>
+			<td class="colHide3">7,232.23</td>
+			<td>0.497</td>
+			<td>1,454,378</td>
+			<td class="colHide2">-0.046</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">80</td>
+			<td class="left">02356</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3610">DAH SING BANKING GROUP LIMITED</a></td>
+			<td class="colHide1">5,859,941</td>
+			<td class="colHide3">70.55</td>
+			<td>0.468</td>
+			<td>15,067</td>
+			<td class="colHide2">0.040</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">81</td>
+			<td class="left">00006</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=43">Power Assets Holdings Limited</a></td>
+			<td class="colHide1">9,629,823</td>
+			<td class="colHide3">669.75</td>
+			<td>0.451</td>
+			<td>148,438</td>
+			<td class="colHide2">-0.016</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">82</td>
+			<td class="left">00013</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=42">Hutchison Whampoa Limited</a></td>
+			<td class="colHide1">18,965,906</td>
+			<td class="colHide3">2,046.42</td>
+			<td>0.445</td>
+			<td>460,018</td>
+			<td class="colHide2">0.029</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">83</td>
+			<td class="left">00836</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3415">CHINA RESOURCES POWER HOLDINGS COMPANY LIMITED</a></td>
+			<td class="colHide1">20,215,183</td>
+			<td class="colHide3">424.52</td>
+			<td>0.422</td>
+			<td>100,630</td>
+			<td class="colHide2">-0.040</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">84</td>
+			<td class="left">03360</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=6759">Far East Horizon Limited</a></td>
+			<td class="colHide1">13,307,853</td>
+			<td class="colHide3">72.93</td>
+			<td>0.404</td>
+			<td>18,042</td>
+			<td class="colHide2">0.001</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">85</td>
+			<td class="left">00939</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=4661">CHINA CONSTRUCTION BANK CORPORATION</a></td>
+			<td class="colHide1">939,039,158</td>
+			<td class="colHide3">5,117.76</td>
+			<td>0.391</td>
+			<td>1,310,274</td>
+			<td class="colHide2">-0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">86</td>
+			<td class="left">00440</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=180">DAH SING FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide1">1,116,000</td>
+			<td class="colHide3">39.23</td>
+			<td>0.376</td>
+			<td>10,423</td>
+			<td class="colHide2">0.138</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">87</td>
+			<td class="left">00762</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2619">CHINA UNICOM (HONG KONG) LIMITED</a></td>
+			<td class="colHide1">88,414,679</td>
+			<td class="colHide3">926.59</td>
+			<td>0.372</td>
+			<td>249,276</td>
+			<td class="colHide2">-0.059</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">88</td>
+			<td class="left">01928</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=5503">Sands China Ltd.</a></td>
+			<td class="colHide1">26,165,950</td>
+			<td class="colHide3">1,598.74</td>
+			<td>0.324</td>
+			<td>492,722</td>
+			<td class="colHide2">-0.008</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">89</td>
+			<td class="left">00883</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2942">CNOOC LIMITED</a></td>
+			<td class="colHide1">132,509,416</td>
+			<td class="colHide3">1,706.72</td>
+			<td>0.297</td>
+			<td>575,059</td>
+			<td class="colHide2">0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">90</td>
+			<td class="left">00005</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1088">HSBC HOLDINGS PLC</a></td>
+			<td class="colHide1">53,955,279</td>
+			<td class="colHide3">4,329.91</td>
+			<td>0.286</td>
+			<td>1,515,566</td>
+			<td class="colHide2">-0.013</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">91</td>
+			<td class="left">02888</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=3448">STANDARD CHARTERED PLC</a></td>
+			<td class="colHide1">6,363,486</td>
+			<td class="colHide3">1,094.52</td>
+			<td>0.262</td>
+			<td>418,016</td>
+			<td class="colHide2">-0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">92</td>
+			<td class="left">01788</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=6052">Guotai Junan International Holdings Limited</a></td>
+			<td class="colHide1">3,591,000</td>
+			<td class="colHide3">15.05</td>
+			<td>0.208</td>
+			<td>7,245</td>
+			<td class="colHide2">-0.125</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">93</td>
+			<td class="left">00302</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=178">OCBC Bank (Hong Kong) Limited</a></td>
+			<td class="colHide1">443,374</td>
+			<td class="colHide3">55.24</td>
+			<td>0.144</td>
+			<td>38,393</td>
+			<td class="colHide2">-0.022</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">94</td>
+			<td class="left">00966</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2738">CHINA TAIPING INSURANCE HOLDINGS COMPANY LIMITED</a></td>
+			<td class="colHide1">2,900,634</td>
+			<td class="colHide3">38.29</td>
+			<td>0.119</td>
+			<td>32,076</td>
+			<td class="colHide2">-0.004</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">95</td>
+			<td class="left">00066</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2638">MTR CORPORATION LIMITED</a></td>
+			<td class="colHide1">6,319,781</td>
+			<td class="colHide3">184.54</td>
+			<td>0.109</td>
+			<td>169,333</td>
+			<td class="colHide2">0.003</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">96</td>
+			<td class="left">06818</td>
+			<td class="left colHide2"><span class="info">H<span>H-share</span></span></td>
+			<td class="left"><a href="short.asp?i=6361">China Everbright Bank Company Limited</a></td>
+			<td class="colHide1">6,500,000</td>
+			<td class="colHide3">20.15</td>
+			<td>0.095</td>
+			<td>21,293</td>
+			<td class="colHide2">-0.001</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">97</td>
+			<td class="left">00194</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=151">LIU CHONG HING INVESTMENT LIMITED</a></td>
+			<td class="colHide1">247,756</td>
+			<td class="colHide3">4.33</td>
+			<td>0.065</td>
+			<td>6,610</td>
+			<td class="colHide2">-0.017</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">98</td>
+			<td class="left">00721</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=2925">CHINA FINANCIAL INTERNATIONAL INVESTMENTS LIMITED</a></td>
+			<td class="colHide1">2,750,000</td>
+			<td class="colHide3">1.36</td>
+			<td>0.059</td>
+			<td>2,307</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">99</td>
+			<td class="left">00086</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=350">SUN HUNG KAI & CO. LIMITED</a></td>
+			<td class="colHide1">1,049,000</td>
+			<td class="colHide3">5.61</td>
+			<td>0.049</td>
+			<td>11,356</td>
+			<td class="colHide2">-0.002</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">100</td>
+			<td class="left">00133</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=291">CHINA MERCHANTS CHINA DIRECT INVESTMENTS LIMITED</a></td>
+			<td class="colHide1">56,000</td>
+			<td class="colHide3">0.56</td>
+			<td>0.037</td>
+			<td>1,536</td>
+			<td class="colHide2">0.003</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">101</td>
+			<td class="left">00053</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=174">GUOCO GROUP LIMITED</a></td>
+			<td class="colHide1">110,500</td>
+			<td class="colHide3">10.50</td>
+			<td>0.034</td>
+			<td>31,260</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">102</td>
+			<td class="left">00662</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1333">ASIA FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>3,231</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">103</td>
+			<td class="left">01111</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=149">Chong Hing Bank Limited</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>11,789</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">104</td>
+			<td class="left">00530</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=795">Goldin Financial Holdings Limited</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>23,309</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">105</td>
+			<td class="left">01031</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1254">Kingston Financial Group Limited</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>10,418</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">106</td>
+			<td class="left">02378</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=6007">PRUDENTIAL PUBLIC LIMITED COMPANY</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>430,781</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">107</td>
+			<td class="left">00626</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=269">Public Financial Holdings Limited</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>4,128</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">108</td>
+			<td class="left">00171</td>
+			<td class="left colHide2"><span class="info">O<span>Ordinary shares</span></span></td>
+			<td class="left"><a href="short.asp?i=1243">Silver Grant International Holdings Group Limited</a></td>
+			<td class="colHide1">0</td>
+			<td class="colHide3">0.00</td>
+			<td>0.000</td>
+			<td>2,351</td>
+			<td class="colHide2">0.000</td>
+		</tr>
+		
+	<tr class="total">
+		<td class="colHide1"></td>
+		<td></td>
+		<td class="colHide2"></td>
+		<td class="left">Total/average</td>
+		<td class="colHide1"></td>
+		<td class="colHide3">214,173</td>
+		<td>1.361%</td>
+		<td>15,732,259</td>
+	</tr>
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>
