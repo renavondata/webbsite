@@ -1,0 +1,42 @@
+﻿<%Option Explicit%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--#include file="functions1.asp"-->
+<!--#include file="navbars.asp"-->
+<%Dim title
+title="About the Listing Teams of SEHK"%>
+<title><%=title%></title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+
+<body>
+<!--#include file="../templates/cotopdb.asp"-->
+<h2><%=title%></h2>
+<%Call lirBar(1,3)%>
+<ol>
+	<li>HK-listed issuers are regulated by the monopoly for-profit Stock Exchange of Hong Kong Ltd (<strong>SEHK</strong>, 
+	wholly owned by <a href="orgdata.asp?p=9643">Hong Kong Exchanges and Clearing Ltd</a> (<strong>HKEX</strong>, 0388.HK), under the supervision of the Securities and Futures 
+	Commission (<strong>SFC</strong>). The staff are divided into teams, with each issuer covered by 1 team at any point in time. Senior 
+	team members may serve on more than one team. </li>
+	<li>We launched the Complaint button on the Webb-site listed issuer pages at the end of 2023. At the time, SEHK was 
+	publishing a helpful spreadsheet showing the name, rank and telephone number of each member of regulatory staff in 
+	each team, and the team number assigned to each issuer. For a short while, we were able to track movement of staff 
+	between teams, arrivals, departures and change of staff ranks.</li>
+	<li>Some time after that, perhaps in reaction to the transparency that we created, SEHK removed the 
+	names of staff and replaced them with a simple "Case Manager" or "Case Officer". We make a working assumption that 
+	the telephone numbers belong to the same people as they did in 2023, although they may now belong to new staff - but 
+	isn't it nice to be able to ask for someone by name when you call to make a complaint? Obviously, the persons 
+	answering new phone numbers 
+	are anonymous in our system.</li>
+	<li>Our system broke down and we have a gap between 2024-01-24 and 2025-08-27 before we got around to fixing it, so you will not see "First Seen" or 
+	"Last Seen" dates in that range. The Stock Exchange definitely had regulatory staff in that period, but we didn't 
+	track changes.</li>
+	<li>HKEX can't regulate itself - that would be an even bigger conflict of interest than being a for-profit 
+	regulator. So the SFC handles complaints against HKEX as a listed company.</li>
+</ol>
+<!--#include virtual="/templates/footerdb.asp"-->
+</body>
+</html>

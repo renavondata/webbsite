@@ -1,0 +1,8 @@
+"Grants for orgs@%"
+"GRANT USAGE ON *.* TO `orgs`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE ON `enigma`.`issue` TO `orgs`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE ON `enigma`.`issuedshares` TO `orgs`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE ON `enigma`.`namechanges` TO `orgs`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE ON `enigma`.`organisations` TO `orgs`@`%`"
+"GRANT SELECT, INSERT, DELETE ON `enigma`.`persons` TO `orgs`@`%`"
+"GRANT `core`@`%` TO `orgs`@`%`"

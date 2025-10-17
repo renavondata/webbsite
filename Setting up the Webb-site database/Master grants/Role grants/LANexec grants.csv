@@ -1,0 +1,7 @@
+"Grants for LANexec@%"
+"GRANT USAGE ON *.* TO `LANexec`@`%`"
+"GRANT INSERT ON `enigma`.`ukchnats` TO `LANexec`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE ON `enigma`.`ukppl` TO `LANexec`@`%`"
+"GRANT EXECUTE ON PROCEDURE `enigma`.`aliassearch` TO `LANexec`@`%`"
+"GRANT EXECUTE ON PROCEDURE `enigma`.`missingos` TO `LANexec`@`%`"
+"GRANT EXECUTE ON PROCEDURE `enigma`.`pplsearch` TO `LANexec`@`%`"

@@ -1,0 +1,7 @@
+name,val,descrip
+CaptchaSecret,,"Google reCaptcha secret"
+CaptchaSiteKey,,"Google reCaptcha site key"
+mailAccount,,"sender address"
+mailHost,,"domain of SMTP host"
+mailPW,,"password for mailAccount"
+MasterHost,,"The internet domain of the master server"

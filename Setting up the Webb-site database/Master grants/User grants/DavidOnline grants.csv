@@ -1,0 +1,4 @@
+"Grants for DavidOnline@%"
+"GRANT USAGE ON *.* TO `DavidOnline`@`%`"
+"GRANT DELETE ON `enigma`.`events` TO `DavidOnline`@`%`"
+"GRANT `HKUteam`@`%`,`dbexec`@`%`,`stories`@`%` TO `DavidOnline`@`%`"

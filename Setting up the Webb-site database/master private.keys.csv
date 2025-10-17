@@ -1,0 +1,11 @@
+name,val,descrip
+mailAccount,,"sender address for SendMail"
+mailHost,,"domain of SMTP host"
+mailName,,"sender name for SendMail reports"
+mailPort,,"port on SMTP host for sending mail"
+mailPW,,"password for mailAccount"
+mailTo,,"comma-separated recipient list for sendMail"
+UKkey1,,"B64 encoded key 1 for UKCH portal"
+UKkey2,,"B64 encoded Key 2 for UKCH portal"
+UKkey3,,"B64 encoded key for UKCH for Access"
+wskey,,"keystring for decrypting wsroles cred"

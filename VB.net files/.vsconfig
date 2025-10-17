@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "components": [
+    "Microsoft.VisualStudio.Component.CoreEditor",
+    "Microsoft.VisualStudio.Workload.CoreEditor",
+    "Microsoft.Net.Component.4.8.SDK",
+    "Microsoft.Net.Component.4.7.2.TargetingPack",
+    "Microsoft.VisualStudio.Component.TypeScript.TSServer",
+    "Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions",
+    "Microsoft.VisualStudio.Component.JavaScript.TypeScript",
+    "Microsoft.VisualStudio.Component.JavaScript.Diagnostics",
+    "Microsoft.VisualStudio.Component.Roslyn.Compiler",
+    "Microsoft.Component.MSBuild",
+    "Microsoft.VisualStudio.Component.Roslyn.LanguageServices",
+    "Component.Microsoft.VisualStudio.RazorExtension",
+    "Microsoft.VisualStudio.Component.NuGet",
+    "Microsoft.VisualStudio.Component.Common.Azure.Tools",
+    "Microsoft.VisualStudio.Component.SQL.CLR",
+    "Microsoft.Component.ClickOnce",
+    "Component.Microsoft.Web.LibraryManager",
+    "Component.Microsoft.WebTools.BrowserLink.WebLivePreview",
+    "Microsoft.NetCore.Component.Runtime.9.0",
+    "Microsoft.ComponentGroup.ClickOnce.Publish",
+    "Microsoft.VisualStudio.Component.AppInsights.Tools",
+    "Microsoft.VisualStudio.Component.DiagnosticTools",
+    "Microsoft.VisualStudio.Component.Debugger.JustInTime",
+    "Microsoft.VisualStudio.Component.IntelliCode"
+  ],
+  "extensions": []
+}

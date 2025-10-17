@@ -1,0 +1,24 @@
+# Large SQL data dumps in dated folders
+*/[a-z]*[0-9][0-9][0-9][0-9][0-9][0-9]/*Data*.sql
+
+# Access database files (binary, large)
+*.accdb
+*.mdb
+
+# Word documents (we have markdown versions)
+*.docx
+
+# Claude Code directory
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.vs/

@@ -1,0 +1,7 @@
+"Grants for Web@%"
+"GRANT USAGE ON *.* TO `Web`@`%`"
+"GRANT SELECT, EXECUTE ON `ccass`.* TO `Web`@`%`"
+"GRANT SELECT, EXECUTE ON `enigma`.* TO `Web`@`%`"
+"GRANT SELECT, INSERT, UPDATE ON `iplog`.* TO `Web`@`%`"
+"GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON `mailvote`.* TO `Web`@`%`"
+"GRANT SELECT ON `performance_schema`.`replication_connection_status` TO `Web`@`%`"
