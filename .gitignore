@@ -1,5 +1,6 @@
 # Large SQL data dumps in dated folders
-*/[a-z]*[0-9][0-9][0-9][0-9][0-9][0-9]/*Data*.sql
+CCASS schema/ccassData-2025-10-11- 600.sql
+enigmaData-2025-10-11- 000.sql
 
 # Access database files (binary, large)
 *.accdb
