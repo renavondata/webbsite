@@ -358,26 +358,54 @@ Zero-downtime deployment
 
 **Goal:** Web-based database editing accessible from anywhere
 
+**Status:** Planned for Q1 2026 (detailed plan available)
+
 **Current Blockers:**
 - Access .accdb files require Windows
 - Not version-controllable
 - Cannot be accessed remotely
 
 **Migration Path:**
-1. **Build Web Admin Interface:**
-   - Django Admin (auto-generates CRUD from models)
-   - Retool/Budibase (low-code option)
-   - Custom React admin panel
+1. **Build Flask-Admin Interface:**
+   - Use Flask-Admin (aligns with existing Flask web app)
+   - Auto-generates CRUD from SQLAlchemy models
+   - Customizable views for complex entities
+   - Integrates directly with Render PostgreSQL
 
-2. **Preserve Security Model:**
-   - Implement wsroles privilege checking in web layer
+2. **Port VBA Ownership Analysis to Python:**
+   - Convert HKU module profileSnaps routine
+   - Rewrite recursive ownership algorithms
+   - Create CLI tools for scheduled execution
+   - Comprehensive test suite vs VBA output
+
+3. **Preserve Security Model:**
+   - Implement wsroles privilege checking via SQLAlchemy events
    - Maintain userID tracking and ranking system
-   - Preserve trigger-based access control
+   - Preserve trigger logic in Python application layer
+
+**Why Flask-Admin (not Django/React):**
+- ✅ Same framework as public site (Flask)
+- ✅ Single technology stack (Python)
+- ✅ Faster development than custom React admin
+- ✅ Direct PostgreSQL integration (no intermediate SQLite/DuckDB)
 
 **Success Criteria:**
 - Database editing via web browser
 - Role-based access control matches current wsroles system
+- VBA ownership analysis produces identical results in Python
 - Access frontend no longer required for daily operations
+- Cross-platform (Windows, Mac, Linux via browser)
+
+**Timeline:** 12 weeks (Q1 2026)
+- Week 1-2: VBA analysis and documentation
+- Week 3-4: Port VBA to Python
+- Week 5-8: Build Flask-Admin interface
+- Week 9-10: Testing and parallel operation
+- Week 11-12: Cutover and decommission Access
+
+**Detailed Documentation:**
+- [Access Replacement Plan](./migration/access-replacement-plan.md) - Full implementation plan
+- [Why Not SQLite/DuckDB](./migration/why-not-sqlite-duckdb.md) - Architecture decision rationale
 
 ### Medium Priority 6: Code Organization
 
@@ -583,6 +611,16 @@ webbsite/
 - Affordable (~$20/month vs $150/month dedicated server)
 - Zero-downtime deployments
 - Similar alternatives: Railway, Fly.io, Heroku
+
+**Why Flask-Admin for Access replacement (not SQLite/DuckDB)?**
+- Access .accdb is a frontend (forms + VBA) to MySQL, not a database itself
+- Converting to SQLite creates unnecessary intermediate step with no value
+- Direct Flask-Admin + PostgreSQL migration solves actual goals:
+  - Web-based editing (SQLite doesn't provide UI)
+  - Cross-platform (forms as code, not binary .accdb)
+  - Port VBA to Python (separate from database conversion)
+- SQLite/DuckDB useful as supplementary tools (archival, analytics)
+- Full rationale: docs/migration/why-not-sqlite-duckdb.md
 
 ## Immediate Next Steps (Oct 17-31, 2025)
 
