@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/highstock.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/exporting.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+{% if error %}
+	<h2>Error</h2>
+	<p>{{ error }}</p>
+{% else %}
+	<h2>{{ title }}</h2>
+	{% if note %}
+		<p>{{ note }}</p>
+	{% endif %}
+	<div id="chart1" style="height: 400px; min-width: 310px"></div>
+
+	<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function () {
+		Highcharts.setOptions({
+			lang: {
+		      thousandsSep: ','
+		    }
+		});
+		Highcharts.stockChart('chart1', {
+	    	chart: {
+	    		backgroundColor: "#FFFFFF",
+		        borderWidth: 1,
+		        borderColor: "black"
+	    	},
+	    	rangeSelector:{
+	    		selected: 9,
+	    		buttons: [{
+					type: 'month',
+					count: 1,
+					text: '1m'
+				}, {
+					type: 'month',
+					count: 3,
+					text: '3m'
+				}, {
+					type: 'month',
+					count: 6,
+					text: '6m'
+				}, {
+					type: 'ytd',
+					text: 'YTD'
+				}, {
+					type: 'year',
+					count: 1,
+					text: '1y'
+				}, {
+					type: 'year',
+					count: 2,
+					text: '2y'
+				}, {
+					type: 'year',
+					count: 5,
+					text: '5y'
+				}, {
+					type: 'year',
+					count: 10,
+					text: '10y'
+				}, {
+					type: 'year',
+					count: 20,
+					text: '20y'
+				}, {
+					type: 'all',
+					text: 'All'
+				}]
+	    	},
+	    	series: [{
+		        name: '{{ title }}',
+		        data: {{ prices_data|tojson }},
+		        tooltip: {
+		            valueDecimals: {{ dp }}
+		        }
+		    }]
+		});
+	});
+	</script>
+{% endif %}
+{% endblock %}

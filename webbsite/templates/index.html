@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Webb-site Database - Home{% endblock %}
+
+{% block content %}
+<h2>Welcome to Webb-site Database</h2>
+
+<p><b>Emergency deployment in progress</b> - This is a minimal viable product deployed before the October 31, 2025 shutdown of the original webb-site.com server.</p>
+
+<h3>Available Features</h3>
+<ul>
+	<li><a href="{{ url_for('search.search_orgs') }}">Search organisations</a> - Find companies and organizations</li>
+	<li><a href="{{ url_for('search.search_people') }}">Search people</a> - Find directors, officers, and other individuals</li>
+	<li><a href="{{ url_for('events.events') }}">Corporate events</a> - View dividends, rights issues, and other corporate actions</li>
+	<li><a href="{{ url_for('quotes.prices', i=1) }}">Stock prices</a> - View historical price charts</li>
+</ul>
+
+<h3>About This Database</h3>
+<p>The Webb-site Database contains 35 years of Hong Kong financial transparency data, including:</p>
+<ul>
+	<li>Listed companies and their officers</li>
+	<li>Corporate actions (dividends, rights issues, etc.)</li>
+	<li>CCASS beneficial ownership data</li>
+	<li>Directors and their relationships</li>
+	<li>SFC licensees and Law Society records</li>
+</ul>
+
+<h3>Data Currency</h3>
+<p>This database was imported from SQL dumps dated <b>October 11, 2025</b>. More features will be added after the emergency deployment.</p>
+
+<h3>License</h3>
+<p>This data is released under <b>Creative Commons CC-BY 4.0</b> license. You are free to use it for commercial or non-commercial purposes with attribution to Webb-site.com.</p>
+
+<p><a href="https://github.com/yourusername/webbsite">Source code on GitHub</a></p>
+{% endblock %}

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: webbsite
+    runtime: python
+    plan: starter
+    buildCommand: uv sync
+    startCommand: uv run gunicorn -w 4 -b 0.0.0.0:$PORT app:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: webbsite-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+
+databases:
+  - name: webbsite-db
+    databaseName: enigma
+    plan: standard

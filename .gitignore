@@ -22,3 +22,23 @@ desktop.ini
 *~
 .vscode/
 .vs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.env.local
+
+# uv
+.uv/
+uv.lock

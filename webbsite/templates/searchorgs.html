@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Search organisations{% endblock %}
+
+{% block content %}
+<h2>Search organisations</h2>
+<form method="get" action="{{ url_for('search.search_orgs') }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
+	<select id="st" name="st">
+		<option value="l"{% if st == 'l' %} selected{% endif %}>Left match</option>
+		<option value="a"{% if st == 'a' %} selected{% endif %}>Any match</option>
+	</select>
+	<input type="submit" value="search" name="search">
+</form>
+
+{% if n %}
+	<p>"*" = is or was HK-listed</p>
+
+	<h3>Matches in current names</h3>
+	{% if not current_results %}
+		<p>None.</p>
+	{% else %}
+		<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="txtable">
+		<tr>
+			<th class="colHide1"></th>
+			<th></th>
+			<th><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='namdn' if sort=='namup' else 'namup') }}"><b>Name</b></a></th>
+			<th class="colHide3">Chinese name</th>
+			<th style="font-size:large"><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='domdn' if sort=='domup' else 'domup') }}"><b>&#x1f310;</b></a></th>
+			<th><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='incdn' if sort=='incup' else 'incup') }}"><b>Formed</b></a></th>
+			<th class="colHide3"><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='disup' if sort=='disdn' else 'disdn') }}"><b>Dissolved</b></a></th>
+		</tr>
+		{% for row in current_results %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td>{% if row.hklist %}*{% else %}&nbsp;{% endif %}</td>
+				<td><a href='/orgdata?p={{ row.personid }}'>{{ row.name1 }}</a></td>
+				<td class="colHide3"><a href='/orgdata?p={{ row.personid }}'>{{ row.cname }}</a></td>
+				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
+				<td>{% if row.incdate %}{{ row.incdate }}{% endif %}</td>
+				<td class="colHide3">{% if row.disdate %}{{ row.disdate }}{% endif %}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% if current_results|length == limit %}
+			<p><b>Only the first {{ limit }} matches are displayed. Please narrow your search.</b></p>
+		{% endif %}
+	{% endif %}
+
+	<h3>Matches in old names</h3>
+	{% if not old_results %}
+		<p>None.</p>
+	{% else %}
+		<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="txtable">
+		<tr>
+			<th class="colHide1"></th>
+			<th></th>
+			<th><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='namdn' if sort=='namup' else 'namup') }}"><b>Name</b></a></th>
+			<th class="colHide3">Chinese name</th>
+			<th style="font-size:large"><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='domdn' if sort=='domup' else 'domup') }}"><b>&#x1f310;</b></a></th>
+			<th><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='incdn' if sort=='incup' else 'incup') }}"><b>Formed</b></a></th>
+			<th class="colHide3"><a href="{{ url_for('search.search_orgs', n=n, st=st, sort='disup' if sort=='disdn' else 'disdn') }}"><b>Dissolved</b></a></th>
+		</tr>
+		{% for row in old_results %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td>{% if row.hklist %}*{% else %}&nbsp;{% endif %}</td>
+				<td><a href='/orgdata?p={{ row.personid }}'>{{ row.name1 }}</a></td>
+				<td class="colHide3"><a href='/orgdata?p={{ row.personid }}'>{{ row.oldcname }}</a></td>
+				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
+				<td>{% if row.incdate %}{{ row.incdate }}{% endif %}</td>
+				<td class="colHide3">{% if row.disdate %}{{ row.disdate }}{% endif %}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% if old_results|length == limit %}
+			<p><b>Only the first {{ limit }} matches are displayed. Please narrow your search.</b></p>
+		{% endif %}
+	{% endif %}
+{% endif %}
+{% endblock %}

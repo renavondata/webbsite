@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Search people{% endblock %}
+
+{% block content %}
+<h2>Search people</h2>
+<form method="get" action="{{ url_for('search.search_people') }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
+	<select id="st" name="st">
+		<option value="l"{% if st == 'l' %} selected{% endif %}>Left match</option>
+		<option value="a"{% if st == 'a' %} selected{% endif %}>Any match</option>
+	</select>
+	<input type="submit" value="search" name="search">
+</form>
+
+{% if n %}
+	<h3>Matches</h3>
+	{% if not results %}
+		<p>None.</p>
+	{% else %}
+		<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="txtable">
+		<tr>
+			<th class="colHide1"></th>
+			<th><a href="{{ url_for('search.search_people', n=n, st=st, sort='namdn' if sort=='namup' else 'namup') }}"><b>Name</b></a></th>
+			<th class="colHide3">Chinese name</th>
+			<th style="font-size:large"><a href="{{ url_for('search.search_people', n=n, st=st, sort='domdn' if sort=='domup' else 'domup') }}"><b>&#x1f310;</b></a></th>
+			<th class="colHide3">Born</th>
+			<th class="colHide3">Died</th>
+		</tr>
+		{% for row in results %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td><a href='/persondata?p={{ row.personid }}'>{{ row.name1 }}{% if row.name2 %}, {{ row.name2 }}{% endif %}</a></td>
+				<td class="colHide3"><a href='/persondata?p={{ row.personid }}'>{{ row.cname }}</a></td>
+				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
+				<td class="colHide3">{% if row.birthdate %}{{ row.birthdate }}{% endif %}</td>
+				<td class="colHide3">{% if row.deathdate %}{{ row.deathdate }}{% endif %}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% if results|length == limit %}
+			<p><b>Only the first {{ limit }} matches are displayed. Please narrow your search.</b></p>
+		{% endif %}
+	{% endif %}
+{% endif %}
+{% endblock %}
