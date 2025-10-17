@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCASS participants</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>Named CCASS Participants</h2>
+
+{# TODO: Add CCASS navigation bar with ccassallbar #}
+
+<p>Click on the links below to show the current CCASS shareholdings of each
+participant. Sort by CCASS ID to show Investor Participants first (who have no
+ID).</p>
+
+{% if participants|length == 0 %}
+	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+	<table class="txtable yscroll">
+		<tr>
+			<th class="colHide3">Count</th>
+			<th><a href="{{ url_for('ccass.cparticipants', sort='ccidup' if sort!='ccidup' else 'cciddn') }}">CCASS ID</a></th>
+			<th><a href="{{ url_for('ccass.cparticipants', sort='nameup' if sort!='nameup' else 'namedn') }}">Name</a></th>
+		</tr>
+		{% for part in participants %}
+		<tr>
+			<td class="colHide3">{{ loop.index }}</td>
+			<td>{{ part.CCASSID }}</td>
+			<td><a href="{{ url_for('ccass.cholder', part=part.partID) }}">{{ part.partName }}</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

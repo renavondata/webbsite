@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+
+<h2>{{ title }}</h2>
+
+{# Exchange filter navigation #}
+<ul class="navlist">
+    <li{% if e=='m' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='m', t=t, sort=sort) }}">Main Board</a>
+    </li>
+    <li{% if e=='g' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='g', t=t, sort=sort) }}">GEM</a>
+    </li>
+    <li{% if e=='s' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='s', t=t, sort=sort) }}">Secondary</a>
+    </li>
+    <li{% if e=='a' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='a', t=t, sort=sort) }}">All HK</a>
+    </li>
+    <li{% if e=='r' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='r', t=t, sort=sort) }}">REIT</a>
+    </li>
+    <li{% if e=='c' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e='c', t=t, sort=sort) }}">CIS</a>
+    </li>
+</ul>
+
+{# Type filter navigation #}
+<ul class="navlist">
+    <li{% if t=='s' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e=e, t='s', sort=sort) }}">Splits & consols</a>
+    </li>
+    <li{% if t=='b' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e=e, t='b', sort=sort) }}">Bonus shares</a>
+    </li>
+    <li{% if t=='a' %} class="livebutton"{% endif %}>
+        <a href="{{ url_for('dbpub.splits', e=e, t='a', sort=sort) }}">Both</a>
+    </li>
+</ul>
+
+<p>Please <a href="/contact">report</a> errors or missing data. S=split or consolidation, B=bonus issue.</p>
+
+{% if events|length == 0 %}
+    <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+    {# Mobile hide columns indicator #}
+    <div class="mobile">
+        <p><i>Columns with grey headers hidden on mobile</i></p>
+    </div>
+
+    <table class="numtable yscroll">
+        <tr>
+            <th>
+                <a href="{{ url_for('dbpub.splits', e=e, t=t, sort='codeup' if sort!='codeup' else 'codedn') }}">
+                    Stock<br>code</a>
+            </th>
+            <th class="left">
+                <a href="{{ url_for('dbpub.splits', e=e, t=t, sort='stckup' if sort!='stckup' else 'stckdn') }}">
+                    Stock</a>
+            </th>
+            <th></th>
+            <th class="colHide3">New</th>
+            <th class="colHide3">Old</th>
+            <th>
+                <a href="{{ url_for('dbpub.splits', e=e, t=t, sort='adjudn' if sort!='adjudn' else 'adjuup') }}">
+                    Adj.<br>factor</a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.splits', e=e, t=t, sort='exdtup' if sort!='exdtup' else 'exdtdn') }}">
+                    ex/eff<br>date</a>
+            </th>
+        </tr>
+        {% for event in events %}
+        <tr>
+            <td>{{ event.stockCode }}</td>
+            <td class="left">
+                <a href="{{ url_for('events.events', i=event.issueID) }}">
+                    {{ event.name1 }}:{{ event.typeShort }}
+                </a>
+            </td>
+            <td class="left">
+                <a href="{{ url_for('dbpub.eventdets', e=event.eventID) }}">
+                    {{ event.change[0] if event.change else '' }}
+                </a>
+            </td>
+            <td class="colHide3">
+                {% if event.new is not none %}
+                    {{ "{:.3f}".format(event.new) if event.new != event.new|int else event.new }}
+                {% endif %}
+            </td>
+            <td class="colHide3">{{ event.old if event.old is not none else '' }}</td>
+            <td>
+                {% if event.adjust is not none %}
+                    {{ "{:.3f}".format(event.adjust) }}
+                {% endif %}
+            </td>
+            <td>{{ event.exDate.strftime('%Y-%m-%d') if event.exDate else '' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

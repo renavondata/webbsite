@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big changes in CCASS holders: {{ stock_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+
+{% if issue_id == 0 %}
+    <h2>Big changes in CCASS holders</h2>
+    <p><b>{{ stock_name }}</b></p>
+{% else %}
+    {# TODO: Add orgBar navigation when database available #}
+    {# TODO: Add ccassbar navigation when database available #}
+    <h2>Big changes in CCASS holders: {{ stock_name }}</h2>
+{% endif %}
+
+<form method="get" action="{{ url_for('ccass.bigchangesissue') }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="hidden" name="i" value="{{ issue_id }}">
+    <div class="inputs">
+        Stock code: <input type="text" name="sc" size="5" value="">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="Clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<h3>Big changes in CCASS holders</h3>
+<p>This table shows daily movements larger than 0.25% of outstanding shares.
+Click the "Change" heading to sort by absolute size of change. Click the
+participant name to see the history of its holding in this stock. Click the date
+of change to see the CCASS movements on that date.</p>
+
+{% if changes|length == 0 %}
+    <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+    {# Mobile hide columns indicator #}
+    <div class="mobile">
+        <p><i>Columns with grey headers hidden on mobile</i></p>
+    </div>
+
+    <table class="numtable yscroll">
+        <tr>
+            <th class="colHide2">Row</th>
+            <th>
+                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='datedn' if sort!='datedn' else 'dateup') }}">
+                    Date<br>Y-M-D</a>
+            </th>
+            <th class="left">
+                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='partup' if sort!='partup' else 'partdn') }}">
+                    Participant</a>
+            </th>
+            <th>
+                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='chgdn' if sort!='chgdn' else 'chgup') }}">
+                    Change</a>
+            </th>
+            <th class="colHide3">Previous<br>change</th>
+        </tr>
+        {% set last_date = None %}
+        {% for change in changes %}
+        <tr>
+            <td class="colHide2">{{ loop.index }}</td>
+            <td class="nowrap">
+                {% if (sort in ['datedn', 'dateup']) and change.atDate == last_date %}
+                    {# Suppress duplicate dates when sorted by date #}
+                {% else %}
+                    <a href="{{ url_for('ccass.chldchg', i=issue_id, d=change.atDate.strftime('%Y-%m-%d')) }}">
+                        {{ change.atDate.strftime('%Y-%m-%d') }}
+                    </a>
+                    {% set last_date = change.atDate %}
+                {% endif %}
+            </td>
+            <td class="left">
+                <a href="{{ url_for('ccass.chistory', i=issue_id, part=change.partID) }}">
+                    {{ change.partName }}
+                </a>
+            </td>
+            <td>{{ "{:.2f}".format(change.stkchg * 100) }}</td>
+            <td class="nowrap colHide3">
+                {{ change.prevDate.strftime('%Y-%m-%d') if change.prevDate else '' }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if changes|length == 0 %}
+        <p>None found.</p>
+    {% endif %}
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

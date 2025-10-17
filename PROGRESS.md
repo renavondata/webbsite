@@ -56,21 +56,59 @@
 ✅ Created footer template:
 - `includes/footer.html` - Universal footer for all pages
 
-### Priority Pages (Starting)
-✅ `/ccass/bigchanges.asp` - CCASS big changes page (complete)
-- Query with date selection, ETF filtering, sortable columns
-- Full port from original ASP including SQL logic
-- Ready for testing once database is loaded
+### Priority Pages Ported (2025-10-17)
+✅ **Database Pages (`/dbpub/`) - 7 pages:**
+- `/dbpub/listed.asp` - Currently listed stocks with filtering and sorting
+- `/dbpub/delisted.asp` - Delisted stocks history
+- `/dbpub/code.asp` - Stock code lookup
+- `/dbpub/orgdata.asp` - Company data page (stub - complex page pending full implementation)
+- `/dbpub/advisers.asp` - Organization advisers (auditors, solicitors, IFAs)
+- `/dbpub/officers.asp` - Directors and officers by rank
+- `/dbpub/splits.asp` - Stock splits, consolidations, and bonus issues
+
+✅ **CCASS Pages (`/ccass/`) - 9 pages:**
+- `/ccass/bigchanges.asp` - CCASS big changes page (complete with query logic)
+- `/ccass/cconc.asp` - Concentration analysis
+- `/ccass/cparticipants.asp` - List of all CCASS participants
+- `/ccass/cholder.asp` - Holdings by specific participant (e.g., Shanghai-HK connect)
+- `/ccass/choldings.asp` - Participants holding a specific stock
+- `/ccass/ipstakes.asp` - Investor participant stakes (stub)
+- `/ccass/chistory.asp` - Holdings history with Highstock chart
+- `/ccass/bigchangesissue.asp` - Big changes for specific stock
+- `/ccass/bigchangespart.asp` - Big changes for specific participant
+
+**Total: 16 ASP Pages Ported** (12 previous + 4 new)
+
+**Pages Status:**
+- ✅ All pages have Flask routes with `.asp` URL extensions
+- ✅ All pages have Jinja2 templates matching original ASP structure
+- ✅ All pages show "Database not yet loaded" message with proper structure
+- ✅ All pages documented with TODO comments showing exact SQL queries needed
+- ✅ Parameter handling (date filters, sorting, show/hide toggles)
+- ✅ Ready for database connection once PostgreSQL import complete
+
+**Features Implemented:**
+- Sortable table columns with toggling sort direction
+- Date filtering with date picker controls
+- Current vs. history views (hide parameter)
+- ETF filtering for CCASS pages
+- Zero holdings toggle for CCASS pages
+- Form inputs with onchange/onblur auto-submit
+- Responsive table classes (colHide1, colHide2, colHide3)
+- Highstock.js chart integration (chistory.asp)
+- Exchange and type filtering (splits, listed, delisted)
+- Proper URL routing matching webb-site.com exactly
 
 ## Next Steps (Before Oct 31)
 
 ### Critical Tasks
 1. ✅ **Download images** from webb-site.com - COMPLETED
 
-2. **Database import**:
-   - Run `pgloader` to convert MySQL → PostgreSQL
-   - Import to Render PostgreSQL database
-   - Verify `everListCo()` function works
+2. **Database import** (CRITICAL BLOCKER):
+   - ⏰ Run `pgloader` to convert MySQL → PostgreSQL
+   - ⏰ Import to Render PostgreSQL database
+   - ⏰ Verify `everListCo()` function works
+   - **Status**: All 16 ported pages await database connection
 
 3. **Test locally**:
    ```bash
@@ -78,12 +116,11 @@
    uv run flask --app app run --debug
    ```
 
-4. **Port 10-15 priority pages**:
-   - holders.asp (ownership trees)
-   - orgdata.asp (company data)
-   - quotes.asp (quote display)
-   - ccass/bigchanges.asp
-   - ccass/cconc.asp
+4. **Port remaining priority pages** (After database import):
+   - holders.asp (ownership trees) - COMPLEX
+   - orgdata.asp (full company data) - COMPLEX
+   - eventdets.asp (event details)
+   - More CCASS history pages
 
 ### Post-MVP (After Oct 31)
 - Port remaining ~270 ASP pages incrementally

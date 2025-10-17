@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History of CCASS shareholding</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/highstock.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/exporting.js') }}"></script>
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+
+<h2>History of CCASS shareholding</h2>
+
+{% if issue_id == 0 %}
+    <p><b>{{ stock_name }}</b></p>
+{% else %}
+    {# TODO: Add navigation bars when database available #}
+    <form method="get" action="{{ url_for('ccass.chistory') }}">
+        <input type="hidden" name="part" value="{{ part_id }}">
+        <input type="hidden" name="i" value="{{ issue_id }}">
+        <div class="inputs">
+            Stock code: <input type="text" name="sc" id="stockCode" size="5" value="">
+        </div>
+        <div class="clear"></div>
+        <div class="inputs">
+            <p>Adjust for splits and bonus issues:
+                <input type="radio" name="a" value="1" {% if a==1 %}checked{% endif %} onchange="this.form.submit()">Yes
+                <input type="radio" name="a" value="0" {% if a==0 %}checked{% endif %} onchange="this.form.submit()">No
+            </p>
+            <p>Use price on:
+                <input type="radio" name="p" value="0" {% if p==0 %}checked{% endif %} onchange="this.form.submit()">trading date
+                <input type="radio" name="p" value="1" {% if p==1 %}checked{% endif %} onchange="this.form.submit()">holding/settlement date
+            </p>
+            <p>Show:
+                <input type="radio" name="s" value="0" {% if s==0 %}checked{% endif %} onchange="this.form.submit()">chart &amp; table
+                <input type="radio" name="s" value="1" {% if s==1 %}checked{% endif %} onchange="this.form.submit()">chart only
+                <input type="radio" name="s" value="2" {% if s==2 %}checked{% endif %} onchange="this.form.submit()">table only
+            </p>
+            <p>Table rows with no holding change:
+                <input type="radio" name="o" value="1" {% if o==1 %}checked{% endif %} onchange="this.form.submit()">include
+                <input type="radio" name="o" value="0" {% if o==0 %}checked{% endif %} onchange="this.form.submit()">exclude
+            </p>
+            <input type="submit" value="Go">
+        </div>
+        <div class="clear"></div>
+    </form>
+
+    <h3>Participant: {{ part_name }}</h3>
+
+    {% if holdings_data|length == 0 %}
+        <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+        <p><i>This page will display a Highstock chart showing holdings history and price over time.</i></p>
+    {% else %}
+        {# Chart container (shown if s == 0 or s == 1) #}
+        {% if s != 2 %}
+            <div id="chart1" style="height: 500px; margin: 20px 0;"></div>
+        {% endif %}
+
+        {# Table (shown if s == 0 or s == 2) #}
+        {% if s != 1 %}
+            <h3>Holdings history</h3>
+            <table class="numtable yscroll">
+                <tr>
+                    <th>Date</th>
+                    <th>Trade date</th>
+                    <th>Closing price</th>
+                    <th>Holdings</th>
+                    <th>Change</th>
+                    <th>% of o/s</th>
+                    <th>Value (HK$)</th>
+                </tr>
+                {% for row in table_data %}
+                <tr>
+                    <td>{{ row.atDate.strftime('%Y-%m-%d') if row.atDate else '' }}</td>
+                    <td>{{ row.tradeDate.strftime('%Y-%m-%d') if row.tradeDate else '' }}</td>
+                    <td>{{ "{:.3f}".format(row.closing) if row.closing else '' }}</td>
+                    <td>{{ "{:,.0f}".format(row.holding) if row.holding else '0' }}</td>
+                    <td>{{ "{:+,.0f}".format(row.change) if row.change else '' }}</td>
+                    <td>{{ "{:.2f}".format(row.pct_outstanding * 100) if row.pct_outstanding else '' }}</td>
+                    <td>{{ "{:,.0f}".format(row.value) if row.value else '' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {# Highstock chart JavaScript #}
+        {% if s != 2 %}
+        <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            Highcharts.setOptions({
+                lang: {
+                    thousandsSep: ','
+                }
+            });
+
+            Highcharts.stockChart('chart1', {
+                chart: {
+                    zoomType: 'x'
+                },
+                rangeSelector: {
+                    selected: 5,
+                    buttons: [{
+                        type: 'month',
+                        count: 1,
+                        text: '1m'
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: '3m'
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6m'
+                    }, {
+                        type: 'ytd',
+                        text: 'YTD'
+                    }, {
+                        type: 'year',
+                        count: 1,
+                        text: '1y'
+                    }, {
+                        type: 'all',
+                        text: 'All'
+                    }]
+                },
+                title: {
+                    text: '{{ stock_name }} - {{ part_name }}'
+                },
+                xAxis: {
+                    type: 'datetime'
+                },
+                yAxis: [{
+                    title: {
+                        text: 'Holdings (shares)'
+                    },
+                    opposite: false,
+                    labels: {
+                        format: '{value:,.0f}'
+                    }
+                }, {
+                    title: {
+                        text: 'Price (HK$)'
+                    },
+                    opposite: true,
+                    labels: {
+                        format: '{value:.2f}'
+                    }
+                }],
+                tooltip: {
+                    shared: true,
+                    valueDecimals: 2
+                },
+                series: [{
+                    name: 'Holdings',
+                    data: {{ holdings_data|tojson }},
+                    yAxis: 0,
+                    type: 'area',
+                    color: '#4682B4',
+                    fillOpacity: 0.3
+                }, {
+                    name: 'Price',
+                    data: {{ price_data|tojson }},
+                    yAxis: 1,
+                    type: 'line',
+                    color: '#FF6347'
+                }],
+                exporting: {
+                    enabled: true,
+                    buttons: {
+                        contextButton: {
+                            menuItems: ['downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS']
+                        }
+                    }
+                }
+            });
+        });
+        </script>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

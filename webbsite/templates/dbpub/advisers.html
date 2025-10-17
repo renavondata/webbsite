@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advisers of: {{ org_name }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>{{ org_name }}</h2>
+
+{# TODO: Add orgBar navigation #}
+
+{# Navigation for current/history #}
+<ul class="navlist">
+	<li{% if hide=='Y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, u=u, sort=sort, hide='Y') }}">Current</a></li>
+	<li{% if hide=='N' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, u=u, sort=sort, hide='N') }}">History</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="{{ url_for('dbpub.advisers') }}">
+	<input type="hidden" name="p" value="{{ person_id }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="hide" value="{{ hide }}">
+	<div class="inputs">
+		Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="checkbox" name="u" id="u" value="1" {% if u %}checked{% endif %} onchange="this.form.submit()">
+		<label for="u">Exclude unknown removal dates</label>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if adviserships|length == 0 %}
+	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+	<p>This page will show advisers (auditors, solicitors, IFAs, etc.) for {{ org_name }}.</p>
+{% else %}
+	<table class="opltable">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, hide=hide, u=u, sort='advup' if sort!='advup' else 'advdn') }}">Adviser</a></th>
+			<th><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, hide=hide, u=u, sort='rolup' if sort!='rolup' else 'roldn') }}">Role</a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, hide=hide, u=u, sort='addup' if sort!='addup' else 'adddn') }}">Added</a></th>
+			<th><a href="{{ url_for('dbpub.advisers', p=person_id, d=d, hide=hide, u=u, sort='remup' if sort!='remup' else 'remdn') }}">Removed</a></th>
+		</tr>
+		{% for adv in adviserships %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td><a href="{{ url_for('dbpub.orgdata', p=adv.adviserID) }}">{{ adv.adviserName }}</a></td>
+			<td>{{ adv.role }}</td>
+			<td class="colHide2">{{ adv.addDate }}</td>
+			<td>{{ adv.remDate }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

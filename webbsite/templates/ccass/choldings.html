@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCASS holdings: {{ stock_name }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+
+{% if not issue_id %}
+	<h2>CCASS holdings</h2>
+	<p><b>No stock selected. Please provide an issueID (i) or stock code (sc).</b></p>
+	<form method="get" action="{{ url_for('ccass.choldings') }}">
+		<div class="inputs">
+			Stock code: <input type="text" name="sc" size="5" value="">
+		</div>
+		<div class="inputs">
+			<input type="submit" value="Go">
+		</div>
+	</form>
+{% else %}
+	<h2>{{ stock_name }}</h2>
+
+	<form method="get" action="{{ url_for('ccass.choldings') }}">
+		<input type="hidden" name="sort" value="{{ sort }}">
+		<input type="hidden" name="i" value="{{ issue_id }}">
+		<div class="inputs">
+			Stock code: <input type="text" name="sc" size="5" value="">
+		</div>
+		<div class="inputs">
+			<input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+		</div>
+		<div class="inputs">
+			<input type="checkbox" name="z" id="z" value="1" {% if z %}checked{% endif %} onchange="this.form.submit()">
+			<label for="z">Show former holders</label>
+		</div>
+		<div class="inputs">
+			<input type="submit" value="Go">
+			<input type="submit" value="Clear" onclick="document.getElementById('d').value='';document.getElementById('z').checked=false;">
+		</div>
+		<div class="clear"></div>
+	</form>
+
+	{% if holdings|length == 0 %}
+		<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+		<p>This page will show all CCASS participants holding this stock on {{ d }}.</p>
+	{% else %}
+		<h3>CCASS holdings on {{ d }}</h3>
+		<table class="numtable yscroll">
+			<tr>
+				<th class="colHide1">Row</th>
+				<th><a href="{{ url_for('ccass.choldings', i=issue_id, d=d, z=z, sort='ccidup' if sort!='ccidup' else 'cciddn') }}">CCASS<br>ID</a></th>
+				<th class="left"><a href="{{ url_for('ccass.choldings', i=issue_id, d=d, z=z, sort='nameup' if sort!='nameup' else 'namedn') }}">Participant</a></th>
+				<th><a href="{{ url_for('ccass.choldings', i=issue_id, d=d, z=z, sort='holddn' if sort!='holddn' else 'holdup') }}">Holding</a></th>
+				<th class="colHide2">Stake %</th>
+			</tr>
+			{% for holding in holdings %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td>{{ holding.CCASSID }}</td>
+				<td class="left"><a href="{{ url_for('ccass.cholder', part=holding.partID) }}">{{ holding.partName }}</a></td>
+				<td>{{ "{:,.0f}".format(holding.holding) }}</td>
+				<td class="colHide2">{{ "%.2f"|format(holding.stake * 100) if holding.stake else '' }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

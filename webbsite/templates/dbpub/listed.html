@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>{{ title }}</h2>
+<ul class="navlist">
+	<li class="livebutton">Listed</li>
+	<li><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort=sort) }}">Delisted</a></li>
+</ul>
+
+{# Navigation for exchange selection #}
+<ul class="navlist">
+	<li{% if e=='m' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='m', t=t, d=d, sort=sort) }}">Main Board</a></li>
+	<li{% if e=='g' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='g', t=t, d=d, sort=sort) }}">GEM</a></li>
+	<li{% if e=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='s', t=t, d=d, sort=sort) }}">Secondary</a></li>
+	<li{% if e=='a' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='a', t=t, d=d, sort=sort) }}">All HK</a></li>
+	<li{% if e=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='r', t=t, d=d, sort=sort) }}">REIT</a></li>
+	<li{% if e=='c' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e='c', t=t, d=d, sort=sort) }}">CIS</a></li>
+</ul>
+
+{# Navigation for security type #}
+<ul class="navlist">
+	<li{% if t=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e=e, t='s', d=d, sort=sort) }}">Shares/units</a></li>
+	<li{% if t=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e=e, t='r', d=d, sort=sort) }}">Rights</a></li>
+	<li{% if t=='w' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e=e, t='w', d=d, sort=sort) }}">Warrants</a></li>
+	<li{% if t=='h' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.listed', e=e, t='h', d=d, sort=sort) }}">H-shares</a></li>
+</ul>
+
+<ul class="navlist">
+	<li><a href="TRnotes.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+
+<p>Current company names are shown but may have been different on the snapshot date.
+Total returns are measured from the latest of the start date and 3-Jan-1994
+until the snapshot date. CAGR is the annualised return and is not shown for
+periods under 180 days. Relative returns are to the
+<a href="{{ url_for('dbpub.orgdata', p=51819) }}">Tracker Fund of
+HK</a> (2800), starting from the latest of 12-Nov-1999 and the listing date.</p>
+
+<form method="get" action="{{ url_for('dbpub.listed') }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="e" value="{{ e }}">
+	<input type="hidden" name="t" value="{{ t }}">
+	<div class="inputs">
+		Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value=''">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if stocks|length == 0 %}
+	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+	<table class="numtable yscroll">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='codeup' if sort!='codeup' else 'codedn') }}">Stock<br>Code</a></th>
+			<th class="left colHide3"><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='typeup' if sort!='typeup' else 'typedn') }}">Sec.<br>type</a></th>
+			<th class="left"><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='nameup' if sort!='nameup' else 'namedn') }}">Issuer</a></th>
+			<th class="colHide3"><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='datedn' if sort!='datedn' else 'dateup') }}">First trade<br>on this<br>board</a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='totrdn' if sort!='totrdn' else 'totrup') }}">Total<br>return<br>%</a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='cagretdn' if sort!='cagretdn' else 'cagretup') }}">CAGR<br>total<br>return<br>%</a></th>
+			<th><a href="{{ url_for('dbpub.listed', e=e, t=t, d=d, sort='cagreldn' if sort!='cagreldn' else 'cagrelup') }}">CAGR<br>relative<br>return<br>%</a></th>
+		</tr>
+		{% for stock in stocks %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td>{{ stock.StockCode }}</td>
+			<td class="left colHide3"><span class="info">{{ stock.typeShort }}<span>{{ stock.typeLong }}</span></span></td>
+			<td class="left"><a href="{{ url_for('dbpub.orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
+			<td class="colHide3" style="white-space:nowrap">{{ stock.FirstTradeDate }}</td>
+			<td class="colHide2"><a href="str.asp?i={{ stock.issueID }}">{{ stock.totRet }}</a></td>
+			<td class="colHide2">{{ stock.CAGret }}</td>
+			<td>{{ stock.CAGrel }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

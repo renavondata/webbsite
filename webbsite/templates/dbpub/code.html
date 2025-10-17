@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Code: {{ code }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>Stock Code: {{ code }}</h2>
+
+{% if delisted|length > 0 %}
+	<h3>Delisted securities</h3>
+	<table class="txtable">
+	<tr>
+		<th>Issuer</th>
+		<th>Type</th>
+		<th>Listed</th>
+		<th>Final trade</th>
+		<th>Delisted</th>
+		<th>Reason</th>
+	</tr>
+	{% for security in delisted %}
+		<tr>
+			<td><a href="{{ url_for('dbpub.orgdata', p=security.OrgID) }}">{{ security.Org }}</a></td>
+			<td>{{ security.SecType }}</td>
+			<td>{{ security.FirstTradeDate }}</td>
+			<td>{{ security.FinalTradeDate }}</td>
+			<td>{{ security.DelistDate }}</td>
+			<td>{{ security.Reason }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% else %}
+	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+	<p>This page will show currently listed and delisted securities using stock code {{ code }}.</p>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

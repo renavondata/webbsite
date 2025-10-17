@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ org.name }} - Webb-site Database</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>{{ org.name }}</h2>
+
+<p><b>{{ org.message }}</b></p>
+
+<p>This is a complex page showing comprehensive company/organization data including:</p>
+<ul>
+	<li>Basic company information (domicile, incorporation date, etc.)</li>
+	<li>Stock codes and current listing status</li>
+	<li>Directors and officers</li>
+	<li>Advisers (auditors, solicitors, etc.)</li>
+	<li>Major shareholders</li>
+	<li>Corporate events (dividends, rights issues, etc.)</li>
+	<li>Financial reports</li>
+	<li>Related news and articles</li>
+</ul>
+
+<p>PersonID: {{ org.personID }}</p>
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big changes by {{ part_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+
+<h2>Big changes by CCASS participant: {{ part_name }}</h2>
+
+<h3>Big changes by this participant</h3>
+<p>This table shows daily movements by this participant larger than 0.25% of outstanding shares.
+Click the "Change" heading to sort by absolute size of change. Click the stock name to see
+the history of all holdings in this stock. Click the date of change to see the CCASS
+movements for this stock on that date.</p>
+
+{% if changes|length == 0 %}
+    <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+    {# Mobile hide columns indicator #}
+    <div class="mobile">
+        <p><i>Columns with grey headers hidden on mobile</i></p>
+    </div>
+
+    <table class="numtable yscroll">
+        <tr>
+            <th class="colHide2">Row</th>
+            <th>
+                <a href="{{ url_for('ccass.bigchangespart', part=part_id, sort='datedn' if sort!='datedn' else 'dateup') }}">
+                    Date<br>Y-M-D</a>
+            </th>
+            <th class="colHide3">Stock<br>code</th>
+            <th class="left">
+                <a href="{{ url_for('ccass.bigchangespart', part=part_id, sort='stckup' if sort!='stckup' else 'stckdn') }}">
+                    Stock</a>
+            </th>
+            <th>
+                <a href="{{ url_for('ccass.bigchangespart', part=part_id, sort='chgdn' if sort!='chgdn' else 'chgup') }}">
+                    Change</a>
+            </th>
+            <th class="colHide3">Previous<br>change</th>
+        </tr>
+        {% set last_date = None %}
+        {% for change in changes %}
+        <tr>
+            <td class="colHide2">{{ loop.index }}</td>
+            <td class="nowrap">
+                {% if (sort in ['datedn', 'dateup']) and change.atDate == last_date %}
+                    {# Suppress duplicate dates when sorted by date #}
+                {% else %}
+                    <a href="{{ url_for('ccass.chldchg', i=change.issueID, d=change.atDate.strftime('%Y-%m-%d')) }}">
+                        {{ change.atDate.strftime('%Y-%m-%d') }}
+                    </a>
+                    {% set last_date = change.atDate %}
+                {% endif %}
+            </td>
+            <td class="colHide3">{{ change.stockCode if change.stockCode else '' }}</td>
+            <td class="left">
+                <a href="{{ url_for('events.events', i=change.issueID) }}">
+                    {{ change.name1 }}:{{ change.typeShort }}
+                </a>
+            </td>
+            <td>{{ "{:.2f}".format(change.stkchg * 100) }}</td>
+            <td class="nowrap colHide3">
+                {{ change.prevDate.strftime('%Y-%m-%d') if change.prevDate else '' }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if changes|length == 0 %}
+        <p>None found.</p>
+    {% endif %}
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>

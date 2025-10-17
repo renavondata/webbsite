@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>{{ title }}</h2>
+
+{# TODO: Add CCASS navigation bar #}
+
+<form method="get" action="{{ url_for('ccass.cconc') }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		<input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="checkbox" name="etf" id="etf" value="1" {% if etf %}checked{% endif %} onchange="this.form.submit()">
+		<label for="etf">include ETFs</label>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="Clear" onclick="document.getElementById('d').value='';document.getElementById('etf').checked=false;">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<p>This table ranks HK-listed shares and subscription warrants by the
+concentration of their holdings amongst CCASS participants, including banks,
+brokers, custodians and investor participants. The denominator for the first two
+columns is all holdings in CCASS except unnamed (or "Non-Consenting") Investor
+Participants. The numerator and denominator in the third column includes the
+aggregate holdings of unnamed Investor Participants. The last column gives you
+the percentage of the listed shares which are in CCASS, based on the number of
+issued shares published by HKEx.</p>
+
+{% if concentrations|length == 0 %}
+	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
+{% else %}
+	<table class="numtable yscroll">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='scup' if sort!='scup' else 'scdn') }}">Stock<br>code</a></th>
+			<th class="left"><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='nameup' if sort!='nameup' else 'namedn') }}">Issue</a></th>
+			<th><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='cp5dn' if sort!='cp5dn' else 'cp5up') }}">Top 5<br>%</a></th>
+			<th class="colHide3"><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='cp10dn' if sort!='cp10dn' else 'cp10up') }}">Top 10<br>%</a></th>
+			<th class="nowrap"><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='cp10ipdn' if sort!='cp10ipdn' else 'cp10ipup') }}">Top<br>10+<br>NCIP<br>%</a></th>
+			<th class="colHide3"><a href="{{ url_for('ccass.cconc', d=d, etf=etf, sort='stakup' if sort!='stakup' else 'stakdn') }}">Stake in<br>CCASS %</a></th>
+			<th class="colHide3"></th>
+		</tr>
+		{% for conc in concentrations %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td>{{ conc.stockCode }}</td>
+			<td class="left"><a href="{{ url_for('dbpub.orgdata', p=conc.personID) }}">{{ conc.name1 }}</a></td>
+			<td>{{ "%.2f"|format(conc.cp5 * 100) if conc.cp5 else '' }}</td>
+			<td class="colHide3">{{ "%.2f"|format(conc.cp10 * 100) if conc.cp10 else '' }}</td>
+			<td>{{ "%.2f"|format(conc.cp10ip * 100) if conc.cp10ip else '' }}</td>
+			<td class="colHide3">{{ "%.2f"|format(conc.stake * 100) if conc.stake else '' }}</td>
+			<td class="colHide3"><a href="chistory.asp?i={{ conc.issueID }}&d={{ d }}">History</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endif %}
+
+{% include 'includes/footer.html' %}
+</body>
+</html>
