@@ -6,11 +6,16 @@
 
 The original Webb-site.com dedicated server will **shut down on October 31, 2025** when the hosting contract expires. Public access to the Webb-site Database and Reports platform will end. This roadmap has been updated to prioritize an **emergency 14-day deployment** to preserve public access to 35 years of Hong Kong financial data.
 
-**Current Status (Oct 17, 2025):**
-- ⏰ **14 days remaining** until shutdown
-- ✅ Have access to SQL database dumps
+**Current Status (Oct 18, 2025):**
+- ⏰ **13 days remaining** until shutdown
+- ✅ Database imported to PostgreSQL (local test environment)
+- ✅ Flask application structure created (192 routes)
+- ⚠️ Only 5 routes actually working (search, quotes, events)
+- ⚠️ 184 skeleton routes need SQL implementation
+- ❌ 3 buggy routes need fixing (articles.py URL pattern)
+- ❌ 109 routes not yet created (specialty pages)
 - ✅ Legacy scrapers will continue operating (deferred migration)
-- 🎯 **Priority**: Deploy web interface FIRST, scrapers later
+- 🎯 **Priority**: Fix bugs, implement high-traffic route SQL, deploy MVP
 
 **For full shutdown details, see**: https://webb-site.com/articles/shutdown2.asp
 
@@ -39,32 +44,44 @@ This document outlines the **emergency deployment strategy** for migrating the W
    - Verify database connectivity
    - **Deliverable**: Working `/health` endpoint
 
-#### Days 3-5: Core Web Pages ✅ IN PROGRESS
+#### Days 3-5: Core Web Pages ⚠️ PARTIALLY COMPLETE
 3. **Create Flask Application Structure** ✅ COMPLETED
    ```
    app.py                    # Entry point ✅
    webbsite/
    ├── __init__.py          # Flask app factory ✅
    ├── config.py            # Environment variables ✅
-   ├── models.py            # SQLAlchemy models (pending DB import)
+   ├── db.py                # Database helpers ✅
+   ├── asp_helpers.py       # ASP compatibility functions ✅
    ├── routes/
-   │   ├── search.py        # Company/person search ✅
-   │   ├── quotes.py        # Stock quotes ✅
-   │   ├── events.py        # Corporate actions ✅
-   │   ├── dbpub.py         # Database pages ✅
-   │   └── ccass.py         # CCASS pages ✅
+   │   ├── search.py        # Company/person search ✅ WORKING
+   │   ├── quotes.py        # Stock quotes ✅ WORKING
+   │   ├── events.py        # Corporate actions ✅ WORKING
+   │   ├── dbpub.py         # Database pages ⚠️ STUBS (75 routes)
+   │   ├── ccass.py         # CCASS pages ⚠️ STUBS (18 routes)
+   │   ├── articles.py      # Articles ❌ BUGGY (3 routes)
+   │   ├── webbmail.py      # User features ⚠️ STUBS (17 routes)
+   │   ├── vote.py          # Polls ⚠️ STUBS (6 routes)
+   │   ├── pollman.py       # Poll admin ⚠️ STUBS (7 routes)
+   │   ├── mailman.py       # Mailing list ⚠️ STUBS (4 routes)
+   │   ├── contact.py       # Contact form ⚠️ STUB (1 route)
+   │   └── dbeditor.py      # DB editor ⚠️ STUBS (53 routes)
    └── templates/           # Jinja2 templates ✅
    ```
 
-4. **Port Priority ASP Pages to Flask** ✅ 16 PAGES PORTED (awaiting DB)
-   - ✅ **Search/browse pages**: Company search, person lookup (searchorgs.asp, searchpeople.asp)
-   - ✅ **quotes.asp/prices.asp**: Stock price display structure
-   - ✅ **events.asp**: Corporate actions list structure
-   - ✅ **Database pages**: listed.asp, delisted.asp, code.asp, advisers.asp, officers.asp, splits.asp
-   - ✅ **CCASS pages**: bigchanges.asp, cconc.asp, participants, holdings, history
-   - ✅ Use Jinja2 templates (similar pattern to Classic ASP)
-   - ✅ Extract CSS from existing ASP files
-   - ⏰ **BLOCKER**: Database import required to activate queries
+4. **Port Priority ASP Pages to Flask** ⚠️ 192 ROUTES CREATED, ONLY 5 WORKING
+   - ✅ **Fully Implemented (5 routes with SQL)**: searchorgs.asp, searchpeople.asp, prices.asp, quotes.asp, events.asp
+   - ⚠️ **Skeleton Routes (184 routes)**: Route exists but returns stub page with TODO comment
+     - dbpub: 75 routes (listed.asp, delisted.asp, code.asp, advisers.asp, officers.asp, splits.asp, etc.)
+     - ccass: 18 routes (bigchanges.asp, cconc.asp, participants, holdings, history, etc.)
+     - dbeditor: 53 routes
+     - webbmail: 17 routes
+     - vote: 6, pollman: 7, mailman: 4, contact: 1
+   - ❌ **Buggy Routes (3 routes)**: articles.py has URL pattern bug (line 28 queries "articles/X.asp" but DB stores "X.asp")
+   - ❌ **Missing Routes (109 routes)**: Not created yet (mostly dbpub specialty pages: qt.asp, HKflights.asp, tender.asp, EFBS.asp, etc.)
+   - ✅ Database imported to PostgreSQL (local test DB at localhost:5432/enigma_pg)
+   - ✅ Templates created with navigation, CSS extracted
+   - ✅ ASP helper functions ported (get_int, get_str, apos, rem_space)
 
 #### Days 6-7: Polish & Integration
 5. **Templates & Styling**
@@ -111,29 +128,200 @@ This document outlines the **emergency deployment strategy** for migrating the W
     - Handle unexpected issues
     - Final adjustments
 
-### MVP Scope (Must Have for Oct 31)
-✅ Company search and browse
-✅ Person search and lookup
-✅ Stock quotes display
-✅ Corporate events/actions list
+### MVP Scope (Must Have for Oct 31) - REVISED
+
+**Actually Working:**
+✅ Company search and browse (searchorgs.asp)
+✅ Person search and lookup (searchpeople.asp)
+✅ Stock price charts (prices.asp)
+✅ Stock quotes (quotes.asp)
+✅ Corporate events/actions list (events.asp)
 ✅ Basic navigation structure
 ✅ Responsive design
+✅ Database imported to PostgreSQL
 
-### Deferred to Post-Launch
-❌ holders.asp (complex recursive ownership trees)
-❌ Advanced CCASS analysis pages
-❌ User authentication/accounts
-❌ Admin interface (Flask-Admin)
+**Needs Implementation (Critical for MVP):**
+⚠️ Fix articles.py URL bug (1 line change)
+⚠️ Implement SQL for top 15-20 high-traffic routes:
+  - listed.asp, delisted.asp, code.asp (stock listings)
+  - orgdata.asp (company data page)
+  - holders.asp (ownership trees - complex)
+  - bigchanges.asp, cconc.asp (CCASS analysis)
+  - advisers.asp, officers.asp (directors/advisors)
+
+**Deferred to Post-Launch:**
+❌ Remaining 164+ skeleton routes (need SQL implementation)
+❌ 109 missing specialty routes (qt.asp, HKflights.asp, etc.)
+❌ User authentication/accounts (webbmail routes)
+❌ Admin interface (dbeditor routes - needs wsroles)
 ❌ Email alerts and personalization
-❌ Remaining 140+ ASP pages
 ❌ Scraper migration (continue on legacy backend)
 
-### Success Criteria for Oct 31 Launch
-1. ✅ Users can search for companies and people
-2. ✅ Users can view stock quotes and price history
-3. ✅ Users can see corporate events (dividends, etc.)
-4. ✅ Site is publicly accessible with new domain
-5. ✅ Data is current (imported from latest dump)
+### Success Criteria for Oct 31 Launch - REVISED
+
+**Realistic Goals:**
+1. ⚠️ Users can search for companies and people ✅ (DONE)
+2. ⚠️ Users can view stock quotes and price history ✅ (DONE)
+3. ⚠️ Users can see corporate events ✅ (DONE)
+4. ⚠️ Users can browse listed/delisted stocks (TODO: implement listed.asp SQL)
+5. ⚠️ Users can view company data pages (TODO: implement orgdata.asp SQL)
+6. ⚠️ Articles work correctly (TODO: fix articles.py line 28 bug)
+7. ❌ Site deployed to Render (TODO)
+8. ❌ Domain configured with SSL (TODO)
+9. ❌ Data is current (local only, need Render deployment)
+
+**Acceptance Criteria:**
+- At least 20 working routes (currently: 5)
+- Core search/browse/view functionality operational
+- No 404s on top 50 most-visited pages
+- Database queries return correct data
+- Performance acceptable (< 2 sec page load)
+
+---
+
+## Actual Implementation Status (Oct 18, 2025)
+
+**Reality Check: What's Actually Been Accomplished**
+
+### Route Implementation Summary
+
+**Total ASP Files in Original Site:** ~1,100+ files across all directories
+**Flask Routes Created:** 192 routes
+**Actually Working:** 5 routes (3%)
+**Skeleton Stubs:** 184 routes (96%)
+**Buggy/Broken:** 3 routes (1%)
+**Not Created Yet:** 109 routes
+
+### Implementation Tiers
+
+#### Tier 1: Fully Implemented with SQL (5 routes) ✅
+
+These routes have complete SQL queries and return real data:
+
+1. **searchorgs.asp** - Organization search with PostgreSQL full-text search
+2. **searchpeople.asp** - Person search with PostgreSQL full-text search
+3. **prices.asp** - Stock price charts with Highstock integration
+4. **quotes.asp** - Stock quotes from ccass.quotes table
+5. **events.asp** - Corporate events from events table
+
+**Status:** Working end-to-end with database integration
+
+#### Tier 2: Skeleton Routes (184 routes) ⚠️
+
+Routes exist and accept parameters but return stub pages with TODO comments:
+
+- **dbpub.py**: 75 routes (listed.asp, delisted.asp, code.asp, orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp, holders.asp, holdings.asp, prices.asp, pricesCSV.asp, chart.asp, alltotrets.asp, mcap.asp, mcaphist.asp, SDI routes, SFC routes, buybacks routes, short selling routes, events routes, documents, articles by year/category, HK solicitors, statistics, pay league, public housing, government accounts, overlap analysis, etc.)
+- **ccass.py**: 18 routes (bigchanges.asp, cconc.asp, ipstakes.asp, cparticipants.asp, cholder.asp, choldings.asp, bigchangesissue.asp, bigchangespart.asp, chistory.asp, CCASSnotes.asp, plus history/analysis routes)
+- **dbeditor.py**: 53 routes (database editing system - requires wsroles auth)
+- **webbmail.py**: 17 routes (user accounts and personalization)
+- **vote.py**: 6 routes (polling system)
+- **pollman.py**: 7 routes (poll management)
+- **mailman.py**: 4 routes (mailing list admin)
+- **contact.py**: 1 route (contact form with spam protection)
+
+**Status:** Routes registered in Flask, templates may exist, but SQL queries marked with TODO
+
+#### Tier 3: Buggy Routes (3 routes) ❌
+
+Routes exist but have implementation bugs:
+
+- **articles.py**: All 3 routes (catch-all, index, root)
+  - **Bug:** Line 28 queries `f"articles/{article_path}.asp"` but database stores just `f"{article_path}.asp"`
+  - **Impact:** All 843 article links in database will 404
+  - **Fix:** Change line 28 from `article_url = f"articles/{article_path}.asp"` to `article_url = f"{article_path}.asp"`
+
+**Status:** Routes exist but non-functional due to URL pattern mismatch
+
+#### Tier 4: Missing Routes (109 routes) ❌
+
+ASP files exist but no Flask routes created:
+
+**dbpub missing (108 files):**
+- Quarantine statistics: qt.asp
+- Flights data: HKflights.asp, HKflightscan.asp, HKflighthist.asp
+- Tenders: HKDtender.asp, tender.asp
+- EFBS data: EFBS.asp, ESSraw.asp
+- Statistics: DirsHKAgeDistn.asp, DirsHKDistnPeople.asp, DirsPerListcoHKdstn.asp, FDirsPerListcoHKdstn.asp, INEDHKDistnCos.asp, INEDHKDistnPeople.asp, HKdirsTypeSex.asp
+- HK BR check: HKBRcheck.asp
+- HKID index: HKIDindex.asp, HKIDindex120215.asp
+- HKMA charts: HKMAchart.asp
+- Board lots: HKstocksByBoardLot.asp
+- Solicitors: HKsolsadmhk.asp, HKsolsadmos.asp, HKsolsdom.asp
+- Additional ~85 specialty pages (adviserships, campaigns, donations, board composition, audit changes, etc.)
+
+**ccass missing (~1 file)**
+
+**Status:** ASP files exist on disk, no Flask equivalent created
+
+### Database Status
+
+✅ **PostgreSQL Database Imported**
+- Local test database: `postgresql://postgres:@localhost:5432/enigma_pg`
+- Enigma schema: 15,572 stories, all tables present
+- CCASS schema: Available (separate schema)
+- Total stories: 15,572 (843 are .asp article files)
+- Database functions: everListCo() and other MySQL functions need PostgreSQL equivalents
+
+### Templates and Assets
+
+✅ **Templates Created:**
+- Base templates: header.html, dbheader.html, nav.html, footer.html
+- Page templates for implemented routes
+- Shared includes structure matches ASP pattern
+
+✅ **CSS & Assets:**
+- main.css extracted from original site
+- Images downloaded: RSS28x28.png, x27x28.png, facebook28x28.png
+- Responsive layout (75/25 desktop, single column mobile)
+
+✅ **ASP Helper Functions:**
+- get_int(), get_str(), get_bool() - Parameter extraction
+- apos() - SQL escaping
+- rem_space() - Whitespace normalization
+- Highstock.js integration for charts
+
+### What Needs to Be Done
+
+**Critical Fixes:**
+1. **Fix articles.py URL bug** (line 28) - 1 line change
+2. **Implement SQL for 184 skeleton routes** - Significant work
+   - Priority 1: High-traffic pages (listed.asp, holders.asp, orgdata.asp, CCASS analysis)
+   - Priority 2: Medium-traffic pages (statistics, pay league, solicitors)
+   - Priority 3: Low-traffic specialty pages
+
+**Create Missing Routes:**
+3. **Create 109 missing Flask routes** - Lower priority
+   - Most are specialty/niche pages (qt.asp, HKflights.asp, etc.)
+   - Can be added incrementally post-launch
+
+**Database Functions:**
+4. **Port MySQL functions to PostgreSQL**
+   - everListCo() - Check if organization ever listed
+   - splitAdj() - Split adjustment calculations
+   - Total returns calculation functions
+
+**Authentication:**
+5. **Implement wsroles authentication system**
+   - Required for dbeditor routes
+   - User privilege checking
+   - Session management
+
+### Revised Timeline
+
+**Week 1 (Remaining):**
+- Fix articles.py URL bug
+- Implement SQL for top 10 high-priority routes
+- Test with real database
+
+**Week 2:**
+- Continue SQL implementation (20 more routes)
+- Deploy to Render with working subset
+- Domain setup and DNS
+
+**Post-Launch (Nov 2025+):**
+- Incrementally add remaining SQL implementations
+- Create missing specialty routes as needed
+- Full feature parity over 3-6 months
 
 ---
 
@@ -627,35 +815,53 @@ webbsite/
 - SQLite/DuckDB useful as supplementary tools (archival, analytics)
 - Full rationale: docs/migration/why-not-sqlite-duckdb.md
 
-## Immediate Next Steps (Oct 17-31, 2025)
+## Immediate Next Steps (Oct 18-31, 2025) - REVISED
 
-**Days 1-2 (Oct 17-18): Database Setup**
-1. ⏰ Convert MySQL dumps to PostgreSQL format (pgloader)
-2. ⏰ Create Render account and set up PostgreSQL database
-3. ⏰ Import data and verify integrity
-4. ⏰ Deploy minimal Flask "hello world" with `/health` endpoint
+**Days 1-2 (Oct 17-18): Database Setup** ✅ COMPLETED
+1. ✅ Convert MySQL dumps to PostgreSQL format
+2. ✅ Import data to local PostgreSQL (localhost:5432/enigma_pg)
+3. ✅ Verify data integrity (15,572 stories, all tables present)
+4. ✅ Create Flask app structure with /health endpoint
 
-**Days 3-5 (Oct 19-21): Core Pages**
-5. ⏰ Create Flask application structure
-6. ⏰ Port search/browse pages (companies, persons)
-7. ⏰ Port quotes.asp (stock quotes display)
-8. ⏰ Port events.asp (corporate actions)
+**Days 3-5 (Oct 19-21): Core Pages** ⚠️ PARTIALLY COMPLETE
+5. ✅ Created Flask application structure (192 routes)
+6. ✅ Ported search/browse pages with SQL (searchorgs.asp, searchpeople.asp)
+7. ✅ Ported quotes.asp and prices.asp with SQL
+8. ✅ Ported events.asp with SQL
+9. ⚠️ Created 184 skeleton routes (need SQL implementation)
+10. ❌ **BUG FOUND**: articles.py line 28 URL pattern mismatch
 
-**Days 6-7 (Oct 22-23): Polish**
-9. ⏰ Create Jinja2 templates with navigation
-10. ⏰ Extract and adapt CSS from webb-site.com
-11. ⏰ Data validation against live site
+**Days 6-7 (Oct 19-20): Critical Fixes & High-Priority Routes** ⏰ IN PROGRESS
+11. ⏰ Fix articles.py URL bug (line 28: change to `f"{article_path}.asp"`)
+12. ⏰ Implement SQL for listed.asp (stock listings)
+13. ⏰ Implement SQL for delisted.asp
+14. ⏰ Implement SQL for code.asp (stock code lookup)
+15. ⏰ Implement SQL for orgdata.asp (company data page - simplified version)
+16. ⏰ Implement SQL for advisers.asp and officers.asp
+17. ⏰ Implement SQL for bigchanges.asp (CCASS)
+18. ⏰ Implement SQL for cconc.asp (CCASS concentration)
+19. ⏰ Port MySQL functions to PostgreSQL (everListCo, etc.)
 
-**Days 8-10 (Oct 24-26): Testing**
-12. ⏰ Manual testing and bug fixes
-13. ⏰ Performance testing and optimization
-14. ⏰ Cross-browser/mobile testing
+**Days 8-10 (Oct 21-23): Additional Routes & Testing**
+20. ⏰ Implement 5-10 more high-traffic routes
+21. ⏰ Create Render account and set up PostgreSQL database
+22. ⏰ Deploy to Render staging environment
+23. ⏰ Manual testing and bug fixes
+24. ⏰ Performance testing and optimization
 
-**Days 11-14 (Oct 27-30): Launch**
-15. ⏰ Register domain and configure DNS
-16. ⏰ Production deployment to Render
-17. ⏰ Final testing and monitoring
-18. ⏰ **GO LIVE** before Oct 31 shutdown
+**Days 11-14 (Oct 24-30): Production Launch**
+25. ⏰ Register domain and configure DNS
+26. ⏰ Production deployment to Render
+27. ⏰ Import latest database dump to Render
+28. ⏰ Final testing and monitoring
+29. ⏰ **GO LIVE** before Oct 31 shutdown
+
+**Key Changes from Original Plan:**
+- Database already imported locally ✅
+- 192 routes created but only 5 working ⚠️
+- Focus shifted to implementing SQL for skeleton routes
+- Articles bug discovered and needs fixing
+- MySQL→PostgreSQL function porting required
 
 ---
 
