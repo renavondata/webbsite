@@ -25,6 +25,100 @@ The original Webb-site.com dedicated server will **shut down on October 31, 2025
 
 This document outlines the **emergency deployment strategy** for migrating the Webb-site platform to cloud infrastructure (Render.com) before the October 31 shutdown, followed by ongoing improvements to enable long-term maintainability while preserving David Webb's 35-year legacy of financial transparency.
 
+## Critical Architecture Decision: Front-End First
+
+**What's Being Replaced (URGENT - Oct 31 deadline):**
+- ❌ Classic ASP web interface on IIS → Flask/Jinja2 on Render.com
+- ❌ Public database hosting on dedicated server → PostgreSQL on Render.com
+- ❌ Domain hosting → Cloud platform with SSL
+
+**What Continues Operating (NOT part of Oct 31 deadline):**
+- ✅ VB.NET data scrapers on Windows (automated collection continues)
+- ✅ MySQL master database on Windows (private backend)
+- ✅ Weekly database dumps to Google Drive repository
+- ✅ All data collection processes unchanged
+
+**Migration Strategy:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ URGENT: Front-End Migration (Oct 17-31, 2025)              │
+│                                                             │
+│  Webb-site.com                                             │
+│  (Shutting Down)          New Cloud Platform               │
+│  ┌──────────────┐         ┌──────────────────────┐        │
+│  │ Classic ASP  │────────>│ Flask/Jinja2         │        │
+│  │ on IIS       │  Port   │ on Render.com        │        │
+│  └──────────────┘         └──────────────────────┘        │
+│         │                          │                       │
+│         │ Read                     │ Read                  │
+│         ↓                          ↓                       │
+│  ┌──────────────┐         ┌──────────────────────┐        │
+│  │ MySQL        │ Weekly  │ PostgreSQL           │        │
+│  │ Public DB    │ Dumps   │ on Render.com        │        │
+│  └──────────────┘────────>└──────────────────────┘        │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│ DEFERRED: Backend Migration (Optional, Q2 2026+)           │
+│                                                             │
+│  Windows Backend                                            │
+│  (Continues Operating)                                      │
+│  ┌──────────────────────────────────────────┐              │
+│  │ VB.NET Scrapers (HKEX, SFC, CR, etc.)    │              │
+│  │ • Quotes.vb                              │              │
+│  │ • CCASS.vb                               │              │
+│  │ • GetFinancialReports.vb                 │              │
+│  │ • SFC.vb, CR.vb, UKCH.vb, etc.          │              │
+│  └──────────────────────────────────────────┘              │
+│         │                                                   │
+│         │ Write                                             │
+│         ↓                                                   │
+│  ┌──────────────────────┐                                  │
+│  │ MySQL Master DB      │                                  │
+│  │ (Private, HK-based)  │                                  │
+│  └──────────────────────┘                                  │
+│         │                                                   │
+│         │ Weekly Dumps                                      │
+│         ↓                                                   │
+│  ┌──────────────────────┐                                  │
+│  │ Google Drive         │                                  │
+│  │ Repository           │                                  │
+│  └──────────────────────┘                                  │
+│         │                                                   │
+│         │ Import                                            │
+│         ↓                                                   │
+│  ┌──────────────────────┐                                  │
+│  │ Render PostgreSQL    │                                  │
+│  │ (Public Access)      │                                  │
+│  └──────────────────────┘                                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Why This Approach?**
+1. **Separates urgent from non-urgent work**: Public web access (Oct 31 deadline) vs backend modernization (when convenient)
+2. **Preserves working systems**: VB.NET scrapers have run reliably for years, no need to rush migration
+3. **Acceptable data freshness**: 1-week lag acceptable for public historical database queries
+4. **Reduces risk**: Smaller scope for Oct 31 deadline = higher success probability
+5. **Enables incremental improvement**: Can migrate scrapers later if/when needed
+
+**Data Update Workflow (Post-Launch):**
+1. VB.NET scrapers continue running on Windows (HK timezone, scheduled via Task Scheduler)
+2. Weekly mysqldump of enigma + ccass schemas to Google Drive
+3. Automated script downloads dump from Google Drive to Render.com
+4. pg_restore imports data to Render PostgreSQL database
+5. Public Flask site queries updated PostgreSQL database
+
+**Scraper Migration Decision Tree:**
+- If VB.NET scrapers continue working reliably → Keep using them (lowest maintenance)
+- If scrapers break due to source website changes → Fix VB.NET code (existing knowledge)
+- If Windows backend becomes unavailable → Migrate critical scrapers to Python on Render.com
+- If real-time data becomes requirement → Migrate scrapers to cloud cron jobs
+
+For now, **weekly dumps provide acceptable data freshness for public access**.
+
+---
+
 ## Emergency Deployment Plan (Oct 17-31, 2025)
 
 **Timeline: 14 Days to Launch MVP**
@@ -130,7 +224,11 @@ This document outlines the **emergency deployment strategy** for migrating the W
 
 ### MVP Scope (Must Have for Oct 31) - REVISED
 
-**Actually Working:**
+**🎯 MVP Goal: Read-Only Public Database Queries**
+
+The MVP provides **public access to historical Hong Kong financial data** via a modern web interface. The scope is deliberately limited to **front-end web pages only** - no backend scraper migration, no user accounts, no admin interface.
+
+**Actually Working (5 routes):**
 ✅ Company search and browse (searchorgs.asp)
 ✅ Person search and lookup (searchpeople.asp)
 ✅ Stock price charts (prices.asp)
@@ -140,42 +238,110 @@ This document outlines the **emergency deployment strategy** for migrating the W
 ✅ Responsive design
 ✅ Database imported to PostgreSQL
 
-**Needs Implementation (Critical for MVP):**
+**Needs Implementation (Critical for MVP - 15-20 routes):**
 ⚠️ Fix articles.py URL bug (1 line change)
-⚠️ Implement SQL for top 15-20 high-traffic routes:
+⚠️ Implement SQL for top high-traffic routes:
   - listed.asp, delisted.asp, code.asp (stock listings)
-  - orgdata.asp (company data page)
-  - holders.asp (ownership trees - complex)
+  - orgdata.asp (company data page - simplified version)
   - bigchanges.asp, cconc.asp (CCASS analysis)
   - advisers.asp, officers.asp (directors/advisors)
+  - splits.asp, positions.asp (corporate actions)
+  - Note: holders.asp (ownership trees) deferred to post-launch due to complexity
 
-**Deferred to Post-Launch:**
-❌ Remaining 164+ skeleton routes (need SQL implementation)
-❌ 109 missing specialty routes (qt.asp, HKflights.asp, etc.)
-❌ User authentication/accounts (webbmail routes)
-❌ Admin interface (dbeditor routes - needs wsroles)
-❌ Email alerts and personalization
-❌ Scraper migration (continue on legacy backend)
+**Explicitly Out of Scope for MVP (Deferred to Post-Launch):**
+❌ **Backend/Data Collection:**
+  - VB.NET scraper migration to Python (continue on Windows)
+  - Real-time data updates (weekly dumps acceptable)
+  - Database import automation (manual initially)
+
+❌ **User Features:**
+  - Authentication/login system (webbmail routes)
+  - User accounts and watchlists (mystocks.asp)
+  - Email alerts and personalization (mybigchanges.asp)
+  - Polling system (vote, pollman routes)
+  - Contact forms with spam protection
+
+❌ **Admin Features:**
+  - Database editing interface (dbeditor routes - 53 routes)
+  - wsroles privilege system
+  - Access frontend replacement
+  - User administration
+
+❌ **Advanced Query Pages:**
+  - holders.asp (recursive ownership trees - complex algorithm)
+  - Complex CCASS analysis (history, concentration trends)
+  - Remaining 164+ skeleton routes (need SQL implementation)
+  - 109 missing specialty routes (qt.asp, HKflights.asp, etc.)
+
+❌ **Non-Essential Features:**
+  - CSV export functionality (pricesCSV.asp, etc.)
+  - Mailing list management (mailman routes)
+  - Advanced statistics pages
+  - Mobile app or API endpoints
+
+**Data Freshness Expectations:**
+- **MVP Launch**: Data current as of last database dump (up to 1 week old)
+- **Post-Launch**: Weekly updates via automated Google Drive import
+- **Acceptable**: Public historical database doesn't require real-time data
+- **Future**: If real-time becomes requirement, migrate scrapers to Render cron jobs
 
 ### Success Criteria for Oct 31 Launch - REVISED
 
-**Realistic Goals:**
-1. ⚠️ Users can search for companies and people ✅ (DONE)
-2. ⚠️ Users can view stock quotes and price history ✅ (DONE)
-3. ⚠️ Users can see corporate events ✅ (DONE)
-4. ⚠️ Users can browse listed/delisted stocks (TODO: implement listed.asp SQL)
-5. ⚠️ Users can view company data pages (TODO: implement orgdata.asp SQL)
-6. ⚠️ Articles work correctly (TODO: fix articles.py line 28 bug)
-7. ❌ Site deployed to Render (TODO)
-8. ❌ Domain configured with SSL (TODO)
-9. ❌ Data is current (local only, need Render deployment)
+**🎯 Front-End Migration Success Criteria (Public Web Interface Only)**
 
-**Acceptance Criteria:**
-- At least 20 working routes (currently: 5)
-- Core search/browse/view functionality operational
-- No 404s on top 50 most-visited pages
-- Database queries return correct data
-- Performance acceptable (< 2 sec page load)
+**Core User Journeys (Must Work):**
+1. ✅ Users can search for companies by name → DONE (searchorgs.asp)
+2. ✅ Users can search for people by name → DONE (searchpeople.asp)
+3. ✅ Users can view stock price charts → DONE (prices.asp)
+4. ✅ Users can view current stock quotes → DONE (quotes.asp)
+5. ✅ Users can browse corporate events → DONE (events.asp)
+6. ⚠️ Users can browse listed companies → TODO (listed.asp SQL)
+7. ⚠️ Users can browse delisted companies → TODO (delisted.asp SQL)
+8. ⚠️ Users can look up stock codes → TODO (code.asp SQL)
+9. ⚠️ Users can view company data pages → TODO (orgdata.asp SQL - simplified)
+10. ⚠️ Users can read archived articles → TODO (fix articles.py line 28 bug)
+
+**Technical Criteria (Must Achieve by Oct 31):**
+1. ❌ Flask application deployed to Render.com production environment
+2. ❌ PostgreSQL database deployed on Render.com with latest data dump imported
+3. ❌ Domain name registered and DNS configured (with SSL certificate)
+4. ❌ At least 20 working routes (currently: 5, need: 15 more)
+5. ⚠️ No 404s on top 50 most-visited pages (need to identify top pages while webb-site.com still live)
+6. ⚠️ Database queries return correct data (validate against live ASP output)
+7. ⚠️ Page load performance acceptable (< 2 seconds for typical queries)
+8. ⚠️ Mobile responsive design works on phones/tablets
+9. ⚠️ Cross-browser compatibility (Chrome, Firefox, Safari, Edge)
+
+**Data Quality Criteria:**
+1. ✅ PostgreSQL database contains all enigma + ccass tables
+2. ✅ Data integrity validated (row counts match MySQL export)
+3. ✅ Database functions ported from MySQL (everListCo, splitAdj, etc.)
+4. ⚠️ Full-text search works correctly for Chinese company names
+5. ❌ Database can be updated via automated weekly import from Google Drive (post-launch automation acceptable)
+
+**Documentation Criteria:**
+1. ⚠️ README explains how to import weekly database dumps
+2. ⚠️ Known limitations documented (what's deferred to post-launch)
+3. ⚠️ Deployment instructions for Render.com
+4. ⚠️ Comparison notes vs legacy ASP site (intentional differences)
+
+**Explicitly NOT Success Criteria for Oct 31:**
+- ❌ User authentication or login system (deferred)
+- ❌ Admin interface for database editing (deferred)
+- ❌ Real-time data updates (weekly dumps acceptable)
+- ❌ Scraper migration to Python (VB.NET continues)
+- ❌ Complex features like holders.asp (deferred)
+- ❌ Email alerts or personalization (deferred)
+- ❌ CSV export functionality (deferred)
+- ❌ All 300+ routes working (20-25 routes sufficient for MVP)
+
+**Quantitative Targets:**
+- **Working routes**: 20-25 (currently: 5, need: 15-20 more)
+- **Page coverage**: Top 50 most-visited pages functional (80%+ of traffic)
+- **Data freshness**: ≤ 1 week old (weekly dumps)
+- **Uptime**: Site accessible 24/7 (Render.com platform reliability)
+- **Performance**: Average page load < 2 seconds
+- **Cost**: ≤ $25/month (Render.com starter plans)
 
 ---
 
@@ -327,23 +493,70 @@ ASP files exist but no Flask routes created:
 
 ## Current State (Legacy System)
 
-**Production Environment (Shutting Down Oct 31):**
-- Windows-based servers (HK master, USA slave)
-- VB.NET console applications for data scraping (will continue)
-- MySQL 8.0 with master-slave replication
-- Classic ASP web interface on IIS (being replaced)
-- Access .accdb frontend for database editing
-- Manual scheduling via Windows Task Scheduler
+### What's Shutting Down on Oct 31, 2025
 
-**What Continues After Shutdown:**
-- Automated data scrapers (VB.NET on Windows) - deferred migration
-- Weekly database dumps to Google Drive repository
-- David Webb's Substack newsletter (replacement for Reports)
+**Webb-site.com Dedicated Server** (USA-based slave server):
+- ❌ **Classic ASP web interface on IIS** - Public-facing query pages (dbpub/, ccass/, articles/)
+- ❌ **MySQL replica database** - Read-only copy of master database for public queries
+- ❌ **Domain hosting** - webb-site.com DNS and SSL certificates
+- ❌ **Email hosting** - Contact forms, newsletter delivery (moving to Substack)
+- ❌ **Access frontend** - Remote desktop access to database editing tools
 
-**What Must Be Replaced by Oct 31:**
-- Public web interface (Classic ASP → Flask)
-- Database hosting (MySQL on Windows → PostgreSQL on Render)
-- Domain/hosting (dedicated server → cloud platform)
+**Impact of Shutdown:**
+- Public loses access to 35 years of Hong Kong financial data
+- All webb-site.com URLs will return 404
+- Historical articles only accessible via Internet Archive
+- Database queries no longer possible for researchers/journalists
+
+**Why Shutting Down:**
+- Hosting contract expires Oct 31, 2025
+- Dedicated server costs ~$150/month (unsustainable)
+- Windows Server 2016 approaching end-of-life
+- Single point of failure (no redundancy)
+
+### What Continues Operating After Oct 31
+
+**Windows Backend (HK-based master server):**
+- ✅ **VB.NET data scrapers** - Automated collection from HKEX, SFC, Companies Registry, etc.
+- ✅ **MySQL 8.0 master database** - Private database with full write access
+- ✅ **Task Scheduler** - Runs scrapers on HK timezone schedule
+- ✅ **Access .accdb frontend** - Local database editing (David's Windows PC)
+
+**Data Collection Continues:**
+- Quotes scraper (HKEX daily quotations) - Mon-Fri 22:00 HKT
+- CCASS scraper (beneficial ownership) - Tue-Sat 04:00 HKT
+- Financial reports (HKEX filings) - Mon-Sat 02:30 HKT
+- SFC licensee data - Tue-Sat 03:00 HKT
+- Companies Registry - Weekly company officer changes
+- UK Companies House - Continuous API polling
+- All other scrapers on existing schedules (see VB.net files/Suggested run times.md)
+
+**Google Drive Repository:**
+- ✅ **Weekly database dumps** - Full mysqldump of enigma + ccass schemas
+- ✅ **Software updates** - VB.NET source code, ASP files, documentation
+- ✅ **Creative Commons CC-BY 4.0** - Free for anyone to mirror and republish
+
+**Substack Newsletter:**
+- ✅ **David Webb's commentary** - Occasional opinion pieces
+- ✅ **Existing subscribers migrated** - Automatic transition notifications
+- ❌ **No automated alerts** - No more personalized stock alerts (mystocks.asp, mybigchanges.asp)
+
+### What Must Be Replaced by Oct 31 (This Migration)
+
+**Critical Replacements (Oct 17-31, 2025):**
+1. ❌ **Public web interface** - Classic ASP → Flask/Jinja2 on Render.com
+2. ❌ **Database hosting** - MySQL on Windows → PostgreSQL on Render.com
+3. ❌ **Domain/hosting** - Dedicated server → Cloud platform (Render.com)
+4. ❌ **SSL certificates** - Manual renewal → Automatic via Let's Encrypt/Render
+5. ❌ **Database import process** - Manual restore → Automated weekly import from Google Drive
+
+**Out of Scope for Oct 31 (Deferred):**
+- ❌ User authentication/accounts (webbmail, mailvote schema)
+- ❌ Admin interface (dbeditor routes, Access frontend replacement)
+- ❌ Email alerts and personalization (mystocks, mybigchanges)
+- ❌ Scraper migration to Python (VB.NET continues on Windows)
+- ❌ Real-time data updates (weekly dumps acceptable)
+- ❌ Advanced features (holders.asp ownership trees, complex CCASS analysis)
 
 ---
 
@@ -728,19 +941,29 @@ webbsite/
 
 ## Success Metrics
 
-### MVP Launch (Oct 31, 2025)
-1. ✅ **Site is live** before webb-site.com shutdown
-2. ✅ **Core functionality** working (search, quotes, events)
-3. ✅ **Data imported** from latest SQL dumps
-4. ✅ **Domain configured** with SSL
-5. ✅ **Zero data loss** during migration
+### MVP Launch (Oct 31, 2025) - Front-End Only
+1. ❌ **Site is live** before webb-site.com shutdown (Render.com deployment complete)
+2. ⚠️ **Core functionality** working (20-25 routes operational, not just 5)
+3. ❌ **Data imported** from latest SQL dumps to Render PostgreSQL
+4. ❌ **Domain configured** with SSL (automatic via Render/Let's Encrypt)
+5. ✅ **Zero data loss** during migration (PostgreSQL import validated against MySQL)
+6. ⚠️ **Public can access historical data** (top 50 most-visited pages functional)
+7. ❌ **Weekly update process** documented (manual import acceptable for MVP)
+
+**Explicit Non-Goals for MVP:**
+- ❌ Backend scrapers migrated to Python (VB.NET continues on Windows)
+- ❌ Real-time data updates (weekly dumps sufficient)
+- ❌ User authentication or admin interface (deferred to post-launch)
+- ❌ All 300+ routes working (20-25 sufficient for 80% of traffic)
 
 ### Post-Launch (Ongoing)
-1. **Availability:** 99.9% uptime
-2. **Performance:** Query response times ≤ legacy system
-3. **Cost:** ~$20/month (Render.com web + database + cron jobs)
-4. **Feature Parity:** All ASP pages migrated within 6 months
-5. **Developer Experience:** New contributor onboarded in < 1 day
+1. **Availability:** 99.9% uptime (Render.com platform SLA)
+2. **Performance:** Query response times ≤ legacy system (PostgreSQL vs MySQL)
+3. **Cost:** ~$20-25/month (Render.com web service + PostgreSQL, no cron jobs initially)
+4. **Data Freshness:** ≤ 7 days old (weekly dumps from Google Drive)
+5. **Feature Parity (Front-End):** All high-traffic ASP pages migrated within 3-6 months
+6. **Developer Experience:** New contributor onboarded in < 1 day
+7. **Backend Independence:** VB.NET scrapers continue operating unchanged (optional migration Q2 2026+)
 
 ## Risks & Mitigations
 
@@ -816,6 +1039,24 @@ webbsite/
 - Full rationale: docs/migration/why-not-sqlite-duckdb.md
 
 ## Immediate Next Steps (Oct 18-31, 2025) - REVISED
+
+**🎯 FOCUS: These steps are 100% front-end migration only**
+
+The tasks below focus exclusively on porting the Classic ASP web interface to Flask and deploying to Render.com. **Backend scrapers and data collection are explicitly out of scope** for the Oct 31 deadline. VB.NET scrapers will continue running on the Windows backend, and data will be updated via weekly PostgreSQL imports from Google Drive.
+
+**What We're Testing Against:**
+- While webb-site.com is still live (until Oct 31), compare Flask output against live ASP pages
+- Archive critical page outputs for regression testing
+- Document any intentional differences (PostgreSQL vs MySQL behavior)
+
+**What We're NOT Doing:**
+- ❌ Migrating VB.NET scrapers to Python
+- ❌ Implementing real-time data updates
+- ❌ Building admin interface or authentication
+- ❌ Creating personalized user features
+- ❌ Porting complex ownership analysis (holders.asp) - defer to post-launch
+
+---
 
 **Days 1-2 (Oct 17-18): Database Setup** ✅ COMPLETED
 1. ✅ Convert MySQL dumps to PostgreSQL format
