@@ -61,3 +61,43 @@
 		</div>
 	</div>
 </div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					{# TODO: Add session check for editor role #}
+					{# {% if session.editor %}
+						<li><a href="/dbeditor/">Edit database</a></li>
+					{% endif %} #}
+					{# TODO: Add session check for logged in user #}
+					{# {% if session.e %}
+						<li><a href="/webbmail/myratings.asp">My ratings</a></li>
+						<li><a href="/webbmail/mystocks.asp">My stocks</a></li>
+						<li><a href="/webbmail/mybigchanges.asp">Big CCASS changes</a></li>
+						<li><a href="/webbmail/mytotrets.asp">Total returns</a></li>
+						<li><a href="/webbmail/mysdi.asp">Dealings</a></li>
+						<li><a href="/webbmail/mailpref.asp">Mail On/Off</a></li>
+						<li><a href="/webbmail/changeaddr.asp">Change address</a></li>
+						<li><a href="/webbmail/username.asp">Username/Volunteer!</a></li>
+						<li><a href="/webbmail/reset.asp">Change password</a></li>
+					{% else %} #}
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					{# {% endif %} #}
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					{# {% if session.e %}
+						<li><a href="/webbmail/login.asp?b=1">Log out</a></li>
+					{% endif %} #}
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
