@@ -3,7 +3,7 @@ services:
     name: webbsite
     runtime: python
     plan: starter
-    buildCommand: uv sync
+    buildCommand: uv sync --frozen && uv cache prune --ci
     startCommand: uv run gunicorn -w 4 -b 0.0.0.0:$PORT app:app
     envVars:
       - key: DATABASE_URL
