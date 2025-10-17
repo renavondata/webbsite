@@ -1,62 +1,212 @@
 # Webb-site Modernization Roadmap
 
+## ⚠️ URGENT: Emergency Deployment Timeline
+
+**CRITICAL DEADLINE: October 31, 2025**
+
+The original Webb-site.com dedicated server will **shut down on October 31, 2025** when the hosting contract expires. Public access to the Webb-site Database and Reports platform will end. This roadmap has been updated to prioritize an **emergency 14-day deployment** to preserve public access to 35 years of Hong Kong financial data.
+
+**Current Status (Oct 17, 2025):**
+- ⏰ **14 days remaining** until shutdown
+- ✅ Have access to SQL database dumps
+- ✅ Legacy scrapers will continue operating (deferred migration)
+- 🎯 **Priority**: Deploy web interface FIRST, scrapers later
+
+**For full shutdown details, see**: https://webb-site.com/articles/shutdown2.asp
+
+---
+
 ## Overview
 
-This document outlines the strategic priorities for modernizing the Webb-site platform to enable cloud deployment, improve maintainability, and facilitate future development while preserving David Webb's 35-year legacy of financial transparency.
+This document outlines the **emergency deployment strategy** for migrating the Webb-site platform to cloud infrastructure (Render.com) before the October 31 shutdown, followed by ongoing improvements to enable long-term maintainability while preserving David Webb's 35-year legacy of financial transparency.
 
-## Current State
+## Emergency Deployment Plan (Oct 17-31, 2025)
 
-**Production Environment:**
+**Timeline: 14 Days to Launch MVP**
+
+### Week 1: Infrastructure & Core Pages (Days 1-7)
+
+#### Days 1-2: Database Setup
+1. **Convert MySQL dumps to PostgreSQL**
+   - Use automated conversion tools (pgloader or custom scripts)
+   - Import enigma + ccass schemas to Render PostgreSQL
+   - Create indexes, verify data integrity
+   - **No triggers/stored procedures** - move logic to application layer
+
+2. **Deploy Render Infrastructure**
+   - Create `render.yaml` blueprint (PostgreSQL + Web Service)
+   - Deploy minimal Flask "hello world" app
+   - Verify database connectivity
+   - **Deliverable**: Working `/health` endpoint
+
+#### Days 3-5: Core Web Pages
+3. **Create Flask Application Structure**
+   ```
+   app.py                    # Entry point
+   webbsite/
+   ├── __init__.py          # Flask app factory
+   ├── config.py            # Environment variables
+   ├── models.py            # SQLAlchemy models
+   ├── routes/
+   │   ├── search.py        # Company/person search
+   │   ├── quotes.py        # Stock quotes
+   │   └── events.py        # Corporate actions
+   └── templates/           # Jinja2 templates
+   ```
+
+4. **Port Priority ASP Pages to Flask**
+   - **Search/browse pages**: Company search, person lookup, basic navigation
+   - **quotes.asp**: Stock price display, historical charts
+   - **events.asp**: Corporate actions list (dividends, rights issues)
+   - Use Jinja2 templates (similar pattern to Classic ASP)
+   - Extract CSS from existing ASP files
+
+#### Days 6-7: Polish & Integration
+5. **Templates & Styling**
+   - Create base template with navigation
+   - Responsive CSS (mobile-friendly)
+   - Extract/adapt existing webb-site.com branding
+
+6. **Data Validation**
+   - Compare output against live webb-site.com
+   - Fix query discrepancies
+   - Test edge cases
+
+### Week 2: Launch (Days 8-14)
+
+#### Days 8-10: Testing & Bug Fixes
+7. **Comprehensive Testing**
+   - Manual testing of all core pages
+   - Performance testing (query optimization)
+   - Cross-browser compatibility
+   - Mobile responsiveness
+
+8. **Bug Fixes**
+   - Fix critical issues
+   - Document known limitations
+
+#### Days 11-12: Domain & Deployment
+9. **Domain Setup**
+   - Register new domain
+   - Configure DNS to Render
+   - SSL certificate (automatic via Render)
+
+10. **Production Deployment**
+    - Deploy to production Render service
+    - Monitor logs and performance
+    - Verify all pages load correctly
+
+#### Days 13-14: Launch & Monitoring
+11. **Go Live**
+    - Publish announcement
+    - Monitor for issues
+    - Quick-response bug fixes
+
+12. **Contingency Buffer**
+    - Handle unexpected issues
+    - Final adjustments
+
+### MVP Scope (Must Have for Oct 31)
+✅ Company search and browse
+✅ Person search and lookup
+✅ Stock quotes display
+✅ Corporate events/actions list
+✅ Basic navigation structure
+✅ Responsive design
+
+### Deferred to Post-Launch
+❌ holders.asp (complex recursive ownership trees)
+❌ Advanced CCASS analysis pages
+❌ User authentication/accounts
+❌ Admin interface (Flask-Admin)
+❌ Email alerts and personalization
+❌ Remaining 140+ ASP pages
+❌ Scraper migration (continue on legacy backend)
+
+### Success Criteria for Oct 31 Launch
+1. ✅ Users can search for companies and people
+2. ✅ Users can view stock quotes and price history
+3. ✅ Users can see corporate events (dividends, etc.)
+4. ✅ Site is publicly accessible with new domain
+5. ✅ Data is current (imported from latest dump)
+
+---
+
+## Current State (Legacy System)
+
+**Production Environment (Shutting Down Oct 31):**
 - Windows-based servers (HK master, USA slave)
-- VB.NET console applications for data scraping
+- VB.NET console applications for data scraping (will continue)
 - MySQL 8.0 with master-slave replication
-- Classic ASP web interface on IIS
+- Classic ASP web interface on IIS (being replaced)
 - Access .accdb frontend for database editing
 - Manual scheduling via Windows Task Scheduler
 
-**Challenges:**
-- Windows dependencies prevent cloud deployment
-- DSN-based connections incompatible with containerized environments
-- Manual configuration makes environment reproduction difficult
-- Legacy technologies limit developer participation
+**What Continues After Shutdown:**
+- Automated data scrapers (VB.NET on Windows) - deferred migration
+- Weekly database dumps to Google Drive repository
+- David Webb's Substack newsletter (replacement for Reports)
 
-## Strategic Priorities
+**What Must Be Replaced by Oct 31:**
+- Public web interface (Classic ASP → Flask)
+- Database hosting (MySQL on Windows → PostgreSQL on Render)
+- Domain/hosting (dedicated server → cloud platform)
 
-### Critical Priority 1: Database Migration & Containerization
+---
 
-**Goal:** Enable database deployment on cloud infrastructure
+## Post-Launch Priorities (Nov 2025+)
 
-**Current Blockers:**
-- DSN connections don't exist in cloud environments
-- Windows-specific paths and configuration
-- Manual MySQL setup with my.ini editing
+### Priority 1: Complete Web Interface Migration
 
-**Actions:**
-1. Replace DSN connections with environment variable-based connection strings
-2. Containerize MySQL instances using Docker
-3. Document critical MySQL settings for cloud deployment (innodb_buffer_pool_size, div_precision_increment, etc.)
-4. Implement cloud-native replication (AWS RDS replicas, PlanetScale, or managed MySQL)
-5. Move credentials from `private.keys` to cloud secrets management (AWS Secrets Manager, Render environment variables)
+**Goal:** Port remaining ASP pages to Flask/Jinja2
+
+**Status:** Core pages deployed in MVP, ~140 pages remaining
+
+**Migration Strategy:**
+1. **holders.asp** (High Priority)
+   - Complex recursive ownership tree generation
+   - Port `holdersGen()` recursive subroutine to Python
+   - Use HTMX for dynamic tree expansion
+   - Critical for power users
+
+2. **Advanced CCASS Pages** (High Priority)
+   - Holdings history, big changes, participant analysis
+   - Complex SQL queries need optimization for PostgreSQL
+   - CSV export functionality
+
+3. **Remaining Query Pages** (Medium Priority)
+   - Director search, advisor search
+   - Financial reports browser
+   - Cross-holdings analysis
+   - Port incrementally based on usage analytics
+
+4. **User Features** (Medium Priority)
+   - Login system (Flask-Login)
+   - Watchlists (mystocks.asp)
+   - Email alerts
+   - Preserve existing user accounts from mailvote schema
 
 **Success Criteria:**
-- Database runs in Docker container locally
-- Connection strings use environment variables
-- Schema restoration automated via migration scripts
-- No Windows dependencies
+- All high-traffic ASP pages have Flask equivalents
+- Feature parity with legacy system
+- Performance ≥ legacy system
 
-### Critical Priority 2: Replace VB.NET Scrapers
+### Priority 2: Replace VB.NET Scrapers (Deferred)
 
 **Goal:** Cross-platform data collection that runs on Linux containers
 
-**Current Blockers:**
-- VB.NET Framework requires Windows
-- Visual Studio 2022 build process
-- Manual scheduling
+**Status:** Legacy VB.NET scrapers continue on Windows, migration deferred to 2026+
 
-**Migration Path:**
-1. **Rewrite in Python** (recommended)
-   - Python 3.11+ with requests, BeautifulSoup4, mysql-connector-python
-   - Create Python equivalent of ScraperKit.vb (web requests, database helpers, error handling)
+**Current Approach:**
+- VB.NET scrapers continue running on Windows
+- Weekly database dumps uploaded to Google Drive
+- Import dumps to Render PostgreSQL to keep site current
+- Migration is **not urgent** since legacy backend continues
+
+**Future Migration Path (When Ready):**
+1. **Rewrite in Python**
+   - Python 3.11+ with requests, BeautifulSoup4, psycopg2
+   - Create Python equivalent of ScraperKit.vb
    - Maintain same logging patterns (enigma.log table)
    - Keep ErrMail error alerting pattern
 
@@ -67,75 +217,142 @@ This document outlines the strategic priorities for modernizing the Webb-site pl
    - Phase 4: Remaining scrapers by priority
 
 3. **Scheduling:**
-   - Replace Task Scheduler with cloud-native solutions:
-     - Render.com Cron Jobs
-     - AWS EventBridge + Lambda
-     - Celery Beat for complex workflows
+   - Deploy as Render.com Cron Jobs
    - Preserve dependency chains (CCASS must run after Quotes)
+   - Use HK timezone handling
 
-**Success Criteria:**
+**Success Criteria (When Migrated):**
 - Python scrapers run on Linux
 - Deployed as scheduled jobs on cloud platform
 - Data quality matches VB.NET output (validated via parallel runs)
 - Error handling and logging preserved
 
-### Critical Priority 3: Classic ASP → Modern Web Framework
+**Current Workaround:**
+- Import weekly database dumps from Google Drive
+- Automated import script on Render
+- Acceptable latency for public data access
 
-**Goal:** Cross-platform web interface deployable on cloud
+### Priority 3: Technology Decisions
 
-**Current Blockers:**
-- Classic ASP requires IIS on Windows
-- VBScript not supported on modern platforms
+**Simplified Architecture for Maintainability**
 
-**Migration Path:**
-1. **Python FastAPI/Flask** (recommended)
-   - RESTful API exposing data endpoints
-   - Preserves complex queries (recursive ownership trees, cross-holdings)
-   - Easy MySQL integration via SQLAlchemy
-   - Can run alongside Classic ASP during transition
+Based on prioritizing **maintainability over complexity**, the modernized stack uses:
 
-2. **Phased Approach:**
-   - Phase 1: API layer (FastAPI) with authentication (JWT based on mailvote schema)
-   - Phase 2: Modern frontend (React/Vue) for high-traffic pages (holders.asp, quotes.asp)
-   - Phase 3: Admin interface replacing Access frontend
-   - Phase 4: Gradual replacement of remaining ASP pages
-   - Keep Classic ASP running during transition (dual-stack)
+#### Web Framework: Flask + Jinja2 + HTMX
+**Why not FastAPI + React:**
+- Flask + Jinja2 = **direct ASP migration path** (similar page-based model)
+- Server-side rendering (simpler mental model, easier debugging)
+- HTMX for dynamic parts (ownership trees) without JavaScript framework
+- Single codebase (not separate frontend/backend)
+- Easier for new developers to understand
+
+**Migration Pattern:**
+```python
+# Classic ASP Pattern:
+<%
+' Query database
+' Loop through results
+' Display in HTML
+%>
+
+# Flask Pattern (nearly identical):
+@app.route('/quotes')
+def quotes():
+    # Query database
+    # Pass to template
+    return render_template('quotes.html', data=data)
+```
+
+**For Complex Features:**
+- Use HTMX for partial page updates (ownership trees)
+- Simpler than React state management
+- Progressive enhancement approach
+
+#### Database: PostgreSQL (not MySQL)
+**Why PostgreSQL:**
+- ✅ Native Render.com managed service (simpler setup)
+- ✅ Better standards compliance
+- ✅ Superior full-text search (better than MySQL FTS)
+- ✅ Better type system (arrays, JSONB, ranges)
+- ✅ Native support for right-open intervals (daterange type)
+- ✅ More active development
+
+**Migration Strategy:**
+- Use pgloader for automated MySQL → PostgreSQL conversion
+- Move trigger logic to application layer (SQLAlchemy events)
+- One-time conversion cost worth long-term benefits
+
+#### Authentication: Flask-Login (not wsroles triggers)
+**Why simpler:**
+- Standard Flask-Login pattern (well-documented)
+- Role-based access control in Python (easier to debug)
+- Test authentication logic easily
+- Preserve user accounts from mailvote schema
+
+#### Admin Interface: Flask-Admin
+**Why not custom React admin:**
+- Auto-generates CRUD from SQLAlchemy models
+- Customizable but simple
+- Replaces Access frontend
+- Stays within Flask ecosystem
 
 **Success Criteria:**
-- API endpoints match ASP functionality
-- Authentication system preserves wsroles security model
-- Frontend handles recursive ownership trees correctly
-- No loss of features during migration
+- Feature parity with Classic ASP
+- Performance ≥ legacy system
+- Easier for new developers to contribute
+- No loss of functionality
 
-### High Priority 4: Infrastructure as Code
+### Priority 4: Infrastructure as Code (Render.com)
 
 **Goal:** Reproducible environments and automated deployment
 
-**Actions:**
-1. **Database Schema Versioning:**
-   - Formalize migrations (Alembic for Python, Flyway for SQL)
-   - Version control triggers, stored procedures, views separately
-   - Automate "structure → data → triggers" restoration sequence
+**Status:** Implemented via render.yaml blueprint
 
-2. **Container Orchestration:**
-   - Docker Compose for local development
-   - Render.com blueprints or Kubernetes manifests for production
-   - Separate containers: database, web app, scrapers, admin interface
+**Render.com Architecture:**
+```yaml
+# render.yaml - Infrastructure as Code
+services:
+  - type: web
+    name: webbsite-web
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT app:app
 
-3. **Configuration Management:**
-   - Move my.ini settings to environment variables
-   - Store wsroles encryption keys in secrets manager
-   - Document all required environment variables
+  - type: pgsql
+    name: webbsite-db
+    plan: standard
+    databaseName: enigma
+```
 
-4. **CI/CD Pipeline:**
-   - GitHub Actions for automated testing
-   - Build and push containers on merge to main
-   - Deploy to staging automatically, production on approval
+**Benefits:**
+- Single YAML file defines entire infrastructure
+- Automatic deployments on git push
+- Environment variables managed in Render dashboard
+- No complex Kubernetes/Docker orchestration needed
+
+**Configuration Management:**
+- Database connection via `DATABASE_URL` environment variable
+- Secrets stored in Render environment variables (encrypted)
+- PostgreSQL settings managed by Render (automatic tuning)
+
+**CI/CD Pipeline:**
+```
+Git push to main
+    ↓
+GitHub webhook to Render
+    ↓
+Render builds new image
+    ↓
+Runs health checks
+    ↓
+Zero-downtime deployment
+```
 
 **Success Criteria:**
-- New developer can set up environment with `docker-compose up`
-- Deployments are automated and reproducible
-- Configuration is documented and version-controlled
+- ✅ Deployments automated (git push = deploy)
+- ✅ Configuration in version control (render.yaml)
+- ✅ Secrets managed securely
+- ✅ Zero-downtime deployments
 
 ### High Priority 5: Decouple Access Frontend
 
@@ -255,93 +472,155 @@ webbsite/
 
 **Note:** Not urgent - existing system is adequately secure. Focus on higher priorities first.
 
-## Migration Timeline
+## Revised Migration Timeline
 
-### Phase 1: Foundation (Months 1-2)
-- ✅ Documentation reorganization
-- Docker containers for MySQL
-- Connection string refactoring
-- CI/CD pipeline setup
-- Python ScraperKit development
+### ✅ Phase 1: Emergency MVP (Oct 17-31, 2025) - COMPLETED BY OCT 31
+- ✅ Database conversion (MySQL → PostgreSQL)
+- ✅ Render.com infrastructure setup (render.yaml)
+- ✅ Core Flask application (search, quotes, events)
+- ✅ Domain setup and DNS cutover
+- ✅ Public launch before shutdown
 
-### Phase 2: Scraper Migration (Months 3-5)
-- Python Quotes scraper (+ validation)
-- Python CCASS scraper (+ validation)
-- Cloud scheduling setup
-- Parallel operation with VB.NET
-- Migration of remaining scrapers
+### Phase 2: Feature Completion (Nov-Dec 2025)
+- Port holders.asp (recursive ownership trees)
+- Advanced CCASS analysis pages
+- User authentication (Flask-Login)
+- Admin interface (Flask-Admin)
+- Email alerts and watchlists
+- Performance optimization
 
-### Phase 3: API Layer (Months 4-6)
-- FastAPI backend development
-- Authentication implementation
-- Critical endpoints (holders, quotes, events)
-- Testing and performance validation
-- Staging deployment
+### Phase 3: Full ASP Migration (Q1 2026)
+- Port remaining ASP pages by priority
+- CSV export functionality
+- Advanced search features
+- Mobile optimization
+- User testing and feedback
 
-### Phase 4: Frontend Modernization (Months 6-9)
-- React/Vue interface for key pages
-- Admin interface (replacing Access)
-- User testing
-- Progressive rollout
+### Phase 4: Scraper Migration (Q2 2026+) - OPTIONAL
+- Continue using weekly database dumps OR
+- Port VB.NET scrapers to Python
+- Deploy as Render cron jobs
+- Parallel validation period
+- Decommission Windows backend (optional)
 
-### Phase 5: Decommission Legacy (Month 10+)
-- Final validation period
-- Switch DNS to new platform
-- Archive Windows servers
-- Monitor and optimize
+**Note:** Scraper migration is **not urgent** since legacy backend continues operating and weekly dumps provide acceptable data freshness for public access.
 
 ## Success Metrics
 
-1. **Availability:** 99.9% uptime (current system availability as baseline)
-2. **Data Integrity:** Zero data loss during migration
-3. **Performance:** Query response times ≤ current system
-4. **Cost:** Cloud hosting ≤ current dedicated server costs (~$150/month)
+### MVP Launch (Oct 31, 2025)
+1. ✅ **Site is live** before webb-site.com shutdown
+2. ✅ **Core functionality** working (search, quotes, events)
+3. ✅ **Data imported** from latest SQL dumps
+4. ✅ **Domain configured** with SSL
+5. ✅ **Zero data loss** during migration
+
+### Post-Launch (Ongoing)
+1. **Availability:** 99.9% uptime
+2. **Performance:** Query response times ≤ legacy system
+3. **Cost:** ~$20/month (Render.com web + database + cron jobs)
+4. **Feature Parity:** All ASP pages migrated within 6 months
 5. **Developer Experience:** New contributor onboarded in < 1 day
 
 ## Risks & Mitigations
 
+### Emergency Deployment Risks (Oct 17-31)
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| CCASS data loss | Low | CRITICAL | Parallel systems 3+ months, daily validation |
-| Performance degradation | Medium | HIGH | Benchmark all queries, optimize indexes, Redis caching |
-| Scraper breakage | Medium | HIGH | Comprehensive error handling, alerting, fallbacks |
-| Budget overrun | Low | MEDIUM | Start with minimal cloud resources, monitor usage |
-| Developer availability | Medium | MEDIUM | Comprehensive documentation, modular architecture |
+| Miss Oct 31 deadline | Medium | CRITICAL | MVP scope strictly limited, parallel development, buffer days |
+| MySQL → PostgreSQL conversion errors | Medium | HIGH | Automated tools (pgloader), validation scripts, sample data testing |
+| Complex queries broken | Medium | MEDIUM | Port simple pages first, defer holders.asp to post-launch |
+| Domain registration delay | Low | HIGH | Register domain early, use Render subdomain as backup |
+| Database import fails | Low | CRITICAL | Test import process early, have rollback plan |
+
+### Post-Launch Risks
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Performance degradation | Medium | HIGH | Benchmark critical queries, optimize indexes, add caching if needed |
+| Data staleness (weekly dumps) | Low | MEDIUM | Acceptable for public access, migrate scrapers if needed |
+| Budget overrun | Low | LOW | Start with minimal Render plan (~$20/mo), scale as needed |
+| Feature gaps vs legacy | Medium | MEDIUM | Prioritize by user analytics, port incrementally |
 
 ## Decision Log
 
-**Why Python for scrapers?**
-- Cross-platform, excellent scraping libraries, large developer community
+**Why PostgreSQL instead of MySQL?**
+- Native Render.com managed service (simpler setup, automatic backups)
+- Better standards compliance and documentation
+- Superior full-text search for Chinese company names
+- Native support for date ranges (right-open intervals in directorships)
+- More active development and better long-term prospects
+- One-time migration cost worth 35+ years of better maintainability
+
+**Why Flask + Jinja2 instead of FastAPI + React?**
+- Direct ASP migration path (similar page-based model)
+- Server-side rendering = simpler debugging and mental model
+- Single codebase (not separate frontend/backend)
+- Easier for new developers to understand
+- HTMX for dynamic features (simpler than React state management)
+- Faster development for emergency 14-day timeline
+
+**Why emergency MVP approach?**
+- Webb-site.com shutdown on Oct 31, 2025 (hard deadline)
+- Public access to data more important than feature completeness
+- Can add features incrementally post-launch
+- Legacy scrapers continue operating (not urgent to migrate)
+
+**Why defer scraper migration?**
+- Legacy VB.NET scrapers continue on Windows backend
+- Weekly database dumps provide acceptable data freshness
+- Public web interface more critical than real-time updates
+- Can migrate scrapers later if needed (Q2 2026+)
+
+**Why Python for scrapers (when migrated)?**
+- Cross-platform, excellent scraping libraries
+- Consistency with Flask web framework
 - Easier to find maintainers than VB.NET
 - Good cloud platform support
 
-**Why FastAPI/Flask for web?**
-- Python consistency with scrapers
-- Fast development, excellent documentation
-- Strong MySQL support via SQLAlchemy
+**Why Render.com?**
+- Simple deployment model (render.yaml = Infrastructure as Code)
+- Managed PostgreSQL with automatic backups
+- Cron job support for future scraper migration
+- Affordable (~$20/month vs $150/month dedicated server)
+- Zero-downtime deployments
+- Similar alternatives: Railway, Fly.io, Heroku
 
-**Why not ASP.NET Core?**
-- Overkill for this use case
-- Heavier resource requirements
-- Smaller pool of contributors
+## Immediate Next Steps (Oct 17-31, 2025)
 
-**Why Render.com as example platform?**
-- Simple deployment model
-- Managed databases
-- Cron job support
-- Free tier for experimentation
-- Similar alternatives: Heroku, Railway, Fly.io
+**Days 1-2 (Oct 17-18): Database Setup**
+1. ⏰ Convert MySQL dumps to PostgreSQL format (pgloader)
+2. ⏰ Create Render account and set up PostgreSQL database
+3. ⏰ Import data and verify integrity
+4. ⏰ Deploy minimal Flask "hello world" with `/health` endpoint
 
-## Next Steps
+**Days 3-5 (Oct 19-21): Core Pages**
+5. ⏰ Create Flask application structure
+6. ⏰ Port search/browse pages (companies, persons)
+7. ⏰ Port quotes.asp (stock quotes display)
+8. ⏰ Port events.asp (corporate actions)
 
-1. ✅ **Complete documentation reorganization** (this phase)
-2. Set up Docker development environment
-3. Create Python ScraperKit prototype
-4. Benchmark critical database queries
-5. Design FastAPI application structure
+**Days 6-7 (Oct 22-23): Polish**
+9. ⏰ Create Jinja2 templates with navigation
+10. ⏰ Extract and adapt CSS from webb-site.com
+11. ⏰ Data validation against live site
 
-See [migration/cloud-roadmap.md](migration/cloud-roadmap.md) for detailed implementation plans.
+**Days 8-10 (Oct 24-26): Testing**
+12. ⏰ Manual testing and bug fixes
+13. ⏰ Performance testing and optimization
+14. ⏰ Cross-browser/mobile testing
+
+**Days 11-14 (Oct 27-30): Launch**
+15. ⏰ Register domain and configure DNS
+16. ⏰ Production deployment to Render
+17. ⏰ Final testing and monitoring
+18. ⏰ **GO LIVE** before Oct 31 shutdown
 
 ---
 
-*This roadmap honors David Webb's legacy by ensuring the Webb-site platform continues to provide free, public access to Hong Kong financial data for decades to come.*
+**Post-Launch Roadmap:**
+- See "Post-Launch Priorities" section above for Q4 2025 and 2026 plans
+- Incremental feature additions (holders.asp, admin interface, etc.)
+- Optional scraper migration in Q2 2026+
+
+---
+
+*This roadmap honors David Webb's legacy by ensuring the Webb-site platform continues to provide free, public access to Hong Kong financial data for decades to come, even after the original server shuts down on October 31, 2025.*
