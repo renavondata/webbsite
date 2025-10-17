@@ -14,16 +14,34 @@ def create_app(config_class=Config):
     from webbsite import db
     db.init_app(app)
 
-    # Register blueprints
-    from webbsite.routes import search, quotes, events
-    app.register_blueprint(search.bp)
-    app.register_blueprint(quotes.bp)
-    app.register_blueprint(events.bp)
+    # Register blueprints with URL prefixes matching original ASP structure
+    # URLs include .asp extension for exact match with original site
+    from webbsite.routes import search, quotes, events, dbpub, ccass
+    app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
+    app.register_blueprint(search.bp, url_prefix='/dbpub')
+    app.register_blueprint(quotes.bp, url_prefix='/dbpub')
+    app.register_blueprint(events.bp, url_prefix='/dbpub')
+    app.register_blueprint(ccass.bp, url_prefix='/ccass')
 
-    # Home page
+    # Home page - news feed (mirrors webb-site.com root)
     @app.route('/')
     def index():
-        return render_template('index.html')
+        # Query latest stories from database
+        from webbsite.db import execute_query
+        try:
+            # Get Webb-site original stories (sourceID=1)
+            stories = execute_query("""
+                SELECT StoryID, Title, Summary, StoryDate, URL, SourceID,
+                       URL2, URL2text, image
+                FROM stories
+                WHERE pubDate <= NOW()
+                ORDER BY StoryDate DESC
+                LIMIT 30
+            """)
+        except Exception:
+            stories = []
+
+        return render_template('index.html', stories=stories)
 
     # Health check endpoint
     @app.route('/health')

@@ -9,7 +9,7 @@ from webbsite.asp_helpers import get_int
 bp = Blueprint('quotes', __name__)
 
 
-@bp.route('/prices')
+@bp.route('/prices.asp')
 def prices():
     """Display stock price chart - port of prices.asp"""
     # Get data item ID
@@ -77,7 +77,7 @@ def prices():
                          prices_data=prices_data)
 
 
-@bp.route('/quotes')
+@bp.route('/quotes.asp')
 def quotes():
     """Display stock quotes - port of quotes.asp (if different from prices.asp)"""
     # Get stock code or issueID

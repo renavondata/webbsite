@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big CCASS changes on {{ d }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include "includes/dbheader.html" %}
+<h2>Big CCASS changes on {{ d }}</h2>
+
+{# TODO: Add ccassallbar navigation when ported #}
+
+<form method="get" action="bigchanges.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		<input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="checkbox" name="etf" id="etf" value="1"{% if etf %} checked{% endif %} onchange="this.form.submit()"> include ETFs
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="Clear" onclick="document.getElementById('d').value='';document.getElementById('etf').checked=false;">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<p>This table shows movements greater than 0.25% of outstanding shares.</p>
+
+{# TODO: Add mobile() function for responsive tables when needed #}
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide1">Row</th>
+		<th class="colHide3">
+			{% if sort == 'scup' %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=scdn">Stock<br>code</a>
+			{% else %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=scup">Stock<br>code</a>
+			{% endif %}
+		</th>
+		<th class="left">
+			{% if sort == 'nameup' %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=namedn">Issue</a>
+			{% else %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=nameup">Issue</a>
+			{% endif %}
+		</th>
+		<th class="left">
+			{% if sort == 'partup' %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=partdn">Participant</a>
+			{% else %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=partup">Participant</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'chgdn' %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=chgup">Change</a>
+			{% else %}
+				<a href="?d={{ d }}&etf={{ '1' if etf else '' }}&sort=chgdn">Change</a>
+			{% endif %}
+		</th>
+		<th class="colHide2">Previous<br>change</th>
+	</tr>
+	{% for row in changes %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td class="colHide3">{{ row.stockcode if row.stockcode else '&nbsp;' }}</td>
+		<td class="left">
+			<a href="chldchg.asp?i={{ row.issueid }}&d={{ d }}">
+				{{ row.name1 }}:{{ row.typeshort }}
+			</a>
+		</td>
+		<td class="left">
+			<a href="chistory.asp?i={{ row.issueid }}&part={{ row.partid }}">
+				{{ row.partname }}
+			</a>
+		</td>
+		<td>{{ "%.2f"|format(row.stkchg * 100) }}</td>
+		<td class="colHide2 nowrap">
+			{% if row.prevdate %}
+				{{ row.prevdate.strftime('%-d-%b-%Y') }}
+			{% else %}
+				&nbsp;
+			{% endif %}
+		</td>
+	</tr>
+	{% else %}
+	<tr>
+		<td colspan="6">None found.</td>
+	</tr>
+	{% endfor %}
+</table>
+
+{% include "includes/footer.html" %}
+</body>
+</html>

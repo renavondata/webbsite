@@ -8,7 +8,7 @@ from webbsite.asp_helpers import rem_space, get_str, apos
 bp = Blueprint('search', __name__)
 
 
-@bp.route('/searchorgs')
+@bp.route('/searchorgs.asp')
 def search_orgs():
     """Search organizations - port of searchorgs.asp"""
     # Get parameters
@@ -38,9 +38,10 @@ def search_orgs():
     if n:
         # Build WHERE clause based on search type
         if st == 'a':
-            # Full-text search - convert space-separated terms to +term1 +term2 format
-            terms = '+' + '+'.join(n.split())
-            match_clause = f"MATCH(name1) AGAINST('{apos(terms)}' IN BOOLEAN MODE)"
+            # Full-text search - PostgreSQL syntax
+            # Convert space-separated terms to term1 & term2 format for tsquery
+            terms = ' & '.join(n.split())
+            match_clause = f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
             # Left match (starts with)
             match_clause = f"name1 LIKE '{apos(n)}%'"
@@ -58,7 +59,7 @@ def search_orgs():
 
         # Search old names
         if st == 'a':
-            old_match_clause = f"MATCH(oldName) AGAINST('{apos(terms)}' IN BOOLEAN MODE)"
+            old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
             old_match_clause = f"oldName LIKE '{apos(n)}%'"
 
@@ -83,7 +84,7 @@ def search_orgs():
                          limit=limit)
 
 
-@bp.route('/searchpeople')
+@bp.route('/searchpeople.asp')
 def search_people():
     """Search people - port of searchpeople.asp"""
     # Get parameters
@@ -108,9 +109,9 @@ def search_people():
     if n:
         # Build WHERE clause based on search type
         if st == 'a':
-            # Full-text search
-            terms = '+' + '+'.join(n.split())
-            match_clause = f"(MATCH(name1) AGAINST('{apos(terms)}' IN BOOLEAN MODE) OR MATCH(name2) AGAINST('{apos(terms)}' IN BOOLEAN MODE))"
+            # Full-text search - PostgreSQL syntax
+            terms = ' & '.join(n.split())
+            match_clause = f"(to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}') OR to_tsvector('simple', name2) @@ to_tsquery('simple', '{apos(terms)}'))"
         else:
             # Left match (starts with)
             match_clause = f"(name1 LIKE '{apos(n)}%' OR name2 LIKE '{apos(n)}%')"

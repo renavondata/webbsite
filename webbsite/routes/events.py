@@ -9,7 +9,7 @@ from webbsite.asp_helpers import get_int, get_str
 bp = Blueprint('events', __name__)
 
 
-@bp.route('/events')
+@bp.route('/events.asp')
 def events():
     """Display corporate events/actions - port of events.asp"""
     # Get parameters

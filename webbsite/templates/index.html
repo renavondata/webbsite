@@ -1,35 +1,169 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<style>
+	.news {
+		width:75%;
+		float:left
+	}
+	.singlecol {
+		display:none
+	}
+	.col1of2 {
+		float:left;
+		border-right:1px gray dotted;
+		box-sizing:border-box;
+		width:50%;
+	}
+	.col2of2 {
+		float:left;
+		width:50%;
+	}
+	.sidebar {
+		float:left;
+		width:25%;
+		text-align:center
+	}
+	@media only screen and (max-width: 480px) {
+		.col1of2, .col2of2 {
+			display:none
+		}
+		.news,.singlecol,.sidebar {
+			display:block;
+			width:100%
+		}
+	}
+	@media only screen and (min-width:481px) and (max-width: 768px) {
+		.col1of2,.col2of2 {
+			display:none
+		}
+		.singlecol {
+			display:block;
+		}
+		.news {
+			width:67%
+		}
+		.sidebar {
+			width:33%
+		}
+	}
+</style>
+<title>Webb-site Reports: non-profit news, analysis and opinions | Webb-site Database</title>
+<link rel="alternate" type="application/rss+xml" href="/rss.asp" title="Webb-site.com latest news">
+</head>
+<body>
 
-{% block title %}Webb-site Database - Home{% endblock %}
+{% include 'includes/header.html' %}
+{% include 'includes/nav.html' %}
 
-{% block content %}
-<h2>Welcome to Webb-site Database</h2>
+<div class="mainbody">
 
-<p><b>Emergency deployment in progress</b> - This is a minimal viable product deployed before the October 31, 2025 shutdown of the original webb-site.com server.</p>
+<div class="news">
+	<div class="singlecol">
+	<h3>News</h3>
 
-<h3>Available Features</h3>
-<ul>
-	<li><a href="{{ url_for('search.search_orgs') }}">Search organisations</a> - Find companies and organizations</li>
-	<li><a href="{{ url_for('search.search_people') }}">Search people</a> - Find directors, officers, and other individuals</li>
-	<li><a href="{{ url_for('events.events') }}">Corporate events</a> - View dividends, rights issues, and other corporate actions</li>
-	<li><a href="{{ url_for('quotes.prices', i=1) }}">Stock prices</a> - View historical price charts</li>
-</ul>
+	{% for story in stories %}
+		<div class="artsum">
+			{% if story.sourceid == 1 %}
+				{# Webb-site original content - bold #}
+				<a style="font-weight:bold" href="/articles/{{ story.url }}">{{ story.title }}</a>
+				{% if story.url2text %}
+					|&nbsp;<a href="/articles/{{ story.url2 }}"><b>{{ story.url2text }}</b></a>
+				{% endif %}
+				<br>
+				<span style="color:blue">Webb-site.com, {{ story.storydate.strftime('%-d-%b-%Y') }}</span>
+				{% if story.summary %}
+					<br>{{ story.summary }}
+				{% endif %}
+			{% else %}
+				{# External news - normal weight #}
+				<a style="font-weight:normal" href="{{ story.url }}">{{ story.title }}</a>
+				{% if story.url2text %}
+					|&nbsp;<a target="_self" href="{{ story.url2 }}">{{ story.url2text }}</a>
+				{% endif %}
+				<br>
+				<span style="color:gray">{{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}</span>
+				{% if story.summary %}
+					<br>{{ story.summary }}
+				{% endif %}
+			{% endif %}
+			<br>
+		</div>
+	{% endfor %}
 
-<h3>About This Database</h3>
-<p>The Webb-site Database contains 35 years of Hong Kong financial transparency data, including:</p>
-<ul>
-	<li>Listed companies and their officers</li>
-	<li>Corporate actions (dividends, rights issues, etc.)</li>
-	<li>CCASS beneficial ownership data</li>
-	<li>Directors and their relationships</li>
-	<li>SFC licensees and Law Society records</li>
-</ul>
+	</div>
 
-<h3>Data Currency</h3>
-<p>This database was imported from SQL dumps dated <b>October 11, 2025</b>. More features will be added after the emergency deployment.</p>
+	{# Two-column layout for desktop #}
+	<div class="col1of2">
+		<h3>Our stories</h3>
+		{% for story in stories %}
+			{% if story.sourceid == 1 %}
+			<div class="artsum">
+				<a href="/articles/{{ story.url }}"><b>{{ story.title }}</b></a>
+				<br>
+				<span style="color:blue">
+				Webb-site.com, {{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}
+				</span>
+				{% if story.summary %}
+					<br>{{ story.summary }}
+				{% endif %}
+				<br>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
 
-<h3>License</h3>
-<p>This data is released under <b>Creative Commons CC-BY 4.0</b> license. You are free to use it for commercial or non-commercial purposes with attribution to Webb-site.com.</p>
+	<div class="col2of2">
+		<h3>Other news</h3>
+		{% for story in stories %}
+			{% if story.sourceid != 1 %}
+			<div class="artsum">
+				<a href="{{ story.url }}">{{ story.title }}</a>
+				<br>
+				<span style="color:gray">
+				{{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}
+				</span>
+				{% if story.summary %}
+					<br>{{ story.summary }}
+				{% endif %}
+				<br>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>
 
-<p><a href="https://github.com/yourusername/webbsite">Source code on GitHub</a></p>
-{% endblock %}
+<div class="sidebar">
+	<p><a href="/dbpub/webbchips.asp"><b>Webb-chips: current disclosed holdings</b></a></p>
+	<div style="text-align:center;border:1px black solid;margin-bottom:10px">
+		<p><a target="_blank" href="http://www.aqhi.gov.hk/en.html">Today's air pollution</a><br/>
+		<a href="http://hedleyindex.sph.hku.hk" target="_blank">Hedley Index</a></p>
+		<a target="_blank" href="https://www.weather.gov.hk/en/wxinfo/ts/webcam/CP1_photo.htm">
+		<img alt="Central (Victoria Harbour)" src="https://www.weather.gov.hk/wxinfo/aws/hko_mica/cp1/latest_CP1.jpg" style="border:0;width:100%"></a>
+	</div>
+	{# Birthday listings would go here - requires query of people table #}
+	<div style="border:thin black solid;margin:10px 0px;position:relative;padding:5px">
+		<span style="text-align:center"><strong>Today's big birthdays</strong></span><br>
+		<i><a href="/dbpub/bornday.asp">more from Webb-site Who's Who</a></i>
+		{# TODO: Query people WHERE birthdate matches today #}
+	</div>
+</div>
+
+<div class="clear"></div>
+
+<hr>
+<p style="text-align:center">
+	<a href="/webbmail/join.asp">Sign up for newsletter</a> |
+	<a href="/pages/refer.asp">Refer a friend</a> |
+	<a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a> |
+	<a href="/pages/privacypolicy.asp">Privacy policy</a>
+</p>
+<p style="text-align:center"><a href="#">Back to top</a></p>
+<hr>
+
+</div>
+</body>
+</html>
