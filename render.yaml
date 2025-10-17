@@ -18,4 +18,4 @@ services:
 databases:
   - name: webbsite-db
     databaseName: enigma
-    plan: standard
+    plan: basic-256mb
