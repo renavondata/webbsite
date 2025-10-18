@@ -61,7 +61,6 @@ def article(article_path):
 
     except Exception as e:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error fetching article {article_url}: {e}")
         abort(500)
 
@@ -102,7 +101,6 @@ def article(article_path):
         content = re.sub(r'\.\./images/', '/static/articles/', content)
 
     except Exception as e:
-        from flask import current_app
         current_app.logger.error(f"Error reading article file {asp_file_path}: {e}")
         content = f"<p><em>Error reading article: {str(e)}</em></p>"
 
@@ -141,7 +139,6 @@ def articles_index():
             content = index_content
 
     except Exception as e:
-        from flask import current_app
         current_app.logger.error(f"Error reading articles index.html: {e}")
         content = "<p><em>Error loading articles index</em></p>"
 
