@@ -149,11 +149,24 @@
 		<a target="_blank" href="https://www.weather.gov.hk/en/wxinfo/ts/webcam/CP1_photo.htm">
 		<img alt="Central (Victoria Harbour)" src="https://www.weather.gov.hk/wxinfo/aws/hko_mica/cp1/latest_CP1.jpg" style="border:0;width:100%"></a>
 	</div>
-	{# Birthday listings would go here - requires query of people table #}
+	{# Birthday listings #}
 	<div style="border:thin black solid;margin:10px 0px;position:relative;padding:5px">
-		<span style="text-align:center"><strong>Today's big birthdays</strong></span><br>
+		<span style="text-align:center"><strong>Today's big birthdays, {{ today.day }}&nbsp;{{ today.strftime('%B') }}</strong></span><br>
 		<i><a href="/dbpub/bornday.asp">more from Webb-site Who's Who</a></i>
-		{# TODO: Query people WHERE birthdate matches today #}
+		{% if birthdays %}
+		<table style="width:100%">
+			<tbody><tr>
+				<td></td>
+				<td style="text-align:right">Age</td>
+			</tr>
+			{% for person in birthdays %}
+				<tr>
+					<td style="text-align:left;"><a href="/dbpub/natperson.asp?p={{ person.personid }}">{{ person.fullname }}{{ person.cname }}</a></td>
+					<td style="text-align:right;">{{ person.age }}</td>
+				</tr>
+			{% endfor %}
+		</tbody></table>
+		{% endif %}
 	</div>
 </div>
 

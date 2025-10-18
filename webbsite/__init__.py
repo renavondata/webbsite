@@ -3,6 +3,7 @@ Webb-site Flask Application Factory
 Direct port from Classic ASP to Flask/Jinja
 """
 from flask import Flask, render_template
+from datetime import datetime
 from .config import Config
 
 
@@ -66,6 +67,24 @@ def create_app(config_class=Config):
                 ORDER BY s.StoryDate DESC
                 LIMIT 20
             """)
+
+            # Get today's big birthdays (ages that are multiples of 5, >= 30)
+            today = datetime.now()
+            birthdays = execute_query("""
+                SELECT personid,
+                       CASE
+                         WHEN name2 IS NULL THEN name1
+                         ELSE name1 || ', ' || name2
+                       END as fullname,
+                       COALESCE(' ' || cname, '') as cname,
+                       yob,
+                       EXTRACT(YEAR FROM CURRENT_DATE) - yob as age
+                FROM enigma.people
+                WHERE mob = %s AND dob = %s AND yob IS NOT NULL
+                  AND (EXTRACT(YEAR FROM CURRENT_DATE) - yob) %% 5 = 0
+                  AND (EXTRACT(YEAR FROM CURRENT_DATE) - yob) >= 30
+                ORDER BY yob
+            """, (today.month, today.day))
         except Exception as ex:
             # Error is already logged by execute_query in db.py
             # In DEBUG mode, exception will be re-raised and shown in browser
@@ -73,6 +92,8 @@ def create_app(config_class=Config):
             app.logger.error(f"Failed to load stories for homepage: {ex}")
             our_stories = []
             other_stories = []
+            birthdays = []
+            today = datetime.now()
 
         # Combine for single-column view (sorted by date)
         all_stories = sorted(
@@ -84,7 +105,9 @@ def create_app(config_class=Config):
         return render_template('index.html',
                              stories=all_stories,
                              our_stories=our_stories,
-                             other_stories=other_stories)
+                             other_stories=other_stories,
+                             birthdays=birthdays,
+                             today=today)
 
     # Health check endpoint
     @app.route('/health')
