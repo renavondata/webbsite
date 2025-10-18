@@ -180,9 +180,126 @@ def cconc():
 
 @bp.route('/ipstakes.asp')
 def ipstakes():
-    """CCASS Investor Participant stakes - port of ipstakes.asp"""
-    # TODO: Implement IP stakes
-    return render_template('ccass/ipstakes.html')
+    """
+    CCASS Investor Participant stakes - port of ipstakes.asp
+
+    Query params:
+    - d: date (default: latest CCASS date)
+    - sort: sorting column
+
+    Tables used: ccass.dailylog, ccass.quotes, issue, organisations, issuedshares, sectypes
+    """
+    sort_param = request.args.get('sort', 'ipsdn')
+    d = request.args.get('d', '')
+
+    # Get latest CCASS date if not specified
+    if not d:
+        try:
+            result = execute_query("SELECT MAX(atDate) FROM ccass.dailylog")
+            if result and result[0][0]:
+                d = ms_date(result[0][0])
+            else:
+                d = '2025-10-17'  # Fallback
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error getting latest CCASS date: {ex}")
+            d = '2025-10-17'
+
+    # Get max settlement date <= requested date
+    try:
+        result = execute_query("""
+            SELECT MAX(settleDate)
+            FROM ccass.calendar
+            WHERE settleDate <= %s
+        """, (d,))
+        if result and result[0][0]:
+            d = ms_date(result[0][0])
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error getting settlement date: {ex}")
+
+    # Sort order mapping
+    sort_orders = {
+        'nipcup': 'NCIPcnt, stockName',
+        'nipcdn': 'NCIPcnt DESC, stockName',
+        'cipcup': 'CIPcnt, stockName',
+        'cipcdn': 'CIPcnt DESC, stockName',
+        'ipcup': 'IPcnt, stockName',
+        'ipcdn': 'IPcnt DESC, stockName',
+        'nipsup': 'NCIPstake, stockName',
+        'nipsdn': 'NCIPstake DESC, stockName',
+        'cipsup': 'CIPstake, stockName',
+        'cipsdn': 'CIPstake DESC, stockName',
+        'ipsup': 'IPstake',
+        'ipsdn': 'IPstake DESC',
+        'nameup': 'stockName',
+        'namedn': 'stockName DESC',
+        'codeup': 'stockCode',
+        'codedn': 'stockCode DESC',
+        'vlndn': 'vln DESC, stockName',
+        'vlnup': 'vln, stockName'
+    }
+    ob = sort_orders.get(sort_param, 'IPstake DESC, stockName')
+    if sort_param not in sort_orders:
+        sort_param = 'ipsdn'
+
+    # Query IP stakes
+    try:
+        stakes_result = execute_query(f"""
+            SELECT o.Name1 || ':' || st.typeshort AS stockName,
+                   i.ID1 AS issueID,
+                   (SELECT stockCode FROM enigma.stocklistings
+                    WHERE issueID = i.ID1 AND DelistDate IS NULL
+                    ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
+                   dl.NCIPcnt,
+                   dl.CIPcnt,
+                   dl.NCIPcnt + dl.CIPcnt AS IPcnt,
+                   dl.NCIPhldg / s.outstanding AS NCIPstake,
+                   dl.CIPhldg / s.outstanding AS CIPstake,
+                   (dl.NCIPhldg + dl.CIPhldg) / s.outstanding AS IPstake,
+                   CASE WHEN q.susp THEN
+                       (SELECT closing FROM ccass.quotes
+                        WHERE atDate <= %s AND issueID = dl.issueID AND closing <> 0
+                        ORDER BY atDate DESC LIMIT 1)
+                   ELSE q.closing
+                   END * (dl.NCIPhldg + dl.CIPhldg) / 1000000 AS vln
+            FROM ccass.dailylog dl
+            JOIN enigma.issue i ON i.ID1 = dl.issueID
+            JOIN ccass.quotes q ON q.issueID = dl.issueID AND q.atDate = dl.atDate
+            JOIN enigma.organisations o ON i.issuer = o.PersonID
+            JOIN enigma.issuedshares s ON s.issueID = dl.issueID
+            JOIN enigma.secTypes st ON st.typeID = i.typeID
+            JOIN (SELECT issueID, MAX(atDate) AS MaxIssueDate
+                  FROM enigma.issuedshares
+                  WHERE atDate <= %s
+                  GROUP BY issueID) t4 ON s.issueID = t4.issueID AND s.atDate = t4.MaxIssueDate
+            WHERE dl.atDate = %s
+            ORDER BY {ob}
+        """, (d, d, d))
+
+        stakes = []
+        for row in stakes_result:
+            stakes.append({
+                'stockName': row['stockname'],
+                'issueID': row['issueid'],
+                'stockCode': row['stockcode'],
+                'NCIPcnt': row['ncipcnt'],
+                'CIPcnt': row['cipcnt'],
+                'IPcnt': row['ipcnt'],
+                'NCIPstake': row['ncipstake'],
+                'CIPstake': row['cipstake'],
+                'IPstake': row['ipstake'],
+                'vln': row['vln']
+            })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in ipstakes query: {ex}", exc_info=True)
+        stakes = []
+
+    return render_template('ccass/ipstakes.html',
+                         stakes=stakes,
+                         d=d,
+                         sort=sort_param)
 
 
 @bp.route('/cparticipants.asp')
@@ -333,27 +450,121 @@ def choldings():
     if sort_param not in sort_orders:
         sort_param = 'holddn'
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT h.partID, h.holding, p.partName, p.CCASSID, h.atDate
-    # FROM ccass.holdings h
-    # JOIN ccass.participants p ON h.partID = p.partID
-    # WHERE h.issueID = issue_id AND h.atDate = d
-    # AND (z OR h.holding > 0)
-    # ORDER BY ob
-    #
-    # Also query dailylog for summary stats and issuedshares for outstanding shares
+    # Look up stock name and personID
+    stock_name = "No stock specified"
+    person_id = 0
+    if issue_id > 0:
+        try:
+            result = execute_query("""
+                SELECT o.name1 || ':' || st.typeShort AS stockName, o.personID
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = result[0]['stockname']
+                person_id = result[0]['personid']
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error looking up stock: {ex}")
+            stock_name = f"Stock {issue_id}"
 
-    # Mock data
-    stock_name = "Loading..." if issue_id else "No stock selected"
-    holdings = []
+    # Get latest CCASS date for this issue
+    if issue_id > 0 and d:
+        try:
+            result = execute_query("""
+                SELECT MAX(atDate) AS maxDate
+                FROM ccass.dailylog
+                WHERE issueID = %s AND atDate <= %s
+            """, (issue_id, d))
+            if result and result[0]['maxdate']:
+                d = ms_date(result[0]['maxdate'])
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error getting CCASS date: {ex}")
+
+    # Query summary data from dailylog
     summary = {}
+    if issue_id > 0 and d:
+        try:
+            result = execute_query("""
+                SELECT NCIPhldg, NCIPcnt, BrokHldg, CustHldg, CIPHldg, intermedHldg
+                FROM ccass.dailylog
+                WHERE issueID = %s AND atDate <= %s
+                ORDER BY atDate DESC
+                LIMIT 1
+            """, (issue_id, d))
+            if result:
+                summary = {
+                    'NCIPhldg': float(result[0]['nciphldg']) if result[0]['nciphldg'] else 0,
+                    'NCIPcnt': float(result[0]['ncipcnt']) if result[0]['ncipcnt'] else 0,
+                    'BrokHldg': float(result[0]['brokhldg']) if result[0]['brokhldg'] else 0,
+                    'CustHldg': float(result[0]['custhldg']) if result[0]['custhldg'] else 0,
+                    'CIPHldg': float(result[0]['ciphldg']) if result[0]['ciphldg'] else 0,
+                    'intermedHldg': float(result[0]['intermedhldg']) if result[0]['intermedhldg'] else 0
+                }
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error getting summary data: {ex}")
+
+    # Get issued shares as of date
+    issued = 0
+    if issue_id > 0 and d:
+        try:
+            result = execute_query("""
+                SELECT outstanding
+                FROM enigma.issuedshares
+                WHERE issueID = %s AND atDate <= %s
+                ORDER BY atDate DESC
+                LIMIT 1
+            """, (issue_id, d))
+            if result and result[0]['outstanding']:
+                issued = float(result[0]['outstanding'])
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error getting issued shares: {ex}")
+
+    # Query detailed holdings (latest for each participant)
+    holdings = []
+    if issue_id > 0 and d:
+        # Build WHERE clause for zero holdings filter
+        zero_filter = "" if z else " AND h.holding <> 0"
+
+        try:
+            holdings_result = execute_query(f"""
+                SELECT h.partID, h.holding, h.atDate, p.partName, p.CCASSID
+                FROM ccass.holdings h
+                JOIN (
+                    SELECT partID AS MDpartID, MAX(atDate) AS maxDate
+                    FROM ccass.holdings
+                    WHERE issueID = %s AND atDate <= %s
+                    GROUP BY MDpartID
+                ) AS t2 ON h.partID = t2.MDpartID AND h.atDate = t2.maxDate
+                JOIN ccass.participants p ON p.partID = h.partID
+                WHERE h.issueID = %s{zero_filter}
+                ORDER BY {ob}
+            """, (issue_id, d, issue_id))
+
+            for row in holdings_result:
+                holdings.append({
+                    'partID': row['partid'],
+                    'holding': float(row['holding']) if row['holding'] else 0,
+                    'atDate': row['atdate'],
+                    'partName': row['partname'],
+                    'CCASSID': row['ccassid']
+                })
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error in choldings query: {ex}", exc_info=True)
 
     return render_template('ccass/choldings.html',
                          issue_id=issue_id,
                          stock_name=stock_name,
+                         person_id=person_id,
                          holdings=holdings,
                          summary=summary,
+                         issued=issued,
                          d=d,
                          z=z,
                          sort=sort_param)
