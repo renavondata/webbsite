@@ -463,7 +463,7 @@ ASP files exist but no Flask routes created:
 ### Templates and Assets
 
 ✅ **Templates Created:**
-- Base templates: header.html, dbheader.html, nav.html, footer.html
+- Base templates: header.html (includes nav), dbheader.html, footer.html
 - Page templates for implemented routes
 - Shared includes structure matches ASP pattern
 
