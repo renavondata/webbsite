@@ -1,20 +1,9 @@
-{% extends "base.html" %}
+{% extends "base_reports.html" %}
 
 {% block title %}{{ article.title if article else 'Article' }} - Webb-site{% endblock %}
 
 {% block content %}
 {% if article %}
-<h2>{{ article.title }}</h2>
-{% if article.storyDate %}
-<p><strong>Date:</strong> {{ article.storyDate }}</p>
-{% endif %}
-{% if article.source %}
-<p><strong>Source:</strong> {{ article.source }}</p>
-{% endif %}
-{% if article.summary %}
-<p><em>{{ article.summary }}</em></p>
-{% endif %}
-
 <div class="article-content">
 {{ content|safe }}
 </div>

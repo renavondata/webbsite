@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Positions - Webb-site Database</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-{% include 'includes/dbheader.html' %}
+{% extends "base_database.html" %}
+
+{% block title %}Positions - Webb-site Database{% endblock %}
+
+{% block content %}
 <h2>Director Positions</h2>
 
 {% if positions and positions|length > 0 %}
@@ -30,7 +25,4 @@
 {% else %}
 <p>No positions found.</p>
 {% endif %}
-
-{% include 'includes/dbfooter.html' %}
-</body>
-</html>
+{% endblock %}

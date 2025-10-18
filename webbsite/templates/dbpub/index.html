@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-<title>Webb-site Database</title>
-</head>
-<body>
-{% include "includes/dbheader.html" %}
+{% extends "base_database.html" %}
+
+{% block title %}Webb-site Database{% endblock %}
+
+{% block content %}
 <h2>What do you want to know?</h2>
 <p>Welcome to Webb-site Database, a free database of people, organisations and statistics of Hong 
 Kong and beyond, drawing together publicly available data. Please attribute any use of this 
@@ -227,6 +222,4 @@ server and spoils it for everyone else.</p>
 	<li><a href="freecodesunder1000.asp">Unused stock codes under 1000</a></li>
 	<li><a href="govac.asp">The Webb-site HKSAR Accounts Explorer</a></li>
 </ul>
-{% include "includes/footer.html" %}
-</body>
-</html>
+{% endblock %}

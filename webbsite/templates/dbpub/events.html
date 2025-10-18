@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corporate Events - {{ n if n else 'Webb-site Database' }}</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-{% include 'includes/dbheader.html' %}
+{% extends "base_database.html" %}
+
+{% block title %}Corporate Events - {{ n if n else 'Webb-site Database' }}{% endblock %}
+
+{% block content %}
 <h2>Corporate Events</h2>
 
 {% if n %}
@@ -37,7 +32,4 @@
 {% else %}
 <p>No events found.</p>
 {% endif %}
-
-{% include 'includes/dbfooter.html' %}
-</body>
-</html>
+{% endblock %}

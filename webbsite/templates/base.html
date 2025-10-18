@@ -3,57 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Webb-site Database{% endblock %}</title>
+<title>{% block title %}Webb-site{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 {% block extra_head %}{% endblock %}
 </head>
 <body>
-<div id="banner" style="background-color:maroon">
-	<div class="box1">
-		<a href="/" class="nodec">
-		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
-		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
-		<label for="srchbtn" id="srchbtn">search</label>
-	</div>
-	<input type="checkbox" id="srchchk" style="display:none">
-	<div id="srchblk" style="background-color:inherit;">
-		<div class="box4">
-			<form class="box4a" method="get" action="https://www.google.com/search">
-				<input type="hidden" name="ie" value="UTF-8">
-				<input type="hidden" name="oe" value="UTF-8">
-				<input type="hidden" name="domains" value="webb-site.com">
-				<input type="hidden" name="sitesearch" value="webb-site.com">
-				<input type="text" class="inptxt searchws" name="q" maxlength="255" placeholder="search Webb-site">
-				<input type="submit" class="btnFont" name="btnG" value="search">
-			</form>
-		</div>
-		<div class="group1">
-			<div class="box3">
-				<form class="box3a" method="get" action="{{ url_for('search.search_orgs') }}" style="margin-bottom:5px">
-					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" placeholder="Organisation">
-					<input type="submit" class="btnFont" value="search organisations">
-				</form>
-				<form class="box3b" method="get" action="{{ url_for('search.search_people') }}">
-					<input type="text" class="inptxt famsearch" name="n" maxlength="255" placeholder="Person name">
-					<input type="submit" class="btnFont" value="search people">
-				</form>
-			</div>
-			<form class="stockbox" action="{{url_for('events.events')}}" method="get">
-				<p>Stock code</p>
-				<input type="number" class="inptxt stockcode" name="sc" min="1" max="99999">
-				<input type="submit" class="btnFont" value="events">
-			</form>
-		</div>
-	</div>
-</div>
-<div class="clear"></div>
+{% block header %}{% endblock %}
 <div class="mainbody">
 {% block content %}{% endblock %}
-<div class="clear"></div>
-<hr>
-<p><a href="/">Back to home</a></p>
-<p>&copy; Webb-site.com - <a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a></p>
-<hr>
+{% include 'includes/footer.html' %}
 </div>
 </body>
 </html>

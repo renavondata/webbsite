@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ org.name }} - Webb-site Database</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-{% include 'includes/dbheader.html' %}
+{% extends "base_database.html" %}
+
+{% block title %}{{ org.name }} - Webb-site Database{% endblock %}
+
+{% block content %}
 <h2>{{ org.name }}</h2>
 
 <p><b>{{ org.message }}</b></p>
@@ -25,7 +20,4 @@
 </ul>
 
 <p>PersonID: {{ org.personID }}</p>
-
-{% include 'includes/footer.html' %}
-</body>
-</html>
+{% endblock %}

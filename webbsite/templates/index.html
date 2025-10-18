@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+{% extends "base_reports.html" %}
+
+{% block title %}Webb-site Reports: non-profit news, analysis and opinions | Webb-site Database{% endblock %}
+
+{% block extra_head %}
 <style>
 	.news {
 		width:75%;
@@ -51,14 +50,10 @@
 		}
 	}
 </style>
-<title>Webb-site Reports: non-profit news, analysis and opinions | Webb-site Database</title>
 <link rel="alternate" type="application/rss+xml" href="/rss.asp" title="Webb-site.com latest news">
-</head>
-<body>
+{% endblock %}
 
-{% include 'includes/header.html' %}
-
-<div class="mainbody">
+{% block content %}
 
 <div class="news">
 	<div class="singlecol">
@@ -169,7 +164,4 @@
 	</div>
 </div>
 
-{% include 'includes/footerws.html' %}
-
-</body>
-</html>
+{% endblock %}
