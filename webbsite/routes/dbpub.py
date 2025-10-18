@@ -116,19 +116,19 @@ def listed():
         stocks = []
         for row in results:
             stocks.append({
-                'StockCode': row[0],
-                'issueID': row[1],
-                'typeShort': row[2],
-                'typeLong': row[3],
-                'Name1': row[4],
-                'PersonID': row[5],
-                'FirstTradeDate': row[6]
+                'StockCode': row['stockcode'],
+                'issueID': row['issueid'],
+                'typeShort': row['typeshort'],
+                'typeLong': row['typelong'],
+                'Name1': row['name1'],
+                'PersonID': row['personid'],
+                'FirstTradeDate': row['firsttradedate']
                 # TODO: Add totRet, CAGret, CAGrel when functions are ported
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in listed.asp: {ex}")
+        current_app.logger.error(f"Error in listed.asp: {type(ex).__name__}: {ex}", exc_info=True)
         stocks = []
 
     return render_template('dbpub/listed.html',
@@ -252,22 +252,22 @@ def delisted():
         stocks = []
         for row in results:
             stocks.append({
-                'StockCode': row[0],
-                'typeShort': row[1],
-                'typeLong': row[2],
-                'issueID': row[3],
-                'Name1': row[4],
-                'PersonID': row[5],
-                'FirstTradeDate': row[6],
-                'FinalTradeDate': row[7],
-                'DelistDate': row[8],
-                'Reason': row[9],
-                'TradeLife': row[10]
+                'StockCode': row['stockcode'],
+                'typeShort': row['typeshort'],
+                'typeLong': row['typelong'],
+                'issueID': row['issueid'],
+                'Name1': row['name1'],
+                'PersonID': row['personid'],
+                'FirstTradeDate': row['firsttradedate'],
+                'FinalTradeDate': row['finaltradedate'],
+                'DelistDate': row['delistdate'],
+                'Reason': row['reason'],
+                'TradeLife': row['tradelife']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in delisted.asp: {ex}")
+        current_app.logger.error(f"Error in delisted.asp: {type(ex).__name__}: {ex}", exc_info=True)
         stocks = []
 
     return render_template('dbpub/delisted.html',
@@ -319,18 +319,18 @@ def code():
         delisted_securities = []
         for row in results:
             delisted_securities.append({
-                'Org': row[0],
-                'OrgID': row[1],
-                'SecType': row[2],
-                'FirstTradeDate': row[3],
-                'FinalTradeDate': row[4],
-                'DelistDate': row[5],
-                'Reason': row[6]
+                'Org': row['org'],
+                'OrgID': row['orgid'],
+                'SecType': row['sectype'],
+                'FirstTradeDate': row['firsttradedate'],
+                'FinalTradeDate': row['finaltradedate'],
+                'DelistDate': row['delistdate'],
+                'Reason': row['reason']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in code.asp: {ex}")
+        current_app.logger.error(f"Error in code.asp: {type(ex).__name__}: {ex}", exc_info=True)
         delisted_securities = []
 
     return render_template('dbpub/code.html',
@@ -389,23 +389,23 @@ def orgdata():
 
         org_row = org_result[0]
         org_data = {
-            'personID': org_row[0],
-            'Name1': org_row[1],
-            'cName': org_row[2],
-            'domicile': org_row[3],
-            'domicileName': org_row[4],
-            'incDate': org_row[5],
-            'disDate': org_row[6],
-            'disMode': org_row[7],
-            'disModeTxt': org_row[8],
-            'typeName': org_row[9],
-            'incID': org_row[10],
-            'hklist': org_row[11]
+            'personID': org_row['personid'],
+            'Name1': org_row['name1'],
+            'cName': org_row['cname'],
+            'domicile': org_row['domicile'],
+            'domicileName': org_row['domicilename'],
+            'incDate': org_row['incdate'],
+            'disDate': org_row['disdate'],
+            'disMode': org_row['dismode'],
+            'disModeTxt': org_row['dismodetxt'],
+            'typeName': org_row['typename'],
+            'incID': org_row['incid'],
+            'hklist': org_row['hklist']
         }
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in orgdata.asp (basic info): {ex}")
+        current_app.logger.error(f"Error in orgdata.asp (basic info): {type(ex).__name__}: {ex}", exc_info=True)
         return "Database error", 500
 
     # Get stock listings (if any)
@@ -431,18 +431,18 @@ def orgdata():
         listings = []
         for row in listings_result:
             listings.append({
-                'StockCode': row[0],
-                'issueID': row[1],
-                'typeShort': row[2],
-                'FirstTradeDate': row[3],
-                'DelistDate': row[4],
-                'listingName': row[5]
+                'StockCode': row['stockcode'],
+                'issueID': row['issueid'],
+                'typeShort': row['typeshort'],
+                'FirstTradeDate': row['firsttradedate'],
+                'DelistDate': row['delistdate'],
+                'listingName': row['listingname']
             })
         org_data['listings'] = listings
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in orgdata.asp (listings): {ex}")
+        current_app.logger.error(f"Error in orgdata.asp (listings): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['listings'] = []
 
     # Get current directors (simplified - current only, not full history)
@@ -469,18 +469,18 @@ def orgdata():
         directors = []
         for row in directors_result:
             directors.append({
-                'personID': row[0],
-                'Name1': row[1],
-                'Name2': row[2],
-                'position': row[3],
-                'from_date': row[4],
-                'until': row[5]
+                'personID': row['personid'],
+                'Name1': row['name1'],
+                'Name2': row['name2'],
+                'position': row['position'],
+                'from_date': row['from_date'],
+                'until': row['until']
             })
         org_data['directors'] = directors
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in orgdata.asp (directors): {ex}")
+        current_app.logger.error(f"Error in orgdata.asp (directors): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['directors'] = []
 
     # Get recent events (limit 20)
@@ -503,17 +503,17 @@ def orgdata():
         events = []
         for row in events_result:
             events.append({
-                'eventID': row[0],
-                'eventDate': row[1],
-                'exDate': row[2],
-                'capChange': row[3],
-                'details': row[4]
+                'eventID': row['eventid'],
+                'eventDate': row['eventdate'],
+                'exDate': row['exdate'],
+                'capChange': row['capchange'],
+                'details': row['details']
             })
         org_data['events'] = events
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in orgdata.asp (events): {ex}")
+        current_app.logger.error(f"Error in orgdata.asp (events): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['events'] = []
 
     return render_template('dbpub/orgdata.html', org=org_data)
@@ -546,7 +546,7 @@ def advisers():
     # Get organization name
     try:
         org_result = execute_query("SELECT Name1 FROM organisations WHERE personID = %s", (person_id,))
-        org_name = org_result[0][0] if org_result else "Unknown"
+        org_name = org_result[0]['name1'] if org_result else "Unknown"
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
@@ -616,17 +616,17 @@ def advisers():
         regular_advisers = []
         for row in regular_results:
             regular_advisers.append({
-                'AdvID': row[0],
-                'AdvName': row[1],
-                'roleID': row[2],
-                'role': row[3],
-                'addDate': row[4],
-                'remDate': row[5]
+                'AdvID': row['advid'],
+                'AdvName': row['advname'],
+                'roleID': row['roleid'],
+                'role': row['role'],
+                'addDate': row['adddate'],
+                'remDate': row['remdate']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in advisers.asp (regular): {ex}")
+        current_app.logger.error(f"Error in advisers.asp (regular): {type(ex).__name__}: {ex}", exc_info=True)
         regular_advisers = []
 
     # Query one-time advisers (transaction-specific like IFAs)
@@ -665,16 +665,16 @@ def advisers():
         onetime_advisers = []
         for row in onetime_results:
             onetime_advisers.append({
-                'AdvID': row[0],
-                'AdvName': row[1],
-                'roleID': row[2],
-                'role': row[3],
-                'addDate': row[4]
+                'AdvID': row['advid'],
+                'AdvName': row['advname'],
+                'roleID': row['roleid'],
+                'role': row['role'],
+                'addDate': row['adddate']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in advisers.asp (one-time): {ex}")
+        current_app.logger.error(f"Error in advisers.asp (one-time): {type(ex).__name__}: {ex}", exc_info=True)
         onetime_advisers = []
 
     return render_template('dbpub/advisers.html',
@@ -715,7 +715,7 @@ def officers():
     # Get organization name
     try:
         org_result = execute_query("SELECT Name1 FROM organisations WHERE personID = %s", (person_id,))
-        org_name = org_result[0][0] if org_result else "Unknown"
+        org_name = org_result[0]['name1'] if org_result else "Unknown"
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
@@ -791,8 +791,8 @@ def officers():
         # Group by rank
         officers_by_rank = {}
         for row in results:
-            rank_id = row[0]
-            rank_text = row[1]
+            rank_id = row['rankid']
+            rank_text = row['ranktext']
 
             if rank_id not in officers_by_rank:
                 officers_by_rank[rank_id] = {
@@ -801,19 +801,19 @@ def officers():
                 }
 
             officers_by_rank[rank_id]['officers'].append({
-                'director': row[2],
-                'PersonName': row[3],
-                'posShort': row[4],
-                'posLong': row[5],
-                'sex': row[6],
-                'YOB': row[7],
-                'from_date': row[8],
-                'until': row[9]
+                'director': row['director'],
+                'PersonName': row['personname'],
+                'posShort': row['posshort'],
+                'posLong': row['poslong'],
+                'sex': row['sex'],
+                'YOB': row['yob'],
+                'from_date': row['from_date'],
+                'until': row['until']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
-        current_app.logger.error(f"Error in officers.asp: {ex}")
+        current_app.logger.error(f"Error in officers.asp: {type(ex).__name__}: {ex}", exc_info=True)
         officers_by_rank = {}
 
     return render_template('dbpub/officers.html',
@@ -967,14 +967,14 @@ def positions():
         """, (person_id,))
 
         if person_result and len(person_result) > 0:
-            person_name = person_result[0][0]
-            is_person = person_result[0][1]
+            person_name = person_result[0]['personname']
+            is_person = person_result[0]['isperson']
         else:
             person_name = f"Person {person_id}"
             is_person = True
     except Exception as ex:
         from flask import current_app
-        current_app.logger.error(f"Error fetching person name for positions: {ex}")
+        current_app.logger.error(f"Error fetching person name for positions: {type(ex).__name__}: {ex}", exc_info=True)
         person_name = f"Person {person_id}"
         is_person = True
 
@@ -995,8 +995,8 @@ def positions():
         # For each rank, get the directorships
         positions_by_rank = []
         for rank_row in ranks:
-            rank_id = rank_row[0]
-            rank_text = rank_row[1]
+            rank_id = rank_row['rankid']
+            rank_text = rank_row['ranktext']
 
             directorships = execute_query(f"""
                 SELECT
