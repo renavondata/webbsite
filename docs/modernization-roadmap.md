@@ -10,8 +10,8 @@ The original Webb-site.com dedicated server will **shut down on October 31, 2025
 - ⏰ **13 days remaining** until shutdown
 - ✅ Database imported to PostgreSQL (local test environment)
 - ✅ Flask application structure created (192 routes)
-- ✅ **20 routes now working** - MVP TARGET REACHED! (search, quotes, events, listings, CCASS analysis)
-- ⚠️ 169 skeleton routes need SQL implementation (down from 184)
+- ✅ **24 routes now working** - MVP TARGET EXCEEDED! (search, quotes, events, listings, CCASS analysis, company data)
+- ⚠️ 165 skeleton routes need SQL implementation (down from 184)
 - ✅ Articles bug fixed (articles.py URL pattern)
 - ❌ 109 routes not yet created (specialty pages)
 - ✅ Legacy scrapers will continue operating (deferred migration)
@@ -353,55 +353,63 @@ The MVP provides **public access to historical Hong Kong financial data** via a 
 
 **Total ASP Files in Original Site:** ~1,100+ files across all directories
 **Flask Routes Created:** 192 routes
-**Actually Working:** 20 routes (10%) - **MVP TARGET REACHED!**
-**Skeleton Stubs:** 169 routes (88%)
+**Actually Working:** 24 routes (13%) - **MVP TARGET EXCEEDED!**
+**Skeleton Stubs:** 165 routes (86%)
 **Buggy/Broken:** 0 routes (all fixed)
 **Not Created Yet:** 109 routes
 
 ### Implementation Tiers
 
-#### Tier 1: Fully Implemented with SQL (20 routes) ✅
+#### Tier 1: Fully Implemented with SQL (24 routes) ✅
 
 These routes have complete SQL queries and return real data:
 
+**Index (1 route):**
+1. **dbpub/** - Database homepage/index
+
 **Core Search & Browse (5 routes):**
-1. **searchorgs.asp** - Organization search with PostgreSQL full-text search
-2. **searchpeople.asp** - Person search with PostgreSQL full-text search
-3. **prices.asp** - Stock price charts with Highstock integration
-4. **quotes.asp** - Stock quotes from ccass.quotes table
-5. **events.asp** - Corporate events from events table
+2. **searchorgs.asp** - Organization search with PostgreSQL full-text search
+3. **searchpeople.asp** - Person search with PostgreSQL full-text search
+4. **prices.asp** - Stock price charts with Highstock integration
+5. **quotes.asp** - Stock quotes from ccass.quotes table
+6. **events.asp** - Corporate events from events table
 
 **Stock Listings (3 routes):**
-6. **listed.asp** - Currently listed stocks with filters
-7. **delisted.asp** - Delisted stocks history
-8. **code.asp** - Stock code lookup
+7. **listed.asp** - Currently listed stocks with filters
+8. **delisted.asp** - Delisted stocks history
+9. **code.asp** - Stock code lookup
 
-**Corporate Structure (3 routes):**
-9. **advisers.asp** - Corporate advisors (auditors, IFAs)
-10. **officers.asp** - Directors and officers
-11. **splits.asp** - Stock splits, consolidations, bonus issues
+**Corporate Structure (4 routes):**
+10. **advisers.asp** - Corporate advisors (auditors, IFAs)
+11. **officers.asp** - Directors and officers
+12. **splits.asp** - Stock splits, consolidations, bonus issues
+13. **positions.asp** - Director positions across companies
+
+**Company Data (1 route):**
+14. **orgdata.asp** - Comprehensive organization data page
 
 **Articles (3 routes):**
-12. **articles/{path}.asp** - Individual article serving
-13. **articles/index.asp** - Articles index
-14. **articles/** - Articles root
+15. **articles/{path}.asp** - Individual article serving
+16. **articles/index.asp** - Articles index
+17. **articles/** - Articles root
 
-**CCASS Analysis (6 routes):**
-15. **bigchanges.asp** - All large CCASS shareholding changes on a given date
-16. **bigchangesissue.asp** - Large shareholding changes for specific stock
-17. **bigchangespart.asp** - Large shareholding changes for specific participant
-18. **cconc.asp** - CCASS concentration analysis (top 5/10 holders)
-19. **cparticipants.asp** - CCASS participants list
-20. **ipstakes.asp** - Investor Participant stakes analysis
+**CCASS Analysis (7 routes):**
+18. **bigchanges.asp** - All large CCASS shareholding changes on a given date
+19. **bigchangesissue.asp** - Large shareholding changes for specific stock
+20. **bigchangespart.asp** - Large shareholding changes for specific participant
+21. **cconc.asp** - CCASS concentration analysis (top 5/10 holders)
+22. **cparticipants.asp** - CCASS participants list
+23. **ipstakes.asp** - Investor Participant stakes analysis
+24. **choldings.asp** - Detailed holdings for a specific stock
 
-**Status:** Working end-to-end with database integration - **MVP TARGET OF 20 ROUTES REACHED!**
+**Status:** Working end-to-end with database integration - **MVP TARGET EXCEEDED! 24 ROUTES WORKING**
 
-#### Tier 2: Skeleton Routes (169 routes) ⚠️
+#### Tier 2: Skeleton Routes (165 routes) ⚠️
 
 Routes exist and accept parameters but return stub pages with TODO comments:
 
-- **dbpub.py**: 68 routes (orgdata.asp, holders.asp, holdings.asp, pricesCSV.asp, chart.asp, alltotrets.asp, mcap.asp, mcaphist.asp, SDI routes, SFC routes, buybacks routes, short selling routes, documents, articles by year/category, HK solicitors, statistics, pay league, public housing, government accounts, overlap analysis, etc.)
-- **ccass.py**: 12 routes (cholder.asp, choldings.asp, chistory.asp, CCASSnotes.asp, plus history/analysis routes)
+- **dbpub.py**: 65 routes (holders.asp, holdings.asp, pricesCSV.asp, chart.asp, alltotrets.asp, mcap.asp, mcaphist.asp, SDI routes, SFC routes, buybacks routes, short selling routes, documents, articles by year/category, HK solicitors, statistics, pay league, public housing, government accounts, overlap analysis, etc.)
+- **ccass.py**: 11 routes (cholder.asp, chistory.asp, CCASSnotes.asp, plus history/analysis routes)
 - **dbeditor.py**: 53 routes (database editing system - requires wsroles auth)
 - **webbmail.py**: 17 routes (user accounts and personalization)
 - **vote.py**: 6 routes (polling system)
