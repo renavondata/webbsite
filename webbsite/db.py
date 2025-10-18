@@ -28,6 +28,12 @@ def get_db():
             # Set cursor factory for dict-like access
             g.db.cursor_factory = psycopg2.extras.RealDictCursor
 
+            # Set search_path to include enigma and ccass schemas
+            # This allows unqualified table references (e.g., "stories") to work
+            # Matches MySQL behavior where USE database switches context
+            with g.db.cursor() as cur:
+                cur.execute("SET search_path TO enigma, ccass, public")
+
             if current_app.config.get('DEBUG'):
                 logger.debug(f"Database connection acquired from pool")
         except Exception as e:
