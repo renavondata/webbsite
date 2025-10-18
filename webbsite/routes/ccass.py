@@ -209,15 +209,26 @@ def cparticipants():
     if sort_param not in sort_orders:
         sort_param = 'nameup'
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT CCASSID, partName, partID
-    # FROM ccass.participants
-    # WHERE hadHoldings = True
-    # ORDER BY ob
+    # Query CCASS participants who have had holdings
+    try:
+        result = execute_query(f"""
+            SELECT CCASSID, partName, partID
+            FROM ccass.participants
+            WHERE hadHoldings = TRUE
+            ORDER BY {ob}
+        """)
 
-    # Mock data structure
-    participants = []
+        participants = []
+        for row in result:
+            participants.append({
+                'CCASSID': row['ccassid'],
+                'partName': row['partname'],
+                'partID': row['partid']
+            })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in cparticipants query: {ex}", exc_info=True)
+        participants = []
 
     return render_template('ccass/cparticipants.html',
                          participants=participants,
@@ -377,22 +388,62 @@ def bigchangesissue():
     if sort_param not in sort_orders:
         sort_param = 'datedn'
 
-    # TODO: If stock_code provided, look up issueID from stocklistings
-    # TODO: Look up stock name from organisations table
+    # If stock_code provided, look up issueID from stocklistings
+    if stock_code and not issue_id:
+        try:
+            result = execute_query("""
+                SELECT issueID FROM enigma.stocklistings
+                WHERE stockCode = %s AND DelistDate IS NULL
+                ORDER BY FirstTradeDate DESC LIMIT 1
+            """, (stock_code.zfill(5),))
+            if result:
+                issue_id = result[0]['issueid']
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    stock_name = f"Stock {issue_id}" if issue_id > 0 else "No stock specified"
-    person_id = 0  # TODO: Get from issue table
+    # Look up stock name from organisations table
+    stock_name = "No stock specified"
+    person_id = 0
+    if issue_id > 0:
+        try:
+            result = execute_query("""
+                SELECT o.Name1, o.personID
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = result[0]['name1']
+                person_id = result[0]['personid']
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error looking up stock name: {ex}")
+            stock_name = f"Stock {issue_id}"
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT b.partID, stkchg, b.atDate, prevDate, partName
-    # FROM ccass.bigchanges b
-    # JOIN ccass.participants p ON b.partID = p.partID
-    # WHERE issueID = issue_id
-    # ORDER BY {ob}
+    # Query bigchanges for this issue
+    try:
+        changes_result = execute_query(f"""
+            SELECT b.partID, b.stkchg, b.atDate, b.prevDate, p.partName
+            FROM ccass.bigchanges b
+            JOIN ccass.participants p ON b.partID = p.partID
+            WHERE b.issueID = %s
+            ORDER BY {ob}
+        """, (issue_id,))
 
-    # Mock data
-    changes = []
+        changes = []
+        for row in changes_result:
+            changes.append({
+                'partID': row['partid'],
+                'stkchg': row['stkchg'],
+                'atDate': row['atdate'],
+                'prevDate': row['prevdate'],
+                'partName': row['partname']
+            })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in bigchangesissue query: {ex}", exc_info=True)
+        changes = []
 
     return render_template('ccass/bigchangesissue.html',
                          issue_id=issue_id,
@@ -429,24 +480,58 @@ def bigchangespart():
     if sort_param not in sort_orders:
         sort_param = 'datedn'
 
-    # TODO: Look up participant name and CCASSID
-    part_name = f"Participant {part_id}" if part_id > 0 else "No participant specified"
+    # Look up participant name and person
+    part_name = "No participant specified"
+    person_id = 0
+    if part_id > 0:
+        try:
+            result = execute_query("""
+                SELECT partName, personID
+                FROM ccass.participants
+                WHERE partID = %s
+            """, (part_id,))
+            if result:
+                part_name = result[0]['partname']
+                person_id = result[0]['personid'] if result[0]['personid'] else 0
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error looking up participant: {ex}")
+            part_name = f"Participant {part_id}"
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT b.issueID, stkchg, b.atDate, prevDate, o.name1, i.typeShort,
-    #        (SELECT stockCode FROM enigma.stocklistings
-    #         WHERE issueID=b.issueID AND toDate IS NULL
-    #         ORDER BY fromDate DESC LIMIT 1) AS stockCode
-    # FROM ccass.bigchanges b
-    # JOIN enigma.issue i ON b.issueID = i.ID1
-    # JOIN enigma.organisations o ON i.issuer = o.personID
-    # JOIN enigma.sectypes s ON i.typeID = s.typeID
-    # WHERE b.partID = part_id
-    # ORDER BY {ob}
+    # Query bigchanges for this participant (excluding ETFs, abs(stkchg) >= 5%)
+    try:
+        changes_result = execute_query(f"""
+            SELECT b.issueID, b.stkchg, b.atDate, b.prevDate,
+                   o.name1 || ':' || st.typeShort AS issueName,
+                   (SELECT stockCode FROM enigma.stocklistings
+                    WHERE issueID = b.issueID
+                      AND (DelistDate IS NULL OR DelistDate > b.atDate)
+                      AND (FirstTradeDate IS NULL OR FirstTradeDate <= b.atDate)
+                    ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode
+            FROM ccass.bigchanges b
+            JOIN enigma.issue i ON b.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            WHERE b.partID = %s
+              AND o.orgType <> 4
+              AND ABS(b.stkchg) >= 0.05
+            ORDER BY {ob}
+        """, (part_id,))
 
-    # Mock data
-    changes = []
+        changes = []
+        for row in changes_result:
+            changes.append({
+                'issueID': row['issueid'],
+                'stkchg': row['stkchg'],
+                'atDate': row['atdate'],
+                'prevDate': row['prevdate'],
+                'issueName': row['issuename'],
+                'stockCode': row['stockcode']
+            })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in bigchangespart query: {ex}", exc_info=True)
+        changes = []
 
     return render_template('ccass/bigchangespart.html',
                          part_id=part_id,

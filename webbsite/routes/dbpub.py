@@ -878,24 +878,44 @@ def splits():
     sql, type_suffix = type_filters.get(t, type_filters['a'])
     title += type_suffix
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT eventID, `change`, exDate, Name1, typeShort, events.issueID, new, old, adjust, stockCode
-    # FROM events
-    # JOIN issue ON events.issueID = issue.ID1
-    # JOIN organisations ON issue.issuer = organisations.PersonID
-    # JOIN capchangetypes ON events.eventType = capchangetypes.CapChangeType
-    # JOIN sectypes ON issue.typeID = sectypes.typeID
-    # JOIN stocklistings ON issue.ID1 = stocklistings.issueID
-    # WHERE cancelDate IS NULL
-    #   AND stockExID {e_str}
-    #   AND (firstTradeDate IS NULL OR firstTradeDate <= exDate)
-    #   AND (delistDate IS NULL OR delistDate > exDate)
-    #   AND eventType {sql}
-    # ORDER BY {ob}
+    # Query splits, consolidations, and bonus issues
+    query = f"""
+        SELECT e.eventID, e.change, e.exDate, o.Name1, st.typeShort,
+               e.issueID, e.new, e.old, e.adjust, sl.stockCode
+        FROM events e
+        JOIN issue i ON e.issueID = i.ID1
+        JOIN organisations o ON i.issuer = o.PersonID
+        JOIN capchangetypes ct ON e.eventType = ct.CapChangeType
+        JOIN secTypes st ON i.typeID = st.typeID
+        JOIN stockListings sl ON i.ID1 = sl.issueID
+        WHERE e.cancelDate IS NULL
+          AND sl.stockExID {e_str}
+          AND (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= e.exDate)
+          AND (sl.DelistDate IS NULL OR sl.DelistDate > e.exDate)
+          AND e.eventType {sql}
+        ORDER BY {ob}
+    """
 
-    # Mock data
-    events = []
+    try:
+        results = execute_query(query)
+        events = []
+        for row in results:
+            events.append({
+                'eventID': row['eventid'],
+                'change': row['change'],
+                'exDate': row['exdate'],
+                'Name1': row['name1'],
+                'typeShort': row['typeshort'],
+                'issueID': row['issueid'],
+                'new': row['new'],
+                'old': row['old'],
+                'adjust': row['adjust'],
+                'stockCode': row['stockcode']
+            })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in splits.asp: {type(ex).__name__}: {ex}", exc_info=True)
+        events = []
 
     return render_template('dbpub/splits.html',
                          title=title,
