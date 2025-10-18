@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: starter
     buildCommand: uv sync --frozen && uv cache prune --ci
-    startCommand: uv run gunicorn -w 4 -b 0.0.0.0:$PORT app:app
+    startCommand: uv run gunicorn -c gunicorn.conf.py app:app
     envVars:
       - key: DATABASE_URL
         fromDatabase:

@@ -1,36 +1,53 @@
 """
 Database connection helpers
 Direct port from Classic ASP ADODB connection patterns
+With connection pooling for production reliability
 """
 import psycopg2
 import psycopg2.extras
+import psycopg2.pool
 from flask import current_app, g
 import logging
 
 logger = logging.getLogger(__name__)
 
+# Global connection pool (initialized in init_app)
+_pool = None
+
 
 def get_db():
-    """Get database connection from Flask g context"""
+    """Get database connection from pool and store in Flask g context"""
     if 'db' not in g:
         try:
-            g.db = psycopg2.connect(
-                current_app.config['DATABASE_URL'],
-                cursor_factory=psycopg2.extras.RealDictCursor
-            )
+            if _pool is None:
+                raise RuntimeError("Database pool not initialized. Call init_app() first.")
+
+            # Get connection from pool
+            g.db = _pool.getconn()
+
+            # Set cursor factory for dict-like access
+            g.db.cursor_factory = psycopg2.extras.RealDictCursor
+
             if current_app.config.get('DEBUG'):
-                logger.debug(f"Database connection established")
+                logger.debug(f"Database connection acquired from pool")
         except Exception as e:
-            logger.error(f"Failed to connect to database: {e}", exc_info=True)
+            logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
             raise
     return g.db
 
 
 def close_db(e=None):
-    """Close database connection"""
+    """Return database connection to pool"""
     db = g.pop('db', None)
     if db is not None:
-        db.close()
+        if _pool is not None:
+            # Return connection to pool instead of closing
+            _pool.putconn(db)
+            if current_app.config.get('DEBUG'):
+                logger.debug(f"Database connection returned to pool")
+        else:
+            # Fallback: close if pool not available
+            db.close()
 
 
 def execute_query(sql, params=None):
@@ -118,6 +135,46 @@ def execute_scalar(sql, params=None):
         cur.close()
 
 
+def init_pool(app):
+    """Initialize database connection pool"""
+    global _pool
+
+    if _pool is not None:
+        logger.warning("Database pool already initialized")
+        return
+
+    try:
+        _pool = psycopg2.pool.SimpleConnectionPool(
+            app.config['DB_POOL_MIN_CONN'],
+            app.config['DB_POOL_MAX_CONN'],
+            app.config['DATABASE_URL'],
+            connect_timeout=app.config['DB_CONNECT_TIMEOUT']
+        )
+        logger.info(f"Database connection pool initialized "
+                   f"(min={app.config['DB_POOL_MIN_CONN']}, "
+                   f"max={app.config['DB_POOL_MAX_CONN']})")
+    except Exception as e:
+        logger.error(f"Failed to initialize database pool: {e}", exc_info=True)
+        raise
+
+
+def close_pool():
+    """Close all connections in the pool"""
+    global _pool
+    if _pool is not None:
+        _pool.closeall()
+        logger.info("Database connection pool closed")
+        _pool = None
+
+
 def init_app(app):
     """Register database functions with Flask app"""
+    # Initialize connection pool
+    init_pool(app)
+
+    # Register cleanup functions
     app.teardown_appcontext(close_db)
+
+    # Close pool on app shutdown
+    import atexit
+    atexit.register(close_pool)
