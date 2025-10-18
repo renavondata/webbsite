@@ -46,23 +46,45 @@ def create_app(config_class=Config):
         # Query latest stories from database
         from webbsite.db import execute_query
         try:
-            # Get Webb-site original stories (sourceID=1)
-            stories = execute_query("""
-                SELECT StoryID, Title, Summary, StoryDate, URL, SourceID,
-                       URL2, URL2text, image
-                FROM stories
-                WHERE pubDate <= NOW()
-                ORDER BY StoryDate DESC
-                LIMIT 30
+            # Get Webb-site original stories (based on headlinesws.asp line 71-72)
+            our_stories = execute_query("""
+                SELECT s.StoryID, s.Title, s.Summary, s.StoryDate, s.URL, s.SourceID,
+                       s.URL2, s.URL2text, s.image
+                FROM enigma.stories s
+                WHERE s.sourceID = 1 AND s.pubDate <= NOW()
+                ORDER BY s.StoryDate DESC
+                LIMIT 15
+            """)
+
+            # Get external news stories (based on headlinesws.asp line 102-104)
+            other_stories = execute_query("""
+                SELECT s.StoryID, s.Title, s.Summary, s.StoryDate, s.URL, s.SourceID,
+                       s.URL2, s.URL2text, s.image, src.sourcename
+                FROM enigma.stories s
+                LEFT JOIN enigma.sources src ON s.sourceID = src.sourceID
+                WHERE (s.sourceID <> 1 OR s.sourceID IS NULL) AND s.pubDate <= NOW()
+                ORDER BY s.StoryDate DESC
+                LIMIT 20
             """)
         except Exception as ex:
             # Error is already logged by execute_query in db.py
             # In DEBUG mode, exception will be re-raised and shown in browser
             # In production, show empty stories list but log the error here too
             app.logger.error(f"Failed to load stories for homepage: {ex}")
-            stories = []
+            our_stories = []
+            other_stories = []
 
-        return render_template('index.html', stories=stories)
+        # Combine for single-column view (sorted by date)
+        all_stories = sorted(
+            our_stories + other_stories,
+            key=lambda x: x.get('storydate') or '',
+            reverse=True
+        )[:30]
+
+        return render_template('index.html',
+                             stories=all_stories,
+                             our_stories=our_stories,
+                             other_stories=other_stories)
 
     # Health check endpoint
     @app.route('/health')

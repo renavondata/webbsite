@@ -85,7 +85,10 @@
 					|&nbsp;<a target="_self" href="{{ story.url2 }}">{{ story.url2text }}</a>
 				{% endif %}
 				<br>
-				<span style="color:gray">{{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}</span>
+				<span style="color:gray">
+				{% if story.sourcename %}{{ story.sourcename }}, {% endif %}
+				{{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}
+				</span>
 				{% if story.summary %}
 					<br>{{ story.summary }}
 				{% endif %}
@@ -99,31 +102,31 @@
 	{# Two-column layout for desktop #}
 	<div class="col1of2">
 		<h3>Our stories</h3>
-		{% for story in stories %}
-			{% if story.sourceid == 1 %}
+		{% for story in our_stories %}
 			<div class="artsum">
-				<a href="/articles/{{ story.url }}"><b>{{ story.title }}</b></a>
-				<br>
-				<span style="color:blue">
-				Webb-site.com, {{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}
-				</span>
-				{% if story.summary %}
-					<br>{{ story.summary }}
+				<a target="_self" href="{{ story.url if story.url.startswith('http') else (story.url[3:] if story.url.startswith('../') else 'articles/' + story.url) }}"><b>{{ story.title }}</b></a>
+				{% if story.url2text %}
+					|&nbsp;<a target="{{ '_blank' if story.url2 and story.url2.startswith('http') else '_self' }}" href="{{ story.url2 if story.url2.startswith('http') else (story.url2[3:] if story.url2.startswith('../') else 'articles/' + story.url2) }}"><b>{{ story.url2text }}</b></a>
 				{% endif %}
 				<br>
+				{% if story.summary %}{{ story.summary }}&nbsp;{% endif %}({{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }})
+				<br>
+
 			</div>
-			{% endif %}
 		{% endfor %}
 	</div>
 
 	<div class="col2of2">
 		<h3>Other news</h3>
-		{% for story in stories %}
-			{% if story.sourceid != 1 %}
+		{% for story in other_stories %}
 			<div class="artsum">
-				<a href="{{ story.url }}">{{ story.title }}</a>
+				<a href="/dbpub/artlinks.asp?s={{ story.storyid }}">{{ story.title }}</a>
+				{% if story.url2text %}
+					|&nbsp;<a target="{{ '_blank' if story.url2 and story.url2.startswith('http') else '_self' }}" href="{{ story.url2 if story.url2.startswith('http') else (story.url2[3:] if story.url2.startswith('../') else 'articles/' + story.url2) }}">{{ story.url2text }}</a>
+				{% endif %}
 				<br>
 				<span style="color:gray">
+				{% if story.sourcename %}{{ story.sourcename }}, {% endif %}
 				{{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }}
 				</span>
 				{% if story.summary %}
@@ -131,9 +134,11 @@
 				{% endif %}
 				<br>
 			</div>
-			{% endif %}
 		{% endfor %}
 	</div>
+	<div class="clear"></div>
+	<div class="artsum"><strong><a href="/articles/">Previously on Webb-site.com</a></strong><br>
+	Check out our full list of articles in the archive, since our launch in 1998.</div>
 </div>
 
 <div class="sidebar">
@@ -152,18 +157,7 @@
 	</div>
 </div>
 
-<div class="clear"></div>
+{% include 'includes/footerws.html' %}
 
-<hr>
-<p style="text-align:center">
-	<a href="/webbmail/join.asp">Sign up for newsletter</a> |
-	<a href="/pages/refer.asp">Refer a friend</a> |
-	<a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a> |
-	<a href="/pages/privacypolicy.asp">Privacy policy</a>
-</p>
-<p style="text-align:center"><a href="#">Back to top</a></p>
-<hr>
-
-</div>
 </body>
 </html>
