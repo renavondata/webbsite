@@ -23,16 +23,29 @@ def get_db():
                 raise RuntimeError("Database pool not initialized. Call init_app() first.")
 
             # Get connection from pool
-            g.db = _pool.getconn()
+            conn = _pool.getconn()
+
+            # CRITICAL: Validate connection is alive before use
+            # This prevents SSL errors from stale connections
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("SELECT 1")
+            except (psycopg2.OperationalError, psycopg2.InterfaceError) as e:
+                # Connection is stale/broken - discard and get fresh one
+                logger.warning(f"Stale connection detected: {e}, getting fresh connection")
+                _pool.putconn(conn, close=True)
+                conn = _pool.getconn()
 
             # Set cursor factory for dict-like access
-            g.db.cursor_factory = psycopg2.extras.RealDictCursor
+            conn.cursor_factory = psycopg2.extras.RealDictCursor
 
             # Set search_path to include enigma and ccass schemas
             # This allows unqualified table references (e.g., "stories") to work
             # Matches MySQL behavior where USE database switches context
-            with g.db.cursor() as cur:
+            with conn.cursor() as cur:
                 cur.execute("SET search_path TO enigma, ccass, public")
+
+            g.db = conn
 
             if current_app.config.get('DEBUG'):
                 logger.debug(f"Database connection acquired from pool")
@@ -47,10 +60,17 @@ def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         if _pool is not None:
-            # Return connection to pool instead of closing
-            _pool.putconn(db)
-            if current_app.config.get('DEBUG'):
-                logger.debug(f"Database connection returned to pool")
+            # Check if connection is healthy before returning to pool
+            # If connection had errors or was closed, discard it
+            if db.closed != 0:
+                # Connection is closed/broken, discard from pool
+                logger.warning("Connection was closed, discarding from pool")
+                _pool.putconn(db, close=True)
+            else:
+                # Return healthy connection to pool for reuse
+                _pool.putconn(db)
+                if current_app.config.get('DEBUG'):
+                    logger.debug(f"Database connection returned to pool")
         else:
             # Fallback: close if pool not available
             db.close()
@@ -150,13 +170,31 @@ def init_pool(app):
         return
 
     try:
+        # Add PostgreSQL TCP keepalive parameters to prevent silent connection drops
+        db_url = app.config['DATABASE_URL']
+
+        # Build keepalive parameters
+        # These settings ensure dead connections are detected within ~60 seconds
+        keepalive_params = (
+            "keepalives=1"              # Enable TCP keepalives
+            "&keepalives_idle=30"       # Start keepalives after 30s of idle
+            "&keepalives_interval=10"   # Send keepalive probe every 10s
+            "&keepalives_count=5"       # Declare dead after 5 failed probes
+        )
+
+        # Append parameters to connection string
+        if '?' not in db_url:
+            db_url += '?' + keepalive_params
+        else:
+            db_url += '&' + keepalive_params
+
         _pool = psycopg2.pool.SimpleConnectionPool(
             app.config['DB_POOL_MIN_CONN'],
             app.config['DB_POOL_MAX_CONN'],
-            app.config['DATABASE_URL'],
+            db_url,
             connect_timeout=app.config['DB_CONNECT_TIMEOUT']
         )
-        logger.info(f"Database connection pool initialized "
+        logger.info(f"Database connection pool initialized with keepalives "
                    f"(min={app.config['DB_POOL_MIN_CONN']}, "
                    f"max={app.config['DB_POOL_MAX_CONN']})")
     except Exception as e:

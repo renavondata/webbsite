@@ -37,8 +37,9 @@ user = None
 group = None
 tmp_upload_dir = None
 
-# Preload app for faster worker spawning
-preload_app = True
+# CRITICAL: Must be False to avoid fork-safety issues with connection pool
+# When True, connection pool is created before fork, causing SSL state corruption
+preload_app = False
 
 def on_starting(server):
     """Called just before the master process is initialized."""
@@ -51,6 +52,10 @@ def on_reload(server):
 def when_ready(server):
     """Called just after the server is started."""
     server.log.info(f"Gunicorn server ready. Workers: {workers}, Timeout: {timeout}s")
+
+def post_fork(server, worker):
+    """Called after worker process is forked."""
+    server.log.info(f"Worker spawned (pid: {worker.pid}) - will initialize own connection pool")
 
 def worker_int(worker):
     """Called when a worker receives the SIGINT or SIGQUIT signal."""
