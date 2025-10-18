@@ -363,23 +363,23 @@ def orgdata():
     # Get basic organization details
     org_sql = """
         SELECT
-            o.personID,
-            o.Name1,
-            o.cName,
+            o.personid,
+            o.name1,
+            o.cname,
             o.domicile,
-            d.friendly AS domicileName,
-            o.incDate,
-            o.disDate,
-            o.disMode,
-            dm.disModeTxt,
-            ot.typeName,
-            o.incID,
+            d.friendly AS domicilename,
+            o.incdate,
+            o.disdate,
+            o.dismode,
+            dm.dismodetxt,
+            ot.typename,
+            o.incid,
             o.hklist
-        FROM organisations o
-        LEFT JOIN domiciles d ON o.domicile = d.ID
-        LEFT JOIN dismodes dm ON o.disMode = dm.dismodeID
-        LEFT JOIN orgTypes ot ON o.orgType = ot.orgTypeID
-        WHERE o.personID = %s
+        FROM enigma.organisations o
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        LEFT JOIN enigma.dismodes dm ON o.dismode = dm.dismodeid
+        LEFT JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtypeid
+        WHERE o.personid = %s
     """
 
     try:
@@ -411,18 +411,18 @@ def orgdata():
     # Get stock listings (if any)
     listings_sql = """
         SELECT
-            sl.StockCode,
-            sl.issueID,
-            st.typeShort,
-            sl.FirstTradeDate,
-            sl.DelistDate,
-            l.listingName
-        FROM stockListings sl
-        JOIN issue i ON sl.issueID = i.ID1
-        JOIN secTypes st ON i.typeID = st.typeID
-        JOIN listings l ON sl.StockExID = l.listingID
+            sl.stockcode,
+            sl.issueid,
+            st.typeshort,
+            sl.firsttradedate,
+            sl.delistdate,
+            l.listingname
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        JOIN enigma.sectypes st ON i.typeid = st.typeid
+        JOIN enigma.listings l ON sl.stockexid = l.listingid
         WHERE i.issuer = %s
-        ORDER BY sl.DelistDate DESC NULLS FIRST, sl.FirstTradeDate DESC
+        ORDER BY sl.delistdate DESC NULLS FIRST, sl.firsttradedate DESC
         LIMIT 10
     """
 
@@ -973,17 +973,17 @@ def positions():
         person_result = execute_query("""
             SELECT
                 CASE
-                    WHEN p.personID IS NOT NULL THEN
+                    WHEN p.personid IS NOT NULL THEN
                         CASE
-                            WHEN p.Name2 IS NOT NULL THEN p.Name1 || ', ' || p.Name2
-                            ELSE p.Name1
+                            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
+                            ELSE p.name1
                         END
-                    ELSE o.Name1
-                END AS PersonName,
-                CASE WHEN p.personID IS NOT NULL THEN TRUE ELSE FALSE END AS isPerson
-            FROM persons p
-            FULL OUTER JOIN organisations o ON p.personID = o.personID
-            WHERE COALESCE(p.personID, o.personID) = %s
+                    ELSE o.name1
+                END AS personname,
+                CASE WHEN p.personid IS NOT NULL THEN TRUE ELSE FALSE END AS isperson
+            FROM enigma.persons p
+            FULL OUTER JOIN enigma.organisations o ON p.personid = o.personid
+            WHERE COALESCE(p.personid, o.personid) = %s
         """, (person_id,))
 
         if person_result and len(person_result) > 0:
@@ -1003,13 +1003,13 @@ def positions():
     try:
         # Get all ranks with positions
         ranks = execute_query("""
-            SELECT DISTINCT r.rankID, r.RankText
-            FROM directorships d
-            JOIN positions pos ON d.positionID = pos.positionID
-            JOIN rank r ON pos.rank = r.rankID
-            WHERE d.personID = %s
+            SELECT DISTINCT r.rankid, r.ranktext
+            FROM enigma.directorships d
+            JOIN enigma.positions pos ON d.positionid = pos.positionid
+            JOIN enigma.rank r ON pos.rank = r.rankid
+            WHERE d.personid = %s
               AND {date_filter}
-            ORDER BY r.rankID
+            ORDER BY r.rankid
         """.format(date_filter=date_filter), (person_id,))
 
         # For each rank, get the directorships
@@ -1020,19 +1020,19 @@ def positions():
 
             directorships = execute_query(f"""
                 SELECT
-                    d.orgID AS company,
-                    o.Name1,
-                    i.ID1 AS issueID,
-                    d.from_date AS apptDate,
-                    d.until AS resDate,
-                    pos.posShort,
-                    pos.posLong
-                FROM directorships d
-                JOIN organisations o ON d.orgID = o.personID
-                JOIN positions pos ON d.positionID = pos.positionID
-                LEFT JOIN issue i ON d.orgID = i.issuer
+                    d.orgid AS company,
+                    o.name1,
+                    i.id1 AS issueid,
+                    d.from_date AS apptdate,
+                    d.until AS resdate,
+                    pos.posshort,
+                    pos.poslong
+                FROM enigma.directorships d
+                JOIN enigma.organisations o ON d.orgid = o.personid
+                JOIN enigma.positions pos ON d.positionid = pos.positionid
+                LEFT JOIN enigma.issue i ON d.orgid = i.issuer
                 WHERE pos.rank = %s
-                  AND d.personID = %s
+                  AND d.personid = %s
                   AND {{date_filter}}
                 ORDER BY {{ob}}
             """.format(date_filter=date_filter, ob=ob), (rank_id, person_id))

@@ -93,7 +93,7 @@ def events():
         """
         events_list = execute_query(sql, (i,))
 
-    return render_template('events.html',
+    return render_template('dbpub/events.html',
                          i=i,
                          n=n,
                          p=p,

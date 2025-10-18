@@ -27,7 +27,7 @@ def prices():
     result = execute_query(sql, (i,))
 
     if not result:
-        return render_template('prices.html', error='Data item not found')
+        return render_template('dbpub/prices.html', error='Data item not found')
 
     item = result[0]
     units = item.get('units', '')
@@ -66,7 +66,7 @@ def prices():
                     continue
             prices_data.append([timestamp, float(v)])
 
-    return render_template('prices.html',
+    return render_template('dbpub/prices.html',
                          i=i,
                          title=title,
                          units=units,
@@ -102,7 +102,7 @@ def quotes():
             i = result[0]['issueid']
 
     if not i:
-        return render_template('quotes.html', error='Please specify a stock code or issueID')
+        return render_template('dbpub/quotes.html', error='Please specify a stock code or issueID')
 
     # Get stock details
     sql = """
@@ -114,7 +114,7 @@ def quotes():
     stock_info = execute_query(sql, (i,))
 
     if not stock_info:
-        return render_template('quotes.html', error='Stock not found')
+        return render_template('dbpub/quotes.html', error='Stock not found')
 
     stock = stock_info[0]
 
@@ -123,12 +123,12 @@ def quotes():
         SELECT *
         FROM ccass.quotes
         WHERE issueid = %s
-        ORDER BY date DESC
+        ORDER BY atdate DESC
         LIMIT 100
     """
     quotes_data = execute_query(sql, (i,))
 
-    return render_template('quotes.html',
+    return render_template('dbpub/quotes.html',
                          i=i,
                          stock=stock,
                          quotes=quotes_data)

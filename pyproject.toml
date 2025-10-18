@@ -8,3 +8,8 @@ dependencies = [
     "gunicorn",
     "python-dotenv",
 ]
+
+[dependency-groups]
+dev = [
+    "requests>=2.32.5",
+]
