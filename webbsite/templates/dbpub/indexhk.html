@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<ul>
+    <li><a href="#hk-listed">HK-listed</a></li>
+    <li><a href="#hk-delisted">HK-delisted</a></li>
+</ul>
+
+<hr>
+
+<h3 id="hk-listed">HK-Listed</h3>
+{% if listed_companies and listed_companies|length > 0 %}
+    {% for company in listed_companies %}
+    <p><a href="/dbpub/articles.asp?p={{ company.issuer }}">{{ company.name }}</a></p>
+    {% endfor %}
+{% else %}
+    <p>None</p>
+{% endif %}
+
+<h3 id="hk-delisted">HK-delisted</h3>
+{% if delisted_companies and delisted_companies|length > 0 %}
+    {% for company in delisted_companies %}
+    <p><a href="/dbpub/articles.asp?p={{ company.issuer }}">{{ company.name }}</a></p>
+    {% endfor %}
+{% else %}
+    <p>None</p>
+{% endif %}
+{% endblock %}

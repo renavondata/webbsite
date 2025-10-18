@@ -1,26 +1,17 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webb-site Reports archive</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
 
-{% block title %}Articles - Webb-site{% endblock %}
+{% include 'includes/header.html' %}
 
-{% block content %}
-<h2>Articles</h2>
-
-{% if articles and articles|length > 0 %}
-<table class="txtable">
-	<tr>
-		<th>Date</th>
-		<th>Title</th>
-		<th>Summary</th>
-	</tr>
-	{% for article in articles %}
-	<tr>
-		<td>{{ article[3] if article[3] else article.storydate }}</td>
-		<td><a href="{{ url_for('articles.article', article_path=article[4].replace('.asp','') if article[4] else article.url.replace('.asp','')) }}">{{ article[1] if article[1] else article.title }}</a></td>
-		<td>{{ article[2] if article[2] else article.summary }}</td>
-	</tr>
-	{% endfor %}
-</table>
-{% else %}
-<p>No articles found.</p>
-{% endif %}
-{% endblock %}
+<div class="mainbody">
+{{ content|safe }}
+</div>
+</body>
+</html>

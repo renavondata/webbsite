@@ -2,7 +2,7 @@
 Database routes - Direct port from dbpub/default.asp
 Main database homepage and related pages
 """
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, abort
 from datetime import date
 from webbsite.db import execute_query
 
@@ -1858,6 +1858,72 @@ def possum():
     # TODO: Query position summary
     summary = []
     return render_template('dbpub/possum.html', summary=summary)
+
+
+# Company index by letter
+@bp.route('/indexhk.asp')
+def indexhk():
+    """
+    HK company index - companies with articles starting with given letter
+
+    Query params: p=<letter> (or "0" for numeric start)
+
+    Workflow:
+    1. Get letter from query param 'p'
+    2. Query HK-listed companies with articles starting with that letter
+    3. Query HK-delisted companies with articles starting with that letter
+    4. Display both lists with links to articles
+
+    Tables used: listedcoshk, listedcoshkever, organisations, personstories
+    """
+    p = request.args.get('p', '')
+
+    if not p:
+        abort(400, "Missing parameter 'p'")
+
+    title = f"Reports on companies: names starting with: {p}"
+
+    # Build WHERE clause based on parameter
+    if p == "0":
+        # Numeric starts
+        where_clause = "LEFT(name1,1) >= '0' AND LEFT(name1,1) <= '9'"
+    else:
+        # Letter starts
+        where_clause = f"name1 LIKE '{p}%'"
+
+    try:
+        # HK-listed companies with articles
+        listed_query = f"""
+            SELECT DISTINCT lc.issuer, o.name1 AS name
+            FROM enigma.listedcoshk lc
+            JOIN enigma.organisations o ON lc.issuer = o.personID
+            JOIN enigma.personstories ps ON lc.issuer = ps.personID
+            WHERE {where_clause}
+            ORDER BY name
+        """
+        listed_companies = execute_query(listed_query)
+
+        # HK-delisted companies (no personstories join - shows all, not just with articles)
+        delisted_query = f"""
+            SELECT DISTINCT lce.issuer, o.name1 AS name
+            FROM enigma.listedcoshkever lce
+            JOIN enigma.organisations o ON lce.issuer = o.personID
+            WHERE lce.issuer NOT IN (SELECT issuer FROM enigma.listedcoshk)
+              AND {where_clause}
+            ORDER BY name
+        """
+        delisted_companies = execute_query(delisted_query)
+
+    except Exception as e:
+        from flask import current_app
+        current_app.logger.error(f"Error in indexhk for p={p}: {e}")
+        abort(500)
+
+    return render_template('dbpub/indexhk.html',
+                         title=title,
+                         p=p,
+                         listed_companies=listed_companies,
+                         delisted_companies=delisted_companies)
 
 
 # Helpers to import

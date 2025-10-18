@@ -2,7 +2,7 @@
 Articles routes - Database-driven article serving
 Serves 729 articles from stories table + static ASP files
 """
-from flask import Blueprint, render_template, request, abort, send_file
+from flask import Blueprint, render_template, request, abort, send_file, current_app
 from webbsite.db import execute_query
 import os
 
@@ -32,7 +32,7 @@ def article(article_path):
     try:
         result = execute_query("""
             SELECT s.storyID, s.title, s.summary, s.storyDate, s.pubDate,
-                   s.URL, s.sourceID, src.source, s.image, s.URL2, s.URL2text
+                   s.URL, s.sourceID, src.sourcename, s.image, s.URL2, s.URL2text
             FROM stories s
             LEFT JOIN sources src ON s.sourceID = src.sourceID
             WHERE s.URL = %s
@@ -43,18 +43,20 @@ def article(article_path):
             # Article not in database, return 404
             abort(404)
 
+        # execute_query returns dictionaries, access by key
+        row = result[0]
         article_meta = {
-            'storyID': result[0][0],
-            'title': result[0][1],
-            'summary': result[0][2],
-            'storyDate': result[0][3],
-            'pubDate': result[0][4],
-            'URL': result[0][5],
-            'sourceID': result[0][6],
-            'source': result[0][7],
-            'image': result[0][8],
-            'URL2': result[0][9],
-            'URL2text': result[0][10]
+            'storyID': row['storyid'],
+            'title': row['title'],
+            'summary': row['summary'],
+            'storyDate': row['storydate'],
+            'pubDate': row['pubdate'],
+            'URL': row['url'],
+            'sourceID': row['sourceid'],
+            'source': row['sourcename'],
+            'image': row['image'],
+            'URL2': row['url2'],
+            'URL2text': row['url2text']
         }
 
     except Exception as e:
@@ -64,9 +66,10 @@ def article(article_path):
         abort(500)
 
     # Check if static ASP file exists
-    # The ASP files are stored in "Webb-site ASP files/articles/" subdirectory
+    # The ASP files are stored in the static/articles directory
     asp_file_path = os.path.join(
-        '/home/g/Sync/git/webbsite/Webb-site ASP files/articles',
+        current_app.static_folder,
+        'articles',
         article_url
     )
 
@@ -76,45 +79,70 @@ def article(article_path):
                              article=article_meta,
                              content="<p><em>Article content file not found.</em></p>")
 
-    # Read the ASP file content
-    # TODO: This is simplified - may need to parse ASP includes, execute code, etc.
+    # Read the ASP file content and extract mainbody
     try:
         with open(asp_file_path, 'r', encoding='utf-8') as f:
             asp_content = f.read()
+
+        # Extract only the <div class="mainbody"> content
+        import re
+        mainbody_match = re.search(r'<div class="mainbody">(.*?)</div>\s*</body>',
+                                    asp_content, re.DOTALL | re.IGNORECASE)
+
+        if mainbody_match:
+            content = mainbody_match.group(1)
+        else:
+            # Fallback: use entire content if mainbody not found
+            content = asp_content
+
+        # Localize image URLs
+        # Replace webb-site.com images with local static path
+        content = re.sub(r'https://webb-site\.com/images/', '/static/articles/', content)
+        # Replace relative ../images/ paths with local static path
+        content = re.sub(r'\.\./images/', '/static/articles/', content)
+
     except Exception as e:
         from flask import current_app
         current_app.logger.error(f"Error reading article file {asp_file_path}: {e}")
-        asp_content = f"<p><em>Error reading article: {str(e)}</em></p>"
+        content = f"<p><em>Error reading article: {str(e)}</em></p>"
 
     # Render article template with metadata + content
     return render_template('articles/article.html',
                          article=article_meta,
-                         content=asp_content)
+                         content=content)
 
 
 @bp.route('/index.asp')
 @bp.route('/')
 def articles_index():
     """
-    Articles index page - list recent articles
+    Articles index page - serve from static index.html file
     """
-    # Get recent articles from stories table
-    try:
-        articles = execute_query("""
-            SELECT storyID, title, summary, storyDate, URL, sourceID
-            FROM stories
-            WHERE URL LIKE '%%.asp'
-              AND URL NOT LIKE 'dbpub/%%'
-              AND URL NOT LIKE 'ccass/%%'
-              AND sourceID = 1
-              AND pubDate <= NOW()
-            ORDER BY storyDate DESC
-            LIMIT 50
-        """)
-    except Exception as ex:
-        # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
-        current_app.logger.error(f"Error fetching articles index: {ex}")
-        articles = []
+    # Read the static index.html file
+    index_file_path = os.path.join(
+        current_app.static_folder,
+        'articles',
+        'index.html'
+    )
 
-    return render_template('articles/index.html', articles=articles)
+    try:
+        with open(index_file_path, 'r', encoding='utf-8') as f:
+            index_content = f.read()
+
+        # Extract only the <div class="mainbody"> content
+        import re
+        mainbody_match = re.search(r'<div class="mainbody">(.*?)</div>\s*</body>',
+                                    index_content, re.DOTALL | re.IGNORECASE)
+
+        if mainbody_match:
+            content = mainbody_match.group(1)
+        else:
+            # Fallback: use entire content if mainbody not found
+            content = index_content
+
+    except Exception as e:
+        from flask import current_app
+        current_app.logger.error(f"Error reading articles index.html: {e}")
+        content = "<p><em>Error loading articles index</em></p>"
+
+    return render_template('articles/index.html', content=content)
