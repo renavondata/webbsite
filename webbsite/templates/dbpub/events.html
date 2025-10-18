@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corporate Events - {{ n if n else 'Webb-site Database' }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>Corporate Events</h2>
+
+{% if n %}
+<h3>{{ n }}</h3>
+{% endif %}
+
+{% if events and events|length > 0 %}
+<table class="txtable">
+	<tr>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='anndup') }}">Announced</a></th>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='evntdn') }}">Event Type</a></th>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='exdtdn') }}">Ex-date</a></th>
+		<th>Details</th>
+	</tr>
+	{% for event in events %}
+	<tr>
+		<td>{{ event.announced }}</td>
+		<td>{{ event.change }}</td>
+		<td>{{ event.exdate }}</td>
+		<td>
+			{% if event.currency %}{{ event.currency }}{% endif %}
+			{% if event.amount %}{{ event.amount }}{% endif %}
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No events found.</p>
+{% endif %}
+
+{% include 'includes/dbfooter.html' %}
+</body>
+</html>

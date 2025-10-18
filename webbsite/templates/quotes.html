@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Quotes - Webb-site{% endblock %}
+
+{% block content %}
+{% if error %}
+	<h2>Error</h2>
+	<p>{{ error }}</p>
+{% else %}
+	<h2>Stock Quotes</h2>
+	{% if stock %}
+	<h3>{{ stock.issuer_name }}</h3>
+	{% endif %}
+
+	{% if quotes and quotes|length > 0 %}
+	<table class="txtable">
+		<tr>
+			<th>Date</th>
+			<th>Open</th>
+			<th>High</th>
+			<th>Low</th>
+			<th>Close</th>
+			<th>Volume</th>
+		</tr>
+		{% for quote in quotes %}
+		<tr>
+			<td>{{ quote.date }}</td>
+			<td>{{ quote.open if quote.open else '-' }}</td>
+			<td>{{ quote.high if quote.high else '-' }}</td>
+			<td>{{ quote.low if quote.low else '-' }}</td>
+			<td>{{ quote.close if quote.close else '-' }}</td>
+			<td>{{ quote.volume if quote.volume else '-' }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>No quotes available.</p>
+	{% endif %}
+{% endif %}
+{% endblock %}

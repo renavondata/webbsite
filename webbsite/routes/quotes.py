@@ -16,12 +16,13 @@ def prices():
     i = get_int('i', 1)
 
     # Get data item details
+    # Original ASP SQL: SELECT units,note,dp,ddes,fdes,freq,source,name1 FROM dataitems d JOIN freq f ON d.freq=f.ID LEFT JOIN organisations o ON d.source=o.personID WHERE d.ID=
     sql = """
         SELECT d.units, d.note, d.dp, d.ddes, f.fdes, d.freq, d.source, o.name1
-        FROM dataitems d
-        JOIN freq f ON d.freq = f.ID
-        LEFT JOIN organisations o ON d.source = o.personID
-        WHERE d.ID = %s
+        FROM enigma.dataitems d
+        JOIN enigma.freq f ON d.freq = f.id
+        LEFT JOIN enigma.organisations o ON d.source = o.personid
+        WHERE d.id = %s
     """
     result = execute_query(sql, (i,))
 
@@ -41,7 +42,8 @@ def prices():
     tipdate = '%Y' if freq == 3 else '%Y-%m'
 
     # Get historical data
-    sql = "SELECT d, v FROM data WHERE item = %s ORDER BY d"
+    # Original ASP SQL: SELECT d,v FROM data WHERE item= ORDER BY d
+    sql = "SELECT d, v FROM enigma.data WHERE item = %s ORDER BY d"
     data_points = execute_query(sql, (i,))
 
     # Format data for Highcharts
@@ -84,9 +86,17 @@ def quotes():
     sc = request.args.get('sc', '')
     i = get_int('i', 0)
 
-    # Look up stock by code if provided
+    # Look up stock by code if provided (using SCissue() logic)
+    # Original SQL: SELECT IFNULL((SELECT issueID FROM enigma.stockListings WHERE stockExID IN(1,20,22,23,38,71) AND stockCode=sc ORDER BY firstTradeDate DESC LIMIT 1),0)
     if sc and not i:
-        sql = "SELECT issueID FROM issue WHERE stockCode = %s"
+        sql = """
+            SELECT COALESCE(
+                (SELECT issueid FROM enigma.stocklistings
+                 WHERE stockexid IN (1,20,22,23,38,71) AND stockcode = %s
+                 ORDER BY firsttradedate DESC LIMIT 1),
+                0
+            ) AS issueid
+        """
         result = execute_query(sql, (sc,))
         if result:
             i = result[0]['issueid']
@@ -97,9 +107,9 @@ def quotes():
     # Get stock details
     sql = """
         SELECT i.*, o.name1 as issuer_name
-        FROM issue i
-        LEFT JOIN organisations o ON i.issuer = o.personID
-        WHERE i.issueID = %s
+        FROM enigma.issue i
+        LEFT JOIN enigma.organisations o ON i.issuer = o.personid
+        WHERE i.id1 = %s
     """
     stock_info = execute_query(sql, (i,))
 
@@ -112,8 +122,8 @@ def quotes():
     sql = """
         SELECT *
         FROM ccass.quotes
-        WHERE issueID = %s
-        ORDER BY `date` DESC
+        WHERE issueid = %s
+        ORDER BY date DESC
         LIMIT 100
     """
     quotes_data = execute_query(sql, (i,))

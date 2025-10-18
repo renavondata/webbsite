@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Positions - Webb-site Database</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
+<h2>Director Positions</h2>
+
+{% if positions and positions|length > 0 %}
+<table class="txtable">
+	<tr>
+		<th><a href="{{ url_for('dbpub.positions', p=p, sort='orgup', hide=hide) }}">Organisation</a></th>
+		<th><a href="{{ url_for('dbpub.positions', p=p, sort='posup', hide=hide) }}">Position</a></th>
+		<th><a href="{{ url_for('dbpub.positions', p=p, sort='appup', hide=hide) }}">From</a></th>
+		<th><a href="{{ url_for('dbpub.positions', p=p, sort='resup', hide=hide) }}">Until</a></th>
+	</tr>
+	{% for position in positions %}
+	<tr>
+		<td><a href="{{ url_for('dbpub.officers', p=position.company) }}">{{ position.name1 }}</a></td>
+		<td>{{ position.posshort }}</td>
+		<td>{{ position.app }}</td>
+		<td>{{ position.res if position.res else 'current' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No positions found.</p>
+{% endif %}
+
+{% include 'includes/dbfooter.html' %}
+</body>
+</html>

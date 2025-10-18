@@ -94,8 +94,6 @@ def search_people():
 
     # Determine sort order
     sort_options = {
-        'domup': 'A2,name1',
-        'domdn': 'A2 DESC,name1',
         'namup': 'name1,name2',
         'namdn': 'name1 DESC,name2 DESC',
     }
@@ -118,9 +116,8 @@ def search_people():
 
         # Search people
         sql = f"""
-            SELECT personID, name1, name2, cName, A2, friendly, birthDate, deathDate
+            SELECT personID, name1, name2, cName, birthDate, deathDate
             FROM people p
-            LEFT JOIN domiciles d ON p.domicile = d.ID
             WHERE {match_clause}
             ORDER BY {ob}
             LIMIT {limit}
