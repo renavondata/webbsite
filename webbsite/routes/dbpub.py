@@ -4,6 +4,7 @@ Main database homepage and related pages
 """
 from flask import Blueprint, render_template, request
 from datetime import date
+from webbsite.db import execute_query
 
 bp = Blueprint('dbpub', __name__)
 
@@ -53,18 +54,82 @@ def listed():
 
     title = exchange_titles.get(e, exchange_titles['a']) + type_suffixes.get(t, ' shares')
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT StockCode, issueID, typeShort, typeLong, Name1, PersonID,
-    #        FirstTradeDate, totRet, CAGret, CAGrel
-    # FROM stocklistings JOIN (issue, organisations, sectypes)
-    # WHERE (FirstTradeDate <= d OR NULL) AND (DelistDate > d OR NULL)
-    #   AND StockExID filtering by e param
-    #   AND typeID filtering by t param
-    # ORDER BY sort_param
+    # Build ORDER BY clause based on sort parameter
+    order_by_map = {
+        'namedn': 'o.Name1 DESC',
+        'codeup': 'sl.StockCode',
+        'codedn': 'sl.StockCode DESC',
+        'typeup': 'st.typeShort, o.Name1',
+        'typedn': 'st.typeShort DESC, o.Name1',
+        'datedn': 'sl.FirstTradeDate DESC, o.Name1',
+        'dateup': 'sl.FirstTradeDate, o.Name1',
+        'nameup': 'o.Name1, sl.StockCode'  # default
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['nameup'])
 
-    # Mock data structure
-    stocks = []
+    # Build exchange filter
+    exchange_filters = {
+        'm': 'sl.StockExID = 1',      # Main Board
+        'g': 'sl.StockExID = 20',     # GEM
+        's': 'sl.StockExID = 22',     # Secondary
+        'r': 'sl.StockExID = 23',     # REIT
+        'c': 'sl.StockExID = 38',     # CIS
+        'a': 'sl.StockExID IN (1, 20, 22)'  # All HK
+    }
+    exchange_filter = exchange_filters.get(e, exchange_filters['a'])
+
+    # Build security type filter
+    type_filters = {
+        'r': 'i.typeID = 2',          # Rights
+        'w': 'i.typeID = 1',          # Warrants
+        'h': 'i.typeID = 6',          # H-shares
+        's': 'i.typeID NOT IN (1, 2, 40, 41, 46)'  # Regular shares/units
+    }
+    type_filter = type_filters.get(t, type_filters['s'])
+
+    # Query for listed stocks
+    # Note: Simplified without total returns calculations for now
+    # totRet, CAGRet, CAGRel functions need to be ported from MySQL
+    sql = f"""
+        SELECT
+            sl.StockCode,
+            sl.issueID,
+            st.typeShort,
+            st.typeLong,
+            o.Name1,
+            o.PersonID,
+            sl.FirstTradeDate
+        FROM stockListings sl
+        JOIN issue i ON sl.issueID = i.ID1
+        JOIN organisations o ON i.issuer = o.personID
+        JOIN secTypes st ON i.typeID = st.typeID
+        WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
+          AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
+          AND sl."2ndCtr" = FALSE
+          AND {exchange_filter}
+          AND {type_filter}
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (d, d))
+        stocks = []
+        for row in results:
+            stocks.append({
+                'StockCode': row[0],
+                'issueID': row[1],
+                'typeShort': row[2],
+                'typeLong': row[3],
+                'Name1': row[4],
+                'PersonID': row[5],
+                'FirstTradeDate': row[6]
+                # TODO: Add totRet, CAGret, CAGrel when functions are ported
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in listed.asp: {ex}")
+        stocks = []
 
     return render_template('dbpub/listed.html',
                          title=title,
@@ -112,20 +177,98 @@ def delisted():
 
     title = exchange_titles.get(e, exchange_titles['a']) + type_suffixes.get(t, ' shares')
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT StockCode, typeShort, typeLong, issueID, Name1, PersonID,
-    #        FirstTradeDate, FinalTradeDate, DelistDate, Reason,
-    #        TradeLife (calculated as days between FirstTradeDate and FinalTradeDate / 365.2425)
-    # FROM stocklistings JOIN (issue, organisations, sectypes)
-    #      LEFT JOIN dlreasons
-    # WHERE DelistDate <= NOW()
-    #   AND StockExID filtering by e param
-    #   AND typeID filtering by t param
-    # ORDER BY sort_param
+    # Build ORDER BY clause based on sort parameter
+    order_by_map = {
+        'namedn': 'o.Name1 DESC',
+        'codeup': 'sl.StockCode',
+        'codedn': 'sl.StockCode DESC',
+        'typeup': 'st.typeShort, o.Name1',
+        'typedn': 'st.typeShort DESC, o.Name1',
+        'fdatedn': 'sl.FirstTradeDate DESC, o.Name1',
+        'fdateup': 'sl.FirstTradeDate, o.Name1',
+        'ldatedn': 'sl.FinalTradeDate DESC, o.Name1',
+        'ldateup': 'sl.FinalTradeDate, o.Name1',
+        'ddatedn': 'sl.DelistDate DESC, o.Name1',
+        'ddateup': 'sl.DelistDate, o.Name1',
+        'lifeup': 'TradeLife, o.Name1',
+        'lifedn': 'TradeLife DESC, o.Name1',
+        'rsnup': 'dl.Reason, o.Name1',
+        'rsndn': 'dl.Reason DESC, o.Name1',
+        'nameup': 'o.Name1, sl.StockCode'  # default
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['nameup'])
 
-    # Mock data structure
-    stocks = []
+    # Build exchange filter
+    exchange_filters = {
+        'm': 'sl.StockExID = 1',
+        'g': 'sl.StockExID = 20',
+        's': 'sl.StockExID = 22',
+        'r': 'sl.StockExID = 23',
+        'c': 'sl.StockExID = 38',
+        'a': 'sl.StockExID IN (1, 20, 22)'
+    }
+    exchange_filter = exchange_filters.get(e, exchange_filters['a'])
+
+    # Build security type filter
+    type_filters = {
+        'r': 'i.typeID = 2',
+        'w': 'i.typeID = 1',
+        'h': 'i.typeID = 6',
+        's': 'i.typeID NOT IN (1, 2, 40, 41, 46)'
+    }
+    type_filter = type_filters.get(t, type_filters['s'])
+
+    # Query for delisted stocks
+    # TradeLife calculation: PostgreSQL date arithmetic instead of MySQL to_days()
+    sql = f"""
+        SELECT
+            sl.StockCode,
+            st.typeShort,
+            st.typeLong,
+            sl.issueID,
+            o.Name1,
+            o.PersonID,
+            sl.FirstTradeDate,
+            sl.FinalTradeDate,
+            sl.DelistDate,
+            dl.Reason,
+            CASE
+                WHEN sl.FirstTradeDate IS NULL OR sl.FinalTradeDate IS NULL THEN NULL
+                ELSE ((sl.FinalTradeDate - sl.FirstTradeDate) + 1) / 365.2425
+            END AS TradeLife
+        FROM stockListings sl
+        JOIN issue i ON sl.issueID = i.ID1
+        JOIN organisations o ON i.issuer = o.personID
+        JOIN secTypes st ON i.typeID = st.typeID
+        LEFT JOIN dlreasons dl ON sl.reasonID = dl.reasonID
+        WHERE sl.DelistDate <= CURRENT_DATE
+          AND {exchange_filter}
+          AND {type_filter}
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+        stocks = []
+        for row in results:
+            stocks.append({
+                'StockCode': row[0],
+                'typeShort': row[1],
+                'typeLong': row[2],
+                'issueID': row[3],
+                'Name1': row[4],
+                'PersonID': row[5],
+                'FirstTradeDate': row[6],
+                'FinalTradeDate': row[7],
+                'DelistDate': row[8],
+                'Reason': row[9],
+                'TradeLife': row[10]
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in delisted.asp: {ex}")
+        stocks = []
 
     return render_template('dbpub/delisted.html',
                          title=title,
@@ -150,16 +293,45 @@ def code():
     # Pad to 5 digits
     code_padded = code_param.zfill(5)
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT * FROM WebListings
-    # WHERE stockCode = code_padded AND DelistDate < NOW()
-    # ORDER BY DelistDate
-    #
-    # WebListings is likely a VIEW joining stocklistings, issue, organisations
+    # Query for delisted securities with this stock code
+    # Note: HKEX recycles stock codes, so multiple companies may have used the same code
+    sql = """
+        SELECT
+            o.Name1 AS Org,
+            o.personID AS OrgID,
+            st.typeShort AS SecType,
+            sl.FirstTradeDate,
+            sl.FinalTradeDate,
+            sl.DelistDate,
+            dl.Reason
+        FROM stockListings sl
+        JOIN issue i ON sl.issueID = i.ID1
+        JOIN organisations o ON i.issuer = o.personID
+        JOIN secTypes st ON i.typeID = st.typeID
+        LEFT JOIN dlreasons dl ON sl.reasonID = dl.reasonID
+        WHERE sl.StockCode = %s
+          AND sl.DelistDate < CURRENT_DATE
+        ORDER BY sl.DelistDate
+    """
 
-    # Mock data structure
-    delisted_securities = []
+    try:
+        results = execute_query(sql, (code_padded,))
+        delisted_securities = []
+        for row in results:
+            delisted_securities.append({
+                'Org': row[0],
+                'OrgID': row[1],
+                'SecType': row[2],
+                'FirstTradeDate': row[3],
+                'FinalTradeDate': row[4],
+                'DelistDate': row[5],
+                'Reason': row[6]
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in code.asp: {ex}")
+        delisted_securities = []
 
     return render_template('dbpub/code.html',
                          code=code_padded,
@@ -185,16 +357,164 @@ def orgdata():
     if not person_id:
         return "PersonID required", 400
 
-    # TODO: Complex query - requires organization details, stock codes,
-    # directors, advisers, shareholdings, corporate events, etc.
-    # This is a MAJOR page that needs significant work
+    # Simplified version for MVP - get basic organization info
+    # Full version would include: shareholdings, full director history, foreign registrations, etc.
 
-    # Mock data
-    org_data = {
-        'personID': person_id,
-        'name': 'Loading...',
-        'message': 'Database not yet loaded. This page requires complex queries across multiple tables.'
-    }
+    # Get basic organization details
+    org_sql = """
+        SELECT
+            o.personID,
+            o.Name1,
+            o.cName,
+            o.domicile,
+            d.friendly AS domicileName,
+            o.incDate,
+            o.disDate,
+            o.disMode,
+            dm.disModeTxt,
+            ot.typeName,
+            o.incID,
+            o.hklist
+        FROM organisations o
+        LEFT JOIN domiciles d ON o.domicile = d.ID
+        LEFT JOIN dismodes dm ON o.disMode = dm.dismodeID
+        LEFT JOIN orgTypes ot ON o.orgType = ot.orgTypeID
+        WHERE o.personID = %s
+    """
+
+    try:
+        org_result = execute_query(org_sql, (person_id,))
+        if not org_result or len(org_result) == 0:
+            return "Organization not found", 404
+
+        org_row = org_result[0]
+        org_data = {
+            'personID': org_row[0],
+            'Name1': org_row[1],
+            'cName': org_row[2],
+            'domicile': org_row[3],
+            'domicileName': org_row[4],
+            'incDate': org_row[5],
+            'disDate': org_row[6],
+            'disMode': org_row[7],
+            'disModeTxt': org_row[8],
+            'typeName': org_row[9],
+            'incID': org_row[10],
+            'hklist': org_row[11]
+        }
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in orgdata.asp (basic info): {ex}")
+        return "Database error", 500
+
+    # Get stock listings (if any)
+    listings_sql = """
+        SELECT
+            sl.StockCode,
+            sl.issueID,
+            st.typeShort,
+            sl.FirstTradeDate,
+            sl.DelistDate,
+            l.listingName
+        FROM stockListings sl
+        JOIN issue i ON sl.issueID = i.ID1
+        JOIN secTypes st ON i.typeID = st.typeID
+        JOIN listings l ON sl.StockExID = l.listingID
+        WHERE i.issuer = %s
+        ORDER BY sl.DelistDate DESC NULLS FIRST, sl.FirstTradeDate DESC
+        LIMIT 10
+    """
+
+    try:
+        listings_result = execute_query(listings_sql, (person_id,))
+        listings = []
+        for row in listings_result:
+            listings.append({
+                'StockCode': row[0],
+                'issueID': row[1],
+                'typeShort': row[2],
+                'FirstTradeDate': row[3],
+                'DelistDate': row[4],
+                'listingName': row[5]
+            })
+        org_data['listings'] = listings
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in orgdata.asp (listings): {ex}")
+        org_data['listings'] = []
+
+    # Get current directors (simplified - current only, not full history)
+    # Using right-open interval: period includes "from" date, excludes "until" date
+    directors_sql = """
+        SELECT
+            p.personID,
+            p.Name1,
+            p.Name2,
+            pos.position,
+            d.from_date,
+            d.until
+        FROM directorships d
+        JOIN persons p ON d.personID = p.personID
+        JOIN positions pos ON d.positionID = pos.positionID
+        WHERE d.orgID = %s
+          AND (d.until IS NULL OR d.until > CURRENT_DATE)
+        ORDER BY pos.rank DESC, d.from_date DESC
+        LIMIT 20
+    """
+
+    try:
+        directors_result = execute_query(directors_sql, (person_id,))
+        directors = []
+        for row in directors_result:
+            directors.append({
+                'personID': row[0],
+                'Name1': row[1],
+                'Name2': row[2],
+                'position': row[3],
+                'from_date': row[4],
+                'until': row[5]
+            })
+        org_data['directors'] = directors
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in orgdata.asp (directors): {ex}")
+        org_data['directors'] = []
+
+    # Get recent events (limit 20)
+    events_sql = """
+        SELECT
+            e.eventID,
+            e.eventDate,
+            e.exDate,
+            ct.capChange,
+            e.details
+        FROM events e
+        JOIN capChangeTypes ct ON e.changeType = ct.typeID
+        WHERE e.personID = %s
+        ORDER BY e.eventDate DESC
+        LIMIT 20
+    """
+
+    try:
+        events_result = execute_query(events_sql, (person_id,))
+        events = []
+        for row in events_result:
+            events.append({
+                'eventID': row[0],
+                'eventDate': row[1],
+                'exDate': row[2],
+                'capChange': row[3],
+                'details': row[4]
+            })
+        org_data['events'] = events
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in orgdata.asp (events): {ex}")
+        org_data['events'] = []
 
     return render_template('dbpub/orgdata.html', org=org_data)
 
@@ -223,39 +543,145 @@ def advisers():
     if not person_id:
         return "PersonID required", 400
 
+    # Get organization name
+    try:
+        org_result = execute_query("SELECT Name1 FROM organisations WHERE personID = %s", (person_id,))
+        org_name = org_result[0][0] if org_result else "Unknown"
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error getting org name for advisers.asp: {ex}")
+        org_name = "Unknown"
+
+    # Build date filter for adviserships (using addDate/remDate with accuracy)
+    # Note: Simplified - not using accuracy columns for MVP
+    date_filter = "(a.addDate IS NULL OR a.addDate <= %s)"
+    params = [d]
+
+    if hide == 'Y':
+        # Current only: remDate IS NULL OR remDate > snapshot_date OR remDate = '1000-01-01'
+        date_filter += " AND (a.remDate IS NULL OR a.remDate > %s OR a.remDate = '1000-01-01')"
+        params.append(d)
+
+    if u:
+        # Exclude unknown removal dates (1000-01-01 placeholder)
+        date_filter += " AND (a.remDate IS NULL OR a.remDate != '1000-01-01')"
+
     # Determine sort order
     sort_orders = {
-        'advup': 'Adv, AddDate, Role',
-        'advdn': 'Adv DESC, AddDate, Role',
-        'rolup': 'Role, Adv, AddDate',
-        'roldn': 'Role DESC, Adv, AddDate',
-        'addup': 'AddDate, Adv, Role',
-        'adddn': 'AddDate DESC, Adv, Role',
-        'remup': 'RemDate, Adv, AddDate, Role',
-        'remdn': 'RemDate DESC, Adv, AddDate, Role'
+        'advup': 'AdvName, a.addDate, r.role',
+        'advdn': 'AdvName DESC, a.addDate, r.role',
+        'rolup': 'r.role, AdvName, a.addDate',
+        'roldn': 'r.role DESC, AdvName, a.addDate',
+        'addup': 'a.addDate, AdvName, r.role',
+        'adddn': 'a.addDate DESC, AdvName, r.role',
+        'remup': 'a.remDate, AdvName, a.addDate, r.role',
+        'remdn': 'a.remDate DESC, AdvName, a.addDate, r.role'
     }
-    ob = sort_orders.get(sort_param, 'Adv, AddDate, Role')
+    ob = sort_orders.get(sort_param, 'AdvName, a.addDate, r.role')
     if sort_param not in sort_orders:
         sort_param = 'advup'
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT adviser, adviserName, role, addDate, remDate
-    # FROM adviserships
-    # WHERE company = person_id
-    # AND (addDate IS NULL OR addDate <= d)
-    # AND (hide='N' OR remDate IS NULL OR remDate > d)
-    # AND (NOT u OR remDate IS NULL OR remDate != '1000-01-01')
-    # ORDER BY ob
+    # Query regular advisers (continuing roles like auditors)
+    regular_sql = f"""
+        SELECT
+            a.personID AS AdvID,
+            COALESCE(
+                CASE
+                    WHEN p.personID IS NOT NULL THEN
+                        CASE
+                            WHEN p.Name2 IS NOT NULL THEN p.Name1 || ', ' || p.Name2
+                            ELSE p.Name1
+                        END
+                    ELSE o.Name1
+                END
+            ) AS AdvName,
+            r.roleID,
+            r.role,
+            a.addDate,
+            a.remDate
+        FROM adviserships a
+        JOIN roles r ON a.roleID = r.roleID
+        LEFT JOIN persons p ON a.personID = p.personID AND p.isPerson = TRUE
+        LEFT JOIN organisations o ON a.personID = o.personID AND o.isPerson = FALSE
+        WHERE a.orgID = %s
+          AND a.oneTime = FALSE
+          AND {date_filter}
+        ORDER BY {ob}
+    """
+    params_regular = [person_id] + params
 
-    # Mock data
-    org_name = f"Organization {person_id}"
-    adviserships = []
+    try:
+        regular_results = execute_query(regular_sql, tuple(params_regular))
+        regular_advisers = []
+        for row in regular_results:
+            regular_advisers.append({
+                'AdvID': row[0],
+                'AdvName': row[1],
+                'roleID': row[2],
+                'role': row[3],
+                'addDate': row[4],
+                'remDate': row[5]
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in advisers.asp (regular): {ex}")
+        regular_advisers = []
+
+    # Query one-time advisers (transaction-specific like IFAs)
+    onetime_sql = f"""
+        SELECT
+            a.personID AS AdvID,
+            COALESCE(
+                CASE
+                    WHEN p.personID IS NOT NULL THEN
+                        CASE
+                            WHEN p.Name2 IS NOT NULL THEN p.Name1 || ', ' || p.Name2
+                            ELSE p.Name1
+                        END
+                    ELSE o.Name1
+                END
+            ) AS AdvName,
+            r.roleID,
+            r.role,
+            a.addDate
+        FROM adviserships a
+        JOIN roles r ON a.roleID = r.roleID
+        LEFT JOIN persons p ON a.personID = p.personID AND p.isPerson = TRUE
+        LEFT JOIN organisations o ON a.personID = o.personID AND o.isPerson = FALSE
+        WHERE a.orgID = %s
+          AND a.oneTime = TRUE
+          AND {date_filter}
+        ORDER BY {ob}
+    """
+    # One-time advisers don't have removal dates
+    params_onetime = [person_id, d]
+    if hide == 'Y':
+        params_onetime.append(d)
+
+    try:
+        onetime_results = execute_query(onetime_sql, tuple(params_onetime))
+        onetime_advisers = []
+        for row in onetime_results:
+            onetime_advisers.append({
+                'AdvID': row[0],
+                'AdvName': row[1],
+                'roleID': row[2],
+                'role': row[3],
+                'addDate': row[4]
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in advisers.asp (one-time): {ex}")
+        onetime_advisers = []
 
     return render_template('dbpub/advisers.html',
                          person_id=person_id,
                          org_name=org_name,
-                         adviserships=adviserships,
+                         regular_advisers=regular_advisers,
+                         onetime_advisers=onetime_advisers,
                          d=d,
                          hide=hide,
                          u=u,
@@ -286,42 +712,114 @@ def officers():
     if not person_id:
         return "PersonID required", 400
 
+    # Get organization name
+    try:
+        org_result = execute_query("SELECT Name1 FROM organisations WHERE personID = %s", (person_id,))
+        org_name = org_result[0][0] if org_result else "Unknown"
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error getting org name for officers.asp: {ex}")
+        org_name = "Unknown"
+
+    # Build date filter for directorships (right-open interval logic)
+    # Note: Using from_date/until columns based on enigma schema
+    date_filter = "(d.from_date IS NULL OR d.from_date <= %s)"
+    params = [d]
+
+    if hide == 'Y':
+        # Current only: until IS NULL OR until > snapshot_date
+        date_filter += " AND (d.until IS NULL OR d.until > %s)"
+        params.append(d)
+
+    if u:
+        # Exclude unknown resignation dates (1000-01-01 placeholder)
+        date_filter += " AND (d.until IS NULL OR d.until != '1000-01-01')"
+
     # Determine sort order
     sort_orders = {
-        'namup': 'Dir, ApptDate',
-        'namdn': 'Dir DESC, ApptDate',
-        'appup': 'ApptDate, Dir',
-        'appdn': 'ApptDate DESC, Dir',
-        'resup': 'ResDate, Dir',
-        'resdn': 'ResDate DESC, Dir',
-        'posup': 'posShort, Dir, ApptDate',
-        'posdn': 'posShort DESC, Dir, ApptDate'
+        'namup': 'PersonName, d.from_date',
+        'namdn': 'PersonName DESC, d.from_date',
+        'appup': 'd.from_date, PersonName',
+        'appdn': 'd.from_date DESC, PersonName',
+        'resup': 'd.until, PersonName',
+        'resdn': 'd.until DESC, PersonName',
+        'posup': 'pos.posShort, PersonName, d.from_date',
+        'posdn': 'pos.posShort DESC, PersonName, d.from_date'
     }
-    ob = sort_orders.get(sort_param, 'Dir, ApptDate')
+    ob = sort_orders.get(sort_param, 'PersonName, d.from_date')
     if sort_param not in sort_orders:
         sort_param = 'namup'
 
-    # TODO: Query database when available
-    # Query would be grouped by rank:
-    # SELECT d.director, personName, positionID, posShort, posLong,
-    #        apptDate, resDate, rank
-    # FROM directorships d
-    # JOIN people p ON d.director = p.personID
-    # JOIN positions pos ON d.positionID = pos.positionID
-    # WHERE d.company = person_id
-    # AND (apptDate IS NULL OR apptDate <= d)
-    # AND (hide='N' OR resDate IS NULL OR resDate > d)
-    # AND (NOT u OR resDate IS NULL OR resDate != '1000-01-01')
-    # ORDER BY rank, ob
+    # Query directorships grouped by rank
+    # Note: Simplified - using COALESCE to handle both people and organisations as directors
+    sql = f"""
+        SELECT
+            r.rankID,
+            r.RankText,
+            d.personID AS director,
+            COALESCE(
+                CASE
+                    WHEN p.personID IS NOT NULL THEN
+                        CASE
+                            WHEN p.Name2 IS NOT NULL THEN p.Name1 || ', ' || p.Name2
+                            ELSE p.Name1
+                        END
+                    ELSE o.Name1
+                END
+            ) AS PersonName,
+            pos.posShort,
+            pos.posLong,
+            p.sex,
+            p.YOB,
+            d.from_date,
+            d.until
+        FROM directorships d
+        JOIN positions pos ON d.positionID = pos.positionID
+        JOIN rank r ON pos.rank = r.rankID
+        LEFT JOIN persons p ON d.personID = p.personID AND p.isPerson = TRUE
+        LEFT JOIN organisations o ON d.personID = o.personID AND o.isPerson = FALSE
+        WHERE d.orgID = %s
+          AND {date_filter}
+        ORDER BY r.rankID, {ob}
+    """
+    params.insert(0, person_id)
 
-    # Mock data
-    org_name = f"Organization {person_id}"
-    directorships_by_rank = {}
+    try:
+        results = execute_query(sql, tuple(params))
+
+        # Group by rank
+        officers_by_rank = {}
+        for row in results:
+            rank_id = row[0]
+            rank_text = row[1]
+
+            if rank_id not in officers_by_rank:
+                officers_by_rank[rank_id] = {
+                    'rankText': rank_text,
+                    'officers': []
+                }
+
+            officers_by_rank[rank_id]['officers'].append({
+                'director': row[2],
+                'PersonName': row[3],
+                'posShort': row[4],
+                'posLong': row[5],
+                'sex': row[6],
+                'YOB': row[7],
+                'from_date': row[8],
+                'until': row[9]
+            })
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in officers.asp: {ex}")
+        officers_by_rank = {}
 
     return render_template('dbpub/officers.html',
                          person_id=person_id,
                          org_name=org_name,
-                         directorships_by_rank=directorships_by_rank,
+                         officers_by_rank=officers_by_rank,
                          d=d,
                          hide=hide,
                          u=u,
@@ -410,28 +908,131 @@ def splits():
 @bp.route('/positions.asp')
 def positions():
     """
-    Director positions across all companies
+    Director positions across all companies - port of positions.asp
 
     Query params:
-    - p: personID
-    - sort: sorting column
+    - p: personID of the person/director
+    - sort: sorting column (orgup/orgdn, posup/posdn, appup/appdn, resup/resdn)
     - hide: Y=current only, N=show history
 
-    Tables used: directorships, positions, organisations
+    Tables used: directorships, positions, organisations, rank
+
+    Note: Simplified version for MVP - total returns calculations omitted
+          (requires totRet, CAGret, CAGrel functions not yet ported)
     """
     person_id = get_int('p', 0)
-    sort_param = request.args.get('sort', 'appdn')
+    sort_param = request.args.get('sort', 'orgup')
     hide = request.args.get('hide', 'Y')
 
     if not person_id:
         return "PersonID required", 400
 
-    # TODO: Query all directorships for person across companies
-    directorships = []
+    # Determine sort order
+    sort_orders = {
+        'orgup': 'name1, from_date',
+        'orgdn': 'name1 DESC, from_date',
+        'posup': 'posShort, name1',
+        'posdn': 'posShort DESC, name1',
+        'appup': 'from_date, name1',
+        'appdn': 'from_date DESC, name1',
+        'resup': 'until, name1',
+        'resdn': 'until DESC, name1'
+    }
+    ob = sort_orders.get(sort_param, 'name1, from_date')
+    if sort_param not in sort_orders:
+        sort_param = 'orgup'
+
+    # Date filter for current vs history
+    if hide == 'Y':
+        date_filter = "(until IS NULL OR until > CURRENT_DATE)"
+    else:
+        date_filter = "TRUE"
+
+    # Get person name
+    try:
+        person_result = execute_query("""
+            SELECT
+                CASE
+                    WHEN p.personID IS NOT NULL THEN
+                        CASE
+                            WHEN p.Name2 IS NOT NULL THEN p.Name1 || ', ' || p.Name2
+                            ELSE p.Name1
+                        END
+                    ELSE o.Name1
+                END AS PersonName,
+                CASE WHEN p.personID IS NOT NULL THEN TRUE ELSE FALSE END AS isPerson
+            FROM persons p
+            FULL OUTER JOIN organisations o ON p.personID = o.personID
+            WHERE COALESCE(p.personID, o.personID) = %s
+        """, (person_id,))
+
+        if person_result and len(person_result) > 0:
+            person_name = person_result[0][0]
+            is_person = person_result[0][1]
+        else:
+            person_name = f"Person {person_id}"
+            is_person = True
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error fetching person name for positions: {ex}")
+        person_name = f"Person {person_id}"
+        is_person = True
+
+    # Query directorships grouped by rank
+    # Note: Simplified - no total returns, no complex date range filtering
+    try:
+        # Get all ranks with positions
+        ranks = execute_query("""
+            SELECT DISTINCT r.rankID, r.RankText
+            FROM directorships d
+            JOIN positions pos ON d.positionID = pos.positionID
+            JOIN rank r ON pos.rank = r.rankID
+            WHERE d.personID = %s
+              AND {date_filter}
+            ORDER BY r.rankID
+        """.format(date_filter=date_filter), (person_id,))
+
+        # For each rank, get the directorships
+        positions_by_rank = []
+        for rank_row in ranks:
+            rank_id = rank_row[0]
+            rank_text = rank_row[1]
+
+            directorships = execute_query(f"""
+                SELECT
+                    d.orgID AS company,
+                    o.Name1,
+                    i.ID1 AS issueID,
+                    d.from_date AS apptDate,
+                    d.until AS resDate,
+                    pos.posShort,
+                    pos.posLong
+                FROM directorships d
+                JOIN organisations o ON d.orgID = o.personID
+                JOIN positions pos ON d.positionID = pos.positionID
+                LEFT JOIN issue i ON d.orgID = i.issuer
+                WHERE pos.rank = %s
+                  AND d.personID = %s
+                  AND {{date_filter}}
+                ORDER BY {{ob}}
+            """.format(date_filter=date_filter, ob=ob), (rank_id, person_id))
+
+            if directorships:
+                positions_by_rank.append({
+                    'rank_id': rank_id,
+                    'rank_text': rank_text,
+                    'directorships': directorships
+                })
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in positions query: {ex}")
+        positions_by_rank = []
 
     return render_template('dbpub/positions.html',
                          person_id=person_id,
-                         directorships=directorships,
+                         person_name=person_name,
+                         is_person=is_person,
+                         positions_by_rank=positions_by_rank,
                          sort=sort_param,
                          hide=hide)
 
@@ -802,11 +1403,106 @@ def short_notes():
 # Events and distributions
 @bp.route('/events.asp')
 def events():
-    """Corporate events for a company"""
-    person_id = get_int('p', 0)
-    # TODO: Query events
-    events = []
-    return render_template('dbpub/events.html', person_id=person_id, events=events)
+    """
+    Corporate events for a stock - port of events.asp
+    Shows dividends, splits, rights issues, etc.
+
+    Query params:
+    - i: issueID
+    - sc: stock code (alternative)
+    - sort: sorting column (annddn/anndup, evntup/evntdn, exdtdn/exdtup)
+
+    Tables used: events, capchangetypes, currencies, issue, organisations
+    """
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+    sort_param = request.args.get('sort', 'annddn')
+
+    # Look up issueID from stock code if provided
+    if stock_code and not issue_id:
+        try:
+            result = execute_query("""
+                SELECT issueID
+                FROM stocklistings
+                WHERE stockCode = %s AND DelistDate IS NULL
+                ORDER BY FirstTradeDate DESC
+                LIMIT 1
+            """, (stock_code,))
+            if result and len(result) > 0:
+                issue_id = result[0][0]
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error looking up stock code for events: {ex}")
+
+    # Get stock/company name
+    stock_name = ""
+    person_id = 0
+    if issue_id:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID
+                FROM issue i
+                JOIN organisations o ON i.issuer = o.personID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result and len(result) > 0:
+                stock_name = result[0][0]
+                person_id = result[0][1]
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error getting stock name for events: {ex}")
+            stock_name = f"Issue {issue_id}"
+
+    # Determine sort order
+    sort_orders = {
+        'anndup': 'announced, exDate, yearEnd',
+        'annddn': 'announced DESC, exDate DESC, yearEnd DESC',
+        'evntup': 'Change, announced DESC, yearEnd DESC',
+        'evntdn': 'Change DESC, announced DESC, yearEnd DESC',
+        'exdtdn': 'exDate DESC, announced DESC, yearEnd DESC',
+        'exdtup': 'exDate, announced, yearEnd'
+    }
+    ob = sort_orders.get(sort_param, 'announced DESC, exDate DESC, yearEnd DESC')
+    if sort_param not in sort_orders:
+        sort_param = 'annddn'
+
+    # Query events
+    events_list = []
+    if issue_id:
+        try:
+            events_list = execute_query(f"""
+                SELECT
+                    e.eventID,
+                    e.Announced,
+                    e.yearEnd,
+                    ct.Change,
+                    e.price,
+                    e.priceHKD,
+                    e.new,
+                    e.old,
+                    e.exDate,
+                    e.distDate,
+                    e.notes,
+                    e.cancelDate,
+                    c.Currency,
+                    e.FXdate
+                FROM events e
+                JOIN capchangetypes ct ON e.eventType = ct.CapChangeType
+                LEFT JOIN currencies c ON e.currID = c.ID
+                WHERE e.issueID = %s
+                ORDER BY {{ob}}
+            """.format(ob=ob), (issue_id,))
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error querying events: {ex}")
+            events_list = []
+
+    return render_template('dbpub/events.html',
+                         issue_id=issue_id,
+                         person_id=person_id,
+                         stock_name=stock_name,
+                         events=events_list,
+                         sort=sort_param)
 
 
 @bp.route('/eventdets.asp')

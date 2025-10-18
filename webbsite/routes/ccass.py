@@ -35,8 +35,11 @@ def bigchanges():
         """, (d,))
         if result and result[0][0]:
             d = ms_date(result[0][0])
-    except Exception:
-        pass  # Use provided date if query fails
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error getting settlement date for bigchanges: {ex}")
+        # Use provided date if query fails
 
     # Determine sort order
     sort_orders = {
@@ -72,8 +75,10 @@ def bigchanges():
             ORDER BY {ob}
         """, (d,))
     except Exception as e:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error in bigchanges query: {e}")
         changes = []
-        error = str(e)
 
     return render_template('ccass/bigchanges.html',
                          changes=changes,
@@ -126,21 +131,42 @@ def cconc():
     if sort_param not in sort_orders:
         sort_param = 'cp5dn'
 
-    # TODO: Query database when available
-    # Query would be:
-    # SELECT d.issueID, name1, typeShort,
-    #        c5/(CIPhldg+intermedhldg) AS cp5,
-    #        c10/(CIPhldg+intermedhldg) AS cp10,
-    #        lastCode(d.issueID) AS stockCode,
-    #        (c10+NCIPhldg)/(CIPhldg+IntermedHldg+NCIPHldg) AS cp10ip,
-    #        (CIPhldg+IntermedHldg+NCIPHldg)/iss.outstanding AS stake
-    # FROM ccass.dailylog d
-    # JOIN (issue i, organisations o, issuedshares iss, sectypes st)
-    # WHERE d.atDate = d AND c5 > 0 AND CIPhldg+intermedhldg > 0
-    # ORDER BY ob
-
-    # Mock data structure
-    concentrations = []
+    # Query concentration data from dailylog
+    # Note: Need to join with issuedshares to get outstanding shares as of snapshot date
+    try:
+        concentrations = execute_query(f"""
+            SELECT
+                d.issueID,
+                o.name1,
+                st.typeShort,
+                CAST(d.c5 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp5,
+                CAST(d.c10 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp10,
+                (SELECT stockCode
+                 FROM enigma.stocklistings
+                 WHERE issueID = d.issueID AND DelistDate IS NULL
+                 ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
+                CAST(d.c10 + d.NCIPhldg AS NUMERIC) / NULLIF(d.CIPhldg + d.IntermedHldg + d.NCIPHldg, 0) AS cp10ip,
+                CAST(d.CIPhldg + d.IntermedHldg + d.NCIPHldg AS NUMERIC) / NULLIF(iss.outstanding, 0) AS stake
+            FROM ccass.dailylog d
+            JOIN enigma.issue i ON d.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            JOIN (
+                SELECT issueID, MAX(atDate) AS maxDate
+                FROM enigma.issuedshares
+                WHERE atDate <= %s
+                GROUP BY issueID
+            ) t3 ON d.issueID = t3.issueID
+            JOIN enigma.issuedshares iss ON t3.issueID = iss.issueID AND t3.maxDate = iss.atDate
+            WHERE d.atDate = %s{sqletf}
+              AND d.c5 > 0
+              AND d.CIPhldg + d.intermedhldg > 0
+            ORDER BY {ob}
+        """, (d, d))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in cconc query: {ex}")
+        concentrations = []
 
     title = f"CCASS concentration on {d}"
 

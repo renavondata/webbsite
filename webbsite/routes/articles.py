@@ -24,8 +24,9 @@ def article(article_path):
     Tables used: stories, sources
     """
     # Construct the expected URL pattern
-    # Articles are stored with paths like "articles/citibank.asp"
-    article_url = f"articles/{article_path}.asp"
+    # Blueprint is registered with url_prefix='/articles', so Flask route is /articles/<path>.asp
+    # But database stores URLs as just "<path>.asp" without the "articles/" prefix
+    article_url = f"{article_path}.asp"
 
     # Query stories table for article metadata
     try:
@@ -57,12 +58,15 @@ def article(article_path):
         }
 
     except Exception as e:
-        # Database error
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error fetching article {article_url}: {e}")
         abort(500)
 
     # Check if static ASP file exists
+    # The ASP files are stored in "Webb-site ASP files/articles/" subdirectory
     asp_file_path = os.path.join(
-        '/home/g/Sync/git/webbsite/Webb-site ASP files',
+        '/home/g/Sync/git/webbsite/Webb-site ASP files/articles',
         article_url
     )
 
@@ -78,6 +82,8 @@ def article(article_path):
         with open(asp_file_path, 'r', encoding='utf-8') as f:
             asp_content = f.read()
     except Exception as e:
+        from flask import current_app
+        current_app.logger.error(f"Error reading article file {asp_file_path}: {e}")
         asp_content = f"<p><em>Error reading article: {str(e)}</em></p>"
 
     # Render article template with metadata + content
@@ -97,12 +103,18 @@ def articles_index():
         articles = execute_query("""
             SELECT storyID, title, summary, storyDate, URL, sourceID
             FROM stories
-            WHERE URL LIKE 'articles/%%'
+            WHERE URL LIKE '%%.asp'
+              AND URL NOT LIKE 'dbpub/%%'
+              AND URL NOT LIKE 'ccass/%%'
+              AND sourceID = 1
               AND pubDate <= NOW()
             ORDER BY storyDate DESC
             LIMIT 50
         """)
-    except Exception:
+    except Exception as ex:
+        # Error already logged by db.py - will show in browser if DEBUG=True
+        from flask import current_app
+        current_app.logger.error(f"Error fetching articles index: {ex}")
         articles = []
 
     return render_template('articles/index.html', articles=articles)

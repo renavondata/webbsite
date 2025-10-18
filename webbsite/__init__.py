@@ -55,7 +55,11 @@ def create_app(config_class=Config):
                 ORDER BY StoryDate DESC
                 LIMIT 30
             """)
-        except Exception:
+        except Exception as ex:
+            # Error is already logged by execute_query in db.py
+            # In DEBUG mode, exception will be re-raised and shown in browser
+            # In production, show empty stories list but log the error here too
+            app.logger.error(f"Failed to load stories for homepage: {ex}")
             stories = []
 
         return render_template('index.html', stories=stories)
