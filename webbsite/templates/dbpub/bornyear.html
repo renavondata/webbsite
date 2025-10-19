@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}People born in {{ y }}{% endblock %}
+
+{% block content %}
+<h2>People born in {{ y }}</h2>
+
+<form method="get" action="/dbpub/bornyear.asp">
+    Year: <input type="number" name="y" value="{{ y }}" min="1800" max="{{ current_year }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="submit" value="Go">
+</form>
+
+<table class="numtable">
+    <tr>
+        <th class="left"><a href="?y={{ y }}&sort=nameup">Name</a> | <a href="?y={{ y }}&sort=namedn">▼</a></th>
+        <th><a href="?y={{ y }}&sort=dayup">Birthday</a> | <a href="?y={{ y }}&sort=daydn">▼</a></th>
+        <th>Age</th>
+        <th>Date of death</th>
+    </tr>
+    {% for person in people %}
+    <tr>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ person.personid }}">{{ person.name }}</a></td>
+        <td>{% if person.mob and person.dob %}{{ person.mob }}/{{ person.dob }}{% endif %}</td>
+        <td>{{ current_year - y }}</td>
+        <td>{% if person.dod %}{{ person.dod }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Total: {{ people|length }} people born in {{ y }}</p>
+{% endblock %}

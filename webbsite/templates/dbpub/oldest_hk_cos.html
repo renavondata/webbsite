@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<p>This page shows the oldest companies incorporated in HK. Keep in mind that
+some entities have an earlier, unincorporated existence.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th class="left"><a href="?a={{ a }}&t={{ t }}&sort=namup">Name</a> | <a href="?a={{ a }}&t={{ t }}&sort=namdn">▼</a></th>
+        <th><a href="?a={{ a }}&t={{ t }}&sort=regup">Reg No.</a> | <a href="?a={{ a }}&t={{ t }}&sort=regdn">▼</a></th>
+        <th><a href="?a={{ a }}&t={{ t }}&sort=incup">Inc Date</a> | <a href="?a={{ a }}&t={{ t }}&sort=incdn">▼</a></th>
+        <th><a href="?a={{ a }}&t={{ t }}&sort=disup">Dis Date</a> | <a href="?a={{ a }}&t={{ t }}&sort=disdn">▼</a></th>
+        <th><a href="?a={{ a }}&t={{ t }}&sort=typup">Type</a> | <a href="?a={{ a }}&t={{ t }}&sort=typdn">▼</a></th>
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
+        <td>{{ company.incid }}</td>
+        <td>{{ company.incdate }}</td>
+        <td>{% if company.disdate %}{{ company.disdate }}{% endif %}</td>
+        <td>{{ company.typename }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

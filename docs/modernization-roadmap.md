@@ -358,6 +358,42 @@ The MVP provides **public access to historical Hong Kong financial data** via a 
 **Buggy/Broken:** 0 routes (all fixed)
 **Not Created Yet:** 109 routes
 
+### /dbpub/ Routes Implementation Plan (Oct 19, 2025)
+
+**High-Priority Missing Routes:** 67 routes linked from /dbpub/ index page
+
+The following routes are directly linked from the database homepage and must be implemented for the site to function properly:
+
+**Phase 1: Core Data Pages (18 routes) - Directors & Companies**
+- boardcomp.asp, dirsHKPerPerson.asp, latestdirsHK.asp, leagueDirsHK.asp
+- FDirsPerListcoHKdstn.asp, INEDHKDistnCos.asp, INEDHKDistnPeople.asp
+- incHKannual.asp, incHKmonth.asp, incHKsurvive.asp, incHKcaltype.asp
+- disHKcaltype.asp, oldestHKcos.asp, regHKannual.asp, incFcal.asp
+- disFcal.asp, domregHK.asp, incUKcaltype.asp
+
+**Phase 2: Law/Finance Professional Data (7 routes)**
+- hksols.asp, hksolfirms.asp, hksolemps.asp, hksolsadmhk.asp
+- hksolsadmos.asp, hksolsdom.asp, auditorchanges.asp
+
+**Phase 3: Market Data & Analysis (10 routes)**
+- listingtrend.asp, yearend.asp, reportspeed.asp, hklistcowebs.asp
+- hklistconowebs.asp, lirteams.asp, str.asp, gemgrads.asp
+- TRnotes.asp, HKstocksByBoardLot.asp, rightsoo.asp
+
+**Phase 4: Government Data (13 routes)**
+- EFBS.asp, HKDtender.asp, hkpax.asp, landreg.asp
+- lrvaluecats.asp, prhdistricts.asp, HKflights.asp, HKflightscan.asp
+
+**Phase 5: Vehicle & Transport Data (11 routes)**
+- veFR.asp, vedet.asp, vebrandhist.asp, veFRtype.asp
+- veFRtypehist.asp, vefuel.asp, vefuelhist.asp, veengine.asp
+- veJourneys.asp, veJourneyhist.asp, tuntraff.asp
+
+**Phase 6: Miscellaneous (8 routes)**
+- bornday.asp, bornyear.asp, jail.asp, judgments.asp
+- qt.asp, vax.asp, ESStop.asp, searchESS.asp
+- freecodesunder1000.asp, HKIDindex.asp, webbchips.asp
+
 ### Implementation Tiers
 
 #### Tier 1: Fully Implemented with SQL (24 routes) ✅

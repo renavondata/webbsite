@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Available stock codes under 1000{% endblock %}
+
+{% block content %}
+<h2>Available stock codes under 1000</h2>
+
+<p>As the number of listings has increased, the stock code space has become
+increasingly crowded. So if you are thinking of listing on the main board, and
+would like a short stock code under 1000, which
+stock codes are currently unused? This page will tell you. To find out what the
+codes have been used for in the past, if anything, click on the code.</p>
+
+<table class="optable">
+    {% for code in unused_codes %}
+        {% if loop.index0 % 10 == 0 %}<tr>{% endif %}
+        <td style="width:40px"><a href="/dbpub/code.asp?code={{ code }}">{{ code }}</a></td>
+        {% if loop.index % 10 == 0 or loop.last %}</tr>{% endif %}
+    {% endfor %}
+</table>
+
+<p>There are {{ count }} stock codes available under 1000.</p>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<p>This chart shows HK company incorporations and dissolutions by year.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th>Year</th>
+        <th>Incorporated</th>
+        <th>Dissolved</th>
+        <th>Net Change</th>
+    </tr>
+    {% for year in years %}
+    <tr>
+        <td>{{ year.year }}</td>
+        <td>{{ year.incorporated }}</td>
+        <td>{{ year.dissolved }}</td>
+        <td>{{ year.incorporated - year.dissolved }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Note: Full chart visualization with Google Charts can be added later.</p>
+{% endblock %}

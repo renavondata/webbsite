@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}HK-listed companies without websites{% endblock %}
+
+{% block content %}
+<h2>HK-listed companies without websites</h2>
+
+<p>For HK-listed companies with web sites, <a href="/dbpub/hklistcowebs.asp">click here</a>.</p>
+
+<table class="opltable yscroll">
+    <tr>
+        <th><a href="?sort=codup">Stock code</a> | <a href="?sort=coddn">▼</a></th>
+        <th><a href="?sort=namup">Name</a> | <a href="?sort=namdn">▼</a></th>
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.code or '—' }}</a></td>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Total: {{ companies|length }} companies without websites</p>
+{% endblock %}

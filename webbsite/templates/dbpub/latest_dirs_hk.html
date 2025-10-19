@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Recent HK-listed director appointments{% endblock %}
+
+{% block content %}
+<h2>Recent HK-listed director appointments</h2>
+<p>This table shows appointments (including changes of position) of directors of HK-listed companies.
+Pick an inclusive start date and end date then click Go. The default range is the last 60 days.
+If you change the end date to earlier than the start date then the range will be
+60 days up to the end date. The maximum range is 366 days. Appointments are usually captured from
+announcements by the next working day but sometimes we have trouble keeping up.</p>
+
+<form method="get" action="/dbpub/latestdirsHK.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        From <input type="date" name="d1" id="d1" value="{{ d1 }}">
+    </div>
+    <div class="inputs">
+        to <input type="date" name="d2" id="d2" value="{{ d2 }}">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="button" value="Clear" onclick="document.getElementById('d1').value='';document.getElementById('d2').value='';this.form.submit()">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>Period length: {{ period_days }} days.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th></th>
+        <th class="left"><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=dirup">Director</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=dirdn">▼</a></th>
+        <th class="left"><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=orgup">Company</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=orgdn">▼</a></th>
+        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=appup">Appt<br>Date</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=appdn">▼</a></th>
+        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=posup">Position</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=posdn">▼</a></th>
+        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=sexup">Sex</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=sexdn">▼</a></th>
+        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=ageup">YOB</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=agedn">▼</a></th>
+    </tr>
+    {% for appt in appointments %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ appt.dirid }}">{{ appt.dir }}</a></td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ appt.orgid }}">{{ appt.org }}</a></td>
+        <td>{{ appt.appt }}</td>
+        <td title="{{ appt.poslong }}">{{ appt.posshort }}</td>
+        <td>{{ appt.sex or '—' }}</td>
+        <td>{{ appt.yob or '—' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not appointments %}
+<p>No appointments found in this period.</p>
+{% endif %}
+{% endblock %}

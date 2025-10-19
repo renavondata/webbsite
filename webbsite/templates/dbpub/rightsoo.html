@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Rights issues and open offers{% endblock %}
+
+{% block content %}
+<h2>Rights issues and open offers</h2>
+
+<p>This page shows rights issues and open offers announced by HK-listed companies.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th><a href="?sort=codeup">Code</a> | <a href="?sort=codedn">▼</a></th>
+        <th class="left"><a href="?sort=nameup">Company</a> | <a href="?sort=namedn">▼</a></th>
+        <th><a href="?sort=datedn">Date</a> | <a href="?sort=dateup">▲</a></th>
+        <th>Type</th>
+    </tr>
+    {% for event in events %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ event.personid }}">{{ event.sc or '—' }}</a></td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ event.personid }}">{{ event.name1 }}</a></td>
+        <td>{{ event.eventdate }}</td>
+        <td>{{ event.eventtype }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not events %}
+<p>No rights issues or open offers found.</p>
+{% endif %}
+{% endblock %}

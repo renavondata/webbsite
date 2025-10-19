@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}HK-listed issuers by market{% endblock %}
+
+{% block content %}
+<h2>HK-listed issuers by market</h2>
+<p>Hit the numbers to see the listed securities of these issuers.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th>Year</th>
+        <th>Main<br>Board</th>
+        <th>GEM</th>
+        <th>Sec.</th>
+        <th class="colHide3">Total<br>Cos</th>
+        <th>REIT</th>
+        <th>CIS</th>
+        <th class="colHide3">Total<br>UTMF</th>
+    </tr>
+    {% for year_data in years %}
+    <tr>
+        <td>{{ year_data.year }}{% if year_data.is_ytd %}<br/>to date{% endif %}</td>
+        <td><a href="/dbpub/listed.asp?e=m&d={{ year_data.date }}">{{ year_data.main }}</a></td>
+        <td><a href="/dbpub/listed.asp?e=g&d={{ year_data.date }}">{{ year_data.gem }}</a></td>
+        <td><a href="/dbpub/listed.asp?e=s&d={{ year_data.date }}">{{ year_data.secondary }}</a></td>
+        <td class="colHide3"><a href="/dbpub/listed.asp?e=a&d={{ year_data.date }}">{{ year_data.total_cos }}</a></td>
+        <td><a href="/dbpub/listed.asp?e=r&d={{ year_data.date }}">{{ year_data.reit }}</a></td>
+        <td><a href="/dbpub/listed.asp?e=c&d={{ year_data.date }}">{{ year_data.cis }}</a></td>
+        <td class="colHide3">{{ year_data.total_utmf }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

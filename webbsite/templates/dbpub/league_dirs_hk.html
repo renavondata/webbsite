@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Webb-site League Table of HK-listed directorships{% endblock %}
+
+{% block content %}
+<h2>Webb-site League Table of HK-listed directorships</h2>
+
+<p>This table shows people with directorships at multiple HK-listed companies.
+The number of directorships includes all positions on the board (executive, non-executive, independent).</p>
+
+<form method="get" action="/dbpub/leagueDirsHK.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="button" value="Clear" onclick="document.getElementById('d').value='';this.form.submit()">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<table class="numtable yscroll">
+    <tr>
+        <th></th>
+        <th class="left"><a href="?d={{ d }}&sort=nameup">Director</a> | <a href="?d={{ d }}&sort=namedn">▼</a></th>
+        <th><a href="?d={{ d }}&sort=countdn">No. of<br>companies</a> | <a href="?d={{ d }}&sort=countup">▲</a></th>
+    </tr>
+    {% for director in directors %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ director.personid }}">{{ director.person }}</a></td>
+        <td>{{ director.dirs }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not directors %}
+<p>No directors with multiple directorships found.</p>
+{% endif %}
+{% endblock %}

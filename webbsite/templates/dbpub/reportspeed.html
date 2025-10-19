@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Reporting speed analysis{% endblock %}
+
+{% block content %}
+<h2>Reporting speed analysis</h2>
+
+<p>This page analyzes the time between financial year-end and results announcement
+for HK-listed companies. Faster reporting is generally considered better governance.</p>
+
+<form method="get" action="/dbpub/reportspeed.asp">
+    Year: <input type="number" name="y" value="{{ y }}" min="1990" max="2030">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="submit" value="Go">
+</form>
+
+<table class="numtable yscroll">
+    <tr>
+        <th><a href="?y={{ y }}&sort=codeup">Code</a> | <a href="?y={{ y }}&sort=codedn">▼</a></th>
+        <th class="left"><a href="?y={{ y }}&sort=nameup">Company</a> | <a href="?y={{ y }}&sort=namedn">▼</a></th>
+        <th>Year-end Month</th>
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.code or '—' }}</a></td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name1 }}</a></td>
+        <td>{{ company.yearendmonth or '—' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Note: Full reporting speed calculation requires matching with announcement dates.</p>
+{% endblock %}

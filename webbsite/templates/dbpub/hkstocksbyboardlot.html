@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Distribution of HK stocks by board lot{% endblock %}
+
+{% block content %}
+<h2>Distribution of HK stocks by board lot size</h2>
+
+<p>This table shows how many listed securities have each board lot size.</p>
+
+<table class="numtable">
+    <tr>
+        <th>Board Lot</th>
+        <th>Count</th>
+        <th>Percentage</th>
+    </tr>
+    {% for lot in board_lots %}
+    <tr>
+        <td>{{ lot.boardlot or 'N/A' }}</td>
+        <td>{{ lot.count }}</td>
+        <td>{{ '%.2f%%'|format((lot.count * 100.0 / total) if total > 0 else 0) }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total">
+        <td><strong>Total</strong></td>
+        <td><strong>{{ total }}</strong></td>
+        <td><strong>100.00%</strong></td>
+    </tr>
+</table>
+{% endblock %}

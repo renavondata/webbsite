@@ -1860,6 +1860,1084 @@ def possum():
     return render_template('dbpub/possum.html', summary=summary)
 
 
+# Recent HK-listed director appointments
+@bp.route('/latestdirsHK.asp')
+def latest_dirs_hk():
+    """
+    Recent HK-listed director appointments
+    Query params: d1, d2 (date range), sort
+    """
+    from datetime import date, timedelta
+    from webbsite.asp_helpers import get_str
+
+    # Get date parameters (default: last 60 days)
+    d2_str = get_str('d2', '')
+    if d2_str:
+        try:
+            d2 = date.fromisoformat(d2_str)
+        except ValueError:
+            d2 = date.today()
+    else:
+        d2 = date.today()
+
+    d1_str = get_str('d1', '')
+    if d1_str:
+        try:
+            d1 = date.fromisoformat(d1_str)
+        except ValueError:
+            d1 = d2 - timedelta(days=59)
+    else:
+        d1 = d2 - timedelta(days=59)
+
+    # Ensure d1 <= d2 and range <= 366 days
+    if d1 > d2:
+        d1 = d2 - timedelta(days=59)
+    if (d2 - d1).days > 366:
+        d1 = d2 - timedelta(days=365)
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'dirup')
+    order_by_map = {
+        'dirup': 'dir, apptdate',
+        'dirdn': 'dir DESC, apptdate',
+        'appup': 'apptdate, dir',
+        'appdn': 'apptdate DESC, dir',
+        'posup': 'posshort, dir, apptdate',
+        'posdn': 'posshort DESC, dir, apptdate',
+        'agedn': 'yob, dir, apptdate',
+        'ageup': 'yob DESC, apptdate',
+        'sexup': 'sex, dir, org',
+        'sexdn': 'sex DESC, dir, org',
+        'orgdn': 'org DESC, apptdate, dir',
+        'orgup': 'org, apptdate, dir'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['dirup'])
+
+    # Query recent appointments
+    sql = f"""
+        SELECT
+            CASE WHEN p.name2 IS NULL THEN p.name1
+                 ELSE p.name1 || ', ' || p.name2
+            END as dir,
+            d.director as dirid,
+            d.company as orgid,
+            o.name1 as org,
+            p.sex,
+            d.apptdate as appt,
+            pn.posshort,
+            pn.poslong,
+            p.yob
+        FROM enigma.directorships d
+        JOIN enigma.people p ON d.director = p.personid
+        JOIN enigma.organisations o ON d.company = o.personid
+        JOIN enigma.positions pn ON d.positionid = pn.positionid
+        JOIN enigma.listedcoshkever lc ON d.company = lc.issuer
+        WHERE d.apptdate >= %s
+          AND d.apptdate <= %s
+          AND pn.rank = 1
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (d1, d2))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in latestdirsHK.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/latest_dirs_hk.html',
+                         appointments=results,
+                         d1=d1,
+                         d2=d2,
+                         sort=sort_param,
+                         period_days=(d2-d1).days + 1)
+
+
+# Board composition per company
+@bp.route('/boardcomp.asp')
+def boardcomp():
+    """
+    Board composition per HK-listed company
+    Query params: d (snapshot date), sort
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_str
+
+    # Get snapshot date
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+        except ValueError:
+            d = date.today()
+    else:
+        d = date.today()
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'dirdn')
+    order_by_map = {
+        'inpdn': 'inepropn DESC, name',
+        'inpup': 'inepropn, name',
+        'fmpdn': 'fempropn DESC, name',
+        'fmpup': 'fempropn, name',
+        'agedn': 'age DESC, name',
+        'ageup': 'age, name',
+        'inedn': 'ine DESC, name',
+        'ineup': 'ine, name',
+        'femdn': 'female DESC, name',
+        'femup': 'female, name',
+        'dirdn': 'dirs DESC, name',
+        'dirup': 'dirs, name',
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'stkup': 'sc',
+        'stkdn': 'sc DESC'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['dirdn'])
+
+    # Query board composition - aggregate directors per company
+    sql = f"""
+        WITH company_boards AS (
+            SELECT
+                d.company,
+                o.name1 as name,
+                COUNT(*) as dirs,
+                COUNT(CASE WHEN pn.postype = 3 THEN 1 END) as ine,
+                COUNT(CASE WHEN p.sex = 'F' THEN 1 END) as female,
+                ROUND(AVG(EXTRACT(YEAR FROM %s) - p.yob), 1) as age,
+                MIN(sl.stockcode) as sc
+            FROM enigma.directorships d
+            JOIN enigma.organisations o ON d.company = o.personid
+            JOIN enigma.people p ON d.director = p.personid
+            JOIN enigma.positions pn ON d.positionid = pn.positionid
+            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+            LEFT JOIN enigma.stocklistings sl ON lc.issueid = sl.issueid
+                AND sl.firsttradedate <= %s
+                AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+                AND sl."2ndCtr" = FALSE
+            WHERE pn.rank = 1
+              AND (d.apptdate IS NULL OR d.apptdate <= %s)
+              AND (d.until IS NULL OR d.until > %s)
+            GROUP BY d.company, o.name1
+        )
+        SELECT
+            company as orgid,
+            name,
+            dirs,
+            ine,
+            female,
+            age,
+            sc,
+            CASE WHEN dirs > 0 THEN ROUND(100.0 * ine / dirs, 1) ELSE 0 END as inepropn,
+            CASE WHEN dirs > 0 THEN ROUND(100.0 * female / dirs, 1) ELSE 0 END as fempropn
+        FROM company_boards
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (d, d, d, d, d))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in boardcomp.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/boardcomp.html',
+                         boards=results,
+                         d=d,
+                         sort=sort_param)
+
+
+# Listing trend by year
+@bp.route('/listingtrend.asp')
+def listingtrend():
+    """
+    Number of HK-listed issuers by market annually
+    Shows Main Board, GEM, Secondary, REIT, CIS counts per year
+    """
+    from datetime import date
+
+    # Query listings by market and year
+    # Port of ListCosByMktAtDate stored procedure
+    start_year = 1986
+    current_year = date.today().year
+
+    years_data = []
+
+    for year in range(start_year, current_year + 1):
+        if year == current_year:
+            snapshot_date = date.today()
+        else:
+            snapshot_date = date(year, 12, 31)
+
+        sql = """
+            SELECT
+                sl.stockexid,
+                COUNT(DISTINCT i.issuer) as count
+            FROM enigma.stocklistings sl
+            JOIN enigma.issue i ON sl.issueid = i.id1
+            WHERE sl."2ndCtr" = FALSE
+              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+              AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+            GROUP BY sl.stockexid
+            ORDER BY sl.stockexid
+        """
+
+        try:
+            results = execute_query(sql, (snapshot_date, snapshot_date))
+
+            # Parse results into market categories
+            counts = {1: 0, 20: 0, 22: 0, 23: 0, 38: 0}  # Main, GEM, Sec, REIT, CIS
+            for row in results:
+                counts[row['stockexid']] = row['count']
+
+            years_data.append({
+                'year': year,
+                'is_ytd': (year == current_year),
+                'main': counts[1],
+                'gem': counts[20],
+                'secondary': counts[22],
+                'reit': counts[23],
+                'cis': counts[38],
+                'total_cos': counts[1] + counts[20] + counts[22],
+                'total_utmf': counts[23] + counts[38],
+                'date': snapshot_date.isoformat()
+            })
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error in listingtrend for year {year}: {ex}", exc_info=True)
+            # Continue with empty data for this year
+            years_data.append({
+                'year': year,
+                'is_ytd': (year == current_year),
+                'main': 0, 'gem': 0, 'secondary': 0, 'reit': 0, 'cis': 0,
+                'total_cos': 0, 'total_utmf': 0,
+                'date': snapshot_date.isoformat()
+            })
+
+    return render_template('dbpub/listingtrend.html', years=years_data)
+
+
+# Year-end distribution
+@bp.route('/yearend.asp')
+def yearend():
+    """
+    Financial year-end distribution for HK-listed companies
+    Query params: e (exchange: m=Main, g=GEM, a=All), sort
+    """
+    from webbsite.asp_helpers import get_str
+
+    e = get_str('e', 'a')
+    sort_param = get_str('sort', 'monup')
+
+    # Build title and exchange filter
+    if e == 'g':
+        stockex_filter = "= 20"
+        title = "GEM"
+    elif e == 'm':
+        stockex_filter = "= 1"
+        title = "Main Board"
+    else:
+        e = 'a'
+        stockex_filter = "IN (1, 20)"
+        title = "Main Board and GEM"
+
+    # Build sort
+    order_by_map = {
+        'cntdn': 'cnt DESC, monthid',
+        'cntup': 'cnt, monthid',
+        'mondn': 'monthid DESC',
+        'monup': 'monthid'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['monup'])
+
+    # Query year-end distribution
+    sql = f"""
+        SELECT
+            m.monthid,
+            m.shortname,
+            COUNT(od.personid) as cnt
+        FROM enigma.months m
+        LEFT JOIN (
+            SELECT DISTINCT lc.issuer, od.yearendmonth, od.personid
+            FROM enigma.listedcoshk lc
+            JOIN enigma.orgdata od ON lc.issuer = od.personid
+            WHERE lc.stockexid {stockex_filter}
+        ) AS yearends ON m.monthid = yearends.yearendmonth
+        GROUP BY m.monthid, m.shortname
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+        total = execute_query(f"""
+            SELECT COUNT(DISTINCT lc.issuer)
+            FROM enigma.listedcoshk lc
+            WHERE lc.stockexid {stockex_filter}
+        """)[0]['count']
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in yearend.asp: {ex}", exc_info=True)
+        results = []
+        total = 1  # Avoid division by zero
+
+    return render_template('dbpub/yearend.html',
+                         months=results,
+                         e=e,
+                         sort=sort_param,
+                         title=title,
+                         total=total)
+
+
+# Companies with websites
+@bp.route('/hklistcowebs.asp')
+def hklistcowebs():
+    """
+    HK-listed companies with websites
+    Query params: sort
+    """
+    from webbsite.asp_helpers import get_str
+
+    sort_param = get_str('sort', 'namup')
+    order_by_map = {
+        'codup': 'code',
+        'coddn': 'code DESC',
+        'namdn': 'name DESC',
+        'namup': 'name'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['namup'])
+
+    # Query companies with websites
+    sql = f"""
+        SELECT
+            a.personid,
+            a.name,
+            w.url,
+            (SELECT MIN(sl.stockcode)
+             FROM enigma.stocklistings sl
+             JOIN enigma.issue i ON sl.issueid = i.id1
+             WHERE i.issuer = a.personid
+               AND sl."2ndCtr" = FALSE
+               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+            ) as code
+        FROM enigma.listedcoshkall a
+        JOIN enigma.web w ON a.personid = w.personid
+        WHERE NOT w.dead
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hklistcowebs.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hklistcowebs.html',
+                         companies=results,
+                         sort=sort_param)
+
+
+# Companies without websites
+@bp.route('/hklistconowebs.asp')
+def hklistconowebs():
+    """
+    HK-listed companies without websites
+    Query params: sort
+    """
+    from webbsite.asp_helpers import get_str
+
+    sort_param = get_str('sort', 'namup')
+    order_by_map = {
+        'codup': 'code',
+        'coddn': 'code DESC',
+        'namdn': 'name DESC',
+        'namup': 'name'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['namup'])
+
+    # Query companies WITHOUT websites
+    sql = f"""
+        SELECT
+            a.personid,
+            a.name,
+            (SELECT MIN(sl.stockcode)
+             FROM enigma.stocklistings sl
+             JOIN enigma.issue i ON sl.issueid = i.id1
+             WHERE i.issuer = a.personid
+               AND sl."2ndCtr" = FALSE
+               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+            ) as code
+        FROM enigma.listedcoshkall a
+        WHERE NOT EXISTS (
+            SELECT 1 FROM enigma.web w
+            WHERE w.personid = a.personid AND NOT w.dead
+        )
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hklistconowebs.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hklistconowebs.html',
+                         companies=results,
+                         sort=sort_param)
+
+
+# League table of directors
+@bp.route('/leagueDirsHK.asp')
+def league_dirs_hk():
+    """
+    Webb-site League Table of HK-listed directorships
+    Shows people with most HK-listed directorships
+    Query params: d (snapshot date), sort
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_str
+
+    # Get snapshot date
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+        except ValueError:
+            d = date.today()
+    else:
+        d = date.today()
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'countdn')
+    order_by_map = {
+        'countdn': 'dirs DESC, person',
+        'countup': 'dirs, person',
+        'namedn': 'person DESC',
+        'nameup': 'person'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['countdn'])
+
+    # Query directors league table
+    sql = f"""
+        SELECT
+            p.personid,
+            CASE WHEN p.name2 IS NULL THEN p.name1
+                 ELSE p.name1 || ', ' || p.name2
+            END as person,
+            COUNT(DISTINCT d.company) as dirs,
+            STRING_AGG(DISTINCT o.name1, '; ' ORDER BY o.name1) as companies
+        FROM enigma.directorships d
+        JOIN enigma.people p ON d.director = p.personid
+        JOIN enigma.organisations o ON d.company = o.personid
+        JOIN enigma.positions pn ON d.positionid = pn.positionid
+        JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+        WHERE pn.rank = 1
+          AND (d.apptdate IS NULL OR d.apptdate <= %s)
+          AND (d.until IS NULL OR d.until > %s)
+        GROUP BY p.personid, person
+        HAVING COUNT(DISTINCT d.company) > 1
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (d, d))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in leagueDirsHK.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/league_dirs_hk.html',
+                         directors=results,
+                         d=d,
+                         sort=sort_param)
+
+
+# Birthdays by day of year
+@bp.route('/bornday.asp')
+def bornday():
+    """
+    People born on a specific day/month
+    Query params: d (day), m (month), sort
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_int, get_str
+    import calendar
+
+    # Get current date as default
+    today = date.today()
+    m = get_int('m', today.month)
+    d = get_int('d', today.day)
+
+    # Validate month
+    if m < 1 or m > 12:
+        m = today.month
+
+    # Validate day for month
+    mend = calendar.monthrange(2000, m)[1]  # Use leap year to get max days
+    if d < 1 or d > mend:
+        d = min(today.day, mend)
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'yearup')
+    order_by_map = {
+        'nameup': 'name1, name2',
+        'namedn': 'name1 DESC, name2 DESC',
+        'yeardn': 'yob DESC',
+        'yearup': 'yob'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['yearup'])
+
+    # Query people born on this day
+    sql = f"""
+        SELECT
+            personid,
+            CASE WHEN name2 IS NULL THEN name1
+                 ELSE name1 || ', ' || name2
+            END as name,
+            yob,
+            yod,
+            dod
+        FROM enigma.people
+        WHERE mob = %s
+          AND dob = %s
+          AND yob IS NOT NULL
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (m, d))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in bornday.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/bornday.html',
+                         people=results,
+                         d=d,
+                         m=m,
+                         sort=sort_param,
+                         month_name=calendar.month_name[m],
+                         current_year=today.year)
+
+
+# Birthdays by year of birth
+@bp.route('/bornyear.asp')
+def bornyear():
+    """
+    People born in a specific year
+    Query params: y (year), sort
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_int, get_str
+
+    # Get current year as default
+    y = get_int('y', date.today().year - 50)
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'nameup')
+    order_by_map = {
+        'nameup': 'name1, name2',
+        'namedn': 'name1 DESC, name2 DESC',
+        'dayup': 'mob, dob, name1, name2',
+        'daydn': 'mob DESC, dob DESC, name1, name2'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['nameup'])
+
+    # Query people born in this year
+    sql = f"""
+        SELECT
+            personid,
+            CASE WHEN name2 IS NULL THEN name1
+                 ELSE name1 || ', ' || name2
+            END as name,
+            mob,
+            dob,
+            yod,
+            dod
+        FROM enigma.people
+        WHERE yob = %s
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql, (y,))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in bornyear.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/bornyear.html',
+                         people=results,
+                         y=y,
+                         sort=sort_param,
+                         current_year=date.today().year)
+
+
+# Free stock codes under 1000
+@bp.route('/freecodesunder1000.asp')
+def freecodesunder1000():
+    """
+    Available stock codes under 1000
+    Shows which 3-digit codes are currently unused
+    """
+    # Query to get all used codes under 1000
+    sql = """
+        SELECT DISTINCT stockcode
+        FROM enigma.stocklistings
+        WHERE stockcode < 1000
+        ORDER BY stockcode
+    """
+
+    try:
+        used_results = execute_query(sql)
+        used_codes = set(row['stockcode'] for row in used_results)
+
+        # Find unused codes
+        unused_codes = [code for code in range(1, 1000) if code not in used_codes]
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in freecodesunder1000.asp: {ex}", exc_info=True)
+        unused_codes = []
+
+    return render_template('dbpub/freecodesunder1000.html',
+                         unused_codes=unused_codes,
+                         count=len(unused_codes))
+
+
+# Total Returns notes
+@bp.route('/TRnotes.asp')
+def tr_notes():
+    """
+    About Webb-site Total Returns - explanatory page
+    This is a static informational page
+    """
+    return render_template('dbpub/tr_notes.html')
+
+
+# Rights issues and open offers
+@bp.route('/rightsoo.asp')
+def rightsoo():
+    """
+    Rights issues and open offers listing
+    Query params: sort
+    """
+    from webbsite.asp_helpers import get_str
+
+    sort_param = get_str('sort', 'datedn')
+    order_by_map = {
+        'datedn': 'eventdate DESC, o.name1',
+        'dateup': 'eventdate, o.name1',
+        'namedn': 'o.name1 DESC, eventdate DESC',
+        'nameup': 'o.name1, eventdate DESC',
+        'codedn': 'sc DESC, eventdate DESC',
+        'codeup': 'sc, eventdate DESC'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['datedn'])
+
+    # Query rights issues and open offers
+    sql = f"""
+        SELECT
+            e.eventid,
+            e.eventdate,
+            e.eventtypeid,
+            et.eventtype,
+            o.personid,
+            o.name1,
+            i.id1 as issueid,
+            (SELECT MIN(sl.stockcode)
+             FROM enigma.stocklistings sl
+             WHERE sl.issueid = i.id1
+               AND sl."2ndCtr" = FALSE
+            ) as sc
+        FROM enigma.events e
+        JOIN enigma.eventtypes et ON e.eventtypeid = et.eventtypeid
+        JOIN enigma.issue i ON e.issueid = i.id1
+        JOIN enigma.organisations o ON i.issuer = o.personid
+        WHERE e.eventtypeid IN (8, 9)  -- 8=rights issue, 9=open offer
+        ORDER BY {order_by}
+        LIMIT 500
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in rightsoo.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/rightsoo.html',
+                         events=results,
+                         sort=sort_param)
+
+
+# Stock distribution by board lot
+@bp.route('/HKstocksByBoardLot.asp')
+def hk_stocks_by_board_lot():
+    """
+    Distribution of HK stocks by board lot size
+    """
+    sql = """
+        SELECT
+            i.boardlot,
+            COUNT(*) as count
+        FROM enigma.issue i
+        JOIN enigma.listedcoshk lc ON i.issuer = lc.issuer
+        JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+        WHERE sl."2ndCtr" = FALSE
+          AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+        GROUP BY i.boardlot
+        ORDER BY i.boardlot
+    """
+
+    try:
+        results = execute_query(sql)
+        total = sum(row['count'] for row in results)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in HKstocksByBoardLot.asp: {ex}", exc_info=True)
+        results = []
+        total = 0
+
+    return render_template('dbpub/hkstocksbyboardlot.html',
+                         board_lots=results,
+                         total=total)
+
+
+# HK companies incorporated per year
+@bp.route('/incHKannual.asp')
+def inc_hk_annual():
+    """
+    HK companies incorporated and dissolved per year
+    Query params: t (orgtype filter)
+    Shows chart and table of incorporations/dissolutions
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_int
+
+    t = get_int('t', 0)
+    title = "HK companies"
+
+    # Build type filter
+    if t > 0:
+        # Get type name
+        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+        try:
+            type_result = execute_query(type_sql, (t,))
+            if type_result:
+                type_name = type_result[0]['typename']
+                title += f": {type_name}"
+                ot_filter = f"AND o.orgtype = {t}"
+            else:
+                ot_filter = ""
+        except:
+            ot_filter = ""
+    else:
+        ot_filter = ""
+
+    # Query incorporations and dissolutions by year
+    sql = f"""
+        WITH RECURSIVE years AS (
+            SELECT 1865 as y
+            UNION ALL
+            SELECT y + 1
+            FROM years
+            WHERE y < EXTRACT(YEAR FROM CURRENT_DATE)
+        )
+        SELECT
+            y.y as year,
+            COALESCE(inc.cnt, 0) as incorporated,
+            COALESCE(dis.cnt, 0) as dissolved
+        FROM years y
+        LEFT JOIN (
+            SELECT EXTRACT(YEAR FROM incdate) as y, COUNT(*) as cnt
+            FROM enigma.organisations o
+            WHERE domicile = 1
+              AND incid ~ '^[0-9]'
+              {ot_filter}
+            GROUP BY EXTRACT(YEAR FROM incdate)
+        ) inc ON y.y = inc.y
+        LEFT JOIN (
+            SELECT EXTRACT(YEAR FROM disdate) as y, COUNT(*) as cnt
+            FROM enigma.organisations o
+            WHERE domicile = 1
+              AND incid ~ '^[0-9]'
+              {ot_filter}
+            GROUP BY EXTRACT(YEAR FROM disdate)
+        ) dis ON y.y = dis.y
+        ORDER BY y.y
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/inchkannual.html',
+                         years=results,
+                         t=t,
+                         title=title)
+
+
+# Oldest HK companies
+@bp.route('/oldestHKcos.asp')
+def oldest_hk_cos():
+    """
+    The oldest HK-incorporated companies
+    Query params: a (alive only), t (orgtype filter), sort
+    """
+    from webbsite.asp_helpers import get_int, get_bool, get_str
+
+    a = get_bool('a')  # Alive only
+    t = get_int('t', 0)  # Orgtype filter
+    sort_param = get_str('sort', 'incup')
+
+    limit = 5000
+    title = f"The oldest {limit}"
+
+    # Build alive filter
+    if a:
+        alive_filter = "AND disdate IS NULL"
+        title += " surviving"
+    else:
+        alive_filter = ""
+
+    title += " HK-incorporated companies"
+
+    # Build sort
+    order_by_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'regup': 'incid',
+        'regdn': 'incid DESC',
+        'incup': 'incdate, name',
+        'incdn': 'incdate DESC, name',
+        'disdn': 'disdate DESC, name',
+        'disup': 'disdate, name',
+        'typup': 'typename, name',
+        'typdn': 'typename DESC, name'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['incup'])
+
+    # Build type filter
+    if t > 0:
+        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+        try:
+            type_result = execute_query(type_sql, (t,))
+            if type_result:
+                type_name = type_result[0]['typename']
+                title += f", {type_name}"
+                ot_filter = f"AND o.orgtype = {t}"
+            else:
+                ot_filter = ""
+        except:
+            ot_filter = ""
+    else:
+        ot_filter = ""
+
+    # Query oldest companies
+    sql = f"""
+        SELECT
+            personid,
+            name1 as name,
+            cname,
+            incdate,
+            disdate,
+            typename,
+            incid
+        FROM enigma.organisations o
+        JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+        WHERE domicile = 1
+          AND incid ~ '^[0-9]'
+          {alive_filter}
+          {ot_filter}
+        ORDER BY incdate
+        LIMIT {limit}
+    """
+
+    # Re-sort based on user selection
+    final_sql = f"""
+        SELECT * FROM ({sql}) AS oldest
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(final_sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/oldest_hk_cos.html',
+                         companies=results,
+                         a=a,
+                         t=t,
+                         sort=sort_param,
+                         title=title)
+
+
+# Directors per person distribution
+@bp.route('/dirsHKPerPerson.asp')
+def dirs_hk_per_person():
+    """
+    Distribution of directorships per person
+    Shows how many people have 1, 2, 3... directorships
+    Query params: d (snapshot date)
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_str
+
+    # Get snapshot date
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+        except ValueError:
+            d = date.today()
+    else:
+        d = date.today()
+
+    # Query distribution of directorships per person
+    sql = """
+        WITH person_counts AS (
+            SELECT
+                d.director,
+                COUNT(DISTINCT d.company) as dirs
+            FROM enigma.directorships d
+            JOIN enigma.positions pn ON d.positionid = pn.positionid
+            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+            WHERE pn.rank = 1
+              AND (d.apptdate IS NULL OR d.apptdate <= %s)
+              AND (d.until IS NULL OR d.until > %s)
+            GROUP BY d.director
+        )
+        SELECT
+            dirs as directorships,
+            COUNT(*) as people
+        FROM person_counts
+        GROUP BY dirs
+        ORDER BY dirs
+    """
+
+    try:
+        results = execute_query(sql, (d, d))
+        total_people = sum(row['people'] for row in results)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in dirsHKPerPerson.asp: {ex}", exc_info=True)
+        results = []
+        total_people = 0
+
+    return render_template('dbpub/dirs_hk_per_person.html',
+                         distribution=results,
+                         d=d,
+                         total=total_people)
+
+
+# Gem graduates - performance since transfer from GEM to Main Board
+@bp.route('/gemgrads.asp')
+def gemgrads():
+    """
+    Performance of companies that graduated from GEM to Main Board
+    Shows total returns since transfer date
+    """
+    # Query companies that transferred from GEM to Main
+    sql = """
+        SELECT
+            o.personid,
+            o.name1 as name,
+            MIN(mb.firsttradedate) as main_date,
+            MAX(gem.finaltradedate) as gem_date,
+            (SELECT MIN(sl.stockcode)
+             FROM enigma.stocklistings sl
+             JOIN enigma.issue i ON sl.issueid = i.id1
+             WHERE i.issuer = o.personid
+               AND sl.stockexid = 1
+               AND sl."2ndCtr" = FALSE
+            ) as code
+        FROM enigma.organisations o
+        JOIN enigma.issue i ON o.personid = i.issuer
+        JOIN enigma.stocklistings mb ON i.id1 = mb.issueid AND mb.stockexid = 1
+        JOIN enigma.stocklistings gem ON i.id1 = gem.issueid AND gem.stockexid = 20
+        WHERE gem.finaltradedate IS NOT NULL
+          AND mb.firsttradedate > gem.finaltradedate
+        GROUP BY o.personid, o.name1
+        ORDER BY main_date DESC
+        LIMIT 200
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in gemgrads.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/gemgrads.html',
+                         companies=results)
+
+
+# Reporting speed - time from year-end to results announcement
+@bp.route('/reportspeed.asp')
+def reportspeed():
+    """
+    Reporting speed analysis
+    Time between financial year-end and results announcement
+    Query params: y (year), sort
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_int, get_str
+
+    y = get_int('y', date.today().year - 1)
+    sort_param = get_str('sort', 'speedup')
+
+    order_by_map = {
+        'speedup': 'days_to_report',
+        'speeddn': 'days_to_report DESC',
+        'nameup': 'o.name1',
+        'namedn': 'o.name1 DESC',
+        'codeup': 'code',
+        'codedn': 'code DESC'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['speedup'])
+
+    # Query reporting speed
+    # This is a simplified version - full version would need year-end calculation
+    sql = f"""
+        SELECT
+            o.personid,
+            o.name1,
+            od.yearendmonth,
+            (SELECT MIN(sl.stockcode)
+             FROM enigma.stocklistings sl
+             JOIN enigma.issue i ON sl.issueid = i.id1
+             WHERE i.issuer = o.personid
+               AND sl."2ndCtr" = FALSE
+               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+            ) as code
+        FROM enigma.organisations o
+        JOIN enigma.orgdata od ON o.personid = od.personid
+        JOIN enigma.listedcoshk lc ON o.personid = lc.issuer
+        WHERE od.yearendmonth IS NOT NULL
+        ORDER BY {order_by}
+        LIMIT 500
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in reportspeed.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/reportspeed.html',
+                         companies=results,
+                         y=y,
+                         sort=sort_param)
+
+
 # Company index by letter
 @bp.route('/indexhk.asp')
 def indexhk():

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}HK Listed companies' web sites{% endblock %}
+
+{% block content %}
+<h2>HK Listed companies' web sites</h2>
+
+<p>For HK-listed companies without web sites, <a href="/dbpub/hklistconowebs.asp">click
+here</a>. The list below shows URLs without the "www" prefix that you may need
+if typing it, depending on whether the company has been stupid enough to reject
+web requests without www.</p>
+
+<table class="opltable yscroll">
+    <tr>
+        <th><a href="?sort=codup">Stock code</a> | <a href="?sort=coddn">▼</a></th>
+        <th><a href="?sort=namup">Name</a> | <a href="?sort=namdn">▼</a></th>
+        <th>URL</th>
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.code or '—' }}</a></td>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
+        <td><a href="{{ company.url }}" target="_blank" rel="noopener">{{ company.url|replace('https://', '')|replace('http://', '')|replace('www.', '') }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not companies %}
+<p>No companies with websites found.</p>
+{% endif %}
+{% endblock %}

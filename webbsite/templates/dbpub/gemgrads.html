@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Performance since transfer from GEM to Main Board{% endblock %}
+
+{% block content %}
+<h2>Performance since transfer from GEM to Main Board</h2>
+
+<p>This table shows companies that graduated from the Growth Enterprise Market (GEM)
+to the Main Board, and their performance since the transfer.</p>
+
+<table class="numtable yscroll">
+    <tr>
+        <th>Code</th>
+        <th class="left">Company</th>
+        <th>Last GEM Date</th>
+        <th>First Main Date</th>
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.code or '—' }}</a></td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
+        <td>{{ company.gem_date }}</td>
+        <td>{{ company.main_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if not companies %}
+<p>No GEM graduates found.</p>
+{% endif %}
+
+<p>Note: Total returns calculations can be added for full performance metrics.</p>
+{% endblock %}

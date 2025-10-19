@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}About Webb-site Total Returns{% endblock %}
+
+{% block content %}
+<h2>About Webb-site Total Returns</h2>
+
+<h3>What are Total Returns?</h3>
+<p>Total Return (TR) is the return to an investor who bought a security and held it,
+assuming all dividends and other distributions were reinvested in the same security at the
+closing price on the ex-dividend date. This gives a true picture of investment performance,
+unlike simple price appreciation which ignores income.</p>
+
+<h3>Calculation Methodology</h3>
+<p>Webb-site Total Returns are calculated as follows:</p>
+<ul>
+    <li>Start with the closing price on the first trading day</li>
+    <li>Adjust for all corporate actions (splits, consolidations, bonus issues, rights issues)</li>
+    <li>Add back all dividends, assuming reinvestment at the ex-dividend closing price</li>
+    <li>Express as an index with base 100 on the first trading day</li>
+</ul>
+
+<h3>Adjustments for Corporate Actions</h3>
+<p><strong>Splits and Consolidations:</strong> The number of shares is multiplied by the split ratio.
+A 1-for-2 consolidation means you have half as many shares worth twice as much each.</p>
+
+<p><strong>Bonus Issues:</strong> Additional shares received for free increase your shareholding without
+changing the total value (initially).</p>
+
+<p><strong>Rights Issues:</strong> If you subscribe to your entitlement, your cost base increases by the
+subscription amount. If you don't subscribe, your percentage ownership is diluted.</p>
+
+<h3>Data Sources</h3>
+<p>All data comes from Hong Kong Exchange Daily Quotations Sheets and official announcements.
+Historical data extends back to 1994-01-03 for Main Board stocks.</p>
+
+<h3>Limitations</h3>
+<ul>
+    <li>Assumes perfect reinvestment at ex-dividend closing prices (not always achievable in practice)</li>
+    <li>Ignores transaction costs, taxes, and bid-ask spreads</li>
+    <li>Does not account for opportunity cost of rights subscription capital</li>
+    <li>Past performance is not indicative of future results</li>
+</ul>
+
+<h3>Using Total Returns</h3>
+<p>Total Returns are useful for:</p>
+<ul>
+    <li>Comparing performance across securities with different dividend policies</li>
+    <li>Evaluating fund manager performance against benchmarks</li>
+    <li>Long-term investment analysis</li>
+    <li>Academic research on market efficiency</li>
+</ul>
+
+<p><a href="/dbpub/alltotrets.asp">View all Webb-site Total Returns</a></p>
+{% endblock %}
