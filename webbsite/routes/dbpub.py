@@ -2,7 +2,7 @@
 Database routes - Direct port from dbpub/default.asp
 Main database homepage and related pages
 """
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, current_app
 from datetime import date
 from webbsite.db import execute_query
 
@@ -127,7 +127,6 @@ def listed():
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in listed.asp: {type(ex).__name__}: {ex}", exc_info=True)
         stocks = []
 
@@ -266,7 +265,6 @@ def delisted():
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in delisted.asp: {type(ex).__name__}: {ex}", exc_info=True)
         stocks = []
 
@@ -329,7 +327,6 @@ def code():
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in code.asp: {type(ex).__name__}: {ex}", exc_info=True)
         delisted_securities = []
 
@@ -404,7 +401,6 @@ def enigma_orgdata():
         }
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in enigma.orgdata.asp (basic info): {type(ex).__name__}: {ex}", exc_info=True)
         return "Database error", 500
 
@@ -441,7 +437,6 @@ def enigma_orgdata():
         org_data['enigma.listings'] = listings_list
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in enigma.orgdata.asp (enigma.listings): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['enigma.listings'] = []
 
@@ -453,14 +448,14 @@ def enigma_orgdata():
             p.name1,
             p.name2,
             pos.position,
-            d.from_date,
-            d.until
+            d.apptdate,
+            d.resdate
         FROM enigma.directorships d
-        JOIN enigma.persons p ON d.personID = p.personID
+        JOIN enigma.people p ON d.director = p.personid
         JOIN enigma.positions pos ON d.positionid = pos.positionid
-        WHERE d.orgid = %s
-          AND (d.until IS NULL OR d.until > CURRENT_DATE)
-        ORDER BY pos.rank DESC, d.from_date DESC
+        WHERE d.company = %s
+          AND (d.resdate IS NULL OR d.resdate > CURRENT_DATE)
+        ORDER BY pos.rank DESC, d.apptdate DESC
         LIMIT 20
     """
 
@@ -473,13 +468,12 @@ def enigma_orgdata():
                 'Name1': row['name1'],
                 'Name2': row['name2'],
                 'position': row['position'],
-                'from_date': row['from_date'],
-                'until': row['until']
+                'from_date': row['apptdate'],
+                'until': row['resdate']
             })
         org_data['directors'] = directors
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in enigma.orgdata.asp (directors): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['directors'] = []
 
@@ -492,7 +486,7 @@ def enigma_orgdata():
             ct.capChange,
             e.details
         FROM enigma.events e
-        JOIN capChangeTypes ct ON e.changeType = ct.typeid
+        JOIN enigma.capchangetypes ct ON e.changeType = ct.typeid
         WHERE e.personID = %s
         ORDER BY e.eventDate DESC
         LIMIT 20
@@ -512,7 +506,6 @@ def enigma_orgdata():
         org_data['enigma.events'] = events_list
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in enigma.orgdata.asp (enigma.events): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['enigma.events'] = []
 
@@ -549,7 +542,6 @@ def advisers():
         org_name = org_result[0]['name1'] if org_result else "Unknown"
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error getting org name for advisers.asp: {ex}")
         org_name = "Unknown"
 
@@ -604,7 +596,7 @@ def advisers():
         JOIN roles r ON a.roleID = r.roleID
         LEFT JOIN enigma.persons p ON a.personID = p.personID AND p.isPerson = TRUE
         LEFT JOIN enigma.organisations o ON a.personID = o.personid AND o.isPerson = FALSE
-        WHERE a.orgid = %s
+        WHERE a.company = %s
           AND a.oneTime = FALSE
           AND {date_filter}
         ORDER BY {ob}
@@ -625,7 +617,6 @@ def advisers():
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in advisers.asp (regular): {type(ex).__name__}: {ex}", exc_info=True)
         regular_advisers = []
 
@@ -650,7 +641,7 @@ def advisers():
         JOIN roles r ON a.roleID = r.roleID
         LEFT JOIN enigma.persons p ON a.personID = p.personID AND p.isPerson = TRUE
         LEFT JOIN enigma.organisations o ON a.personID = o.personid AND o.isPerson = FALSE
-        WHERE a.orgid = %s
+        WHERE a.company = %s
           AND a.oneTime = TRUE
           AND {date_filter}
         ORDER BY {ob}
@@ -673,7 +664,6 @@ def advisers():
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in advisers.asp (one-time): {type(ex).__name__}: {ex}", exc_info=True)
         onetime_advisers = []
 
@@ -718,36 +708,35 @@ def officers():
         org_name = org_result[0]['name1'] if org_result else "Unknown"
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error getting org name for officers.asp: {ex}")
         org_name = "Unknown"
 
     # Build date filter for enigma.directorships (right-open interval logic)
     # Note: Using from_date/until columns based on enigma schema
-    date_filter = "(d.from_date IS NULL OR d.from_date <= %s)"
+    date_filter = "(d.apptdate IS NULL OR d.apptdate <= %s)"
     params = [d]
 
     if hide == 'Y':
         # Current only: until IS NULL OR until > snapshot_date
-        date_filter += " AND (d.until IS NULL OR d.until > %s)"
+        date_filter += " AND (d.resdate IS NULL OR d.resdate > %s)"
         params.append(d)
 
     if u:
         # Exclude unknown resignation dates (1000-01-01 placeholder)
-        date_filter += " AND (d.until IS NULL OR d.until != '1000-01-01')"
+        date_filter += " AND (d.resdate IS NULL OR d.resdate != '1000-01-01')"
 
     # Determine sort order
     sort_orders = {
-        'namup': 'PersonName, d.from_date',
-        'namdn': 'PersonName DESC, d.from_date',
-        'appup': 'd.from_date, PersonName',
-        'appdn': 'd.from_date DESC, PersonName',
-        'resup': 'd.until, PersonName',
-        'resdn': 'd.until DESC, PersonName',
-        'posup': 'pos.posShort, PersonName, d.from_date',
-        'posdn': 'pos.posShort DESC, PersonName, d.from_date'
+        'namup': 'PersonName, d.apptdate',
+        'namdn': 'PersonName DESC, d.apptdate',
+        'appup': 'd.apptdate, PersonName',
+        'appdn': 'd.apptdate DESC, PersonName',
+        'resup': 'd.resdate, PersonName',
+        'resdn': 'd.resdate DESC, PersonName',
+        'posup': 'pos.posShort, PersonName, d.apptdate',
+        'posdn': 'pos.posShort DESC, PersonName, d.apptdate'
     }
-    ob = sort_orders.get(sort_param, 'PersonName, d.from_date')
+    ob = sort_orders.get(sort_param, 'PersonName, d.apptdate')
     if sort_param not in sort_orders:
         sort_param = 'namup'
 
@@ -757,7 +746,7 @@ def officers():
         SELECT
             r.rankID,
             r.RankText,
-            d.personID AS director,
+            d.director AS director,
             COALESCE(
                 CASE
                     WHEN p.personID IS NOT NULL THEN
@@ -772,18 +761,18 @@ def officers():
             pos.posLong,
             p.sex,
             p.YOB,
-            d.from_date,
-            d.until
+            d.apptdate,
+            d.resdate
         FROM enigma.directorships d
         JOIN enigma.positions pos ON d.positionid = pos.positionid
         JOIN rank r ON pos.rank = r.rankID
-        LEFT JOIN enigma.persons p ON d.personID = p.personID AND p.isPerson = TRUE
-        LEFT JOIN enigma.organisations o ON d.personID = o.personid AND o.isPerson = FALSE
-        WHERE d.orgid = %s
+        LEFT JOIN enigma.people p ON d.director = p.personid AND p.isPerson = TRUE
+        LEFT JOIN enigma.organisations o ON d.director = o.personid
+        WHERE d.company = %s
           AND {date_filter}
         ORDER BY r.rankID, {ob}
     """
-    params.insert(0, person_id)
+    params = [person_id] + params
 
     try:
         results = execute_query(sql, tuple(params))
@@ -807,12 +796,11 @@ def officers():
                 'posLong': row['poslong'],
                 'sex': row['sex'],
                 'YOB': row['yob'],
-                'from_date': row['from_date'],
-                'until': row['until']
+                'from_date': row['apptdate'],
+                'until': row['resdate']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
-        from flask import current_app
         current_app.logger.error(f"Error in officers.asp: {type(ex).__name__}: {ex}", exc_info=True)
         officers_by_rank = {}
 
@@ -880,8 +868,8 @@ def splits():
 
     # Query splits, consolidations, and bonus issues
     query = f"""
-        SELECT e.eventid, e.change, e.exdate, o.name1, st.typeshort,
-               e.issueid, e.new, e.old, e.adjust, sl.stockCode
+        SELECT e.eventid, ct.change, e.exdate, o.name1, st.typeshort,
+               e.issueid, e.new, e.old, e.adjust, sl.stockcode
         FROM enigma.events e
         JOIN enigma.issue i ON e.issueid = i.id1
         JOIN enigma.organisations o ON i.issuer = o.personid
@@ -913,7 +901,6 @@ def splits():
                 'stockCode': row['stockcode']
             })
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in splits.asp: {type(ex).__name__}: {ex}", exc_info=True)
         events_list = []
 
@@ -993,7 +980,6 @@ def enigma_positions():
             person_name = f"Person {person_id}"
             is_person = True
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error fetching person name for enigma.positions: {type(ex).__name__}: {ex}", exc_info=True)
         person_name = f"Person {person_id}"
         is_person = True
@@ -1020,17 +1006,17 @@ def enigma_positions():
 
             directorships_list = execute_query("""
                 SELECT
-                    d.orgid AS company,
+                    d.company AS company,
                     o.name1,
                     i.id1 AS issueid,
-                    d.from_date AS apptdate,
-                    d.until AS resdate,
+                    d.apptdate AS apptdate,
+                    d.resdate AS resdate,
                     pos.posshort,
                     pos.poslong
                 FROM enigma.directorships d
-                JOIN enigma.organisations o ON d.orgid = o.personid
+                JOIN enigma.organisations o ON d.company = o.personid
                 JOIN enigma.positions pos ON d.positionid = pos.positionid
-                LEFT JOIN enigma.issue i ON d.orgid = i.issuer
+                LEFT JOIN enigma.issue i ON d.company = i.issuer
                 WHERE pos.rank = %s
                   AND d.personid = %s
                   AND {{date_filter}}
@@ -1044,7 +1030,6 @@ def enigma_positions():
                     'enigma.directorships': directorships_list
                 })
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in enigma.positions query: {ex}")
         positions_by_rank = []
 
@@ -1451,8 +1436,7 @@ def enigma_events():
             if result and len(result) > 0:
                 issue_id = result[0][0]
         except Exception as ex:
-            from flask import current_app
-            current_app.logger.error(f"Error looking up stock code for enigma.events: {ex}")
+                current_app.logger.error(f"Error looking up stock code for enigma.events: {ex}")
 
     # Get stock/company name
     stock_name = ""
@@ -1469,7 +1453,6 @@ def enigma_events():
                 stock_name = result[0][0]
                 person_id = result[0][1]
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error getting stock name for enigma.events: {ex}")
             stock_name = f"Issue {issue_id}"
 
@@ -1513,7 +1496,6 @@ def enigma_events():
                 ORDER BY {{ob}}
             """.format(ob=ob), (issue_id,))
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error querying enigma.events: {ex}")
             events_list = []
 
@@ -1941,7 +1923,6 @@ def latest_dirs_hk():
     try:
         results = execute_query(sql, (d1, d2))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in latestdirsHK.asp: {ex}", exc_info=True)
         results = []
 
@@ -2017,7 +1998,7 @@ def boardcomp():
                 AND sl."2ndCtr" = FALSE
             WHERE pn.rank = 1
               AND (d.apptdate IS NULL OR d.apptdate <= %s)
-              AND (d.until IS NULL OR d.until > %s)
+              AND (d.resdate IS NULL OR d.resdate > %s)
             GROUP BY d.company, o.name1
         )
         SELECT
@@ -2037,7 +2018,6 @@ def boardcomp():
     try:
         results = execute_query(sql, (d, d, d, d, d))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in boardcomp.asp: {ex}", exc_info=True)
         results = []
 
@@ -2103,7 +2083,6 @@ def listingtrend():
                 'date': snapshot_date.isoformat()
             })
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error in listingtrend for year {year}: {ex}", exc_info=True)
             # Continue with empty data for this year
             years_data.append({
@@ -2175,7 +2154,6 @@ def yearend():
             WHERE lc.stockexid {stockex_filter}
         """)[0]['count']
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in yearend.asp: {ex}", exc_info=True)
         results = []
         total = 1  # Avoid division by zero
@@ -2228,7 +2206,6 @@ def hklistcowebs():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hklistcowebs.asp: {ex}", exc_info=True)
         results = []
 
@@ -2278,7 +2255,6 @@ def hklistconowebs():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hklistconowebs.asp: {ex}", exc_info=True)
         results = []
 
@@ -2334,7 +2310,7 @@ def league_dirs_hk():
         JOIN enigma.listedcoshk lc ON d.company = lc.issuer
         WHERE pn.rank = 1
           AND (d.apptdate IS NULL OR d.apptdate <= %s)
-          AND (d.until IS NULL OR d.until > %s)
+          AND (d.resdate IS NULL OR d.resdate > %s)
         GROUP BY p.personid, person
         HAVING COUNT(DISTINCT d.company) > 1
         ORDER BY {order_by}
@@ -2343,7 +2319,6 @@ def league_dirs_hk():
     try:
         results = execute_query(sql, (d, d))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in leagueDirsHK.asp: {ex}", exc_info=True)
         results = []
 
@@ -2408,7 +2383,6 @@ def bornday():
     try:
         results = execute_query(sql, (m, d))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in bornday.asp: {ex}", exc_info=True)
         results = []
 
@@ -2463,7 +2437,6 @@ def bornyear():
     try:
         results = execute_query(sql, (y,))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in bornyear.asp: {ex}", exc_info=True)
         results = []
 
@@ -2496,7 +2469,6 @@ def freecodesunder1000():
         # Find unused codes
         unused_codes = [code for code in range(1, 1000) if code not in used_codes]
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in freecodesunder1000.asp: {ex}", exc_info=True)
         unused_codes = []
 
@@ -2562,7 +2534,6 @@ def rightsoo():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in rightsoo.asp: {ex}", exc_info=True)
         results = []
 
@@ -2594,7 +2565,6 @@ def hk_stocks_by_board_lot():
         results = execute_query(sql)
         total = sum(row['count'] for row in results)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in HKstocksByBoardLot.asp: {ex}", exc_info=True)
         results = []
         total = 0
@@ -2671,7 +2641,6 @@ def inc_hk_annual():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
         results = []
 
@@ -2766,7 +2735,6 @@ def oldest_hk_cos():
     try:
         results = execute_query(final_sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
 
@@ -2810,7 +2778,7 @@ def dirs_hk_per_person():
             JOIN enigma.listedcoshk lc ON d.company = lc.issuer
             WHERE pn.rank = 1
               AND (d.apptdate IS NULL OR d.apptdate <= %s)
-              AND (d.until IS NULL OR d.until > %s)
+              AND (d.resdate IS NULL OR d.resdate > %s)
             GROUP BY d.director
         )
         SELECT
@@ -2825,7 +2793,6 @@ def dirs_hk_per_person():
         results = execute_query(sql, (d, d))
         total_people = sum(row['people'] for row in results)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in dirsHKPerPerson.asp: {ex}", exc_info=True)
         results = []
         total_people = 0
@@ -2871,7 +2838,6 @@ def gemgrads():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in gemgrads.asp: {ex}", exc_info=True)
         results = []
 
@@ -2928,7 +2894,6 @@ def reportspeed():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in reportspeed.asp: {ex}", exc_info=True)
         results = []
 
@@ -3045,7 +3010,6 @@ def inchkcaltype():
         """
         orgtypes_list = execute_query(types_sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incHKcaltype.asp: {ex}", exc_info=True)
         results = []
         typename = None
@@ -3214,7 +3178,6 @@ def dishkcaltype():
         """
         dismodes_list = execute_query(methods_sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in disHKcaltype.asp: {ex}", exc_info=True)
         results = []
         typename = None
@@ -3270,7 +3233,6 @@ def auditorchanges():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in auditorchanges.asp: {ex}", exc_info=True)
         results = []
 
@@ -3383,7 +3345,6 @@ def inchkmonth():
         orgtypes_list = execute_query(types_sql)
 
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incHKmonth.asp: {ex}", exc_info=True)
         results = []
         inc_total = 0
@@ -3472,7 +3433,6 @@ def inchksurvive():
         orgtypes_list = execute_query(types_sql)
 
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incHKsurvive.asp: {ex}", exc_info=True)
         results = []
         orgtypes_list = []
@@ -3512,7 +3472,6 @@ def reghkannual():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in regHKannual.asp: {ex}", exc_info=True)
         results = []
 
@@ -3543,7 +3502,6 @@ def incfcal():
     try:
         results = execute_query(sql, (y,))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incFcal.asp: {ex}", exc_info=True)
         results = []
 
@@ -3574,7 +3532,6 @@ def disfcal():
     try:
         results = execute_query(sql, (y,))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in disFcal.asp: {ex}", exc_info=True)
         results = []
 
@@ -3604,7 +3561,6 @@ def domreghk():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in domregHK.asp: {ex}", exc_info=True)
         results = []
 
@@ -3643,7 +3599,6 @@ def incukcaltype():
     try:
         results = execute_query(sql, (y,))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)
         results = []
 
@@ -3678,7 +3633,7 @@ def hksols():
         FROM enigma.directorships d
         JOIN enigma.people p ON d.director = p.personid
         WHERE d.positionid IN (394, 395)
-          AND d.until IS NULL
+          AND d.resdate IS NULL
         GROUP BY d.director, p.name1, p.name2
         ORDER BY {order_by}
         LIMIT 5000
@@ -3687,7 +3642,6 @@ def hksols():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksols.asp: {ex}", exc_info=True)
         results = []
 
@@ -3721,7 +3675,7 @@ def hksolfirms():
         FROM enigma.directorships d
         JOIN enigma.organisations o ON d.company = o.personid
         WHERE d.positionid IN (394, 395)
-          AND d.until IS NULL
+          AND d.resdate IS NULL
         GROUP BY d.company, o.name1
         HAVING COUNT(DISTINCT d.director) > 0
         ORDER BY {order_by}
@@ -3731,7 +3685,6 @@ def hksolfirms():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksolfirms.asp: {ex}", exc_info=True)
         results = []
 
@@ -3767,7 +3720,6 @@ def hksolsadmhk():
     try:
         results = execute_query(sql, (y,))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksolsadmhk.asp: {ex}", exc_info=True)
         results = []
 
@@ -3791,7 +3743,7 @@ def hksolsadmos():
         FROM enigma.directorships d
         JOIN enigma.people p ON d.director = p.personid
         WHERE d.positionid IN (394, 395)
-          AND d.until IS NULL
+          AND d.resdate IS NULL
         ORDER BY name
         LIMIT 100
     """
@@ -3799,7 +3751,6 @@ def hksolsadmos():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksolsadmos.asp: {ex}", exc_info=True)
         results = []
 
@@ -3830,7 +3781,6 @@ def hksolsdom():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksolsdom.asp: {ex}", exc_info=True)
         results = []
 
@@ -3853,7 +3803,7 @@ def hksolemps():
         FROM enigma.directorships d
         JOIN enigma.organisations o ON d.company = o.personid
         WHERE d.positionid IN (394, 395)
-          AND d.until IS NULL
+          AND d.resdate IS NULL
         GROUP BY d.company, o.name1
         ORDER BY sol_count DESC
         LIMIT 500
@@ -3862,7 +3812,6 @@ def hksolemps():
     try:
         results = execute_query(sql)
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in hksolemps.asp: {ex}", exc_info=True)
         results = []
 
@@ -3924,7 +3873,6 @@ def indexhk():
         delisted_companies = execute_query(delisted_query)
 
     except Exception as e:
-        from flask import current_app
         current_app.logger.error(f"Error in indexhk for p={p}: {e}")
         abort(500)
 
@@ -3966,7 +3914,6 @@ def judgments():
         try:
             results = execute_query(sql, (f'%{search}%', f'%{search}%'))
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error in judgments.asp: {ex}", exc_info=True)
             results = []
     else:
@@ -4141,7 +4088,7 @@ def fdirsperlistcohkdstn():
             JOIN enigma.positions pos ON d.positionid = pos.positionid
             JOIN enigma.listedcoshk lc ON d.company = lc.issuer
             WHERE pos.rank = 1
-              AND (d.until IS NULL OR d.until > %s)
+              AND (d.resdate IS NULL OR d.resdate > %s)
               AND d.apptdate <= %s
             GROUP BY d.company
         )
@@ -4162,7 +4109,6 @@ def fdirsperlistcohkdstn():
         count_result = execute_query(count_sql)
         total_cos = count_result[0]['cnt'] if count_result else 0
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in FDirsPerListcoHKdstn.asp: {ex}", exc_info=True)
         results = []
         total_cos = 0
@@ -4198,7 +4144,7 @@ def inedhkdstncos():
             JOIN enigma.positions pos ON d.positionid = pos.positionid
             JOIN enigma.listedcoshk lc ON d.company = lc.issuer
             WHERE pos.rank = 1
-              AND (d.until IS NULL OR d.until > %s)
+              AND (d.resdate IS NULL OR d.resdate > %s)
               AND d.apptdate <= %s
             GROUP BY d.company
         )
@@ -4218,7 +4164,6 @@ def inedhkdstncos():
         count_result = execute_query(count_sql)
         total_cos = count_result[0]['cnt'] if count_result else 0
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in INEDHKDistnCos.asp: {ex}", exc_info=True)
         results = []
         total_cos = 0
@@ -4257,7 +4202,7 @@ def inedhkdstnpeople():
             JOIN enigma.listedcoshk lc ON d.company = lc.issuer
             WHERE pos.rank = 1
               AND pos.status = 'INED'
-              AND (d.until IS NULL OR d.until > %s)
+              AND (d.resdate IS NULL OR d.resdate > %s)
               AND d.apptdate <= %s
             GROUP BY d.director, p.sex
         )
@@ -4273,7 +4218,6 @@ def inedhkdstnpeople():
     try:
         results = execute_query(sql, (snapshot_date, snapshot_date))
     except Exception as ex:
-        from flask import current_app
         current_app.logger.error(f"Error in INEDHKDistnPeople.asp: {ex}", exc_info=True)
         results = []
 
@@ -4349,7 +4293,6 @@ def lirteams():
             staff = execute_query(staff_sql, (t,))
             issuers = execute_query(issuers_sql, (t,))
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error in lirteams.asp: {ex}", exc_info=True)
             staff = []
             issuers = []
@@ -4436,7 +4379,6 @@ def str_route():
 
             quotes = execute_query(quotes_sql, (i,))
         except Exception as ex:
-            from flask import current_app
             current_app.logger.error(f"Error in str.asp: {ex}", exc_info=True)
             stock_name = f"Issue {i}"
             quotes = []
@@ -4493,7 +4435,7 @@ def ctr():
 @bp.route('/hksolsmoves.asp')
 def hksolsmoves_lowercase():
     """Lowercase alias for HKsolsmoves.asp"""
-    return HKsolsmoves()
+    return hk_sols_moves()
 
 
 @bp.route('/hkpax.asp')
