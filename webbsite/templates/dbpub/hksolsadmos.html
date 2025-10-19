@@ -1,0 +1,24 @@
+{% extends "base_database.html" %}
+{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% block content %}
+<h2>{{ title|default('Query Results') }}</h2>
+<p>Results displayed below.</p>
+{% if results or years or companies or domiciles or solicitors or firms or employers %}
+<table class="txtable yscroll">
+  <tr>
+    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
+    <th>{{ key }}</th>
+    {% endfor %}
+  </tr>
+  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
+  <tr>
+    {% for value in row.values() %}
+    <td>{{ value }}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No results found.</p>
+{% endif %}
+{% endblock %}

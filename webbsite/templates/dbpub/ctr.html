@@ -1,0 +1,7 @@
+{% extends "base_database.html" %}
+{% block title %}Chart total returns{% if stock_name != "Unknown" %}: {{ stock_name }}{% endif %}{% endblock %}
+{% block content %}
+<h2>Chart total returns{% if stock_name != "Unknown" %}: {{ stock_name }}{% endif %}</h2>
+<p>Interactive price chart with total returns adjustments for stock code {{ sc or i }}.</p>
+<p><em>Chart data not yet implemented - requires Highstock integration.</em></p>
+{% endblock %}

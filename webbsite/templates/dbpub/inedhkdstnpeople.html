@@ -1,0 +1,71 @@
+{% extends "base_database.html" %}
+{% block title %}Distribution of INED seats per person at {{ d }}{% endblock %}
+{% block content %}
+<h2>Distribution of INED seats per person at {{ d }}</h2>
+<p>This table summarises the number of HK primary-listed INED positions held per
+person on the snapshot date.</p>
+<form method="get" action="/dbpub/INEDHKDistnPeople.asp">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+<table class="numtable">
+    <tr>
+        <th>No. of<br>INED<br>seats</th>
+        <th>No. of<br>people</th>
+        <th>Fem.</th>
+        <th>Cumul-<br>ative<br>people</th>
+        <th>Cumul-<br>ative<br>female</th>
+        <th>Cumul-<br>ative<br>seats</th>
+        <th>Cumul-<br>ative<br>female<br>seats</th>
+    </tr>
+    {% set cum_people = 0 %}
+    {% set cum_female = 0 %}
+    {% set cum_seats = 0 %}
+    {% set cum_female_seats = 0 %}
+    {% for row in distribution %}
+    {% set cum_people = cum_people + row.num_people %}
+    {% set cum_female = cum_female + row.female %}
+    {% set cum_seats = cum_seats + (row.num_seats * row.num_people) %}
+    {% set cum_female_seats = cum_female_seats + (row.num_seats * row.female) %}
+    <tr>
+        <td>{{ row.num_seats }}</td>
+        <td>{{ row.num_people }}</td>
+        <td>{{ row.female }}</td>
+        <td>{{ cum_people }}</td>
+        <td>{{ cum_female }}</td>
+        <td>{{ cum_seats }}</td>
+        <td>{{ cum_female_seats }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<table class="opltable">
+    <tr>
+        <th>Statistic</th>
+        <th class="right">Result</th>
+    </tr>
+    <tr>
+        <td>Average number of seats per person</td>
+        <td class="right">{{ '%.3f'|format(cum_seats / cum_people) if cum_people > 0 else '0.000' }}</td>
+    </tr>
+    <tr>
+        <td>Average number of seats per female</td>
+        <td class="right">{{ '%.3f'|format(cum_female_seats / cum_female) if cum_female > 0 else '0.000' }}</td>
+    </tr>
+    <tr>
+        <td>Percentage of INED seats held by females</td>
+        <td class="right">{{ '%.2f'|format(cum_female_seats / cum_seats * 100) if cum_seats > 0 else '0.00' }}%</td>
+    </tr>
+    <tr>
+        <td>Percentage of INEDs who are female</td>
+        <td class="right">{{ '%.2f'|format(cum_female / cum_people * 100) if cum_people > 0 else '0.00' }}%</td>
+    </tr>
+</table>
+<p><a href="/dbpub/dirsHKPerPerson.asp?d={{ d }}">Click here</a> to see a complete list of
+INEDs and the number of seats they hold.</p>
+{% endblock %}

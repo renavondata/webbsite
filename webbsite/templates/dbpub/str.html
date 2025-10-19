@@ -1,0 +1,49 @@
+{% extends "base_database.html" %}
+{% block title %}Webb-site Total Return: {{ stock_name }}{% endblock %}
+{% block content %}
+<h2>Webb-site Total Return: {{ stock_name }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/TRnotes.asp" target="_blank">Notes</a></li>
+    <li><a href="/dbpub/alltotrets.asp">All Total Returns</a></li>
+</ul>
+<div class="clear"></div>
+<form method="get" action="/dbpub/str.asp">
+    <div class="inputs">
+        Stock code: <input type="text" name="sc" size="5" value="{{ sc if sc else '' }}">
+    </div>
+    <div class="inputs">
+        <input type="hidden" name="i" value="{{ i }}">
+        <input type="checkbox" id="dealCheck" name="f" value="1" {% if show_deals %}checked{% endif %}>show directors' on-market dealings
+    </div>
+    <div class="inputs">
+        <input type="checkbox" id="bbCheck" name="b" value="1" {% if show_bb %}checked{% endif %}>show buybacks
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+</form>
+{% if quotes %}
+<p>Chart data available: {{ quotes|length }} data points</p>
+<p>Note: Highstock.js chart integration can be added for graphical display.</p>
+<table class="numtable yscroll">
+    <tr>
+        <th>Date</th>
+        <th>Adj Close</th>
+        <th>Adj Volume</th>
+    </tr>
+    {% for quote in quotes[:100] %}
+    <tr>
+        <td>{{ (quote.timestamp / 1000)|int }}</td>
+        <td>{{ '%.3f'|format(quote.adj_close) }}</td>
+        <td>{{ '{:,.0f}'.format(quote.adj_vol) }}</td>
+    </tr>
+    {% endfor %}
+    {% if quotes|length > 100 %}
+    <tr><td colspan="3"><em>Showing first 100 of {{ quotes|length }} data points</em></td></tr>
+    {% endif %}
+</table>
+{% else %}
+<p>No quote data available. Please enter a valid stock code.</p>
+{% endif %}
+{% endblock %}

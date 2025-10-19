@@ -2938,6 +2938,937 @@ def reportspeed():
                          sort=sort_param)
 
 
+# HK Companies incorporated by year/month/day and type
+@bp.route('/incHKcaltype.asp')
+def inchkcaltype():
+    """HK companies incorporated by calendar date and type"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    # Get parameters
+    y = get_int('y', date.today().year)
+    m = get_int('m', 0)  # 0 = any month
+    d = get_int('d', 0)  # 0 = any day
+    t = get_int('t', 0)  # 0 = any type
+    sort_param = get_str('sort', 'namup')
+
+    # Validate year range
+    if y < 1865:
+        y = 1865
+    elif y > date.today().year:
+        y = date.today().year
+
+    # Build order by clause
+    order_by_map = {
+        'namup': 'o.name1',
+        'namdn': 'o.name1 DESC',
+        'regup': 'o.incid',
+        'regdn': 'o.incid DESC',
+        'incup': 'o.incdate, o.name1',
+        'incdn': 'o.incdate DESC, o.name1',
+        'disup': 'o.disdate, o.name1',
+        'disdn': 'o.disdate DESC, o.name1',
+        'typup': 'ot.typename, o.name1',
+        'typdn': 'ot.typename DESC, o.name1'
+    }
+    order_by = order_by_map.get(sort_param, 'o.name1')
+
+    # Build date range
+    if m > 0:
+        # Specific month or day
+        month_start = date(y, m, 1)
+        if d > 0:
+            # Specific day
+            month_end = date(y, m, d)
+        else:
+            # End of month
+            if m == 12:
+                month_end = date(y, 12, 31)
+            else:
+                month_end = date(y, m + 1, 1)
+                from datetime import timedelta
+                month_end = month_end - timedelta(days=1)
+    else:
+        # Entire year
+        month_start = date(y, 1, 1)
+        month_end = date(y, 12, 31)
+
+    # Build query
+    if t == 0:
+        # All types
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
+                   o.orgtype, ot.typename
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.incdate >= %s
+              AND o.incdate <= %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end)
+    else:
+        # Specific type
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate
+            FROM enigma.organisations o
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.incdate >= %s
+              AND o.incdate <= %s
+              AND o.orgtype = %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end, t)
+
+    try:
+        results = execute_query(sql, params)
+        # Get type name if filtering by type
+        typename = None
+        if t > 0:
+            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+            type_result = execute_query(type_sql, (t,))
+            if type_result:
+                typename = type_result[0]['typename']
+
+        # Get org types for dropdown
+        types_sql = """
+            SELECT orgtype, typename
+            FROM enigma.orgtypes
+            WHERE orgtype IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
+            ORDER BY typename
+        """
+        orgtypes = execute_query(types_sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incHKcaltype.asp: {ex}", exc_info=True)
+        results = []
+        typename = None
+        orgtypes = []
+
+    return render_template('dbpub/inchkcaltype.html',
+                         companies=results,
+                         y=y, m=m, d=d, t=t,
+                         typename=typename,
+                         orgtypes=orgtypes,
+                         sort=sort_param,
+                         count=len(results))
+
+
+# HK Companies dissolved by year/month/day, type, and method
+@bp.route('/disHKcaltype.asp')
+def dishkcaltype():
+    """HK companies dissolved by calendar date, type, and dissolution method"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    # Get parameters
+    y = get_int('y', date.today().year)
+    m = get_int('m', 0)  # 0 = any month
+    d = get_int('d', 0)  # 0 = any day
+    t = get_int('t', 0)  # 0 = any type
+    w = get_int('w', 0)  # 0 = any dissolution method
+    sort_param = get_str('sort', 'namup')
+
+    # Validate year range
+    if y < 1917:
+        y = 1917
+    elif y > date.today().year:
+        y = date.today().year
+
+    # Build order by clause
+    order_by_map = {
+        'namup': 'o.name1',
+        'namdn': 'o.name1 DESC',
+        'modup': 'dm.dismodetxt, o.name1',
+        'moddn': 'dm.dismodetxt DESC, o.name1',
+        'typup': 'ot.typename, o.name1',
+        'typdn': 'ot.typename DESC, o.name1',
+        'incup': 'o.incdate, o.name1',
+        'incdn': 'o.incdate DESC, o.name1',
+        'disup': 'o.disdate, o.name1',
+        'disdn': 'o.disdate DESC, o.name1'
+    }
+    order_by = order_by_map.get(sort_param, 'o.name1')
+
+    # Build date range
+    if m > 0:
+        month_start = date(y, m, 1)
+        if d > 0:
+            month_end = date(y, m, d)
+        else:
+            if m == 12:
+                month_end = date(y, 12, 31)
+            else:
+                month_end = date(y, m + 1, 1)
+                from datetime import timedelta
+                month_end = month_end - timedelta(days=1)
+    else:
+        month_start = date(y, 1, 1)
+        month_end = date(y, 12, 31)
+
+    # Build query based on type and method filters
+    if t == 0 and w == 0:
+        # All types and methods
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
+                   o.orgtype, ot.typename, dm.dismodetxt
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+            JOIN enigma.dismodes dm ON o.dismode = dm.id
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.disdate >= %s
+              AND o.disdate <= %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end)
+    elif t > 0 and w == 0:
+        # Specific type, all methods
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
+                   dm.dismodetxt
+            FROM enigma.organisations o
+            JOIN enigma.dismodes dm ON o.dismode = dm.id
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.disdate >= %s
+              AND o.disdate <= %s
+              AND o.orgtype = %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end, t)
+    elif t == 0 and w > 0:
+        # All types, specific method
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
+                   o.orgtype, ot.typename
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.disdate >= %s
+              AND o.disdate <= %s
+              AND o.dismode = %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end, w)
+    else:
+        # Specific type and method
+        sql = f"""
+            SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate
+            FROM enigma.organisations o
+            WHERE o.domicile = 1
+              AND o.incid ~ '^[0-9]'
+              AND o.disdate >= %s
+              AND o.disdate <= %s
+              AND o.orgtype = %s
+              AND o.dismode = %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (month_start, month_end, t, w)
+
+    try:
+        results = execute_query(sql, params)
+
+        # Get type/method names for title
+        typename = None
+        methodname = None
+        if t > 0:
+            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+            type_result = execute_query(type_sql, (t,))
+            if type_result:
+                typename = type_result[0]['typename']
+        if w > 0:
+            method_sql = "SELECT dismodetxt FROM enigma.dismodes WHERE id = %s"
+            method_result = execute_query(method_sql, (w,))
+            if method_result:
+                methodname = method_result[0]['dismodetxt']
+
+        # Get org types for dropdown
+        types_sql = """
+            SELECT orgtype, typename
+            FROM enigma.orgtypes
+            WHERE orgtype IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
+            ORDER BY typename
+        """
+        orgtypes = execute_query(types_sql)
+
+        # Get dissolution methods for dropdown
+        methods_sql = """
+            SELECT id, dismodetxt
+            FROM enigma.dismodes
+            WHERE id IN (1,2,3,4,5,8,9,10,18)
+            ORDER BY dismodetxt
+        """
+        dismodes = execute_query(methods_sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in disHKcaltype.asp: {ex}", exc_info=True)
+        results = []
+        typename = None
+        methodname = None
+        orgtypes = []
+        dismodes = []
+
+    return render_template('dbpub/dishkcaltype.html',
+                         companies=results,
+                         y=y, m=m, d=d, t=t, w=w,
+                         typename=typename,
+                         methodname=methodname,
+                         orgtypes=orgtypes,
+                         dismodes=dismodes,
+                         sort=sort_param,
+                         count=len(results))
+
+
+# Auditor changes for listed companies
+@bp.route('/auditorchanges.asp')
+def auditorchanges():
+    """Changes of auditors for current HK-listed companies"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sort_param = get_str('sort', 'sdatdn')
+
+    # Build order by clause
+    order_by_map = {
+        'sdatup': 'sortdate',
+        'sdatdn': 'sortdate DESC',
+        'anamup': 'advname, sortdate DESC',
+        'anamdn': 'advname DESC, sortdate DESC',
+        'cnamup': 'coname, sortdate DESC',
+        'cnamdn': 'coname DESC, sortdate DESC'
+    }
+    order_by = order_by_map.get(sort_param, 'sortdate DESC')
+
+    # Query auditor changes - this uses a view that should exist
+    sql = f"""
+        SELECT
+            "add",
+            rem,
+            company,
+            coname,
+            advname,
+            sortdate
+        FROM enigma.auditorchanges
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in auditorchanges.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/auditorchanges.html',
+                         changes=results,
+                         sort=sort_param)
+
+
+# HK monthly incorporations and dissolutions
+@bp.route('/incHKmonth.asp')
+def inchkmonth():
+    """Monthly HK company incorporations and dissolutions"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    t = get_int('t', -1)  # -1 = all types
+
+    # Get type name if filtering
+    typename = None
+    if t > 0:
+        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+        type_result = execute_query(type_sql, (t,))
+        if type_result:
+            typename = type_result[0]['typename']
+
+    # Build query for monthly data since 1985
+    start_date = '1985-01-01'
+    end_date = date.today().replace(day=1).isoformat()
+
+    # This query generates monthly data points
+    sql = """
+        WITH RECURSIVE dates AS (
+            SELECT DATE '1985-01-01' AS d
+            UNION ALL
+            SELECT (d + INTERVAL '1 month')::date
+            FROM dates
+            WHERE d + INTERVAL '1 month' <= %s::date
+        )
+        SELECT
+            d,
+            COALESCE(inc.cnt, 0) AS incorporated,
+            COALESCE(dis.cnt, 0) AS dissolved
+        FROM dates
+        LEFT JOIN (
+            SELECT DATE_TRUNC('month', incdate)::date AS mstart, COUNT(*) AS cnt
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND incid ~ '^[0-9]'
+              AND incdate >= '1985-01-01'
+              AND incdate <= %s::date
+    """ + ("AND orgtype = %s" if t > 0 else "") + """
+            GROUP BY mstart
+        ) inc ON dates.d = inc.mstart
+        LEFT JOIN (
+            SELECT DATE_TRUNC('month', disdate)::date AS mstart, COUNT(*) AS cnt
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND incid ~ '^[0-9]'
+              AND disdate >= '1985-01-01'
+              AND disdate <= %s::date
+    """ + ("AND orgtype = %s" if t > 0 else "") + """
+            GROUP BY mstart
+        ) dis ON dates.d = dis.mstart
+        ORDER BY d
+    """
+
+    try:
+        if t > 0:
+            params = (end_date, end_date, t, end_date, t)
+        else:
+            params = (end_date, end_date, end_date)
+
+        results = execute_query(sql, params)
+
+        # Get initial totals before start date
+        if t > 0:
+            init_sql = """
+                SELECT
+                    COUNT(*) FILTER (WHERE incdate < '1985-01-01') AS inc_total,
+                    COUNT(*) FILTER (WHERE disdate < '1985-01-01') AS dis_total
+                FROM enigma.organisations
+                WHERE domicile = 1
+                  AND incid ~ '^[0-9]'
+                  AND orgtype = %s
+            """
+            init_result = execute_query(init_sql, (t,))
+        else:
+            init_sql = """
+                SELECT
+                    COUNT(*) FILTER (WHERE incdate < '1985-01-01') AS inc_total,
+                    COUNT(*) FILTER (WHERE disdate < '1985-01-01') AS dis_total
+                FROM enigma.organisations
+                WHERE domicile = 1
+                  AND incid ~ '^[0-9]'
+            """
+            init_result = execute_query(init_sql)
+
+        inc_total = init_result[0]['inc_total'] if init_result else 0
+        dis_total = init_result[0]['dis_total'] if init_result else 0
+
+        # Get org types for dropdown
+        types_sql = """
+            SELECT orgtype, typename
+            FROM enigma.orgtypes
+            WHERE orgtype IN (1,19,21,26,28)
+            ORDER BY typename
+        """
+        orgtypes = execute_query(types_sql)
+
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incHKmonth.asp: {ex}", exc_info=True)
+        results = []
+        inc_total = 0
+        dis_total = 0
+        orgtypes = []
+
+    return render_template('dbpub/inchkmonth.html',
+                         months=results,
+                         t=t,
+                         typename=typename,
+                         orgtypes=orgtypes,
+                         inc_total=inc_total,
+                         dis_total=dis_total)
+
+
+# HK company survival rates
+@bp.route('/incHKsurvive.asp')
+def inchksurvive():
+    """Survival of HK companies at a given date"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    # Get parameters
+    d_str = get_str('d', date.today().isoformat())
+    t = get_int('t', -1)  # -1 = all types
+
+    try:
+        snapshot_date = date.fromisoformat(d_str)
+    except ValueError:
+        snapshot_date = date.today()
+
+    # Get type name if filtering
+    typename = None
+    if t > 0:
+        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+        type_result = execute_query(type_sql, (t,))
+        if type_result:
+            typename = type_result[0]['typename']
+
+    # Query survival rates by year of incorporation
+    sql = """
+        WITH RECURSIVE years AS (
+            SELECT 1865 AS y
+            UNION ALL
+            SELECT y + 1
+            FROM years
+            WHERE y + 1 <= EXTRACT(YEAR FROM %s::date)
+        )
+        SELECT
+            y,
+            COALESCE(t.cnt, 0) AS incorporated,
+            COALESCE(t.survive, 0) AS surviving
+        FROM years
+        LEFT JOIN (
+            SELECT
+                EXTRACT(YEAR FROM incdate) AS incyear,
+                COUNT(*) AS cnt,
+                COUNT(*) FILTER (WHERE disdate IS NULL OR disdate > '2023-12-13') AS survive
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND incid ~ '^[0-9]'
+              AND incdate <= %s::date
+    """ + ("AND orgtype = %s" if t > 0 else "") + """
+            GROUP BY incyear
+        ) t ON y = t.incyear
+        ORDER BY y
+    """
+
+    try:
+        if t > 0:
+            params = (snapshot_date, snapshot_date, t)
+        else:
+            params = (snapshot_date, snapshot_date)
+
+        results = execute_query(sql, params)
+
+        # Get org types for dropdown
+        types_sql = """
+            SELECT orgtype, typename
+            FROM enigma.orgtypes
+            WHERE orgtype IN (1,19,21,26,28)
+            ORDER BY typename
+        """
+        orgtypes = execute_query(types_sql)
+
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incHKsurvive.asp: {ex}", exc_info=True)
+        results = []
+        orgtypes = []
+
+    return render_template('dbpub/inchksurvive.html',
+                         years=results,
+                         d=snapshot_date.isoformat(),
+                         t=t,
+                         typename=typename,
+                         orgtypes=orgtypes)
+
+
+# Annual HK company registrations
+@bp.route('/regHKannual.asp')
+def reghkannual():
+    """Annual HK company registrations since 1865"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sql = """
+        WITH RECURSIVE years AS (
+            SELECT 1865 AS y
+            UNION ALL
+            SELECT y + 1 FROM years WHERE y + 1 <= EXTRACT(YEAR FROM CURRENT_DATE)
+        )
+        SELECT y, COALESCE(cnt, 0) AS registrations
+        FROM years
+        LEFT JOIN (
+            SELECT EXTRACT(YEAR FROM incdate) AS year, COUNT(*) AS cnt
+            FROM enigma.organisations
+            WHERE domicile = 1 AND incid ~ '^[0-9]'
+            GROUP BY year
+        ) t ON y = t.year
+        ORDER BY y DESC
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in regHKannual.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/reghkannual.html', years=results)
+
+
+# Foreign company annual registrations
+@bp.route('/incFcal.asp')
+def incfcal():
+    """Foreign companies registered in HK by year"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    y = get_int('y', 2024)
+
+    sql = """
+        SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, d.domName
+        FROM enigma.organisations o
+        JOIN enigma.domiciles d ON o.domicile = d.ID
+        WHERE o.domicile != 1
+          AND o.incid ~ '^[0-9]'
+          AND EXTRACT(YEAR FROM o.incdate) = %s
+        ORDER BY o.incdate DESC, o.name1
+        LIMIT 1000
+    """
+
+    try:
+        results = execute_query(sql, (y,))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incFcal.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/incfcal.html', companies=results, y=y)
+
+
+# Foreign company dissolutions
+@bp.route('/disFcal.asp')
+def disfcal():
+    """Foreign companies dissolved in HK by year"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    y = get_int('y', 2024)
+
+    sql = """
+        SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate, d.domName
+        FROM enigma.organisations o
+        JOIN enigma.domiciles d ON o.domicile = d.ID
+        WHERE o.domicile != 1
+          AND o.incid ~ '^[0-9]'
+          AND EXTRACT(YEAR FROM o.disdate) = %s
+        ORDER BY o.disdate DESC, o.name1
+        LIMIT 1000
+    """
+
+    try:
+        results = execute_query(sql, (y,))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in disFcal.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/disfcal.html', companies=results, y=y)
+
+
+# HK company domicile and registration
+@bp.route('/domregHK.asp')
+def domreghk():
+    """HK companies by domicile and registration status"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sql = """
+        SELECT
+            d.domname,
+            COUNT(*) AS total,
+            COUNT(*) FILTER (WHERE o.disdate IS NULL) AS alive,
+            COUNT(*) FILTER (WHERE o.disdate IS NOT NULL) AS dissolved
+        FROM enigma.organisations o
+        JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE o.incid ~ '^[0-9]'
+        GROUP BY d.id, d.domname
+        ORDER BY total DESC
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in domregHK.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/domreghk.html', domiciles=results)
+
+
+# UK company incorporations by calendar type
+@bp.route('/incUKcaltype.asp')
+def incukcaltype():
+    """UK companies incorporated by year"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    y = get_int('y', date.today().year)
+    sort_param = get_str('sort', 'namup')
+
+    order_by_map = {
+        'namup': 'o.name1',
+        'namdn': 'o.name1 DESC',
+        'incup': 'o.incdate, o.name1',
+        'incdn': 'o.incdate DESC, o.name1'
+    }
+    order_by = order_by_map.get(sort_param, 'o.name1')
+
+    sql = f"""
+        SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate
+        FROM enigma.organisations o
+        WHERE o.domicile = 2
+          AND EXTRACT(YEAR FROM o.incdate) = %s
+        ORDER BY {order_by}
+        LIMIT 5000
+    """
+
+    try:
+        results = execute_query(sql, (y,))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/incukcaltype.html', companies=results, y=y, sort=sort_param)
+
+
+# HK solicitors list
+@bp.route('/hksols.asp')
+def hksols():
+    """List of HK solicitors"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sort_param = get_str('sort', 'namup')
+
+    order_by_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'admup': 'adm',
+        'admdn': 'adm DESC'
+    }
+    order_by = order_by_map.get(sort_param, 'name')
+
+    sql = f"""
+        SELECT
+            d.director AS personid,
+            CASE WHEN p.name2 IS NULL THEN p.name1
+                 ELSE p.name1 || ', ' || p.name2
+            END AS name,
+            MIN(d.apptdate) AS adm
+        FROM enigma.directorships d
+        JOIN enigma.people p ON d.director = p.personid
+        WHERE d.positionid IN (394, 395)
+          AND d.until IS NULL
+        GROUP BY d.director, p.name1, p.name2
+        ORDER BY {order_by}
+        LIMIT 5000
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksols.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksols.html', solicitors=results, sort=sort_param)
+
+
+# HK solicitor firms
+@bp.route('/hksolfirms.asp')
+def hksolfirms():
+    """List of HK solicitor firms"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sort_param = get_str('sort', 'namup')
+
+    order_by_map = {
+        'namup': 'o.name1',
+        'namdn': 'o.name1 DESC',
+        'cntdn': 'sol_count DESC',
+        'cntup': 'sol_count'
+    }
+    order_by = order_by_map.get(sort_param, 'o.name1')
+
+    # This is a simplified version - full version would need lsemps table
+    sql = f"""
+        SELECT
+            d.company AS personid,
+            o.name1,
+            COUNT(DISTINCT d.director) AS sol_count
+        FROM enigma.directorships d
+        JOIN enigma.organisations o ON d.company = o.personid
+        WHERE d.positionid IN (394, 395)
+          AND d.until IS NULL
+        GROUP BY d.company, o.name1
+        HAVING COUNT(DISTINCT d.director) > 0
+        ORDER BY {order_by}
+        LIMIT 1000
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksolfirms.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksolfirms.html', firms=results, sort=sort_param)
+
+
+# HK solicitors admitted in HK
+@bp.route('/hksolsadmhk.asp')
+def hksolsadmhk():
+    """HK solicitors admitted in Hong Kong"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    sql = """
+        SELECT
+            d.director AS personid,
+            CASE WHEN p.name2 IS NULL THEN p.name1
+                 ELSE p.name1 || ', ' || p.name2
+            END AS name,
+            d.apptdate AS admitted
+        FROM enigma.directorships d
+        JOIN enigma.people p ON d.director = p.personid
+        WHERE d.positionid IN (394, 395)
+          AND EXTRACT(YEAR FROM d.apptdate) = %s
+        ORDER BY d.apptdate DESC, name
+        LIMIT 1000
+    """
+
+    try:
+        results = execute_query(sql, (y,))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksolsadmhk.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksolsadmhk.html', solicitors=results, y=y)
+
+
+# HK solicitors admitted overseas
+@bp.route('/hksolsadmos.asp')
+def hksolsadmos():
+    """HK solicitors admitted overseas"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # This is a stub - would need additional data on overseas admissions
+    sql = """
+        SELECT
+            d.director AS personid,
+            CASE WHEN p.name2 IS NULL THEN p.name1
+                 ELSE p.name1 || ', ' || p.name2
+            END AS name
+        FROM enigma.directorships d
+        JOIN enigma.people p ON d.director = p.personid
+        WHERE d.positionid IN (394, 395)
+          AND d.until IS NULL
+        ORDER BY name
+        LIMIT 100
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksolsadmos.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksolsadmos.html', solicitors=results)
+
+
+# HK solicitors by domicile
+@bp.route('/hksolsdom.asp')
+def hksolsdom():
+    """HK solicitors grouped by domicile"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    sql = """
+        SELECT
+            p.domicile,
+            d.domname,
+            COUNT(DISTINCT dir.director) AS sol_count
+        FROM enigma.directorships dir
+        JOIN enigma.people p ON dir.director = p.personid
+        LEFT JOIN enigma.domiciles d ON p.domicile = d.id
+        WHERE dir.positionid IN (394, 395)
+          AND dir.until IS NULL
+        GROUP BY p.domicile, d.domname
+        ORDER BY sol_count DESC
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksolsdom.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksolsdom.html', domiciles=results)
+
+
+# HK solicitors employer search
+@bp.route('/hksolemps.asp')
+def hksolemps():
+    """HK solicitors by employer"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Simplified - would need lsemps table for full implementation
+    sql = """
+        SELECT
+            d.company AS personid,
+            o.name1 AS employer,
+            COUNT(DISTINCT d.director) AS sol_count
+        FROM enigma.directorships d
+        JOIN enigma.organisations o ON d.company = o.personid
+        WHERE d.positionid IN (394, 395)
+          AND d.until IS NULL
+        GROUP BY d.company, o.name1
+        ORDER BY sol_count DESC
+        LIMIT 500
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in hksolemps.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/hksolemps.html', employers=results)
+
+
 # Company index by letter
 @bp.route('/indexhk.asp')
 def indexhk():
@@ -3002,6 +3933,798 @@ def indexhk():
                          p=p,
                          listed_companies=listed_companies,
                          delisted_companies=delisted_companies)
+
+
+# Government quarantine data
+@bp.route('/qt.asp')
+def qt():
+    """Quarantine data (COVID-19 related)"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need quarantine-specific tables
+    return render_template('dbpub/qt.html', data=[])
+
+
+# Judgments database
+@bp.route('/judgments.asp')
+def judgments():
+    """Legal judgments database"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    search = get_str('q', '')
+
+    if search:
+        sql = """
+            SELECT personid, name1, cname
+            FROM enigma.organisations
+            WHERE name1 ILIKE %s OR cname ILIKE %s
+            LIMIT 100
+        """
+        try:
+            results = execute_query(sql, (f'%{search}%', f'%{search}%'))
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error in judgments.asp: {ex}", exc_info=True)
+            results = []
+    else:
+        results = []
+
+    return render_template('dbpub/judgments.html', results=results, q=search)
+
+
+# Vaccination data
+@bp.route('/vax.asp')
+def vax():
+    """Vaccination statistics"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need vaccination-specific tables
+    return render_template('dbpub/vax.html', data=[])
+
+
+# ESS (Employee Stock Scheme) top holdings
+@bp.route('/ESStop.asp')
+def esstop():
+    """Top Employee Stock Scheme holdings"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need ESS-specific data
+    return render_template('dbpub/esstop.html', data=[])
+
+
+# ESS search
+@bp.route('/searchESS.asp')
+def searchess():
+    """Search Employee Stock Schemes"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    search = get_str('q', '')
+    return render_template('dbpub/searchess.html', q=search, results=[])
+
+
+# HKID index
+@bp.route('/HKIDindex.asp')
+def hkidindex():
+    """HKID (Hong Kong Identity Card) index"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need HKID-specific data
+    return render_template('dbpub/hkidindex.html', data=[])
+
+
+# Webb chips (stock market analysis)
+@bp.route('/webbchips.asp')
+def webbchips():
+    """Webb-site CHIPS (Cheapest, Highest, Insider, PB, Shrinking) analysis"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - complex calculation requiring multiple metrics
+    return render_template('dbpub/webbchips.html', data=[])
+
+
+# Land registry data
+@bp.route('/landreg.asp')
+def landreg():
+    """Land registry transactions"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # Stub - would need land registry tables
+    return render_template('dbpub/landreg.html', y=y, transactions=[])
+
+
+# Land registry value categories
+@bp.route('/lrvaluecats.asp')
+def lrvaluecats():
+    """Land registry transactions by value category"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need land registry tables
+    return render_template('dbpub/lrvaluecats.html', categories=[])
+
+
+# Public rental housing districts
+@bp.route('/prhdistricts.asp')
+def prhdistricts():
+    """Public rental housing by district"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need PRH tables
+    return render_template('dbpub/prhdistricts.html', districts=[])
+
+
+# HK flights data
+@bp.route('/HKflights.asp')
+def hkflights():
+    """Hong Kong flight statistics"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    date_param = get_str('d', '')
+
+    # Stub - would need flights tables
+    return render_template('dbpub/hkflights.html', d=date_param, flights=[])
+
+
+# HK flights cancellations
+@bp.route('/HKflightscan.asp')
+def hkflightscan():
+    """Hong Kong flight cancellations"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need flights tables
+    return render_template('dbpub/hkflightscan.html', cancellations=[])
+
+
+# Tenders
+@bp.route('/HKDtender.asp')
+def hkdtender():
+    """Government tenders"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need tender tables
+    return render_template('dbpub/hkdtender.html', tenders=[])
+
+
+# EFBS (Exchange Fund Bills and Notes)
+@bp.route('/EFBS.asp')
+def efbs():
+    """Exchange Fund Bills and Notes"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Stub - would need EFBS tables
+    return render_template('dbpub/efbs.html', securities=[])
+
+
+# Female directors distribution per HK-listed company
+@bp.route('/FDirsPerListcoHKdstn.asp')
+def fdirsperlistcohkdstn():
+    """Distribution of female directors per HK-listed company at snapshot date"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    d_str = get_str('d', date.today().isoformat())
+    try:
+        snapshot_date = date.fromisoformat(d_str)
+    except ValueError:
+        snapshot_date = date.today()
+
+    # Query distribution of female directors
+    sql = """
+        WITH board_data AS (
+            SELECT
+                d.company,
+                COUNT(DISTINCT d.director) FILTER (WHERE p.sex = 'F') AS fdirs
+            FROM enigma.directorships d
+            JOIN enigma.people p ON d.director = p.personid
+            JOIN enigma.positions pos ON d.positionid = pos.positionid
+            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+            WHERE pos.rank = 1
+              AND (d.until IS NULL OR d.until > %s)
+              AND d.apptdate <= %s
+            GROUP BY d.company
+        )
+        SELECT
+            fdirs,
+            COUNT(*) AS number_of_cos
+        FROM board_data
+        WHERE fdirs > 0
+        GROUP BY fdirs
+        ORDER BY fdirs DESC
+    """
+
+    try:
+        results = execute_query(sql, (snapshot_date, snapshot_date))
+
+        # Get total listed company count
+        count_sql = "SELECT COUNT(*) AS cnt FROM enigma.listedcoshk"
+        count_result = execute_query(count_sql)
+        total_cos = count_result[0]['cnt'] if count_result else 0
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in FDirsPerListcoHKdstn.asp: {ex}", exc_info=True)
+        results = []
+        total_cos = 0
+
+    return render_template('dbpub/fdirsperlistcohkdstn.html',
+                         distribution=results,
+                         d=snapshot_date.isoformat(),
+                         total_cos=total_cos)
+
+
+# INED distribution per HK-listed company
+@bp.route('/INEDHKDistnCos.asp')
+def inedhkdstncos():
+    """Distribution of INEDs per HK-listed company at snapshot date"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    d_str = get_str('d', date.today().isoformat())
+    try:
+        snapshot_date = date.fromisoformat(d_str)
+    except ValueError:
+        snapshot_date = date.today()
+
+    # Query distribution of INEDs
+    sql = """
+        WITH board_data AS (
+            SELECT
+                d.company,
+                COUNT(DISTINCT d.director) FILTER (WHERE pos.status = 'INED') AS ineds
+            FROM enigma.directorships d
+            JOIN enigma.positions pos ON d.positionid = pos.positionid
+            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+            WHERE pos.rank = 1
+              AND (d.until IS NULL OR d.until > %s)
+              AND d.apptdate <= %s
+            GROUP BY d.company
+        )
+        SELECT
+            ineds AS num_seats,
+            COUNT(*) AS num_cos
+        FROM board_data
+        GROUP BY ineds
+        ORDER BY ineds DESC
+    """
+
+    try:
+        results = execute_query(sql, (snapshot_date, snapshot_date))
+
+        # Get total listed company count
+        count_sql = "SELECT COUNT(*) AS cnt FROM enigma.listedcoshk"
+        count_result = execute_query(count_sql)
+        total_cos = count_result[0]['cnt'] if count_result else 0
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in INEDHKDistnCos.asp: {ex}", exc_info=True)
+        results = []
+        total_cos = 0
+
+    return render_template('dbpub/inedhkdstncos.html',
+                         distribution=results,
+                         d=snapshot_date.isoformat(),
+                         total_cos=total_cos)
+
+
+# INED distribution per person
+@bp.route('/INEDHKDistnPeople.asp')
+def inedhkdstnpeople():
+    """Distribution of INED seats per person at snapshot date"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from datetime import date
+    from flask import render_template
+
+    d_str = get_str('d', date.today().isoformat())
+    try:
+        snapshot_date = date.fromisoformat(d_str)
+    except ValueError:
+        snapshot_date = date.today()
+
+    # Query distribution of INED seats per person
+    sql = """
+        WITH person_data AS (
+            SELECT
+                d.director,
+                p.sex,
+                COUNT(DISTINCT d.company) AS num_seats
+            FROM enigma.directorships d
+            JOIN enigma.people p ON d.director = p.personid
+            JOIN enigma.positions pos ON d.positionid = pos.positionid
+            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+            WHERE pos.rank = 1
+              AND pos.status = 'INED'
+              AND (d.until IS NULL OR d.until > %s)
+              AND d.apptdate <= %s
+            GROUP BY d.director, p.sex
+        )
+        SELECT
+            num_seats,
+            COUNT(*) AS num_people,
+            COUNT(*) FILTER (WHERE sex = 'F') AS female
+        FROM person_data
+        GROUP BY num_seats
+        ORDER BY num_seats DESC
+    """
+
+    try:
+        results = execute_query(sql, (snapshot_date, snapshot_date))
+    except Exception as ex:
+        from flask import current_app
+        current_app.logger.error(f"Error in INEDHKDistnPeople.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/inedhkdstnpeople.html',
+                         distribution=results,
+                         d=snapshot_date.isoformat())
+
+
+# Listing teams (SEHK regulatory teams)
+@bp.route('/lirteams.asp')
+def lirteams():
+    """Issuers regulated by SEHK Listing team"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    t = get_int('t', 1)  # Team ID
+    sort_param = get_str('sort', 'namup')
+
+    order_by_map = {
+        'codup': 'sc',
+        'coddn': 'sc DESC',
+        'namup': 'name',
+        'namdn': 'name DESC'
+    }
+    order_by = order_by_map.get(sort_param, 'name')
+
+    # Get team number
+    team_sql = "SELECT teamno FROM enigma.lirteams WHERE id = %s"
+    try:
+        team_result = execute_query(team_sql, (t,))
+        teamno = team_result[0]['teamno'] if team_result else 0
+    except:
+        teamno = 0
+
+    if teamno > 0:
+        # Get team staff
+        staff_sql = """
+            SELECT ls.staffid, ls.firstseen,
+                   CASE WHEN s.n2 IS NULL THEN s.n1
+                        ELSE s.n1 || ', ' || s.n2
+                   END AS name,
+                   r.title, s.tel
+            FROM enigma.lirteamstaff ls
+            JOIN enigma.lirstaff s ON ls.staffid = s.id
+            JOIN enigma.lirroles r ON ls.posid = r.id
+            WHERE ls.teamid = %s
+              AND NOT ls.dead
+            ORDER BY r.id DESC
+        """
+
+        # Get current issuers
+        issuers_sql = f"""
+            SELECT
+                t.orgid,
+                o.name1 AS name,
+                t.firstseen,
+                (SELECT MIN(sl.stockcode)
+                 FROM enigma.stocklistings sl
+                 JOIN enigma.issue i ON sl.issueid = i.id1
+                 WHERE i.issuer = t.orgid
+                   AND NOT sl."2ndCtr"
+                   AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+                ) AS sc
+            FROM enigma.lirorgteam t
+            JOIN enigma.organisations o ON t.orgid = o.personid
+            WHERE t.teamid = %s
+              AND NOT t.dead
+            ORDER BY {order_by}
+        """
+
+        try:
+            staff = execute_query(staff_sql, (t,))
+            issuers = execute_query(issuers_sql, (t,))
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error in lirteams.asp: {ex}", exc_info=True)
+            staff = []
+            issuers = []
+    else:
+        staff = []
+        issuers = []
+
+    # Get all teams for dropdown
+    teams_sql = """
+        SELECT DISTINCT l.id, l.teamno
+        FROM enigma.lirteams l
+        JOIN enigma.lirteamstaff s ON l.id = s.teamid
+        WHERE NOT s.dead
+        ORDER BY l.teamno
+    """
+    try:
+        teams = execute_query(teams_sql)
+    except:
+        teams = []
+
+    return render_template('dbpub/lirteams.html',
+                         t=t,
+                         teamno=teamno,
+                         staff=staff,
+                         issuers=issuers,
+                         teams=teams,
+                         sort=sort_param)
+
+
+# Single stock total returns (STR)
+@bp.route('/str.asp')
+def str_route():
+    """Webb-site Single stock Total Return chart"""
+    from webbsite.asp_helpers import get_int, get_bool
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    i = get_int('i', 0)  # Issue ID
+    sc = get_int('sc', 0)  # Stock code (alternative lookup)
+    show_deals = get_bool('f')  # Show directors' dealings
+    show_bb = get_bool('b')  # Show buybacks
+
+    # Find issue ID from stock code if needed
+    if sc > 0 and i == 0:
+        issue_sql = """
+            SELECT i.id1
+            FROM enigma.issue i
+            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+            WHERE sl.stockcode = %s
+              AND NOT sl."2ndCtr"
+            ORDER BY sl.firsttradedate DESC
+            LIMIT 1
+        """
+        try:
+            issue_result = execute_query(issue_sql, (sc,))
+            if issue_result:
+                i = issue_result[0]['id1']
+        except:
+            pass
+
+    if i > 0:
+        # Get stock name
+        name_sql = """
+            SELECT o.name1
+            FROM enigma.issue i
+            JOIN enigma.organisations o ON i.issuer = o.personid
+            WHERE i.id1 = %s
+        """
+
+        # Get adjusted quotes
+        quotes_sql = """
+            SELECT
+                EXTRACT(EPOCH FROM atdate) * 1000 AS timestamp,
+                ROUND(vol / COALESCE(NULLIF(splitadj, 0), 1)) AS adj_vol,
+                ROUND(closing * COALESCE(NULLIF(splitadj, 0), 1), 5) AS adj_close
+            FROM ccass.quotes
+            WHERE issueid = %s
+            ORDER BY atdate
+        """
+
+        try:
+            name_result = execute_query(name_sql, (i,))
+            stock_name = name_result[0]['name1'] if name_result else f"Issue {i}"
+
+            quotes = execute_query(quotes_sql, (i,))
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.error(f"Error in str.asp: {ex}", exc_info=True)
+            stock_name = f"Issue {i}"
+            quotes = []
+    else:
+        stock_name = "Unknown"
+        quotes = []
+
+    return render_template('dbpub/str.html',
+                         i=i,
+                         sc=sc,
+                         stock_name=stock_name,
+                         quotes=quotes,
+                         show_deals=show_deals,
+                         show_bb=show_bb)
+
+
+@bp.route('/ctr.asp')
+def ctr():
+    """Chart total returns - interactive price chart with total returns"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    i = get_int('i', 0)
+    sc = get_str('sc', '')
+
+    # Get stock info
+    stock_name = "Unknown"
+    if i > 0:
+        try:
+            sql = """
+                SELECT i.issuename, i.stockcode
+                FROM enigma.issue i
+                WHERE i.issueid = %s
+            """
+            result = execute_query(sql, (i,))
+            if result:
+                stock_name = result[0]['issuename']
+                if not sc and result[0]['stockcode']:
+                    sc = result[0]['stockcode']
+        except Exception as ex:
+            current_app.logger.error(f"Error in ctr.asp: {ex}", exc_info=True)
+
+    # TODO: Get quote data with total returns adjustments
+    chart_data = []
+
+    return render_template('dbpub/ctr.html',
+                         i=i,
+                         sc=sc,
+                         stock_name=stock_name,
+                         chart_data=chart_data)
+
+
+@bp.route('/hksolsmoves.asp')
+def hksolsmoves_lowercase():
+    """Lowercase alias for HKsolsmoves.asp"""
+    return HKsolsmoves()
+
+
+@bp.route('/hkpax.asp')
+def hkpax():
+    """HK passenger statistics (airport, border crossings)"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # TODO: Query passenger statistics from transport tables
+    pax_data = []
+
+    return render_template('dbpub/hkpax.html',
+                         y=y,
+                         pax_data=pax_data)
+
+
+@bp.route('/jail.asp')
+def jail():
+    """Directors who went to jail"""
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # TODO: Query directorships where person has jail-related events
+    # Need to identify which eventTypeIDs correspond to jail sentences
+    jail_data = []
+
+    return render_template('dbpub/jail.html',
+                         jail_data=jail_data)
+
+
+@bp.route('/tuntraff.asp')
+def tuntraff():
+    """Tunnel and bridge traffic statistics"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # TODO: Query tunnel/bridge traffic from transport tables
+    traffic_data = []
+
+    return render_template('dbpub/tuntraff.html',
+                         y=y,
+                         traffic_data=traffic_data)
+
+
+@bp.route('/veFR.asp')
+def vefr():
+    """Vehicle first registrations"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+    m = get_int('m', 0)
+
+    # TODO: Query vehicle first registrations from transport tables
+    registrations = []
+
+    return render_template('dbpub/vefr.html',
+                         y=y,
+                         m=m,
+                         registrations=registrations)
+
+
+@bp.route('/veFRtype.asp')
+def vefrtype():
+    """Vehicle first registrations by type"""
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+    m = get_int('m', 0)
+    vt = get_str('vt', '')  # vehicle type
+
+    # TODO: Query vehicle first registrations by type
+    registrations = []
+
+    return render_template('dbpub/vefrtype.html',
+                         y=y,
+                         m=m,
+                         vt=vt,
+                         registrations=registrations)
+
+
+@bp.route('/veFRtypehist.asp')
+def vefrtypehist():
+    """Vehicle first registrations by type - historical trend"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    vt = get_str('vt', '')  # vehicle type
+
+    # TODO: Query historical vehicle registrations by type
+    history = []
+
+    return render_template('dbpub/vefrtypehist.html',
+                         vt=vt,
+                         history=history)
+
+
+@bp.route('/veJourneyhist.asp')
+def vejourneyhist():
+    """Vehicle journey history"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    reg = get_str('reg', '')  # registration number
+
+    # TODO: Query vehicle journey history
+    journeys = []
+
+    return render_template('dbpub/vejourneyhist.html',
+                         reg=reg,
+                         journeys=journeys)
+
+
+@bp.route('/veJourneys.asp')
+def vejourneys():
+    """Vehicle journeys summary"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # TODO: Query vehicle journey statistics
+    journeys = []
+
+    return render_template('dbpub/vejourneys.html',
+                         y=y,
+                         journeys=journeys)
+
+
+@bp.route('/vebrandhist.asp')
+def vebrandhist():
+    """Vehicle brand registration history"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    brand = get_str('brand', '')
+
+    # TODO: Query vehicle brand registration history
+    history = []
+
+    return render_template('dbpub/vebrandhist.html',
+                         brand=brand,
+                         history=history)
+
+
+@bp.route('/vedet.asp')
+def vedet():
+    """Vehicle details"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    reg = get_str('reg', '')  # registration number
+
+    # TODO: Query vehicle details (make, model, year, etc.)
+    vehicle = None
+
+    return render_template('dbpub/vedet.html',
+                         reg=reg,
+                         vehicle=vehicle)
+
+
+@bp.route('/veengine.asp')
+def veengine():
+    """Vehicle engine types summary"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # TODO: Query vehicle engine type statistics
+    engines = []
+
+    return render_template('dbpub/veengine.html',
+                         y=y,
+                         engines=engines)
+
+
+@bp.route('/vefuel.asp')
+def vefuel():
+    """Vehicle fuel types summary"""
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template
+    from datetime import date
+
+    y = get_int('y', date.today().year)
+
+    # TODO: Query vehicle fuel type statistics
+    fuels = []
+
+    return render_template('dbpub/vefuel.html',
+                         y=y,
+                         fuels=fuels)
+
+
+@bp.route('/vefuelhist.asp')
+def vefuelhist():
+    """Vehicle fuel types - historical trend"""
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    fuel = get_str('fuel', '')
+
+    # TODO: Query historical vehicle fuel type statistics
+    history = []
+
+    return render_template('dbpub/vefuelhist.html',
+                         fuel=fuel,
+                         history=history)
 
 
 # Helpers to import

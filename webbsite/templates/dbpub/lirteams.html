@@ -1,0 +1,58 @@
+{% extends "base_database.html" %}
+{% block title %}Issuers regulated by SEHK Listing team {{ teamno }}{% endblock %}
+{% block content %}
+<h2>Issuers regulated by SEHK Listing team {{ teamno }}</h2>
+<form method="get" action="/dbpub/lirteams.asp">
+    <div class="inputs">
+    See coverage for another team:
+    <select name="t">
+        {% for team in teams %}
+        <option value="{{ team.id }}" {% if team.id == t %}selected{% endif %}>Team {{ team.teamno }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+</form>
+{% if teamno > 0 %}
+<p>Complaint e-mail: <a href="mailto:lirteam{{ teamno }}@hkex.com.hk?cc=complaint@sfc.hk&subject=Complaint about:">Click here</a></p>
+{% if staff %}
+<h3>Team members</h3>
+<table class="txtable">
+    <tr>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Phone</th>
+        <th>First Seen</th>
+    </tr>
+    {% for member in staff %}
+    <tr>
+        <td>{{ member.name }}</td>
+        <td>{{ member.title }}</td>
+        <td>{{ member.tel[:4] }}-{{ member.tel[4:] if member.tel else '' }}</td>
+        <td>{{ member.firstseen or '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% if issuers %}
+<h3>Issuers currently regulated by this team</h3>
+<table class="txtable yscroll">
+    <tr>
+        <th></th>
+        <th><a href="?t={{ t }}&sort=codup">Stock code</a> | <a href="?t={{ t }}&sort=coddn">▼</a></th>
+        <th><a href="?t={{ t }}&sort=namup">Issuer name</a> | <a href="?t={{ t }}&sort=namdn">▼</a></th>
+        <th>First seen</th>
+    </tr>
+    {% for issuer in issuers %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ issuer.sc or '—' }}</td>
+        <td><a href="/dbpub/orgdata.asp?p={{ issuer.orgid }}">{{ issuer.name }}</a></td>
+        <td>{{ issuer.firstseen or '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endif %}
+{% endblock %}

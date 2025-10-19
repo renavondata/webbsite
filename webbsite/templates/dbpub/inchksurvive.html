@@ -1,0 +1,71 @@
+{% extends "base_database.html" %}
+
+{% block title %}Survival of HK companies at {{ d }}{% if typename %}: {{ typename }}{% endif %}{% endblock %}
+
+{% block content %}
+<h2>Survival of HK companies at {{ d }}{% if typename %}: {{ typename }}{% endif %}</h2>
+
+<form method="get" action="/dbpub/incHKsurvive.asp">
+    <div class="inputs">
+        <input type="date" id="d" name="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        Company type:
+        <select name="t">
+            <option value="-1" {% if t == -1 %}selected{% endif %}>Any type</option>
+            {% for orgtype in orgtypes %}
+            <option value="{{ orgtype.orgtype }}" {% if orgtype.orgtype == t %}selected{% endif %}>{{ orgtype.typename }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';document.getElementById('t').value='-1';">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>This page shows, at the chosen date, the number of surviving
+and dissolved HK-incorporated companies for each year of incorporation.
+Earliest records from the 19th century are understated due to
+lost records of dissolved companies. Registration was not required until 1911.</p>
+
+<p>Note: data on dissolutions are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new
+incorporations and name-changes.</p>
+
+<table class="numtable center">
+    <tr>
+        <th></th>
+        <th>Year</th>
+        <th>Inc.</th>
+        <th>live</th>
+        <th>Survival<br>%</th>
+        <th>Total<br>inc.</th>
+        <th>Total<br>live</th>
+        <th>Total<br>survival<br>%</th>
+    </tr>
+    {% set inc_total = 0 %}
+    {% set surv_total = 0 %}
+    {% for year in years %}
+    {% set inc_total = inc_total + year.incorporated %}
+    {% set surv_total = surv_total + year.surviving %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ year.y }}</td>
+        <td><a href="/dbpub/incHKcaltype.asp?t={{ t }}&amp;y={{ year.y }}">{{ '{:,}'.format(year.incorporated) }}</a></td>
+        <td>{{ '{:,}'.format(year.surviving) }}</td>
+        <td>{% if year.incorporated > 0 %}{{ '%.1f'|format(year.surviving / year.incorporated * 100) }}{% else %}—{% endif %}</td>
+        <td>{{ '{:,}'.format(inc_total) }}</td>
+        <td>{{ '{:,}'.format(surv_total) }}</td>
+        <td>{% if inc_total > 0 %}{{ '%.1f'|format(surv_total / inc_total * 100) }}{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Note: Google Charts visualization can be added later for graphical representation.</p>
+{% endblock %}

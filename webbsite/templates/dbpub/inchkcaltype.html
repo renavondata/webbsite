@@ -1,0 +1,92 @@
+{% extends "base_database.html" %}
+
+{% block title %}Entities formed in HK
+{%- if d > 0 %} on {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}-{{ '%02d'|format(d) }}
+{%- elif m > 0 %} in {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}
+{%- else %} in {{ y }}
+{%- endif %}
+{%- if typename %}: {{ typename }}{% endif %}{% endblock %}
+
+{% block content %}
+<h2>Entities formed in HK
+{%- if d > 0 %} on {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}-{{ '%02d'|format(d) }}
+{%- elif m > 0 %} in {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}
+{%- else %} in {{ y }}
+{%- endif %}
+{%- if typename %}: {{ typename }}{% endif %}</h2>
+
+<p>This page shows the companies newly-incorporated in HK by year, month or date and by type.
+Earliest records from the 19th century are understated due to lost records of
+dissolved companies. Registration was not required until 1911.</p>
+
+<p>Note: data on dissolutions are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new
+incorporations and name-changes.</p>
+
+<form method="get" action="/dbpub/incHKcaltype.asp">
+    <div class="inputs"><b>Incorporation date</b>&nbsp;</div>
+    <div class="inputs">
+        Year: <select name="y">
+            {% for year in range(1865, 2026) %}
+            <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        Month: <select name="m">
+            <option value="0" {% if m == 0 %}selected{% endif %}>Any month</option>
+            {% for month in range(1, 13) %}
+            <option value="{{ month }}" {% if month == m %}selected{% endif %}>{{ month }}</option>
+            {% endfor %}
+        </select>
+        Day: <select name="d">
+            <option value="0" {% if d == 0 %}selected{% endif %}>Any day</option>
+            {% for day in range(1, 32) %}
+            <option value="{{ day }}" {% if day == d %}selected{% endif %}>{{ day }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <b>Type</b>
+        <select name="t">
+            <option value="0" {% if t == 0 %}selected{% endif %}>Any type</option>
+            {% for orgtype in orgtypes %}
+            <option value="{{ orgtype.orgtype }}" {% if orgtype.orgtype == t %}selected{% endif %}>{{ orgtype.typename }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+    <input type="hidden" name="sort" value="{{ sort }}">
+</form>
+
+{% if not companies %}
+    <p>None found. Try widening your search.</p>
+{% else %}
+    <table class="txtable fcr">
+    <tr>
+        <th></th>
+        <th>Reg no.</th>
+        <th class="left"><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=namup">Name</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=namdn">▼</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=incup">Incorporated</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=incdn">▼</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=disdn">Dissolved</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&sort=disup">▲</a></th>
+        {% if t == 0 %}<th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=typup">Type</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&sort=typdn">▼</a></th>{% endif %}
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ company.incid or '—' }}&nbsp;</td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name1 }}{% if company.cname %}<br>{{ company.cname }}{% endif %}</a></td>
+        <td class="nowrap">{{ company.incdate }}</td>
+        <td class="nowrap">{{ company.disdate or '—' }}</td>
+        {% if t == 0 %}<td>{{ company.typename }}</td>{% endif %}
+    </tr>
+    {% endfor %}
+    </table>
+    {% if count == 5000 %}
+        <p>Only the first 5000 records are shown. Try narrowing your search to a specific month or day.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

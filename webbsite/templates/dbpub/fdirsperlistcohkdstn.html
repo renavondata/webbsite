@@ -1,0 +1,51 @@
+{% extends "base_database.html" %}
+{% block title %}Distribution of female directors per HK-listed company at {{ d }}{% endblock %}
+{% block content %}
+<h2>Distribution of female directors per HK-listed company at {{ d }}</h2>
+<p>This table summarises the number of female Directors on the boards of companies with a
+HK primary listing on the snapshot date.</p>
+<form method="get" action="/dbpub/FDirsPerListcoHKdstn.asp">
+    <div class="inputs">
+        <input type="date" id="d" name="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value=''">
+    </div>
+    <div class="clear"></div>
+</form>
+<table class="numtable">
+    <tr>
+        <th>No. of<br>fem.<br>dirs</th>
+        <th>No.<br>of<br>Cos</th>
+        <th>Share<br>of<br>Cos</th>
+        <th>Total<br>seats</th>
+        <th>Cumul-<br>ative<br>Cos</th>
+        <th>Cumul-<br>ative<br>seats</th>
+    </tr>
+    {% set cum_cos = 0 %}
+    {% set cum_seats = 0 %}
+    {% for row in distribution %}
+    {% set cum_cos = cum_cos + row.number_of_cos %}
+    {% set cum_seats = cum_seats + (row.fdirs * row.number_of_cos) %}
+    <tr>
+        <td>{{ row.fdirs }}</td>
+        <td>{{ row.number_of_cos }}</td>
+        <td>{{ '%.1f'|format(row.number_of_cos / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>{{ row.fdirs * row.number_of_cos }}</td>
+        <td>{{ cum_cos }}</td>
+        <td>{{ cum_seats }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>0</td>
+        <td>{{ total_cos - cum_cos }}</td>
+        <td>{{ '%.1f'|format((total_cos - cum_cos) / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>0</td>
+        <td>{{ total_cos }}</td>
+        <td>{{ cum_seats }}</td>
+    </tr>
+</table>
+<p>The average number of female directors per listed company on the snapshot date is: <b>{{ '%.2f'|format(cum_seats / total_cos) if total_cos > 0 else '0.00' }}.</b></p>
+<p><a href="/dbpub/boardcomp.asp?sort=femdn&d={{ d }}">Click here</a> to see the company list.</p>
+{% endblock %}

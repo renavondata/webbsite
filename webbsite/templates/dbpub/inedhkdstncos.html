@@ -1,0 +1,52 @@
+{% extends "base_database.html" %}
+{% block title %}Distribution of INEDs per HK-listed company at {{ d }}{% endblock %}
+{% block content %}
+<h2>Distribution of INEDs per HK-listed company at {{ d }}</h2>
+<p>This table summarises the number of Independent Non-executive Directors of companies
+with a HK primary listing on the snapshot date.</p>
+<form method="get" action="/dbpub/INEDHKDistnCos.asp">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+<table class="numtable">
+    <tr>
+        <th>No.<br>of<br>INEDs</th>
+        <th>No.<br>of<br>Cos</th>
+        <th>Share<br>of<br>Cos</th>
+        <th>Total<br>INED<br>seats</th>
+        <th>Cumul-<br>ative<br>Cos</th>
+        <th>Cumul-<br>ative<br>seats</th>
+    </tr>
+    {% set cum_cos = 0 %}
+    {% set cum_seats = 0 %}
+    {% for row in distribution %}
+    {% set cum_cos = cum_cos + row.num_cos %}
+    {% set cum_seats = cum_seats + (row.num_seats * row.num_cos) %}
+    <tr>
+        <td>{{ row.num_seats }}</td>
+        <td>{{ row.num_cos }}</td>
+        <td>{{ '%.1f'|format(row.num_cos / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>{{ row.num_seats * row.num_cos }}</td>
+        <td>{{ cum_cos }}</td>
+        <td>{{ cum_seats }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>0</td>
+        <td>{{ total_cos - cum_cos }}</td>
+        <td>{{ '%.1f'|format((total_cos - cum_cos) / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>0</td>
+        <td>{{ total_cos }}</td>
+        <td>{{ cum_seats }}</td>
+    </tr>
+</table>
+<p>The average number of INEDs per listed company at the snapshot date is: <b>{{ '%.3f'|format(cum_seats / total_cos) if total_cos > 0 else '0.000' }}.</b></p>
+<p><a href="/dbpub/boardcomp.asp?sort=inedn&d={{ d }}">Click here</a> to see the
+list of companies and their board composition on the snapshot date.</p>
+{% endblock %}

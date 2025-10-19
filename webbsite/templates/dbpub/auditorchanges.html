@@ -1,0 +1,31 @@
+{% extends "base_database.html" %}
+
+{% block title %}Auditor changes of current HK-listed companies{% endblock %}
+
+{% block content %}
+<h2>Changes of Auditors of current HK-listed companies</h2>
+<ul class="navlist">
+    <li class="livebutton">Auditor changes</li>
+    <li><a target="_blank" href="/dbpub/auditornotes.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+
+<table class="txtable yscroll">
+    <tr>
+        <th>Count</th>
+        <th><a href="?sort=cnamup">Company</a> | <a href="?sort=cnamdn">▼</a></th>
+        <th><a href="?sort=anamdn">Auditor</a> | <a href="?sort=anamup">▲</a></th>
+        <th>Added</th>
+        <th><a href="?sort=sdatdn">Removed</a> | <a href="?sort=sdatup">▲</a></th>
+    </tr>
+{% for change in changes %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td><a href="/dbpub/orgdata.asp?p={{ change.company }}">{{ change.coname }}</a></td>
+        <td>{{ change.advname }}</td>
+        <td class="nowrap">{{ change.add or '—' }}</td>
+        <td class="nowrap">{{ change.rem or '—' }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}
