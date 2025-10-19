@@ -5,6 +5,7 @@ requires-python = ">=3.13"
 dependencies = [
     "flask",
     "psycopg2-binary",
+    "sqlalchemy",
     "gunicorn",
     "python-dotenv",
 ]
