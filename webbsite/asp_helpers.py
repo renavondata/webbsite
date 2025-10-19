@@ -301,3 +301,244 @@ def yn(v):
     if v:
         return 'Y'
     return 'N'
+
+
+# ===== DATABASE LOOKUP HELPERS =====
+
+def find_stock():
+    """
+    Use input 'sc' (stock code) or 'i' (issueID) to return (issue_id, issue_name, person_id)
+    Port of ASP findStock() function
+    """
+    from webbsite.db import execute_query
+
+    # Try stock code first
+    stock_code = get_int('sc', 0)
+    if stock_code > 0:
+        issue_id = sc_issue(stock_code)
+    else:
+        issue_id = get_int('i', 0)
+        if issue_id == 0:
+            issue_id = get_int('issue', 0)  # legacy links
+
+    issue_name, person_id = issue_name_func(issue_id)
+    return issue_id, issue_name, person_id
+
+
+def sc_issue(stock_code):
+    """
+    Return the issueID of most recent issue to use this stock code, or 0 if none
+    Port of ASP SCissue() function
+    """
+    from webbsite.db import execute_query
+
+    try:
+        result = execute_query("""
+            SELECT COALESCE((
+                SELECT issueID
+                FROM enigma.stockListings
+                WHERE stockExID IN (1,20,22,23,38,71)
+                  AND stockCode = %s
+                ORDER BY firstTradeDate DESC
+                LIMIT 1
+            ), 0) as issue_id
+        """, (stock_code,))
+
+        if result and len(result) > 0:
+            return int(result[0]['issue_id'])
+        return 0
+    except Exception:
+        return 0
+
+
+def issue_name_func(issue_id):
+    """
+    Return (issue_name, person_id) for an issue
+    Returns ("Stock not found. ", 0) if not found
+    Port of ASP issueName() function
+    """
+    from webbsite.db import execute_query
+
+    if not issue_id or issue_id == 0:
+        return "Stock not found. ", 0
+
+    try:
+        # Query to get issue details
+        result = execute_query("""
+            SELECT
+                o.Name1,
+                st.typeShort,
+                CASE
+                    WHEN i.expAcc = 1 OR i.expAcc = 4 THEN CAST(EXTRACT(YEAR FROM i.expmat) AS TEXT)
+                    WHEN i.expAcc = 2 OR i.expAcc = 5 THEN
+                        TO_CHAR(i.expmat, 'Mon-YYYY')
+                    WHEN i.expAcc = 3 THEN 'U'
+                    ELSE TO_CHAR(i.expmat, 'DD-Mon-YYYY')
+                END as exp,
+                o.personID,
+                i.coupon,
+                i.floating,
+                COALESCE(c.currency, 'HKD') as curr
+            FROM enigma.issue i
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.sectypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+            WHERE i.ID1 = %s
+        """, (issue_id,))
+
+        if not result or len(result) == 0:
+            return "Stock not found. ", 0
+
+        row = result[0]
+        name = row['name1'] + ": "
+
+        if row['floating']:
+            name += " Floating"
+
+        name += " " + row['typeshort']
+
+        if row['curr'] and row['curr'] != '':
+            name += " " + row['curr']
+
+        if row['coupon'] is not None:
+            name += f" {row['coupon']}%"
+
+        if row['exp'] and row['exp'] != '':
+            name += " due " + row['exp']
+
+        return name, row['personid']
+
+    except Exception:
+        return "Stock not found. ", 0
+
+
+# ===== NAVIGATION HELPERS =====
+
+def mobile(n):
+    """
+    Warning that columns may disappear on mobile
+    n is the lowest number of colHide used on the page
+    Port of ASP mobile() function
+    """
+    return f"<p class='widthAlert{n}'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>"
+
+
+def btn(button_id, url, text, target_id):
+    """
+    Generate navigation button HTML - active or link
+    Port of ASP btn() function
+    """
+    if button_id == target_id:
+        return f"<li class='livebutton'>{text}</li>"
+    else:
+        return f"<li><a href='{url}'>{text}</a></li>"
+
+
+def write_nav(val, param_values, labels, base_url):
+    """
+    Write a navigation bar with buttons linking to a common URL with 1 parameter
+    val: current value (active button)
+    param_values: comma-separated list of parameter values
+    labels: comma-separated list of button labels
+    base_url: base URL with querystring to which parameter is appended
+    Port of ASP writeNav() function
+    """
+    btns = write_btns(val, param_values, labels, base_url)
+    return f"<ul class='navlist'>{btns}</ul><div class='clear'></div>"
+
+
+def write_btns(val, param_values, labels, base_url):
+    """
+    Generate button list elements without ul wrapper
+    Port of ASP writeBtns() function
+    """
+    p_list = param_values.split(',')
+    l_list = labels.split(',')
+
+    # Try to convert val to int if numeric
+    if str(val).isdigit():
+        val = int(val)
+
+    html = ''
+    for i, p_val in enumerate(p_list):
+        if i >= len(l_list):
+            break
+
+        # Try to convert parameter to int for comparison
+        compare_val = p_val
+        if p_val.isdigit() and isinstance(val, int):
+            compare_val = int(p_val)
+
+        if compare_val == val:
+            html += f"<li class='livebutton'>{l_list[i]}</li>"
+        else:
+            html += f"<li><a href='{base_url}{p_val}'>{l_list[i]}</a></li>"
+
+    return html
+
+
+# ===== ADDITIONAL FORMATTING HELPERS =====
+
+def month_end(month, year):
+    """Return last day of month"""
+    import calendar
+    return calendar.monthrange(year, month)[1]
+
+
+def date_ymd(year, month=0, day=0):
+    """Produce ISO date format or partial date from year/month/day"""
+    result = str(year)
+    if month > 0:
+        result = f"{year}-{month:02d}"
+        if day > 0:
+            result = f"{year}-{month:02d}-{day:02d}"
+    return result
+
+
+def last_id(con):
+    """
+    Get last inserted ID (for after INSERT)
+    PostgreSQL version - use RETURNING clause instead when possible
+    """
+    # In PostgreSQL, use RETURNING id_column in INSERT instead
+    # This is here for compatibility but not recommended
+    from webbsite.db import execute_query
+    result = execute_query("SELECT lastval() as last_id")
+    if result and len(result) > 0:
+        return result[0]['last_id']
+    return 0
+
+
+def norm_url(url):
+    """Normalize URL - convert https to http, add http:// prefix if missing"""
+    if not url or url == '':
+        return None
+
+    if url.startswith('https'):
+        return 'http' + url[5:]
+    elif not url.startswith('http'):
+        return 'http://' + url
+    else:
+        return url
+
+
+def col_sum(arr, col_index):
+    """Sum column of a 2D array"""
+    total = 0
+    for row in arr:
+        if col_index < len(row):
+            val = row[col_index]
+            if isinstance(val, (int, float)):
+                total += val
+            elif isinstance(val, str) and val.replace('.', '').replace('-', '').isdigit():
+                total += float(val)
+    return total
+
+
+def arr_sum(arr):
+    """Sum a 1D array"""
+    total = 0
+    for val in arr:
+        if isinstance(val, (int, float)):
+            total += val
+    return total

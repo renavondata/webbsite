@@ -13,4 +13,5 @@ dependencies = [
 [dependency-groups]
 dev = [
     "requests>=2.32.5",
+    "ruff>=0.14.1",
 ]

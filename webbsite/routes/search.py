@@ -44,7 +44,7 @@ def search_orgs():
             match_clause = f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
             # Left match (starts with)
-            match_clause = f"name1 LIKE '{apos(n)}%%'"
+            match_clause = f"name1 LIKE '{apos(n)}%'"
 
         # Search current names
         sql = f"""
@@ -61,7 +61,7 @@ def search_orgs():
         if st == 'a':
             old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
-            old_match_clause = f"oldName LIKE '{apos(n)}%%'"
+            old_match_clause = f"oldName LIKE '{apos(n)}%'"
 
         sql = f"""
             SELECT n.PersonID, oldName as name1, oldcName, everListCo(o.personID) as hklist,
@@ -112,7 +112,7 @@ def search_people():
             match_clause = f"(to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}') OR to_tsvector('simple', name2) @@ to_tsquery('simple', '{apos(terms)}'))"
         else:
             # Left match (starts with)
-            match_clause = f"(name1 LIKE '{apos(n)}%%' OR name2 LIKE '{apos(n)}%%')"
+            match_clause = f"(name1 LIKE '{apos(n)}%' OR name2 LIKE '{apos(n)}%')"
 
         # Search people
         sql = f"""

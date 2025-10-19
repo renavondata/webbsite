@@ -81,7 +81,7 @@ def create_app(config_class=Config):
                        EXTRACT(YEAR FROM CURRENT_DATE) - yob as age
                 FROM enigma.people
                 WHERE mob = %s AND dob = %s AND yob IS NOT NULL
-                  AND (EXTRACT(YEAR FROM CURRENT_DATE) - yob) %% 5 = 0
+                  AND (EXTRACT(YEAR FROM CURRENT_DATE) - yob) % 5 = 0
                   AND (EXTRACT(YEAR FROM CURRENT_DATE) - yob) >= 30
                 ORDER BY yob
             """, (today.month, today.day))
