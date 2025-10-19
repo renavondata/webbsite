@@ -195,7 +195,7 @@ Christmas pudding, on 28-Dec up pops
 this listing announcement</a>, of a US$350m 5-year bond by CDB's HK Branch. This bond is 
 indistinguishable from any other CDB bond - they've been issuing bonds in HK 
 since at least 2012, and
-<a href="https://webb-site.com/dbpub/orgdata.asp?p=11716" target="_blank">by our 
+<a href="/dbpub/orgdata.asp?p=11716" target="_blank">by our 
 count</a> this is the 30th bond they've listed on the Stock Exchange of Hong 
 Kong since then.</p>
 <p>The CDB BAR-Bond is denominated in US dollars (not politically correct 

@@ -255,7 +255,7 @@ exceeding 5% of outstanding shares in all companies over time. For example, the
 big movements for CCB International Securities Ltd
 <a href="../ccass/bigchangespart.asp?p=411" target="_blank">are here</a>, and 
 Kingston Securities Ltd
-<a href="https://webb-site.com/ccass/bigchangespart.asp?p=150" target="_blank">
+<a href="/ccass/bigchangespart.asp?p=150" target="_blank">
 are here</a>. Again, you can sort by size, by date or by issue name and date. 
 For more examples, consider brokers with large holdings in what we call the "<a href="../dbpub/subject.asp?c=136">Enigma 
 Network</a>" such as <a href="../ccass/bigchangespart.asp?p=980" target="_blank">

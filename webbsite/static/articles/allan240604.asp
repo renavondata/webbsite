@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="https://webb-site.com/templates/main.css">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
 <title>Webb-site Reports</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
 		<span style="font-size:1.6em;margin:0"><b>Webb-site Reports</b></span><br>
 		<span style="font-size:0.9em"><b>News, analysis and opinions since 1998</b></span></a><br>
 		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
-			<a type="application/rss+xml" href="https://webb-site.com/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
 			<div id="social" style="float:right;margin-left:2px">
 				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="https://webb-site.com/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
 				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="https://webb-site.com/images/facebook28x28.png" style="margin-left:2px"></a>
@@ -24,12 +24,12 @@
 		<label for="menuchk" id="menubtn">Menu</label>
 		<div id="loginbtn">
 			
-				<a href="https://webb-site.com/webbmail/login.asp" class="nodec">log in</a>
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
 			
 		</div>
 		<div class="clear"></div>
 		<div id="volunteer">
-			<a href="https://webb-site.com/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
 		</div>
 		<label for="srchchk" id="srchbtn">search</label>
 	</div>
@@ -77,61 +77,61 @@
 		<input type="checkbox" id="menuchk" style="display:none">
 		<ul>
 		<li><a href="../index.html">Home</a></li>
-		<li><a href="https://webb-site.com/dbpub/">Database</a></li>
-		<li><a href="https://webb-site.com/webbmail/login.asp">User</a>
+		<li><a href="/dbpub/">Database</a></li>
+		<li><a href="/webbmail/login.asp">User</a>
 			<ul>
 				
-					<li><a href="https://webb-site.com/webbmail/login.asp">Log in</a></li>
+					<li><a href="/webbmail/login.asp">Log in</a></li>
 				
-				<li><a href="https://webb-site.com/webbmail/join.asp">Sign up</a></li>
-				<li><a href="https://webb-site.com/webbmail/forgot.asp">Forgot password</a></li>
+				<li><a href="/webbmail/join.asp">Sign up</a></li>
+				<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
 				
 			</ul>
 		</li>
 		<li><a href="index.html">Archive</a></li>
-		<li><a href="https://webb-site.com/pages/tools.asp">Tools</a>
+		<li><a href="/pages/tools.asp">Tools</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/howtovote.asp">How to vote</a></li>
-				<li><a href="https://webb-site.com/library/">Reference library</a></li>
-				<li><a href="https://webb-site.com/cg/">CG directory</a></li>
+				<li><a href="/pages/howtovote.asp">How to vote</a></li>
+				<li><a href="/library/">Reference library</a></li>
+				<li><a href="/cg/">CG directory</a></li>
 				<li><a href="https://www.icris.cr.gov.hk/csci/login_i.do?loginType=iguest&OPT_01=1&OPT_02=1&OPT_03=1&OPT_04=1&OPT_05=1&OPT_06=1&OPT_07=1&OPT_08=1&OPT_09=1">Companies Registry</a></li>
 				<li><a href="http://sdinotice.hkex.com.hk/di/NSSrchMethod.aspx?src=MAIN&lang=EN&in=1">Dealing disclosures</a></li>
 				<li><a href="http://www.hsi.com.hk">Hang Seng Index</a></li>
 				<li><a href="http://legalref.judiciary.gov.hk/lrs/common/ju/newjudgments.jsp">Judgments</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/vote/">Polls</a></li>
-		<li><a href="https://webb-site.com/pages/hallofshame.asp">Hall of Shame</a></li>
-		<li><a href="https://webb-site.com/pages/stuff.asp">Other stuff</a>
+		<li><a href="/vote/">Polls</a></li>
+		<li><a href="/pages/hallofshame.asp">Hall of Shame</a></li>
+		<li><a href="/pages/stuff.asp">Other stuff</a>
 			<ul>
-				<li><a href="https://webb-site.com/HAMS/">HAMS proposal</a></li>
-				<li><a href="https://webb-site.com/pages/electiondisclosures.asp">Election returns</a></li>
+				<li><a href="/HAMS/">HAMS proposal</a></li>
+				<li><a href="/pages/electiondisclosures.asp">Election returns</a></li>
 				<li><a href="PECSregister.asp">PECS register</a></li>
-				<li><a href="https://webb-site.com/pages/loopholes.asp">Listing Loopholes</a></li>
-				<li><a href="https://webb-site.com/books/">Webb-Books</a></li>
-				<li><a href="https://webb-site.com/news/">Old newsletters</a></li>
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=160">Laughing Stock</a></li>
+				<li><a href="/pages/loopholes.asp">Listing Loopholes</a></li>
+				<li><a href="/books/">Webb-Books</a></li>
+				<li><a href="/news/">Old newsletters</a></li>
+				<li><a href="/dbpub/subject.asp?c=160">Laughing Stock</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page">Flight arrivals</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/departures/passenger.page">Flight departures</a></li>
 				<li><a href="https://www.liveatc.net/search/?icao=HKG">Air traffic radio</a></li>
 				<li><a href="https://www.hkemobility.gov.hk/en/traffic-information/live/cctv">Road traffic</a></li>
 				<li><a href="https://www.weather.gov.hk/en/">Weather</a></li>
-				<li><a href="https://webb-site.com/dbpub/idcheck.asp">HKID check digit</a></li>
-				<li><a href="https://webb-site.com/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
+				<li><a href="/dbpub/idcheck.asp">HKID check digit</a></li>
+				<li><a href="/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/about.asp">About</a>
+		<li><a href="/pages/about.asp">About</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/aboutus.asp">About us</a></li>
-				<li><a href="https://webb-site.com/photos/">Webb-Photos</a></li>
-				<li><a href="https://webb-site.com/pages/mediaroom.asp">Media room</a></li>
-				<li><a href="https://webb-site.com/dbpub/webbchips.asp">Webb-chips</a></li>
-				<li><a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></li>
+				<li><a href="/pages/aboutus.asp">About us</a></li>
+				<li><a href="/photos/">Webb-Photos</a></li>
+				<li><a href="/pages/mediaroom.asp">Media room</a></li>
+				<li><a href="/dbpub/webbchips.asp">Webb-chips</a></li>
+				<li><a href="/pages/privacypolicy.asp">Privacy policy</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/contact/">Contact</a></li>
-		<li><a href="https://webb-site.com/pages/refer.asp">Tell a Friend!</a></li>
-		<li><a href="https://webb-site.com/pages/hkradio.asp">Radio</a>
+		<li><a href="/contact/">Contact</a></li>
+		<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		<li><a href="/pages/hkradio.asp">Radio</a>
 			<ul>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio1">RTHK 1</a></li>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio2">RTHK 2</a></li>
@@ -145,7 +145,7 @@
 				<li><a target="_blank" href="https://www.bbc.co.uk/sounds/player/bbc_world_service">BBC World Service</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/TV.asp">TV</a>
+		<li><a href="/pages/TV.asp">TV</a>
 			<ul>
 				<li><a target="_blank" href="https://www.abc.net.au/news/newschannel/">ABC News (Australia)</a></li>
 				<li><a target="_blank" href="https://www.aljazeera.com/live">Al Jazeera</a></li>
@@ -171,9 +171,9 @@
 <h2 class="center">Another open letter to the Board of Allan (0684)<br>
 <span class="headlinedate">4 June 2024</span></h2>
 <p>To: 
-<a href="https://webb-site.com/dbpub/officers.asp?p=2949&amp;d=2024-06-04&amp;u=1&amp;hide=Y">The Board 
+<a href="/dbpub/officers.asp?p=2949&amp;d=2024-06-04&amp;u=1&amp;hide=Y">The Board 
 of Directors</a></p>
-<p><a href="https://webb-site.com/dbpub/orgdata.asp?p=2949">Allan International Holdings Limited</a> (<strong>Allan</strong>)</p>
+<p><a href="/dbpub/orgdata.asp?p=2949">Allan International Holdings Limited</a> (<strong>Allan</strong>)</p>
 <p>Dear Directors,</p>
 <p>You will soon be convening a board meeting to approve and release results for the year ended 31-Mar-2024. It will be 
 nice to learn how our business has been doing since 30-Sep-2023, over 8 months ago. The
@@ -208,7 +208,7 @@ dated 13-Jul-2023, the Cheung family and its associated parties hold 62.72%. Tha
 Cheung-family directors may regard the stock price to be as cheap as I do, but now that I am over 13%, they cannot buy shares, 
 and nor can the company repurchase shares, without reducing the public float further below the 25% minimum in the 
 Listing Rules.</p>
-<p>The last <a href="https://webb-site.com/dbpub/sdiissue.asp?i=941">director purchase</a> was on 30-Aug-2021 at $1.85. The only way 
+<p>The last <a href="/dbpub/sdiissue.asp?i=941">director purchase</a> was on 30-Aug-2021 at $1.85. The only way 
 to reopen that door is to persuade me to reduce my stake, rather than keep increasing it, and the only way I will do 
 that is if you bring the stock much closer to fair value by returning surplus capital, which is in the interests of all 
 shareholders, including the Cheung family. If you now distribute half of the net cash and investments ($0.69 per share), 
@@ -234,26 +234,26 @@ It's our company's 60th anniversary. You know what you need to do.</p>
 		<h4>Organisations in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=2949">ALLAN INTERNATIONAL HOLDINGS LIMITED</a></li>
+				<li><a href="/dbpub/articles.asp?p=2949">ALLAN INTERNATIONAL HOLDINGS LIMITED</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=30534892">De'Longhi S.p.A.</a></li>
+				<li><a href="/dbpub/articles.asp?p=30534892">De'Longhi S.p.A.</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=30534890">Groupe SEB</a></li>
+				<li><a href="/dbpub/articles.asp?p=30534890">Groupe SEB</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=36881">Koninklijke Philips Electronics N.V.</a></li>
+				<li><a href="/dbpub/articles.asp?p=36881">Koninklijke Philips Electronics N.V.</a></li>
 				
 		</ul>
 	
 		<h4>Topics in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=118">Corporate governance - general</a></li>
+				<li><a href="/dbpub/subject.asp?c=118">Corporate governance - general</a></li>
 				
 		</ul>
 	<hr>
-<p><a href="https://webb-site.com/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
-<p><a href="https://webb-site.com/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
-<p><a href="https://webb-site.com/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
 <p><a href="allan240604.asp#top">Back to top</a></p>
 <hr>
 </div>

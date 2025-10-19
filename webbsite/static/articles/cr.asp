@@ -189,7 +189,7 @@ the Court of Final Appeal, in a judgment (<a href="https://legalref.judiciary.hk
 involving another TF (the Communications Authority), confirmed what we had long believed: 
 the registry as a government service was supposed to cover its costs, not make a 
 stonking great profit. As the economies of scale kicked in with increasing 
-usage (<a href="https://webb-site.com/dbpub/incHKannual.asp" target="_blank">statistics 
+usage (<a href="/dbpub/incHKannual.asp" target="_blank">statistics 
 here</a>), it should have cut its tariff, but failed to do so. The CFA ruling states 
 that unless 
 the enabling legislation includes the purpose of making a profit or levying a 

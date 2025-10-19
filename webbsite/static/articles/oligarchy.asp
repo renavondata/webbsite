@@ -400,7 +400,7 @@ more normal conditions.</p>
 gaming, chat and payment firm <a href="../dbpub/orgdata.asp?p=21290">Tencent 
 Holdings Ltd</a> (0700), which listed in 2004 and closed on 31-Jul-2017 with a 
 market cap of HK$2,977bn (US$381.7bn), or 9.34% of the
-<a href="https://webb-site.com/dbpub/mcaphist.asp?e=a&amp;s=mcpdn&amp;t=s&amp;d=2017-07-31" target="_blank">
+<a href="/dbpub/mcaphist.asp?e=a&amp;s=mcpdn&amp;t=s&amp;d=2017-07-31" target="_blank">
 entire HK market of HK$31,878m</a>. 10 years earlier, Tencent
 <a href="../dbpub/outstanding.asp?i=3601">was worth</a> just HK$64.53bn, and 
 it was even smaller when it listed, at just HK$6.2bn.</p>

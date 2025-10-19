@@ -200,7 +200,7 @@ market? Will they do so if Singapore does?</p>
 bond market in Hong Kong. They should look in the mirror - it's their own fault. 
 There is certainly no shortage of bond issues, many of which are listed on the 
 Stock Exchange of Hong Kong Ltd (<strong>SEHK</strong>) owned by
-<a href="https://webb-site.com/dbpub/articles.asp?p=9643">Hong Kong Exchanges 
+<a href="/dbpub/articles.asp?p=9643">Hong Kong Exchanges 
 and Clearing Ltd</a> (<strong>HKEX</strong>, 0388), but these bonds hardly ever 
 trade on the exchange. Bonds are traded by banks in the so-called "Over The 
 Counter" (<strong>OTC</strong>) market, which in practice means by phone or 
@@ -232,10 +232,10 @@ per share for those, or you can buy some more from us for $11 per share". They
 must go to the market and get you the best price.</p>
 <p>How bad is it? Take for example, the RMB4.3bn 2-year PRC RMB bond maturing 
 4-Dec-2019 (stock code 86650), which has
-<a href="https://webb-site.com/dbpub/hpu.asp?i=25573" target="_blank">never 
+<a href="/dbpub/hpu.asp?i=25573" target="_blank">never 
 traded</a> on SEHK. And it's not just RMB bonds - for example, the HK$4.8bn 
 HKSAR Government 10-year bond maturing 17-Jan-2023 (stock code 4215) has
-<a href="https://webb-site.com/dbpub/hpu.asp?i=10566" target="_blank">trades 
+<a href="/dbpub/hpu.asp?i=10566" target="_blank">trades 
 reported</a> to SEHK on just 6 days in over 5 years since issue, with turnover 
 totalling just HK$13.82m, or less than 0.3% of the issue in over 5 years.</p>
 <p>The HKMA's
@@ -306,7 +306,7 @@ the price he gets, as there is no publicly traded market.</p>
 <p>Meanwhile, let us not forget that the banks and their insurance affiliates 
 have 2 seats in the Legislative Council and 38 seats (including the 2 
 legislators) on the 1200-member
-<a href="https://webb-site.com/dbpub/officers.asp?p=8576&amp;sort=posup&amp;d=&amp;u=0" target="_blank">
+<a href="/dbpub/officers.asp?p=8576&amp;sort=posup&amp;d=&amp;u=0" target="_blank">
 Election Committee</a> that selects HK's Chief Executive. That may not seem like 
 much, but members from other sectors work together to reciprocate favours and 
 preserve each other's interests. It's the same system that deferred the 

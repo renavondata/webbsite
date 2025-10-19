@@ -231,7 +231,7 @@ HSBC</a> to allow its retail clients to use StockMax, an ALP that could have
 provided price improvement and faster execution for clients by allowing them to 
 deal inside the often wide minimum bid-offer spread on SEHK and to at least 
 bypass the SEHK queue. At the last minute, the SFC
-<a href="https://webb-site.com/articles/stockmin.asp">revoked</a> its approval 
+<a href="/articles/stockmin.asp">revoked</a> its approval 
 for retail access, and it was only 16 months later that it indirectly
 <a href="stockmax2.asp">explained why</a>; HSBC had proposed 
 StockMax as an opt-in service but had then changed its mind to make it an 

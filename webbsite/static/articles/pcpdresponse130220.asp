@@ -226,7 +226,7 @@ One of the
 key elements of good governance is transparency and accountability, and the 
 information that is needed to achieve that. Over the years, I have added 
 functionality to the site which allows users to know more about the people and 
-companies of Hong Kong and China, amongst others. There is now a "<a href="https://webb-site.com/dbpub/">Webb-site 
+companies of Hong Kong and China, amongst others. There is now a "<a href="/dbpub/">Webb-site 
 Who's Who</a>" (<b style="mso-bidi-font-weight:normal">WWW</b>) database, which 
 includes all the directors of HK-listed companies since 1990. We also cover 
 membership of statutory and advisory boards (in most cases since about 2000), 

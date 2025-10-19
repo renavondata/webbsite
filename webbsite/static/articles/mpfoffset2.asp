@@ -273,7 +273,7 @@ rate of return. During the same period, asset managers, custodians,
 administrators, trustees, auditors and others took out an average of about 2% 
 p.a., so the gross real return was about 5%. Therefore 2/5, or 40% of that real return went in 
 costs. By comparison, the Tracker Fund of HK (2800) had a
-<a href="https://webb-site.com/dbpub/ctr.asp?i1=5295&amp;rel=0&amp;d1=2000-12-29" target="_blank">
+<a href="/dbpub/ctr.asp?i1=5295&amp;rel=0&amp;d1=2000-12-29" target="_blank">
 total return</a> over that period of 7.5% p.a. (ignoring dealing costs), or 
 about 5.7% after inflation.</p>
 <p>So independent savers could have done far better than pay away 2% per year to 

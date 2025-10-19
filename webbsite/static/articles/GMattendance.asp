@@ -235,7 +235,7 @@ the date of the previous AGM and sending out the next annual report. The figures
 might also be aggregated if there were several GMs in one year, so that it is 
 impossible to know which directors attended which GMs.</p>
 <p>Following the successful conclusion of Webb-site's 2003
-<a href="https://webb-site.com/dbpub/subject.asp?c=172">Project Poll</a> 
+<a href="/dbpub/subject.asp?c=172">Project Poll</a> 
 campaign, since 2009,
 <a href="http://en-rules.hkex.com.hk/en/display/display_main.html?rbid=4476&amp;element_id=2553" target="_blank">
 Listing Rule 13.39(5)</a> has required that all meetings must be voted by poll 

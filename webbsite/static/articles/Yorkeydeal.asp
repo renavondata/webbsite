@@ -203,7 +203,7 @@ That was a gesture of goodwill on our part, to improve the optics.</p>
 <p>So, we recommend all shareholders of Yorkey to vote in favour of the 
 transaction. To other companies in which we hold a blocking stake of more than 
 10% of the independent shares (some of which are in our
-<a href="https://webb-site.com/dbpub/webbchips.asp">"Webb chips" disclosed 
+<a href="/dbpub/webbchips.asp">"Webb chips" disclosed 
 holdings</a>), we would just say that our door is always open to 
 privatise at a reasonable price, if you decide that the costs of being a small listed 
 company are no longer worth the benefits.</p>

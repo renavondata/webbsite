@@ -261,7 +261,7 @@ of the problem - the fact
 that corporate voting entrenches the tycoons as proxies for Beijing control and 
 requires the HKSAR Government to place the interests of Beijing and the tycoons 
 ahead of the public interest. We
-<a href="https://webb-site.com/articles/outcome.asp#CV">again urge the HKSAR 
+<a href="/articles/outcome.asp#CV">again urge the HKSAR 
 Government</a> to address this by tabling legislation to abolish corporate 
 voting and replacing it with workers' votes in each of the relevant sub-sectors 
 and constituencies, with Election Committee seats allocated to each sub-sector 

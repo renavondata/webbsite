@@ -4,18 +4,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="https://webb-site.com/templates/main.css">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
 <title>Webb-site Reports</title>
 </head>
 <body>
 
 <div id="banner" style="background-color:blue">
 	<div class="box1">
-		<a href="https://webb-site.com/" class="nodec">
+		<a href="/" class="nodec">
 		<span style="font-size:1.6em;margin:0"><b>Webb-site Reports</b></span><br>
 		<span style="font-size:0.9em"><b>News, analysis and opinions since 1998</b></span></a><br>
 		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
-			<a type="application/rss+xml" href="https://webb-site.com/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
 			<div id="social" style="float:right;margin-left:2px">
 				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="https://webb-site.com/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
 				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="https://webb-site.com/images/facebook28x28.png" style="margin-left:2px"></a>
@@ -24,12 +24,12 @@
 		<label for="menuchk" id="menubtn">Menu</label>
 		<div id="loginbtn">
 			
-				<a href="https://webb-site.com/webbmail/login.asp" class="nodec">log in</a>
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
 			
 		</div>
 		<div class="clear"></div>
 		<div id="volunteer">
-			<a href="https://webb-site.com/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
 		</div>
 		<label for="srchchk" id="srchbtn">search</label>
 	</div>
@@ -76,62 +76,62 @@
 	<div class="hnav">
 		<input type="checkbox" id="menuchk" style="display:none">
 		<ul>
-		<li><a href="https://webb-site.com/">Home</a></li>
-		<li><a href="https://webb-site.com/dbpub/">Database</a></li>
-		<li><a href="https://webb-site.com/webbmail/login.asp">User</a>
+		<li><a href="/">Home</a></li>
+		<li><a href="/dbpub/">Database</a></li>
+		<li><a href="/webbmail/login.asp">User</a>
 			<ul>
 				
-					<li><a href="https://webb-site.com/webbmail/login.asp">Log in</a></li>
+					<li><a href="/webbmail/login.asp">Log in</a></li>
 				
-				<li><a href="https://webb-site.com/webbmail/join.asp">Sign up</a></li>
-				<li><a href="https://webb-site.com/webbmail/forgot.asp">Forgot password</a></li>
+				<li><a href="/webbmail/join.asp">Sign up</a></li>
+				<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
 				
 			</ul>
 		</li>
 		<li><a href="index.html">Archive</a></li>
-		<li><a href="https://webb-site.com/pages/tools.asp">Tools</a>
+		<li><a href="/pages/tools.asp">Tools</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/howtovote.asp">How to vote</a></li>
-				<li><a href="https://webb-site.com/library/">Reference library</a></li>
-				<li><a href="https://webb-site.com/cg/">CG directory</a></li>
+				<li><a href="/pages/howtovote.asp">How to vote</a></li>
+				<li><a href="/library/">Reference library</a></li>
+				<li><a href="/cg/">CG directory</a></li>
 				<li><a href="https://www.icris.cr.gov.hk/csci/login_i.do?loginType=iguest&OPT_01=1&OPT_02=1&OPT_03=1&OPT_04=1&OPT_05=1&OPT_06=1&OPT_07=1&OPT_08=1&OPT_09=1">Companies Registry</a></li>
 				<li><a href="http://sdinotice.hkex.com.hk/di/NSSrchMethod.aspx?src=MAIN&lang=EN&in=1">Dealing disclosures</a></li>
 				<li><a href="http://www.hsi.com.hk">Hang Seng Index</a></li>
 				<li><a href="http://legalref.judiciary.gov.hk/lrs/common/ju/newjudgments.jsp">Judgments</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/vote/">Polls</a></li>
-		<li><a href="https://webb-site.com/pages/hallofshame.asp">Hall of Shame</a></li>
-		<li><a href="https://webb-site.com/pages/stuff.asp">Other stuff</a>
+		<li><a href="/vote/">Polls</a></li>
+		<li><a href="/pages/hallofshame.asp">Hall of Shame</a></li>
+		<li><a href="/pages/stuff.asp">Other stuff</a>
 			<ul>
-				<li><a href="https://webb-site.com/HAMS/">HAMS proposal</a></li>
-				<li><a href="https://webb-site.com/pages/electiondisclosures.asp">Election returns</a></li>
+				<li><a href="/HAMS/">HAMS proposal</a></li>
+				<li><a href="/pages/electiondisclosures.asp">Election returns</a></li>
 				<li><a href="PECSregister.asp">PECS register</a></li>
-				<li><a href="https://webb-site.com/pages/loopholes.asp">Listing Loopholes</a></li>
-				<li><a href="https://webb-site.com/books/">Webb-Books</a></li>
-				<li><a href="https://webb-site.com/news/">Old newsletters</a></li>
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=160">Laughing Stock</a></li>
+				<li><a href="/pages/loopholes.asp">Listing Loopholes</a></li>
+				<li><a href="/books/">Webb-Books</a></li>
+				<li><a href="/news/">Old newsletters</a></li>
+				<li><a href="/dbpub/subject.asp?c=160">Laughing Stock</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page">Flight arrivals</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/departures/passenger.page">Flight departures</a></li>
 				<li><a href="https://www.liveatc.net/search/?icao=HKG">Air traffic radio</a></li>
 				<li><a href="https://www.hkemobility.gov.hk/en/traffic-information/live/cctv">Road traffic</a></li>
 				<li><a href="https://www.weather.gov.hk/en/">Weather</a></li>
-				<li><a href="https://webb-site.com/dbpub/idcheck.asp">HKID check digit</a></li>
-				<li><a href="https://webb-site.com/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
+				<li><a href="/dbpub/idcheck.asp">HKID check digit</a></li>
+				<li><a href="/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/about.asp">About</a>
+		<li><a href="/pages/about.asp">About</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/aboutus.asp">About us</a></li>
-				<li><a href="https://webb-site.com/photos/">Webb-Photos</a></li>
-				<li><a href="https://webb-site.com/pages/mediaroom.asp">Media room</a></li>
-				<li><a href="https://webb-site.com/dbpub/webbchips.asp">Webb-chips</a></li>
-				<li><a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></li>
+				<li><a href="/pages/aboutus.asp">About us</a></li>
+				<li><a href="/photos/">Webb-Photos</a></li>
+				<li><a href="/pages/mediaroom.asp">Media room</a></li>
+				<li><a href="/dbpub/webbchips.asp">Webb-chips</a></li>
+				<li><a href="/pages/privacypolicy.asp">Privacy policy</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/contact/">Contact</a></li>
-		<li><a href="https://webb-site.com/pages/refer.asp">Tell a Friend!</a></li>
-		<li><a href="https://webb-site.com/pages/hkradio.asp">Radio</a>
+		<li><a href="/contact/">Contact</a></li>
+		<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		<li><a href="/pages/hkradio.asp">Radio</a>
 			<ul>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio1">RTHK 1</a></li>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio2">RTHK 2</a></li>
@@ -145,7 +145,7 @@
 				<li><a target="_blank" href="https://www.bbc.co.uk/sounds/player/bbc_world_service">BBC World Service</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/TV.asp">TV</a>
+		<li><a href="/pages/TV.asp">TV</a>
 			<ul>
 				<li><a target="_blank" href="https://www.abc.net.au/news/newschannel/">ABC News (Australia)</a></li>
 				<li><a target="_blank" href="https://www.aljazeera.com/live">Al Jazeera</a></li>
@@ -173,7 +173,7 @@
 <p>The HK Government keeps a register, which is &quot;open to public inspection&quot; but 
 not online, of approvals for Post-service Employment of senior Civil Servants, 
 or what we call the <strong>PECS Register</strong>. The Government is advised on 
-such approvals by the <a href="https://webb-site.com/dbpub/officers.asp?p=46264">Advisory Committee on Post-service Employment of Civil 
+such approvals by the <a href="/dbpub/officers.asp?p=46264">Advisory Committee on Post-service Employment of Civil 
 Servants</a> (<strong>ACPECS</strong>) since October 1987. As a community 
 service, on this page are documents which you won't yet find on the Civil 
 Service Bureau (<strong>CSB</strong>) web site. For more background, see our
@@ -193,94 +193,94 @@ inspection.</p>
 		<th>Organisation</th>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2006_09FungBoscoCheeKeung.pdf">09/2006</a></td>
+		<td><a href="/codocs/PECS/2006_09FungBoscoCheeKeung.pdf">09/2006</a></td>
 		<td>Bosco Fung Chee Keung</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=7402">Chinese University of Hong Kong</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=7402">Chinese University of Hong Kong</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2006_10PangTsanWing.pdf">10/2006</a></td>
+		<td><a href="/codocs/PECS/2006_10PangTsanWing.pdf">10/2006</a></td>
 		<td>Kenneth Pang Tsan Wing</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2006_11PangTsanWing.pdf">11/2006</a></td>
+		<td><a href="/codocs/PECS/2006_11PangTsanWing.pdf">11/2006</a></td>
 		<td>Kenneth Pang Tsan Wing</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2006_12PangTsanWing.pdf">12/2006</a></td>
+		<td><a href="/codocs/PECS/2006_12PangTsanWing.pdf">12/2006</a></td>
 		<td>Kenneth Pang Tsan Wing</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=52223">Lincoln Institute of Land Policy, USA</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=52223">Lincoln Institute of Land Policy, USA</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2007_02LeungChinMan.pdf">02/2007</a></td>
+		<td><a href="/codocs/PECS/2007_02LeungChinMan.pdf">02/2007</a></td>
 		<td>Leung Chin Man</td>
 		<td>Trust Company International Pty Ltd</td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2007_03LeungChinMan.pdf">03/2007</a></td>
+		<td><a href="/codocs/PECS/2007_03LeungChinMan.pdf">03/2007</a></td>
 		<td>Leung Chin Man</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=27720">PuraPharm International (HK) Ltd</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=27720">PuraPharm International (HK) Ltd</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2007_14ChiangAllanYamWang.pdf">14/2007</a></td>
+		<td><a href="/codocs/PECS/2007_14ChiangAllanYamWang.pdf">14/2007</a></td>
 		<td>Allan Chiang Yam Wang</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=30506">Hong Kong Design Centre</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=30506">Hong Kong Design Centre</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2007_16TsuiShungYiu.pdf">16/2007</a></td>
+		<td><a href="/codocs/PECS/2007_16TsuiShungYiu.pdf">16/2007</a></td>
 		<td>Tsui Shung Yiu</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=23212">Shun Tak-China Travel Ship Management Ltd</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=23212">Shun Tak-China Travel Ship Management Ltd</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2007_25FungBoscoCheeKeung.pdf">25/2007</a></td>
+		<td><a href="/codocs/PECS/2007_25FungBoscoCheeKeung.pdf">25/2007</a></td>
 		<td>Bosco Fung Chee Keung</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=14782">Hong Kong Housing Society</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2008_04MakSinPing.pdf">04/2008</a></td>
+		<td><a href="/codocs/PECS/2008_04MakSinPing.pdf">04/2008</a></td>
 		<td>Mak Sin Ping</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=7402">Chinese University of Hong Kong</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=7402">Chinese University of Hong Kong</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2008_14ChiuLeeLee.pdf">14/2008</a></td>
+		<td><a href="/codocs/PECS/2008_14ChiuLeeLee.pdf">14/2008</a></td>
 		<td>Chiu Lee Lee</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=11586">Hospital Authority</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=11586">Hospital Authority</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2008_17ChuPuiHing.pdf">17/2008</a></td>
+		<td><a href="/codocs/PECS/2008_17ChuPuiHing.pdf">17/2008</a></td>
 		<td>Chu Pui Hing</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=52227">Health and Lifestyle Broadcast Co. Ltd.</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=52227">Health and Lifestyle Broadcast Co. Ltd.</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2008_26LaiKoRebeccaWingYee.pdf">26/2008</a></td>
+		<td><a href="/codocs/PECS/2008_26LaiKoRebeccaWingYee.pdf">26/2008</a></td>
 		<td>Rebecca Lai Ko Wing Yee</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=52224">Chinese Rhenish Church Hong Kong</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=52224">Chinese Rhenish Church Hong Kong</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2009_03YenTonyYuenHo.pdf">03/2009</a></td>
+		<td><a href="/codocs/PECS/2009_03YenTonyYuenHo.pdf">03/2009</a></td>
 		<td>Tony Yen Yuen Ho</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=507">Winsor Industrial Corporation Ltd</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=507">Winsor Industrial Corporation Ltd</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2009_04KwokKwokChuen.pdf">04/2009</a></td>
+		<td><a href="/codocs/PECS/2009_04KwokKwokChuen.pdf">04/2009</a></td>
 		<td>Kwok Kwok Chuen</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=52225">Asianomics Limited</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=52225">Asianomics Limited</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2009_09LaiAlanNin.pdf">09/2009</a></td>
+		<td><a href="/codocs/PECS/2009_09LaiAlanNin.pdf">09/2009</a></td>
 		<td>Alan Lai Nin</td>
 		<td><a href="http://www.ombudsman.gov.hk">Office of The Ombudsman</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2009_14CheungHauWai.pdf">14/2009</a></td>
+		<td><a href="/codocs/PECS/2009_14CheungHauWai.pdf">14/2009</a></td>
 		<td>Cheung Hau Wai</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=16864">Urban Renewal Authority</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=16864">Urban Renewal Authority</a></td>
 	</tr>
 	<tr>
-		<td><a href="https://webb-site.com/codocs/PECS/2009_20LaiKoRebeccaWingYee.pdf">20/2009</a></td>
+		<td><a href="/codocs/PECS/2009_20LaiKoRebeccaWingYee.pdf">20/2009</a></td>
 		<td>Rebecca Lai Ko Wing Yee</td>
-		<td><a href="https://webb-site.com/dbpub/orgdata.asp?p=52226">China Graduate School of Theology</a></td>
+		<td><a href="/dbpub/orgdata.asp?p=52226">China Graduate School of Theology</a></td>
 	</tr>
 </table>
 <h4>Update, 17-Nov-09</h4>
@@ -291,10 +291,10 @@ grasp of modern technology, they printed it out and scanned it back in again, so
 blame them for the large, non-searchable file. As there is more than one entry 
 per page of this new register, we will simply upload it in the format received. 
 At a glance, the only new entry is on the last page:</p>
-<p class="center"><a href="https://webb-site.com/codocs/PECS/PECSregister091107.pdf">The scanned 
+<p class="center"><a href="/codocs/PECS/PECSregister091107.pdf">The scanned 
 register, as at 7-Nov-2009</a></p>
 <p class="center"><strong>For subsequent updates, </strong>
-<a href="https://webb-site.com/dbpub/articles.asp?p=46264"><strong>click here</strong></a>.</p>
+<a href="/dbpub/articles.asp?p=46264"><strong>click here</strong></a>.</p>
 <h3>ACPECS annual reports</h3>
 <p>The CSB keeps deleting annual reports from its web site, only keeping the 
 last 5 years. Unit the CSB learns how to web-serve the public better, Webb-site.com will 
@@ -307,79 +307,79 @@ Here they are:</p>
 	</tr>
 	<tr>
 		<td>1</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9002.pdf">Feb-1990</a></td>
+		<td><a href="/codocs/PECS/Report9002.pdf">Feb-1990</a></td>
 	</tr>
 	<tr>
 		<td>2</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9106.pdf">Jun-1991</a></td>
+		<td><a href="/codocs/PECS/Report9106.pdf">Jun-1991</a></td>
 	</tr>
 	<tr>
 		<td>3</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9205.pdf">May-1992</a></td>
+		<td><a href="/codocs/PECS/Report9205.pdf">May-1992</a></td>
 	</tr>
 	<tr>
 		<td>4</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9305.pdf">May-1993</a></td>
+		<td><a href="/codocs/PECS/Report9305.pdf">May-1993</a></td>
 	</tr>
 	<tr>
 		<td>5</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9408.pdf">Aug-1994</a></td>
+		<td><a href="/codocs/PECS/Report9408.pdf">Aug-1994</a></td>
 	</tr>
 	<tr>
 		<td>6</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9503.pdf">31-Mar-1995</a></td>
+		<td><a href="/codocs/PECS/Report9503.pdf">31-Mar-1995</a></td>
 	</tr>
 	<tr>
 		<td>7</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9603.pdf">31-Mar-1996</a></td>
+		<td><a href="/codocs/PECS/Report9603.pdf">31-Mar-1996</a></td>
 	</tr>
 	<tr>
 		<td>8</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9703.pdf">31-Mar-1997</a></td>
+		<td><a href="/codocs/PECS/Report9703.pdf">31-Mar-1997</a></td>
 	</tr>
 	<tr>
 		<td>9</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9712.pdf">31-Dec-1997</a></td>
+		<td><a href="/codocs/PECS/Report9712.pdf">31-Dec-1997</a></td>
 	</tr>
 	<tr>
 		<td>10</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9812.pdf">31-Dec-1998</a></td>
+		<td><a href="/codocs/PECS/Report9812.pdf">31-Dec-1998</a></td>
 	</tr>
 	<tr>
 		<td>11</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report9912.pdf">31-Dec-1999</a></td>
+		<td><a href="/codocs/PECS/Report9912.pdf">31-Dec-1999</a></td>
 	</tr>
 	<tr>
 		<td>12</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0012.pdf">31-Dec-2000</a></td>
+		<td><a href="/codocs/PECS/Report0012.pdf">31-Dec-2000</a></td>
 	</tr>
 	<tr>
 		<td>13</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0112.pdf">31-Dec-2001</a></td>
+		<td><a href="/codocs/PECS/Report0112.pdf">31-Dec-2001</a></td>
 	</tr>
 	<tr>
 		<td>14</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0212.pdf">31-Dec-2002</a></td>
+		<td><a href="/codocs/PECS/Report0212.pdf">31-Dec-2002</a></td>
 	</tr>
 	<tr>
 		<td>15</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0312.pdf">31-Dec-2003</a></td>
+		<td><a href="/codocs/PECS/Report0312.pdf">31-Dec-2003</a></td>
 	</tr>
 	<tr>
 		<td>16</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0412.pdf">31-Dec-2004</a></td>
+		<td><a href="/codocs/PECS/Report0412.pdf">31-Dec-2004</a></td>
 	</tr>
 	<tr>
 		<td>17</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0512.pdf">31-Dec-2005</a></td>
+		<td><a href="/codocs/PECS/Report0512.pdf">31-Dec-2005</a></td>
 	</tr>
 	<tr>
 		<td>18</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0612.pdf">31-Dec-2006</a></td>
+		<td><a href="/codocs/PECS/Report0612.pdf">31-Dec-2006</a></td>
 	</tr>
 	<tr>
 		<td>19</td>
-		<td><a href="https://webb-site.com/codocs/PECS/Report0712.pdf">31-Dec-2007</a></td>
+		<td><a href="/codocs/PECS/Report0712.pdf">31-Dec-2007</a></td>
 	</tr>
 </table>
 <p><em>&copy; Webb-site.com, 2009</em></p>
@@ -388,13 +388,13 @@ Here they are:</p>
 		<h4>Organisations in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=46264">HKSAR Advisory Committee on Post-service Employment of Civil Servants</a></li>
+				<li><a href="/dbpub/articles.asp?p=46264">HKSAR Advisory Committee on Post-service Employment of Civil Servants</a></li>
 				
 		</ul>
 	<hr>
-<p><a href="https://webb-site.com/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
-<p><a href="https://webb-site.com/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
-<p><a href="https://webb-site.com/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
 <p><a href="PECSregister.asp#top">Back to top</a></p>
 <hr>
 </div>

@@ -192,7 +192,7 @@ Kong dollar Bank of China banknotes
 signature</a>, although most of them have worn out and been withdrawn from 
 circulation. We also have several certificates for 2 shares each with his 
 signature, left over from our
-<a href="https://webb-site.com/dbpub/subject.asp?c=172" target="_blank">Project 
+<a href="/dbpub/subject.asp?c=172" target="_blank">Project 
 Poll</a> in 2003.</p>
 <p>So if anyone out there has a Huarong Lai Xiaomin share certificate for one board lot (1000 
 shares) or less, given that the company is reducing supply, you might want to 

@@ -284,7 +284,7 @@ at 1 Lincoln Road, Kowloon Tong, in exchange for new FWF shares, increasing
 CSPT's holding in FWF to 18.78%.</p>
 <p>In the other leg of the cross-holding, FWF owns 7.27% of CSPT and has a 
 securities margin account at CSPT's 100%-owned broker, Central Wealth Securities 
-Investment Ltd (<a href="https://webb-site.com/ccass/cholder.asp?part=1105&amp;d=10/19/2018&amp;z=0&amp;sort=valndn" target="_blank">CCASS 
+Investment Ltd (<a href="/ccass/cholder.asp?part=1105&amp;d=10/19/2018&amp;z=0&amp;sort=valndn" target="_blank">CCASS 
 holdings here</a>), with a maximum margin loan of HK$100m. FWF owns 4.39% of CMBC at 
 30-Jun-2018. The connected transactions with CSPT, including the expanded loan 
 facility, were approved in an EGM of FWF on 6-Aug-2018.</p>

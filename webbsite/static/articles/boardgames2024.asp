@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="https://webb-site.com/templates/main.css">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
 <title>Webb-site Reports</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
 		<span style="font-size:1.6em;margin:0"><b>Webb-site Reports</b></span><br>
 		<span style="font-size:0.9em"><b>News, analysis and opinions since 1998</b></span></a><br>
 		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
-			<a type="application/rss+xml" href="https://webb-site.com/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
 			<div id="social" style="float:right;margin-left:2px">
 				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="https://webb-site.com/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
 				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="https://webb-site.com/images/facebook28x28.png" style="margin-left:2px"></a>
@@ -24,12 +24,12 @@
 		<label for="menuchk" id="menubtn">Menu</label>
 		<div id="loginbtn">
 			
-				<a href="https://webb-site.com/webbmail/login.asp" class="nodec">log in</a>
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
 			
 		</div>
 		<div class="clear"></div>
 		<div id="volunteer">
-			<a href="https://webb-site.com/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
 		</div>
 		<label for="srchchk" id="srchbtn">search</label>
 	</div>
@@ -77,61 +77,61 @@
 		<input type="checkbox" id="menuchk" style="display:none">
 		<ul>
 		<li><a href="../index.html">Home</a></li>
-		<li><a href="https://webb-site.com/dbpub/">Database</a></li>
-		<li><a href="https://webb-site.com/webbmail/login.asp">User</a>
+		<li><a href="/dbpub/">Database</a></li>
+		<li><a href="/webbmail/login.asp">User</a>
 			<ul>
 				
-					<li><a href="https://webb-site.com/webbmail/login.asp">Log in</a></li>
+					<li><a href="/webbmail/login.asp">Log in</a></li>
 				
-				<li><a href="https://webb-site.com/webbmail/join.asp">Sign up</a></li>
-				<li><a href="https://webb-site.com/webbmail/forgot.asp">Forgot password</a></li>
+				<li><a href="/webbmail/join.asp">Sign up</a></li>
+				<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
 				
 			</ul>
 		</li>
 		<li><a href="index.html">Archive</a></li>
-		<li><a href="https://webb-site.com/pages/tools.asp">Tools</a>
+		<li><a href="/pages/tools.asp">Tools</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/howtovote.asp">How to vote</a></li>
-				<li><a href="https://webb-site.com/library/">Reference library</a></li>
-				<li><a href="https://webb-site.com/cg/">CG directory</a></li>
+				<li><a href="/pages/howtovote.asp">How to vote</a></li>
+				<li><a href="/library/">Reference library</a></li>
+				<li><a href="/cg/">CG directory</a></li>
 				<li><a href="https://www.icris.cr.gov.hk/csci/login_i.do?loginType=iguest&OPT_01=1&OPT_02=1&OPT_03=1&OPT_04=1&OPT_05=1&OPT_06=1&OPT_07=1&OPT_08=1&OPT_09=1">Companies Registry</a></li>
 				<li><a href="http://sdinotice.hkex.com.hk/di/NSSrchMethod.aspx?src=MAIN&lang=EN&in=1">Dealing disclosures</a></li>
 				<li><a href="http://www.hsi.com.hk">Hang Seng Index</a></li>
 				<li><a href="http://legalref.judiciary.gov.hk/lrs/common/ju/newjudgments.jsp">Judgments</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/vote/">Polls</a></li>
-		<li><a href="https://webb-site.com/pages/hallofshame.asp">Hall of Shame</a></li>
-		<li><a href="https://webb-site.com/pages/stuff.asp">Other stuff</a>
+		<li><a href="/vote/">Polls</a></li>
+		<li><a href="/pages/hallofshame.asp">Hall of Shame</a></li>
+		<li><a href="/pages/stuff.asp">Other stuff</a>
 			<ul>
-				<li><a href="https://webb-site.com/HAMS/">HAMS proposal</a></li>
-				<li><a href="https://webb-site.com/pages/electiondisclosures.asp">Election returns</a></li>
+				<li><a href="/HAMS/">HAMS proposal</a></li>
+				<li><a href="/pages/electiondisclosures.asp">Election returns</a></li>
 				<li><a href="PECSregister.asp">PECS register</a></li>
-				<li><a href="https://webb-site.com/pages/loopholes.asp">Listing Loopholes</a></li>
-				<li><a href="https://webb-site.com/books/">Webb-Books</a></li>
-				<li><a href="https://webb-site.com/news/">Old newsletters</a></li>
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=160">Laughing Stock</a></li>
+				<li><a href="/pages/loopholes.asp">Listing Loopholes</a></li>
+				<li><a href="/books/">Webb-Books</a></li>
+				<li><a href="/news/">Old newsletters</a></li>
+				<li><a href="/dbpub/subject.asp?c=160">Laughing Stock</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page">Flight arrivals</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/departures/passenger.page">Flight departures</a></li>
 				<li><a href="https://www.liveatc.net/search/?icao=HKG">Air traffic radio</a></li>
 				<li><a href="https://www.hkemobility.gov.hk/en/traffic-information/live/cctv">Road traffic</a></li>
 				<li><a href="https://www.weather.gov.hk/en/">Weather</a></li>
-				<li><a href="https://webb-site.com/dbpub/idcheck.asp">HKID check digit</a></li>
-				<li><a href="https://webb-site.com/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
+				<li><a href="/dbpub/idcheck.asp">HKID check digit</a></li>
+				<li><a href="/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/about.asp">About</a>
+		<li><a href="/pages/about.asp">About</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/aboutus.asp">About us</a></li>
-				<li><a href="https://webb-site.com/photos/">Webb-Photos</a></li>
-				<li><a href="https://webb-site.com/pages/mediaroom.asp">Media room</a></li>
-				<li><a href="https://webb-site.com/dbpub/webbchips.asp">Webb-chips</a></li>
-				<li><a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></li>
+				<li><a href="/pages/aboutus.asp">About us</a></li>
+				<li><a href="/photos/">Webb-Photos</a></li>
+				<li><a href="/pages/mediaroom.asp">Media room</a></li>
+				<li><a href="/dbpub/webbchips.asp">Webb-chips</a></li>
+				<li><a href="/pages/privacypolicy.asp">Privacy policy</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/contact/">Contact</a></li>
-		<li><a href="https://webb-site.com/pages/refer.asp">Tell a Friend!</a></li>
-		<li><a href="https://webb-site.com/pages/hkradio.asp">Radio</a>
+		<li><a href="/contact/">Contact</a></li>
+		<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		<li><a href="/pages/hkradio.asp">Radio</a>
 			<ul>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio1">RTHK 1</a></li>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio2">RTHK 2</a></li>
@@ -145,7 +145,7 @@
 				<li><a target="_blank" href="https://www.bbc.co.uk/sounds/player/bbc_world_service">BBC World Service</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/TV.asp">TV</a>
+		<li><a href="/pages/TV.asp">TV</a>
 			<ul>
 				<li><a target="_blank" href="https://www.abc.net.au/news/newschannel/">ABC News (Australia)</a></li>
 				<li><a target="_blank" href="https://www.aljazeera.com/live">Al Jazeera</a></li>
@@ -172,7 +172,7 @@
 
 <h2 class="center">Meaningless board games at HKEX, and how the UK FCA has just made an awful mistake<br>
 <span class="headlinedate">28 July 2024</span></h2>
-<p>Over the last quarter century, Webb-site has <a href="https://webb-site.com/dbpub/subject.asp?c=154">written repeatedly</a> about the 
+<p>Over the last quarter century, Webb-site has <a href="/dbpub/subject.asp?c=154">written repeatedly</a> about the 
 fundamental problem with Hong Kong's so-called Independent Non-Executive Directors (<strong>INEDs</strong>): they are 
 not independent. Nearly all (about 90%) of HK-listed companies have controlling shareholders, and these controllers vote 
 to elect the INEDs. So the INEDs are only as independent and competent as the controlling shareholders want them to be. 
@@ -201,7 +201,7 @@ cost of capital would make the nation more competitive.</p>
 than 6 HK-listed issuer directorships and that no INED can serve more than 9 years, both rules to become effective at 
 the AGMs to be held in 2028, and allowing them to come back on board after a 2-year cooling-off period, so they could 
 serve 18 years out of 20 or 27 out of 31.</p>
-<p>Predictably, the <a href="https://webb-site.com/dbpub/orgdata.asp?p=17399">Chamber of Hong Kong Listed Companies</a> (<strong>CHKLC</strong>) 
+<p>Predictably, the <a href="/dbpub/orgdata.asp?p=17399">Chamber of Hong Kong Listed Companies</a> (<strong>CHKLC</strong>) 
 came out last week to
 <a href="https://finance.yahoo.com/news/hong-kong-companies-hkex-micromanaging-093000849.html" target="_blank">oppose</a> 
 even these reforms, accusing SEHK of micromanagement. They do have a point: it would be far better to allow independent 
@@ -210,15 +210,15 @@ shareholder vote on the elections, that would be the case. A crappy INED with on
 from day one - there's no reason to think that they would only be crappy after 9 years or when they have more than 6 
 jobs.</p>
 <p>It's worth noting, however, that SEHK has chosen the 6-seat limit to affect
-<a href="https://webb-site.com/dbpub/dirsHKPerPerson.asp?sort=cntdn&amp;d=2023-12-31">only 23 people</a> as of 31-Dec-2023. If they had set 
+<a href="/dbpub/dirsHKPerPerson.asp?sort=cntdn&amp;d=2023-12-31">only 23 people</a> as of 31-Dec-2023. If they had set 
 the limit at 3 (the limit in mainland China) then 270 people would be "over-boarding".</p>
 <h3>The Blackout Rule and quarterly reporting</h3>
 <p>Incidentally, despite its name, don't assume that CHKLC is representative of HK-listed companies. It only has 224 
 companies in its <a href="https://chklc.org/full-members" target="_blank">membership</a>, many of them sharing the same 
-controlling shareholders, or about 8.5% of the <a href="https://webb-site.com/dbpub/listingtrend.asp">2,625 current HK-listed companies</a>. 
+controlling shareholders, or about 8.5% of the <a href="/dbpub/listingtrend.asp">2,625 current HK-listed companies</a>. 
 It is very much a fringe group with a committee <a href="https://chklc.org/general-committee" target="_blank">populated</a> 
 by representatives of HK property tycoons, although a few other large companies have, perhaps accidentally, signed up. 
-CHKLC's <a href="https://webb-site.com/dbpub/articles.asp?p=17399">history</a> includes opposing in 2009 the "Blackout Rule" which proposed 
+CHKLC's <a href="/dbpub/articles.asp?p=17399">history</a> includes opposing in 2009 the "Blackout Rule" which proposed 
 a ban on directors' share-dealing from the end of the financial period until the results were published. They
 <a href="https://www.hkex.com.hk/news/news-release/2009/090212news?sc_lang=en" target="_blank">succeeded</a>, and to 
 this day, there's an incentive to release results at the last possible moment so that directors have longer to deal in 
@@ -231,7 +231,7 @@ That was of course quietly dropped, and the requirement for quarterly reporting 
 effective 1-Jan-2024</a>.</p>
 <p>The regulators' theory is that the deterrent of being taken by the SFC to the Market Misconduct Tribunal (<strong>MMT</strong>) for withholding Inside 
 Information is sufficient to incentivise voluntary financial updates.&nbsp; It isn't. The MMT,
-<a href="https://webb-site.com/dbpub/officers.asp?p=29802&amp;hide=Y">chaired by retired judges</a>, operates with sloth-like 
+<a href="/dbpub/officers.asp?p=29802&amp;hide=Y">chaired by retired judges</a>, operates with sloth-like 
 speed and can only handle a handful of cases per year, including insider-dealing cases. We continue to frequently see full-year "profit warnings" from listed 
 companies some 8 months after their previous half-year ended, revealing earnings surprises (usually negative) that 
 should have been obvious much earlier to any competent board receiving monthly management accounts. Some institutional 
@@ -284,7 +284,7 @@ and simply says "we will provide further guidance on the areas to be covered in 
 Consultation Paper</a>.</p>
 <h3>Conclusions</h3>
 <p>These feeble proposals will do nothing to enhance corporate governance in HK and attract investors back to our market. 
-The <a href="https://webb-site.com/vote/result.asp?p=39">opinion poll we conducted in 2011</a> on the election of INEDs is as valid now as 
+The <a href="/vote/result.asp?p=39">opinion poll we conducted in 2011</a> on the election of INEDs is as valid now as 
 it was then, so we won't bother to repeat it. HKEX, with the staunch support of the HKSAR Government which controls the 
 majority of its board, continues to dodge the real issues and has spent most of the last decade weakening the rules in 
 the mistaken belief that the consequently higher-risk, lower-valuation market will somehow attract high quality listings.</p>
@@ -317,36 +317,36 @@ in the consultation paper - they try to force you to use a
 		<h4>Organisations in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=17399">CHAMBER OF HONG KONG LISTED COMPANIES (THE)</a></li>
+				<li><a href="/dbpub/articles.asp?p=17399">CHAMBER OF HONG KONG LISTED COMPANIES (THE)</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=29802">HKSAR Market Misconduct Tribunal</a></li>
+				<li><a href="/dbpub/articles.asp?p=29802">HKSAR Market Misconduct Tribunal</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=9643">HONG KONG EXCHANGES AND CLEARING LIMITED</a></li>
+				<li><a href="/dbpub/articles.asp?p=9643">HONG KONG EXCHANGES AND CLEARING LIMITED</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=825">STOCK EXCHANGE OF HONG KONG LIMITED (THE)</a></li>
+				<li><a href="/dbpub/articles.asp?p=825">STOCK EXCHANGE OF HONG KONG LIMITED (THE)</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=32114928">UK Financial Conduct Authority</a></li>
+				<li><a href="/dbpub/articles.asp?p=32114928">UK Financial Conduct Authority</a></li>
 				
 		</ul>
 	
 		<h4>Topics in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=118">Corporate governance - general</a></li>
+				<li><a href="/dbpub/subject.asp?c=118">Corporate governance - general</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=129">Dividends</a></li>
+				<li><a href="/dbpub/subject.asp?c=129">Dividends</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=154">Independent Non-Executive Directors</a></li>
+				<li><a href="/dbpub/subject.asp?c=154">Independent Non-Executive Directors</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=164">Listing rules</a></li>
+				<li><a href="/dbpub/subject.asp?c=164">Listing rules</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=177">Quarterly financial reporting</a></li>
+				<li><a href="/dbpub/subject.asp?c=177">Quarterly financial reporting</a></li>
 				
 		</ul>
 	<hr>
-<p><a href="https://webb-site.com/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
-<p><a href="https://webb-site.com/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
-<p><a href="https://webb-site.com/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
 <p><a href="boardgames2024.asp#top">Back to top</a></p>
 <hr>
 </div>

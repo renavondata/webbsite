@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" type="text/css" href="https://webb-site.com/templates/main.css">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
 <title>Webb-site Reports</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
 		<span style="font-size:1.6em;margin:0"><b>Webb-site Reports</b></span><br>
 		<span style="font-size:0.9em"><b>News, analysis and opinions since 1998</b></span></a><br>
 		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
-			<a type="application/rss+xml" href="https://webb-site.com/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="https://webb-site.com/images/RSS28x28.png"></a>
 			<div id="social" style="float:right;margin-left:2px">
 				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="https://webb-site.com/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
 				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="https://webb-site.com/images/facebook28x28.png" style="margin-left:2px"></a>
@@ -24,12 +24,12 @@
 		<label for="menuchk" id="menubtn">Menu</label>
 		<div id="loginbtn">
 			
-				<a href="https://webb-site.com/webbmail/login.asp" class="nodec">log in</a>
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
 			
 		</div>
 		<div class="clear"></div>
 		<div id="volunteer">
-			<a href="https://webb-site.com/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
 		</div>
 		<label for="srchchk" id="srchbtn">search</label>
 	</div>
@@ -77,61 +77,61 @@
 		<input type="checkbox" id="menuchk" style="display:none">
 		<ul>
 		<li><a href="../index.html">Home</a></li>
-		<li><a href="https://webb-site.com/dbpub/">Database</a></li>
-		<li><a href="https://webb-site.com/webbmail/login.asp">User</a>
+		<li><a href="/dbpub/">Database</a></li>
+		<li><a href="/webbmail/login.asp">User</a>
 			<ul>
 				
-					<li><a href="https://webb-site.com/webbmail/login.asp">Log in</a></li>
+					<li><a href="/webbmail/login.asp">Log in</a></li>
 				
-				<li><a href="https://webb-site.com/webbmail/join.asp">Sign up</a></li>
-				<li><a href="https://webb-site.com/webbmail/forgot.asp">Forgot password</a></li>
+				<li><a href="/webbmail/join.asp">Sign up</a></li>
+				<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
 				
 			</ul>
 		</li>
 		<li><a href="index.html">Archive</a></li>
-		<li><a href="https://webb-site.com/pages/tools.asp">Tools</a>
+		<li><a href="/pages/tools.asp">Tools</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/howtovote.asp">How to vote</a></li>
-				<li><a href="https://webb-site.com/library/">Reference library</a></li>
-				<li><a href="https://webb-site.com/cg/">CG directory</a></li>
+				<li><a href="/pages/howtovote.asp">How to vote</a></li>
+				<li><a href="/library/">Reference library</a></li>
+				<li><a href="/cg/">CG directory</a></li>
 				<li><a href="https://www.icris.cr.gov.hk/csci/login_i.do?loginType=iguest&OPT_01=1&OPT_02=1&OPT_03=1&OPT_04=1&OPT_05=1&OPT_06=1&OPT_07=1&OPT_08=1&OPT_09=1">Companies Registry</a></li>
 				<li><a href="http://sdinotice.hkex.com.hk/di/NSSrchMethod.aspx?src=MAIN&lang=EN&in=1">Dealing disclosures</a></li>
 				<li><a href="http://www.hsi.com.hk">Hang Seng Index</a></li>
 				<li><a href="http://legalref.judiciary.gov.hk/lrs/common/ju/newjudgments.jsp">Judgments</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/vote/">Polls</a></li>
-		<li><a href="https://webb-site.com/pages/hallofshame.asp">Hall of Shame</a></li>
-		<li><a href="https://webb-site.com/pages/stuff.asp">Other stuff</a>
+		<li><a href="/vote/">Polls</a></li>
+		<li><a href="/pages/hallofshame.asp">Hall of Shame</a></li>
+		<li><a href="/pages/stuff.asp">Other stuff</a>
 			<ul>
-				<li><a href="https://webb-site.com/HAMS/">HAMS proposal</a></li>
-				<li><a href="https://webb-site.com/pages/electiondisclosures.asp">Election returns</a></li>
+				<li><a href="/HAMS/">HAMS proposal</a></li>
+				<li><a href="/pages/electiondisclosures.asp">Election returns</a></li>
 				<li><a href="PECSregister.asp">PECS register</a></li>
-				<li><a href="https://webb-site.com/pages/loopholes.asp">Listing Loopholes</a></li>
-				<li><a href="https://webb-site.com/books/">Webb-Books</a></li>
-				<li><a href="https://webb-site.com/news/">Old newsletters</a></li>
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=160">Laughing Stock</a></li>
+				<li><a href="/pages/loopholes.asp">Listing Loopholes</a></li>
+				<li><a href="/books/">Webb-Books</a></li>
+				<li><a href="/news/">Old newsletters</a></li>
+				<li><a href="/dbpub/subject.asp?c=160">Laughing Stock</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page">Flight arrivals</a></li>
 				<li><a href="https://www.hongkongairport.com/en/flights/departures/passenger.page">Flight departures</a></li>
 				<li><a href="https://www.liveatc.net/search/?icao=HKG">Air traffic radio</a></li>
 				<li><a href="https://www.hkemobility.gov.hk/en/traffic-information/live/cctv">Road traffic</a></li>
 				<li><a href="https://www.weather.gov.hk/en/">Weather</a></li>
-				<li><a href="https://webb-site.com/dbpub/idcheck.asp">HKID check digit</a></li>
-				<li><a href="https://webb-site.com/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
+				<li><a href="/dbpub/idcheck.asp">HKID check digit</a></li>
+				<li><a href="/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/about.asp">About</a>
+		<li><a href="/pages/about.asp">About</a>
 			<ul>
-				<li><a href="https://webb-site.com/pages/aboutus.asp">About us</a></li>
-				<li><a href="https://webb-site.com/photos/">Webb-Photos</a></li>
-				<li><a href="https://webb-site.com/pages/mediaroom.asp">Media room</a></li>
-				<li><a href="https://webb-site.com/dbpub/webbchips.asp">Webb-chips</a></li>
-				<li><a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></li>
+				<li><a href="/pages/aboutus.asp">About us</a></li>
+				<li><a href="/photos/">Webb-Photos</a></li>
+				<li><a href="/pages/mediaroom.asp">Media room</a></li>
+				<li><a href="/dbpub/webbchips.asp">Webb-chips</a></li>
+				<li><a href="/pages/privacypolicy.asp">Privacy policy</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/contact/">Contact</a></li>
-		<li><a href="https://webb-site.com/pages/refer.asp">Tell a Friend!</a></li>
-		<li><a href="https://webb-site.com/pages/hkradio.asp">Radio</a>
+		<li><a href="/contact/">Contact</a></li>
+		<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		<li><a href="/pages/hkradio.asp">Radio</a>
 			<ul>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio1">RTHK 1</a></li>
 				<li><a target="_blank" href="https://www.rthk.hk/radio/radio2">RTHK 2</a></li>
@@ -145,7 +145,7 @@
 				<li><a target="_blank" href="https://www.bbc.co.uk/sounds/player/bbc_world_service">BBC World Service</a></li>
 			</ul>
 		</li>
-		<li><a href="https://webb-site.com/pages/TV.asp">TV</a>
+		<li><a href="/pages/TV.asp">TV</a>
 			<ul>
 				<li><a target="_blank" href="https://www.abc.net.au/news/newschannel/">ABC News (Australia)</a></li>
 				<li><a target="_blank" href="https://www.aljazeera.com/live">Al Jazeera</a></li>
@@ -183,13 +183,13 @@ measured in months rather than years and my symptoms and side-effects are making
 60 in August and all I want for my birthday is another one, but before I become more dysfunctional, I need to make plans 
 for the orderly conclusion of this pro bono, loss-making work rather than leave managing it as a burden for my family. 
 One of the few benefits of knowing that you're dying is being able to plan the end on your own terms.</p>
-<p>The <a href="https://webb-site.com/dbpub">Webb-site Database</a> has grown over the years to include an enormous amount of material. 
+<p>The <a href="/dbpub">Webb-site Database</a> has grown over the years to include an enormous amount of material. 
 Much of it is collected by automated methods - I kept up my coding skills from the 1980s when I wrote books and games 
 for the first generation of home computers. But even in the dawning era of artificial intelligence, there are some 
 datasets which (so far) can only be accurately maintained by human judgment, for example, carefully parsing corporate 
 announcements to determine which individual has been appointed to a board, as many individuals share the same name and 
-no ID numbers are disclosed. Similarly, we track the membership of over 800 HK <a href="https://webb-site.com/dbpub/cat.asp?c=3">statutory</a> 
-and <a href="https://webb-site.com/dbpub/cat.asp?c=7">advisory</a> bodies - everything from the Executive and Legislative Councils down to 
+no ID numbers are disclosed. Similarly, we track the membership of over 800 HK <a href="/dbpub/cat.asp?c=3">statutory</a> 
+and <a href="/dbpub/cat.asp?c=7">advisory</a> bodies - everything from the Executive and Legislative Councils down to 
 the Dogs and Cats Classification Board.</p>
 <p>So a loyal assistant whom I have employed for 22 years has been maintaining anything that I can't automate. All-in, 
 I've spent over HK$10m since 2003 building and operating the database, not counting the considerable opportunity cost of 
@@ -197,11 +197,11 @@ my own time. I know that the database has been useful to journalists, regulators
 as they have often told me so.</p>
 <p>A lot has happened since my cancer diagnosis, which came just after HK quarantined its borders for COVID. Since then, 
 I deciphered the pseudo-disclosure on who received over HK$90bn of hand-outs under the so-called
-<a href="https://webb-site.com/dbpub/esstop.asp">Employment Support Scheme</a>, draining a substantial portion of HK's fiscal reserves. I 
-also tracked <a href="https://webb-site.com/dbpub/vax.asp">vaccination rates</a>, <a href="https://webb-site.com/dbpub/hkpax.asp">immigration data</a> and
-<a href="https://webb-site.com/dbpub/HKflightscan.asp">airport flight statistics</a>, which we continue to collect. I've also been 
-collecting data on <a href="https://webb-site.com/dbpub/jail.asp">HK prisoners</a>, a record 39% of whom (at 30-Sep-2024) are unconvicted 
-and on remand - presumed innocent under law. And I've built a complete history of the <a href="https://webb-site.com/dbpub/govac.asp">HKSAR 
+<a href="/dbpub/esstop.asp">Employment Support Scheme</a>, draining a substantial portion of HK's fiscal reserves. I 
+also tracked <a href="/dbpub/vax.asp">vaccination rates</a>, <a href="/dbpub/hkpax.asp">immigration data</a> and
+<a href="/dbpub/HKflightscan.asp">airport flight statistics</a>, which we continue to collect. I've also been 
+collecting data on <a href="/dbpub/jail.asp">HK prisoners</a>, a record 39% of whom (at 30-Sep-2024) are unconvicted 
+and on remand - presumed innocent under law. And I've built a complete history of the <a href="/dbpub/govac.asp">HKSAR 
 Government Accounts</a> from Apr-1998 to Mar-2024, with thousands of line items. Of course, I've also made more time for 
 family, and managed to visit numerous places after the borders reopened. The bucket list is still long, but time is 
 short. </p>
@@ -220,14 +220,14 @@ effort to other datasets that we manually maintain. Even if it were, someone wou
 software and arbitrate disputes.</p>
 <p>So that leaves me out of options and nearly out of time. Accordingly, I plan the following steps:</p>
 <ol>
-	<li>All manual data collection by my assistant on <a href="https://webb-site.com/dbpub/#hkboards">directors</a> and supervisors of HK-listed 
-	companies and their <a href="https://webb-site.com/dbpub/roles.asp">advisers</a> (bankers, lawyers, auditors, financial advisors etc) 
+	<li>All manual data collection by my assistant on <a href="/dbpub/#hkboards">directors</a> and supervisors of HK-listed 
+	companies and their <a href="/dbpub/roles.asp">advisers</a> (bankers, lawyers, auditors, financial advisors etc) 
 	will cease, effective 31-Mar-2025.</li>
 	<li>The directors' pay database project will continue for financial year-ends up to 31-Dec-2024 (the Listing Rules 
 	deadline for publishing the annual reports is 30-Apr-2025). I ask the volunteers to focus on completing and 
 	verifying the dataset from 2005 to 2024. I will then make the full dataset available for download.</li>
-	<li>Automated data collection (for example, the <a href="https://webb-site.com/ccass/bigchanges.asp">CCASS Analysis System</a>,
-	<a href="https://webb-site.com/dbpub/SFClicount.asp">SFC licensees</a>, <a href="https://webb-site.com/dbpub/hksolfirms.asp">HK law firms</a>) will 
+	<li>Automated data collection (for example, the <a href="/ccass/bigchanges.asp">CCASS Analysis System</a>,
+	<a href="/dbpub/SFClicount.asp">SFC licensees</a>, <a href="/dbpub/hksolfirms.asp">HK law firms</a>) will 
 	continue until the first annual expiry date (31-Oct) for the Webb-site server (in New York State) after my death, 
 	but individual datasets may cease earlier if the collection software breaks and I am either dead or too ill to 
 	update it.</li>
@@ -274,33 +274,33 @@ I hope to get a first dump done in April, health permitting.</p>
 		<h4>Organisations in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/articles.asp?p=11118">UNIVERSITY OF HONG KONG (THE)</a></li>
+				<li><a href="/dbpub/articles.asp?p=11118">UNIVERSITY OF HONG KONG (THE)</a></li>
 				
 		</ul>
 	
 		<h4>People in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/natarts.asp?p=13215">Webb, David Michael (1965-08-29)</a></li>
+				<li><a href="/dbpub/natarts.asp?p=13215">Webb, David Michael (1965-08-29)</a></li>
 				
 		</ul>
 	
 		<h4>Topics in this story</h4>
 		<ul>
 			
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=125">Directors' remuneration</a></li>
+				<li><a href="/dbpub/subject.asp?c=125">Directors' remuneration</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=141">Free speech & transparency</a></li>
+				<li><a href="/dbpub/subject.asp?c=141">Free speech & transparency</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=144">Government intervention</a></li>
+				<li><a href="/dbpub/subject.asp?c=144">Government intervention</a></li>
 				
-				<li><a href="https://webb-site.com/dbpub/subject.asp?c=35">Immigration</a></li>
+				<li><a href="/dbpub/subject.asp?c=35">Immigration</a></li>
 				
 		</ul>
 	<hr>
-<p><a href="https://webb-site.com/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
-<p><a href="https://webb-site.com/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
-<p><a href="https://webb-site.com/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="https://webb-site.com/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
 <p><a href="shutdown.asp#top">Back to top</a></p>
 <hr>
 </div>
