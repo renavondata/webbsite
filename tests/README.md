@@ -15,20 +15,14 @@ Before the webb-site.com shutdown on **October 31, 2025**, we need to verify tha
 
 ## Installation
 
-Install test dependencies:
+Test dependencies are managed with `uv` in the `test` group. They're already added to `pyproject.toml`:
 
 ```bash
-# From repository root
-pip install -r tests/requirements-test.txt
+# Dependencies already added via:
+# uv add --group test requests pyyaml colorama beautifulsoup4 lxml
 ```
 
-Or if using the project's virtual environment:
-
-```bash
-# Activate venv first
-source .venv/bin/activate
-pip install -r tests/requirements-test.txt
-```
+No additional installation needed - just use `uv run --group test` to run tests (see below).
 
 ## Prerequisites
 
@@ -55,7 +49,7 @@ Before running tests:
 Test all 24 routes with ~60 parameter combinations:
 
 ```bash
-python tests/test_routes.py
+uv run --group test python tests/test_routes.py
 ```
 
 Expected output:
@@ -92,13 +86,13 @@ Test only routes matching a specific name:
 
 ```bash
 # Test only searchorgs routes
-python tests/test_routes.py --route searchorgs
+uv run --group test python tests/test_routes.py --route searchorgs
 
 # Test only CCASS routes
-python tests/test_routes.py --route ccass
+uv run --group test python tests/test_routes.py --route ccass
 
 # Test only articles
-python tests/test_routes.py --route articles
+uv run --group test python tests/test_routes.py --route articles
 ```
 
 ### Verbose Mode
@@ -106,7 +100,7 @@ python tests/test_routes.py --route articles
 Show detailed HTML diffs for failures:
 
 ```bash
-python tests/test_routes.py --verbose
+uv run --group test python tests/test_routes.py --verbose
 ```
 
 Example output with diff:
@@ -127,7 +121,7 @@ Testing: listed - currently listed stocks
 Archive HTML outputs for manual inspection:
 
 ```bash
-python tests/test_routes.py --save-outputs
+uv run --group test python tests/test_routes.py --save-outputs
 ```
 
 This creates `tests/outputs/` directory with files like:
@@ -144,7 +138,7 @@ Useful for:
 Use a different test configuration file:
 
 ```bash
-python tests/test_routes.py --config /path/to/custom_config.yaml
+uv run --group test python tests/test_routes.py --config /path/to/custom_config.yaml
 ```
 
 ## Test Configuration
@@ -296,7 +290,7 @@ normalize:
 
 Use `--save-outputs` to archive HTML, then open in browser:
 ```bash
-python tests/test_routes.py --route listed --save-outputs
+uv run --group test python tests/test_routes.py --route listed --save-outputs
 firefox tests/outputs/listed_currently_listed_stocks_case_1_flask.html
 firefox tests/outputs/listed_currently_listed_stocks_case_1_asp.html
 ```
@@ -328,7 +322,7 @@ jobs:
 **Important:** Run tests with `--save-outputs` to archive ASP outputs:
 
 ```bash
-python tests/test_routes.py --save-outputs
+uv run --group test python tests/test_routes.py --save-outputs
 ```
 
 This creates a permanent archive of the original ASP site's output for future reference and regression testing after the shutdown.
