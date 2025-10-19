@@ -100,6 +100,16 @@ def article(article_path):
         # Replace relative ../images/ paths with local static path
         content = re.sub(r'\.\./images/', '/static/articles/', content)
 
+        # Remove the footer section from ASP content (template will add its own footer)
+        # This pattern matches the 4-paragraph footer block that appears at the end of articles
+        footer_pattern = r'<hr>\s*' \
+                         r'<p>.*?sign up for our.*?newsletter.*?</p>\s*' \
+                         r'<p>.*?recommend.*?webb-site.*?</p>\s*' \
+                         r'<p>.*?copyright.*?disclaimer.*?privacy policy.*?</p>\s*' \
+                         r'<p>.*?back to top.*?</p>\s*' \
+                         r'<hr>'
+        content = re.sub(footer_pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
+
     except Exception as e:
         current_app.logger.error(f"Error reading article file {asp_file_path}: {e}")
         content = f"<p><em>Error reading article: {str(e)}</em></p>"
