@@ -1,0 +1,225 @@
+# Test configuration for Flask vs ASP validation
+# All 24 working routes with 2-3 test scenarios each
+
+# Base URLs
+asp_base: "http://webb-site.com"
+flask_base: "http://127.0.0.1:5000"
+
+# Fixed test date for consistent comparisons
+test_date: "2024-10-01"
+
+# Route test definitions
+routes:
+  # ==========================================
+  # Index (1 route)
+  # ==========================================
+  - name: "dbpub index"
+    path: "/dbpub/"
+    params: []
+
+  # ==========================================
+  # Core Search & Browse (5 routes)
+  # ==========================================
+  - name: "searchorgs - company search"
+    path: "/dbpub/searchorgs.asp"
+    params:
+      - q: "HSBC"
+      - q: "中國移動"
+        l: "50"
+
+  - name: "searchpeople - person search"
+    path: "/dbpub/searchpeople.asp"
+    params:
+      - q: "David Webb"
+      - q: "Li Ka"
+        l: "50"
+
+  - name: "prices - stock price charts"
+    path: "/dbpub/prices.asp"
+    params:
+      - i: "62"  # HSBC issueID
+        d: "2024-10-01"
+      - i: "12"  # China Mobile issueID
+        d: "2024-10-01"
+        months: "12"
+
+  - name: "quotes - stock quotes"
+    path: "/dbpub/quotes.asp"
+    params:
+      - d: "2024-10-01"
+      - d: "2024-10-01"
+        e: "m"
+        sort: "changedn"
+
+  - name: "events - corporate events"
+    path: "/dbpub/events.asp"
+    params:
+      - {}
+      - cat: "div"
+        limit: "50"
+
+  # ==========================================
+  # Stock Listings (3 routes)
+  # ==========================================
+  - name: "listed - currently listed stocks"
+    path: "/dbpub/listed.asp"
+    params:
+      - e: "m"
+        t: "s"
+        d: "2024-10-01"
+      - e: "g"
+        t: "s"
+        d: "2024-10-01"
+        sort: "codeup"
+      - e: "a"
+        t: "s"
+        d: "2024-10-01"
+
+  - name: "delisted - delisted stocks"
+    path: "/dbpub/delisted.asp"
+    params:
+      - e: "m"
+        t: "s"
+      - e: "g"
+        t: "s"
+        sort: "datedn"
+
+  - name: "code - stock code lookup"
+    path: "/dbpub/code.asp"
+    params:
+      - c: "5"  # HSBC
+      - c: "941"  # China Mobile
+      - c: "1"  # CKH Holdings
+
+  # ==========================================
+  # Corporate Structure (4 routes)
+  # ==========================================
+  - name: "advisers - corporate advisors"
+    path: "/dbpub/advisers.asp"
+    params:
+      - p: "1"  # HSBC personID
+        d: "2024-10-01"
+      - p: "100"  # Example personID
+        d: "2024-10-01"
+        role: "auditor"
+
+  - name: "officers - directors and officers"
+    path: "/dbpub/officers.asp"
+    params:
+      - p: "1"  # HSBC personID
+        d: "2024-10-01"
+      - p: "100"  # Example personID
+        d: "2024-10-01"
+        pos: "ED"
+
+  - name: "splits - stock splits and consolidations"
+    path: "/dbpub/splits.asp"
+    params:
+      - {}
+      - cat: "split"
+        limit: "50"
+
+  - name: "positions - director positions"
+    path: "/dbpub/positions.asp"
+    params:
+      - pid: "100"  # Example personID
+        d: "2024-10-01"
+      - pid: "200"  # Example personID
+        d: "2024-10-01"
+
+  # ==========================================
+  # Company Data (1 route)
+  # ==========================================
+  - name: "orgdata - company data page"
+    path: "/dbpub/orgdata.asp"
+    params:
+      - p: "1"  # HSBC personID
+      - p: "12"  # China Mobile personID
+      - p: "100"  # Example personID
+
+  # ==========================================
+  # Articles (3 routes)
+  # ==========================================
+  - name: "articles - individual article"
+    path: "/dbpub/articles/shutdown2.asp"
+    params: []
+
+  - name: "articles - index"
+    path: "/dbpub/articles/index.asp"
+    params: []
+
+  - name: "articles - root"
+    path: "/dbpub/articles/"
+    params: []
+
+  # ==========================================
+  # CCASS Analysis (7 routes)
+  # ==========================================
+  - name: "bigchanges - large shareholding changes"
+    path: "/dbpub/bigchanges.asp"
+    params:
+      - d: "2024-10-01"
+      - d: "2024-10-01"
+        minpct: "1"
+
+  - name: "bigchangesissue - changes for specific stock"
+    path: "/dbpub/bigchangesissue.asp"
+    params:
+      - i: "62"  # HSBC issueID
+      - i: "12"  # China Mobile issueID
+        minpct: "0.5"
+
+  - name: "bigchangespart - changes for specific participant"
+    path: "/dbpub/bigchangespart.asp"
+    params:
+      - part: "A00001"  # Example participant ID
+      - part: "C00001"  # Example participant ID
+        minpct: "1"
+
+  - name: "cconc - CCASS concentration"
+    path: "/dbpub/cconc.asp"
+    params:
+      - d: "2024-10-01"
+        e: "m"
+      - d: "2024-10-01"
+        e: "g"
+        sort: "top5dn"
+
+  - name: "cparticipants - CCASS participants"
+    path: "/dbpub/cparticipants.asp"
+    params:
+      - {}
+      - search: "HSBC"
+
+  - name: "ipstakes - investor participant stakes"
+    path: "/dbpub/ipstakes.asp"
+    params:
+      - d: "2024-10-01"
+      - d: "2024-10-01"
+        minpct: "5"
+
+  - name: "choldings - holdings for stock"
+    path: "/dbpub/choldings.asp"
+    params:
+      - i: "62"  # HSBC issueID
+        d: "2024-10-01"
+      - i: "12"  # China Mobile issueID
+        d: "2024-10-01"
+
+# Normalization options
+normalize:
+  strip_whitespace: true
+  remove_comments: true
+  lowercase_tags: false  # Preserve tag case
+  collapse_spaces: true
+
+# Timeout settings (seconds)
+timeout:
+  request: 30
+  total: 300
+
+# Reporting options
+report:
+  show_diff: true
+  max_diff_lines: 20
+  color_output: true
