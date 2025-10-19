@@ -8,8 +8,51 @@ The Webb-site codebase is a multi-tier financial data platform that scrapes, pro
 
 1. **VB.NET scraping modules** - Automated data collection from various HK sources (HKEX, SFC, Companies Registry, etc.)
 2. **MySQL databases** - Core data storage across multiple schemas (enigma, ccass, private, iplog, mailvote)
-3. **Classic ASP web interface** - Public-facing query and reporting system
+3. **Classic ASP web interface** - Public-facing query and reporting system (BEING MIGRATED TO FLASK)
 4. **Access frontend** - Database editing system for manual data management
+
+## Modernization in Progress (Oct 2025)
+
+**URGENT:** The original Webb-site.com dedicated server shuts down **October 31, 2025**. An emergency migration is underway to preserve public access to 35 years of Hong Kong financial data.
+
+### New Technology Stack
+
+**Frontend Migration (Priority 1 - Oct 31 deadline):**
+- Classic ASP → **Flask + Jinja2 + HTMX** (Python 3.11+)
+- MySQL replica → **PostgreSQL on Render.com** (managed cloud database)
+- Dedicated server → **Render.com Web Service** (cloud platform)
+
+**Backend (Deferred - continues operating):**
+- VB.NET scrapers continue running on Windows backend
+- Weekly database dumps uploaded to Google Drive
+- Automated import to Render PostgreSQL
+
+### Current Migration Status (Oct 19, 2025)
+
+**✅ Completed:**
+- Flask application structure with 192 routes created
+- PostgreSQL database imported locally (all tables, indexes, functions)
+- **24 routes fully working** with SQL implementation (MVP target exceeded!)
+- Templates and CSS extracted from legacy ASP
+- ASP helper functions ported to Python (asp_helpers.py)
+
+**⚠️ In Progress:**
+- 165 skeleton routes need SQL implementation
+- Deployment to Render.com staging environment
+- Performance testing and optimization
+
+**❌ Not Started:**
+- 109 specialty routes not yet created
+- Production deployment and domain setup
+
+**Working Routes:**
+- Core search: searchorgs.asp, searchpeople.asp
+- Stock data: prices.asp, quotes.asp, events.asp, listed.asp, delisted.asp, code.asp
+- Company data: orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp
+- Articles: All article routes (index, individual articles)
+- CCASS: bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cparticipants.asp, ipstakes.asp, choldings.asp
+
+See `docs/modernization-roadmap.md` for complete migration plan.
 
 ## License and Attribution
 
@@ -518,3 +561,96 @@ ASP code uses:
 - VBScript syntax
 - Hungarian notation (rs for recordsets, con for connections)
 - Recursive subroutines for hierarchical data structures
+
+## Flask Migration (October 2025)
+
+The Classic ASP web interface is being migrated to Flask/Python to enable cloud deployment.
+
+### Flask Application Structure
+
+```
+webbsite/
+├── app.py                    # Entry point, creates Flask app
+├── webbsite/
+│   ├── __init__.py          # Flask app factory
+│   ├── config.py            # Environment variables
+│   ├── db.py                # Database helpers (SQLAlchemy)
+│   ├── asp_helpers.py       # ASP compatibility functions
+│   ├── routes/              # Route blueprints
+│   │   ├── search.py        # Company/person search
+│   │   ├── quotes.py        # Stock quotes
+│   │   ├── events.py        # Corporate actions
+│   │   ├── dbpub.py         # Database pages (75 routes)
+│   │   ├── ccass.py         # CCASS pages (18 routes)
+│   │   ├── articles.py      # Articles (3 routes)
+│   │   └── ...              # Other route modules
+│   └── templates/           # Jinja2 templates
+│       ├── base.html        # Base template
+│       ├── header.html      # Navigation
+│       └── ...              # Page templates
+└── requirements.txt         # Python dependencies
+```
+
+### ASP → Flask Migration Patterns
+
+**Database Queries:**
+```python
+# Classic ASP Pattern:
+# Set rs = con.Execute("SELECT * FROM organisations WHERE personID=" & id)
+
+# Flask Pattern:
+from webbsite.db import get_db_connection
+
+with get_db_connection() as conn:
+    org = conn.execute(
+        "SELECT * FROM enigma.organisations WHERE personID = %s",
+        (person_id,)
+    ).fetchone()
+```
+
+**Parameter Handling:**
+```python
+# Classic ASP: Request.QueryString("p")
+# Flask: from webbsite.asp_helpers import get_int, get_str
+
+person_id = get_int(request.args.get('p'))
+search_term = get_str(request.args.get('q'))
+```
+
+**SQL Escaping:**
+```python
+# Classic ASP: Apos() function doubles apostrophes
+# Flask: Use parameterized queries (psycopg2 handles escaping)
+
+# WRONG (SQL injection vulnerable):
+# query = f"SELECT * FROM table WHERE name = '{user_input}'"
+
+# CORRECT:
+query = "SELECT * FROM table WHERE name = %s"
+result = conn.execute(query, (user_input,))
+```
+
+### PostgreSQL Conversion Notes
+
+**Database Functions Ported:**
+- `everListCo(personID)` - Check if organization was ever listed
+- Other MySQL functions converted to PostgreSQL equivalents
+
+**Key Differences from MySQL:**
+- Modulo operator: `%` → `MOD()` function in queries
+- Full-text search: Uses PostgreSQL `to_tsvector()` and `to_tsquery()`
+- Date arithmetic: Uses PostgreSQL interval syntax
+- Schema qualification: All tables prefixed with schema name (`enigma.organisations`, `ccass.holdings`)
+
+**Connection Details:**
+- Local development: `postgresql://postgres:@localhost:5432/enigma_pg`
+- Production: Environment variable `DATABASE_URL` on Render.com
+
+### Flask Helper Functions (asp_helpers.py)
+
+Ported from Classic ASP functions1.asp:
+- `get_int(value, default=None)` - Safe integer parsing
+- `get_str(value, default='')` - String parameter extraction
+- `get_bool(value)` - Boolean parameter parsing
+- `apos(text)` - SQL escaping (deprecated - use parameterized queries)
+- `rem_space(text)` - Whitespace normalization

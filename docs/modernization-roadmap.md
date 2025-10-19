@@ -6,16 +6,16 @@
 
 The original Webb-site.com dedicated server will **shut down on October 31, 2025** when the hosting contract expires. Public access to the Webb-site Database and Reports platform will end. This roadmap has been updated to prioritize an **emergency 14-day deployment** to preserve public access to 35 years of Hong Kong financial data.
 
-**Current Status (Oct 18, 2025):**
-- ⏰ **13 days remaining** until shutdown
+**Current Status (Oct 19, 2025):**
+- ⏰ **12 days remaining** until shutdown
 - ✅ Database imported to PostgreSQL (local test environment)
 - ✅ Flask application structure created (192 routes)
 - ✅ **24 routes now working** - MVP TARGET EXCEEDED! (search, quotes, events, listings, CCASS analysis, company data)
-- ⚠️ 165 skeleton routes need SQL implementation (down from 184)
+- ⚠️ 165 skeleton routes need SQL implementation
 - ✅ Articles bug fixed (articles.py URL pattern)
 - ❌ 109 routes not yet created (specialty pages)
 - ✅ Legacy scrapers will continue operating (deferred migration)
-- 🎯 **Next**: Test routes locally, then deploy to Render
+- 🎯 **Next**: Implement high-priority missing routes, deploy to Render staging
 
 **For full shutdown details, see**: https://webb-site.com/articles/shutdown2.asp
 
@@ -295,17 +295,17 @@ The MVP provides **public access to historical Hong Kong financial data** via a 
 3. ✅ Users can view stock price charts → DONE (prices.asp)
 4. ✅ Users can view current stock quotes → DONE (quotes.asp)
 5. ✅ Users can browse corporate events → DONE (events.asp)
-6. ⚠️ Users can browse listed companies → TODO (listed.asp SQL)
-7. ⚠️ Users can browse delisted companies → TODO (delisted.asp SQL)
-8. ⚠️ Users can look up stock codes → TODO (code.asp SQL)
-9. ⚠️ Users can view company data pages → TODO (orgdata.asp SQL - simplified)
-10. ⚠️ Users can read archived articles → TODO (fix articles.py line 28 bug)
+6. ✅ Users can browse listed companies → DONE (listed.asp)
+7. ✅ Users can browse delisted companies → DONE (delisted.asp)
+8. ✅ Users can look up stock codes → DONE (code.asp)
+9. ✅ Users can view company data pages → DONE (orgdata.asp - comprehensive)
+10. ✅ Users can read archived articles → DONE (articles.py fixed)
 
 **Technical Criteria (Must Achieve by Oct 31):**
 1. ❌ Flask application deployed to Render.com production environment
 2. ❌ PostgreSQL database deployed on Render.com with latest data dump imported
 3. ❌ Domain name registered and DNS configured (with SSL certificate)
-4. ❌ At least 20 working routes (currently: 5, need: 15 more)
+4. ✅ At least 20 working routes (achieved: 24 routes - TARGET EXCEEDED!)
 5. ⚠️ No 404s on top 50 most-visited pages (need to identify top pages while webb-site.com still live)
 6. ⚠️ Database queries return correct data (validate against live ASP output)
 7. ⚠️ Page load performance acceptable (< 2 seconds for typical queries)
@@ -1141,15 +1141,16 @@ The tasks below focus exclusively on porting the Classic ASP web interface to Fl
 10. ❌ **BUG FOUND**: articles.py line 28 URL pattern mismatch
 
 **Days 6-7 (Oct 19-20): Critical Fixes & High-Priority Routes** ⏰ IN PROGRESS
-11. ⏰ Fix articles.py URL bug (line 28: change to `f"{article_path}.asp"`)
-12. ⏰ Implement SQL for listed.asp (stock listings)
-13. ⏰ Implement SQL for delisted.asp
-14. ⏰ Implement SQL for code.asp (stock code lookup)
-15. ⏰ Implement SQL for orgdata.asp (company data page - simplified version)
-16. ⏰ Implement SQL for advisers.asp and officers.asp
-17. ⏰ Implement SQL for bigchanges.asp (CCASS)
-18. ⏰ Implement SQL for cconc.asp (CCASS concentration)
-19. ⏰ Port MySQL functions to PostgreSQL (everListCo, etc.)
+11. ✅ Fix articles.py URL bug (COMPLETED - all 3 article routes working)
+12. ✅ Implement SQL for listed.asp (COMPLETED)
+13. ✅ Implement SQL for delisted.asp (COMPLETED)
+14. ✅ Implement SQL for code.asp (COMPLETED)
+15. ✅ Implement SQL for orgdata.asp (COMPLETED - comprehensive company data page)
+16. ✅ Implement SQL for advisers.asp and officers.asp (COMPLETED)
+17. ✅ Implement SQL for bigchanges.asp and related CCASS routes (COMPLETED - 7 CCASS routes)
+18. ✅ Implement SQL for cconc.asp (COMPLETED - included in CCASS routes)
+19. ✅ Implement SQL for splits.asp and positions.asp (COMPLETED)
+20. ⏰ Port MySQL functions to PostgreSQL (everListCo ported, others as needed)
 
 **Days 8-10 (Oct 21-23): Additional Routes & Testing**
 20. ⏰ Implement 5-10 more high-traffic routes

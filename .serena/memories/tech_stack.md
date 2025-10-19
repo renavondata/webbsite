@@ -1,12 +1,14 @@
 # Webb-site Tech Stack
 
-## Programming Languages
+## Legacy Stack (Being Phased Out)
 
-### VB.NET (Visual Basic .NET)
+### Programming Languages
+
+#### VB.NET (Visual Basic .NET)
 - **Version:** .NET Framework (Console App targeting .NET Framework)
 - **Platform:** x64 compilation required
 - **IDE:** Visual Studio 2022 or later
-- **Purpose:** All data scraping and processing modules
+- **Purpose:** All data scraping and processing modules (CONTINUING TO OPERATE)
 
 **Key Libraries:**
 - **Microsoft ADODB** (Version 7.0.3300.0) - Database connectivity
@@ -18,27 +20,21 @@
   - ScraperKit.vb - Shared utility library
   - JSONkit.vb - JSON parsing
 
-### Classic ASP (VBScript)
+#### Classic ASP (VBScript)
 - **Version:** Classic ASP (pre-.NET)
 - **Runtime:** IIS (Internet Information Services)
-- **Purpose:** Web interface for querying and displaying data
+- **Purpose:** Web interface for querying and displaying data (BEING MIGRATED TO FLASK)
 
 **Configuration Requirements:**
 - Enable Parent Paths: True (for "../" includes)
 - Send Errors to Browser: True (development only)
 
-### SQL
+### Legacy Database
+
+#### MySQL
 - **Database:** MySQL 8.0.37 (recommended) or 8.4.5 LTS
 - **Avoid:** MySQL 9.x Innovation series (breaks compatibility)
 - **ODBC Driver:** MySQL ODBC 8.4.0 Unicode Driver
-
-## Database Technology
-
-### MySQL Configuration
-
-**Version Requirements:**
-- MySQL 8.0.37 (current) or 8.4.5 LTS
-- AVOID MySQL 9.x Innovation series
 
 **Critical Settings (my.ini):**
 ```ini
@@ -60,8 +56,106 @@ activate_all_roles_on_login = ON
 **Storage Engine:** InnoDB (all tables, not myISAM)
 
 **Replication:** Master-slave replication between:
-- Master: Windows 10 PC (HK) - runs scrapers
-- Slave: Windows Server 2016 (USA) - serves web traffic
+- Master: Windows 10 PC (HK) - runs scrapers (CONTINUES)
+- Slave: Windows Server 2016 (USA) - serves web traffic (SHUTTING DOWN OCT 31)
+
+---
+
+## New Stack (Oct 2025 Migration)
+
+### Python Web Framework
+
+#### Flask 3.0+
+- **Framework:** Flask with Jinja2 templates
+- **WSGI Server:** Gunicorn (production)
+- **Purpose:** Replacement for Classic ASP web interface
+
+**Key Dependencies:**
+```
+Flask>=3.0
+psycopg2-binary>=2.9
+SQLAlchemy>=2.0
+gunicorn>=21.0
+```
+
+**Application Structure:**
+```
+webbsite/
+├── app.py                    # Entry point
+├── webbsite/
+│   ├── __init__.py          # Flask app factory
+│   ├── config.py            # Environment variables
+│   ├── db.py                # Database connection management
+│   ├── asp_helpers.py       # ASP compatibility functions
+│   ├── routes/              # Route blueprints
+│   │   ├── search.py        # Company/person search
+│   │   ├── quotes.py        # Stock quotes
+│   │   ├── events.py        # Corporate actions
+│   │   ├── dbpub.py         # Database pages
+│   │   ├── ccass.py         # CCASS pages
+│   │   └── articles.py      # Articles
+│   └── templates/           # Jinja2 templates
+└── requirements.txt
+```
+
+**ASP Compatibility Functions (asp_helpers.py):**
+- `get_int(value, default=None)` - Safe integer parsing
+- `get_str(value, default='')` - String parameter extraction
+- `get_bool(value)` - Boolean parameter parsing
+- `rem_space(text)` - Whitespace normalization
+
+### PostgreSQL Database
+
+#### PostgreSQL 16
+- **Deployment:** Render.com Managed PostgreSQL
+- **Driver:** psycopg2-binary
+- **Purpose:** Replacement for MySQL public replica
+
+**Schemas:**
+- `enigma` - Main database (companies, persons, securities, events)
+- `ccass` - CCASS holdings and beneficial ownership data
+
+**Connection:**
+- Local dev: `postgresql://postgres:@localhost:5432/enigma_pg`
+- Production: `DATABASE_URL` environment variable (Render.com)
+
+**Key Differences from MySQL:**
+- Modulo operator: `%` → `MOD()` function
+- Full-text search: `to_tsvector()` and `to_tsquery()`
+- Schema qualification required: `enigma.organisations`, `ccass.holdings`
+- Ported functions: `everListCo()`, etc.
+
+### Cloud Platform
+
+#### Render.com
+- **Web Service:** Python runtime with auto-scaling
+- **Database:** Managed PostgreSQL with automated backups
+- **Deployment:** GitHub integration with zero-downtime deploys
+- **Configuration:** `render.yaml` (Infrastructure as Code)
+
+**Architecture:**
+```yaml
+services:
+  - type: web
+    name: webbsite-web
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT app:app
+
+  - type: pgsql
+    name: webbsite-db
+    plan: standard
+    databaseName: enigma
+```
+
+**Data Update Workflow:**
+1. VB.NET scrapers run on Windows (HK time zone)
+2. Weekly mysqldump to Google Drive
+3. Automated script downloads dump
+4. pg_restore imports to Render PostgreSQL
+5. Flask site queries updated data
+
+---
 
 ## Development Tools
 
@@ -79,13 +173,20 @@ activate_all_roles_on_login = ON
 - IntelliCode
 
 ### Microsoft Access
-- **Purpose:** Database editing frontend
+- **Purpose:** Database editing frontend (CONTINUES ON WINDOWS)
 - **File Format:** .accdb files
 - **Note:** Binary files excluded from git (.gitignore)
 
+### Python Development
+- **Python Version:** 3.11+
+- **Package Manager:** pip
+- **Virtual Environment:** venv or virtualenv recommended
+
+---
+
 ## Operating System Requirements
 
-### Production/Development
+### Legacy Development
 - **Windows 10/11** or **Windows Server 2016+**
 - Required for:
   - Visual Studio 2022
@@ -93,9 +194,12 @@ activate_all_roles_on_login = ON
   - MySQL ODBC drivers
   - Microsoft Access frontend
 
-### Repository Management
-- Can be browsed/edited on Linux
-- Full development requires Windows environment
+### Flask Development
+- **Any OS:** Linux, macOS, Windows
+- Python 3.11+ required
+- PostgreSQL client tools recommended
+
+---
 
 ## Key Dependencies
 
@@ -105,22 +209,50 @@ Each module requires:
 2. ScraperKit (Projects/Solution)
 3. JSONkit (Projects/Solution) - some modules only
 
-### ODBC Data Source Names (DSNs)
-**Master Server - User DSNs:**
-- enigmaMySQL (localhost, database=enigma)
-- CCASS (localhost, database=ccass)
+### Python Requirements
+```
+Flask>=3.0
+Jinja2>=3.1
+psycopg2-binary>=2.9
+SQLAlchemy>=2.0
+gunicorn>=21.0
+python-dotenv>=1.0
+```
 
-**Slave Server - System DSNs:**
-- enigmaMySQL (localhost, database=enigma)
-- CCASSserver (localhost, database=ccass)
-- conAuto (master server, database=enigma)
-- mailvote (localhost, database=mailvote)
+---
 
 ## Scheduling
-Scrapers run on Windows Task Scheduler with different frequencies:
+
+### VB.NET Scrapers (CONTINUES)
+Runs on Windows Task Scheduler:
 - **Daily:** Quotes (22:00), CCASS (04:00), SFC (03:00), GetFinancialReports (02:30)
 - **Hourly:** HKflights, UKCH (continuous operation)
 - **Weekly:** housing (Fridays 20:00)
 - **Manual only:** Treasury
 
-See `VB.net files/Suggested run times.md` for complete schedule.
+### Database Updates (NEW)
+- **Frequency:** Weekly (acceptable for public access)
+- **Method:** Automated Google Drive → Render PostgreSQL import
+- **Latency:** Up to 7 days (acceptable for historical data)
+
+---
+
+## Migration Status
+
+**✅ Completed:**
+- Flask application with 24 working routes
+- PostgreSQL database imported locally
+- Templates and CSS ported
+- Helper functions ported
+
+**⚠️ In Progress:**
+- 165 skeleton routes need SQL implementation
+- Render.com deployment
+- Performance testing
+
+**❌ Not Started:**
+- 109 specialty routes
+- Production launch
+- Domain setup
+
+See `migration_progress` memory and `docs/modernization-roadmap.md` for details.
