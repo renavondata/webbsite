@@ -19,4 +19,4 @@ databases:
   - name: webbsite-db
     databaseName: enigma
     plan: pro-4gb
-    diskSizeGB: 70
+    diskSizeGB: 80
