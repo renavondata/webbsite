@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_database.html" %}
 
 {% block title %}Search organisations{% endblock %}
 
 {% block content %}
 <h2>Search organisations</h2>
-<form method="get" action="{{ url_for('search.search_orgs') }}">
+<form method="post" action="{{ url_for('search.search_orgs') }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
 	<select id="st" name="st">

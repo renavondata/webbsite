@@ -30,13 +30,15 @@ def prices():
         return render_template('dbpub/prices.html', error='Data item not found')
 
     item = result[0]
-    units = item.get('units', '')
-    note = item.get('note', '')
-    dp = item.get('dp', 2)
-    title = f"{item.get('ddes', '')} {item.get('fdes', '').lower()}, {units}"
-    freq = item.get('freq', 1)
+    units = item.get('units') or ''
+    note = item.get('note') or ''
+    dp = item.get('dp') or 2
+    ddes = item.get('ddes') or ''
+    fdes = item.get('fdes') or ''
+    title = f"{ddes} {fdes.lower()}, {units}"
+    freq = item.get('freq') or 1
     source = item.get('source')
-    sname = item.get('name1', '')
+    sname = item.get('name1') or ''
 
     # Determine date format for tooltip
     tipdate = '%Y' if freq == 3 else '%Y-%m'

@@ -1045,95 +1045,363 @@ def enigma_positions():
 @bp.route('/holders.asp')
 def holders():
     """
-    Recursive ownership tree - COMPLEX PAGE
-    Shows complete ownership structure with cross-holdings
+    Recursive ownership tree - shows who owns a company
 
     Query params:
     - p: personID of company
-    - d: snapshot date
-    - min: minimum percentage threshold
+    - x: expand mode (n=direct, c=condensed, y=expanded)
+    - s1: sort parameter
 
-    Tables used: sholdings, ownerprof, people, enigma.organisations
-
-    IMPORTANT: Uses recursive holdersGen() subroutine to traverse ownership tree
+    Tables used: webholders3 view, issue, issuedshares
     """
     person_id = get_int('p', 0)
-    d = request.args.get('d', str(date.today()))
-    min_pct = request.args.get('min', type=float, default=5.0)
+    expand = request.args.get('x', 'n')
+    sort_param = request.args.get('s1', 'stakdn')
 
     if not person_id:
         return "PersonID required", 400
 
-    # TODO: Implement recursive ownership tree generation
-    # This is a VERY complex query involving:
-    # - Recursive tree traversal
-    # - Cross-holding detection
-    # - Circular ownership handling
-    # - Ultimate beneficial owner identification
+    # Get all qualifying issues for this person/company
+    # Exclude warrants (1,2), rights (40,41), structured products (46)
+    issues_data = execute_query("""
+        SELECT i.id1 AS issueid,
+               st.typelong,
+               COALESCE(
+                   (SELECT os.atdate
+                    FROM enigma.issuedshares os
+                    WHERE os.issueid = i.id1
+                    ORDER BY os.atdate DESC
+                    LIMIT 1), NULL) AS osdate,
+               COALESCE(
+                   (SELECT os.outstanding
+                    FROM enigma.issuedshares os
+                    WHERE os.issueid = i.id1
+                    ORDER BY os.atdate DESC
+                    LIMIT 1), NULL) AS outstanding
+        FROM enigma.issue i
+        JOIN enigma.sectypes st ON i.typeid = st.typeid
+        WHERE i.issuer = %s
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
+        ORDER BY i.id1
+    """, (person_id,))
 
-    ownership_tree = {}
+    if not issues_data:
+        return render_template('dbpub/holders.html',
+                             person_id=person_id,
+                             issues_data=[],
+                             expand=expand)
+
+    # Sort order mapping
+    sort_mappings = {
+        'stakdn': 'stakecomp DESC, name',
+        'stakup': 'stakecomp, name',
+        'namedn': 'name DESC',
+        'nameup': 'name',
+        'datedn': 'holdingdate DESC, name',
+        'dateup': 'holdingdate, name'
+    }
+    ob = sort_mappings.get(sort_param, 'stakecomp DESC, name')
+
+    # Process each issue
+    issues_with_holders = []
+    for issue_data in issues_data:
+        issue_id = issue_data['issueid']
+
+        if expand == 'n':
+            # Direct mode - simple table
+            holders = execute_query(f"""
+                SELECT *,
+                       CASE
+                           WHEN shares IS NOT NULL AND shares > 0 THEN
+                               shares / NULLIF(
+                                   (SELECT outstanding
+                                    FROM enigma.issuedshares
+                                    WHERE issueid = %s
+                                      AND atdate <= CURRENT_DATE
+                                    ORDER BY atdate DESC
+                                    LIMIT 1), 0)
+                           ELSE stake
+                       END AS stakecomp
+                FROM enigma.webholders3
+                WHERE issue = %s
+                  AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+                ORDER BY {ob}
+            """, (issue_id, issue_id))
+
+            issues_with_holders.append({
+                'issue_data': issue_data,
+                'holders': holders,
+                'mode': 'direct'
+            })
+        else:
+            # Expanded or condensed mode - recursive tree
+            holders_tree = []
+            seen_holders = {person_id: -1}  # Track to detect cross-holdings
+            _build_holders_tree(issue_id, 0, 0, ob, holders_tree, seen_holders, expand == 'c')
+
+            issues_with_holders.append({
+                'issue_data': issue_data,
+                'holders_tree': holders_tree,
+                'mode': 'expanded' if expand == 'y' else 'condensed'
+            })
 
     return render_template('dbpub/holders.html',
                          person_id=person_id,
-                         ownership_tree=ownership_tree,
-                         d=d,
-                         min_pct=min_pct)
+                         issues_with_holders=issues_with_holders,
+                         expand=expand,
+                         sort_param=sort_param)
+
+
+def _build_holders_tree(issue_id, parent_idx, level, ob, tree, seen_holders, is_condensed):
+    """
+    Recursive function to build ownership tree
+
+    Args:
+        issue_id: Issue whose holders to retrieve
+        parent_idx: Index of parent node in tree
+        level: Depth level in tree
+        ob: ORDER BY clause
+        tree: List to append results to
+        seen_holders: Dict mapping personID -> first occurrence index (for cross-holding detection)
+        is_condensed: If True, hide 100%-owned intermediates
+
+    Algorithm mirrors the ASP holdersGen() subroutine:
+    - Get all holders of this issue
+    - For each holder that is an organization:
+      - Check if already seen (cross-holding)
+      - If not seen and not listed company, recursively get their issues and holders
+      - Mark as visible if: stake != 100%, cross-holding, listed company, or multiple issues
+    """
+    # Get holders of this issue
+    holders = execute_query(f"""
+        SELECT *,
+               CASE
+                   WHEN shares IS NOT NULL AND shares > 0 THEN
+                       shares / NULLIF(
+                           (SELECT outstanding
+                            FROM enigma.issuedshares
+                            WHERE issueid = %s
+                              AND atdate <= CURRENT_DATE
+                            ORDER BY atdate DESC
+                            LIMIT 1), 0)
+                   ELSE stake
+               END AS stakecomp
+        FROM enigma.webholders3
+        WHERE issue = %s
+          AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+        ORDER BY {ob}
+    """, (issue_id, issue_id))
+
+    # If no holders, mark parent as visible
+    if not holders:
+        if parent_idx >= 0:
+            tree[parent_idx]['visible'] = True
+        return
+
+    for holder in holders:
+        holder_id = holder['personid']
+        stake = holder.get('stakecomp')
+        current_idx = len(tree)
+
+        # Add this holder to tree
+        tree.append({
+            'holder': holder,
+            'parent_idx': parent_idx,
+            'level': level,
+            'visible': False,
+            'is_cross_holding': False,
+            'first_occurrence_idx': None
+        })
+
+        # Mark parent visible if stake != 100%
+        if parent_idx >= 0 and stake != 1.0:
+            tree[parent_idx]['visible'] = True
+
+        # Check if this is a person (always visible) or organization
+        if holder['persontype'] == 'P':
+            tree[current_idx]['visible'] = True
+        elif holder['persontype'] == 'O':
+            # Check for cross-holding
+            if holder_id in seen_holders:
+                # Cross-holding detected
+                tree[current_idx]['is_cross_holding'] = True
+                tree[current_idx]['first_occurrence_idx'] = seen_holders[holder_id]
+                tree[current_idx]['visible'] = True
+                # Also make the first occurrence visible
+                if seen_holders[holder_id] >= 0:
+                    tree[seen_holders[holder_id]]['visible'] = True
+            else:
+                # Not yet seen - add to tracker
+                seen_holders[holder_id] = current_idx
+
+                # Check if this is a listed company (orgType 21=public, 22=listed)
+                if holder.get('orgtype') in (21, 22):
+                    tree[current_idx]['visible'] = True
+                else:
+                    # Get issues owned by this holder organization
+                    holder_issues = execute_query("""
+                        SELECT id1 FROM enigma.issue
+                        WHERE issuer = %s
+                          AND typeid NOT IN (1, 2, 40, 41, 46)
+                    """, (holder_id,))
+
+                    if not holder_issues:
+                        # No qualifying issues - make visible
+                        tree[current_idx]['visible'] = True
+                    else:
+                        # Recursively process each issue
+                        for i, holder_issue in enumerate(holder_issues):
+                            _build_holders_tree(
+                                holder_issue['id1'],
+                                current_idx,
+                                level + 1,
+                                ob,
+                                tree,
+                                seen_holders,
+                                is_condensed
+                            )
+                            # If more than one issue, make this holder visible
+                            if i > 0:
+                                tree[current_idx]['visible'] = True
 
 
 @bp.route('/holdings.asp')
 def holdings():
     """
-    Shareholdings by a specific shareholder
+    Shareholdings by a specific shareholder - recursive tree showing what they own
 
     Query params:
     - p: personID of shareholder
-    - d: snapshot date
+    - x: expand mode (y=expanded tree, n=simple table)
+    - sort: sorting column
 
-    Tables used: sholdings, enigma.organisations, enigma.issue
+    Tables used: webholdings3 view (sholdings + issue + organisations + domiciles)
     """
     person_id = get_int('p', 0)
-    d = request.args.get('d', str(date.today()))
+    expand = request.args.get('x', 'n')
+    sort_param = request.args.get('sort', 'namup')
 
     if not person_id:
         return "PersonID required", 400
 
-    # TODO: Query shareholdings
-    holdings = []
+    # Sort order mapping
+    sort_mappings = {
+        'stakup': 'stakecomp, name',
+        'stakdn': 'stakecomp DESC, name',
+        'namedn': 'name DESC',
+        'namup': 'name',
+        'incdup': 'incdate, name',
+        'incddn': 'incdate DESC, name',
+        'domiup': 'a2, name',
+        'domidn': 'a2 DESC, name'
+    }
+    ob = sort_mappings.get(sort_param, 'name')
 
-    return render_template('dbpub/holdings.html',
-                         person_id=person_id,
-                         holdings=holdings,
-                         d=d)
+    if expand == 'y':
+        # Expanded mode - recursive tree
+        holdings_tree = []
+        org_tracker = {person_id: 0}  # Track organizations to detect cross-holdings
+        _build_holdings_tree(person_id, 0, ob, holdings_tree, org_tracker)
+
+        return render_template('dbpub/holdings.html',
+                             person_id=person_id,
+                             holdings_tree=holdings_tree,
+                             expand=expand,
+                             sort_param=sort_param)
+    else:
+        # Simple mode - flat table
+        holdings_data = execute_query(f"""
+            SELECT personid, issue, holdingdate, shares, stake, friendly, a2,
+                   name, orgtype, sectype, typeshort, issuer,
+                   CASE
+                       WHEN shares IS NOT NULL THEN
+                           shares / NULLIF(
+                               (SELECT outstanding
+                                FROM enigma.issuedshares
+                                WHERE issueid = issue
+                                  AND atdate <= CURRENT_DATE
+                                ORDER BY atdate DESC
+                                LIMIT 1), 0)
+                       ELSE stake
+                   END AS stakecomp,
+                   incdate, incacc
+            FROM enigma.webholdings3
+            WHERE personid = %s
+              AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+            ORDER BY {ob}
+        """, (person_id,))
+
+        return render_template('dbpub/holdings.html',
+                             person_id=person_id,
+                             holdings_data=holdings_data,
+                             expand=expand,
+                             sort_param=sort_param)
 
 
-@bp.route('/prices.asp')
-def prices():
+def _build_holdings_tree(person_id, level, ob, tree, org_tracker):
     """
-    Price and total returns history for a stock
+    Recursive function to build holdings tree
 
-    Query params:
-    - i: issueid
-    - sc: stock code (alternative)
-    - from: start date
-    - to: end date
-
-    Tables used: ccass.quotes, enigma.issue, enigma.events (for splits)
+    Args:
+        person_id: Person/organization whose holdings to retrieve
+        level: Depth level in tree (for indentation)
+        ob: ORDER BY clause
+        tree: List to append results to
+        org_tracker: Dict mapping personID -> first occurrence index (for cross-holding detection)
     """
-    issue_id = get_int('i', 0)
-    stock_code = get_str('sc', '')
-    from_date = request.args.get('from', '')
-    to_date = request.args.get('to', str(date.today()))
+    holdings = execute_query(f"""
+        SELECT *,
+               CASE
+                   WHEN shares IS NOT NULL THEN
+                       shares / NULLIF(
+                           (SELECT outstanding
+                            FROM enigma.issuedshares
+                            WHERE issueid = issue
+                              AND atdate <= CURRENT_DATE
+                            ORDER BY atdate DESC
+                            LIMIT 1), 0)
+                   ELSE stake
+               END AS stakecomp
+        FROM enigma.webholdings3
+        WHERE personid = %s
+          AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+        ORDER BY {ob}
+    """, (person_id,))
 
-    # TODO: Query price history
-    # TODO: Calculate total returns with dividend reinvestment
-    prices = []
+    for holding in holdings:
+        issuer_id = holding['issuer']
 
-    return render_template('dbpub/prices.html',
-                         issue_id=issue_id,
-                         stock_code=stock_code,
-                         prices=prices,
-                         from_date=from_date,
-                         to_date=to_date)
+        # Check if this issuer has been seen before (cross-holding)
+        if issuer_id in org_tracker:
+            # Cross-holding detected - add reference to previous occurrence
+            tree.append({
+                'level': level,
+                'holding': holding,
+                'is_cross_holding': True,
+                'first_occurrence_idx': org_tracker[issuer_id]
+            })
+        else:
+            # First time seeing this issuer - add to tracker and recurse
+            org_tracker[issuer_id] = len(tree)
+            tree.append({
+                'level': level,
+                'holding': holding,
+                'is_cross_holding': False,
+                'first_occurrence_idx': None
+            })
+
+            # Recursively get holdings of this issuer
+            _build_holdings_tree(issuer_id, level + 1, ob, tree, org_tracker)
+
+
+# NOTE: /prices.asp is implemented in quotes.py blueprint, not here
+# @bp.route('/prices.asp')
+# def prices():
+#     """
+#     Price and total returns history for a stock
+#     MOVED TO: quotes.py
+#     """
+#     pass
 
 
 @bp.route('/pricesCSV.asp')
@@ -1199,96 +1467,741 @@ def alltotrets():
 @bp.route('/mcap.asp')
 def mcap():
     """
-    Market capitalization snapshot
+    Market capitalization snapshot - current market values by exchange and type
 
     Query params:
-    - d: date
-    - e: exchange
+    - e: exchange (m=Main Board, g=GEM, s=Secondary, a=All, r=REIT, c=CIS)
+    - t: type (s=shares, w=warrants, h=H-shares)
     - sort: sorting column
 
-    Tables used: issuedshares, quotes, stocklistings
+    Tables used: issuedshares, quotes, stocklistings, hkexdata
     """
-    d = request.args.get('d', str(date.today()))
+    from flask import current_app
+    from datetime import date as dt
+
     e = request.args.get('e', 'a')
+    t = request.args.get('t', 's')
     sort_param = request.args.get('sort', 'mcapdn')
 
-    # TODO: Calculate market caps
+    # Exchange filter mapping
+    exchange_filters = {
+        'm': ('= 1', 'Main Board primary-listed'),
+        'g': ('= 20', 'Growth Enterprise Market'),
+        's': ('= 22', 'Secondary-listed'),
+        'r': ('= 23', 'Real Estate Investment Trust'),
+        'c': ('= 38', 'Collective Investment Scheme'),
+        'a': ('IN (1, 20, 22)', 'Main Board, GEM and secondary')
+    }
+    e_str, title = exchange_filters.get(e, ('IN (1, 20, 22)', 'Main Board, GEM and secondary'))
+
+    # Type filter mapping
+    type_filters = {
+        'w': ('= 1', ' subscription warrants'),
+        'h': ('= 6', ' H-shares'),
+        's': ('NOT IN (1, 2, 5, 40, 41, 46)', ' shares' if e not in ['r', 'c'] else ' units')
+    }
+    t_str, t_suffix = type_filters.get(t, ('NOT IN (1, 2, 5, 40, 41, 46)', ' shares'))
+    title = f"Market values of {title}{t_suffix}"
+
+    # Sort mapping
+    sort_map = {
+        'namedn': 'name DESC',
+        'nameup': 'name',
+        'codeup': 'stockCode',
+        'codedn': 'stockCode DESC',
+        'typeup': 'typeShort, name',
+        'typedn': 'typeShort DESC, name',
+        'lotup': 'lot, name',
+        'lotdn': 'lot DESC, name',
+        'ltvup': 'lotVal, name',
+        'ltvdn': 'lotVal DESC, name',
+        'prcdn': 'closing DESC, name',
+        'prcup': 'closing, name',
+        'issdn': 'outstanding DESC, name',
+        'issup': 'outstanding, name',
+        'mcpup': 'mcap, name',
+        'mcapdn': 'mcap DESC, name'
+    }
+    ob = sort_map.get(sort_param, 'mcap DESC, name')
+
+    # Currency codes
+    currencies = ['HKD', 'CNY', 'USD']
     market_caps = []
+
+    try:
+        for curr_idx in range(3):
+            if curr_idx == 0:
+                curr_filter = "(sl.SEHKcurr IS NULL OR sl.SEHKcurr = 0)"
+            else:
+                curr_filter = f"sl.SEHKcurr = {curr_idx}"
+
+            # Query market caps for this currency
+            curr_data = execute_query(f"""
+                SELECT COALESCE(h.nomprice, 0) AS closing,
+                       h.priceDate,
+                       o.name1 AS name,
+                       i.issuer,
+                       sl.issueID,
+                       st.typeShort,
+                       COALESCE(h.boardlot, 0) AS lot,
+                       LPAD(sl.stockCode::TEXT, 5, '0') AS stockCode,
+                       COALESCE(os.outstanding, 0) AS outstanding,
+                       COALESCE(h.nomprice * os.outstanding, 0) AS mcap,
+                       COALESCE(h.nomprice * h.boardlot, 0) AS lotVal
+                FROM enigma.stockListings sl
+                JOIN enigma.issue i ON sl.issueID = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.hkexdata h ON sl.issueID = h.issueID
+                LEFT JOIN LATERAL (
+                    SELECT outstanding
+                    FROM enigma.issuedshares
+                    WHERE issueID = sl.issueID
+                      AND atDate <= CURRENT_DATE
+                    ORDER BY atDate DESC
+                    LIMIT 1
+                ) os ON TRUE
+                WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= CURRENT_DATE)
+                  AND (sl.DelistDate IS NULL OR sl.DelistDate > CURRENT_DATE)
+                  AND NOT sl.`2ndCtr`
+                  AND sl.StockExID {e_str}
+                  AND i.typeID {t_str}
+                  AND {curr_filter}
+                ORDER BY {ob}
+            """)
+
+            if curr_data:
+                market_caps.append({
+                    'currency': currencies[curr_idx],
+                    'data': curr_data
+                })
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying market caps: {ex}")
+        market_caps = []
 
     return render_template('dbpub/mcap.html',
                          market_caps=market_caps,
-                         d=d,
+                         title=title,
                          e=e,
+                         t=t,
                          sort=sort_param)
 
 
 @bp.route('/mcaphist.asp')
 def mcaphist():
     """
-    Market capitalization history
+    Market capitalization history - historical market values by exchange and type
 
     Query params:
-    - i: issueid
-    - sc: stock code
+    - d: date
+    - e: exchange (m=Main Board, g=GEM, s=Secondary, a=All, r=REIT, c=CIS)
+    - t: type (s=shares, w=warrants, h=H-shares)
+    - p: exclude pending shares (bool)
+    - sort: sorting column
 
-    Tables used: issuedshares, quotes
+    Tables used: issuedshares, quotes, stocklistings
     """
-    issue_id = get_int('i', 0)
-    stock_code = get_str('sc', '')
+    from flask import current_app
+    from datetime import date as dt
 
-    # TODO: Query market cap history
-    mcap_history = []
+    d = request.args.get('d', str(dt.today()))
+    e = request.args.get('e', 'a')
+    t = request.args.get('t', 's')
+    exclude_pending = get_bool('p')
+    sort_param = request.args.get('sort', 'mcapdn')
+
+    # Exchange filter mapping (same as mcap)
+    exchange_filters = {
+        'm': ('= 1', 'Main Board primary-listed'),
+        'g': ('= 20', 'Growth Enterprise Market'),
+        's': ('= 22', 'Secondary-listed'),
+        'r': ('= 23', 'Real Estate Investment Trust'),
+        'c': ('= 38', 'Collective Investment Scheme'),
+        'a': ('IN (1, 20, 22)', 'Main Board, GEM and secondary')
+    }
+    e_str, title = exchange_filters.get(e, ('IN (1, 20, 22)', 'Main Board, GEM and secondary'))
+
+    # Type filter mapping
+    type_filters = {
+        'w': ('= 1', ' subscription warrants'),
+        'h': ('= 6', ' H-shares'),
+        's': ('NOT IN (1, 2, 5, 40, 41, 46)', ' shares' if e not in ['r', 'c'] else ' units')
+    }
+    t_str, t_suffix = type_filters.get(t, ('NOT IN (1, 2, 5, 40, 41, 46)', ' shares'))
+    title = f"Historic market values of {title}{t_suffix}"
+
+    # Sort mapping (slightly different from mcap for historical data)
+    if exclude_pending:
+        mcap_field = 'mcap'
+        os_field = 'os'
+    else:
+        mcap_field = 'pendMcap'
+        os_field = 'totsh'
+
+    sort_map = {
+        'namedn': 'name DESC',
+        'nameup': 'name',
+        'codeup': 'sc',
+        'codedn': 'sc DESC',
+        'typeup': 'typeShort, name',
+        'typedn': 'typeShort DESC, name',
+        'datedn': 'td DESC, name',
+        'dateup': 'td, name',
+        'lotup': 'lot, name',
+        'lotdn': 'lot DESC, name',
+        'ltvup': 'lotVal, name',
+        'ltvdn': 'lotVal DESC, name',
+        'prcdn': 'closing DESC, name',
+        'prcup': 'closing, name',
+        'issdn': f'{os_field} DESC, name',
+        'issup': f'{os_field}, name',
+        'mcpup': f'{mcap_field}, name',
+        'mcapdn': f'{mcap_field} DESC, name'
+    }
+    ob = sort_map.get(sort_param, f'{mcap_field} DESC, name')
+
+    # Get list of distinct currencies used
+    currencies_list = []
+    market_caps = []
+
+    try:
+        # Get currencies in use on this date
+        currencies_list = execute_query(f"""
+            SELECT DISTINCT sl.SEHKcurr, c.currency
+            FROM enigma.stockListings sl
+            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.currencies c ON sl.SEHKcurr = c.id
+            WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
+              AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
+              AND sl.StockExID {e_str}
+              AND i.typeID {t_str}
+              AND NOT sl.`2ndCtr`
+            ORDER BY sl.SEHKcurr
+        """, (d, d))
+
+        for curr_row in currencies_list:
+            sehk_curr = curr_row['sehkcurr']
+            currency = curr_row['currency']
+
+            if sehk_curr == 0:
+                curr_filter = "(sl.SEHKcurr = 0 OR sl.SEHKcurr IS NULL)"
+            else:
+                curr_filter = f"sl.SEHKcurr = {sehk_curr}"
+
+            # Complex query for historical market caps
+            curr_data = execute_query(f"""
+                SELECT t2.sc, t2.i, t2.typeShort, t2.p, t2.closing, t2.td,
+                       t2.os,
+                       COALESCE(t2.closing * t2.os / 1000000.0, 0) AS mcap,
+                       COALESCE(t2.os + t2.pendsh, 0) AS totsh,
+                       COALESCE(t2.closing * (t2.os + t2.pendsh) / 1000000.0, 0) AS pendMcap,
+                       o.name1 AS name,
+                       COALESCE(t2.lot, 0) AS lot,
+                       COALESCE(t2.closing * t2.lot, 0) AS lotVal
+                FROM (
+                    SELECT t1.sc, t1.i, t1.typeID, t1.p, t1.td,
+                           COALESCE(os.outstanding, 0) AS os,
+                           COALESCE(pend.pending, 0) AS pendsh,
+                           COALESCE(bl.boardlot, 0) AS lot,
+                           COALESCE(q.closing, 0) AS closing
+                    FROM (
+                        SELECT sl.stockCode AS sc,
+                               sl.issueID AS i,
+                               i.typeID,
+                               i.issuer AS p,
+                               COALESCE(
+                                   (SELECT MAX(q2.atDate)
+                                    FROM ccass.quotes q2
+                                    WHERE q2.issueID = sl.issueID
+                                      AND q2.atDate <= %s), %s) AS td
+                        FROM enigma.stockListings sl
+                        JOIN enigma.issue i ON sl.issueID = i.ID1
+                        WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
+                          AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
+                          AND NOT sl.`2ndCtr`
+                          AND {curr_filter}
+                          AND sl.StockExID {e_str}
+                          AND i.typeID {t_str}
+                    ) t1
+                    LEFT JOIN LATERAL (
+                        SELECT outstanding
+                        FROM enigma.issuedshares
+                        WHERE issueID = t1.i AND atDate <= t1.td
+                        ORDER BY atDate DESC
+                        LIMIT 1
+                    ) os ON TRUE
+                    LEFT JOIN LATERAL (
+                        SELECT SUM(sharesPost - sharesPre) AS pending
+                        FROM enigma.splitpends
+                        WHERE issueID = t1.i AND effDate > t1.td
+                    ) pend ON TRUE
+                    LEFT JOIN LATERAL (
+                        SELECT boardlot
+                        FROM enigma.boardlotchanges
+                        WHERE issueID = t1.i AND effDate <= t1.td
+                        ORDER BY effDate DESC
+                        LIMIT 1
+                    ) bl ON TRUE
+                    LEFT JOIN ccass.quotes q ON t1.i = q.issueID AND t1.td = q.atDate
+                ) t2
+                JOIN enigma.organisations o ON t2.p = o.personID
+                JOIN enigma.secTypes st ON t2.typeID = st.typeID
+                ORDER BY {ob}
+            """, (d, d, d, d))
+
+            if curr_data:
+                market_caps.append({
+                    'currency': currency,
+                    'data': curr_data
+                })
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying historical market caps: {ex}")
+        market_caps = []
 
     return render_template('dbpub/mcaphist.html',
-                         issue_id=issue_id,
-                         stock_code=stock_code,
-                         mcap_history=mcap_history)
+                         market_caps=market_caps,
+                         title=title,
+                         d=d,
+                         e=e,
+                         t=t,
+                         exclude_pending=exclude_pending,
+                         sort=sort_param)
 
 
 # SDI (Significant Dealer Information) routes
 @bp.route('/sdilatest.asp')
 def sdilatest():
-    """Latest SDI disclosures"""
-    # TODO: Query latest SDI records
-    sdi = []
-    return render_template('dbpub/sdilatest.html', sdi=sdi)
+    """Latest SDI disclosures - latest 200 director & CEO dealings"""
+    from flask import current_app
+    sort_param = request.args.get('sort', 'relddn')
+
+    # Map sort parameters to ORDER BY clauses
+    sort_map = {
+        'codeup': 'stockCode, name, relDate DESC',
+        'codedn': 'stockCode DESC, name, relDate DESC',
+        'nameup': 'name, oName, relDate DESC',
+        'namedn': 'name DESC, oName, relDate DESC',
+        'stokup': 'oName, name, relDate DESC',
+        'stokdn': 'oName DESC, name, relDate DESC',
+        'rsnup': 'rsnSht, oName, name, relDate DESC',
+        'rsndn': 'rsnSht DESC, oName, name, relDate DESC',
+        'lvalup': 'value, oName, name',
+        'lvaldn': 'value DESC, oName, name',
+        'reldup': 'relDate, oName, name',
+        'relddn': 'relDate DESC, oName, name'
+    }
+    ob = sort_map.get(sort_param, 'relDate DESC, oName, name')
+
+    try:
+        # Complex query to get latest 200 SDI filings
+        sdi = execute_query(f"""
+            SELECT t2.id, t2.filing, t2.relDate, t2.issueID,
+                   (SELECT sl.stockCode FROM enigma.stockListings sl
+                    WHERE sl.issueID = t2.issueID AND sl.toDate IS NULL
+                    ORDER BY sl.fromDate DESC LIMIT 1) AS stockCode,
+                   t2.posType, r.rsnSht, r.rsnLng, t2.dir,
+                   t2.shsInv, t2.longShs1, t2.longShs2, t2.shortShs1, t2.shortShs2,
+                   t2.price, t2.avCon, t2.currency,
+                   t2.longStk2, t2.shortStk2, t2.lngStkChg, t2.shtStkChg,
+                   COALESCE(org.name1, CONCAT(pp.name1,
+                            CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
+                   CASE WHEN org.name1 IS NULL THEN 'P' ELSE 'O' END AS pType,
+                   p.personID AS holderID,
+                   COALESCE(t2.price, t2.avCon) * t2.shsInv AS value,
+                   CONCAT(o.name1, ':', st.typeShort) AS oName,
+                   c3.settleDate
+            FROM (
+                SELECT s.id, s.curr, s.filing, s.relDate, s.issueID, s.dir,
+                       s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
+                       COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon,
+                       s.longStk2, s.shortStk2, s.shsInv,
+                       s.longStk2 - s.longStk1 AS lngStkChg,
+                       s.shortStk2 - COALESCE(s.shortStk1, 0) AS shtStkChg
+                FROM enigma.sdi s
+                WHERE s.serNoSuper IS NULL
+                ORDER BY s.relDate DESC
+                LIMIT 200
+            ) AS t2
+            JOIN enigma.persons p ON t2.dir = p.personID
+            JOIN enigma.sdievent se ON t2.id = se.sdiID
+            JOIN enigma.sdireason r ON se.reason = r.id
+            JOIN enigma.issue i ON t2.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.organisations org ON p.personID = org.personID
+            LEFT JOIN enigma.people pp ON p.personID = pp.personID
+            LEFT JOIN enigma.currencies c ON t2.curr = c.id
+            LEFT JOIN ccass.calendar c3 ON t2.relDate = c3.tradeDate
+            ORDER BY {ob}
+        """)
+    except Exception as e:
+        current_app.logger.error(f"Error querying SDI latest: {e}")
+        sdi = []
+
+    return render_template('dbpub/sdilatest.html', sdi=sdi, sort=sort_param)
 
 
 @bp.route('/sdiissue.asp')
 def sdiissue():
     """SDI disclosures for a specific stock"""
+    from flask import current_app
     issue_id = get_int('i', 0)
-    # TODO: Query SDI for stock
+    stock_code = request.args.get('sc', '')
+    sort_param = request.args.get('sort', 'relddn')
+
+    # Map sort parameters to ORDER BY clauses
+    sort_map = {
+        'nameup': 'name, relDate DESC',
+        'namedn': 'name DESC, relDate DESC',
+        'rsnup': 'rsnSht, relDate DESC',
+        'rsndn': 'rsnSht DESC, relDate DESC',
+        'pricup': 'currency, price, relDate DESC',
+        'pricdn': 'currency DESC, price DESC, relDate DESC',
+        'lvalup': 'value, relDate DESC',
+        'lvaldn': 'value DESC, relDate DESC',
+        'reldup': 'relDate, posType',
+        'relddn': 'relDate DESC, posType'
+    }
+    ob = sort_map.get(sort_param, 'relDate DESC, posType')
+
+    # Get stock info and convert stock code to issueID if needed
+    stock_name = ''
+    org_id = 0
+    if stock_code and not issue_id:
+        try:
+            result = execute_query("""
+                SELECT i.ID1 AS issueID, o.name1, o.personID, st.typeShort
+                FROM enigma.stockListings sl
+                JOIN enigma.issue i ON sl.issueID = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                WHERE sl.stockCode = %s AND sl.toDate IS NULL
+                ORDER BY sl.fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error looking up stock code: {e}")
+
+    # Get stock info if we have issueID
+    if issue_id and not stock_name:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID, st.typeShort
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error getting stock info: {e}")
+
     sdi = []
-    return render_template('dbpub/sdiissue.html', issue_id=issue_id, sdi=sdi)
+    if issue_id:
+        try:
+            # Query SDI for specific stock
+            sdi = execute_query(f"""
+                SELECT t1.id, t1.name, t1.posType, t1.rsnSht, t1.rsnLng,
+                       t1.filing, t1.relDate, t1.shsInv,
+                       t1.longShs1, t1.longShs2, t1.shortShs1, t1.shortShs2,
+                       t1.price, t1.avCon, t1.currency,
+                       t1.longStk2, t1.shortStk2, t1.lngStkChg, t1.shtStkChg,
+                       t1.personID, c3.settleDate,
+                       COALESCE(t1.price, t1.avCon) * t1.shsInv AS value
+                FROM (
+                    SELECT s.id, s.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
+                           s.shsInv, s.longShs1, s.longShs2, s.longStk2,
+                           s.shortShs1, s.shortShs2, s.shortStk2,
+                           COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon, c.currency,
+                           s.longStk2 - s.longStk1 AS lngStkChg,
+                           s.shortStk2 - COALESCE(s.shortStk1, 0) AS shtStkChg,
+                           COALESCE(o.name1, CONCAT(pp.name1,
+                                    CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
+                           p.personID
+                    FROM enigma.sdi s
+                    JOIN enigma.persons p ON s.dir = p.personID
+                    JOIN enigma.sdievent se ON s.id = se.sdiID
+                    JOIN enigma.sdireason r ON se.probReason = r.id
+                    LEFT JOIN enigma.people pp ON p.personID = pp.personID
+                    LEFT JOIN enigma.organisations o ON p.personID = o.personID
+                    LEFT JOIN enigma.currencies c ON s.curr = c.id
+                    WHERE s.serNoSuper IS NULL AND s.issueID = %s
+                ) AS t1
+                LEFT JOIN ccass.calendar c3 ON t1.relDate = c3.tradeDate
+                ORDER BY {ob}
+            """, (issue_id,))
+        except Exception as e:
+            current_app.logger.error(f"Error querying SDI for stock: {e}")
+            sdi = []
+
+    return render_template('dbpub/sdiissue.html',
+                         issue_id=issue_id, stock_name=stock_name,
+                         org_id=org_id, sdi=sdi, sort=sort_param)
 
 
 @bp.route('/sdidir.asp')
 def sdidir():
-    """SDI disclosures by a specific director"""
+    """SDI disclosures by a specific director - shows all stocks where person has filed"""
+    from flask import current_app
     person_id = get_int('p', 0)
-    # TODO: Query SDI by director
+    sort_param = request.args.get('sort', 'stkup')
+
+    # Map sort parameters to ORDER BY clauses
+    sort_map = {
+        'stakdn': 'longStk2 DESC, stock',
+        'stakup': 'longStk2, stock',
+        'ldatup': 'maxDate, stock',
+        'ldatdn': 'maxDate DESC, stock',
+        'stkdn': 'stock DESC',
+        'stkup': 'stock'
+    }
+    ob = sort_map.get(sort_param, 'stock')
+
+    # Get person name
+    person_name = ''
+    if person_id:
+        try:
+            result = execute_query("""
+                SELECT COALESCE(o.name1, CONCAT(p.name1,
+                                CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name
+                FROM enigma.persons ps
+                LEFT JOIN enigma.organisations o ON ps.personID = o.personID
+                LEFT JOIN enigma.people p ON ps.personID = p.personID
+                WHERE ps.personID = %s
+            """, (person_id,))
+            if result:
+                person_name = result[0]['name']
+        except Exception as e:
+            current_app.logger.error(f"Error getting person name: {e}")
+
     sdi = []
-    return render_template('dbpub/sdidir.html', person_id=person_id, sdi=sdi)
+    if person_id:
+        try:
+            # Query all stocks where person has filed SDI, showing latest position
+            sdi = execute_query(f"""
+                SELECT t1.issueID,
+                       CONCAT(o.name1, ':', st.typeShort) AS stock,
+                       t1.maxDate, s.longShs2, s.longStk2
+                FROM (
+                    SELECT issueID, MAX(relDate) AS maxDate
+                    FROM enigma.sdi
+                    WHERE dir = %s
+                    GROUP BY issueID
+                ) t1
+                JOIN enigma.sdi s ON t1.issueID = s.issueID
+                                  AND t1.maxDate = s.relDate
+                                  AND s.dir = %s
+                JOIN enigma.issue i ON s.issueID = i.ID1
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                ORDER BY {ob}
+            """, (person_id, person_id))
+        except Exception as e:
+            current_app.logger.error(f"Error querying SDI by director: {e}")
+            sdi = []
+
+    return render_template('dbpub/sdidir.html',
+                         person_id=person_id, person_name=person_name,
+                         sdi=sdi, sort=sort_param)
 
 
 @bp.route('/sdidirco.asp')
 def sdidirco():
-    """SDI cross-reference: director and company"""
+    """SDI cross-reference: director and company - all dealings by person in stock"""
+    from flask import current_app
     person_id = get_int('p', 0)
-    company_id = get_int('c', 0)
-    # TODO: Query SDI
+    issue_id = get_int('i', 0)
+    sort_param = request.args.get('sort', 'relddn')
+
+    # Map sort parameters to ORDER BY clauses
+    sort_map = {
+        'rsnup': 'rsnSht, relDate DESC',
+        'rsndn': 'rsnSht DESC, relDate DESC',
+        'pricup': 'currency, price, relDate DESC',
+        'pricdn': 'currency DESC, price DESC, relDate DESC',
+        'lvalup': 'value, relDate DESC',
+        'lvaldn': 'value DESC, relDate DESC',
+        'reldup': 'relDate, posType',
+        'relddn': 'relDate DESC, posType'
+    }
+    ob = sort_map.get(sort_param, 'relDate DESC, posType')
+
+    # Get person name and org status
+    person_name = ''
+    is_org = False
+    if person_id:
+        try:
+            result = execute_query("""
+                SELECT COALESCE(o.name1, CONCAT(p.name1,
+                                CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name,
+                       CASE WHEN o.name1 IS NOT NULL THEN TRUE ELSE FALSE END AS is_org
+                FROM enigma.persons ps
+                LEFT JOIN enigma.organisations o ON ps.personID = o.personID
+                LEFT JOIN enigma.people p ON ps.personID = p.personID
+                WHERE ps.personID = %s
+            """, (person_id,))
+            if result:
+                person_name = result[0]['name']
+                is_org = result[0]['is_org']
+        except Exception as e:
+            current_app.logger.error(f"Error getting person name: {e}")
+
+    # Get stock info
+    stock_name = ''
+    org_id = 0
+    if issue_id:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID, st.typeShort
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error getting stock info: {e}")
+
     sdi = []
+    if person_id and issue_id:
+        try:
+            # Query all dealings by person in specific stock
+            sdi = execute_query(f"""
+                SELECT t1.id, t1.posType, t1.rsnSht, t1.rsnLng,
+                       t1.filing, t1.relDate, t1.shsInv,
+                       t1.longShs1, t1.longShs2, t1.shortShs1, t1.shortShs2,
+                       t1.price, t1.avCon, t1.currency,
+                       t1.longStk2, t1.shortStk2, t1.lngStkChg, t1.shtStkChg,
+                       t1.capShort, t1.capLong, c3.settleDate,
+                       COALESCE(t1.price, t1.avCon) * t1.shsInv AS value
+                FROM (
+                    SELECT s.id, s.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
+                           s.shsInv, s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
+                           COALESCE(s.capAfter, s.capBefore) AS capID,
+                           COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon, c.currency,
+                           s.longStk2, s.longStk2 - s.longStk1 AS lngStkChg,
+                           s.shortStk2, s.shortStk2 - COALESCE(s.shortStk1, 0) AS shtStkChg,
+                           cap.capShort, cap.capLong
+                    FROM enigma.sdi s
+                    JOIN enigma.sdievent se ON s.id = se.sdiID
+                    JOIN enigma.sdireason r ON se.probReason = r.id
+                    LEFT JOIN enigma.currencies c ON s.curr = c.id
+                    LEFT JOIN enigma.capacity cap ON COALESCE(s.capAfter, s.capBefore) = cap.id
+                    WHERE s.serNoSuper IS NULL
+                      AND s.issueID = %s
+                      AND s.dir = %s
+                ) AS t1
+                LEFT JOIN ccass.calendar c3 ON t1.relDate = c3.tradeDate
+                ORDER BY {ob}
+            """, (issue_id, person_id))
+        except Exception as e:
+            current_app.logger.error(f"Error querying SDI for person+stock: {e}")
+            sdi = []
+
     return render_template('dbpub/sdidirco.html',
-                         person_id=person_id, company_id=company_id, sdi=sdi)
+                         person_id=person_id, person_name=person_name, is_org=is_org,
+                         issue_id=issue_id, stock_name=stock_name, org_id=org_id,
+                         sdi=sdi, sort=sort_param)
 
 
 @bp.route('/sdicap.asp')
 def sdicap():
-    """SDI as percentage of issued capital"""
-    # TODO: Calculate SDI percentages
-    sdi = []
-    return render_template('dbpub/sdicap.html', sdi=sdi)
+    """SDI filing details - full details of a single SDI filing"""
+    from flask import current_app
+    sdi_id = get_int('r', 0)
+
+    # Initialize context variables
+    person_name = ''
+    is_org = False
+    person_id = 0
+    stock_name = ''
+    org_id = 0
+    issue_id = 0
+    filing_data = None
+    events = []
+    capacities = []
+
+    if sdi_id:
+        try:
+            # Get main filing data
+            result = execute_query("""
+                SELECT COALESCE(o.name1, CONCAT(pp.name1,
+                                CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
+                       CASE WHEN pp.name1 IS NULL THEN TRUE ELSE FALSE END AS isOrg,
+                       s.dir, s.filing, s.serNo, s.issueID, s.relDate, s.awDate, s.signDate,
+                       s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
+                       s.longStk1, s.longStk2, s.shortStk1, s.shortStk2, s.shsOut,
+                       s.avPrice, s.hiPrice, s.avCon, c1.currency, c2.settleDate,
+                       q.high, q.low, q.vol, q.turn
+                FROM enigma.sdi s
+                JOIN enigma.persons p ON s.dir = p.personID
+                LEFT JOIN enigma.organisations o ON p.personID = o.personID
+                LEFT JOIN enigma.people pp ON p.personID = pp.personID
+                LEFT JOIN enigma.currencies c1 ON s.curr = c1.id
+                LEFT JOIN ccass.calendar c2 ON s.relDate = c2.tradeDate
+                LEFT JOIN ccass.quotes q ON s.relDate = q.atDate AND s.issueID = q.issueID
+                WHERE s.id = %s
+            """, (sdi_id,))
+
+            if result and result[0]:
+                filing_data = result[0]
+                person_name = filing_data['name']
+                is_org = filing_data['isorg']
+                person_id = filing_data['dir']
+                issue_id = filing_data['issueid']
+
+                # Get stock info
+                stock_result = execute_query("""
+                    SELECT o.name1, o.personID, st.typeShort
+                    FROM enigma.issue i
+                    JOIN enigma.organisations o ON i.issuer = o.personID
+                    JOIN enigma.secTypes st ON i.typeID = st.typeID
+                    WHERE i.ID1 = %s
+                """, (issue_id,))
+                if stock_result:
+                    stock_name = f"{stock_result[0]['name1']}:{stock_result[0]['typeshort']}"
+                    org_id = stock_result[0]['personid']
+
+                # Get event details (long and short events)
+                events = execute_query("""
+                    SELECT se.shsInv, se.posType,
+                           c1.capLong AS capBef, c2.capLong AS capAft,
+                           r1.rsnLng AS rsnLng1, r2.rsnLng AS rsnLng2
+                    FROM enigma.sdievent se
+                    JOIN enigma.sdireason r1 ON se.reason = r1.id
+                    JOIN enigma.sdireason r2 ON se.probReason = r2.id
+                    LEFT JOIN enigma.capacity c1 ON se.capBefore = c1.id
+                    LEFT JOIN enigma.capacity c2 ON se.capAfter = c2.id
+                    WHERE se.sdiID = %s
+                    ORDER BY se.posType
+                """, (sdi_id,))
+
+                # Get capacity breakdown after the event
+                capacities = execute_query("""
+                    SELECT sc.capID, sc.posType, sc.shares, cap.capLong
+                    FROM enigma.sdicap sc
+                    JOIN enigma.capacity cap ON sc.capID = cap.id
+                    WHERE sc.sdiID = %s
+                    ORDER BY sc.capID, sc.posType
+                """, (sdi_id,))
+
+        except Exception as e:
+            current_app.logger.error(f"Error querying SDI filing details: {e}")
+
+    return render_template('dbpub/sdicap.html',
+                         sdi_id=sdi_id,
+                         person_id=person_id, person_name=person_name, is_org=is_org,
+                         issue_id=issue_id, stock_name=stock_name, org_id=org_id,
+                         filing_data=filing_data, events=events, capacities=capacities)
 
 
 @bp.route('/sdiNotes.asp')
@@ -1300,103 +2213,1181 @@ def sdi_notes():
 # SFC (Securities and Futures Commission) routes
 @bp.route('/SFClicensees.asp')
 def sfc_licensees():
-    """SFC licensed enigma.persons and firms"""
-    search = get_str('n', '')
-    # TODO: Query SFC licensees
+    """
+    SFC licensed persons at a firm - port of SFClicensees.asp
+    Shows Responsible Officers (ROs) and Representatives (Reps) for a firm
+
+    Query params:
+    - p: personID (organization)
+    - d: date (defaults to today)
+    - a: activity type (0 = all activities)
+    - hide: Y (current only) or N (history)
+    - sort: sorting column
+
+    Tables used: enigma.directorships (for all activities) or enigma.licrec (for specific activity)
+    """
+    from flask import current_app
+    person_id = get_int('p', 0)
+    d = request.args.get('d', str(date.today()))
+    act = get_int('a', 0)
+    hide = get_str('hide', 'Y')
+    sort_param = request.args.get('sort', 'namup')
+
+    # Get organization name
+    org_name = "No organisation was specified"
+    if person_id:
+        try:
+            result = execute_query("""
+                SELECT name1 FROM enigma.organisations WHERE personID = %s
+            """, (person_id,))
+            if result:
+                org_name = result[0]['name1']
+        except Exception as ex:
+            current_app.logger.error(f"Error getting org name: {ex}")
+
+    # Determine which columns to use based on activity filter
+    if act > 0:
+        appt_var = "startDate"
+        res_var = "endDate"
+    else:
+        appt_var = "apptDate"
+        res_var = "resDate"
+
+    # Build hide filter
+    hide_str = f" AND (({appt_var} IS NULL) OR ({appt_var} <= %s))"
+    params = [person_id, d]
+    if hide == 'Y':
+        hide_str += f" AND (({res_var} IS NULL) OR ({res_var} > %s))"
+        params.append(d)
+
+    # Build sort order
+    sort_map = {
+        'namup': f"name,{appt_var}",
+        'namdn': f"name DESC,{appt_var}",
+        'appup': f"{appt_var},name",
+        'appdn': f"{appt_var} DESC,name",
+        'resup': f"{res_var},name",
+        'resdn': f"{res_var} DESC,name",
+        'rolup': f"role,name,{appt_var}",
+        'roldn': f"role DESC,name,{appt_var}",
+        'agedn': f"YOB,name,{appt_var}",
+        'ageup': f"YOB DESC,name,{appt_var}",
+        'sexup': f"sex,name,{appt_var}",
+        'sexdn': f"sex DESC,name,{appt_var}"
+    }
+    ob = sort_map.get(sort_param, f"name,{appt_var}")
+
+    # Build SQL based on activity filter
     licensees = []
+    try:
+        if act > 0:
+            # Use licrec table for specific activity
+            sql = f"""
+                SELECT p.YOB, p.sex,
+                       CONCAT(COALESCE(p.name1,''),
+                              CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
+                              CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS name,
+                       lr.staffID, lr.startDate, lr.endDate, lr.role, p.SFCID
+                FROM enigma.licrec lr
+                JOIN enigma.people p ON lr.staffID = p.personID
+                WHERE lr.actType = %s AND lr.orgID = %s {hide_str}
+                ORDER BY {ob}
+            """
+            params = [act] + params
+        else:
+            # Use directorships table for all activities
+            sql = f"""
+                SELECT p.YOB, p.sex,
+                       CONCAT(COALESCE(p.name1,''),
+                              CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
+                              CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS name,
+                       p.personID AS staffID, d.apptDate AS startDate, d.resDate AS endDate,
+                       CASE WHEN d.positionID = 395 THEN 1 ELSE 0 END AS role,
+                       p.SFCID
+                FROM enigma.directorships d
+                JOIN enigma.people p ON d.director = p.personID
+                WHERE d.positionID IN (394, 395) AND d.company = %s {hide_str}
+                ORDER BY {ob}
+            """
+
+        licensees = execute_query(sql, tuple(params))
+
+        # Add role text
+        for lic in licensees:
+            lic['role_text'] = 'RO' if lic['role'] == 1 else 'Rep'
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying SFC licensees: {ex}")
+
+    # Get activity name if specific activity selected
+    act_name = "All activities"
+    if act > 0:
+        try:
+            result = execute_query("""
+                SELECT actName FROM enigma.activity WHERE ID = %s
+            """, (act,))
+            if result:
+                act_name = result[0]['actname']
+        except:
+            pass
+
     return render_template('dbpub/sfc_licensees.html',
-                         search=search, licensees=licensees)
+                         person_id=person_id, org_name=org_name,
+                         licensees=licensees, d=d, act=act, act_name=act_name,
+                         hide=hide, sort=sort_param)
 
 
 @bp.route('/SFChistall.asp')
 def sfc_hist_all():
-    """SFC licensing history for a person (all activities)"""
-    person_id = get_int('p', 0)
-    # TODO: Query SFC history
+    """
+    SFC licensing history for all firms - port of SFChistall.asp
+    Shows historic number of SFC licensees (ROs and Reps) for all firms combined
+
+    Query params:
+    - a: activity type (0 = all activities)
+
+    Tables used: enigma.licrecsum
+    """
+    from flask import current_app
+    act = get_int('a', 0)
+
+    # Get activity name
+    act_name = "All activities"
+    if act > 0:
+        try:
+            result = execute_query("""
+                SELECT actName FROM enigma.activity WHERE ID = %s
+            """, (act,))
+            if result:
+                act_name = result[0]['actname']
+        except:
+            pass
+
+    # Query historic licensee counts
     history = []
+    try:
+        history = execute_query("""
+            SELECT d, RO, total - RO AS reps, total, (total - RO) / NULLIF(total, 0) AS rep_ratio
+            FROM enigma.licrecsum
+            WHERE actType = %s
+            ORDER BY d DESC
+        """, (act,))
+    except Exception as ex:
+        current_app.logger.error(f"Error querying SFC hist all: {ex}")
+
     return render_template('dbpub/sfc_hist_all.html',
-                         person_id=person_id, history=history)
+                         act=act, act_name=act_name, history=history)
 
 
 @bp.route('/SFChistfirm.asp')
 def sfc_hist_firm():
-    """SFC licensing history for a firm"""
+    """
+    SFC licensing history for a specific firm - port of SFChistfirm.asp
+    Shows historic number of SFC licensees (ROs and Reps) for one firm
+
+    Query params:
+    - p: personID (organization)
+    - a: activity type (0 = all activities)
+    - f: frequency (m=monthly, y=yearly, defaults to yearly)
+
+    Tables used: enigma.licrec
+    """
+    from flask import current_app
+    from datetime import date as dt_date
+    from calendar import monthrange
+
     person_id = get_int('p', 0)
-    # TODO: Query SFC firm history
+    act = get_int('a', 0)
+    freq = get_str('f', 'y')
+    if freq not in ['m', 'y']:
+        freq = 'y'
+
+    # Get organization name
+    org_name = "FIRM NOT FOUND"
+    if person_id:
+        try:
+            result = execute_query("""
+                SELECT name1 FROM enigma.organisations WHERE personID = %s
+            """, (person_id,))
+            if result:
+                org_name = result[0]['name1']
+        except:
+            pass
+
+    # Get activity name
+    act_name = "All activities"
+    if act > 0:
+        try:
+            result = execute_query("""
+                SELECT actName FROM enigma.activity WHERE ID = %s
+            """, (act,))
+            if result:
+                act_name = result[0]['actname']
+        except:
+            pass
+
+    # Generate date array going back to 2003-03-31
     history = []
+    if person_id and org_name != "FIRM NOT FOUND":
+        today = dt_date.today()
+        dates = []
+
+        if freq == 'm':
+            # Monthly snapshots
+            year = today.year
+            month = today.month
+            while year >= 2003:
+                last_month = 12 if year > 2003 else 3
+                for m in range(month, 0, -1):
+                    if year == 2003 and m < 3:
+                        break
+                    last_day = monthrange(year, m)[1]
+                    snap_date = dt_date(year, m, last_day)
+                    if snap_date > today:
+                        snap_date = today
+                    dates.append(snap_date)
+                year -= 1
+                month = 12
+        else:
+            # Yearly snapshots (December 31)
+            year = today.year
+            while year >= 2003:
+                snap_date = dt_date(year, 12, 31) if year < today.year else today
+                dates.append(snap_date)
+                year -= 1
+            # Add 2003-03-31
+            dates.append(dt_date(2003, 3, 31))
+
+        # Query licensee counts for each date
+        for snap_date in dates:
+            try:
+                if act > 0:
+                    result = execute_query("""
+                        SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
+                        FROM (SELECT DISTINCT staffID, role
+                              FROM enigma.licrec
+                              WHERE orgID = %s
+                                AND actType = %s
+                                AND (endDate IS NULL OR endDate > %s)
+                                AND (startDate IS NULL OR startDate <= %s)
+                        ) t
+                    """, (person_id, act, snap_date, snap_date))
+                else:
+                    result = execute_query("""
+                        SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
+                        FROM (SELECT DISTINCT staffID, role
+                              FROM enigma.licrec
+                              WHERE orgID = %s
+                                AND (endDate IS NULL OR endDate > %s)
+                                AND (startDate IS NULL OR startDate <= %s)
+                        ) t
+                    """, (person_id, snap_date, snap_date))
+
+                if result:
+                    total = result[0]['total'] or 0
+                    ros = result[0]['ros'] or 0
+                    reps = total - ros
+                    rep_ratio = reps / total if total > 0 else 0
+
+                    # Only include if not leading zeros
+                    if total > 0 or not history:
+                        history.append({
+                            'd': snap_date,
+                            'ros': ros,
+                            'reps': reps,
+                            'total': total,
+                            'rep_ratio': rep_ratio
+                        })
+            except Exception as ex:
+                current_app.logger.error(f"Error querying SFC hist firm for {snap_date}: {ex}")
+
     return render_template('dbpub/sfc_hist_firm.html',
-                         person_id=person_id, history=history)
+                         person_id=person_id, org_name=org_name,
+                         act=act, act_name=act_name, freq=freq, history=history)
 
 
 @bp.route('/SFCchanges.asp')
 def sfc_changes():
-    """Recent SFC licensing changes"""
-    # TODO: Query recent changes
+    """
+    Recent SFC licensing changes - port of SFCchanges.asp
+    Shows appointments and cessations in SFC licensees over last 14 days
+
+    Query params:
+    - d: end date (defaults to today)
+    - sort: sorting column
+
+    Tables used: enigma.directorships (positionID 394=Rep, 395=RO)
+    """
+    from flask import current_app
+    from datetime import timedelta
+
+    d = request.args.get('d', str(date.today()))
+    sort_param = request.args.get('sort', 'orgup')
+
+    # Calculate start date (14 days before end date)
+    try:
+        end_date = date.fromisoformat(d)
+        start_date = end_date - timedelta(days=14)
+    except:
+        end_date = date.today()
+        start_date = end_date - timedelta(days=14)
+
+    # Build sort order
+    sort_map = {
+        'pplup': "pplName,orgName,apptDate",
+        'ppldn': "pplName DESC,orgName,apptDate",
+        'orgup': "orgName,pplName,apptDate",
+        'orgdn': "orgName DESC,pplName,apptDate",
+        'datup': "relDate,orgName,pplName",
+        'datdn': "relDate DESC,orgName,pplName"
+    }
+    ob = sort_map.get(sort_param, "orgName,pplName,apptDate")
+
+    # Query changes
     changes = []
-    return render_template('dbpub/sfc_changes.html', changes=changes)
+    try:
+        changes = execute_query(f"""
+            SELECT o.name1 AS orgName,
+                   CONCAT(COALESCE(p.name1,''),
+                          CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
+                          CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pplName,
+                   d.company AS orgID, d.director AS pplID,
+                   d.apptDate, d.resDate, d.positionID,
+                   CASE WHEN d.resDate >= %s THEN '-' ELSE '+' END AS appCes,
+                   CASE WHEN d.resDate >= %s THEN d.resDate ELSE d.apptDate END AS relDate
+            FROM enigma.directorships d
+            JOIN enigma.organisations o ON d.company = o.personID
+            JOIN enigma.people p ON d.director = p.personID
+            WHERE d.positionID IN (394, 395)
+              AND ((d.apptDate >= %s AND d.apptDate <= %s)
+                   OR (d.resDate >= %s AND d.resDate <= %s))
+            ORDER BY {ob}
+        """, (start_date, start_date, start_date, d, start_date, d))
+
+        # Add role text
+        for change in changes:
+            change['posText'] = 'Rep' if change['positionid'] == 394 else 'RO'
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying SFC changes: {ex}")
+
+    return render_template('dbpub/sfc_changes.html',
+                         changes=changes, d=d, start_date=str(start_date),
+                         sort=sort_param)
 
 
 @bp.route('/SFClicount.asp')
 def sfc_licount():
-    """SFC licensee count statistics"""
-    # TODO: Generate statistics
+    """
+    SFC licensee count league table - port of SFClicount.asp
+    Shows SFC licensee counts per firm at two dates (start and end) with changes
+
+    Query params:
+    - da: end date (defaults to today)
+    - db: start date (defaults to 1 year before end date)
+    - a: activity type (0 = all activities)
+    - sort: sorting column
+
+    Tables used: enigma.licrec, enigma.olicrec, enigma.organisations
+    """
+    from flask import current_app
+    from datetime import timedelta
+
+    # Get dates
+    da = request.args.get('da', str(date.today()))
+    try:
+        date_a = date.fromisoformat(da)
+        default_db = date_a - timedelta(days=365)
+    except:
+        date_a = date.today()
+        default_db = date_a - timedelta(days=365)
+
+    db = request.args.get('db', str(max(date(2003, 4, 1), default_db)))
+
+    # Ensure db <= da
+    try:
+        date_b = date.fromisoformat(db)
+        if date_b > date_a:
+            db, da = da, db
+    except:
+        pass
+
+    act = get_int('a', 0)
+    sort_param = request.args.get('sort', 'acntdn')
+
+    # Get activity name
+    act_name = "All activities"
+    if act > 0:
+        try:
+            result = execute_query("""
+                SELECT actName FROM enigma.activity WHERE ID = %s
+            """, (act,))
+            if result:
+                act_name = result[0]['actname']
+        except:
+            pass
+
+    # Build sort order
+    sort_map = {
+        'namup': "name", 'namdn': "name DESC",
+        'arepup': "arep,name", 'arepdn': "arep DESC,name",
+        'aroup': "aRO,name", 'arodn': "aRO DESC,name",
+        'acntup': "acnt,name", 'acntdn': "acnt DESC,name",
+        'brepup': "brep,name", 'brepdn': "brep DESC,name",
+        'broup': "bRO,name", 'brodn': "bRO DESC,name",
+        'bcntup': "bcnt,name", 'bcntdn': "bcnt DESC,name",
+        'crepup': "crep,name", 'crepdn': "crep DESC,name",
+        'croup': "cRO,name", 'crodn': "cRO DESC,name",
+        'ccntup': "ccnt,name", 'ccntdn': "ccnt DESC,name",
+        'aratup': "arat,name", 'aratdn': "arat DESC,name",
+        'bratup': "brat,name", 'bratdn': "brat DESC,name",
+        'sddn': "startDate DESC,name", 'sdup': "startDate,name",
+        'eddn': "endDate DESC,name", 'edup': "endDate,name"
+    }
+    ob = sort_map.get(sort_param, "acnt DESC,name")
+
+    # Query stats
     stats = []
-    return render_template('dbpub/sfc_licount.html', stats=stats)
+    try:
+        if act == 0:
+            # All activities
+            sql = f"""
+                SELECT t.orgID, o.name1 AS name, t.startDate, t.endDate,
+                       t.bRO, t.bcnt - t.bRO AS brep, t.bcnt,
+                       t.aRO, t.acnt - t.aRO AS arep, t.acnt,
+                       CASE WHEN t.acnt > 0 THEN 1 - t.aRO / NULLIF(t.acnt, 0) ELSE NULL END AS arat,
+                       CASE WHEN t.bcnt > 0 THEN 1 - t.bRO / NULLIF(t.bcnt, 0) ELSE NULL END AS brat,
+                       t.aRO - t.bRO AS cRO, t.acnt - t.aRO - t.bcnt + t.bRO AS crep, t.acnt - t.bcnt AS ccnt
+                FROM (
+                    SELECT COALESCE(a.cnt, 0) AS acnt, COALESCE(a.RO, 0) AS aRO,
+                           COALESCE(b.cnt, 0) AS bcnt, COALESCE(b.RO, 0) AS bRO,
+                           ol.orgID, ol.startDate, ol.endDate
+                    FROM (
+                        SELECT orgID, MIN(startDate) AS startDate,
+                               CASE WHEN MAX(COALESCE(endDate, '9999-12-31')) = '9999-12-31'
+                                    THEN NULL ELSE MAX(endDate) END AS endDate
+                        FROM enigma.olicrec
+                        WHERE (endDate IS NULL OR endDate > %s)
+                          AND (startDate IS NULL OR startDate <= %s)
+                        GROUP BY orgID
+                    ) ol
+                    LEFT JOIN (
+                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM (SELECT DISTINCT orgID, staffID, role
+                              FROM enigma.licrec
+                              WHERE (endDate IS NULL OR endDate > %s)
+                                AND (startDate IS NULL OR startDate <= %s)
+                        ) t
+                        GROUP BY orgID
+                    ) b ON ol.orgID = b.orgID
+                    LEFT JOIN (
+                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM (SELECT DISTINCT orgID, staffID, role
+                              FROM enigma.licrec
+                              WHERE (endDate IS NULL OR endDate > %s)
+                                AND (startDate IS NULL OR startDate <= %s)
+                        ) t
+                        GROUP BY orgID
+                    ) a ON ol.orgID = a.orgID
+                ) t
+                JOIN enigma.organisations o ON o.personID = t.orgID
+                WHERE t.acnt + t.bcnt > 0
+                ORDER BY {ob}
+            """
+            stats = execute_query(sql, (db, da, db, db, da, da))
+        else:
+            # Specific activity
+            sql = f"""
+                SELECT t.orgID, o.name1 AS name, t.startDate, t.endDate,
+                       t.bRO, t.brep, t.bcnt, t.aRO, t.arep, t.acnt,
+                       t.arat, t.brat, t.acnt - t.bcnt AS ccnt,
+                       t.aRO - t.bRO AS cRO, t.arep - t.brep AS crep
+                FROM (
+                    SELECT ol.orgID, ol.startDate, ol.endDate,
+                           COALESCE(b.RO, 0) AS bRO, COALESCE(b.cnt - b.RO, 0) AS brep, COALESCE(b.cnt, 0) AS bcnt,
+                           COALESCE(a.RO, 0) AS aRO, COALESCE(a.cnt - a.RO, 0) AS arep, COALESCE(a.cnt, 0) AS acnt,
+                           CASE WHEN b.cnt > 0 THEN 1 - b.RO / NULLIF(b.cnt, 0) ELSE NULL END AS brat,
+                           CASE WHEN a.cnt > 0 THEN 1 - a.RO / NULLIF(a.cnt, 0) ELSE NULL END AS arat
+                    FROM enigma.olicrec ol
+                    LEFT JOIN (
+                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM enigma.licrec
+                        WHERE (endDate IS NULL OR endDate > %s)
+                          AND (startDate IS NULL OR startDate <= %s)
+                          AND actType = %s
+                        GROUP BY orgID
+                    ) b ON ol.orgID = b.orgID
+                    LEFT JOIN (
+                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM enigma.licrec
+                        WHERE (endDate IS NULL OR endDate > %s)
+                          AND (startDate IS NULL OR startDate <= %s)
+                          AND actType = %s
+                        GROUP BY orgID
+                    ) a ON ol.orgID = a.orgID
+                    WHERE ol.actType = %s
+                      AND (ol.endDate IS NULL OR ol.endDate > %s)
+                      AND (ol.startDate IS NULL OR ol.startDate <= %s)
+                ) t
+                JOIN enigma.organisations o ON t.orgID = o.personID
+                WHERE t.acnt + t.bcnt > 0
+                ORDER BY {ob}
+            """
+            stats = execute_query(sql, (db, db, act, da, da, act, act, db, da))
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying SFC licount: {ex}")
+
+    return render_template('dbpub/sfc_licount.html',
+                         stats=stats, da=da, db=db, act=act, act_name=act_name,
+                         sort=sort_param)
 
 
 # Buybacks routes
 @bp.route('/buybacks.asp')
 def buybacks():
-    """Share buyback transactions"""
+    """Share buyback transactions for a specific stock"""
+    from flask import current_app
+    from datetime import date
     issue_id = get_int('i', 0)
-    # TODO: Query buybacks
-    buybacks = []
+    stock_code = request.args.get('sc', '')
+    freq = request.args.get('f', 'd')  # d=daily, m=monthly, y=yearly
+    unadj = get_bool('u')  # Show unadjusted for splits
+    show_method = get_bool('e')  # Show exchange method
+    sort_param = request.args.get('sort', 'datedn')
+
+    # Validate frequency
+    if freq not in ['d', 'm', 'y']:
+        freq = 'd'
+
+    # Get stock info from stock code if provided
+    stock_name = ''
+    org_id = 0
+    if stock_code and not issue_id:
+        try:
+            result = execute_query("""
+                SELECT i.ID1 AS issueID, o.name1, o.personID
+                FROM enigma.stockListings sl
+                JOIN enigma.issue i ON sl.issueID = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE sl.stockCode = %s AND sl.toDate IS NULL
+                ORDER BY sl.fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+                stock_name = result[0]['name1']
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error looking up stock code: {e}")
+
+    # Get stock info if we have issueID
+    if issue_id and not stock_name:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = result[0]['name1']
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error getting stock info: {e}")
+
+    # Build ORDER BY based on frequency and sort
+    if freq == 'd':
+        date_fields = 'effDate'
+        date_dn = 'effDate DESC'
+    elif freq == 'm':
+        date_fields = 'y, m'
+        date_dn = 'y DESC, m DESC'
+    else:  # yearly
+        date_fields = 'y'
+        date_dn = 'y DESC'
+
+    sort_map = {
+        'dateup': date_fields,
+        'datedn': date_dn,
+        'shrsup': f'shares, {date_fields}',
+        'shrsdn': f'shares DESC, {date_dn}',
+        'valuup': f'currency, value, {date_fields}',
+        'valudn': f'currency, value DESC, {date_dn}',
+        'currup': f'currency, {date_dn}',
+        'currdn': f'currency DESC, {date_fields}',
+        'pricup': f'currency, price, {date_dn}',
+        'pricdn': f'currency, price DESC, {date_dn}',
+        'stkdn': f'stake DESC, {date_dn}',
+        'stkup': f'stake, {date_fields}'
+    }
+    ob = sort_map.get(sort_param, date_dn)
+
+    buybacks_data = []
+    totals = []
+    if issue_id:
+        try:
+            # Build the query based on frequency and adjustment
+            table = 'enigma.WebBuyBacks' if unadj else 'enigma.buybacksAdj'
+
+            if freq == 'd':
+                # Daily data
+                select_fields = 'effDate, shares, value, currency, exchName'
+                group_by = 'effDate, currency, exchName'
+            elif freq == 'm':
+                # Monthly data
+                select_fields = 'EXTRACT(YEAR FROM effDate)::INTEGER AS y, EXTRACT(MONTH FROM effDate)::INTEGER AS m, SUM(shares) AS shares, SUM(value) AS value, currency'
+                group_by = 'EXTRACT(YEAR FROM effDate), EXTRACT(MONTH FROM effDate), currency'
+                if show_method:
+                    select_fields += ', exchName'
+                    group_by += ', exchName'
+            else:  # yearly
+                select_fields = 'EXTRACT(YEAR FROM effDate)::INTEGER AS y, SUM(shares) AS shares, SUM(value) AS value, currency'
+                group_by = 'EXTRACT(YEAR FROM effDate), currency'
+                if show_method:
+                    select_fields += ', exchName'
+                    group_by += ', exchName'
+
+            # Get buybacks with outstanding shares calculation
+            buybacks_data = execute_query(f"""
+                SELECT bb.*, os.outstanding, os.atDate AS osd,
+                       CASE WHEN os.outstanding > 0
+                            THEN bb.shares * 100.0 / os.outstanding
+                            ELSE NULL END AS stake,
+                       CASE WHEN bb.shares > 0
+                            THEN bb.value / bb.shares
+                            ELSE NULL END AS price,
+                       c.settleDate
+                FROM (
+                    SELECT {select_fields}
+                    FROM {table}
+                    WHERE issueID = %s
+                    GROUP BY {group_by}
+                ) bb
+                LEFT JOIN LATERAL (
+                    SELECT outstanding, atDate
+                    FROM enigma.issuedshares
+                    WHERE issueID = %s
+                      AND atDate <= CASE
+                                     WHEN {repr(freq)} = 'd' THEN bb.effDate
+                                     WHEN {repr(freq)} = 'm' THEN MAKE_DATE(bb.y, bb.m, 1)
+                                     ELSE MAKE_DATE(bb.y, 1, 1)
+                                    END
+                    ORDER BY atDate DESC
+                    LIMIT 1
+                ) os ON TRUE
+                LEFT JOIN ccass.calendar c ON bb.effDate = c.tradeDate
+                ORDER BY {ob}
+            """, (issue_id, issue_id))
+
+            # Get totals by currency
+            totals = execute_query(f"""
+                SELECT SUM(shares) AS shares, SUM(value) AS value,
+                       currency,
+                       CASE WHEN SUM(shares) > 0
+                            THEN SUM(value) / SUM(shares)
+                            ELSE NULL END AS price
+                FROM {table}
+                WHERE issueID = %s
+                GROUP BY currency
+            """, (issue_id,))
+
+        except Exception as e:
+            current_app.logger.error(f"Error querying buybacks: {e}")
+            buybacks_data = []
+            totals = []
+
     return render_template('dbpub/buybacks.html',
-                         issue_id=issue_id, buybacks=buybacks)
+                         issue_id=issue_id, stock_name=stock_name, org_id=org_id,
+                         buybacks=buybacks_data, totals=totals,
+                         freq=freq, unadj=unadj, show_method=show_method,
+                         sort=sort_param, current_year=date.today().year)
 
 
 @bp.route('/buybacksum.asp')
 def buybacksum():
-    """Buyback summary statistics"""
-    # TODO: Query buyback summaries
+    """Buyback summary - all stocks on a given date/period"""
+    from flask import current_app
+    from datetime import date
+
+    # Get parameters
+    unadj = get_bool('u')  # Show unadjusted for splits
+    sort_param = request.args.get('sort', 'valdn')
+
+    # Get max date from database
+    max_date = date.today()
+    try:
+        result = execute_query("SELECT MAX(effDate) AS maxdate FROM enigma.WebBuybacks")
+        if result and result[0]['maxdate']:
+            max_date = result[0]['maxdate']
+    except Exception as e:
+        current_app.logger.error(f"Error getting max buyback date: {e}")
+
+    # Parse date parameters with validation
+    y = get_int('y', max_date.year)
+    m = get_int('m', max_date.month)
+    d = get_int('d', max_date.day if m > 0 else 0)
+
+    # Validate year range
+    y = max(1991, min(y, date.today().year))
+
+    # Validate month range
+    if y == 1991 and m > 0:
+        m = max(11, m)
+    if y == date.today().year:
+        m = min(m, date.today().month)
+    m = max(0, min(m, 12))
+
+    # Validate day range
+    if m > 0:
+        import calendar
+        max_day = calendar.monthrange(y, m)[1]
+        if y == 1991 and m == 11:
+            d = max(d, 27) if d > 0 else 0
+        d = max(0, min(d, max_day))
+    else:
+        d = 0
+
+    # Calculate start and end dates for query
+    if m == 0:
+        # Yearly: whole year
+        dstart = date(y, 1, 1)
+        dend = date(y, 12, 31)
+        freq = 'y'
+    elif d == 0:
+        # Monthly: whole month
+        import calendar
+        dstart = date(y, m, 1)
+        dend = date(y, m, calendar.monthrange(y, m)[1])
+        freq = 'm'
+    else:
+        # Daily: single day
+        dstart = date(y, m, d)
+        dend = date(y, m, d)
+        freq = 'd'
+
+    # Sort mapping
+    sort_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'codup': 'stockCode',
+        'coddn': 'stockCode DESC',
+        'valup': 'value, name',
+        'valdn': 'value DESC, name',
+        'curup': 'currency, value DESC',
+        'curdn': 'currency, value',
+        'stkdn': 'stake DESC, name',
+        'stkup': 'stake, name'
+    }
+    ob = sort_map.get(sort_param, 'value DESC, name')
+
     summaries = []
-    return render_template('dbpub/buybacksum.html', summaries=summaries)
+    try:
+        table = 'enigma.WebBuyBacks' if unadj else 'enigma.buybacksAdj'
+
+        # Query all buybacks in the period
+        summaries = execute_query(f"""
+            SELECT b.issueID, sl.stockCode, CONCAT(o.name1, ':', st.typeShort) AS name,
+                   b.currency, b.shares, b.value,
+                   os.outstanding, os.osd,
+                   CASE WHEN os.outstanding > 0
+                        THEN b.shares * 100.0 / os.outstanding
+                        ELSE NULL END AS stake,
+                   CASE WHEN b.shares > 0
+                        THEN b.value / b.shares
+                        ELSE NULL END AS price
+            FROM (
+                SELECT issueID, currency, SUM(shares) AS shares, SUM(value) AS value
+                FROM {table}
+                WHERE effDate BETWEEN %s AND %s
+                GROUP BY issueID, currency
+            ) b
+            JOIN enigma.issue i ON b.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN LATERAL (
+                SELECT outstanding, atDate AS osd
+                FROM enigma.issuedshares
+                WHERE issueID = b.issueID AND atDate <= %s
+                ORDER BY atDate DESC
+                LIMIT 1
+            ) os ON TRUE
+            LEFT JOIN LATERAL (
+                SELECT stockCode
+                FROM enigma.stockListings
+                WHERE issueID = b.issueID AND toDate IS NULL
+                ORDER BY fromDate DESC
+                LIMIT 1
+            ) sl ON TRUE
+            ORDER BY {ob}
+        """, (dstart, dend, dstart))
+
+    except Exception as e:
+        current_app.logger.error(f"Error querying buyback summary: {e}")
+        summaries = []
+
+    return render_template('dbpub/buybacksum.html',
+                         summaries=summaries, year=y, month=m, day=d,
+                         unadj=unadj, sort=sort_param, freq=freq,
+                         max_date=max_date)
 
 
 @bp.route('/buybackstime.asp')
 def buybacks_time():
-    """Buybacks over time"""
-    # TODO: Query time-series data
+    """Buybacks lookback view - last N days"""
+    from flask import current_app
+    from datetime import date, timedelta
+
+    # Get lookback period parameter (in days)
+    hist = get_int('hist', 10)
+    sort_param = request.args.get('sort', 'valdn')
+
+    # Get max buyback date
+    max_date = date.today()
+    try:
+        result = execute_query("SELECT MAX(effDate) AS maxdate FROM enigma.WebBuybacks")
+        if result and result[0]['maxdate']:
+            max_date = result[0]['maxdate']
+    except Exception as e:
+        current_app.logger.error(f"Error getting max buyback date: {e}")
+
+    # Calculate lookback start date
+    lookback_start = max_date - timedelta(days=hist)
+
+    # Sort mapping
+    sort_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'valup': 'sumValue, name',
+        'valdn': 'sumValue DESC, name',
+        'curup': 'currency, sumValue DESC',
+        'curdn': 'currency, sumValue'
+    }
+    ob = sort_map.get(sort_param, 'sumValue DESC, name')
+
     time_series = []
-    return render_template('dbpub/buybackstime.html', time_series=time_series)
+    try:
+        # Query buybacks since lookback date
+        time_series = execute_query(f"""
+            SELECT b.issueID, CONCAT(o.name1, ':', st.typeShort) AS name,
+                   b.currency, SUM(b.value) AS sumValue
+            FROM enigma.WebBuyBacks b
+            JOIN enigma.issue i ON b.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            WHERE b.effDate >= %s
+            GROUP BY b.issueID, o.name1, st.typeShort, b.currency
+            ORDER BY {ob}
+        """, (lookback_start,))
+
+    except Exception as e:
+        current_app.logger.error(f"Error querying buybacks time series: {e}")
+        time_series = []
+
+    return render_template('dbpub/buybackstime.html',
+                         time_series=time_series, hist=hist,
+                         lookback_start=lookback_start, max_date=max_date,
+                         sort=sort_param)
 
 
 # Short selling routes
 @bp.route('/short.asp')
 def short():
-    """Short selling enigma.positions"""
+    """Short selling positions for a specific stock - time series with charting data"""
+    from flask import current_app
     issue_id = get_int('i', 0)
-    # TODO: Query short enigma.positions
+    stock_code = request.args.get('sc', '')
+
+    # Get stock info from stock code if provided
+    stock_name = ''
+    org_id = 0
+    if stock_code and not issue_id:
+        try:
+            result = execute_query("""
+                SELECT i.ID1 AS issueID, o.name1, o.personID
+                FROM enigma.stockListings sl
+                JOIN enigma.issue i ON sl.issueID = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE sl.stockCode = %s AND sl.toDate IS NULL
+                ORDER BY sl.fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+                stock_name = result[0]['name1']
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error looking up stock code: {e}")
+
+    # Get stock info if we have issueID
+    if issue_id and not stock_name:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE i.ID1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = result[0]['name1']
+                org_id = result[0]['personid']
+        except Exception as e:
+            current_app.logger.error(f"Error getting stock info: {e}")
+
     shorts = []
+    if issue_id:
+        try:
+            # Get short position history with prices and outstanding shares
+            # Note: Uses MySQL functions lastQuote() and outstanding() which need PostgreSQL equivalents
+            shorts = execute_query("""
+                SELECT s.atDate,
+                       EXTRACT(EPOCH FROM s.atDate)::BIGINT * 1000 AS timestamp,
+                       s.shares,
+                       COALESCE(
+                           (SELECT q.closing
+                            FROM ccass.quotes q
+                            WHERE q.issueID = s.issueID
+                              AND q.atDate <= s.atDate
+                            ORDER BY q.atDate DESC
+                            LIMIT 1), 0) AS price,
+                       COALESCE(
+                           (SELECT os.outstanding
+                            FROM enigma.issuedshares os
+                            WHERE os.issueID = s.issueID
+                              AND os.atDate <= s.atDate
+                            ORDER BY os.atDate DESC
+                            LIMIT 1), 0) AS outstanding,
+                       CASE WHEN COALESCE(
+                                (SELECT os.outstanding
+                                 FROM enigma.issuedshares os
+                                 WHERE os.issueID = s.issueID
+                                   AND os.atDate <= s.atDate
+                                 ORDER BY os.atDate DESC
+                                 LIMIT 1), 0) > 0
+                            THEN s.shares / COALESCE(
+                                (SELECT os.outstanding
+                                 FROM enigma.issuedshares os
+                                 WHERE os.issueID = s.issueID
+                                   AND os.atDate <= s.atDate
+                                 ORDER BY os.atDate DESC
+                                 LIMIT 1), 1)
+                            ELSE 0
+                       END AS stake
+                FROM enigma.sfcshort s
+                WHERE s.issueID = %s
+                ORDER BY s.atDate DESC
+            """, (issue_id,))
+
+        except Exception as e:
+            current_app.logger.error(f"Error querying short positions: {e}")
+            shorts = []
+
     return render_template('dbpub/short.html',
-                         issue_id=issue_id, shorts=shorts)
+                         issue_id=issue_id, stock_name=stock_name, org_id=org_id,
+                         shorts=shorts)
 
 
 @bp.route('/shortsum.asp')
 def shortsum():
-    """Short selling summary"""
-    # TODO: Query short summaries
+    """Short selling weekly summary - aggregate across all stocks"""
+    from flask import current_app
+
     summaries = []
+    try:
+        # Aggregate short positions by week with market cap calculation
+        summaries = execute_query("""
+            SELECT s.atDate,
+                   EXTRACT(EPOCH FROM s.atDate)::BIGINT * 1000 AS timestamp,
+                   COUNT(*) AS cnt,
+                   SUM(s.value) / 1000000000.0 AS sumVal,
+                   SUM(
+                       COALESCE(
+                           (SELECT os.outstanding
+                            FROM enigma.issuedshares os
+                            WHERE os.issueID = s.issueID
+                              AND os.atDate <= s.atDate
+                            ORDER BY os.atDate DESC
+                            LIMIT 1), 0) *
+                       COALESCE(
+                           (SELECT q.closing
+                            FROM ccass.quotes q
+                            WHERE q.issueID = s.issueID
+                              AND q.atDate <= s.atDate
+                            ORDER BY q.atDate DESC
+                            LIMIT 1), 0)
+                   ) / 1000000000.0 AS sumCap,
+                   CASE WHEN SUM(
+                            COALESCE(
+                                (SELECT os.outstanding
+                                 FROM enigma.issuedshares os
+                                 WHERE os.issueID = s.issueID
+                                   AND os.atDate <= s.atDate
+                                 ORDER BY os.atDate DESC
+                                 LIMIT 1), 0) *
+                            COALESCE(
+                                (SELECT q.closing
+                                 FROM ccass.quotes q
+                                 WHERE q.issueID = s.issueID
+                                   AND q.atDate <= s.atDate
+                                 ORDER BY q.atDate DESC
+                                 LIMIT 1), 0)
+                        ) > 0
+                        THEN SUM(s.value) / SUM(
+                            COALESCE(
+                                (SELECT os.outstanding
+                                 FROM enigma.issuedshares os
+                                 WHERE os.issueID = s.issueID
+                                   AND os.atDate <= s.atDate
+                                 ORDER BY os.atDate DESC
+                                 LIMIT 1), 0) *
+                            COALESCE(
+                                (SELECT q.closing
+                                 FROM ccass.quotes q
+                                 WHERE q.issueID = s.issueID
+                                   AND q.atDate <= s.atDate
+                                 ORDER BY q.atDate DESC
+                                 LIMIT 1), 0)
+                        )
+                        ELSE 0
+                   END AS stake
+            FROM enigma.sfcshort s
+            GROUP BY s.atDate
+            ORDER BY s.atDate DESC
+        """)
+
+    except Exception as e:
+        current_app.logger.error(f"Error querying short summary: {e}")
+        summaries = []
+
     return render_template('dbpub/shortsum.html', summaries=summaries)
 
 
 @bp.route('/shortdate.asp')
 def shortdate():
-    """Short enigma.positions on a specific date"""
-    d = request.args.get('d', str(date.today()))
-    # TODO: Query short enigma.positions
+    """Short positions on a specific date - all stocks"""
+    from flask import current_app
+    from datetime import date
+
+    # Get date parameter
+    d = request.args.get('d', '')
+    sort_param = request.args.get('sort', 'stakdn')
+
+    # Get list of available dates
+    date_list = []
+    try:
+        date_list = execute_query("""
+            SELECT DISTINCT atDate
+            FROM enigma.sfcshort
+            ORDER BY atDate DESC
+        """)
+    except Exception as e:
+        current_app.logger.error(f"Error getting short dates: {e}")
+
+    # Use first date if not specified
+    if not d and date_list:
+        d = str(date_list[0]['atdate'])
+    elif not d:
+        d = str(date.today())
+
+    # Get previous date for change calculation
+    prev_date = None
+    try:
+        result = execute_query("""
+            SELECT COALESCE(
+                (SELECT MAX(atDate) FROM enigma.sfcshort WHERE atDate < %s),
+                '2012-08-31'::date
+            ) AS prevDate
+        """, (d,))
+        if result:
+            prev_date = result[0]['prevdate']
+    except Exception as e:
+        current_app.logger.error(f"Error getting previous short date: {e}")
+        prev_date = '2012-08-31'
+
+    # Sort mapping
+    sort_map = {
+        'nameup': 'name1',
+        'namedn': 'name1 DESC',
+        'stakdn': 'stake DESC, name1',
+        'stakup': 'stake, name1',
+        'valudn': 'value DESC, name1',
+        'valuup': 'value, name1',
+        'codeup': 'stockCode',
+        'codedn': 'stockCode DESC',
+        'mcapdn': 'mcap DESC',
+        'mcapup': 'mcap',
+        'typeup': 'typeShort, stake DESC',
+        'typedn': 'typeShort DESC, stake DESC',
+        'diffdn': 'diff DESC, name1',
+        'diffup': 'diff, name1'
+    }
+    ob = sort_map.get(sort_param, 'stake DESC, name1')
+
     shorts = []
-    return render_template('dbpub/shortdate.html', d=d, shorts=shorts)
+    try:
+        # Query all short positions on the specified date
+        shorts = execute_query(f"""
+            SELECT sl.stockCode, t1.issueID, t1.shares, t1.value,
+                   t1.stake, o.name1, st.typeShort, st.typeLong,
+                   COALESCE(t1.stake - t2.prevStake, 0) AS diff,
+                   t1.mcap, t1.os
+            FROM (
+                SELECT s.issueID, s.shares, s.value,
+                       os.outstanding AS os,
+                       CASE WHEN os.outstanding > 0
+                            THEN s.shares / os.outstanding
+                            ELSE 0 END AS stake,
+                       COALESCE(q.closing, 0) * os.outstanding AS mcap
+                FROM enigma.sfcshort s
+                LEFT JOIN LATERAL (
+                    SELECT outstanding
+                    FROM enigma.issuedshares
+                    WHERE issueID = s.issueID AND atDate <= %s
+                    ORDER BY atDate DESC
+                    LIMIT 1
+                ) os ON TRUE
+                LEFT JOIN LATERAL (
+                    SELECT closing
+                    FROM ccass.quotes
+                    WHERE issueID = s.issueID AND atDate <= %s
+                    ORDER BY atDate DESC
+                    LIMIT 1
+                ) q ON TRUE
+                WHERE s.atDate = %s
+            ) t1
+            JOIN enigma.issue i ON t1.issueID = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN (
+                SELECT s2.issueID,
+                       CASE WHEN os2.outstanding > 0
+                            THEN s2.shares / os2.outstanding
+                            ELSE 0 END AS prevStake
+                FROM enigma.sfcshort s2
+                LEFT JOIN LATERAL (
+                    SELECT outstanding
+                    FROM enigma.issuedshares
+                    WHERE issueID = s2.issueID AND atDate <= %s
+                    ORDER BY atDate DESC
+                    LIMIT 1
+                ) os2 ON TRUE
+                WHERE s2.atDate = %s
+            ) t2 ON t1.issueID = t2.issueID
+            LEFT JOIN LATERAL (
+                SELECT stockCode
+                FROM enigma.stockListings
+                WHERE issueID = t1.issueID AND toDate IS NULL
+                ORDER BY fromDate DESC
+                LIMIT 1
+            ) sl ON TRUE
+            ORDER BY {ob}
+        """, (d, d, d, prev_date, prev_date))
+
+    except Exception as e:
+        current_app.logger.error(f"Error querying short positions by date: {e}")
+        shorts = []
+
+    return render_template('dbpub/shortdate.html',
+                         d=d, prev_date=prev_date, shorts=shorts,
+                         date_list=date_list, sort=sort_param)
 
 
 @bp.route('/shortnotes.asp')
@@ -1509,21 +3500,137 @@ def enigma_events():
 
 @bp.route('/eventdets.asp')
 def eventdets():
-    """Event details"""
-    event_id = get_int('e', 0)
-    # TODO: Query event details
-    event = {}
-    return render_template('dbpub/eventdets.html', event_id=event_id, event=event)
+    """
+    Corporate event details
+
+    Query params:
+    - e: eventID
+
+    Shows full details of a specific corporate action event
+    """
+    event_id = get_int('e', 1)
+
+    # Get issue info from event
+    issue_result = execute_query("""
+        SELECT COALESCE(issueid, 0) AS issueid
+        FROM enigma.events
+        WHERE eventid = %s
+    """, (event_id,))
+
+    if not issue_result:
+        return "Event not found", 404
+
+    issue_id = issue_result[0]['issueid']
+
+    # Get event details with all related data
+    event_data = execute_query("""
+        SELECT e.*,
+               cct.change,
+               cu.currency,
+               COALESCE(e.distdate, e.exdate) AS dist_or_ex
+        FROM enigma.events e
+        JOIN enigma.capchangetypes cct ON e.eventtype = cct.capchangetype
+        LEFT JOIN enigma.currencies cu ON e.currid = cu.id
+        WHERE e.eventid = %s
+    """, (event_id,))
+
+    if not event_data:
+        return "Event not found", 404
+
+    event = event_data[0]
+
+    # Get issue2 details if exists
+    issue2_data = None
+    if event.get('issue2'):
+        issue2_data = execute_query("""
+            SELECT i.issuer,
+                   o.name1
+            FROM enigma.issue i
+            JOIN enigma.organisations o ON i.issuer = o.personid
+            WHERE i.id1 = %s
+        """, (event['issue2'],))
+
+    # Get afterEvent details if exists (for bonus/warrant issues)
+    after_event_type = None
+    if event.get('afterevent'):
+        after_event_data = execute_query("""
+            SELECT eventtype FROM enigma.events WHERE eventid = %s
+        """, (event['afterevent'],))
+        if after_event_data:
+            after_event_type = after_event_data[0]['eventtype']
+
+    return render_template('dbpub/eventdets.html',
+                         event_id=event_id,
+                         issue_id=issue_id,
+                         event=event,
+                         issue2_data=issue2_data[0] if issue2_data else None,
+                         after_event_type=after_event_type)
 
 
 # Documents
 @bp.route('/docs.asp')
 def docs():
-    """Search financial reports and documents"""
-    search = get_str('s', '')
-    # TODO: Query documents
-    docs = []
-    return render_template('dbpub/docs.html', search=search, docs=docs)
+    """
+    Financial reports and documents for an organization
+
+    Query params:
+    - p: personID (organization)
+    - sort: sorting column
+
+    Shows annual reports, interim reports, quarterly reports with filing dates and speeds
+    """
+    person_id = get_int('p', 0)
+    sort_param = request.args.get('sort', 'recdn')
+
+    if not person_id:
+        return "PersonID required", 400
+
+    # Sort order mapping
+    sort_mappings = {
+        'typup': 'doclong, reportdate DESC',
+        'typdn': 'doclong DESC, reportdate',
+        'repdn': 'reportdate DESC, recorddate DESC',
+        'repup': 'reportdate, recorddate',
+        'recup': 'recorddate',
+        'recdn': 'recorddate DESC',
+        'spddn': 'doclong, speed DESC, recorddate',
+        'spdup': 'doclong, speed, recorddate DESC'
+    }
+    ob = sort_mappings.get(sort_param, 'recorddate DESC')
+
+    # Query documents (docTypeID 0=annual, 1=interim, 6=quarterly)
+    docs_data = execute_query(f"""
+        SELECT d.recorddate,
+               d.reportdate,
+               EXTRACT(DAY FROM (d.reportdate - d.recorddate))::INTEGER AS speed,
+               dt.doclong,
+               COALESCE(r.url, '') AS url,
+               r.repfiled,
+               r.fsize
+        FROM enigma.documents d
+        JOIN enigma.doctypes dt ON d.doctypeid = dt.doctypeid
+        LEFT JOIN enigma.repfilings r ON d.repid = r.id
+        WHERE d.doctypeid IN (0, 1, 6)
+          AND d.orgid = %s
+        ORDER BY {ob}
+    """, (person_id,))
+
+    # Process URLs for display
+    for doc in docs_data:
+        if doc.get('url'):
+            url = doc['url']
+            # Fix HTTPS to HTTP (legacy ASP code did this)
+            if url.startswith('https'):
+                url = 'http' + url[5:]
+            # Add HKEX prefix if not a full URL
+            elif not url.startswith('http'):
+                url = 'https://www.hkexnews.hk/listedco/listconews/' + url
+            doc['url'] = url
+
+    return render_template('dbpub/docs.html',
+                         person_id=person_id,
+                         docs_data=docs_data,
+                         sort_param=sort_param)
 
 
 # Articles and content
@@ -1573,37 +3680,251 @@ def subject():
 # HK Solicitors
 @bp.route('/HKsols.asp')
 def hk_sols():
-    """HK solicitors search"""
-    search = get_str('n', '')
-    # TODO: Query solicitors
+    """
+    HK solicitors in law firms - port of HKsols.asp
+    Lists all current HK solicitors associated with HK law firms
+
+    Query params:
+    - p: role filter (1=Partner, 2=Consultant, 3=Solicitor, 5=Proprietor, 0=All)
+    - sort: sorting column
+
+    Tables used: enigma.lsposts, enigma.lsppl, enigma.lsorgs, enigma.lsroles, enigma.organisations, enigma.people
+    """
+    from flask import current_app
+
+    p = get_int('p', 0)
+    sort_param = request.args.get('sort', 'admup')
+
+    # Get role title
+    role_sql = ""
+    if p > 0:
+        role_sql = f" AND ps.post = {p}"
+
+    # Build sort order
+    sort_map = {
+        'humup': "pName,oName",
+        'humdn': "pName DESC,oName",
+        'orgup': "oName,LStxt,pName",
+        'orgdn': "oName,admHK,pName",
+        'admdn': "admHK DESC,pName",
+        'admup': "admHK,pName,oName",
+        'ageup': "age,pName,oName",
+        'agedn': "age DESC,pName,oName",
+        'rolup': "LStxt,pName,oName",
+        'roldn': "LStxt DESC,oName,pName"
+    }
+    ob = sort_map.get(sort_param, "admHK,pName,oName")
+
+    # Query solicitors
     solicitors = []
-    return render_template('dbpub/hk_sols.html', search=search, solicitors=solicitors)
+    try:
+        solicitors = execute_query(f"""
+            SELECT
+                CONCAT(EXTRACT(YEAR FROM p.admHK), '-',
+                       LPAD(EXTRACT(MONTH FROM p.admHK), 2, '0')) AS admHK,
+                o.personID AS orgID, o.name1 AS oName,
+                ppl.personID AS pID,
+                CONCAT(COALESCE(ppl.name1,''),
+                       CASE WHEN ppl.name2 IS NOT NULL THEN CONCAT(', ', ppl.name2) ELSE '' END,
+                       CASE WHEN ppl.cName IS NOT NULL THEN CONCAT(' ', ppl.cName) ELSE '' END) AS pName,
+                lr.LStxt,
+                EXTRACT(YEAR FROM CURRENT_DATE) - ppl.YOB AS age
+            FROM enigma.lsposts ps
+            JOIN enigma.lsppl lp ON ps.lsppl = lp.lsid
+            JOIN enigma.lsorgs lo ON ps.lsorg = lo.lsid
+            JOIN enigma.lsroles lr ON ps.post = lr.id
+            JOIN enigma.organisations o ON lo.personID = o.PersonID
+            JOIN enigma.people ppl ON lp.personID = ppl.personID
+            JOIN enigma.lsppl p ON lp.lsid = p.lsid
+            WHERE NOT ps.dead {role_sql}
+            ORDER BY {ob}
+        """)
+    except Exception as ex:
+        current_app.logger.error(f"Error querying HK sols: {ex}")
+
+    return render_template('dbpub/hk_sols.html',
+                         p=p, solicitors=solicitors, sort=sort_param)
 
 
 @bp.route('/HKsolfirms.asp')
 def hk_sol_firms():
-    """HK law firms"""
-    # TODO: Query law firms
+    """
+    HK law firms - port of HKsolfirms.asp
+    Lists all current HK law firms with solicitor counts by role
+
+    Query params:
+    - d: snapshot date (defaults to today)
+    - sort: sorting column
+
+    Tables used: enigma.lsposts, enigma.lsorgs, enigma.organisations
+    """
+    from flask import current_app
+
+    d = request.args.get('d', str(date.today()))
+    sort_param = request.args.get('sort', 'totdn')
+
+    # Build sort order
+    sort_map = {
+        'orgup': "name1", 'orgdn': "name1 DESC",
+        'partup': "partner,tot,name1", 'partdn': "partner DESC,tot DESC,name1",
+        'solup': "sol,tot,name1", 'soldn': "sol DESC,tot DESC,name1",
+        'conup': "con,tot,name1", 'condn': "con DESC,tot DESC,name1",
+        'propup': "prop,tot,name1", 'propdn': "prop DESC,tot DESC,name1",
+        'totup': "tot,name1", 'totdn': "tot DESC,name1"
+    }
+    ob = sort_map.get(sort_param, "tot DESC,name1")
+
+    # Query law firms
     firms = []
-    return render_template('dbpub/hk_sol_firms.html', firms=firms)
+    totals = {'partner': 0, 'con': 0, 'sol': 0, 'prop': 0, 'tot': 0}
+    try:
+        firms = execute_query(f"""
+            SELECT lo.personID, o.name1,
+                   COUNT(lp.lsppl) AS tot,
+                   SUM(CASE WHEN lp.post = 1 THEN 1 ELSE 0 END) AS partner,
+                   SUM(CASE WHEN lp.post = 2 THEN 1 ELSE 0 END) AS con,
+                   SUM(CASE WHEN lp.post = 3 THEN 1 ELSE 0 END) AS sol,
+                   SUM(CASE WHEN lp.post = 5 THEN 1 ELSE 0 END) AS prop
+            FROM enigma.lsposts lp
+            JOIN enigma.lsorgs lo ON lp.lsorg = lo.lsid
+            JOIN enigma.organisations o ON lo.personID = o.personID
+            WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
+              AND (NOT lp.dead OR lp.lastSeen >= %s)
+            GROUP BY lo.personID, o.name1
+            ORDER BY {ob}
+        """, (d, d))
+
+        # Calculate totals
+        result = execute_query("""
+            SELECT COUNT(lsppl) AS tot,
+                   SUM(CASE WHEN post = 1 THEN 1 ELSE 0 END) AS partner,
+                   SUM(CASE WHEN post = 2 THEN 1 ELSE 0 END) AS con,
+                   SUM(CASE WHEN post = 3 THEN 1 ELSE 0 END) AS sol,
+                   SUM(CASE WHEN post = 5 THEN 1 ELSE 0 END) AS prop
+            FROM enigma.lsposts lp
+            WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
+              AND (NOT lp.dead OR lp.lastSeen >= %s)
+              AND lp.post <> 4
+        """, (d, d))
+        if result:
+            totals = result[0]
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying HK sol firms: {ex}")
+
+    return render_template('dbpub/hk_sol_firms.html',
+                         firms=firms, totals=totals, d=d, sort=sort_param)
 
 
 @bp.route('/HKsolsmoves.asp')
 def hk_sols_moves():
-    """HK solicitors job moves"""
-    # TODO: Query moves
+    """
+    HK solicitors job moves - port of HKsolsmoves.asp
+    Shows recent moves in HK law firms (last 30 days)
+
+    Query params:
+    - sort: sorting column
+
+    Tables used: enigma.directorships, enigma.lsppl, enigma.lsorgs, enigma.organisations, enigma.people, enigma.positions, enigma.lsroles
+    """
+    from flask import current_app
+
+    sort_param = request.args.get('sort', 'orgup')
+
+    # Build sort order
+    sort_map = {
+        'orgup': "oName,pName,LSrole DESC",
+        'orgdn': "oName DESC,pName,LSrole DESC",
+        'solup': "pName,oName,LSrole DESC",
+        'soldn': "pName DESC,oName,LSrole DESC",
+        'datdn': "relDate DESC,pName,oName",
+        'datup': "relDate,pName,oName"
+    }
+    ob = sort_map.get(sort_param, "oName,pName,LSrole DESC")
+
+    # Query recent moves
     moves = []
-    return render_template('dbpub/hk_sols_moves.html', moves=moves)
+    try:
+        moves = execute_query(f"""
+            SELECT DISTINCT
+                d.company AS orgID, d.director AS pID,
+                CONCAT(COALESCE(p.name1,''),
+                       CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
+                       CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pName,
+                o.name1 AS oName,
+                CONCAT(EXTRACT(YEAR FROM d.apptDate), '-',
+                       LPAD(EXTRACT(MONTH FROM d.apptDate), 2, '0'),
+                       CASE WHEN d.apptAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.apptDate), 2, '0')) END) AS appt,
+                CONCAT(EXTRACT(YEAR FROM d.resDate), '-',
+                       LPAD(EXTRACT(MONTH FROM d.resDate), 2, '0'),
+                       CASE WHEN d.resAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.resDate), 2, '0')) END) AS res,
+                lr.LStxt,
+                COALESCE(d.resDate, d.apptDate) AS relDate
+            FROM enigma.directorships d
+            JOIN enigma.lsppl lp ON d.director = lp.personID
+            JOIN enigma.lsorgs lo ON d.company = lo.personID
+            JOIN enigma.organisations o ON d.company = o.personID
+            JOIN enigma.people p ON d.director = p.PersonID
+            JOIN enigma.positions pn ON d.positionID = pn.positionID
+            JOIN enigma.lsroles lr ON pn.LSrole = lr.ID
+            WHERE d.resDate >= CURRENT_DATE - INTERVAL '30 days'
+               OR d.apptDate >= CURRENT_DATE - INTERVAL '30 days'
+            ORDER BY {ob}
+        """)
+    except Exception as ex:
+        current_app.logger.error(f"Error querying HK sols moves: {ex}")
+
+    return render_template('dbpub/hk_sols_moves.html',
+                         moves=moves, sort=sort_param)
 
 
 @bp.route('/HKsolemps.asp')
 def hk_sol_emps():
-    """HK solicitors by employer"""
-    person_id = get_int('p', 0)
-    # TODO: Query solicitors by employer
-    solicitors = []
+    """
+    Non-law firm employers with HK solicitors - port of HKsolemps.asp
+    Lists employers of HK solicitors that are not law firms
+
+    Query params:
+    - sort: sorting column
+
+    Tables used: enigma.lsjobs, enigma.lsemps, enigma.organisations
+    """
+    from flask import current_app
+
+    sort_param = request.args.get('sort', 'cntdn')
+
+    # Build sort order
+    sort_map = {
+        'orgup': "name1",
+        'orgdn': "name1 DESC",
+        'cntup': "cnt,name1",
+        'cntdn': "cnt DESC,name1"
+    }
+    ob = sort_map.get(sort_param, "cnt DESC,name1")
+
+    # Query employers
+    employers = []
+    total = 0
+    try:
+        employers = execute_query(f"""
+            SELECT o.name1, o.personID, COUNT(*) AS cnt
+            FROM enigma.lsjobs j
+            JOIN enigma.lsemps e ON j.empID = e.ID
+            JOIN enigma.organisations o ON e.personID = o.personID
+            WHERE NOT j.dead
+            GROUP BY e.personID, o.name1, o.personID
+            ORDER BY {ob}
+        """)
+
+        # Calculate total
+        for emp in employers:
+            total += emp['cnt']
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying HK sol emps: {ex}")
+
     return render_template('dbpub/hk_sol_emps.html',
-                         person_id=person_id, solicitors=solicitors)
+                         employers=employers, total=total, sort=sort_param)
 
 
 # Website URLs
@@ -1628,69 +3949,455 @@ def matches():
 # Domiciles
 @bp.route('/domicile.asp')
 def domicile():
-    """Companies by domicile"""
-    dom_id = get_int('d', 0)
-    # TODO: Query by domicile
-    companies = []
-    return render_template('dbpub/domicile.html', dom_id=dom_id, companies=companies)
+    """
+    Distribution of listed companies by domicile
+
+    Query params:
+    - e: exchange (m=Main Board, g=GEM, a=All)
+    - sort: sorting column
+
+    Shows count and percentage of listed companies by jurisdiction
+    """
+    e = request.args.get('e', 'a')
+    sort_param = request.args.get('sort', 'cntdn')
+
+    # Exchange filter
+    exchange_filters = {
+        'g': ('20', 'GEM'),
+        'm': ('1', 'Main Board'),
+        'a': ('1, 20', 'Main Board and GEM')
+    }
+    ex_str, title_suffix = exchange_filters.get(e, ('1, 20', 'Main Board and GEM'))
+
+    # Sort order mapping
+    sort_mappings = {
+        'cntup': 'cnt',
+        'cntdn': 'cnt DESC',
+        'domup': 'domname',
+        'domdn': 'domname DESC'
+    }
+    ob = sort_mappings.get(sort_param, 'cnt DESC')
+
+    # Get total count for percentage calculation
+    total = execute_query(f"""
+        SELECT COUNT(*) AS total
+        FROM enigma.listedcoshk
+        WHERE stockexid IN ({ex_str})
+    """)[0]['total']
+
+    # Query domiciles with company counts
+    domiciles_data = execute_query(f"""
+        SELECT d.id,
+               d.fullname AS domname,
+               COUNT(l.issuer) AS cnt
+        FROM enigma.listedcoshk l
+        JOIN enigma.organisations o ON l.issuer = o.personid
+        JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE l.stockexid IN ({ex_str})
+        GROUP BY d.id, d.fullname
+        ORDER BY {ob}
+    """)
+
+    # Add percentage to each row
+    for row in domiciles_data:
+        row['pct'] = (row['cnt'] * 100.0 / total) if total > 0 else 0
+
+    return render_template('dbpub/domicile.html',
+                         domiciles_data=domiciles_data,
+                         e=e,
+                         sort_param=sort_param,
+                         title=f"Domicile of HK {title_suffix} listed companies",
+                         total=total)
 
 
 @bp.route('/domicilecos.asp')
 def domicilecos():
-    """All enigma.domiciles with company counts"""
-    # TODO: Query enigma.domiciles
-    domiciles_list = []
-    return render_template('dbpub/domicilecos.html', enigma_domiciles=domiciles_list)
+    """
+    Companies from a specific domicile
+
+    Query params:
+    - dom: domicile ID
+    - e: exchange (m=Main Board, g=GEM, a=All)
+    - sort: sorting column
+
+    Shows list of listed companies from specified jurisdiction
+    """
+    dom = get_int('dom', 1)
+    e = request.args.get('e', 'a')
+    sort_param = request.args.get('sort', 'nameup')
+
+    # Exchange filter
+    exchange_filters = {
+        'g': ('20', 'GEM'),
+        'm': ('1', 'Main Board'),
+        'a': ('1, 20', 'HK')
+    }
+    ex_str, title_prefix = exchange_filters.get(e, ('1, 20', 'HK'))
+
+    # Get domicile name
+    domicile_result = execute_query("""
+        SELECT friendly FROM enigma.domiciles WHERE id = %s
+    """, (dom,))
+
+    if not domicile_result:
+        return "Domicile not found", 404
+
+    dom_name = domicile_result[0]['friendly']
+
+    # Sort order mapping
+    sort_mappings = {
+        'namedn': 'name DESC',
+        'nameup': 'name',
+        'incdup': 'incdate, name',
+        'incddn': 'incdate DESC, name',
+        'scup': 'sc',
+        'scdn': 'sc DESC'
+    }
+    ob = sort_mappings.get(sort_param, 'name')
+
+    # Get all domiciles for dropdown
+    all_domiciles = execute_query("""
+        SELECT DISTINCT o.domicile, d.friendly
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        JOIN enigma.organisations o ON i.issuer = o.personid
+        JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE sl.stockexid IN (1, 20)
+          AND i.typeid IN (0, 6, 7, 10, 42)
+          AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= CURRENT_DATE)
+          AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+        ORDER BY d.friendly
+    """)
+
+    # Get companies from this domicile
+    companies_data = execute_query(f"""
+        SELECT o.name1 AS name,
+               o.personid,
+               o.incdate,
+               COALESCE(
+                   (SELECT sl2.stockcode
+                    FROM enigma.stocklistings sl2
+                    JOIN enigma.issue i2 ON sl2.issueid = i2.id1
+                    WHERE i2.issuer = o.personid
+                      AND (sl2.firsttradedate IS NULL OR sl2.firsttradedate <= CURRENT_DATE)
+                      AND (sl2.delistdate IS NULL OR sl2.delistdate > CURRENT_DATE)
+                    ORDER BY sl2.stockcode
+                    LIMIT 1), '') AS sc
+        FROM enigma.listedcoshk l
+        JOIN enigma.organisations o ON l.issuer = o.personid
+        WHERE l.stockexid IN ({ex_str})
+          AND o.domicile = %s
+        ORDER BY {ob}
+    """, (dom,))
+
+    return render_template('dbpub/domicilecos.html',
+                         companies_data=companies_data,
+                         all_domiciles=all_domiciles,
+                         dom=dom,
+                         dom_name=dom_name,
+                         e=e,
+                         sort_param=sort_param,
+                         title=f"{title_prefix}-listed companies domiciled in {dom_name}")
 
 
 @bp.route('/domicilechange.asp')
 def domicile_change():
-    """Domicile changes"""
-    # TODO: Query domicile changes
-    changes = []
-    return render_template('dbpub/domicile_change.html', changes=changes)
+    """
+    Companies that have changed domicile
+
+    Shows companies redomiciled by continuation or scheme of arrangement
+    """
+    sort_param = request.args.get('sort', 'datedn')
+
+    # Sort order mapping
+    sort_mappings = {
+        'newup': 'newdom, datechanged DESC',
+        'newdn': 'newdom DESC, datechanged DESC',
+        'oldup': 'olddom, datechanged DESC',
+        'olddn': 'olddom DESC, datechanged DESC',
+        'dateup': 'datechanged, name1',
+        'datedn': 'datechanged DESC, name1',
+        'namup': 'name1, datechanged DESC',
+        'namdn': 'name1 DESC, datechanged DESC'
+    }
+    ob = sort_mappings.get(sort_param, 'datechanged DESC, name1')
+
+    # Query domicile changes with old and new domiciles
+    changes_data = execute_query(f"""
+        SELECT dc.orgid,
+               o.name1,
+               dc.datechanged,
+               dc.dateacc,
+               d1.friendly AS olddom,
+               d2.friendly AS newdom
+        FROM enigma.domchanges dc
+        JOIN enigma.organisations o ON dc.orgid = o.personid
+        JOIN enigma.domiciles d1 ON dc.olddom = d1.id
+        JOIN enigma.domiciles d2 ON o.domicile = d2.id
+        ORDER BY {ob}
+    """)
+
+    return render_template('dbpub/domicile_change.html',
+                         changes_data=changes_data,
+                         sort_param=sort_param)
 
 
 # Name changes
 @bp.route('/namechangeHK.asp')
 def namechange_hk():
-    """HK company name changes"""
-    # TODO: Query name changes
-    changes = []
-    return render_template('dbpub/namechange_hk.html', changes=changes)
+    """
+    Recent name changes for HK-incorporated companies
+
+    Shows name changes in the last 30 days for companies incorporated in Hong Kong
+    """
+    sort_param = request.args.get('sort', 'newup')
+
+    # Sort order mapping
+    sort_mappings = {
+        'oldup': 'oldname',
+        'olddn': 'oldname DESC',
+        'newdn': 'name1 DESC',
+        'newup': 'name1',
+        'datup': 'datechanged, name1',
+        'datdn': 'datechanged DESC, name1'
+    }
+    ob = sort_mappings.get(sort_param, 'name1')
+
+    # Query name changes for HK companies in last 30 days
+    # domicile=1 is Hong Kong
+    changes_data = execute_query(f"""
+        SELECT o.personid,
+               nc.datechanged,
+               nc.oldname,
+               nc.oldcname,
+               o.name1,
+               o.cname
+        FROM enigma.namechanges nc
+        JOIN enigma.organisations o ON nc.personid = o.personid
+        WHERE o.domicile = 1
+          AND o.incid IS NOT NULL
+          AND (nc.oldname IS NOT NULL OR nc.oldcname IS NOT NULL)
+          AND ((nc.oldname <> o.name1 OR nc.oldname IS NULL)
+               OR (nc.oldcname <> o.cname OR nc.oldcname IS NULL))
+          AND nc.datechanged >= (CURRENT_DATE - INTERVAL '30 days')
+        ORDER BY {ob}
+    """)
+
+    return render_template('dbpub/namechange_hk.html',
+                         changes_data=changes_data,
+                         sort_param=sort_param)
 
 
 @bp.route('/namechangeHKlisted.asp')
 def namechange_hk_listed():
-    """HK listed company name changes"""
-    # TODO: Query name changes for listed cos
-    changes = []
-    return render_template('dbpub/namechange_hk_listed.html', changes=changes)
+    """
+    Name changes for HK-listed companies
+
+    Shows all name changes for companies ever listed in Hong Kong
+    """
+    sort_param = request.args.get('sort', 'datdn')
+
+    # Sort order mapping
+    sort_mappings = {
+        'oldup': 'oldname, datechanged',
+        'olddn': 'oldname DESC, datechanged DESC',
+        'datup': 'datechanged, name1',
+        'datdn': 'datechanged DESC, name1',
+        'newup': 'name1, datechanged DESC',
+        'newdn': 'name1 DESC, datechanged'
+    }
+    ob = sort_mappings.get(sort_param, 'datechanged DESC, name1')
+
+    # Query name changes for listed companies
+    changes_data = execute_query(f"""
+        SELECT o.personid,
+               nc.datechanged,
+               nc.oldname,
+               nc.oldcname,
+               o.name1,
+               o.cname
+        FROM enigma.namechanges nc
+        JOIN enigma.organisations o ON nc.personid = o.personid
+        JOIN enigma.listedcoshkever l ON nc.personid = l.issuer
+        WHERE (nc.oldname IS NOT NULL OR nc.oldcname IS NOT NULL)
+          AND ((nc.oldname <> o.name1 OR nc.oldname IS NULL)
+               OR (nc.oldcname <> o.cname OR nc.oldcname IS NULL))
+        ORDER BY {ob}
+    """)
+
+    return render_template('dbpub/namechange_hk_listed.html',
+                         changes_data=changes_data,
+                         sort_param=sort_param)
 
 
 # Directors stats
 @bp.route('/DirsPerListcoHKdstn.asp')
 def dirs_per_listco_hk():
-    """Directors per listed company distribution"""
-    # TODO: Generate distribution stats
+    """
+    Distribution of directors per HK-listed company - port of DirsPerListcoHKdstn.asp
+    Shows how many companies have 1, 2, 3... directors on their boards
+
+    Query params:
+    - d: snapshot date (defaults to today)
+
+    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    """
+    from flask import current_app
+
+    d = request.args.get('d', str(date.today()))
+    snap_year = int(d[:4]) if d else date.today().year
+
+    # Query distribution of directors per company
     distribution = []
-    return render_template('dbpub/dirs_per_listco_hk.html', distribution=distribution)
+    try:
+        distribution = execute_query("""
+            WITH company_counts AS (
+                SELECT
+                    d.company,
+                    COUNT(*) AS numSeats,
+                    SUM(CASE WHEN p.sex = 'F' THEN 1 ELSE 0 END) AS femSeats,
+                    AVG(p.YOB) AS avg_yob
+                FROM enigma.directorships d
+                JOIN enigma.positions pn ON d.positionID = pn.positionID
+                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+                JOIN enigma.people p ON d.director = p.personID
+                WHERE pn.rank = 1
+                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
+                  AND (d.resDate IS NULL OR d.resDate > %s)
+                GROUP BY d.company
+            )
+            SELECT
+                numSeats,
+                COUNT(*) AS numCos,
+                SUM(femSeats) AS femSeats,
+                AVG(avg_yob) AS yob_avg
+            FROM company_counts
+            GROUP BY numSeats
+            ORDER BY numSeats
+        """, (d, d))
+
+        # Get total company count
+        total_cos_result = execute_query("""
+            SELECT COUNT(DISTINCT issuer) AS cnt
+            FROM enigma.listedcoshk
+        """)
+        total_cos = total_cos_result[0]['cnt'] if total_cos_result else 0
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying dirs per listco distribution: {ex}")
+        total_cos = 0
+
+    return render_template('dbpub/dirs_per_listco_hk.html',
+                         distribution=distribution, d=d, snap_year=snap_year,
+                         total_cos=total_cos)
 
 
 @bp.route('/DirsHKDistnPeople.asp')
 def dirs_hk_distn_people():
-    """HK directors distribution by person"""
-    # TODO: Generate stats
+    """
+    Distribution of HK-listed directorships per person - port of DirsHKDistnPeople.asp
+    Shows how many people hold 1, 2, 3... directorships
+
+    Query params:
+    - d: snapshot date (defaults to today)
+
+    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    """
+    from flask import current_app
+
+    d = request.args.get('d', str(date.today()))
+
+    # Query distribution of directorships per person
     distribution = []
-    return render_template('dbpub/dirs_hk_distn_people.html', distribution=distribution)
+    try:
+        distribution = execute_query("""
+            WITH person_counts AS (
+                SELECT
+                    d.director,
+                    COUNT(DISTINCT d.company) AS numSeats,
+                    MAX(p.sex) AS sex
+                FROM enigma.directorships d
+                JOIN enigma.positions pn ON d.positionID = pn.positionID
+                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+                JOIN enigma.people p ON d.director = p.personID
+                WHERE pn.rank = 1
+                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
+                  AND (d.resDate IS NULL OR d.resDate > %s)
+                GROUP BY d.director
+            )
+            SELECT
+                numSeats,
+                COUNT(*) AS numPeople,
+                SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female
+            FROM person_counts
+            GROUP BY numSeats
+            ORDER BY numSeats
+        """, (d, d))
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying dirs HK distn people: {ex}")
+
+    return render_template('dbpub/dirs_hk_distn_people.html',
+                         distribution=distribution, d=d)
 
 
 @bp.route('/DirsHKAgeDistn.asp')
 def dirs_hk_age_distn():
-    """HK directors age distribution"""
-    # TODO: Generate age stats
+    """
+    Distribution of HK-listed directors by age - port of DirsHKAgeDistn.asp
+    Shows how many directors were born in each year
+
+    Query params:
+    - d: snapshot date (defaults to today)
+    - sort: YOBup or YOBdn
+
+    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    """
+    from flask import current_app
+
+    d = request.args.get('d', str(date.today()))
+    sort_param = request.args.get('sort', 'YOBup')
+    snap_year = int(d[:4]) if d else date.today().year
+
+    # Build sort order
+    ob = "p.YOB DESC" if sort_param == "YOBdn" else "p.YOB"
+
+    # Query age distribution
     distribution = []
-    return render_template('dbpub/dirs_hk_age_distn.html', distribution=distribution)
+    try:
+        distribution = execute_query(f"""
+            WITH director_counts AS (
+                SELECT
+                    d.director,
+                    p.YOB,
+                    p.sex,
+                    COUNT(DISTINCT d.company) AS seats
+                FROM enigma.directorships d
+                JOIN enigma.positions pn ON d.positionID = pn.positionID
+                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
+                JOIN enigma.people p ON d.director = p.personID
+                WHERE pn.rank = 1
+                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
+                  AND (d.resDate IS NULL OR d.resDate > %s)
+                GROUP BY d.director, p.YOB, p.sex
+            )
+            SELECT
+                YOB,
+                COUNT(*) AS dirs,
+                SUM(seats) AS seats,
+                SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female,
+                SUM(CASE WHEN sex = 'F' THEN seats ELSE 0 END) AS femSeats
+            FROM director_counts
+            GROUP BY YOB
+            ORDER BY {ob}
+        """, (d, d))
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying dirs HK age distn: {ex}")
+
+    return render_template('dbpub/dirs_hk_age_distn.html',
+                         distribution=distribution, d=d, snap_year=snap_year,
+                         sort=sort_param)
 
 
 @bp.route('/HKdirsTypeSex.asp')

@@ -34,7 +34,7 @@
 Total returns are measured from the latest of the start date and 3-Jan-1994
 until the snapshot date. CAGR is the annualised return and is not shown for
 periods under 180 days. Relative returns are to the
-<a href="{{ url_for('dbpub.orgdata', p=51819) }}">Tracker Fund of
+<a href="{{ url_for('dbpub.enigma_orgdata', p=51819) }}">Tracker Fund of
 HK</a> (2800), starting from the latest of 12-Nov-1999 and the listing date.</p>
 
 <form method="get" action="{{ url_for('dbpub.listed') }}">
@@ -70,7 +70,7 @@ HK</a> (2800), starting from the latest of 12-Nov-1999 and the listing date.</p>
 			<td class="colHide1">{{ loop.index }}</td>
 			<td>{{ stock.StockCode }}</td>
 			<td class="left colHide3"><span class="info">{{ stock.typeShort }}<span>{{ stock.typeLong }}</span></span></td>
-			<td class="left"><a href="{{ url_for('dbpub.orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
+			<td class="left"><a href="{{ url_for('dbpub.enigma_orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
 			<td class="colHide3" style="white-space:nowrap">{{ stock.FirstTradeDate }}</td>
 			<td class="colHide2"><a href="str.asp?i={{ stock.issueID }}">{{ stock.totRet }}</a></td>
 			<td class="colHide2">{{ stock.CAGret }}</td>

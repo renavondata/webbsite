@@ -42,3 +42,6 @@ instance/
 
 # uv
 .uv/
+
+# testing
+tests/outputs

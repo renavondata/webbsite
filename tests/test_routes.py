@@ -80,6 +80,7 @@ class RouteComparator:
         - Strip leading/trailing whitespace from each line
         - Collapse multiple spaces to single space
         - Remove HTML comments (optional)
+        - Normalize static file paths (CSS, images)
         - Normalize line endings to \\n
         """
         if not html:
@@ -90,6 +91,13 @@ class RouteComparator:
         # Remove HTML comments if configured
         if normalize_config.get("remove_comments", True):
             html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
+
+        # Normalize static file paths (CSS and images)
+        # Convert /static/css/X, ../templates/X, etc. to just filename
+        # Handles both absolute (/static/css/) and relative (../templates/) paths
+        html = re.sub(r'href="(?:[^"]*/)?([\w-]+\.css)"', r'href="\1"', html)
+        # Normalize image paths: /static/images/X.png, /images/X.png, etc. to just filename
+        html = re.sub(r'src="(?:[^"]*/)?([\w-]+\.(png|jpg|gif|svg))"', r'src="\1"', html)
 
         # Split into lines and process each
         lines = html.splitlines()

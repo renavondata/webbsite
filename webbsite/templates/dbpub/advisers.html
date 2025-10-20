@@ -46,7 +46,7 @@
 		{% for adv in adviserships %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
-			<td><a href="{{ url_for('dbpub.orgdata', p=adv.adviserID) }}">{{ adv.adviserName }}</a></td>
+			<td><a href="{{ url_for('dbpub.enigma_orgdata', p=adv.adviserID) }}">{{ adv.adviserName }}</a></td>
 			<td>{{ adv.role }}</td>
 			<td class="colHide2">{{ adv.addDate }}</td>
 			<td>{{ adv.remDate }}</td>

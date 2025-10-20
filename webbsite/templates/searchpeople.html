@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "base_database.html" %}
 
 {% block title %}Search people{% endblock %}
 
 {% block content %}
 <h2>Search people</h2>
-<form method="get" action="{{ url_for('search.search_people') }}">
+<form method="post" action="{{ url_for('search.search_people') }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
 	<select id="st" name="st">

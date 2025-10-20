@@ -47,7 +47,7 @@
 			<td class="colHide1">{{ loop.index }}</td>
 			<td>{{ stock.StockCode }}</td>
 			<td class="left colHide3"><span class="info">{{ stock.typeShort }}<span>{{ stock.typeLong }}</span></span></td>
-			<td class="left"><a href="{{ url_for('dbpub.orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
+			<td class="left"><a href="{{ url_for('dbpub.enigma_orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
 			<td class="colHide2" style="white-space:nowrap">{{ stock.FirstTradeDate }}</td>
 			<td class="colHide2" style="white-space:nowrap">{{ stock.FinalTradeDate }}</td>
 			<td style="white-space:nowrap">{{ stock.DelistDate }}</td>

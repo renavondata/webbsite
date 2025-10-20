@@ -18,7 +18,7 @@
 	</tr>
 	{% for security in delisted %}
 		<tr>
-			<td><a href="{{ url_for('dbpub.orgdata', p=security.OrgID) }}">{{ security.Org }}</a></td>
+			<td><a href="{{ url_for('dbpub.enigma_orgdata', p=security.OrgID) }}">{{ security.Org }}</a></td>
 			<td>{{ security.SecType }}</td>
 			<td>{{ security.FirstTradeDate }}</td>
 			<td>{{ security.FinalTradeDate }}</td>

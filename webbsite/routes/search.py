@@ -8,13 +8,18 @@ from webbsite.asp_helpers import rem_space, get_str, apos
 bp = Blueprint('search', __name__)
 
 
-@bp.route('/searchorgs.asp')
+@bp.route('/searchorgs.asp', methods=['GET', 'POST'])
 def search_orgs():
     """Search organizations - port of searchorgs.asp"""
-    # Get parameters
-    n = rem_space(get_str('n', ''))
-    st = get_str('st', 'l')  # l=left match, a=any match (full-text)
-    sort = get_str('sort', 'namup')
+    # Get parameters from POST (form submit) or GET (URL links)
+    if request.method == 'POST':
+        n = rem_space(request.form.get('n', ''))
+        st = request.form.get('st', 'l')
+        sort = request.form.get('sort', 'namup')
+    else:
+        n = rem_space(get_str('n', ''))
+        st = get_str('st', 'l')  # l=left match, a=any match (full-text)
+        sort = get_str('sort', 'namup')
 
     # Determine sort order
     sort_options = {
@@ -84,13 +89,18 @@ def search_orgs():
                          limit=limit)
 
 
-@bp.route('/searchpeople.asp')
+@bp.route('/searchpeople.asp', methods=['GET', 'POST'])
 def search_people():
     """Search people - port of searchpeople.asp"""
-    # Get parameters
-    n = rem_space(get_str('n', ''))
-    st = get_str('st', 'l')  # l=left match, a=any match (full-text)
-    sort = get_str('sort', 'namup')
+    # Get parameters from POST (form submit) or GET (URL links)
+    if request.method == 'POST':
+        n = rem_space(request.form.get('n', ''))
+        st = request.form.get('st', 'l')
+        sort = request.form.get('sort', 'namup')
+    else:
+        n = rem_space(get_str('n', ''))
+        st = get_str('st', 'l')  # l=left match, a=any match (full-text)
+        sort = get_str('sort', 'namup')
 
     # Determine sort order
     sort_options = {
