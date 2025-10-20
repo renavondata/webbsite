@@ -1,0 +1,2244 @@
+================================================================================
+PostgreSQL Schema Column Mapping
+================================================================================
+
+
+================================================================================
+Schema: enigma
+================================================================================
+
+Found 227 tables in enigma schema
+
+
+enigma.acdata (3 columns):
+------------------------------------------------------------
+  acitem                         bigint
+  atdate                         date
+  acval                          double precision
+
+enigma.acitems (6 columns):
+------------------------------------------------------------
+  id                             bigint
+  datasource                     bigint
+  sourcename                     character varying(255)
+  dispname                       character varying(255)
+  type                           character varying(7)
+  refdate                        boolean
+
+enigma.activity (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  actname                        character varying(255)
+
+enigma.adjustments (3 columns):
+------------------------------------------------------------
+  issueid                        bigint
+  exdate                         date
+  cumadjust                      double precision
+
+enigma.advisers (1 columns):
+------------------------------------------------------------
+  personid                       bigint
+
+enigma.adviserships (9 columns):
+------------------------------------------------------------
+  company                        bigint
+  adviser                        bigint
+  role                           smallint
+  adddate                        date
+  addacc                         smallint
+  remdate                        date
+  remacc                         smallint
+  id                             bigint
+  modified                       timestamp with time zone
+
+enigma.airlines (4 columns):
+------------------------------------------------------------
+  icao                           character(3)
+  enname                         character varying(30)
+  tcname                         character varying(30)
+  scname                         character varying(30)
+
+enigma.airports (5 columns):
+------------------------------------------------------------
+  iata                           character(3)
+  enname                         character varying(15)
+  tcname                         character varying(15)
+  scname                         character varying(15)
+  country                        character varying(2)
+
+enigma.alias (9 columns):
+------------------------------------------------------------
+  id                             bigint
+  personid                       bigint
+  n1                             character varying(90)
+  n2                             character varying(63)
+  cn                             character varying(20)
+  alias                          boolean
+  dn1                            character varying(90)
+  dn2                            character varying(63)
+  userid                         integer
+
+enigma.auditorchanges (7 columns):
+------------------------------------------------------------
+  company                        bigint
+  adviser                        bigint
+  add                            character varying
+  rem                            character varying
+  sortdate                       date
+  coname                         character varying(255)
+  advname                        character varying(255)
+
+enigma.bbexch (5 columns):
+------------------------------------------------------------
+  id                             integer
+  des                            character varying(127)
+  name                           character varying(127)
+  filedate                       date
+  mapto                          smallint
+
+enigma.bodytype (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  des                            character varying(45)
+
+enigma.buybacklog (3 columns):
+------------------------------------------------------------
+  lastrun                        timestamp with time zone
+  mainboarddate                  date
+  gemdate                        date
+
+enigma.campaign (3 columns):
+------------------------------------------------------------
+  campid                         integer
+  camptext                       character varying(50)
+  recipient                      bigint
+
+enigma.capacity (3 columns):
+------------------------------------------------------------
+  id                             integer
+  capshort                       character varying(11)
+  caplong                        character varying(255)
+
+enigma.capchanges (11 columns):
+------------------------------------------------------------
+  ccid                           bigint
+  issueid                        integer
+  effdate                        date
+  capchangetype                  smallint
+  exchid                         smallint
+  shares                         bigint
+  value                          double precision
+  price                          double precision
+  currency                       smallint
+  descrip                        character varying(50)
+  filedate                       date
+
+enigma.capchangetypes (6 columns):
+------------------------------------------------------------
+  capchangetype                  smallint
+  change                         character varying(30)
+  negdescrip                     character varying(50)
+  descrip                        character varying(50)
+  dist                           boolean
+  likestr                        character varying(255)
+
+enigma.casetypes (4 columns):
+------------------------------------------------------------
+  id                             integer
+  prefix                         character varying(4)
+  des                            character varying(63)
+  courtid                        smallint
+
+enigma.categories (2 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(50)
+
+enigma.cattree (2 columns):
+------------------------------------------------------------
+  childcat                       integer
+  parentcat                      integer
+
+enigma.chartitems (4 columns):
+------------------------------------------------------------
+  chartid                        integer
+  dataitem                       integer
+  typeid                         smallint
+  negate                         boolean
+
+enigma.charts (3 columns):
+------------------------------------------------------------
+  id                             integer
+  title                          character varying(45)
+  quant                          boolean
+
+enigma.charttypes (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  name                           character varying(45)
+
+enigma.classifications (2 columns):
+------------------------------------------------------------
+  company                        bigint
+  category                       integer
+
+enigma.codeshare (3 columns):
+------------------------------------------------------------
+  flightid                       bigint
+  flightno                       character varying(8)
+  airline                        character(3)
+
+enigma.comeets (6 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  comid                          smallint
+  atdate                         date
+  mtngs                          smallint
+  userid                         integer
+  modified                       timestamp with time zone
+
+enigma.comex (3 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  atdate                         date
+  comid                          smallint
+
+enigma.compos (9 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  dirid                          bigint
+  comid                          smallint
+  atdate                         date
+  posn                           smallint
+  userid                         integer
+  modified                       timestamp with time zone
+  attend                         smallint
+  mtngs                          smallint
+
+enigma.coms (2 columns):
+------------------------------------------------------------
+  id                             integer
+  comname                        character varying(45)
+
+enigma.corpwords (1 columns):
+------------------------------------------------------------
+  word                           character varying(255)
+
+enigma.courts (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  des                            character varying(45)
+  ncpref                         character varying(6)
+
+enigma.currencies (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  currency                       character varying(3)
+  hkexcurr                       character varying(3)
+
+enigma.currpair (3 columns):
+------------------------------------------------------------
+  id                             integer
+  curr1                          smallint
+  curr2                          smallint
+
+enigma.data (3 columns):
+------------------------------------------------------------
+  item                           integer
+  d                              date
+  v                              double precision
+
+enigma.dataitems (9 columns):
+------------------------------------------------------------
+  id                             integer
+  ddes                           character varying(127)
+  note                           character varying(255)
+  dp                             smallint
+  sv                             character varying(45)
+  units                          character varying(45)
+  freq                           smallint
+  shortname                      character varying(25)
+  source                         bigint
+
+enigma.datasource (5 columns):
+------------------------------------------------------------
+  id                             bigint
+  url                            character varying(255)
+  name                           character varying(255)
+  swagger                        character varying(255)
+  fieldlist                      character varying(255)
+
+enigma.dateaccuracy (2 columns):
+------------------------------------------------------------
+  accid                          smallint
+  acctext                        character varying(2)
+
+enigma.destor (3 columns):
+------------------------------------------------------------
+  flightid                       bigint
+  seq                            smallint
+  iata                           character(3)
+
+enigma.directorships (11 columns):
+------------------------------------------------------------
+  id1                            bigint
+  company                        bigint
+  director                       bigint
+  joinedy                        smallint
+  apptdate                       date
+  apptacc                        smallint
+  resdate                        date
+  resacc                         smallint
+  positionid                     integer
+  source                         smallint
+  modified                       timestamp with time zone
+
+enigma.dirnocname (4 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  director                       bigint
+  orgname                        character varying(255)
+  pplname                        character varying
+
+enigma.dismodes (4 columns):
+------------------------------------------------------------
+  id                             smallint
+  dismodetxt                     character varying(45)
+  ukuri                          character varying(45)
+  ukapi                          character varying(45)
+
+enigma.dlreasons (2 columns):
+------------------------------------------------------------
+  reasonid                       integer
+  reason                         character varying(45)
+
+enigma.doctypes (3 columns):
+------------------------------------------------------------
+  doctypeid                      smallint
+  docshort                       character varying(50)
+  doclong                        character varying(50)
+
+enigma.documents (14 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  doctypeid                      smallint
+  recorddate                     date
+  midday                         boolean
+  reportdate                     date
+  adv                            boolean
+  dir                            boolean
+  pay                            boolean
+  sai                            boolean
+  modified                       timestamp with time zone
+  repid                          integer
+  resid                          integer
+  paypage                        integer
+
+enigma.domchanges (6 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  datechanged                    date
+  dateacc                        smallint
+  olddom                         integer
+  oldincid                       character varying(14)
+
+enigma.domiciles (7 columns):
+------------------------------------------------------------
+  id                             integer
+  shortname                      character varying(6)
+  fullname                       character varying(50)
+  hkexdomicile                   character varying(50)
+  a2                             character varying(4)
+  friendly                       character varying(30)
+  hkcr                           character varying(45)
+
+enigma.donations (5 columns):
+------------------------------------------------------------
+  campaign                       smallint
+  donor                          bigint
+  doncurr                        smallint
+  donamnt                        bigint
+  receipt                        integer
+
+enigma.dtsquotes (13 columns):
+------------------------------------------------------------
+  stockcode                      bigint
+  stockid                        bigint
+  date                           date
+  high                           double precision
+  low                            double precision
+  closing                        double precision
+  vol                            numeric
+  turn                           numeric
+  deals                          bigint
+  bid                            double precision
+  ask                            double precision
+  susp                           boolean
+  last                           double precision
+
+enigma.enginesize (4 columns):
+------------------------------------------------------------
+  id                             smallint
+  des                            character varying(8)
+  td                             character varying(10)
+  td2                            character varying(10)
+
+enigma.entall (69 columns):
+------------------------------------------------------------
+  importid                       bigint
+  daily                          boolean
+  autoprocess                    boolean
+  ignorerow                      boolean
+  stock                          character varying(5)
+  sehkid                         bigint
+  issueid                        integer
+  stk_name                       character varying(60)
+  type                           character varying(4)
+  announced                      date
+  yearend                        date
+  details_1                      character varying(63)
+  details_2                      character varying(63)
+  details_3                      character varying(63)
+  details_4                      character varying(63)
+  details_5                      character varying(63)
+  details_6                      character varying(63)
+  bookclosefr                    date
+  bookcloseto                    date
+  paydate                        date
+  exdate                         date
+  capchangetype1                 smallint
+  curr1                          smallint
+  price1                         double precision
+  pricehkd1                      double precision
+  old1                           double precision
+  new1                           double precision
+  date1                          date
+  issueid1                       bigint
+  descrip1                       character varying(255)
+  capchangetype2                 smallint
+  curr2                          smallint
+  price2                         double precision
+  pricehkd2                      double precision
+  old2                           double precision
+  new2                           double precision
+  date2                          date
+  issueid2                       bigint
+  descrip2                       character varying(255)
+  capchangetype3                 smallint
+  curr3                          smallint
+  price3                         double precision
+  pricehkd3                      double precision
+  old3                           double precision
+  new3                           double precision
+  date3                          date
+  issueid3                       bigint
+  descrip3                       character varying(255)
+  capchangetype4                 smallint
+  curr4                          smallint
+  price4                         double precision
+  pricehkd4                      double precision
+  old4                           double precision
+  new4                           double precision
+  date4                          date
+  issueid4                       bigint
+  descrip4                       character varying(255)
+  event1                         bigint
+  event2                         bigint
+  event3                         bigint
+  event4                         bigint
+  modified                       timestamp with time zone
+  details                        text
+  col1                           boolean
+  col2                           boolean
+  col3                           boolean
+  col4                           boolean
+  col5                           boolean
+  col6                           boolean
+
+enigma.entitlements (68 columns):
+------------------------------------------------------------
+  importid                       bigint
+  daily                          boolean
+  autoprocess                    boolean
+  ignorerow                      boolean
+  stock                          character varying(5)
+  sehkid                         bigint
+  issueid                        integer
+  stk_name                       character varying(60)
+  type                           character varying(4)
+  announced                      date
+  yearend                        date
+  details_1                      character varying(63)
+  details_2                      character varying(63)
+  details_3                      character varying(63)
+  details_4                      character varying(63)
+  details_5                      character varying(63)
+  details_6                      character varying(63)
+  bookclosefr                    date
+  bookcloseto                    date
+  paydate                        date
+  exdate                         date
+  capchangetype1                 smallint
+  curr1                          smallint
+  price1                         double precision
+  pricehkd1                      double precision
+  old1                           double precision
+  new1                           double precision
+  date1                          date
+  issueid1                       bigint
+  descrip1                       character varying(255)
+  capchangetype2                 smallint
+  curr2                          smallint
+  price2                         double precision
+  pricehkd2                      double precision
+  old2                           double precision
+  new2                           double precision
+  date2                          date
+  issueid2                       bigint
+  descrip2                       character varying(255)
+  capchangetype3                 smallint
+  curr3                          smallint
+  price3                         double precision
+  pricehkd3                      double precision
+  old3                           double precision
+  new3                           double precision
+  date3                          date
+  issueid3                       bigint
+  descrip3                       character varying(255)
+  capchangetype4                 smallint
+  curr4                          smallint
+  price4                         double precision
+  pricehkd4                      double precision
+  old4                           double precision
+  new4                           double precision
+  date4                          date
+  issueid4                       bigint
+  descrip4                       character varying(255)
+  event1                         bigint
+  event2                         bigint
+  event3                         bigint
+  event4                         bigint
+  modified                       timestamp with time zone
+  col1                           boolean
+  col2                           boolean
+  col3                           boolean
+  col4                           boolean
+  col5                           boolean
+  col6                           boolean
+
+enigma.errorlog (4 columns):
+------------------------------------------------------------
+  id                             bigint
+  proc                           character varying(45)
+  descrip                        character varying(1000)
+  errtime                        timestamp with time zone
+
+enigma.ess (8 columns):
+------------------------------------------------------------
+  id                             bigint
+  ename                          character varying(255)
+  cname                          character varying(255)
+  phase                          smallint
+  amt                            bigint
+  heads                          bigint
+  orgid                          bigint
+  modified                       timestamp with time zone
+
+enigma.events (27 columns):
+------------------------------------------------------------
+  eventid                        bigint
+  importid                       bigint
+  subent                         smallint
+  issueid                        integer
+  announced                      date
+  eventtype                      smallint
+  yearend                        date
+  exdate                         date
+  bookclosefr                    date
+  bookcloseto                    date
+  acceptdate                     date
+  distdate                       date
+  new                            double precision
+  old                            double precision
+  currid                         smallint
+  price                          double precision
+  pricehkd                       double precision
+  issue2                         integer
+  notes                          character varying(255)
+  cumdate                        date
+  cumprice                       double precision
+  afterevent                     bigint
+  adjust                         double precision
+  canceldate                     date
+  modified                       timestamp with time zone
+  fxdate                         date
+  tempentry                      boolean
+
+enigma.filingcodes (2 columns):
+------------------------------------------------------------
+  repid                          integer
+  sc                             integer
+
+enigma.flights (16 columns):
+------------------------------------------------------------
+  id                             bigint
+  sched                          timestamp with time zone
+  flightno                       character varying(8)
+  airline                        character varying(3)
+  actual                         timestamp with time zone
+  terminal                       smallint
+  aisle                          character varying(4)
+  gate                           character varying(3)
+  stand                          character varying(5)
+  baggage                        smallint
+  hall                           character(1)
+  status                         character varying(45)
+  arrival                        boolean
+  cargo                          boolean
+  cancelled                      boolean
+  lastseen                       timestamp with time zone
+
+enigma.forexrates (3 columns):
+------------------------------------------------------------
+  currpair                       smallint
+  atdate                         date
+  rate                           double precision
+
+enigma.freg (7 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  hostdom                        integer
+  regid                          character varying(11)
+  regdate                        date
+  cesdate                        date
+  regupd                         timestamp with time zone
+
+enigma.freq (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  fdes                           character varying(45)
+
+enigma.frstatus (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  des                            character varying(9)
+
+enigma.fueltype (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  des                            character varying(45)
+  friendly                       character varying(45)
+
+enigma.govac (6 columns):
+------------------------------------------------------------
+  d                              date
+  govitem                        integer
+  ann                            boolean
+  est                            bigint
+  act                            bigint
+  modified                       timestamp with time zone
+
+enigma.govadopt (6 columns):
+------------------------------------------------------------
+  tree                           integer
+  govitem                        integer
+  parentid                       integer
+  txt                            character varying(127)
+  short                          character varying(127)
+  priority                       smallint
+
+enigma.govitems (15 columns):
+------------------------------------------------------------
+  id                             integer
+  parentid                       integer
+  h1                             character varying(6)
+  h2                             character varying(6)
+  h3                             character varying(6)
+  govtxt                         character varying(255)
+  txt                            character varying(255)
+  short                          character varying(255)
+  firstd                         date
+  priority                       smallint
+  approved                       bigint
+  rev                            boolean
+  reimb                          boolean
+  head                           boolean
+  transfer                       boolean
+
+enigma.heldas (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  heldastxt                      character varying(45)
+
+enigma.hkcrtypes (3 columns):
+------------------------------------------------------------
+  prefix                         character varying(2)
+  crtype                         character varying(42)
+  orgtype                        smallint
+
+enigma.hkdistrict (4 columns):
+------------------------------------------------------------
+  id                             smallint
+  en                             character varying(17)
+  cn                             character varying(3)
+  regionid                       smallint
+
+enigma.hkexdata (7 columns):
+------------------------------------------------------------
+  stockcode                      character varying(5)
+  domicile                       character varying(50)
+  boardlot                       bigint
+  nomprice                       double precision
+  pricedate                      timestamp with time zone
+  issueid                        integer
+  modified                       timestamp with time zone
+
+enigma.hkports (2 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(255)
+
+enigma.hkpx (5 columns):
+------------------------------------------------------------
+  d                              date
+  port                           smallint
+  pxtype                         smallint
+  arrivals                       bigint
+  departures                     bigint
+
+enigma.hkpxtypes (2 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(255)
+
+enigma.hkregion (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  en                             character varying(16)
+  cn                             character varying(3)
+
+enigma.issue (11 columns):
+------------------------------------------------------------
+  id1                            integer
+  issuer                         bigint
+  sehkid                         bigint
+  typeid                         smallint
+  expmat                         date
+  expacc                         smallint
+  sehkcurr                       smallint
+  userid                         integer
+  coupon                         double precision
+  floating                       boolean
+  hkexwvr                        boolean
+
+enigma.issuedlatest (3 columns):
+------------------------------------------------------------
+  issueid                        integer
+  outstanding                    double precision
+  atdate                         date
+
+enigma.issuedlatestdate (2 columns):
+------------------------------------------------------------
+  issueid                        integer
+  maxdate                        date
+
+enigma.issuedshares (5 columns):
+------------------------------------------------------------
+  issueid                        integer
+  atdate                         date
+  outstanding                    double precision
+  modified                       timestamp with time zone
+  userid                         integer
+
+enigma.issuers2003 (2 columns):
+------------------------------------------------------------
+  personid                       bigint
+  name                           character varying(255)
+
+enigma.jails (3 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(255)
+  type                           smallint
+
+enigma.jailtypes (2 columns):
+------------------------------------------------------------
+  id                             integer
+  txt                            character varying(127)
+
+enigma.judgments (18 columns):
+------------------------------------------------------------
+  id                             bigint
+  uploaded                       date
+  jdate                          date
+  dis                            bigint
+  casenum                        character varying(20)
+  casetype                       smallint
+  neutcit                        character varying(20)
+  parties                        character varying(511)
+  rep                            character varying(63)
+  lang                           character varying(4)
+  star                           boolean
+  rv                             boolean
+  rs                             boolean
+  modified                       timestamp with time zone
+  caseyear                       integer
+  caseseq                        integer
+  ncyear                         integer
+  ncseq                          integer
+
+enigma.landreg (4 columns):
+------------------------------------------------------------
+  statid                         integer
+  d                              date
+  units                          bigint
+  consid                         bigint
+
+enigma.lasthlddate (4 columns):
+------------------------------------------------------------
+  maxdate                        date
+  issueid                        integer
+  holderid                       bigint
+  heldas                         smallint
+
+enigma.lastmreturn (4 columns):
+------------------------------------------------------------
+  stockcode                      character varying(8)
+  name                           character varying(255)
+  typeshort                      character varying(8)
+  maxdate                        date
+
+enigma.licrec (8 columns):
+------------------------------------------------------------
+  id                             bigint
+  staffid                        bigint
+  orgid                          bigint
+  role                           smallint
+  acttype                        smallint
+  startdate                      date
+  enddate                        date
+  modified                       timestamp with time zone
+
+enigma.licrecsum (4 columns):
+------------------------------------------------------------
+  acttype                        smallint
+  d                              date
+  total                          integer
+  ro                             integer
+
+enigma.lirorgteam (6 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  teamid                         smallint
+  firstseen                      date
+  lastseen                       date
+  dead                           boolean
+
+enigma.lirroles (2 columns):
+------------------------------------------------------------
+  id                             integer
+  title                          character varying(45)
+
+enigma.lirstaff (5 columns):
+------------------------------------------------------------
+  id                             integer
+  n1                             character varying(45)
+  n2                             character varying(45)
+  cn                             character varying(45)
+  tel                            bigint
+
+enigma.lirteams (4 columns):
+------------------------------------------------------------
+  id                             integer
+  teamno                         integer
+  firstseen                      date
+  lastseen                       date
+
+enigma.lirteamstaff (7 columns):
+------------------------------------------------------------
+  id                             bigint
+  teamid                         smallint
+  staffid                        integer
+  posid                          smallint
+  firstseen                      date
+  lastseen                       date
+  dead                           boolean
+
+enigma.listedcoshk (2 columns):
+------------------------------------------------------------
+  issuer                         bigint
+  stockexid                      smallint
+
+enigma.listedcoshkadv (3 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  name                           character varying(255)
+  advdone                        date
+
+enigma.listedcoshkall (5 columns):
+------------------------------------------------------------
+  personid                       bigint
+  domicile                       integer
+  incdate                        date
+  stockexid                      smallint
+  name                           character varying(255)
+
+enigma.listedcoshkever (2 columns):
+------------------------------------------------------------
+  issuer                         bigint
+  firsttrade                     date
+
+enigma.listedfirsttrade (2 columns):
+------------------------------------------------------------
+  personid                       bigint
+  firsttradedate                 date
+
+enigma.listings (3 columns):
+------------------------------------------------------------
+  stockexid                      integer
+  shortname                      character varying(10)
+  longname                       character varying(50)
+
+enigma.log (3 columns):
+------------------------------------------------------------
+  name                           character varying(255)
+  val                            character varying(255)
+  descrip                        character varying(255)
+
+enigma.lookupadviser (2 columns):
+------------------------------------------------------------
+  personid                       bigint
+  name1                          character varying(255)
+
+enigma.lookupposition (3 columns):
+------------------------------------------------------------
+  positionid                     integer
+  posshort                       character varying(21)
+  poslong                        character varying(70)
+
+enigma.lookuprelationship (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  relation                       character varying(20)
+
+enigma.lookuprole (2 columns):
+------------------------------------------------------------
+  roleid                         smallint
+  role                           character varying(30)
+
+enigma.lsadm (5 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  lsdom                          smallint
+  adm                            date
+  admacc                         smallint
+  modified                       timestamp with time zone
+
+enigma.lsalias (4 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  aliase                         character varying(255)
+  aliasc                         character varying(255)
+  firstseen                      timestamp with time zone
+
+enigma.lsdoms (3 columns):
+------------------------------------------------------------
+  lsdom                          integer
+  domname                        character varying(127)
+  domid                          integer
+
+enigma.lsemps (4 columns):
+------------------------------------------------------------
+  id                             bigint
+  empname                        character varying(255)
+  personid                       bigint
+  modified                       timestamp with time zone
+
+enigma.lsjobs (6 columns):
+------------------------------------------------------------
+  id                             bigint
+  lsppl                          bigint
+  empid                          bigint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.lsorgs (10 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  lsename                        character varying(255)
+  lscname                        character varying(45)
+  tel                            character varying(255)
+  name1                          character varying(255)
+  orgtype                        smallint
+  personid                       bigint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.lsposts (7 columns):
+------------------------------------------------------------
+  id                             bigint
+  lsorg                          bigint
+  lsppl                          bigint
+  post                           smallint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.lsppl (14 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  lsename                        character varying(255)
+  lscname                        character varying(20)
+  admhk                          date
+  admacc                         smallint
+  name1                          character varying(90)
+  name2                          character varying(56)
+  cname                          character varying(20)
+  sex                            character varying(1)
+  personid                       bigint
+  modified                       timestamp with time zone
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.lsroles (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  posid                          integer
+  lstxt                          character varying(45)
+
+enigma.marketsforweb (2 columns):
+------------------------------------------------------------
+  stockexid                      smallint
+  order                          smallint
+
+enigma.mergedpersons (3 columns):
+------------------------------------------------------------
+  oldp                           bigint
+  newp                           bigint
+  merged                         timestamp with time zone
+
+enigma.missingcr (4 columns):
+------------------------------------------------------------
+  cr                             character varying(45)
+  brn                            character varying(45)
+  ename                          character varying(255)
+  cname                          character varying(127)
+
+enigma.missingorg (2 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  added                          timestamp with time zone
+
+enigma.months (2 columns):
+------------------------------------------------------------
+  monthid                        smallint
+  shortname                      character varying(3)
+
+enigma.namechanges (9 columns):
+------------------------------------------------------------
+  id1                            bigint
+  personid                       bigint
+  oldname                        character varying(255)
+  oldcname                       character varying(127)
+  datechanged                    date
+  dateacc                        smallint
+  modified                       timestamp with time zone
+  namehash                       numeric
+  userid                         integer
+
+enigma.namesex (6 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(40)
+  sex                            character varying(1)
+  added                          timestamp with time zone
+  dsex                           character varying(1)
+  modified                       timestamp with time zone
+
+enigma.nationality (3 columns):
+------------------------------------------------------------
+  personid                       bigint
+  ukchnat                        integer
+  latest                         date
+
+enigma.oldcr (3 columns):
+------------------------------------------------------------
+  personid                       bigint
+  crn                            character varying(9)
+  brn                            character varying(45)
+
+enigma.oldcrf (3 columns):
+------------------------------------------------------------
+  fregid                         bigint
+  crn                            character varying(9)
+  brn                            character varying(45)
+
+enigma.oldlots (3 columns):
+------------------------------------------------------------
+  issueid                        bigint
+  until                          date
+  lot                            bigint
+
+enigma.oldlsjobs (6 columns):
+------------------------------------------------------------
+  id                             bigint
+  lsppl                          bigint
+  empid                          bigint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.oldlsorgs (10 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  lsename                        character varying(255)
+  lscname                        character varying(45)
+  tel                            character varying(255)
+  name1                          character varying(255)
+  orgtype                        smallint
+  personid                       bigint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.oldlsposts (7 columns):
+------------------------------------------------------------
+  id                             bigint
+  lsorg                          bigint
+  lsppl                          bigint
+  post                           smallint
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.oldlsppl (14 columns):
+------------------------------------------------------------
+  lsid                           bigint
+  lsename                        character varying(255)
+  lscname                        character varying(20)
+  admhk                          date
+  admacc                         smallint
+  name1                          character varying(90)
+  name2                          character varying(56)
+  cname                          character varying(20)
+  sex                            character varying(1)
+  personid                       bigint
+  modified                       timestamp with time zone
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+  dead                           boolean
+
+enigma.oldsfcids (4 columns):
+------------------------------------------------------------
+  sfcid                          character(6)
+  sfcri                          boolean
+  until                          date
+  orgid                          bigint
+
+enigma.olicrec (7 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  ri                             boolean
+  acttype                        smallint
+  startdate                      date
+  enddate                        date
+  modified                       timestamp with time zone
+
+enigma.organisations (19 columns):
+------------------------------------------------------------
+  personid                       bigint
+  domicile                       integer
+  name1                          character varying(255)
+  modified                       timestamp with time zone
+  orgtype                        smallint
+  sfcid                          character varying(6)
+  cname                          character varying(127)
+  sfcupd                         timestamp with time zone
+  incdate                        date
+  disdate                        date
+  dismode                        smallint
+  incacc                         smallint
+  incid                          character varying(14)
+  incupd                         timestamp with time zone
+  userid                         integer
+  incname                        boolean
+  sfcri                          boolean
+  ukuri                          boolean
+  namehash                       numeric
+
+enigma.orgdata (12 columns):
+------------------------------------------------------------
+  personid                       bigint
+  yearenddate                    smallint
+  yearendmonth                   smallint
+  addr1                          character varying(255)
+  addr2                          character varying(127)
+  addr3                          character varying(127)
+  district                       character varying(50)
+  territory                      integer
+  addrdate                       date
+  notes                          text
+  modified                       timestamp with time zone
+  D&Afinal                       boolean
+
+enigma.orgtypes (3 columns):
+------------------------------------------------------------
+  orgtype                        smallint
+  typename                       character varying(45)
+  hkcrname                       character varying(45)
+
+enigma.ownerprof (9 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  atdate                         date
+  dirstake                       double precision
+  famstake                       double precision
+  amstake                        double precision
+  govstake                       double precision
+  othstake                       double precision
+  ot                             smallint
+  modified                       timestamp with time zone
+
+enigma.ownerstks (9 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  atdate                         date
+  ultimid                        bigint
+  ot                             smallint
+  shares                         double precision
+  stake                          double precision
+  econshares                     double precision
+  econstake                      double precision
+  weakest                        double precision
+
+enigma.ownertype (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  ownshort                       character varying(2)
+  ownlong                        character varying(255)
+
+enigma.pay (14 columns):
+------------------------------------------------------------
+  id                             bigint
+  orgid                          bigint
+  pplid                          bigint
+  prank                          smallint
+  d                              date
+  currid                         smallint
+  fees                           integer
+  salary                         integer
+  bonus                          integer
+  retire                         integer
+  share                          bigint
+  total                          bigint
+  userid                         integer
+  modified                       timestamp with time zone
+
+enigma.payerrors (6 columns):
+------------------------------------------------------------
+  docid                          bigint
+  errid                          smallint
+  userid                         integer
+  reported                       timestamp with time zone
+  resolvedby                     integer
+  resolved                       timestamp with time zone
+
+enigma.payerrtype (2 columns):
+------------------------------------------------------------
+  id                             smallint
+  txt                            character varying(127)
+
+enigma.payfx (4 columns):
+------------------------------------------------------------
+  d                              date
+  repcurr                        smallint
+  dispcurr                       smallint
+  f                              double precision
+
+enigma.paylineerrors (6 columns):
+------------------------------------------------------------
+  payid                          bigint
+  errid                          smallint
+  userid                         integer
+  reported                       timestamp with time zone
+  resolvedby                     integer
+  resolved                       timestamp with time zone
+
+enigma.paylineerrtype (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  txt                            character varying(127)
+  ord                            smallint
+
+enigma.payreview (3 columns):
+------------------------------------------------------------
+  docid                          bigint
+  userid                         integer
+  submitted                      timestamp with time zone
+
+enigma.people (23 columns):
+------------------------------------------------------------
+  personid                       bigint
+  sex                            character varying(1)
+  yob                            integer
+  mob                            smallint
+  dob                            smallint
+  yod                            integer
+  mond                           smallint
+  dod                            smallint
+  titleid                        smallint
+  name1                          character varying(90)
+  name2                          character varying(63)
+  modified                       timestamp with time zone
+  hkid                           character varying(8)
+  sfcid                          character varying(6)
+  cname                          character varying(20)
+  sfcupd                         timestamp with time zone
+  sfclastdate                    date
+  hkidsource                     character varying(255)
+  userid                         integer
+  namestem                       character(5)
+  dn1                            character varying(90)
+  dn2                            character varying(63)
+  dsex                           character varying(1)
+
+enigma.persons (1 columns):
+------------------------------------------------------------
+  personid                       bigint
+
+enigma.personstories (2 columns):
+------------------------------------------------------------
+  personid                       bigint
+  storyid                        integer
+
+enigma.positions (6 columns):
+------------------------------------------------------------
+  positionid                     integer
+  posshort                       character varying(21)
+  poslong                        character varying(70)
+  status                         smallint
+  rank                           smallint
+  lsrole                         smallint
+
+enigma.prhblock (4 columns):
+------------------------------------------------------------
+  id                             bigint
+  en                             character varying(127)
+  cn                             character varying(45)
+  estateid                       integer
+
+enigma.prhestate (6 columns):
+------------------------------------------------------------
+  id                             integer
+  en                             character varying(45)
+  cn                             character varying(45)
+  district                       smallint
+  latitude                       double precision
+  longitude                      double precision
+
+enigma.prhflat (8 columns):
+------------------------------------------------------------
+  id                             bigint
+  blockid                        bigint
+  floor                          character varying(2)
+  flat                           character varying(6)
+  area                           double precision
+  elevator                       boolean
+  firstseen                      timestamp with time zone
+  lastseen                       timestamp with time zone
+
+enigma.prisoners (5 columns):
+------------------------------------------------------------
+  jail                           smallint
+  d                              date
+  convict                        integer
+  remand                         integer
+  detain                         integer
+
+enigma.prisorigin (4 columns):
+------------------------------------------------------------
+  d                              date
+  local                          integer
+  mtm                            integer
+  nonlocal                       integer
+
+enigma.ptoperators (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  tdabbrev                       character varying(6)
+  orgid                          bigint
+
+enigma.qt (6 columns):
+------------------------------------------------------------
+  qtid                           smallint
+  d                              date
+  capunit                        integer
+  useunit                        integer
+  pax                            integer
+  availunit                      integer
+
+enigma.qtbytype (5 columns):
+------------------------------------------------------------
+  d                              date
+  cumcc                          integer
+  cumncc                         integer
+  cc                             integer
+  ncc                            integer
+
+enigma.qtcentres (3 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(255)
+  address                        character varying(255)
+
+enigma.rank (3 columns):
+------------------------------------------------------------
+  rankid                         smallint
+  ranktext                       character varying(50)
+  rankshort                      character varying(10)
+
+enigma.relationships (4 columns):
+------------------------------------------------------------
+  id                             smallint
+  relation                       character varying(20)
+  invrel                         character varying(20)
+  level                          smallint
+
+enigma.relatives (5 columns):
+------------------------------------------------------------
+  rel1                           bigint
+  relid                          smallint
+  rel2                           bigint
+  modified                       timestamp with time zone
+  userid                         integer
+
+enigma.reorg (4 columns):
+------------------------------------------------------------
+  fromorg                        bigint
+  toorg                          bigint
+  effdate                        date
+  effacc                         smallint
+
+enigma.repdocs (3 columns):
+------------------------------------------------------------
+  repid                          integer
+  file                           character varying(20)
+  docname                        character varying(255)
+
+enigma.repfilings (8 columns):
+------------------------------------------------------------
+  id                             integer
+  repfiled                       timestamp with time zone
+  url                            character varying(255)
+  descrip                        character varying(511)
+  descrip2                       character varying(511)
+  doctype                        smallint
+  fsize                          integer
+  newsid                         bigint
+
+enigma.roles (4 columns):
+------------------------------------------------------------
+  roleid                         smallint
+  role                           character varying(30)
+  onetime                        boolean
+  rolelong                       character varying(45)
+
+enigma.sdi (32 columns):
+------------------------------------------------------------
+  id                             bigint
+  form                           smallint
+  filing                         bigint
+  name1                          character varying(255)
+  name2                          character varying(255)
+  cname                          character varying(40)
+  ccc                            character varying(40)
+  stockcode                      character varying(5)
+  stockname                      character varying(255)
+  reldate                        date
+  awdate                         date
+  issueid                        integer
+  dir                            bigint
+  longshs1                       double precision
+  longstk1                       double precision
+  shortshs1                      double precision
+  shortstk1                      double precision
+  longshs2                       double precision
+  longstk2                       double precision
+  shortshs2                      double precision
+  shortstk2                      double precision
+  shsout                         double precision
+  signdate                       date
+  curr                           smallint
+  hiprice                        double precision
+  avprice                        double precision
+  avcon                          double precision
+  concode                        smallint
+  serno                          character(16)
+  sernoamend                     character(16)
+  sernosuper                     character(16)
+  modified                       timestamp with time zone
+
+enigma.sdicap (4 columns):
+------------------------------------------------------------
+  sdiid                          bigint
+  capid                          integer
+  postype                        smallint
+  shares                         double precision
+
+enigma.sdievent (7 columns):
+------------------------------------------------------------
+  sdiid                          bigint
+  postype                        smallint
+  reason                         integer
+  capbefore                      integer
+  capafter                       integer
+  shsinv                         double precision
+  probreason                     integer
+
+enigma.sdireason (3 columns):
+------------------------------------------------------------
+  id                             integer
+  rsnsht                         character varying(12)
+  rsnlng                         character varying(255)
+
+enigma.sectypes (5 columns):
+------------------------------------------------------------
+  typeid                         smallint
+  typeshort                      character varying(8)
+  typelong                       character varying(45)
+  listord                        smallint
+  canexpire                      boolean
+
+enigma.sfcnews (8 columns):
+------------------------------------------------------------
+  storyid                        integer
+  titleen                        character varying(255)
+  htmlen                         text
+  issuedate                      timestamp with time zone
+  modtime                        timestamp with time zone
+  titletc                        character varying(255)
+  htmltc                         text
+  sda                            character varying(255)
+
+enigma.sfcshort (6 columns):
+------------------------------------------------------------
+  issueid                        bigint
+  atdate                         date
+  stockcode                      integer
+  stockname                      character varying(20)
+  shares                         double precision
+  value                          double precision
+
+enigma.sholdings (9 columns):
+------------------------------------------------------------
+  id                             bigint
+  holderid                       bigint
+  issueid                        integer
+  atdate                         date
+  shares                         double precision
+  stake                          double precision
+  modified                       timestamp with time zone
+  userid                         integer
+  heldas                         smallint
+
+enigma.snaplog (9 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  snapdate                       date
+  userid                         integer
+  project                        smallint
+  status                         boolean
+  done                           boolean
+  entered                        timestamp with time zone
+  modified                       timestamp with time zone
+  notes                          text
+
+enigma.sources (2 columns):
+------------------------------------------------------------
+  sourceid                       integer
+  sourcename                     character varying(255)
+
+enigma.st1cos (1 columns):
+------------------------------------------------------------
+  issuer                         bigint
+
+enigma.st1dates (3 columns):
+------------------------------------------------------------
+  issuer                         bigint
+  befdate                        date
+  aftdate                        date
+
+enigma.st2cos (1 columns):
+------------------------------------------------------------
+  issuer                         bigint
+
+enigma.st2dates (3 columns):
+------------------------------------------------------------
+  issuer                         bigint
+  befdate                        date
+  aftdate                        date
+
+enigma.st4cos (1 columns):
+------------------------------------------------------------
+  issuer                         bigint
+
+enigma.st4dates (3 columns):
+------------------------------------------------------------
+  issuer                         bigint
+  befdate                        date
+  aftdate                        date
+
+enigma.statgov (2 columns):
+------------------------------------------------------------
+  descrip                        character varying(127)
+  statsid                        integer
+
+enigma.stats (2 columns):
+------------------------------------------------------------
+  id                             integer
+  statname                       character varying(127)
+
+enigma.status (2 columns):
+------------------------------------------------------------
+  statusid                       smallint
+  statustext                     character varying(50)
+
+enigma.stockcodes1000 (1 columns):
+------------------------------------------------------------
+  stockcode                      character varying(8)
+
+enigma.stocklistings (13 columns):
+------------------------------------------------------------
+  issueid                        integer
+  stockcode                      character varying(8)
+  stockexid                      smallint
+  firsttradedate                 date
+  finaltradedate                 date
+  delistdate                     date
+  id                             bigint
+  modified                       timestamp with time zone
+  reasonid                       smallint
+  2ndCtr                         boolean
+  sedol                          character varying(7)
+  isin                           character varying(12)
+  stockid                        bigint
+
+enigma.stories (11 columns):
+------------------------------------------------------------
+  storyid                        integer
+  title                          character varying(255)
+  summary                        text
+  storydate                      timestamp with time zone
+  url                            character varying(255)
+  sourceid                       integer
+  url2                           character varying(255)
+  url2text                       character varying(255)
+  pubdate                        timestamp with time zone
+  tweeted                        timestamp with time zone
+  image                          character varying(255)
+
+enigma.storytags (2 columns):
+------------------------------------------------------------
+  storyid                        integer
+  catid                          integer
+
+enigma.tdjourneys (8 columns):
+------------------------------------------------------------
+  d                              date
+  vc                             smallint
+  j                              bigint
+  km                             bigint
+  kmch                           bigint
+  paxcap                         integer
+  provj                          boolean
+  provkm                         boolean
+
+enigma.tdreglic (5 columns):
+------------------------------------------------------------
+  d                              date
+  vc                             smallint
+  fr                             integer
+  totreg                         integer
+  totlic                         integer
+
+enigma.tempsfc (4 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  started                        date
+  ended                          date
+  role                           smallint
+
+enigma.titles (3 columns):
+------------------------------------------------------------
+  titleid                        smallint
+  title                          character varying(30)
+  sex                            character varying(1)
+
+enigma.tundir (5 columns):
+------------------------------------------------------------
+  id                             smallint
+  defdir                         character varying(11)
+  altdir                         character varying(11)
+  deftd                          character(2)
+  alttd                          character(2)
+
+enigma.tunnels (7 columns):
+------------------------------------------------------------
+  id                             smallint
+  td                             character varying(6)
+  name                           character varying(37)
+  tundirid                       smallint
+  tdtable                        character varying(4)
+  notes                          text
+  opened                         date
+
+enigma.tuntraff (5 columns):
+------------------------------------------------------------
+  tunid                          smallint
+  vc                             smallint
+  d                              date
+  defcnt                         integer
+  altcnt                         integer
+
+enigma.ukappres (5 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  chid                           character varying(27)
+  appdate                        date
+  resdate                        date
+  name                           character varying(255)
+
+enigma.ukch (4 columns):
+------------------------------------------------------------
+  uktype                         integer
+  api                            character varying(127)
+  meaning                        character varying(255)
+  orgtype                        smallint
+
+enigma.ukchnats (4 columns):
+------------------------------------------------------------
+  id                             integer
+  descrip                        character varying(50)
+  domicile                       integer
+  uklist                         boolean
+
+enigma.ukhons (1 columns):
+------------------------------------------------------------
+  ukhons                         character varying(20)
+
+enigma.uklog (4 columns):
+------------------------------------------------------------
+  prefix                         character(2)
+  lastco                         bigint
+  domid                          integer
+  lastcoadded                    timestamp with time zone
+
+enigma.uknonhuman (3 columns):
+------------------------------------------------------------
+  chid                           character varying(27)
+  name                           character varying(255)
+  modified                       timestamp with time zone
+
+enigma.ukppl (2 columns):
+------------------------------------------------------------
+  chid                           character varying(27)
+  personid                       bigint
+
+enigma.users (2 columns):
+------------------------------------------------------------
+  id                             integer
+  name                           character varying(15)
+
+enigma.vax (24 columns):
+------------------------------------------------------------
+  d                              date
+  cohort                         smallint
+  male                           boolean
+  prov                           boolean
+  sino1                          integer
+  sino2                          integer
+  sino3                          integer
+  sino4                          integer
+  sino5                          integer
+  sino6                          integer
+  sino7                          integer
+  sino8                          integer
+  sino9                          integer
+  sino10                         integer
+  bion1                          integer
+  bion2                          integer
+  bion3                          integer
+  bion4                          integer
+  bion5                          integer
+  bion6                          integer
+  bion7                          integer
+  bion8                          integer
+  bion9                          integer
+  bion10                         integer
+
+enigma.vaxcohorts (13 columns):
+------------------------------------------------------------
+  id                             smallint
+  txt                            character varying(5)
+  govtxt                         character varying(12)
+  minage                         smallint
+  popn                           integer
+  mpopn                          integer
+  fpopn                          integer
+  sino1                          integer
+  sino2                          integer
+  sino3                          integer
+  bion1                          integer
+  bion2                          integer
+  bion3                          integer
+
+enigma.veengine (4 columns):
+------------------------------------------------------------
+  d                              date
+  engid                          smallint
+  fr                             integer
+  totreg                         integer
+
+enigma.vehicleclass (9 columns):
+------------------------------------------------------------
+  id                             smallint
+  parent                         smallint
+  fuelparent                     smallint
+  jparent                        smallint
+  des                            character varying(255)
+  govtype                        character varying(45)
+  operator                       smallint
+  dd                             boolean
+  franchise                      smallint
+
+enigma.vehiclefr (7 columns):
+------------------------------------------------------------
+  vc                             smallint
+  d                              date
+  makeid                         integer
+  fuelid                         smallint
+  bodyid                         smallint
+  frstatid                       smallint
+  freg                           integer
+
+enigma.vehiclefuel (5 columns):
+------------------------------------------------------------
+  d                              date
+  vc                             smallint
+  fuelid                         smallint
+  totreg                         integer
+  totlic                         integer
+
+enigma.vehiclemakes (2 columns):
+------------------------------------------------------------
+  id                             integer
+  make                           character varying(45)
+
+enigma.vehicletypos (2 columns):
+------------------------------------------------------------
+  wrong                          character varying(20)
+  correct                        character varying(20)
+
+enigma.web (5 columns):
+------------------------------------------------------------
+  id                             bigint
+  personid                       bigint
+  url                            character varying(255)
+  source                         integer
+  dead                           boolean
+
+enigma.webadv (11 columns):
+------------------------------------------------------------
+  org                            character varying(255)
+  role                           character varying(30)
+  roleid                         smallint
+  adv                            character varying(255)
+  orgid                          bigint
+  advid                          bigint
+  adddate                        date
+  addacc                         smallint
+  remdate                        date
+  remacc                         smallint
+  onetime                        boolean
+
+enigma.webadvships (10 columns):
+------------------------------------------------------------
+  org                            character varying(255)
+  role                           character varying(30)
+  onetime                        boolean
+  orgid                          bigint
+  advid                          bigint
+  adddate                        date
+  addacc                         smallint
+  remdate                        date
+  remacc                         smallint
+  issuer                         bigint
+
+enigma.webbhold (5 columns):
+------------------------------------------------------------
+  issueid                        integer
+  atdate                         date
+  shares                         bigint
+  stake                          double precision
+  filing                         character varying(255)
+
+enigma.webcatmembers (4 columns):
+------------------------------------------------------------
+  personid                       bigint
+  name1                          character varying(255)
+  category                       integer
+  catname                        character varying(50)
+
+enigma.webcattree (4 columns):
+------------------------------------------------------------
+  parentname                     character varying(50)
+  childname                      character varying(50)
+  parentid                       integer
+  childid                        integer
+
+enigma.webcountadvbyrole (4 columns):
+------------------------------------------------------------
+  roleid                         smallint
+  role                           character varying(45)
+  onetime                        boolean
+  countofrole                    bigint
+
+enigma.webcurrlisted (8 columns):
+------------------------------------------------------------
+  stockcode                      character varying(8)
+  name1                          character varying(255)
+  type                           character varying(8)
+  personid                       bigint
+  stockexid                      smallint
+  type1                          text
+  firsttradedate                 date
+  domicile                       integer
+
+enigma.webdelisted (12 columns):
+------------------------------------------------------------
+  stockcode                      character varying(8)
+  issueid                        integer
+  name1                          character varying(255)
+  domicile                       integer
+  type                           character varying(8)
+  firsttradedate                 date
+  finaltradedate                 date
+  delistdate                     date
+  personid                       bigint
+  stockexid                      smallint
+  reason                         character varying(45)
+  tradelife                      numeric
+
+enigma.webdirs (11 columns):
+------------------------------------------------------------
+  dir                            text
+  position                       character varying(21)
+  rank                           smallint
+  poslong                        character varying(70)
+  dirid                          bigint
+  orgid                          bigint
+  apptdate                       date
+  resdate                        date
+  apptacc                        smallint
+  resacc                         smallint
+  yob                            integer
+
+enigma.webdirships (11 columns):
+------------------------------------------------------------
+  position                       character varying(21)
+  rank                           smallint
+  poslong                        character varying(70)
+  org                            character varying(255)
+  dirid                          bigint
+  orgid                          bigint
+  apptdate                       date
+  resdate                        date
+  apptacc                        smallint
+  resacc                         smallint
+  stockexid                      smallint
+
+enigma.webdocs (6 columns):
+------------------------------------------------------------
+  orgid                          bigint
+  recorddate                     date
+  reportdate                     date
+  doclong                        character varying(50)
+  adv                            boolean
+  dir                            boolean
+
+enigma.webholders3 (16 columns):
+------------------------------------------------------------
+  issue                          integer
+  personid                       bigint
+  holdingdate                    date
+  shares                         double precision
+  stake                          double precision
+  persontype                     text
+  name                           text
+  orgtype                        smallint
+  domicile                       integer
+  a2                             character varying(4)
+  friendly                       character varying(30)
+  incdate                        date
+  incacc                         smallint
+  sectype                        smallint
+  typeshort                      character varying(8)
+  typelong                       character varying(45)
+
+enigma.webholdings3 (15 columns):
+------------------------------------------------------------
+  personid                       bigint
+  issue                          integer
+  holdingdate                    date
+  shares                         double precision
+  stake                          double precision
+  issuer                         bigint
+  sectype                        smallint
+  typeshort                      character varying(8)
+  typelong                       character varying(45)
+  name                           character varying(255)
+  orgtype                        smallint
+  a2                             character varying(4)
+  friendly                       character varying(30)
+  incdate                        date
+  incacc                         smallint
+
+enigma.webincats (4 columns):
+------------------------------------------------------------
+  personid                       bigint
+  name1                          character varying(255)
+  category                       integer
+  catname                        character varying(50)
+
+enigma.webissues (4 columns):
+------------------------------------------------------------
+  id1                            integer
+  sectype                        character varying(8)
+  issuer                         character varying(255)
+  person                         bigint
+
+enigma.weblistings (11 columns):
+------------------------------------------------------------
+  stockcode                      character varying(8)
+  sectype                        character varying(8)
+  org                            character varying(255)
+  delistdate                     date
+  orgid                          bigint
+  firsttradedate                 date
+  finaltradedate                 date
+  shortname                      character varying(10)
+  issueid                        integer
+  stockexid                      integer
+  reason                         character varying(45)
+
+enigma.weborgs (18 columns):
+------------------------------------------------------------
+  domid                          integer
+  orgid                          bigint
+  org                            character varying(255)
+  orgtype                        smallint
+  cname                          text
+  dom                            character varying(50)
+  typename                       character varying(45)
+  inc                            character varying
+  incdate                        date
+  disdate                        date
+  incacc                         smallint
+  incid                          character varying(14)
+  dismodetxt                     character varying(45)
+  sfcid                          character varying(6)
+  sfcri                          boolean
+  ukuri                          boolean
+  incupd                         timestamp with time zone
+  oldcrn                         character varying(9)
+
+enigma.wsprivs (4 columns):
+------------------------------------------------------------
+  userid                         integer
+  roleid                         smallint
+  urank                          smallint
+  live                           boolean
+
+enigma.wsroles (3 columns):
+------------------------------------------------------------
+  id                             smallint
+  msuser                         character varying(45)
+  cred                           bytea
+
+enigma.wsroletabs (2 columns):
+------------------------------------------------------------
+  roleid                         smallint
+  tblname                        character varying(45)
+
+================================================================================
+Schema: ccass
+================================================================================
+
+Found 17 tables in ccass schema
+
+
+ccass.bigchanges (5 columns):
+------------------------------------------------------------
+  atdate                         date
+  issueid                        integer
+  partid                         integer
+  stkchg                         double precision
+  prevdate                       date
+
+ccass.calendar (3 columns):
+------------------------------------------------------------
+  tradedate                      date
+  settledate                     date
+  deferred                       boolean
+
+ccass.dailylog (12 columns):
+------------------------------------------------------------
+  atdate                         date
+  issueid                        integer
+  intermedhldg                   numeric
+  intermedcnt                    integer
+  nciphldg                       numeric
+  ncipcnt                        integer
+  ciphldg                        numeric
+  cipcnt                         integer
+  c5                             numeric
+  c10                            numeric
+  custhldg                       numeric
+  brokhldg                       numeric
+
+ccass.holdings (4 columns):
+------------------------------------------------------------
+  partid                         integer
+  issueid                        integer
+  holding                        bigint
+  atdate                         date
+
+ccass.holdingsperdate (2 columns):
+------------------------------------------------------------
+  atdate                         date
+  Count(holding)                 bigint
+
+ccass.latestholdings (4 columns):
+------------------------------------------------------------
+  partid                         integer
+  issueid                        integer
+  holding                        bigint
+  atdate                         date
+
+ccass.maxdate (3 columns):
+------------------------------------------------------------
+  partid                         integer
+  issueid                        integer
+  Max(atDate)                    date
+
+ccass.missing (3 columns):
+------------------------------------------------------------
+  atdate                         date
+  issueid                        integer
+  stockcode                      integer
+
+ccass.oldnames (4 columns):
+------------------------------------------------------------
+  oldnameid                      bigint
+  oldname                        character varying(255)
+  datechanged                    date
+  partid                         integer
+
+ccass.parthold (4 columns):
+------------------------------------------------------------
+  partid                         integer
+  issueid                        integer
+  holding                        bigint
+  atdate                         date
+
+ccass.participants (7 columns):
+------------------------------------------------------------
+  partid                         integer
+  ccassid                        character varying(6)
+  partname                       character varying(255)
+  atdate                         date
+  addeddate                      date
+  personid                       bigint
+  hadholdings                    boolean
+
+ccass.pquotes (13 columns):
+------------------------------------------------------------
+  issueid                        integer
+  atdate                         date
+  prevclose                      double precision
+  closing                        double precision
+  ask                            double precision
+  bid                            double precision
+  high                           double precision
+  low                            double precision
+  vol                            numeric
+  turn                           numeric
+  susp                           boolean
+  newsusp                        boolean
+  noclose                        boolean
+
+ccass.quotes (13 columns):
+------------------------------------------------------------
+  issueid                        integer
+  atdate                         date
+  prevclose                      double precision
+  closing                        double precision
+  ask                            double precision
+  bid                            double precision
+  high                           double precision
+  low                            double precision
+  vol                            numeric
+  turn                           numeric
+  susp                           boolean
+  newsusp                        boolean
+  noclose                        boolean
+
+ccass.sehkmonthend (1 columns):
+------------------------------------------------------------
+  monthend                       date
+
+ccass.shortnames (9 columns):
+------------------------------------------------------------
+  issueid                        integer
+  shortname                      character varying(45)
+  fromdate                       date
+  todate                         date
+  id                             bigint
+  stockcode                      character varying(5)
+  usedate                        date
+  stockexid                      smallint
+  parallel                       boolean
+
+ccass.specialdays (6 columns):
+------------------------------------------------------------
+  specialdate                    date
+  pubhol                         boolean
+  partsess                       boolean
+  noam                           boolean
+  nopm                           boolean
+  nosettle                       boolean
+
+ccass.unquotes (13 columns):
+------------------------------------------------------------
+  stockcode                      integer
+  atdate                         date
+  prevclose                      double precision
+  closing                        double precision
+  ask                            double precision
+  bid                            double precision
+  high                           double precision
+  low                            double precision
+  vol                            numeric
+  turn                           numeric
+  susp                           boolean
+  newsusp                        boolean
+  noclose                        boolean
