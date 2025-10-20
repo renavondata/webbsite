@@ -45,3 +45,4 @@ instance/
 
 # testing
 tests/outputs
+scripts/
