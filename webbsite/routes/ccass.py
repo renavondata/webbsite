@@ -67,7 +67,7 @@ def bigchanges():
                     ORDER BY fromDate DESC LIMIT 1) AS stockCode,
                    s.typeShort
             FROM ccass.bigchanges b
-            JOIN enigma.issue i ON b.issueID=i.ID1
+            JOIN enigma.issue i ON b.issueID=i.id1
             JOIN enigma.organisations o ON i.issuer=o.personID
             JOIN ccass.participants p ON b.partID=p.partID
             JOIN enigma.secTypes s ON i.typeID=s.typeID
@@ -143,12 +143,12 @@ def cconc():
                 CAST(d.c10 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp10,
                 (SELECT stockCode
                  FROM enigma.stocklistings
-                 WHERE issueID = d.issueID AND DelistDate IS NULL
+                 WHERE issueid = d.issueID AND delistdate IS NULL
                  ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
                 CAST(d.c10 + d.NCIPhldg AS NUMERIC) / NULLIF(d.CIPhldg + d.IntermedHldg + d.NCIPHldg, 0) AS cp10ip,
                 CAST(d.CIPhldg + d.IntermedHldg + d.NCIPHldg AS NUMERIC) / NULLIF(iss.outstanding, 0) AS stake
             FROM ccass.dailylog d
-            JOIN enigma.issue i ON d.issueID = i.ID1
+            JOIN enigma.issue i ON d.issueID = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             JOIN (
@@ -247,9 +247,9 @@ def ipstakes():
     try:
         stakes_result = execute_query(f"""
             SELECT o.Name1 || ':' || st.typeshort AS stockName,
-                   i.ID1 AS issueID,
+                   i.id1 AS issueID,
                    (SELECT stockCode FROM enigma.stocklistings
-                    WHERE issueID = i.ID1 AND DelistDate IS NULL
+                    WHERE issueid = i.id1 AND delistdate IS NULL
                     ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
                    dl.NCIPcnt,
                    dl.CIPcnt,
@@ -259,14 +259,14 @@ def ipstakes():
                    (dl.NCIPhldg + dl.CIPhldg) / s.outstanding AS IPstake,
                    CASE WHEN q.susp THEN
                        (SELECT closing FROM ccass.quotes
-                        WHERE atDate <= %s AND issueID = dl.issueID AND closing <> 0
+                        WHERE atDate <= %s AND issueid = dl.issueID AND closing <> 0
                         ORDER BY atDate DESC LIMIT 1)
                    ELSE q.closing
                    END * (dl.NCIPhldg + dl.CIPhldg) / 1000000 AS vln
             FROM ccass.dailylog dl
-            JOIN enigma.issue i ON i.ID1 = dl.issueID
+            JOIN enigma.issue i ON i.id1 = dl.issueID
             JOIN ccass.quotes q ON q.issueID = dl.issueID AND q.atDate = dl.atDate
-            JOIN enigma.organisations o ON i.issuer = o.PersonID
+            JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.issuedshares s ON s.issueID = dl.issueID
             JOIN enigma.secTypes st ON st.typeID = i.typeID
             JOIN (SELECT issueID, MAX(atDate) AS MaxIssueDate
@@ -472,7 +472,7 @@ def cholder():
                             ELSE FALSE
                        END AS susp
                 FROM ccass.parthold ph
-                JOIN enigma.issue i ON ph.issueID = i.ID1
+                JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 LEFT JOIN ccass.issuedshares os ON ph.issueID = os.issueID
@@ -565,7 +565,7 @@ def choldings():
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['stockname']
@@ -581,7 +581,7 @@ def choldings():
             result = execute_query("""
                 SELECT MAX(atDate) AS maxDate
                 FROM ccass.dailylog
-                WHERE issueID = %s AND atDate <= %s
+                WHERE issueid = %s AND atDate <= %s
             """, (issue_id, d))
             if result and result[0]['maxdate']:
                 d = ms_date(result[0]['maxdate'])
@@ -596,7 +596,7 @@ def choldings():
             result = execute_query("""
                 SELECT NCIPhldg, NCIPcnt, BrokHldg, CustHldg, CIPHldg, intermedHldg
                 FROM ccass.dailylog
-                WHERE issueID = %s AND atDate <= %s
+                WHERE issueid = %s AND atDate <= %s
                 ORDER BY atDate DESC
                 LIMIT 1
             """, (issue_id, d))
@@ -620,7 +620,7 @@ def choldings():
             result = execute_query("""
                 SELECT outstanding
                 FROM enigma.issuedshares
-                WHERE issueID = %s AND atDate <= %s
+                WHERE issueid = %s AND atDate <= %s
                 ORDER BY atDate DESC
                 LIMIT 1
             """, (issue_id, d))
@@ -643,7 +643,7 @@ def choldings():
                 JOIN (
                     SELECT partID AS MDpartID, MAX(atDate) AS maxDate
                     FROM ccass.holdings
-                    WHERE issueID = %s AND atDate <= %s
+                    WHERE issueid = %s AND atDate <= %s
                     GROUP BY MDpartID
                 ) AS t2 ON h.partID = t2.MDpartID AND h.atDate = t2.maxDate
                 JOIN ccass.participants p ON p.partID = h.partID
@@ -709,7 +709,7 @@ def bigchangesissue():
         try:
             result = execute_query("""
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND DelistDate IS NULL
+                WHERE stockCode = %s AND delistdate IS NULL
                 ORDER BY FirstTradeDate DESC LIMIT 1
             """, (stock_code.zfill(5),))
             if result:
@@ -727,7 +727,7 @@ def bigchangesissue():
                 SELECT o.Name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -820,12 +820,12 @@ def bigchangespart():
             SELECT b.issueID, b.stkchg, b.atDate, b.prevDate,
                    o.name1 || ':' || st.typeShort AS issueName,
                    (SELECT stockCode FROM enigma.stocklistings
-                    WHERE issueID = b.issueID
-                      AND (DelistDate IS NULL OR DelistDate > b.atDate)
+                    WHERE issueid = b.issueID
+                      AND (delistdate IS NULL OR delistdate > b.atDate)
                       AND (FirstTradeDate IS NULL OR FirstTradeDate <= b.atDate)
                     ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode
             FROM ccass.bigchanges b
-            JOIN enigma.issue i ON b.issueID = i.ID1
+            JOIN enigma.issue i ON b.issueID = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             WHERE b.partID = %s
@@ -967,7 +967,7 @@ def cconchist():
                 SELECT o.name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -1007,7 +1007,7 @@ def cconchist():
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS issuedate,
                     (SELECT (CIPhldg + intermedHldg + NCIPhldg)::NUMERIC / outstanding
                      FROM ccass.issuedshares
-                     WHERE atDate = issuedate AND issueID = %s) AS stake
+                     WHERE atDate = issuedate AND issueid = %s) AS stake
                 FROM ccass.dailylog d
                 WHERE d.issueID = %s
                   AND c5 > 0
@@ -1080,7 +1080,7 @@ def ctothist():
                 SELECT o.name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -1109,9 +1109,9 @@ def ctothist():
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
                     (SELECT outstanding
                      FROM ccass.issuedshares
-                     WHERE issueID = %s AND atDate = maxDate) AS shares
+                     WHERE issueid = %s AND atDate = maxDate) AS shares
                 FROM ccass.dailylog d
-                WHERE issueID = %s
+                WHERE issueid = %s
                 ORDER BY {ob}
             """
             results = execute_query(sql, (issue_id, issue_id, issue_id))
@@ -1188,7 +1188,7 @@ def custhist():
                 SELECT o.name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -1210,9 +1210,9 @@ def custhist():
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
                     (SELECT outstanding
                      FROM ccass.issuedshares
-                     WHERE issueID = %s AND atDate = maxDate) AS shares
+                     WHERE issueid = %s AND atDate = maxDate) AS shares
                 FROM ccass.dailylog d
-                WHERE issueID = %s
+                WHERE issueid = %s
                 ORDER BY atDate DESC
             """
             results = execute_query(sql, (issue_id, issue_id, issue_id))
@@ -1366,7 +1366,7 @@ def ncipchg():
                 END AS susp
             FROM ncip1 n1
             FULL OUTER JOIN ncip2 n2 ON n1.issueID = n2.issueID
-            JOIN enigma.issue i ON COALESCE(n2.issueID, n1.issueID) = i.ID1
+            JOIN enigma.issue i ON COALESCE(n2.issueID, n1.issueID) = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             LEFT JOIN ccass.issuedshares os ON COALESCE(n2.issueID, n1.issueID) = os.issueID
@@ -1481,7 +1481,7 @@ def portchg():
                         WHERE sl.issueID = ph.issueID AND sl.toDate IS NULL
                         ORDER BY sl.fromDate DESC LIMIT 1) AS stockCode
                 FROM ccass.parthold ph
-                JOIN enigma.issue i ON ph.issueID = i.ID1
+                JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE ph.partID = %s AND ph.atDate = %s
@@ -1550,7 +1550,7 @@ def reghist():
                 SELECT o.name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -1634,7 +1634,7 @@ def brokhist():
                 SELECT o.name1, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE i.ID1 = %s
+                WHERE i.id1 = %s
             """, (issue_id,))
             if result:
                 stock_name = result[0]['name1']
@@ -1672,7 +1672,7 @@ def brokhist():
                 sql = """
                     SELECT atDate, BrokHldg AS holding
                     FROM ccass.dailylog
-                    WHERE issueID = %s
+                    WHERE issueid = %s
                     ORDER BY atDate DESC
                 """
                 results = execute_query(sql, (issue_id,))

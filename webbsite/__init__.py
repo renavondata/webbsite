@@ -24,9 +24,10 @@ def create_app(config_class=Config):
     # Main database query pages
     app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
     app.register_blueprint(search.bp, url_prefix='/dbpub')
-    app.register_blueprint(prices.bp, url_prefix='/dbpub')
     app.register_blueprint(events.bp, url_prefix='/dbpub')
     app.register_blueprint(ccass.bp, url_prefix='/ccass')
+    # Note: prices blueprint imported but not registered
+    # prices.asp exists in codebase but was never deployed to production server
 
     # Articles (729 routes via stories table)
     app.register_blueprint(articles.bp, url_prefix='/articles')
