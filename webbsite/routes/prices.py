@@ -1,12 +1,12 @@
 """
-Quotes route - Direct port from prices.asp
-Stock price quotes and historical charts
+Prices route - Direct port from prices.asp
+Economic data charts (CPI, import prices, etc.)
 """
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int
 
-bp = Blueprint('quotes', __name__)
+bp = Blueprint('prices', __name__)
 
 
 @bp.route('/prices.asp')
@@ -79,58 +79,3 @@ def prices():
                          sname=sname,
                          tipdate=tipdate,
                          prices_data=prices_data)
-
-
-@bp.route('/quotes.asp')
-def quotes():
-    """Display stock quotes - port of quotes.asp (if different from prices.asp)"""
-    # Get stock code or issueID
-    sc = request.args.get('sc', '')
-    i = get_int('i', 0)
-
-    # Look up stock by code if provided (using SCissue() logic)
-    # Original SQL: SELECT IFNULL((SELECT issueID FROM enigma.stockListings WHERE stockExID IN(1,20,22,23,38,71) AND stockCode=sc ORDER BY firstTradeDate DESC LIMIT 1),0)
-    if sc and not i:
-        sql = """
-            SELECT COALESCE(
-                (SELECT issueid FROM enigma.stocklistings
-                 WHERE stockexid IN (1,20,22,23,38,71) AND stockcode = %s
-                 ORDER BY firsttradedate DESC LIMIT 1),
-                0
-            ) AS issueid
-        """
-        result = execute_query(sql, (sc,))
-        if result:
-            i = result[0]['issueid']
-
-    if not i:
-        return render_template('dbpub/quotes.html', error='Please specify a stock code or issueID')
-
-    # Get stock details
-    sql = """
-        SELECT i.*, o.name1 as issuer_name
-        FROM enigma.issue i
-        LEFT JOIN enigma.organisations o ON i.issuer = o.personid
-        WHERE i.id1 = %s
-    """
-    stock_info = execute_query(sql, (i,))
-
-    if not stock_info:
-        return render_template('dbpub/quotes.html', error='Stock not found')
-
-    stock = stock_info[0]
-
-    # Get recent quotes from ccass.quotes table
-    sql = """
-        SELECT *
-        FROM ccass.quotes
-        WHERE issueid = %s
-        ORDER BY atdate DESC
-        LIMIT 100
-    """
-    quotes_data = execute_query(sql, (i,))
-
-    return render_template('dbpub/quotes.html',
-                         i=i,
-                         stock=stock,
-                         quotes=quotes_data)

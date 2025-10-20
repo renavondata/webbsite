@@ -17,14 +17,14 @@ def create_app(config_class=Config):
 
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site
-    from webbsite.routes import (search, quotes, events, dbpub, ccass,
+    from webbsite.routes import (search, prices, events, dbpub, ccass,
                                   articles, webbmail, vote, pollman,
                                   mailman, contact, dbeditor)
 
     # Main database query pages
     app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
     app.register_blueprint(search.bp, url_prefix='/dbpub')
-    app.register_blueprint(quotes.bp, url_prefix='/dbpub')
+    app.register_blueprint(prices.bp, url_prefix='/dbpub')
     app.register_blueprint(events.bp, url_prefix='/dbpub')
     app.register_blueprint(ccass.bp, url_prefix='/ccass')
 

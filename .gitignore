@@ -45,4 +45,6 @@ instance/
 
 # testing
 tests/outputs
+tests/*.md
 scripts/
+*.log
