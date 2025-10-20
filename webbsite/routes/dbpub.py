@@ -283,33 +283,25 @@ def code():
     Shows securities (current and delisted) using a specific stock code
 
     Query params:
-    - code: 5-digit stock code
+    - code: Stock code (will be padded to 5 digits like ASP: Right("0000"&code,5))
 
-    Tables used: stocklistings (via WebListings view)
+    Tables used: enigma.weblistings view
     """
-    code_param = request.args.get('code', '00001')
-    # Pad to 5 digits
+    code_param = request.args.get('code', '1')
+    # ASP: code=Right("0000"&Request("code"),5) - pad to 5 digits
     code_padded = code_param.zfill(5)
 
     # Query for delisted securities with this stock code
     # Note: HKEX recycles stock codes, so multiple companies may have used the same code
+    # ASP SQL: SELECT * FROM WebListings WHERE stockCode=X AND DelistDate<Now() ORDER BY DeListDate
+    # ASP does numeric comparison (no quotes), so "00009" matches "0009" in MySQL
+    # PostgreSQL: Use LPAD to normalize comparison (some codes like "E16.SI" aren't numeric)
     sql = """
-        SELECT
-            o.name1 AS Org,
-            o.personid AS OrgID,
-            st.typeshort AS SecType,
-            sl.firsttradedate,
-            sl.finaltradedate,
-            sl.delistdate,
-            dl.reason
-        FROM enigma.stocklistings sl
-        JOIN enigma.issue i ON sl.issueid = i.id1
-        JOIN enigma.organisations o ON i.issuer = o.personid
-        JOIN enigma.sectypes st ON i.typeid = st.typeid
-        LEFT JOIN enigma.dlreasons dl ON sl.reasonid = dl.reasonid
-        WHERE sl.stockcode = %s
-          AND sl.delistdate < CURRENT_DATE
-        ORDER BY sl.delistdate
+        SELECT *
+        FROM enigma.weblistings
+        WHERE LPAD(stockcode, 8, '0') = LPAD(%s, 8, '0')
+          AND delistdate < CURRENT_DATE
+        ORDER BY delistdate
     """
 
     try:
@@ -370,12 +362,11 @@ def enigma_orgdata():
             o.dismode,
             dm.dismodetxt,
             ot.typename,
-            o.incid,
-            o.hklist
+            o.incid
         FROM enigma.organisations o
         LEFT JOIN enigma.domiciles d ON o.domicile = d.id
-        LEFT JOIN enigma.dismodes dm ON o.dismode = dm.dismodeid
-        LEFT JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtypeid
+        LEFT JOIN enigma.dismodes dm ON o.dismode = dm.id
+        LEFT JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
         WHERE o.personid = %s
     """
 
@@ -396,8 +387,7 @@ def enigma_orgdata():
             'disMode': org_row['dismode'],
             'disModeTxt': org_row['dismodetxt'],
             'typeName': org_row['typename'],
-            'incID': org_row['incid'],
-            'hklist': org_row['hklist']
+            'incID': org_row['incid']
         }
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
@@ -412,11 +402,11 @@ def enigma_orgdata():
             st.typeshort,
             sl.firsttradedate,
             sl.delistdate,
-            l.listingname
+            l.longname as listingname
         FROM enigma.stocklistings sl
         JOIN enigma.issue i ON sl.issueid = i.id1
         JOIN enigma.sectypes st ON i.typeid = st.typeid
-        JOIN enigma.listings l ON sl.stockexid = l.listingid
+        JOIN enigma.listings l ON sl.stockexid = l.stockexid
         WHERE i.issuer = %s
         ORDER BY sl.delistdate DESC NULLS FIRST, sl.firsttradedate DESC
         LIMIT 10
@@ -447,7 +437,7 @@ def enigma_orgdata():
             p.personID,
             p.name1,
             p.name2,
-            pos.position,
+            pos.posshort,
             d.apptdate,
             d.resdate
         FROM enigma.directorships d
@@ -467,7 +457,7 @@ def enigma_orgdata():
                 'personID': row['personid'],
                 'Name1': row['name1'],
                 'Name2': row['name2'],
-                'position': row['position'],
+                'position': row['posshort'],
                 'from_date': row['apptdate'],
                 'until': row['resdate']
             })
@@ -481,14 +471,14 @@ def enigma_orgdata():
     events_sql = """
         SELECT
             e.eventid,
-            e.eventDate,
+            e.announced,
             e.exdate,
-            ct.capChange,
-            e.details
+            ct.change,
+            e.notes
         FROM enigma.events e
-        JOIN enigma.capchangetypes ct ON e.changeType = ct.typeid
-        WHERE e.personID = %s
-        ORDER BY e.eventDate DESC
+        JOIN enigma.capchangetypes ct ON e.eventtype = ct.capchangetype
+        WHERE e.issueid IN (SELECT id1 FROM enigma.issue WHERE issuer = %s)
+        ORDER BY e.announced DESC
         LIMIT 20
     """
 
@@ -498,10 +488,10 @@ def enigma_orgdata():
         for row in events_result:
             events_list.append({
                 'eventID': row['eventid'],
-                'eventDate': row['eventdate'],
+                'eventDate': row['announced'],
                 'exDate': row['exdate'],
-                'capChange': row['capchange'],
-                'details': row['details']
+                'capChange': row['change'],
+                'details': row['notes']
             })
         org_data['enigma.events'] = events_list
     except Exception as ex:

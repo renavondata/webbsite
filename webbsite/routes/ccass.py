@@ -475,7 +475,7 @@ def cholder():
                 JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
-                LEFT JOIN ccass.issuedshares os ON ph.issueID = os.issueID
+                LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
                     AND ph.atDate = os.atDate
                 LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
                     AND ph.atDate = q.atDate
@@ -937,7 +937,7 @@ def cconchist():
     - sc: stock code
     - sort: sorting column
 
-    Tables used: ccass.dailylog, ccass.issuedshares
+    Tables used: ccass.dailylog, enigma.issuedshares
     """
     from flask import current_app
 
@@ -999,19 +999,25 @@ def cconchist():
             sql = f"""
                 SELECT
                     d.atDate,
-                    c5 / (CIPhldg + intermedHldg) AS cp5,
-                    c10 / (CIPhldg + intermedHldg) AS cp10,
-                    (c10 + NCIPhldg) / (CIPhldg + intermedHldg + NCIPhldg) AS cp10ip,
-                    (SELECT MAX(i.atDate)
-                     FROM ccass.issuedshares i
-                     WHERE i.atDate <= d.atDate AND i.issueID = %s) AS issuedate,
-                    (SELECT (CIPhldg + intermedHldg + NCIPhldg)::NUMERIC / outstanding
-                     FROM ccass.issuedshares
-                     WHERE atDate = issuedate AND issueid = %s) AS stake
+                    d.c5 / (d.CIPhldg + d.intermedHldg) AS cp5,
+                    d.c10 / (d.CIPhldg + d.intermedHldg) AS cp10,
+                    (d.c10 + d.NCIPhldg) / (d.CIPhldg + d.intermedHldg + d.NCIPhldg) AS cp10ip,
+                    issue_dates.issuedate,
+                    stakes.stake
                 FROM ccass.dailylog d
+                CROSS JOIN LATERAL (
+                    SELECT MAX(i.atDate) AS issuedate
+                    FROM enigma.issuedshares i
+                    WHERE i.atDate <= d.atDate AND i.issueID = %s
+                ) issue_dates
+                LEFT JOIN LATERAL (
+                    SELECT (d.CIPhldg + d.intermedHldg + d.NCIPhldg)::NUMERIC / outstanding AS stake
+                    FROM enigma.issuedshares
+                    WHERE atDate = issue_dates.issuedate AND issueid = %s
+                ) stakes ON true
                 WHERE d.issueID = %s
-                  AND c5 > 0
-                  AND CIPhldg + intermedHldg > 0
+                  AND d.c5 > 0
+                  AND d.CIPhldg + d.intermedHldg > 0
                 ORDER BY {ob}
             """
             results = execute_query(sql, (issue_id, issue_id, issue_id))
@@ -1049,7 +1055,7 @@ def ctothist():
     - sort: sorting column
     - o: include rows with no change (0/1)
 
-    Tables used: ccass.dailylog, ccass.issuedshares
+    Tables used: ccass.dailylog, enigma.issuedshares
     """
     from flask import current_app
 
@@ -1105,10 +1111,10 @@ def ctothist():
                     NCIPcnt + intermedcnt + CIPcnt AS holders,
                     atDate,
                     (SELECT MAX(i.atDate)
-                     FROM ccass.issuedshares i
+                     FROM enigma.issuedshares i
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
                     (SELECT outstanding
-                     FROM ccass.issuedshares
+                     FROM enigma.issuedshares
                      WHERE issueid = %s AND atDate = maxDate) AS shares
                 FROM ccass.dailylog d
                 WHERE issueid = %s
@@ -1206,10 +1212,10 @@ def custhist():
                     intermedcnt AS holders,
                     atDate,
                     (SELECT MAX(i.atDate)
-                     FROM ccass.issuedshares i
+                     FROM enigma.issuedshares i
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
                     (SELECT outstanding
-                     FROM ccass.issuedshares
+                     FROM enigma.issuedshares
                      WHERE issueid = %s AND atDate = maxDate) AS shares
                 FROM ccass.dailylog d
                 WHERE issueid = %s
@@ -1369,7 +1375,7 @@ def ncipchg():
             JOIN enigma.issue i ON COALESCE(n2.issueID, n1.issueID) = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
-            LEFT JOIN ccass.issuedshares os ON COALESCE(n2.issueID, n1.issueID) = os.issueID
+            LEFT JOIN enigma.issuedshares os ON COALESCE(n2.issueID, n1.issueID) = os.issueID
                 AND os.atDate = %s
             LEFT JOIN ccass.quotes q ON COALESCE(n2.issueID, n1.issueID) = q.issueID
                 AND q.atDate = %s
