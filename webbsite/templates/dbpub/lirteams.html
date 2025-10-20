@@ -29,7 +29,7 @@
     <tr>
         <td>{{ member.name }}</td>
         <td>{{ member.title }}</td>
-        <td>{{ member.tel[:4] }}-{{ member.tel[4:] if member.tel else '' }}</td>
+        <td>{{ (member.tel|string)[:4] }}-{{ (member.tel|string)[4:] if member.tel else '' }}</td>
         <td>{{ member.firstseen or '' }}</td>
     </tr>
     {% endfor %}

@@ -1429,24 +1429,161 @@ def prices_csv():
 @bp.route('/chart.asp')
 def chart():
     """
-    Price chart with Highstock
+    Economic data charts with Highstock
+    Direct port from chart.asp
 
     Query params:
-    - i: issueid
-    - sc: stock code
+    - c: chart ID (default 1)
+    - d: show per day (boolean, for quantity charts)
 
-    Uses Highstock for interactive charting
+    Uses charts, chartitems, dataitems, charttypes tables
     """
-    issue_id = get_int('i', 0)
-    stock_code = get_str('sc', '')
+    c = get_int('c', 1)
+    daily = request.args.get('d', '').lower() in ('1', 'true', 'yes')
 
-    # TODO: Query price data for chart
-    chart_data = []
+    # Get chart metadata
+    sql = "SELECT * FROM enigma.charts WHERE id = %s"
+    chart_result = execute_query(sql, (c,))
+
+    if not chart_result:
+        return render_template('dbpub/chart.html', error='Chart not found')
+
+    chart_info = chart_result[0]
+    chart_title = chart_info.get('title', '')
+    quant = chart_info.get('quant', False)
+
+    # Get chart items with data item details
+    sql = """
+        SELECT c.dataitem, d.ddes, d.note, d.units, d.dp,
+               d.shortname, d.freq, ct.name as typename, c.negate
+        FROM enigma.chartitems c
+        JOIN enigma.dataitems d ON c.dataitem = d.id
+        JOIN enigma.charttypes ct ON c.typeid = ct.id
+        WHERE c.chartid = %s
+    """
+    items = execute_query(sql, (c,))
+
+    if not items:
+        return render_template('dbpub/chart.html', error='No chart items found')
+
+    # Get chart configuration from first item
+    units = items[0].get('units', '')
+    freq = items[0].get('freq', 1)
+
+    # Determine date format for tooltip
+    tipdate = '%Y' if freq == 3 else '%Y-%m'
+
+    # Build title with frequency
+    freq_sql = "SELECT fdes FROM enigma.freq WHERE id = %s"
+    freq_result = execute_query(freq_sql, (freq,))
+    freq_desc = freq_result[0].get('fdes', '').lower() if freq_result else ''
+
+    denom = ""
+    dpinc = 0
+    if quant and freq < 3 and daily:
+        # Per-day calculation for monthly/quarterly quantity data
+        if freq == 1:
+            denom = "/monthdays(d)"
+        else:
+            denom = "/quarterdays(d)"
+        dpinc = 2
+
+    full_title = f"{chart_title} {freq_desc}, {units}"
+    if daily:
+        full_title += " per day"
+
+    # Get notes from all chart items
+    note_sql = """
+        SELECT STRING_AGG(d.note, ' ') as combined_note
+        FROM enigma.chartitems c
+        JOIN enigma.dataitems d ON c.dataitem = d.id
+        WHERE c.chartid = %s
+    """
+    note_result = execute_query(note_sql, (c,))
+    note = note_result[0].get('combined_note', '') if note_result else ''
+
+    # Build data query for all items
+    item_ids = [item.get('dataitem') for item in items]
+
+    # Build SELECT for each data item
+    select_parts = []
+    for item in items:
+        item_id = item.get('dataitem')
+        negate = item.get('negate', False)
+        sign = '-' if negate else ''
+        select_parts.append(f"{sign}SUM(CASE WHEN item = {item_id} THEN v ELSE 0 END){denom}")
+
+    data_sql = f"""
+        SELECT d, {', '.join(select_parts)}
+        FROM enigma.data
+        WHERE item IN ({','.join(['%s'] * len(item_ids))})
+        GROUP BY d
+        ORDER BY d
+    """
+
+    data_points = execute_query(data_sql, item_ids)
+
+    # Format data for Highcharts - one series per item
+    series_data = [[] for _ in items]
+    table_data = []
+
+    for row in data_points:
+        d = row.get('d')
+        if d:
+            # Convert date to JavaScript timestamp (milliseconds)
+            if hasattr(d, 'timestamp'):
+                timestamp = int(d.timestamp() * 1000)
+            else:
+                from datetime import datetime
+                try:
+                    dt = datetime.fromisoformat(str(d))
+                    timestamp = int(dt.timestamp() * 1000)
+                except:
+                    continue
+
+            # Add data point to each series
+            row_values = []
+            for i, item in enumerate(items):
+                # PostgreSQL returns columns in order: d, item1, item2, ...
+                value = row.get(f'sum', None) if len(items) == 1 else list(row.values())[i + 1]
+                if value is not None:
+                    series_data[i].append([timestamp, float(value)])
+                    row_values.append(value)
+                else:
+                    row_values.append(None)
+
+            table_data.append({'date': d, 'values': row_values})
+
+    # Get data sources
+    source_sql = """
+        SELECT DISTINCT d.source, o.name1
+        FROM enigma.chartitems c
+        JOIN enigma.dataitems d ON c.dataitem = d.id
+        JOIN enigma.organisations o ON d.source = o.personid
+        WHERE c.chartid = %s
+        ORDER BY o.name1
+    """
+    sources = execute_query(source_sql, (c,))
+
+    # Get all available charts for dropdown
+    charts_sql = "SELECT id, title FROM enigma.charts ORDER BY title"
+    all_charts = execute_query(charts_sql)
 
     return render_template('dbpub/chart.html',
-                         issue_id=issue_id,
-                         stock_code=stock_code,
-                         chart_data=chart_data)
+                         c=c,
+                         title=full_title,
+                         units=units,
+                         note=note,
+                         tipdate=tipdate,
+                         freq=freq,
+                         quant=quant,
+                         daily=daily,
+                         items=items,
+                         series_data=series_data,
+                         table_data=table_data,
+                         sources=sources,
+                         all_charts=all_charts,
+                         dpinc=dpinc)
 
 
 @bp.route('/alltotrets.asp')
