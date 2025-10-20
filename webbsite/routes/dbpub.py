@@ -509,7 +509,14 @@ def enigma_orgdata():
         current_app.logger.error(f"Error in enigma.orgdata.asp (enigma.events): {type(ex).__name__}: {ex}", exc_info=True)
         org_data['enigma.events'] = []
 
-    return render_template('dbpub/enigma.orgdata.html', org=org_data)
+    return render_template('dbpub/orgdata.html', org=org_data)
+
+
+# Alias route for orgdata.asp (backward compatibility with ASP URLs)
+@bp.route('/orgdata.asp')
+def orgdata():
+    """Alias for enigma_orgdata() to match ASP URL pattern"""
+    return enigma_orgdata()
 
 
 @bp.route('/advisers.asp')
@@ -968,7 +975,7 @@ def enigma_positions():
                     ELSE o.name1
                 END AS personname,
                 CASE WHEN p.personid IS NOT NULL THEN TRUE ELSE FALSE END AS isperson
-            FROM enigma.persons p
+            FROM enigma.people p
             FULL OUTER JOIN enigma.organisations o ON p.personid = o.personid
             WHERE COALESCE(p.personid, o.personid) = %s
         """, (person_id,))
@@ -993,7 +1000,7 @@ def enigma_positions():
             FROM enigma.directorships d
             JOIN enigma.positions pos ON d.positionid = pos.positionid
             JOIN enigma.rank r ON pos.rank = r.rankid
-            WHERE d.personid = %s
+            WHERE d.director = %s
               AND {date_filter}
             ORDER BY r.rankid
         """.format(date_filter=date_filter), (person_id,))
@@ -1018,7 +1025,7 @@ def enigma_positions():
                 JOIN enigma.positions pos ON d.positionid = pos.positionid
                 LEFT JOIN enigma.issue i ON d.company = i.issuer
                 WHERE pos.rank = %s
-                  AND d.personid = %s
+                  AND d.director = %s
                   AND {{date_filter}}
                 ORDER BY {{ob}}
             """.format(date_filter=date_filter, ob=ob), (rank_id, person_id))
@@ -1033,13 +1040,20 @@ def enigma_positions():
         current_app.logger.error(f"Error in enigma.positions query: {ex}")
         positions_by_rank = []
 
-    return render_template('dbpub/enigma.positions.html',
+    return render_template('dbpub/positions.html',
                          person_id=person_id,
                          person_name=person_name,
                          is_person=is_person,
                          positions_by_rank=positions_by_rank,
                          sort=sort_param,
                          hide=hide)
+
+
+# Alias route for positions.asp (backward compatibility with ASP URLs)
+@bp.route('/positions.asp')
+def positions():
+    """Alias for enigma_positions() to match ASP URL pattern"""
+    return enigma_positions()
 
 
 @bp.route('/holders.asp')

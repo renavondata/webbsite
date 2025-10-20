@@ -1,12 +1,13 @@
 # Test configuration for Flask vs ASP validation
-# All 24 working routes with 2-3 test scenarios each
+# Expanded from 24 to 64 routes covering high-priority pages
 
 # Base URLs
-asp_base: "http://webb-site.com"
+asp_base: "https://webb-site.com"
 flask_base: "http://127.0.0.1:5000"
 
 # Fixed test date for consistent comparisons
-test_date: "2024-10-01"
+# Changed from 2024-10-01 (public holiday, no data) to 2024-10-02 (trading day with data)
+test_date: "2024-10-02"
 
 # Route test definitions
 routes:
@@ -34,22 +35,9 @@ routes:
       - q: "Li Ka"
         l: "50"
 
-  - name: "prices - stock price charts"
-    path: "/dbpub/prices.asp"
-    params:
-      - i: "62"  # HSBC issueID
-        d: "2024-10-01"
-      - i: "12"  # China Mobile issueID
-        d: "2024-10-01"
-        months: "12"
-
-  - name: "quotes - stock quotes"
-    path: "/dbpub/quotes.asp"
-    params:
-      - d: "2024-10-01"
-      - d: "2024-10-01"
-        e: "m"
-        sort: "changedn"
+  # prices.asp and quotes.asp removed - not deployed on live ASP server
+  # prices.asp exists in ASP source but not deployed (returns 404)
+  # quotes.asp was Flask-only addition (deleted from codebase)
 
   - name: "events - corporate events"
     path: "/dbpub/events.asp"
@@ -122,9 +110,9 @@ routes:
   - name: "positions - director positions"
     path: "/dbpub/positions.asp"
     params:
-      - pid: "100"  # Example personID
+      - p: "100"  # Example personID (was 'pid', corrected to 'p')
         d: "2024-10-01"
-      - pid: "200"  # Example personID
+      - p: "200"  # Example personID
         d: "2024-10-01"
 
   # ==========================================
@@ -156,28 +144,28 @@ routes:
   # CCASS Analysis (7 routes)
   # ==========================================
   - name: "bigchanges - large shareholding changes"
-    path: "/dbpub/bigchanges.asp"
+    path: "/ccass/bigchanges.asp"
     params:
       - d: "2024-10-01"
       - d: "2024-10-01"
         minpct: "1"
 
   - name: "bigchangesissue - changes for specific stock"
-    path: "/dbpub/bigchangesissue.asp"
+    path: "/ccass/bigchangesissue.asp"
     params:
       - i: "62"  # HSBC issueID
       - i: "12"  # China Mobile issueID
         minpct: "0.5"
 
   - name: "bigchangespart - changes for specific participant"
-    path: "/dbpub/bigchangespart.asp"
+    path: "/ccass/bigchangespart.asp"
     params:
       - part: "A00001"  # Example participant ID
       - part: "C00001"  # Example participant ID
         minpct: "1"
 
   - name: "cconc - CCASS concentration"
-    path: "/dbpub/cconc.asp"
+    path: "/ccass/cconc.asp"
     params:
       - d: "2024-10-01"
         e: "m"
@@ -186,25 +174,249 @@ routes:
         sort: "top5dn"
 
   - name: "cparticipants - CCASS participants"
-    path: "/dbpub/cparticipants.asp"
+    path: "/ccass/cparticipants.asp"
     params:
       - {}
       - search: "HSBC"
 
   - name: "ipstakes - investor participant stakes"
-    path: "/dbpub/ipstakes.asp"
+    path: "/ccass/ipstakes.asp"
     params:
       - d: "2024-10-01"
       - d: "2024-10-01"
         minpct: "5"
 
   - name: "choldings - holdings for stock"
-    path: "/dbpub/choldings.asp"
+    path: "/ccass/choldings.asp"
     params:
       - i: "62"  # HSBC issueID
         d: "2024-10-01"
       - i: "12"  # China Mobile issueID
         d: "2024-10-01"
+
+  # ==========================================
+  # Additional CCASS Routes (8 routes)
+  # ==========================================
+  - name: "cholder - CCASS holder history"
+    path: "/ccass/cholder.asp"
+    params:
+      - part: "C00001"
+      - part: "A00001"
+
+  - name: "brokhist - broker history"
+    path: "/ccass/brokhist.asp"
+    params:
+      - i: "62"
+        d: "2024-10-01"
+      - i: "12"
+        d: "2024-10-01"
+
+  - name: "cconchist - concentration history"
+    path: "/ccass/cconchist.asp"
+    params:
+      - i: "62"
+      - i: "941"
+
+  - name: "ctothist - turnover history"
+    path: "/ccass/ctothist.asp"
+    params:
+      - i: "62"
+
+  - name: "custhist - custody history"
+    path: "/ccass/custhist.asp"
+    params:
+      - i: "62"
+
+  - name: "reghist - registered holder history"
+    path: "/ccass/reghist.asp"
+    params:
+      - i: "62"
+
+  - name: "ncipchg - non-CIP changes"
+    path: "/ccass/ncipchg.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "portchg - portfolio changes"
+    path: "/ccass/portchg.asp"
+    params:
+      - part: "C00001"
+        d: "2024-10-01"
+
+  # ==========================================
+  # Directors & Board Composition (7 routes)
+  # ==========================================
+  - name: "boardcomp - board composition"
+    path: "/dbpub/boardcomp.asp"
+    params:
+      - d: "2024-10-01"
+      - e: "m"
+        d: "2024-10-01"
+
+  - name: "dirsHKPerPerson - directors per person"
+    path: "/dbpub/dirsHKPerPerson.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "latestdirsHK - latest directors HK"
+    path: "/dbpub/latestdirsHK.asp"
+    params:
+      - {}
+
+  - name: "leagueDirsHK - league of directors"
+    path: "/dbpub/leagueDirsHK.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "FDirsPerListcoHKdstn - female directors distribution"
+    path: "/dbpub/FDirsPerListcoHKdstn.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "INEDHKDistnCos - INED distribution by company"
+    path: "/dbpub/INEDHKDistnCos.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "INEDHKDistnPeople - INED distribution by people"
+    path: "/dbpub/INEDHKDistnPeople.asp"
+    params:
+      - d: "2024-10-01"
+
+  # ==========================================
+  # Incorporation/Dissolution Statistics (11 routes)
+  # ==========================================
+  - name: "incHKannual - HK incorporations annual"
+    path: "/dbpub/incHKannual.asp"
+    params:
+      - {}
+
+  - name: "incHKmonth - HK incorporations by month"
+    path: "/dbpub/incHKmonth.asp"
+    params:
+      - {}
+
+  - name: "incHKsurvive - HK survival rates"
+    path: "/dbpub/incHKsurvive.asp"
+    params:
+      - {}
+
+  - name: "incHKcaltype - HK inc by calendar type"
+    path: "/dbpub/incHKcaltype.asp"
+    params:
+      - {}
+
+  - name: "disHKcaltype - HK dissolution by calendar type"
+    path: "/dbpub/disHKcaltype.asp"
+    params:
+      - {}
+
+  - name: "oldestHKcos - oldest HK companies"
+    path: "/dbpub/oldestHKcos.asp"
+    params:
+      - {}
+
+  - name: "regHKannual - HK registrations annual"
+    path: "/dbpub/regHKannual.asp"
+    params:
+      - {}
+
+  - name: "incFcal - foreign incorporations"
+    path: "/dbpub/incFcal.asp"
+    params:
+      - {}
+
+  - name: "disFcal - foreign dissolutions"
+    path: "/dbpub/disFcal.asp"
+    params:
+      - {}
+
+  - name: "domregHK - domicile registrations HK"
+    path: "/dbpub/domregHK.asp"
+    params:
+      - {}
+
+  - name: "incUKcaltype - UK incorporations by calendar type"
+    path: "/dbpub/incUKcaltype.asp"
+    params:
+      - {}
+
+  # ==========================================
+  # Law & Finance Professionals (4 routes)
+  # ==========================================
+  - name: "hksols - HK solicitors"
+    path: "/dbpub/hksols.asp"
+    params:
+      - {}
+      - search: "Wong"
+
+  - name: "hksolfirms - HK solicitor firms"
+    path: "/dbpub/hksolfirms.asp"
+    params:
+      - {}
+
+  - name: "hksolemps - HK solicitor employers"
+    path: "/dbpub/hksolemps.asp"
+    params:
+      - {}
+
+  - name: "auditorchanges - auditor changes"
+    path: "/dbpub/auditorchanges.asp"
+    params:
+      - {}
+
+  # ==========================================
+  # Market Data & Analysis (10 routes)
+  # ==========================================
+  - name: "listingtrend - listing trends"
+    path: "/dbpub/listingtrend.asp"
+    params:
+      - {}
+
+  - name: "yearend - year-end statistics"
+    path: "/dbpub/yearend.asp"
+    params:
+      - {}
+
+  - name: "reportspeed - reporting speed"
+    path: "/dbpub/reportspeed.asp"
+    params:
+      - {}
+
+  - name: "hklistcowebs - HK listcos with websites"
+    path: "/dbpub/hklistcowebs.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "hklistconowebs - HK listcos without websites"
+    path: "/dbpub/hklistconowebs.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "lirteams - listing teams"
+    path: "/dbpub/lirteams.asp"
+    params:
+      - {}
+
+  - name: "str - short-term returns"
+    path: "/dbpub/str.asp"
+    params:
+      - {}
+
+  - name: "gemgrads - GEM graduates"
+    path: "/dbpub/gemgrads.asp"
+    params:
+      - {}
+
+  - name: "HKstocksByBoardLot - stocks by board lot"
+    path: "/dbpub/HKstocksByBoardLot.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "rightsoo - rights out-of-the-money"
+    path: "/dbpub/rightsoo.asp"
+    params:
+      - {}
 
 # Normalization options
 normalize:
@@ -212,11 +424,22 @@ normalize:
   remove_comments: true
   lowercase_tags: false  # Preserve tag case
   collapse_spaces: true
+  # NOTE: CSS path differences are ACCEPTABLE and ignored by normalization
+  # ASP uses relative paths (href="main.css")
+  # Flask uses absolute paths (href="/static/css/main.css")
+  # The normalize_html() function in test_routes.py handles this
 
 # Timeout settings (seconds)
 timeout:
   request: 30
   total: 300
+  # Per-route timeout overrides for slow ASP queries
+  route_timeouts:
+    leagueDirsHK: 60
+    incHKannual: 60
+    incHKmonth: 60
+    incHKsurvive: 60
+    disHKcaltype: 60
 
 # Reporting options
 report:
