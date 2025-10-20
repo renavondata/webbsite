@@ -3636,45 +3636,333 @@ def docs():
 # Articles and content
 @bp.route('/articles.asp')
 def articles():
-    """Articles index"""
-    # TODO: Query articles from stories table
-    articles = []
-    return render_template('dbpub/articles.html', articles=articles)
+    """
+    Articles index - shows recent Webb-site articles
+
+    Query params:
+    - p: personID (show articles mentioning this person/org)
+
+    Tables used: stories, personstories, organisations, people
+    """
+    person_id = get_int('p', 0)
+
+    if person_id:
+        # Articles mentioning specific person/org
+        articles_data = execute_query("""
+            SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
+                   s.image, sr.sourcename, s.sourceid,
+                   sn.storyid AS snid
+            FROM enigma.personstories ps
+            JOIN enigma.stories s ON ps.storyid = s.storyid
+            LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
+            LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
+            WHERE ps.personid = %s
+              AND s.pubdate <= CURRENT_TIMESTAMP
+            ORDER BY s.storydate DESC
+            LIMIT 500
+        """, (person_id,))
+    else:
+        # Recent articles
+        articles_data = execute_query("""
+            SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
+                   s.image, sr.sourcename, s.sourceid,
+                   sn.storyid AS snid
+            FROM enigma.stories s
+            LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
+            LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
+            WHERE s.sourceid = 1
+              AND s.pubdate <= CURRENT_TIMESTAMP
+            ORDER BY s.storydate DESC
+            LIMIT 100
+        """)
+
+    # Get related entities for each article
+    for article in articles_data:
+        story_id = article['storyid']
+
+        # Get organizations mentioned
+        article['orgs'] = execute_query("""
+            SELECT ps.personid, o.name1
+            FROM enigma.personstories ps
+            JOIN enigma.organisations o ON ps.personid = o.personid
+            WHERE ps.storyid = %s
+            ORDER BY o.name1
+        """, (story_id,))
+
+        # Get people mentioned
+        article['people'] = execute_query("""
+            SELECT ps.personid,
+                   p.name1 || COALESCE(', ' || p.name2, '') AS name
+            FROM enigma.personstories ps
+            JOIN enigma.people p ON ps.personid = p.personid
+            WHERE ps.storyid = %s
+            ORDER BY p.name1, p.name2
+        """, (story_id,))
+
+        # Get tags
+        article['tags'] = execute_query("""
+            SELECT st.catid, c.name
+            FROM enigma.storytags st
+            JOIN enigma.categories c ON st.catid = c.id
+            WHERE st.storyid = %s
+            ORDER BY c.name
+        """, (story_id,))
+
+    return render_template('dbpub/articles.html',
+                         articles=articles_data,
+                         person_id=person_id)
 
 
 @bp.route('/articlesyear.asp')
 def articles_year():
-    """Articles by year"""
+    """
+    Articles by publication year
+
+    Query params:
+    - y: year (default current year)
+
+    Shows all Webb-site articles published in a specific year
+    """
+    from datetime import date
     year = get_int('y', date.today().year)
-    # TODO: Query articles
-    articles = []
-    return render_template('dbpub/articlesyear.html', year=year, articles=articles)
+
+    # Query articles for this year
+    articles_data = execute_query("""
+        SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text
+        FROM enigma.stories s
+        WHERE s.sourceid = 1
+          AND EXTRACT(YEAR FROM s.storydate) = %s
+          AND s.pubdate <= CURRENT_TIMESTAMP
+        ORDER BY s.storydate DESC
+    """, (year,))
+
+    # Get related entities for each article
+    for article in articles_data:
+        story_id = article['storyid']
+
+        # Get organizations mentioned
+        article['orgs'] = execute_query("""
+            SELECT ps.personid, o.name1
+            FROM enigma.personstories ps
+            JOIN enigma.organisations o ON ps.personid = o.personid
+            WHERE ps.storyid = %s
+            ORDER BY o.name1
+        """, (story_id,))
+
+        # Get people mentioned
+        article['people'] = execute_query("""
+            SELECT ps.personid,
+                   p.name1 || COALESCE(', ' || p.name2, '') AS name
+            FROM enigma.personstories ps
+            JOIN enigma.people p ON ps.personid = p.personid
+            WHERE ps.storyid = %s
+            ORDER BY p.name1, p.name2
+        """, (story_id,))
+
+        # Get tags
+        article['tags'] = execute_query("""
+            SELECT st.catid, c.name
+            FROM enigma.storytags st
+            JOIN enigma.categories c ON st.catid = c.id
+            WHERE st.storyid = %s
+            ORDER BY c.name
+        """, (story_id,))
+
+    return render_template('dbpub/articlesyear.html',
+                         year=year,
+                         articles=articles_data)
 
 
 @bp.route('/artlinks.asp')
 def artlinks():
-    """Article links"""
-    # TODO: Query article links
-    links = []
-    return render_template('dbpub/artlinks.html', links=links)
+    """
+    Article links - shows organizations, people, and tags for a specific article
+
+    Query params:
+    - s: storyID
+
+    Shows all entities and tags associated with an article
+    """
+    story_id = get_int('s', 0)
+
+    if not story_id:
+        return "Story ID required", 400
+
+    # Get article details
+    article_data = execute_query("""
+        SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
+               sr.sourcename, s.sourceid,
+               sn.storyid AS snid, sn.titleEN, sn.titleTC
+        FROM enigma.stories s
+        LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
+        LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
+        WHERE s.storyid = %s
+    """, (story_id,))
+
+    if not article_data:
+        return "Article not found", 404
+
+    article = article_data[0]
+
+    # Get organizations mentioned
+    orgs_data = execute_query("""
+        SELECT ps.personid, o.name1, o.cname
+        FROM enigma.personstories ps
+        JOIN enigma.organisations o ON ps.personid = o.personid
+        WHERE ps.storyid = %s
+        ORDER BY o.name1
+    """, (story_id,))
+
+    # Get people mentioned
+    people_data = execute_query("""
+        SELECT ps.personid,
+               p.name1 || COALESCE(', ' || p.name2, '') AS name,
+               p.cname
+        FROM enigma.personstories ps
+        JOIN enigma.people p ON ps.personid = p.personid
+        WHERE ps.storyid = %s
+        ORDER BY p.name1, p.name2
+    """, (story_id,))
+
+    # Get tags
+    tags_data = execute_query("""
+        SELECT st.catid, c.name
+        FROM enigma.storytags st
+        JOIN enigma.categories c ON st.catid = c.id
+        WHERE st.storyid = %s
+        ORDER BY c.name
+    """, (story_id,))
+
+    return render_template('dbpub/artlinks.html',
+                         story_id=story_id,
+                         article=article,
+                         orgs=orgs_data,
+                         people=people_data,
+                         tags=tags_data)
 
 
 @bp.route('/cat.asp')
 def cat():
-    """Article categories"""
-    cat_id = get_int('c', 0)
-    # TODO: Query articles by category
-    articles = []
-    return render_template('dbpub/cat.html', cat_id=cat_id, articles=articles)
+    """
+    Article category browser - shows subcategories and member organizations
+
+    Query params:
+    - c: category ID
+
+    Shows hierarchical category tree and category members
+    Tables used: webcattree view, webcatmembers view
+    """
+    cat_id = get_int('c', 1)
+
+    # Get category name
+    cat_result = execute_query("""
+        SELECT name FROM enigma.categories WHERE id = %s
+    """, (cat_id,))
+
+    if not cat_result:
+        return "Category not found", 404
+
+    cat_name = cat_result[0]['name']
+
+    # Get subcategories
+    subcats = execute_query("""
+        SELECT childid, childname
+        FROM enigma.webcattree
+        WHERE parentid = %s
+        ORDER BY childname
+    """, (cat_id,))
+
+    # Get category members (organizations)
+    members = execute_query("""
+        SELECT personid, name1
+        FROM enigma.webcatmembers
+        WHERE category = %s
+        ORDER BY name1
+    """, (cat_id,))
+
+    return render_template('dbpub/cat.html',
+                         cat_id=cat_id,
+                         cat_name=cat_name,
+                         subcategories=subcats,
+                         members=members)
 
 
 @bp.route('/subject.asp')
 def subject():
-    """Articles by subject tag"""
-    tag = get_str('t', '')
-    # TODO: Query articles by tag
-    articles = []
-    return render_template('dbpub/subject.html', tag=tag, articles=articles)
+    """
+    Articles by subject tag
+
+    Query params:
+    - c: category ID (subject tag)
+
+    Shows all articles tagged with a specific subject
+    Tables used: storytags, stories, categories
+    """
+    cat_id = get_int('c', 0)
+
+    if not cat_id:
+        return "Category ID required", 400
+
+    # Get category name
+    cat_result = execute_query("""
+        SELECT name FROM enigma.categories WHERE id = %s
+    """, (cat_id,))
+
+    if not cat_result:
+        return "Subject not found", 404
+
+    subject_name = cat_result[0]['name']
+
+    # Get articles with this tag
+    articles_data = execute_query("""
+        SELECT s.title, s.storyid, s.storydate, s.url, s.summary,
+               s.sourceid, sr.sourcename, s.url2, s.url2text, s.image,
+               sn.storyid AS snid
+        FROM enigma.storytags st
+        JOIN enigma.stories s ON st.storyid = s.storyid
+        LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
+        LEFT JOIN enigma.sfcnews sn ON st.storyid = sn.storyid
+        WHERE st.catid = %s
+          AND s.pubdate <= CURRENT_TIMESTAMP
+        ORDER BY s.storydate DESC
+    """, (cat_id,))
+
+    # Get related entities for each article
+    for article in articles_data:
+        story_id = article['storyid']
+
+        # Get organizations mentioned
+        article['orgs'] = execute_query("""
+            SELECT ps.personid, o.name1
+            FROM enigma.personstories ps
+            JOIN enigma.organisations o ON ps.personid = o.personid
+            WHERE ps.storyid = %s
+            ORDER BY o.name1
+        """, (story_id,))
+
+        # Get people mentioned
+        article['people'] = execute_query("""
+            SELECT ps.personid,
+                   p.name1 || COALESCE(', ' || p.name2, '') AS name
+            FROM enigma.personstories ps
+            JOIN enigma.people p ON ps.personid = p.personid
+            WHERE ps.storyid = %s
+            ORDER BY p.name1, p.name2
+        """, (story_id,))
+
+        # Get other tags
+        article['tags'] = execute_query("""
+            SELECT st.catid, c.name
+            FROM enigma.storytags st
+            JOIN enigma.categories c ON st.catid = c.id
+            WHERE st.storyid = %s
+            ORDER BY c.name
+        """, (story_id,))
+
+    return render_template('dbpub/subject.html',
+                         cat_id=cat_id,
+                         subject_name=subject_name,
+                         articles=articles_data)
 
 
 # HK Solicitors
@@ -3930,20 +4218,116 @@ def hk_sol_emps():
 # Website URLs
 @bp.route('/websites.asp')
 def websites():
-    """Company websites"""
-    # TODO: Query company websites
-    websites = []
-    return render_template('dbpub/websites.html', websites=websites)
+    """
+    Company websites listing
+
+    Query params:
+    - p: personID (organization)
+
+    Shows all websites associated with an organization (active and archived)
+    Tables used: enigma.web
+    """
+    person_id = get_int('p', 0)
+
+    if not person_id:
+        return "PersonID required", 400
+
+    # Query websites for this organization
+    websites_data = execute_query("""
+        SELECT url, dead
+        FROM enigma.web
+        WHERE personid = %s
+        ORDER BY dead, url
+    """, (person_id,))
+
+    return render_template('dbpub/websites.html',
+                         person_id=person_id,
+                         websites=websites_data)
 
 
-# Matches (name similarity)
+# Matches (overlapping directors)
 @bp.route('/matches.asp')
 def matches():
-    """Find similar organization names"""
-    search = get_str('n', '')
-    # TODO: Find name matches
-    matches = []
-    return render_template('dbpub/matches.html', search=search, matches=matches)
+    """
+    Find common directors between two organizations
+
+    Query params:
+    - org1: first organization personID
+    - org2: second organization personID
+    - d: snapshot date (defaults to today)
+    - sort: sorting column
+
+    Shows people who hold positions in both organizations at a given date
+    Tables used: enigma.directorships, enigma.people, enigma.positions
+    """
+    from datetime import date
+
+    org1 = get_int('org1', 0)
+    org2 = get_int('org2', 0)
+    d = get_str('d', str(date.today()))
+    sort_param = request.args.get('sort', 'name')
+
+    if not org1 or not org2:
+        return "Both organization IDs required", 400
+
+    # Get organization names
+    org1_result = execute_query("""
+        SELECT name1 FROM enigma.organisations WHERE personid = %s
+    """, (org1,))
+
+    org2_result = execute_query("""
+        SELECT name1 FROM enigma.organisations WHERE personid = %s
+    """, (org2,))
+
+    if not org1_result or not org2_result:
+        return "Organizations not found", 404
+
+    org1_name = org1_result[0]['name1']
+    org2_name = org2_result[0]['name1']
+
+    # Sort order mapping
+    sort_mappings = {
+        'app1': 'app1, app2, name',
+        'app2': 'app2, app1, name',
+        'pos1': 'pos1, name',
+        'pos2': 'pos2, name',
+        'name': 'name'
+    }
+    ob = sort_mappings.get(sort_param, 'name')
+
+    # Query overlapping directors
+    matches_data = execute_query(f"""
+        SELECT
+            d1.director AS personid,
+            p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '') AS name,
+            pns1.posshort AS pos1,
+            pns1.poslong AS pos1long,
+            pns2.posshort AS pos2,
+            pns2.poslong AS pos2long,
+            TO_CHAR(d1.apptdate, 'YYYY-MM-DD') AS app1,
+            TO_CHAR(d2.apptdate, 'YYYY-MM-DD') AS app2
+        FROM enigma.directorships d1
+        JOIN enigma.directorships d2 ON d1.director = d2.director
+        JOIN enigma.people p ON d1.director = p.personid
+        JOIN enigma.positions pns1 ON d1.positionid = pns1.positionid
+        JOIN enigma.positions pns2 ON d2.positionid = pns2.positionid
+        WHERE d1.company = %s
+          AND d2.company = %s
+          AND (d1.resdate IS NULL OR d1.resdate > %s::date)
+          AND (d2.resdate IS NULL OR d2.resdate > %s::date)
+          AND (d1.apptdate IS NULL OR d1.apptdate <= %s::date)
+          AND (d2.apptdate IS NULL OR d2.apptdate <= %s::date)
+        ORDER BY {ob}
+    """, (org1, org2, d, d, d, d))
+
+    return render_template('dbpub/matches.html',
+                         org1=org1,
+                         org2=org2,
+                         org1_name=org1_name,
+                         org2_name=org2_name,
+                         d=d,
+                         matches=matches_data,
+                         sort_param=sort_param)
 
 
 # Domiciles
