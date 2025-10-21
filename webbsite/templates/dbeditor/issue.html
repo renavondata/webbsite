@@ -1,0 +1,118 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if i>0 %}
+	<h2>{{ n }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,8)
+	Call issueBar(i,1)
+ElseIf p>0 Th... #}
+	<h2>{{ orgName }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,8)
+Else... #}
+	<h2>{{ title }}</h2>
+{% endif %}
+{% if p>0 %}
+	<form method="post" action="issue.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		{% if i>0 %}
+			<h3>Edit issue</h3>
+			<p>Issue ID: {{ i }}</p>
+			<p>Issue type: {{ conRole.Execute("SELECT typeLong FROM secTypes WHERE typeID="&s).Fields(0) }}</p>
+		{% else %}
+			<div class="inputs">Issue type: {{ arrSelect("s",s,conRole.Execute("SELECT typeID,typeLong FROM secTypes WHERE typeID NOT IN(2,40,41,46) ORDER BY typeLong").GetRows,True) }}</div>	
+		{% endif %}
+		<div class="inputs">SEHK currency: {{ arrSelectZ("curr",curr,conRole.Execute("SELECT ID,currency FROM currencies ORDER BY currency").GetRows,False,True,"","") }} (leave blank if unlisted)</div>
+		<div class="clear"></div>
+		{% if canExpire %}
+			<div class="inputs">Expiry date: <input type="date" name="exp" value="{{ exp }}"></div>
+			<div class="clear"></div>
+		{# TODO: Port ASP logic: End If
+		If hint<>"" Then... #}
+			<p><b>{{ Hint }}</b></p>
+		{# TODO: Port ASP logic: End If
+		'make buttons
+		If i>0 Then... #}
+			<input type="hidden" name="i" value="{{ i }}">
+			{% if Not priced %}
+				<input type="submit" name="submitIss" value="Update">
+				{% if canDelete %}
+					{% if submit="Delete" %}
+						<input type="submit" name="submitIss" style="color:red" value="CONFIRM DELETE">
+						<input type="submit" name="submitIss" value="Cancel">
+					{% else %}
+						<input type="submit" name="submitIss" value="Delete">
+					{% endif %}
+				{# TODO: Port ASP logic: End If
+			End If
+		Else... #}
+			<input type="submit" name="submitIss" value="Add">
+		{% endif %}
+	</form>
+	<form method="post" action="issue.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitIss" value="Clear form">
+	</form>
+	{% if referer>"" and i>0 %}
+		<form method="post" action="{{ referer }}">
+			<input type="hidden" name="{{ tv }}" value="{{ i }}">
+			<p><input type="submit" name="submitBtn" value="Use this issue"></p>
+		</form>
+	{# End If	
+	rs.Open "SELECT *,maxRank('issue',i.userID)uRank,priced(i.ID1) priced FROM issue i JOIN secTypes s ON i.typeID=s.typeID "&_
+		"JOIN users u ON i.userID=u.ID LEFT JOIN currencies c ON i.SEHKcurr=c.ID WHERE issuer="&p&" ORDER BY listOrd,expmat",conRole
+	If Not rs.EOF Then #}
+		<h3>Existing issues</h3>
+		<table class="txtable">
+			<tr>
+				<th>Issue ID</th>
+				<th>Type</th>
+				<th>SEHK<br>currency</th>
+				<th>Expiry</th>
+				<th>User</th>
+				<th colspan="2"></th>
+			</tr>
+		{% for row in results %}
+			<tr>
+				<td>{{ row.ID1 }}</td>
+				<td>{{ row.typeLong }}</td>
+				<td>{{ row.currency }}</td>
+				<td>{{ row.expmat }}</td>
+				<td>{{ row.name }}</td>
+				<td><a href="issue.asp?i={{ row.ID1 }}">Select</a></td>
+				{% if Not CBool(row.priced) and rankingRs(rs,uRank) %}
+					<td><a href="issue.asp?submitIss=Delete&amp;i={{ row.ID1 }}">Delete</a></td>
+				{% else %}
+					<td></td>
+				{% endif %}
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If... #}
+<p><a href="searchorgs.asp?tv=p">Find or add an issuer</a></p>
+<form method="post" action="issue.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+
+<hr>
+<h3>Rules</h3>
+<ul>
+	<li>You cannot edit or delete an issue if it has been traded on SEHK.</li>
+	<li>You cannot edit or delete an issue unless you created it or outrank the 
+	person who did, or have the highest rank.</li>
+	<li>You cannot change the type of an issue. If needed, delete it and create 
+	a new one.</li>
+	<li>You cannot delete an issue which has holders. Delete those first, if you 
+	have sufficient rank.</li>
+	<li>Leave the SEHK currency blank if an issue has not and will not be listed 
+	on SEHK.</li>
+	<li>For stocks such as ETFs with multi-currency trading on SEHK, different 
+	currencies have different issues IDs.</li>
+</ul>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

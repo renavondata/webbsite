@@ -24,16 +24,16 @@ routes:
   - name: "searchorgs - company search"
     path: "/dbpub/searchorgs.asp"
     params:
-      - q: "HSBC"
-      - q: "中國移動"
-        l: "50"
+      - n: "Tencent"
+      - n: "Alibaba"
 
   - name: "searchpeople - person search"
     path: "/dbpub/searchpeople.asp"
     params:
-      - q: "David Webb"
-      - q: "Li Ka"
-        l: "50"
+      - n1: "Webb"
+        n2: "David"
+      - n1: "Li"
+        n2: "Ka"
 
   # prices.asp and quotes.asp removed - not deployed on live ASP server
   # prices.asp exists in ASP source but not deployed (returns 404)
@@ -75,9 +75,9 @@ routes:
   - name: "code - stock code lookup"
     path: "/dbpub/code.asp"
     params:
-      - c: "5"  # HSBC
-      - c: "941"  # China Mobile
-      - c: "1"  # CKH Holdings
+      - code: "5"  # HSBC
+      - code: "941"  # China Mobile
+      - code: "1"  # CKH Holdings
 
   # ==========================================
   # Corporate Structure (4 routes)
@@ -431,7 +431,7 @@ normalize:
 
 # Timeout settings (seconds)
 timeout:
-  request: 30
+  request: 60
   total: 300
   # Per-route timeout overrides for slow ASP queries
   route_timeouts:

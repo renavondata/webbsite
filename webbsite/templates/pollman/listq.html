@@ -1,0 +1,23 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include virtual="/dbeditor/cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call pollBar(PID,0,3)
+If PID>0 Then... #}
+	<h3>Poll Name: {{ pollName }}</h3>
+	<table class="txtable">
+		<tr>
+			<th><b>Click to add question to poll</b></th>
+		</tr>
+		
+			<tr><td><a href="editP.asp?QID={{ row.QID }}&amp;PID={{ PID }}">{{ row.Question }}</a></td></tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+Call closeConRs(voteDB,rs)... #}
+<!--#include virtual="/dbeditor/cofooter.asp"-->
+{% endblock %}

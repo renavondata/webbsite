@@ -1,0 +1,243 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if firm>0 %}
+	<h2>{{ firmName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(firm,3)
+End If... #}
+{% if officer>0 %}
+	<h2>{{ oName }}</h2>
+	{# TODO: Port ASP logic: If human Then Call pplBar(officer,4)... #}
+{% endif %}
+{% if firm=0 and officer=0 %}
+	<h2>{{ title }}</h2>
+{% endif %}
+{% if firm=0 or officer=0 %}
+	{{ writeNav(hide,"Y,N","Current,History",URL&"&amp;hide=") }}
+{% endif %}
+<h3>Search</h3>
+<table class="txtable">
+	<tr>
+		<th>Select</th>
+		<th>Name</th>
+	</tr>
+	<tr>
+		<td><a href="searchorgs.asp?tv=firm">Firm</a></td>
+		<td>
+			{% if firm>0 %}
+				<a href="officer.asp?reset=1&amp;firm={{ firm }}">{{ firmName }}</a>
+			{% endif %}
+		</td>
+	</tr>
+	<tr>
+		<td><a href="searchpeople.asp?tv=officer">Human officer</a></td>
+		<td>
+			{% if officer>0 and human %}
+				<a href="officer.asp?reset=1&amp;officer={{ officer }}">{{ oName }}</a>
+			{% endif %}
+		</td>
+	</tr>
+	<tr>
+		<td><a href="searchorgs.asp?tv=officer">Non-human officer</a></td>
+		<td>
+			{% if officer>0 and not human %}
+				<a href="officer.asp?reset=1&amp;officer={{ officer }}">{{ oName }}</a>
+			{% endif %}
+		</td>
+	</tr>
+	{# TODO: Port ASP logic: If pos>0 Then
+		rs.Open "SELECT * FROM positions p... #}
+		<tr><td>Position</td><td><span class="info">{{ row.posShort }}<span>{{ row.posLong }}</span></span></td></tr>
+		<tr><td>Status</td><td>{{ row.statustext }}</td></tr>
+		<tr><td>Rank</td><td>{{ row.ranktext }}</td></tr>
+		{# TODO: Port ASP logic: rs.close
+	End If... #}
+</table>
+<form method="post" action="officer.asp">
+	<input type="hidden" name="officer" value="{{ officer }}">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<form method="post" action="officer.asp">
+	<input type="hidden" name="officer" value="{{ officer }}">
+	<input type="hidden" name="firm" value="{{ firm }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		Snapshot date: <input type="date" id="d" name="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="checkbox" id="u" name="u" value="1" {{ checked(u) }} onchange="this.form.submit()"> exclude unknown removal dates
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value='{{ Date }}';document.getElementById('u').checked=false;">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if officer>0 or firm>0 %}
+	<form method="post" action="officer.asp">
+		<input type="hidden" name="officer" value="{{ officer }}">
+		<input type="hidden" name="firm" value="{{ firm }}">
+		{# TODO: Port ASP logic: If officer=0 Then v="officer" Else v="firm"
+		'dis... #}
+			<table class="opltable">
+				<tr>
+					<th>Record ID</th>
+					{% if officer=0 or firm=0 %}<th></th>{% endif %}
+					{% if firm=0 %}
+						<th>{# TODO: Port ASP logic: SL "Firm","namup","namdn"... #}</th>
+					{% elif officer=0 %}
+						<th>{# TODO: Port ASP logic: SL "Officer","namup","namdn"... #}</th>
+						<th style="font-size:large">{# TODO: Port ASP logic: SL "&#x26A5;","sexup","sexdn"... #}</th>
+						<th class="right">{# TODO: Port ASP logic: SL "Age","agedn","ageup"... #}</th>
+					{% endif %}
+					<th>{# TODO: Port ASP logic: SL "Position","posup","posdn"... #}</th>
+					<th>{# TODO: Port ASP logic: SL "ApptDate","appup","appdn"... #}</th>
+					<th>{# TODO: Port ASP logic: SL "ResDate","resup","resdn"... #}</th>
+					<th>Select</th>
+					<th>Delete</th>
+					<th>Make new</th>
+					<th>Multi-<br>Update</th>
+				</tr>
+				{# lastPerson=0
+				lastRank=-1
+				Do until rs.EOF
+					listpos=CLng(rs("positionID"))
+					source=rs("source")
+					canEdit=(listpos<394 or listpos>395) AND (isNull(source) or source>2) 
+					source=rs("source")
+					If officer=0 Then
+						personID=rs("director")
+					ElseIf firm=0 Then
+						personID=rs("company")
+					End If
+					samePerson=((officer=0 or firm=0) And personID=lastPerson)
+					pRank=rs("pRank")
+					If pRank<>lastRank Then
+						cnt=0 #}
+						<tr>
+							<td colspan="6"><h3>{{ ranks(pRank) }}</h3></td>
+						</tr>
+					{% endif %}
+					<tr {% if Not samePerson %} class="total"{% endif %}>
+						<td>{{ row.ID1 }}</td>
+						{# TODO: Port ASP logic: If officer=0 or Firm=0 Then
+							If Not samePers... #}
+								<td class="right">{{ cnt }}</td>
+								<td><a href="officer.asp?reset=1&amp;{{ v&"="&personID }}">{{ row.name }}</a></td>
+							{% else %}
+								<td colspan="2"></td>
+							{# End If
+						End If
+						If officer=0 Then #}
+							<td class="right">{# TODO: Port ASP logic: If Not samePerson Then Response.Write rs("sex")... #}</td>
+							<td class="right">{# TODO: Port ASP logic: If Not samePerson Then Response.Write rs("age")... #}</td>
+						{% endif %}
+						<td><span class="info">{{ row.posShort }}<span>{{ row.posLong }}</span></span></td>
+						<td>{{ row.apptDate }}</td>
+						<td>{{ row.resDate }}</td>
+						<td>
+							{% if listpos<394 or listpos>395 %}
+								<a href="officer.asp?ID={{ row.ID1 }}">Select</a>
+							{% else %}
+								SFC
+							{% endif %}
+						</td>
+						<td>
+							{% if canEdit %}
+								<a href="officer.asp?ID={{ row.ID1 }}&amp;submitOff=Delete">Delete</a>					
+							{% endif %}
+						</td>
+						<td>
+							{% if officer=0 %}
+								<a href="officer.asp?reset=1&amp;firm={{ firm }}&amp;officer={{ personID }}">Make new</a>
+							{% elif firm=0 %}
+								<a href="officer.asp?reset=1&amp;firm={{ personID }}&amp;officer={{ officer }}">Make new</a>
+							{% else %}
+								<a href="officer.asp?reset=1&amp;firm={{ firm }}&amp;officer={{ officer }}">Make new</a>
+							{% endif %}
+						</td>
+						<td>
+							{% if canEdit %}
+								<input type="checkbox" name="upd" value="{{ row.ID1 }}">
+							{% endif %}
+						</td>
+					</tr>
+					{# lastPerson=personID
+					lastRank=pRank
+					rs.MoveNext
+				Loop #}
+			</table>
+		{# TODO: Port ASP logic: End If
+		rs.Close
+		If recsFound Then... #}
+			<div class="inputs">
+				<label for="tResd">Multi-update ResDate: </label><input type="date" id="tResd" name="tResd" value="{{ tResd }}">
+				<label for="clear">Clear date </label><input type="checkbox" id="clear" name="clear" value="1">
+				<input type="submit" name="submitOff" value="Update selected records">
+			</div>
+			<div class="clear"></div>
+		{% endif %}
+	</form>
+{% endif %}
+{# TODO: Port ASP logic: If ID>0 Or (firm>0 And officer>0) Then
+	'produce a... #}
+		<h3>Update or delete existing record</h3>
+		<p><b>Record ID: {{ ID }}</b></p>
+	{% else %}
+		<h3>Add a new record</h3>
+	{% endif %}
+	<form method="post" action="officer.asp">
+		<table style="font-size:large">
+			<tr>
+				<th>Position</th>
+				<th>Joined</th>
+				<th>Appointed</th>
+				<th>ApptAcc</th>
+				<th>Resigned</th>
+				<th>ResAcc</th>
+			</tr>
+			<tr>
+				<td>{{ arrSelect("pos",pos,con.Execute("SELECT positionID,posShort FROM positions ORDER BY posShort").GetRows,False) }}</td>
+				<td><input type="text" name="joined" maxlength="4" style="width:40px" value="{{ joined }}"></td>		
+				<td><input type="date" name="apptDate" value="{{ apptDate }}"></td>
+				<td>{{ makeSelect("apptAcc",apptAcc,",,2,M,1,Y",False) }}</td>
+				<td><input type="date" name="resDate" value="{{ resDate }}"></td>
+				<td>{{ makeSelect("resAcc",resAcc,",,2,M,1,Y,3,U",False) }}</td>			
+			</tr>
+		</table>
+		{% if ID>0 %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			<input type="submit" name="submitOff" value="Update">
+			{# TODO: Port ASP logic: If canDelete Then
+				If submit="Delete" Then... #}
+					<input type="submit" name="submitOff" style="color:red" value="CONFIRM DELETE">
+					<input type="submit" name="submitOff" value="Cancel">
+				{% else %}
+					<input type="submit" name="submitOff" value="Delete">
+				{# TODO: Port ASP logic: End If
+			End If
+		Else... #}
+			<input type="hidden" name="firm" value="{{ firm }}">
+			<input type="hidden" name="officer" value="{{ officer }}">
+			<input type="submit" name="submitOff" value="Add record">
+		{% endif %}
+	</form>
+	<input type="button" value="Clear form" onclick="window.location.href='officer.asp'">
+{# TODO: Port ASP logic: End If
+Call closeConRs(conMaster,rs)
+Call closeCon... #}
+<p><b>{{ hint }}</b></p>
+<hr>
+<h3>Rules</h3>
+<ol>
+	<li>A person can only have 1 Main Board or Supervisory position at a time.</li>
+	<li>The date of removal is the first day on which a person does NOT hold the position.</li>
+	<li>You can't add, edit or delete SFC positions.</li>
+	<li>You can't delete positions if they were added by the Law Society system.</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

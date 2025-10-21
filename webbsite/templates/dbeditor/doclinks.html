@@ -1,0 +1,49 @@
+{%extends "base.html" %}
+
+{% block title %}Reporting dates: {{ name }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ name }}</h2>
+{# TODO: Port ASP logic: If person>0 Then
+	rs.Open "SELECT d.ID,recordDate,... #}
+		<p><b>No reports logged.</b></p>
+	{% else %}
+		<h2>Reports and links</h2>
+		<p>The report date is as stated in the directors' report or interim 
+		report and is usually the date on which the preliminary statement of 
+		results is published. The full annual or interim report is usually filed 
+		later than that.</p>
+		<table class="numtable fcl">
+		<tr>
+			<th>{# TODO: Port ASP logic: SL "Type","typup","typdn"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Record date","recdn","recup"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Report date","repup","repdn"... #}</th>
+			<th>Report filed</th>
+			<th>Got URL</th>
+			<th>Add/edit URL</th>
+		</tr>
+		{# Do Until rs.EOF
+			repURL=rs("URL") #}
+			<tr>
+				<td style="text-align:left">
+					{% if isNull(repURL) %}
+						{{ row.docLong }}
+					{% else %}
+						<a target="_blank" href="{{ normURL(repURL) }}">{{ row.docLong }}</a>
+					{% endif %}
+				</td>
+				<td>{{ row.recordDate }}</td>
+				<td>{{ row.reportDate }}</td>
+				<td>{{ Msdatetime(row.repfiled) }}</td>
+				<td>{# TODO: Port ASP logic: If not isNull(repURL) Then response.Write "Y"... #}</td>
+				<td><a href="docedit.asp?d={{ row.ID }}">Edit</a></td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+End If
+Call CloseConRs(con,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

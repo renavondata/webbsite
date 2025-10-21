@@ -1,0 +1,49 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<form action="admlogs.asp" method="post">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<p>User: {{ arrSelectZ("tu",tu,con.Execute("SELECT DISTINCT userID,name FROM snaplog s JOIN users u on s.userID=u.ID ORDER by name").GetRows,True,True,"","All") }}</p>
+	<p><input type="radio" name="st" value="1"{{ chkst(1) }} onchange="this.form.submit()">Study 1: report by 2003-12-31 and on or after 2004-12-31</p>
+	<p><input type="radio" name="st" value="2"{{ chkst(2) }} onchange="this.form.submit()">Study 2: report by 2011-12-31 and on or after 2012-12-31</p>
+	<p><input type="radio" name="st" value="4"{{ chkst(4) }} onchange="this.form.submit()">Study 4: report by 2007-12-31 and on or after 2008-12-31</p>	
+	<p><input type="radio" name="st" id="st3" value="3"{{ chkst(3) }} onchange="this.form.submit()">Study 3: Board committees in 
+	<input type="number" name="y" min="1990" max="{{ year(Date) }}" step="1" width="4" value="{{ y }}" onchange="document.getElementById('st3').checked=true;">
+	-06-01 to 05-31 of next year.</p>
+	<input type="checkbox" name="u" value="1" {{ checked(u) }} onchange="this.form.submit()">Show not done only
+	<input type="submit" value="Go">
+</form>
+<p>Click on the snap date to add or edit your comment. A=Author, R=Reviewer. Click column-heads to sort.</p>
+<table class="txtable">
+<tr>
+	<th></th>
+	<th>{# TODO: Port ASP logic: SL "Issuer","issu","issd"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Snap date","snapd","snapu"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "User","useru","userd"... #}</th>
+	<th>Role</th>
+	<th>Done?</th>
+	<th>{# TODO: Port ASP logic: SL "Updated","modd","modu"... #}</th>
+	<th>Notes</th>
+</tr>
+{# TODO: Port ASP logic: If st=3 Then
+	sql="SELECT DISTINCT issuer,name1,sn... #}
+	<tr>
+		<td>{{ cnt }}</td>
+		<td><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">{{ row.name1 }}</a></td>
+		<td><a href="snaplog.asp?p={{ p }}&d={{ d }}&j={{ j }}">{{ d }}</a></td>
+		<td>{{ row.userName }}</td>
+		<td>{{ role }}</td>
+		<td>{{ done }}</td>
+		<td>{{ MSdateTime(row.modified) }}</td>
+		<td>{{ row.notes }}</td>
+	</tr>
+	{# TODO: Port ASP logic: rs.MoveNext
+Loop... #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

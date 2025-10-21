@@ -1,0 +1,56 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<table class="txtable">
+	<tr>
+		<th>Relative 1</th>
+		<th>Age in {{ nowYear }}</th>
+		<th>Relation</th>
+		<th>Age in {{ nowYear }}</th>
+		<th>Relative 2</th>
+		<th>Entered by</th>
+		<th>Timestamp</th>
+		<th></th>
+		<th></th>
+	</tr>
+{# Do Until rs.EOF
+	r1=rs("rel1")
+	r2=rs("rel2") #}
+	<tr>
+		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ r1 }}">{{ row.r1Name }}</a></td>
+		<td>{{ nowYear-row.YOB1 }}</td>
+		<td>{{ row.relation }}</td>
+		<td>{{ nowYear-row.YOB2 }}</td>
+		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ r2 }}">{{ row.r2Name }}</a></td>
+		<td>{{ row.userName }}</td>
+		<td>{{ MSdateTime(row.modified) }}</td>
+		{% if rankingRs(rs,uRank) %}
+			<td>
+				<form method="post" action="relatives.asp">
+					<input type="hidden" name="h1" value="{{ r1 }}">
+					<input type="hidden" name="h2" value="{{ r2 }}">
+					<input type="submit" name="submitBtn" style="color:green" value="Edit">
+				</form>
+			</td>
+			<td>
+				<form method="post" action="relatives.asp">
+					<input type="hidden" name="h1" value="{{ r1 }}">
+					<input type="hidden" name="h2" value="{{ r2 }}">
+					<input type="submit" name="submitBtn" style="color:red" value="Delete">
+				</form>
+			</td>
+		{% else %}
+			<td></td>
+			<td></td>
+		{% endif %}
+	</tr>
+	{# TODO: Port ASP logic: rs.MoveNext
+Loop... #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

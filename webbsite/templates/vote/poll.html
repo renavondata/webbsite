@@ -1,0 +1,88 @@
+
+{# functions1.asp functionality moved to Python helpers #}
+<!--#include file="../vote/pollfunctions.asp"-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{# Variables moved to Flask route #}
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<title>Poll</title>
+</head>
+<body>
+{% extends "base.html" %}
+<ul class="navlist">
+	<li id="livebutton">Poll</li>
+	<li><a href='../vote/result.asp?p={{ PID }}'>Results</a></li>
+	<li><a href="../vote/default.asp">More polls</a></li>
+	{% if userID="" %}
+		<li><a href="../webbmail/login.asp">Log in</a></li>
+		<li><a href="../webbmail/join.asp">Sign up</a></li>
+	{% else %}
+		<li><a href="../webbmail/login.asp?b=1">Log out</a></li>		
+	{% endif %}
+</ul>
+<div class="clear"></div>
+<h2>Poll: {{ PollName }}</h2>
+<p><b>{{ Hint }}</b></p>
+
+{% if blnReady %}
+	<table class="txtable">
+		<tr>
+			<td>Current time:</td>
+			<td>{{ MSdateTime(NowTime) }}</td>
+		</tr>
+		<tr>
+			<td>Closing time:</td>
+		{% if EndTime is none %}
+			<td>Not yet set, please vote!</td>
+		{% else %}
+			<td>{{ MSdateTime(EndTime) }}</td>
+			</tr>
+			<tr>
+			<td>Time left:</td>
+				{% if blnClosed %}
+					<td><b>Poll closed</b></td>
+				{% else %}
+					<td>{{ DiffTimeStr(NowTime,EndTime) }}</td>
+				{% endif %}
+			</tr>
+		{% endif %}
+	</table>
+	<script type="text/javascript">
+	function NoEnter(e)
+	{
+		var key;
+		if(window.event)
+			key = window.event.keyCode;     //IE
+		else
+			key = e.which;     //firefox
+		if(key == 13)
+			return false;
+		else
+		return true;
+	}
+	</script>
+	<form method="post" action="poll.asp">
+		<input type="hidden" name="PID" value="{{ PID }}">
+		{% if PollIntro!="" %}
+			<h3>Introduction</h3>
+			<p>{{ PollIntro }}</p>
+		{% endif %}
+		<h3>Questions</h3>
+		{# Call GenPoll(PID,UserID,"")
+		If Not blnClosed Then
+			If userID="" Then #}
+				<p><b>Please <a href="../webbmail/login.asp">log in</a> to vote</b></p>
+			{% else %}
+				<p><b>Check your answers, and submit your vote. You do not have to answer every question. The identity of voters will not be disclosed.</b></p>
+				<p><input type="submit" value="Vote" name="submitBtn"></p>
+			{# TODO: Port ASP logic: End If
+		End If... #}
+	</form>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(mailDB,rst)... #}
+{% endblock %}
+</body>
+</html>

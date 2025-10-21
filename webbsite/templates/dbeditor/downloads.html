@@ -1,0 +1,17 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+{% if uRank<128 %}
+	<p><b>Your user rank is too low for access to this page</b></p>
+{% else %}
+	<h3>CSV files</h3>
+	<p><a href="CSV.asp?t=comeets">coMeets</a></p>
+	<p><a href="CSV.asp?t=comex">comEx</a></p>
+	<p><a href="CSV.asp?t=comPosDirs">comPosDirs</a></p>
+{% endif %}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

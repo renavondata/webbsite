@@ -1,0 +1,20 @@
+{%extends "base.html" %}
+
+{% block title %}Webb-site{% endblock %}
+
+{% block content %}
+﻿{# Option Explicit
+Response.ContentType="text/xml"
+Response.expires=-1 'what does this do? #}
+{{ "<?xml version='1.0' encoding='UTF-8'?>" }}
+<!--#include file="../dbeditor/prepMaster.inc"-->
+{# functions1.asp functionality moved to Python helpers #}
+{# Subroutine moved to Python #}
+{{ "<result>" }}
+{% if Len(Session("username")) = 0 %}
+	{{ "<hint>Timeout</hint>" }}
+{# TODO: Port ASP logic: Else
+	Call respond
+End If... #}
+{{ "</result>" }}
+{% endblock %}

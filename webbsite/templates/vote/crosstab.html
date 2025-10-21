@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# functions1.asp functionality moved to Python helpers #}
+{# Variables moved to Flask route #}
+<title>{{ Title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+<ul class="navlist">
+	<li><a href="poll.asp?p={{ PID }}">Poll</a></li>
+	<li><a href="result.asp?p={{ PID }}">Results</a></li>
+	<li><a href="default.asp">More polls</a> </li>
+</ul>
+<div class="clear"></div>
+<h2>{{ Title }}</h2>
+<p><b>{{ Hint }}</b></p>
+{% if blnReady %}
+	<table class="txtable">
+	<tr><td>Current time: </td><td>{{ MSdateTime(NowTime) }}</td></tr>
+	<tr><td>Closing time: </td><td>
+	{# TODO: Port ASP logic: If IsNull(EndTime) Then
+		Response.Write "Not yet ... #}
+	</td></tr></table>
+	{% if isNull(EndTime) or not blnClosed %}
+		<p><b>This poll is still open - <a href="poll.asp?p={{ PID }}">click here</a> to vote or to change your vote!</b></p>
+	{% endif %}
+	<hr/>
+	<h3>By votes cast</h3>
+	<table class="numtable">
+		<tr><td colspan="2" rowspan="2"></td><td colspan="{{ A1cnt }}" style="text-align:center">{{ Q1 }}</td></tr>
+		<tr>
+			<td>No response</td>
+			{# TODO: Port ASP logic: For cnt1=0 to Ubound(arrA1,2)... #}
+				<td>{{ arrA1(0,cnt1) }}</td>
+			{% endfor %}
+			<td>Total</td>
+		</tr>
+		{# TODO: Port ASP logic: Qs.Open "Call crosstab("&pq1&","&pq2&")",mailDB
+		... #}
+		<tr>
+			<td rowspan="{{ A2cnt+1 }}" class="left" style="vertical-align:middle">{{ Q2 }}</td>
+			<td>No response</td>
+			<td></td>
+			{# rowTot=0
+			Qs.MoveNext
+			For cnt1=2 to A1cnt
+				score=CInt(Qs("Score"))
+				arrScore(cnt1,1)=score
+				rowTot=rowTot+score
+				arrScore(cnt1,0)=arrScore(cnt1,0)+score #}
+				<td>{{ score }}</td>
+				{# Qs.MoveNext
+			Next
+			arrScore(0,1)=rowTot
+			totSum=rowTot #}
+			<td>{{ rowTot }}</td>
+		</tr>
+		{# TODO: Port ASP logic: For cnt2=2 to A2cnt... #}
+			<tr>
+			<td>{{ arrA2(0,cnt2-2) }}</td>
+			{# rowTot=0
+			For cnt1=1 to A1cnt
+				score=CInt(Qs("Score"))
+				arrScore(cnt1,cnt2)=score
+				rowTot=rowTot+score
+				arrScore(cnt1,0)=arrScore(cnt1,0)+score #}
+				<td>{{ score }}</td>
+				{# Qs.MoveNext
+			Next
+			arrScore(0,cnt2)=rowTot
+			totSum=totSum+rowTot #}
+			<td>{{ rowTot }}</td></tr>
+		{% endfor %}
+		<tr class="total">
+			<td>Total</td>
+			{# TODO: Port ASP logic: For cnt1=1 to A1cnt... #}
+				<td>{{ arrScore(cnt1,0) }}</td>
+			{% endfor %}
+			<td><b>{{ totSum }}</b></td>
+		</tr>
+	</table>
+	<h3>Percentage share of X-question</h3>
+	<table class="numtable">
+		<tr><td colspan="2" rowspan="2"></td><td colspan="{{ A1cnt }}" style="text-align:center">{{ Q1 }}</td></tr>
+		<tr>
+			<td>No response</td>
+			{# TODO: Port ASP logic: For cnt1=0 to Ubound(arrA1,2)... #}
+				<td>{{ arrA1(0,cnt1) }}</td>
+			{% endfor %}
+		</tr>
+		<tr>
+		<td rowspan="{{ A2cnt+1 }}" class="left" style="vertical-align:middle">{{ Q2 }}</td>
+		<td>No response</td>
+		<td></td>
+		{# TODO: Port ASP logic: For cnt1=2 to A1cnt
+			If arrScore(cnt1,0)<>0 Then... #}
+				<td>{{ "{:.\2%}".format(arrScore(cnt1)/arrScore(cnt1,0),1) }}</td>
+			{% else %}
+				<td>NA</td>
+			{# TODO: Port ASP logic: End If
+		Next... #}
+		</tr>
+		{# TODO: Port ASP logic: For cnt2=2 to A2cnt... #}
+		<tr>
+			<td>{{ arrA2(0,cnt2-2) }}</td>
+			{# TODO: Port ASP logic: For cnt1=1 to A1cnt
+				If arrScore(cnt1,0)<>0 The... #}
+					<td>{{ FormatPercent(arrScore(cnt1,cnt2)/arrScore(cnt1,0),1) }}</td>
+				{% else %}
+					<td>NA</td>
+				{# TODO: Port ASP logic: End If
+			Next... #}
+		</tr>
+		{% endfor %}
+		<tr class="total"><td>Total</td>
+		{# TODO: Port ASP logic: For cnt1=1 to A1cnt... #}
+			<td>100.0%</td>
+		{% endfor %}
+		</tr>
+	</table>
+	<h3>Percentage share of Y-question</h3>
+	<table class="numtable">
+		<tr><td colspan="2" rowspan="2"></td><td colspan="{{ A1cnt }}" style="text-align:center">{{ Q1 }}</td></tr>
+		<tr>
+			<td>No response</td>
+			{# TODO: Port ASP logic: For cnt1=0 to Ubound(arrA1,2)... #}
+				<td>{{ arrA1(0,cnt1) }}</td>
+			{% endfor %}
+			<td>Total</td>
+		</tr>
+		<tr>
+			<td rowspan="{{ A2cnt }}" class="left" style="vertical-align:middle">{{ Q2 }}</td>
+			<td>No response</td>
+			<td></td>
+			{# TODO: Port ASP logic: For cnt1=2 to A1cnt
+				If arrScore(0,1)<>0 Then... #}
+					<td>{{ "{:.\2%}".format(arrScore(cnt1)/arrScore(0,1),1) }}</td>
+				{% else %}
+					<td>NA</td>
+				{# TODO: Port ASP logic: End If
+			Next... #}
+			<td>100.0%</td>
+		</tr>
+		{# TODO: Port ASP logic: For cnt2=2 to A2cnt... #}
+		<tr>
+			<td>{{ arrA2(0,cnt2-2) }}</td>
+			{# TODO: Port ASP logic: For cnt1=1 to A1cnt
+				If arrScore(0,cnt2)<>0 The... #}
+					<td>{{ FormatPercent(arrScore(cnt1,cnt2)/arrScore(0,cnt2),1) }}</td>
+				{% else %}
+					<td>NA</td>
+				{# TODO: Port ASP logic: End If
+			Next... #}
+			<td>100.0%</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p><a href="result.asp?p={{ PID }}">Back to poll results</a></p>
+	{# TODO: Port ASP logic: Qs.Close
+End If
+Call CloseConRs(mailDB,Qs)... #}
+{% endblock %}
+</body>
+</html>

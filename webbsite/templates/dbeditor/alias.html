@@ -1,0 +1,112 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿
+
+
+
+
+<!--#include file="cotop.inc"-->
+{# TODO: Port ASP logic: 'If p>0 Then... #}
+	<h2>{{ fnamePpl(p) }}</h2>
+{# TODO: Port ASP logic: 'End If... #}
+{# TODO: Port ASP logic: Call pplBar(p,2)... #}
+<p><b>Person ID: {{ p }}</b></p>
+<h3>{{ title }}</h3>
+{% if ID>0 %}
+	<p><b>Alias ID: {{ ID }}</b></p>	
+{% endif %}
+<p>In given names, put English names first and do not use hyphens in Romanised Chinese given names. For example, use "David Wai Keung", not 
+&quot;Wai Keung David&quot; and not "David Wai-Keung". For married Chinese women, the 
+husband's family name (if used) comes first. The Chinese name box is for Asian 
+scripts, including Chinese, Japanese and Korean.</p>
+{% if p>0 %}
+	<form method="post" action="alias.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<table>
+			<tr><td>Family name:</td><td><input type="text" name="n1" size="30" value="{{ n1 }}"></td></tr>
+			<tr><td>Given names (English first):</td><td><input type="text" name="n2" size="30" value="{{ n2 }}"></td></tr>
+			<tr><td>Chinese name:</td><td><input type="text" size="30" name="cn" value="{{ cn }}"></td></tr>
+			<tr><td></td><td><input type="radio" name="fka" id="alias" value="0" {{ checked(Not fka) }}><label for="alias">Alias</label></td></tr>
+			<tr><td></td><td><input type="radio" name="fka" id="fka" value="1" {{ checked(fka) }}><label for="fka">Former name</label></td></tr>
+		</table>
+		{% if Hint>"" %}
+			<p><b>{{ Hint }}</b></p>
+		{% endif %}
+		<p>
+		{% if ID=0 %}
+			<input type="submit" name="submitAli" value="Add">
+		{% else %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			{% if canEdit %}
+				<input type="submit" name="submitAli" value="Update">
+				{% if submit="Delete" %}
+					<input type="submit" name="submitAli" value="CONFIRM DELETE" style="color:red">
+					<input type="submit" name="submitAli" value="Cancel">
+				{% else %}
+					<input type="submit" name="submitAli" value="Delete">
+				{# TODO: Port ASP logic: End If
+			End If
+		End If... #}
+		</p>
+	</form>
+	{% if ID>0 %}
+		<form method="post" action="alias.asp">
+			<input type="hidden" name="p" value="{{ p }}">
+			<input type="submit" name="submit" value="Add another alias">
+		</form>
+	{% endif %}
+	<form method="post" action="searchpeople.asp">
+		<input type="hidden" name="tv" value="p">
+		<input type="submit" name="submit" value="Find another human">
+	</form>	
+	<p><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ p }}">View the human in Webb-site Database</a></p>
+	<p><a href="relatives.asp?h1={{ p }}">Add spouse or descendant</a></p>
+	<p><a href="relatives.asp?h2={{ p }}">Add spouse or ancestor</a></p>
+	<h3>Alias or former names of this human</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<style>table.c5-6m td:nth-child(n+5):nth-child(-n+6){text-align:center}</style>
+		<table class="txtable c5-6m fcr">
+			<tr>
+				<th>ID</th>
+				<th>Family name</th>
+				<th>Given names</th>
+				<th>Chinese name</th>
+				<th>Alias</th>
+				<th>Former</th>
+				<th>User</th>
+				<th></th>
+			</tr>
+			{# Do Until rs.EOF
+				fka=Not CBool(rs("alias")) #}
+				<tr>
+					<td>{{ row.ID }}</td>
+					<td>{{ row.n1 }}</td>
+					<td>{{ row.n2 }}</td>
+					<td>{{ row.cn }}</td>
+					<td>{{ IIF(Not fka,"&#10004;","") }}</td>
+					<td>{{ IIF(fka,"&#10004;","") }}</td>
+					<td>{{ row.name }}</td>
+					<td>
+						{% if rankingRs(rs,uRank) %}
+							<a href="alias.asp?ID={{ row.ID }}">Edit</a>
+						{% else %}
+							{{ row.name }}
+						{% endif %}
+					</td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+Else... #}
+	<p><a href="searchpeople.asp?tv=p">Find a human</a></p>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conRole,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

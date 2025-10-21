@@ -1,0 +1,158 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{# Option Explicit
+Response.CodePage=65001 #}
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+{% if hint!="" %}
+	<p><b>{{ hint }}</b></p>
+{% endif %}
+<form action="story.asp" method="post" name="myform">
+	<table class="txtable" style="width:100%">
+		<tr><td style="width:150px">Caption: </td><td><textarea rows="2" name="caption" style="width:100%">{{ caption }}</textarea></td></tr>
+		<tr><td>Source:</td>
+		<td>{{ arrSelect("sourceID",sourceID,con.Execute("SELECT sourceID,sourceName FROM sources ORDER BY sourceName").GetRows,False) }}</td></tr>
+		<tr>
+			<td>URL: </td>
+			<td><input type="text" style="width:100%" name="URL" value="{{ URL }}"></td>
+		</tr>
+		<tr>
+			<td>Link 2 Text: </td>
+			<td><input type="text" style="width:100%" name="URL2t" value="{{ URL2t }}"></td>
+		</tr>
+		<tr>
+			<td>URL2:</td>
+			<td><input type="text" style="width:100%" name="URL2" value="{{ URL2 }}"></td>
+		</tr>
+		<tr>
+			<td>Story date-time</td>
+			<td><input type="datetime-local" name="sDate" id="sDate" value="{{ sDate }}"></td>
+		</tr>
+		<tr>
+			<td>Publication date-time</td>
+			<td><input type="datetime-local" name="pDate" id="pDate" value="{{ pDate }}"></td>
+		</tr>
+		<tr>
+			<td>Summary:</td>
+			<td><textarea rows="10" name="summary" style="width:100%">{{ summary }}</textarea></td>
+		</tr>
+		<tr>
+			<td>Story ID:</td>
+			<td>{{ storyID }}</td>
+		</tr>
+	</table>
+	{% if storyID=0 %}
+		<p><input type="submit" name="submitSt" value="Add story"></p>
+	{% else %}
+		<input type="hidden" name="s" value="{{ storyID }}">
+		<p>
+			<input type="submit" name="submitSt" value="Update story">
+			<input type="submit" name="submitSt" value="Cancel changes">
+			<input type="submit" name="submitSt" value="Fetch SFC PR">				
+			{% if submit="Delete story" %}
+				<input type="submit" name="submitSt" style="color:red" value="CONFIRM DELETE">
+			{% else %}
+				<input type="submit" name="submitSt" style="color:red" value="Delete story">
+			{% endif %}
+		</p>
+	{% endif %}
+</form>
+{# TODO: Port ASP logic: If storyID>0 Then
+	'show tagging system... #}
+	<h3>Tags</h3>
+	<form action="story.asp" method="post">
+		<input type="hidden" name="s" value="{{ storyID }}">
+		<p>
+		Copy all tags from another storyID:
+		<input type="text" style="width:80px" name="copyID" value="{{ copyID }}">
+		<input type="submit" name="submitSt" value="Copy tags">
+		</p>
+	</form>
+	<h4>Organisations</h4>
+	<a href="searchorgs.asp?tv=org">Find or add an organisation to tags</a>
+	
+		<form action="story.asp" method="post">
+			<input type="hidden" name="s" value="{{ storyID }}">
+			{# Do until rs.EOF
+				orgList=orgList&rs("personID")&"," #}
+				<p>
+					<input type="checkbox" name="p" value="{{ row.personID }}">
+					<a href="org.asp?p={{ row.personID }}">{{ row.name1 }}</a>
+				</p>
+				{# rs.MoveNext
+			Loop
+			orgList=Left(orgList,len(orgList)-1) #}
+			<input type="submit" name="submitSt" value="Delete org tags">
+		</form>
+	{# TODO: Port ASP logic: End If
+	rs.Close... #}
+	<h4>People</h4>
+	<a href="searchpeople.asp?tv=ppl">Find or add a human to tags</a>
+	{# TODO: Port ASP logic: If orgList<>"" Then
+		rs.Open "SELECT DISTINCT per... #}
+			<p>Pick an officer:</p>
+			<form action="story.asp" method="post">
+				<input type="hidden" name="s" value="{{ storyID }}">
+				{{ arrSelect("ppl","",rs.GetRows,False) }}
+				<input type="submit" name="submitSt" value="Add officer">
+			</form>
+		{# End If
+		rs.Close
+	End If
+	rs.Open "SELECT s.personID,CAST(fnameppl(name1,name2,cname)AS NCHAR)name FROM personStories s JOIN people p on s.personID=p.personID "&_
+		"WHERE storyID="&storyID&" ORDER BY name",conMaster
+	If not rs.EOF Then #}
+		<form action="story.asp" method="post">
+			<input type="hidden" name="s" value="{{ storyID }}">
+			{% for row in results %}
+				<p>
+					<input type="checkbox" name="p" value="{{ row.personID }}">
+					<a href="human.asp?p={{ row.personID }}">{{ row.name }}</a>
+				</p>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+			<input type="submit" name="submitSt" value="Delete people tags">
+		</form>
+	{# TODO: Port ASP logic: End If
+	rs.Close... #}
+	<h4>Topics</h4>
+	<form action="story.asp" method="post">
+		<input type="hidden" name="s" value="{{ storyID }}">
+		<p>
+		{{ arrSelect("catID","",con.Execute("SELECT ID,name FROM categories ORDER BY name").GetRows,False) }}
+		<input type="submit" name="submitSt" value="Add tag">
+		</p>
+	</form>
+	
+		<form action="story.asp" method="post">
+			<input type="hidden" name="s" value="{{ storyID }}">
+			{% for row in results %}
+				<p>
+					<input type="checkbox" name="catID" value="{{ row.catID }}">
+					<a target="_blank" href="https://webb-site.com/dbpub/subject.asp?c={{ row.catID }}">{{ row.name }}</a>
+				</p>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+			<input type="submit" name="submitSt" value="Delete topic tags">
+		</form>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+If storyID>0 Then... #}
+	<p><a target="_blank" href="https://webb-site.com/dbpub/artlinks.asp?s={{ storyID }}">View the story in Webb-site Reports</a></p>
+	<p><a href="story.asp">Start a new story</a></p>
+{# TODO: Port ASP logic: End If
+If s2<>"" Then... #}
+	<p><a target="_blank" href="https://webb-site.com/dbpub/artlinks.asp?s={{ s2 }}">See the other story in Webb-site Reports</a></p>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(con,rs)
+Call CloseCon(conMa... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

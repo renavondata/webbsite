@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Webb-site{% endblock %}
+
+{% block head_extra %}
+<script src='https://www.google.com/recaptcha/api.js' async defer></script>
+{% endblock %}
+
+{% block content %}
+{% if success %}
+<h2>Thank you!</h2>
+<p>Thank you for your message. <a href="/">Click here to return to the front page!</a></p>
+
+{% elif limit_exceeded %}
+<h4>Daily message limit exceeded.</h4>
+<p>Sorry, you have already sent us {{ limit }} messages today. We suspect you are a spam-bot. Please try again tomorrow.</p>
+
+{% else %}
+<h2>Contact Webb-site</h2>
+<p>If you have any comments or suggestions on how we can improve this
+publication,
+please let us know. If you want us to blow the whistle to <em>Webb-site Reports</em> on wrong-doing in your organisation,
+then contact us in confidence. Your identity will be protected to the full
+extent of the law.&nbsp;We regret that we cannot reply to requests for individual
+investment advice. If you are looking for published reports or information on a particular company
+or person, try
+the <a href="/articles/"><em>Webb-site Reports</em> archive</a>, or
+key in the stock code or name in the search boxes above to search <em>
+<a href="/dbpub/">Webb-site
+Who's Who</a></em>.</p>
+
+<p>You can contact <i>Webb-site</i> by e-mail using this form. If you give
+us a fake or incorrect e-mail address, we will get the message but will be
+unable to reply to you.</p>
+
+<form method="post" action="/contact/default.asp">
+    <p>Your name:<br>
+    <input type="text" name="senderName" class="ws" value="{{ sender_name or '' }}"></p>
+
+    <p>Your e-mail address (check it!):<br>
+    <input type="text" name="senderEmail" class="ws" value="{{ sender_email or '' }}"></p>
+
+    <p>Subject: <select name="subject">
+    <option value="General comment/question" {% if subject == "General comment/question" %}selected{% endif %}>General comment/question</option>
+    <option value="Add to/update Webb-site database" {% if subject == "Add to/update Webb-site database" %}selected{% endif %}>Add to/update Webb-site database</option>
+    <option value="Error on Webb-site.com" {% if subject == "Error on Webb-site.com" %}selected{% endif %}>Error on Webb-site.com</option>
+    <option value="Media enquiry" {% if subject == "Media enquiry" %}selected{% endif %}>Media enquiry</option>
+    <option value="Journalist seat at shareholder meeting" {% if subject == "Journalist seat at shareholder meeting" %}selected{% endif %}>Journalist seat at shareholder meeting</option>
+    <option value="Suggested Opinion Poll" {% if subject == "Suggested Opinion Poll" %}selected{% endif %}>Suggested Opinion Poll</option>
+    <option value="Tip-off / whistle blower" {% if subject == "Tip-off / whistle blower" %}selected{% endif %}>Tip-off / whistle blower</option>
+    </select></p>
+
+    <p>Last page visited: {{ last_page or '' }}</p>
+
+    <p>Message:</p>
+    <textarea rows="10" name="message" style="width:100%;font-family:Verdana;">{{ message or '' }}</textarea><br>
+
+    <input type="hidden" name="lastpage" value="{{ last_page or '' }}">
+
+    {% if captcha_error %}
+    <p style="color:red;font-weight:bold">An error occurred with the CAPTCHA. Please try again.</p>
+    {% endif %}
+
+    <div class="g-recaptcha" data-size="compact" data-sitekey="{{ captcha_site_key }}"></div>
+
+    <input type="submit" value="Send">&nbsp;<input type="reset" value="Clear">
+</form>
+{% endif %}
+{% endblock %}

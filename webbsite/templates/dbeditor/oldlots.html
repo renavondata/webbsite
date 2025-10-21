@@ -1,0 +1,71 @@
+{%extends "base.html" %}
+
+{% block title %}{{ n }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ n }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,8)
+	If i>0 Then	Call issueBar(i,3)
+E... #}
+<h3>Rules</h3>
+<ul>
+	<li>Our system checks board lots on HKEX web site daily and captures the 
+	current board lot. However, we need to make manual entries to cover parallel 
+	trading during a consolidation or split of shares (e.g, consolidation of 50 
+	to 1, or split of 1 to 10).</li>
+	<li>The first relevant date (Date1) is the date on which the original 
+	counter for the existing shares temporarily closes and a new counter (with a 
+	temporary stock code) for the adjusted shares opens. For example, in a 50:1 
+	consolidation, if the board lot was 2,000 until Date1, then enter 2,000 
+	shares until Date 1. The second date (Date2) is when the original counter 
+	reopens (NOT when the temporary counter closes). That is typically 2 weeks 
+	after the original counter closed, but may vary with public holidays. We 
+	enter that the board lot is 40 shares until Date2.</li>
+</ul>
+<hr>
+{% if i>0 %}
+	<form method="post" action="oldlots.asp">
+		<input type="hidden" name="i" value="{{ i }}">
+		<p>Until: <input type="date" name="d" value="{{ d }}"></p>
+		<p>Lot size: <input type="number" min="1" name="lot" value="{{ lot }}"></p>
+		{% if hint!="" %}<p><b>{{ Hint }}</b></p>{% endif %}
+		{% if found %}
+			<input type="submit" name="submitLot" value="Update">
+			{% if submit="Delete" %}
+				<input type="submit" name="submitLot" style="color:red" value="CONFIRM DELETE">
+			{% else %}
+				<input type="submit" name="submitLot" value="Delete">
+			{% endif %}
+		{% else %}
+			<input type="submit" name="submitLot" value="Add">
+		{% endif %}
+	</form>
+	<h3>Old lots of this issue</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="numtable">
+			<tr>
+				<th>Until</th>
+				<th>Board lot</th>
+			</tr>
+			{# Do Until rs.EOF
+				d=MSdate(rs("until")) #}
+				<tr>
+					<td><a href="oldlots.asp?i={{ i }}&amp;d={{ d }}">{{ d }}</a></td>
+					<td>{{ "{:,.\2f}".format(row.lot) }}</td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>	
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If... #}
+<form method="post" action="oldlots.asp">
+	Enter stock code: <input type="number" name="sc" min="1" max="999999" step="1" maxlength="6" size="6">
+</form>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

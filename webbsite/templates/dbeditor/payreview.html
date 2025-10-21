@@ -1,0 +1,176 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call payBar(2)... #}
+<h3>Errors reported in my submissions</h3>
+
+	<p>None found. </p>
+{% else %}
+	<p>There are unresolved reported errors in pay-years that you have submitted. Please click on the year-end date to edit your submissions. </p>
+	<table class="txtable yscroll">
+		<tr>
+			<th>Stock<br>code</th>
+			<th>Issuer</th>
+			<th>Year-end</th>
+		</tr>
+		{# a=rs.GetRows
+		For x=0 to Ubound(a,2) #}
+			<tr>
+				<td>{{ a(3,x) }}</td>
+				<td>{{ a(0,x) }}</td>
+				<td><a href="pay.asp?docID={{ a(2,x) }}">{{ a(1,x) }}</a></td>				
+			</tr>
+		{% endfor %}
+	</table>
+{# TODO: Port ASP logic: End If
+rs.Close... #}
+<h3>My work in progress</h3>
+
+	<p>You have no work in progress. </p>
+{% else %}
+	<p>Please continue working on these reports and submit when ready. Click on the year-end date. </p>
+	<table class="txtable yscroll">
+		<tr>
+			<th>Issuer</th>
+			<th>Year-end</th>
+		</tr>
+		{% for row in results %}
+			<tr>
+				<td>{{ row.name1 }}</td>
+				<td><a href="pay.asp?docID={{ row.docID }}">{{ row.d }}</a></td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+	</table>
+{# End If
+rs.Close
+If hasRole(con,6) Then
+	rs.Open "SELECT ordCodeThen(d.orgID,d.recordDate),name1,e.docID,d.recordDate,max(reported) FROM payerrors e JOIN (documents d,organisations o) "&_
+		"ON e.docID=d.ID AND d.orgID=o.personID WHERE errID=3 AND isNull(resolved) GROUP BY docID ORDER BY name1,recordDate",con
+	If Not rs.EOF Then #}
+		<h3>Missing officer(s) in pick-list</h3>
+		<table class="txtable yscroll">
+			<tr>
+				<th>Stock<br>code</th>
+				<th>Issuer</th>
+				<th>Year-end</th>
+				<th>Last error report</th>
+			</tr>
+			{# a=rs.GetRows
+			For x=0 to Ubound(a,2) #}
+				<tr>
+					<td>{{ a(0,x) }}</td>
+					<td>{{ a(1,x) }}</td>
+					<td><a href="pay.asp?docID={{ a(2,x) }}">{{ a(3,x) }}</a></td>
+					<td>{{ MSdateTime(a(4,x)) }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{# End If
+	rs.Close
+End If
+If uRank>=2 Then
+	rs.Open "SELECT DISTINCT o.name1,recordDate,docID,ordCodeThen(orgID,recordDate),MAX(rep) FROM("&_
+		"SELECT DISTINCT d.orgID,d.ID docID,d.recordDate,MAX(reported)rep FROM paylineerrors e JOIN (pay p,documents d) "&_
+		"ON e.payID=p.ID AND p.orgID=d.orgID AND p.d=d.recordDate "&_
+		"WHERE d.DocTypeID=0 AND isNull(e.resolved) AND maxRank('pay',p.userID)<="&uRank&" AND p.userID<>"&userID&_
+		" AND (NOT d.pay OR (SELECT IFNULL(MAX(maxRank('pay',r.userID)),0) FROM payreview r WHERE docID=d.ID)<="&uRank&_
+		") GROUP BY docID UNION SELECT DISTINCT d.orgID,d.ID docID,d.recordDate,MAX(reported) FROM payerrors e "&_
+		"JOIN documents d ON e.docID=d.ID WHERE e.errID<>3 AND isNull(e.resolved) AND (NOT d.pay OR (SELECT IFNULL(MAX(maxRank('pay',r.userID)),0) "&_
+		"FROM payreview r WHERE docID=d.ID)<="&uRank&") GROUP BY docID)t "&_
+		"JOIN organisations o ON t.orgID=o.personID GROUP BY docID ORDER BY name1,recordDate",con
+	If Not rs.EOF Then #}
+		<h3>Other errors you can help with</h3>
+		<p>Your accuracy has earned editor rank {{ uRank }}, so you outrank editors with lower ranks. Please help to resolve reported errors in these reports. 
+		The errors exclude "Missing officer(s) in pick list" as these are dealt with by Webb-site staff adding officers 
+		to the database where needed.</p>
+		<table class="txtable yscroll">
+			<tr>
+				<th>Stock<br>code</th>
+				<th>Issuer</th>
+				<th>Year-end</th>
+				<th>Last error report</th>
+			</tr>
+			{# a=rs.GetRows
+			For x=0 to Ubound(a,2) #}
+				<tr>
+					<td>{{ a(3,x) }}</td>
+					<td>{{ a(0,x) }}</td>
+					<td><a href="pay.asp?docID={{ a(2,x) }}">{{ a(1,x) }}</a></td>	
+					<td>{{ MSdateTime(a(4,x)) }}</td>			
+				</tr>
+			{% endfor %}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If... #}
+<h3>Submitted records pending approval</h3>
+
+	<p>There are currently no submitted records awaiting review. Please check back soon. </p>
+{% else %}
+	<p>Please click on a year-end date that you <b>haven't</b> reviewed to review the pay records submitted by other editors for publication. 
+	Remember that if your approval is correct then, like the first editor, it counts towards your submitted valid 
+	reports, but if it later turns out to be wrong then it counts against both of you!</p>
+	<table class="txtable yscroll">
+		<tr>
+			<th></th>
+			<th>{# TODO: Port ASP logic: SL "Stock<br>code","scup","scdn"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Issuer","namup","namdn"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Year-end","ydn","yup"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Submitted","subup","subdn"... #}</th>
+			<th>Submitted<br>by me</th>
+		</tr>
+		{# x=1
+		Do Until rs.EOF #}
+			<tr>
+				<td>{{ x }}</td>
+				<td>{{ row.sc }}</td>
+				<td>{{ row.name }}</td>
+				<td><a href="pay.asp?docID={{ row.docID }}">{{ row.recordDate }}</a></td>
+				<td>{{ MSdateTime(row.submitted) }}</td>
+				<td class="center">{{ IIF(CBool(row.myDoc),"&#10004;","") }}</td>
+			</tr>
+			{# rs.MoveNext
+			x=x+1
+		Loop #}
+	</table>
+{# End If
+rs.Close
+If sort="subup" or sort="subdn" Then ob="recordDate DESC,name" #}
+<h3>Documents to help with</h3>
+<p>You have so far submitted <b>{{ con.Execute("SELECT COUNT(*) FROM payreview WHERE userID="&userID).Fields(0) }}</b> pay-years for review or publication. Thanks! 
+Our aim with this crowd-sourcing is to build the history back to 2004 when the Listing Rules first required directors' pay to be disclosed by 
+name, or at least to keep up with new documents as they arrive.</p>
+<p>These are the documents (sorted by most recent year-end) awaiting editors to enter pay data. Please do as many as you can to help. Click on the year-end or company to get started.</p>
+
+<table class="txtable yscroll">
+	<tr>
+		<th></th>
+		<th>{# TODO: Port ASP logic: SL "Stock<br>code","scup","scdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Issuer","namup","namdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Year-end","ydn","yup"... #}</th>
+	</tr>
+	{# x=1
+	Do Until rs.EOF #}
+		<tr>
+			<td>{{ x }}</td>
+			<td>{{ row.sc }}</td>
+			<td><a href="pay.asp?docID={{ row.docID }}">{{ row.name }}</a></td>
+			<td><a href="pay.asp?docID={{ row.docID }}">{{ row.recordDate }}</a></td>
+		</tr>
+		{# rs.MoveNext
+		x=x+1
+	Loop #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

@@ -3,7 +3,7 @@ Search routes - Direct port from searchorgs.asp and searchpeople.asp
 """
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
-from webbsite.asp_helpers import rem_space, get_str, apos
+from webbsite.asp_helpers import rem_space, get_str, get_bool, apos
 
 bp = Blueprint('search', __name__)
 
@@ -14,11 +14,11 @@ def search_orgs():
     # Get parameters from POST (form submit) or GET (URL links)
     if request.method == 'POST':
         n = rem_space(request.form.get('n', ''))
-        st = request.form.get('st', 'l')
+        st = request.form.get('st', '')
         sort = request.form.get('sort', 'namup')
     else:
         n = rem_space(get_str('n', ''))
-        st = get_str('st', 'l')  # l=left match, a=any match (full-text)
+        st = get_str('st', '')  # l=left match, a=any match (full-text)
         sort = get_str('sort', 'namup')
 
     # Determine sort order
@@ -48,14 +48,14 @@ def search_orgs():
             terms = ' & '.join(n.split())
             match_clause = f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
-            # Left match (starts with)
-            match_clause = f"name1 LIKE '{apos(n)}%'"
+            # Left match (starts with) - use ILIKE for case-insensitive (MySQL compatibility)
+            match_clause = f"name1 ILIKE '{apos(n)}%'"
 
         # Search current names
         sql = f"""
             SELECT personID, Name1, everListCo(personID) as hklist, incDate, disDate, cName, A2, friendly
-            FROM organisations o
-            LEFT JOIN domiciles d ON o.domicile = d.ID
+            FROM enigma.organisations o
+            LEFT JOIN enigma.domiciles d ON o.domicile = d.ID
             WHERE {match_clause}
             ORDER BY {ob}
             LIMIT {limit}
@@ -66,14 +66,14 @@ def search_orgs():
         if st == 'a':
             old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
-            old_match_clause = f"oldName LIKE '{apos(n)}%'"
+            old_match_clause = f"oldName ILIKE '{apos(n)}%'"
 
         sql = f"""
             SELECT n.PersonID, oldName as name1, oldcName, everListCo(o.personID) as hklist,
                    incDate, disDate, A2, friendly
-            FROM nameChanges n
-            JOIN organisations o ON n.PersonID = o.personID
-            LEFT JOIN domiciles d ON o.domicile = d.ID
+            FROM enigma.nameChanges n
+            JOIN enigma.organisations o ON n.PersonID = o.personID
+            LEFT JOIN enigma.domiciles d ON o.domicile = d.ID
             WHERE {old_match_clause}
             ORDER BY {ob}
             LIMIT {limit}
@@ -92,51 +92,142 @@ def search_orgs():
 @bp.route('/searchpeople.asp', methods=['GET', 'POST'])
 def search_people():
     """Search people - port of searchpeople.asp"""
-    # Get parameters from POST (form submit) or GET (URL links)
+    from datetime import datetime
+
+    # Get parameters
     if request.method == 'POST':
-        n = rem_space(request.form.get('n', ''))
-        st = request.form.get('st', 'l')
-        sort = request.form.get('sort', 'namup')
+        n1 = request.form.get('n1', '')[:90].strip()
+        n2 = request.form.get('n2', '')[:63].strip()
+        d = request.form.get('d') == '1'
+        e = request.form.get('e') == '1'
     else:
-        n = rem_space(get_str('n', ''))
-        st = get_str('st', 'l')  # l=left match, a=any match (full-text)
-        sort = get_str('sort', 'namup')
+        n1 = get_str('n1', '')[:90].strip()
+        n2 = get_str('n2', '')[:63].strip()
+        d = get_bool('d')
+        e = get_bool('e')
 
-    # Determine sort order
-    sort_options = {
-        'namup': 'name1,name2',
-        'namdn': 'name1 DESC,name2 DESC',
-    }
-    ob = sort_options.get(sort, 'name1,name2')
-    if sort not in sort_options:
-        sort = 'namup'
+    # Clean up names (remove hyphens, asterisks, extra spaces)
+    n1 = n1.replace('-', ' ').replace('*', '')
+    n2 = n2.replace('-', ' ').replace('*', '')
+    n1 = rem_space(n1)
+    n2 = rem_space(n2)
 
-    limit = 500
-    results = []
+    now_year = datetime.now().year
+    current_results = []
+    alias_results = []
 
-    if n:
-        # Build WHERE clause based on search type
-        if st == 'a':
-            # Full-text search - PostgreSQL syntax
-            terms = ' & '.join(n.split())
-            match_clause = f"(to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}') OR to_tsvector('simple', name2) @@ to_tsquery('simple', '{apos(terms)}'))"
+    if n1 or n2:
+        # Build WHERE clauses for current names query
+        if e:
+            # Exact match mode
+            where_current = "1=1"
+            where_alias = "1=1"
+            if n1:
+                where_current += f" AND dn1 = '{apos(n1)}'"
+                where_alias += f" AND a.dn1 = '{apos(n1)}'"
+            if n2 == '':
+                where_current += " AND dn2 IS NULL"
+                where_alias += " AND a.dn2 IS NULL"
+            else:
+                where_current += f" AND dn2 = '{apos(n2)}'"
+                where_alias += f" AND a.dn2 = '{apos(n2)}'"
         else:
-            # Left match (starts with)
-            match_clause = f"(name1 LIKE '{apos(n)}%' OR name2 LIKE '{apos(n)}%')"
+            # Full-text search mode
+            # Build family name search term
+            fname = ''
+            if n1:
+                fname = ' & '.join(f'"{word}"' for word in n1.split())
 
-        # Search people
+            # Build given names search term (with multi-word logic)
+            forename = ''
+            if n2:
+                words = n2.split()
+                if len(words) == 1:
+                    forename = f'"{words[0]}"'
+                elif len(words) > 1:
+                    # Add all words except last two as required
+                    for word in words[:-2]:
+                        forename += f' & "{word}"'
+                    # Last two words: search both separate and combined
+                    # e.g., "Xiao Ping" searches for (("Xiao" & "Ping") | "XiaoPing")
+                    forename += f' & (("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")'
+
+            if d:
+                # Match family and given names separately
+                where_current = "1=1"
+                where_alias = "1=1"
+                if n1:
+                    where_current += f" AND to_tsvector('simple', dn1) @@ to_tsquery('simple', '{apos(fname)}')"
+                    where_alias += f" AND to_tsvector('simple', a.dn1) @@ to_tsquery('simple', '{apos(fname)}')"
+                if n2:
+                    where_current += f" AND to_tsvector('simple', dn2) @@ to_tsquery('simple', '{apos(forename)}')"
+                    where_alias += f" AND to_tsvector('simple', a.dn2) @@ to_tsquery('simple', '{apos(forename)}')"
+            else:
+                # Match across both fields
+                combined = fname
+                if forename:
+                    combined = combined + ' & ' + forename if combined else forename
+                where_current = f"to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
+                where_alias = f"to_tsvector('simple', COALESCE(a.dn1, '') || ' ' || COALESCE(a.dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
+
+        # Query current names
         sql = f"""
-            SELECT personID, name1, name2, cName, birthDate, deathDate
-            FROM people p
-            WHERE {match_clause}
-            ORDER BY {ob}
-            LIMIT {limit}
+            SELECT personID, name1, name2, cName, YOB, MOB, DOB,
+                   {now_year} - YOB AS est_age
+            FROM enigma.people p
+            WHERE {where_current}
+            ORDER BY name1, name2
+            LIMIT 500
         """
-        results = execute_query(sql)
+        current_results = execute_query(sql)
+
+        # Format birth dates for display
+        for row in current_results:
+            yob = row.get('yob')
+            mob = row.get('mob')
+            dob = row.get('dob')
+            if yob:
+                if mob and dob:
+                    row['birth_display'] = f"{yob:04d}-{mob:02d}-{dob:02d}"
+                elif mob:
+                    row['birth_display'] = f"{yob:04d}-{mob:02d}"
+                else:
+                    row['birth_display'] = str(yob)
+            else:
+                row['birth_display'] = ''
+
+        # Query alias/former names
+        sql = f"""
+            SELECT p.personID, a.n1, a.n2, a.cn, p.YOB, p.MOB, p.DOB,
+                   {now_year} - p.YOB AS est_age, a.alias
+            FROM enigma.alias a
+            JOIN enigma.people p ON a.personID = p.personID
+            WHERE {where_alias}
+            ORDER BY a.n1, a.n2
+            LIMIT 500
+        """
+        alias_results = execute_query(sql)
+
+        # Format birth dates for alias results
+        for row in alias_results:
+            yob = row.get('yob')
+            mob = row.get('mob')
+            dob = row.get('dob')
+            if yob:
+                if mob and dob:
+                    row['birth_display'] = f"{yob:04d}-{mob:02d}-{dob:02d}"
+                elif mob:
+                    row['birth_display'] = f"{yob:04d}-{mob:02d}"
+                else:
+                    row['birth_display'] = str(yob)
+            else:
+                row['birth_display'] = ''
 
     return render_template('searchpeople.html',
-                         n=n,
-                         st=st,
-                         sort=sort,
-                         results=results,
-                         limit=limit)
+                         n1=n1,
+                         n2=n2,
+                         d=d,
+                         e=e,
+                         now_year=now_year,
+                         current_results=current_results,
+                         alias_results=alias_results)

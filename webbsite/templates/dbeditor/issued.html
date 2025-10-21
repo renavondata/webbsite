@@ -1,0 +1,82 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ n }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,8)
+	If i>0 Then	Call issueBar(i,2)
+E... #}
+<form method="post" action="issued.asp">
+	Enter stock code: <input type="number" name="sc" min="1" max="999999" step="1" maxlength="6" size="6">
+</form>
+<p>Or <a href="issue.asp?tv=i">pick an issue</a></p>
+<h3>{{ title }}</h3>
+<p>This form allows outstanding shares to be entered or corrected. For HK-listed shares, please 
+make a rebuttable assumption that records on or after 31-Dec-2006 are correct as 
+these were collected automatically from HKEx. However, HKEx sometimes makes 
+errors, for example, by expanding the share count when a rights issue begins 
+rather than when the issue closes and shares are actually allotted!</p>
+{% if i>0 %}
+	<form action="issued.asp" method="post">
+		<input type="hidden" name="i" value="{{ i }}">
+		<h3>Issue: {{ n }}</h3>
+		<p>At date: <input type="date" name="d" value="{{ d }}"></p>
+		<p>Outstanding shares: <input type="number" name="shares" min="1" step="1" value="{{ outstanding }}"></p>
+		<p><b>{{ hint }}</b></p>
+
+		{% if found %}
+			<input type="submit" name="submitOS" value="Update">
+			{% if submit="Delete" %}
+				<input type="submit" name="submitOS" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitOS" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitOS" value="Delete">
+			{% endif %}
+		{% else %}
+			<input type="submit" name="submitOS" value="Add">
+		{% endif %}
+	</form>
+	<form method="post" action="issued.asp">
+		<input type="hidden" name="i" value="{{ i }}">
+		<input type="submit" name="submitList" value="Clear form">
+	</form>
+	<hr>
+	<h3>Existing records</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="numtable fcl">
+			<tr>
+				<th>At date</th>
+				<th>Outstanding</th>
+				<th>Change</th>
+				<th>User</th>
+				<th></th>
+				<th></th>
+			</tr>
+		{# Do Until rs.EOF
+			d=MSdate(rs("atDate"))
+			outstanding=Cdbl(rs("outstanding"))
+			userName=rs("name")
+			canEdit=rankingRs(rs,uRank)
+			rs.MoveNext
+			If Not rs.EOF Then oschange=FormatNumber(outstanding-CDbl(rs("outstanding")),0) Else oschange="" #}
+			<tr>
+				<td>{{ d }}</td>
+				<td>{{ "{:,.\2f}".format(outstanding) }}</td>
+				<td>{{ oschange }}</td>
+				<td>{{ userName }}</td>
+				<td>{% if canEdit %}<a href="issued.asp?i={{ i }}&amp;d={{ d }}">Edit</a>{% endif %}</td>
+				<td><a href="holding.asp?i={{ i }}&amp;targDate={{ d }}">Holders</a></td>
+			</tr>		
+		{% endfor %}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conRole,rs... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

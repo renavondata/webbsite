@@ -1,0 +1,109 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,4)
+End If... #}
+<h3>{{ title }}</h3>
+
+<form method="post" action="docmon.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<input type="button" value="Clear" onclick="window.location.href='docmon.asp'">
+<p><a href="searchorgs.asp?tv=p">Find a firm</a></p>
+{# TODO: Port ASP logic: If p>0 Then
+	'produce an input form to edit or add... #}
+	<h3>Add or Update record</h3>
+	<form method="post" action="docmon.asp">
+		<input type="hidden" name="sort" value="{{ sort }}">
+		<table class="c5-8m numtable">
+			<tr>
+				<th>ID</th>
+				<th>Type</th>
+				<th>Record date</th>
+				<th>Results date</th>
+				<th>Mid-day</th>
+				<th>Adv</th>
+				<th>Pay</th>
+				<th>Dir</th>
+			</tr>
+			<tr>
+				<td>{{ IIF(ID>0,ID,"") }}</td>
+				<td>{{ arrSelect("dtype",dtype,conMaster.Execute("SELECT docTypeID,docShort FROM doctypes ORDER BY docShort").GetRows,False) }}</td>
+				<td><input type="date" name="recDate" value="{{ recDate }}"></td>
+				<td><input type="date" name="repDate" value="{{ repDate }}"></td>
+				<td><input type="checkbox" name="midDay" value="1" {{ checked(midDay) }}></td>
+				<td><input type="checkbox" name="adv" value="1" {{ checked(adv) }}></td>
+				<td><input type="checkbox" name="pay" value="1" {{ checked(pay) }}></td>
+				<td><input type="checkbox" name="dir" value="1" {{ checked(dir) }}></td>
+			</tr>
+		</table>
+		<p><b>{{ hint }}</b></p>
+		{% if ID>0 %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			<input type="submit" name="submitDoc" value="Update">
+			{# TODO: Port ASP logic: If canDel Then
+				If submit="Delete" Then... #}
+					<input type="submit" name="submitDoc" style="color:red" value="CONFIRM DELETE">
+					<input type="submit" name="submitDoc" value="Cancel">
+				{% else %}
+					<input type="submit" name="submitDoc" value="Delete">
+				{# TODO: Port ASP logic: End If
+			End If
+		End If
+		If p>0 Then... #}
+			<input type="hidden" name="p" value="{{ p }}">
+			<input type="submit" name="submitDoc" value="Add record">
+		{% endif %}
+	</form>
+	<form method="post" action="docmon.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitDoc" value="Clear form">
+	</form>
+{# End If
+
+If p>0 Then
+	'display tables of documents
+	rs.Open "SELECT * FROM documents d JOIN doctypes t ON d.docTypeID=t.docTypeID WHERE orgID="&p&" ORDER BY "&ob,conMaster #}
+	<h3>Documents</h3>
+	<p>Click the record date to edit.</p>
+	<style>table.c5-8m td:nth-child(n+5):nth-child(-n+8) {text-align:center}</style>
+	<table class="c5-8m numtable">
+		<tr>
+			<th>ID</th>
+			<th>{# TODO: Port ASP logic: SL "Type","typup","typdn"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Record date","recdn","recup"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Results date","repdn","repup"... #}</th>
+			<th>Mid-day</th>
+			<th>Adv</th>
+			<th>Pay</th>
+			<th>Dir</th>
+			<th>repID</th>
+			<th>resID</th>
+		</tr>
+		{% for row in results %}
+			<tr>
+				<td>{{ row.ID }}</td>
+				<td>{{ row.docShort }}</td>
+				<td><a href="docmon.asp?sort={{ sort }}&amp;ID={{ row.ID }}">{{ row.recordDate }}</a></td>
+				<td>{{ row.reportDate }}</td>
+				<td>{{ tick(row.midDay) }}</td>
+				<td>{{ tick(row.adv) }}</td>
+				<td>{{ tick(row.pay) }}</td>
+				<td>{{ tick(row.dir) }}</td>
+				<td>{{ row.repID }}</td>
+				<td>{{ row.resID }}</td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop
+		rs.Close... #}
+		</table>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conMaster,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

@@ -1,0 +1,137 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ Trim(en&" "&cn) }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,5)... #}
+{% endif %}
+<h3>{{ title }}</h3>
+<form method="post" name="myform" action="org.asp">
+	{# TODO: Port ASP logic: 'the form fields remain open unless displaying a p... #}
+	<table class="txtable">
+		<tr>
+			<td>Name</td>
+			<td>{% if edit %}
+				<input type="text" name="en" size="50" value="{{ en }}">
+			{% else %}
+				{{ en }}
+			{% endif %}</td>
+		</tr>
+		<tr>
+			<td>Chinese name</td>
+			<td>{% if edit %}
+				<input type="text" name="cn" size="50" value="{{ cn }}">
+			{% else %}
+				{{ cn }}
+			{% endif %}</td>
+		</tr>
+		<tr>
+			<td>Domicile</td>
+			<td>{% if edit %}
+				{{ arrSelectZ("dom",dom,conRole.Execute("SELECT ID,friendly FROM domiciles WHERE ID<>29 ORDER BY friendly").GetRows,False,True,"","") }}
+			{% elif dom>0 %}
+				{{ conRole.Execute("SELECT friendly FROM domiciles WHERE ID="&dom).Fields(0) }}
+			{% endif %}</td>
+		</tr>
+		<tr>
+			<td>Organisation type</td>
+			<td>{% if edit %}
+				{{ arrSelectZ("t",t,conRole.Execute("SELECT orgType,typeName FROM orgtypes ORDER BY typeName").GetRows,False,True,"","") }}
+			{% elif t>0 %}
+				{{ conRole.Execute("SELECT typeName FROM orgtypes WHERE orgType="&t).Fields(0) }}
+			{% endif %}</td>
+		</tr>
+		<tr>
+			<td>Formation date</td>
+			<td>{% if edit %}
+				<input type="date" name="incd" value="{{ incDate }}">
+			{% else %}
+				{{ incDate }}
+			{% endif %}</td>
+		</tr>
+		<tr>{# TODO: Port ASP logic: 'can always edit this, even for protected dom-orgT... #}
+			<td>Dissolution date</td>
+			<td><input type="date" name="disd" value="{{ disDate }}"></td>
+		</tr>
+		<tr>
+			<td>Incorporation ID</td>
+			<td>{% if edit %}
+				<input type="text" name="incID" maxlength="14" value="{{ incID }}">
+			{% else %}
+				{{ incID }}
+			{% endif %}</td>
+		</tr>
+		{% if edit and p>0 %}
+			<tr>
+				<td>Add old names to name changes</td>
+				<td><input type="checkbox" name="addON" value="1" {{ checked(addON) }}></td>
+			</tr>
+		{% endif %}
+	</table>
+	{% if Hint!="" %}
+		<p><b>{{ Hint }}</b></p>
+	{# TODO: Port ASP logic: End If
+	If p>0 Then... #}
+		<p><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">View the organisation in Webb-site Who's Who</a></p>
+	{# TODO: Port ASP logic: End If
+	If p2>0 Then... #}
+		<p><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p2 }}">View the other organisation in Webb-site Who's Who</a></p>
+	{% endif %}
+	<p>
+	{% if p=0 %}
+		<input type="submit" name="submitOrg" value="Add">
+	{% elif edit %}
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitOrg" value="Update">
+		{% if submit="Delete" and edit %}
+			<input type="submit" name="submitOrg" style="color:red" value="CONFIRM DELETE">
+			<input type="submit" name="submitOrg" value="Cancel">			
+		{% elif edit %}
+			<input type="submit" name="submitOrg" value="Delete">
+		{# TODO: Port ASP logic: End If
+	End If... #}
+</form>
+{% if p2>0 %}
+	<form method="post" action="org.asp">
+		<input type="hidden" name="p" value="{{ p2 }}">
+		<input type="submit" name="submitOrg" value="Edit existing org">
+	</form>
+{% endif %}
+
+<form method="post" action="org.asp"><input type="submit" value="Clear form"></form>
+
+{% if referer>"" and p>0 %}
+	<form method="post" action="{{ referer }}">
+		<input type="hidden" name="{{ tv }}" value="{{ p }}">
+		<input type="submit" name="submitOrg" value="Use this organisation">
+	</form>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conRole,rs)... #}
+<hr>
+<h3>Rules</h3>
+<ol>
+<li>You cannot add, edit or delete companies incorporated in HK, England &amp; 
+Wales, Scotland, Northern Ireland or UK, as these are auto-maintained, except 
+for dissolution dates.</li>
+	<li>Always perform an "any match" search on the <a href="searchorgs.asp">
+	search page</a> before adding new organisations. Otherwise subtle variations 
+	such as a period (.), a space between two initials (A. B. rather than A.B.), 
+	or "Ltd" instead of "Limited", may cause you to miss an existing entity.</li>
+	<li>If you are adding or updating and a name-collision is found, then our 
+	system silently tries to resolve the conflict, adding extensions to the 
+	names of the new entity and/or the existing entity (such as their different 
+	domicile, incorporation date or dissolution date). If it cannot resolve the 
+	conflict, then it will display a link to the existing entity.</li>
+	<li>Two entities can never have the same Incorporation ID in the same 
+	domicile. This is Pauli's Exclusion Principle for companies.</li>
+	<li>If you are American, be careful with dates. The date/month order in the 
+	date-picker may depend on your system settings and choice of browser. 
+	Internally our dates are all YYYY-MM-DD (the
+	<a href="https://en.wikipedia.org/wiki/ISO_8601" target="_blank">ISO 8601</a> 
+	standard).</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

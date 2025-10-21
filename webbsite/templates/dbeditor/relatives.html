@@ -1,0 +1,87 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if h1>0 %}
+	<h2>{{ h1Name }}</h2>
+	{# TODO: Port ASP logic: Call pplBar(h1,3)... #}
+{% elif h2>0 %}
+	<h2>{{ h2Name }}</h2>
+	{# TODO: Port ASP logic: Call pplBar(h2,3)... #}
+{% else %}
+	<h2>{{ title }}</h2>
+{% endif %}
+<h3>Rules:</h3>
+<ol>
+	<li>Vertical relationships take priority (e.g. A is the parent of B and C rather than B is the sibling of C).</li>
+	<li>Direct relationships are better, e.g. add A is the parent of B and B is the spouse of C rather than A is the parent-in-law of C.</li>
+	<li>Don't add relationships which can be inferred from existing records. E.g. if A is the parent of B and C, then don't enter them as siblings.</li>
+	<li>If you don't know any parents of siblings, then add the siblings 
+	pairwise (e.g. if A, B and C are siblings, then add A-B, A-C and B-C; 
+	similarly if A, B, C and D are siblings, then add A-B, A-C, A-D, B-C, B-D 
+	and C-D).</li>
+</ol>
+<hr>
+<form action="relatives.asp" method="post">
+	<input type="hidden" name="h1" value="{{ h1 }}">
+	<input type="hidden" name="h2" value="{{ h2 }}">
+	{% if found %}
+		<h3>Existing record</h3>
+		<table class="txtable">
+		<tr>
+			<th>Person A</th>
+			<th>A is the ? of B</th>
+			<th>Person B</th>
+			<th>User</th>
+		</tr>
+		<tr>
+			<td>{{ h1name }}</td>
+			<td>{{ oldRel }}</td>
+			<td>{{ h2name }}</td>
+			<td>{{ userName }}</td>
+		</tr>
+		</table>
+		<br>
+	{% endif %}
+	<h3>Enter the relationship</h3>
+	<p>Click on the column headings to select an existing or new human as a relative.</p>
+	<table class="txtable">
+		<tr>
+			<th><a href="searchpeople.asp?tv=h1">Person A</a></th>
+			<th>A is the ? of B</th>
+			<th><a href="searchpeople.asp?tv=h2">Person B</a></th>
+		</tr>
+		<tr>
+			<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ h1 }}">{{ h1Name }}</a></td>
+			<td>{{ arrSelectZ("r",r,conRole.Execute("SELECT ID,relation FROM relationships ORDER BY relation").GetRows,False,True,"","?") }}</td>
+			<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ h2 }}">{{ h2Name }}</a></td>
+		</tr>
+	</table>
+	<p><b>{{ hint }}</b></p>
+	<p>
+	{# TODO: Port ASP logic: If found Then
+		If ready Then... #}
+			<input type="submit" name="submitRel" value="Update">
+			{% if submit="Delete" %}
+				<input type="submit" name="submitRel" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitRel" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitRel" value="Delete">
+			{# TODO: Port ASP logic: End If
+		End If
+	Else... #}
+		<input type="submit" name="submitRel" value="Add">
+		{% if h1>0 or h2>0 and not found %}
+			<input type="submit" name="submitRel" value="Swap Persons">
+		{# TODO: Port ASP logic: End If
+	End If... #}
+	</p>
+</form>
+<form method="post" action="relatives.asp?reset=1"><input type="submit" value="Clear form"></form>
+{# TODO: Port ASP logic: Call genTable(2,h1)
+Call genTable(1,h1)
+Call genTa... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

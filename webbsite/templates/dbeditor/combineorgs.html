@@ -1,0 +1,60 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p1>0 %}
+	<h2>{{ p1Name }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p1,14)... #}
+{% elif p2>0 %}
+	<p2>{{ p2Name }}</p2>
+	{# TODO: Port ASP logic: Call orgBar(p2,14)... #}
+{% else %}
+	<h2>{{ title }}</h2>
+{% endif %}
+<h3>Rules</h3>
+<ol>
+	<li>You cannot delete an organisation which has any 
+	issues of securities or any OrgData, as the addresses or year-ends could 
+	conflict. Delete the orgData of Org 2 first.</li>
+	<li>You cannot delete an organisation which is auto-maintained, including 
+	companies incorporated in HK, England &amp; Wales, Scotland and Northern 
+	Ireland.</li>
+</ol>
+<hr>
+<form action="combineorgs.asp" method="post">
+	<input type="hidden" name="p1" value="{{ p1 }}">
+	<input type="hidden" name="p2" value="{{ p2 }}">
+	<table class="txtable">
+		<tr>
+			<th>Select</th>
+			<th>Name</th>
+		</tr>
+		<tr>
+			<td><a href="searchorgs.asp?tv=p1">Organisation 1 (survivor)</a></td>
+			<td><a href="org.asp?p={{ p1 }}">{{ p1Name }}</a></td>
+		</tr>
+		<tr>
+			<td><a href="searchorgs.asp?tv=p2">Organisation 2 (to be deleted)</td>
+			<td><a href="org.asp?p={{ p2 }}">{{ p2Name }}</a></td>
+		</tr>
+	</table>
+	<p><b>{{ hint }}</b></p>
+	{% if ready %}
+		{% if submit="Combine" %}
+			<input type="submit" name="submitCO" style="color:red" value="CONFIRM COMBINE">
+			<input type="submit" name="submitCO" value="Cancel">
+		{% else %}
+			<input type="submit" name="submitCO" value="Combine">
+		{# TODO: Port ASP logic: End If
+	End If
+	If p1>0 Or p2>0 Then... #}
+		<input type="submit" name="submitCO" value="Swap Persons">
+	{% endif %}
+</form>
+<form method="post" action="combineorgs.asp?reset=1"><input type="submit" value="Clear form"></form>
+{# Set rs2=Nothing
+Call closeConRs(conMaster,rs) #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

@@ -1,0 +1,114 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ fname }}</h2>
+	{# TODO: Port ASP logic: Call pplBar(p,1)... #}
+	<p><b>Person ID: {{ p }}</b></p>
+{% endif %}
+<h3>{{ title }}</h3>
+<form method="post" action="human.asp">
+	<table>
+		<tr><td>Family name:</td><td><input type="text" name="n1" size="30" value="{{ n1 }}"></td></tr>
+		<tr><td>Given names (English first):</td><td><input type="text" name="n2" size="30" value="{{ n2 }}"></td></tr>
+		{% if p2>0 %}
+			<tr><td>Ignore match?</td><td><input type="checkbox" name="override" value="1"></td></tr>
+		{% endif %}
+		<tr><td>Chinese name:</td><td><input type="text" size="30" name="cn" value="{{ cn }}"></td></tr>
+		{% if p>0 %}
+			<tr>
+				<td><input type="checkbox" name="KeepOld" value="1" {{ checked(keepOld) }}>Store old names:</td>
+				<td><input type="radio" name="alias" value="1" {{ checked(alias) }}> as alias<br>
+					<input type="radio" name="alias" value="0" {{ checked(Not alias) }}> as former names</td>
+			</tr>
+		{% endif %}
+		<tr><td>Title:</td><td>{{ arrSelectZ("titleID",titleID,conRole.Execute("SELECT titleID,title FROM titles ORDER BY title").GetRows,False,True,"","") }}</td></tr>
+		<tr><td>Gender:</td><td>{{ makeSelect("g",g,",Unknown,F,Female,M,Male",False) }}</td></tr>
+	{% if roleExec %}
+		<tr><td>HKID (without checkdigit):</td><td><input type="text" name="HKID" size="30" pattern="[A-Z]{1,2}[0-9]{3}[0-9X]{3}" value="{{ HKID }}">
+			{# TODO: Port ASP logic: If HKID>"" Then Response.Write checkdigit(HKID)... #}</td></tr>
+		<tr><td>HKID source URL:</td><td><input type="text" name="HKIDsource" size="30" value="{{ HKIDsource }}">
+			{# TODO: Port ASP logic: If HKIDsource>"" Then Response.Write "<a target='_... #}</td></tr>
+	{% endif %}
+	</table>
+	<br>
+	<table class="txtable">
+	<tr>
+		<th>Dates if known</th>
+		<th>Year</th>
+		<th>Month</th>
+		<th>Day</th>
+	</tr>
+	<tr>
+		<td>Birth</td>
+		<td><input type="number" min="1000" max="{{ Year(Date) }}" step="1" name="YOB" value="{{ YOB }}"></td>
+		<td><input type="number" min="1" max="12" step="1" name="MOB" value="{{ MOB }}"></td>
+		<td><input type="number" min="1" max="31" step="1" name="DOB" value="{{ DOB }}"></td>
+	</tr>
+	<tr>
+		<td>Death</td>
+		<td><input type="number" min="1000" max="{{ Year(Date) }}" step="1" name="YOD" value="{{ YOD }}"></td>
+		<td><input type="number" min="1" max="12" step="1" name="MonD" value="{{ MonD }}"></td>
+		<td><input type="number" min="1" max="31" step="1" name="DOD" value="{{ DOD }}"></td>
+	</tr>
+	</table>
+	{% if YOB>0 %}
+	<p>Age in {{ Year(Date) }}: {{ Year(Date)-YOB }}</p>
+	{% endif %}
+	{% if Hint>"" %}
+		<p><b>{{ Hint }}</b></p>
+	{% endif %}
+	<p>
+	{% if p=0 %}
+		<input type="submit" name="submitHum" value="Add">
+	{% else %}
+		<input type="hidden" name="p" value="{{ p }}">
+		{% if canEdit %}
+			<input type="submit" name="submitHum" value="Update">
+			{# TODO: Port ASP logic: If canDelete Then
+				If submit="Delete" Then... #}
+					<input type="submit" name="submitHum" style="color:red" value="CONFIRM DELETE">
+					<input type="submit" name="submitHum" value="Cancel">
+				{% else %}
+					<input type="submit" name="submitHum" value="Delete">
+				{# TODO: Port ASP logic: End If
+			End If
+		End If
+	End If... #}
+	</p>
+</form>
+{# TODO: Port ASP logic: If referer<>"" Then
+	If p>0 Then... #}
+		<form method="post" action="{{ referer }}">
+			<input type="hidden" name="{{ tv }}" value="{{ p }}">
+			<p><input type="submit" name="submitHum" value="Use this human"></p>
+		</form>
+	{# TODO: Port ASP logic: End If	
+	If p2>0 Then... #}
+		<form method="post" action="{{ referer }}">
+			<input type="hidden" name="{{ tv }}" value="{{ p2 }}">
+			<p><input type="submit" name="submitHum" value="Use the other human"></p>
+		</form>
+	{# TODO: Port ASP logic: End If
+End If... #}
+<form method="post" action="human.asp"><input type="submit" name="submit" value="Clear form"></form>
+{% if p>0 %}
+	<p><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ p }}">View the human in Webb-site Who's Who</a></p>
+	<p><a href="relatives.asp?h1={{ p }}">Add spouse or descendant</a></p>
+	<p><a href="relatives.asp?h2={{ p }}">Add spouse or ancestor</a></p>
+{# TODO: Port ASP logic: End If
+If p2>0 Then... #}
+	<p><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ p2 }}">View the other human in Webb-site Who's Who</a></p>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conRole,rs)... #}
+<hr>
+<h3>Rules</h3>
+<p>In given names, put English names first and do not use hyphens in Romanised Chinese given names. For example, use "David Wai Keung", not 
+&quot;Wai Keung David&quot; and not "David Wai-Keung". For married Chinese women, the 
+husband's family name (if used) comes first. The Chinese name box is for Asian 
+scripts, including Chinese, Japanese and Korean.</p>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

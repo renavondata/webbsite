@@ -1,0 +1,56 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿{# Option Explicit
+'Redirect must happen before headers are sent to browser, which happens if buffer is off
+If Not Session("master") Then Response.Redirect("/dbeditor/")
+'stream the output, don't wait for complete page
+Response.buffer=false
+'allow a page to run for an hour, not the 90 seconds default
+Server.ScriptTimeout=3600 #}
+
+
+
+
+<!--#include virtual="/dbeditor/cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call mailBar(4)... #}
+<form method="post" action="sendletter.asp">
+	<table class="txtable">
+		<tr>
+			<td>Name of htm file on webb-site.com:</td>
+			<td>https://webb-site.com/news/<input type="text" name="filename" size="20" value="{{ fname }}"></td>	
+		</tr>
+		<tr>
+			<td>Subject:</td>
+			<td><input type="text" name="subject" size="56" value="{{ subject }}"></td>
+		</tr>
+		<tr>
+			<td>Send test</td>
+			<td><input type="checkbox" name="test" value="1" checked></td>
+		</tr>
+		<tr>
+			<td>Retries only</td>
+			<td><input type="checkbox" name="retry" value="1" {{ checked(retry) }}></td>
+		</tr>
+		<tr>
+			<td>Start mail at line number:</td>
+			<td><input type="text" name="start" size="10" value="{{ start }}"></td>
+		</tr>
+		<tr>
+			<td>End mail at line number:</td>
+			<td><input type="text" name="end" size="10"></td>
+		</tr>
+	</table>
+	<input type="submit" value="Send">
+</form>
+{# TODO: Port ASP logic: If ready Then
+	Set msg=PrepMsg()
+	msg.Subject=subj... #}
+{% if hint!="" %}
+	<p><b>{{ hint }}</b></p>
+{% endif %}
+<!--#include virtual="/dbeditor/cofooter.asp"-->
+{% endblock %}

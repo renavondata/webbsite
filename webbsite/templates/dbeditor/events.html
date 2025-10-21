@@ -1,0 +1,159 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if i>0 %}
+	<h2>{{ n }}</h2>
+	{# TODO: Port ASP logic: Call orgbar(p,8)
+	Call issueBar(i,6)
+End If... #}
+<form method="post" action="events.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<p><a href="issue.asp?tv=i">Find an issue</a></p>
+{# TODO: Port ASP logic: If ID>0 Then
+	'produce an input form to edit a rec... #}
+	<h3>{{ title }}</h3>
+	<form method="post" action="events.asp">
+		<input type="hidden" name="ID" value="{{ ID }}">
+		<table class="txtable">
+			<tr>
+				<td>Event ID</td>
+				<td>{{ ID }}</td>
+			</tr>
+			<tr>
+				<td>Type</td>
+				<td>{{ arrSelect("eType",eType,conMaster.Execute("SELECT capchangetype,`change` FROM capchangetypes ORDER BY `change`").GetRows,False) }}</td>
+			</tr>
+			<tr>
+				<td>Announced</td>
+				<td><input type="date" name="announced" value="{{ announced }}"></td>
+			</tr>
+			<tr>
+				<td>Year-end</td>
+				<td><input type="date" name="yearEnd" value="{{ yearEnd }}"></td>
+			</tr>
+			<tr>
+				<td>Last cum date</td>
+				<td>{{ cumDate }}</td>
+			</tr>
+			<tr>
+				<td>ex-Date</td>
+				<td><input type="date" name="exDate" value="{{ exDate }}"></td>
+			</tr>				
+			<tr>
+				<td>Book closed from<br>/record date</td>
+				<td><input type="date" name="bcFr" value="{{ bcFr }}"></td>
+			</tr>
+			<tr>
+				<td>Book closed to</td>
+				<td><input type="date" name="bcTo" value="{{ bcTo }}"></td>
+			</tr>
+			<tr>
+				<td>Acceptance deadline</td>
+				<td><input type="date" name="accept" value="{{ accept }}"></td>
+			</tr>
+			<tr>
+				<td>Payout/dispatch date</td>
+				<td><input type="date" name="distDate" value="{{ distDate }}"></td>
+			</tr>
+			<tr>
+				<td>Cancelled on</td>
+				<td><input type="date" name="canD" value="{{ canD }}"></td>
+			</tr>
+			<tr>
+				<td>New shares...</td>
+				<td><input type="number" step="any" name="newS" value="{{ newS }}"></td>
+			</tr>
+			<tr>
+				<td>...for old shares</td>
+				<td><input type="number" step="any" name="old" value="{{ old }}"></td>
+			</tr>
+			<tr>
+				<td>Currency</td>
+				<td>{{ arrSelectZ("curr",curr,conMaster.Execute("SELECT ID,currency FROM currencies ORDER BY currency").GetRows,False,True,"","") }}</td>
+			</tr>
+			<tr>
+				<td>Price</td>
+				<td><input type="number" step="any" name="price" value="{{ price }}"></td>
+			</tr>
+			<tr>
+				<td>Price in quoted currency</td>
+				<td><input type="number" step="any" name="qprice" value="{{ qprice }}"></td>
+			</tr>
+			<tr>
+				<td>FXdate (for auto convert)</td>
+				<td>{{ FXdate }}</td>
+			</tr>
+			<tr>
+				<td>Last cum price</td>
+				<td>{{ cumPrice }}</td>
+			</tr>
+			<tr>
+				<td>Adjustment factor</td>
+				<td>{{ adjust }}</td>
+			</tr>
+			<tr>
+				<td>Notes</td>
+				<td><textarea name="notes">{{ notes }}</textarea></td>
+			</tr>
+		</table>
+		<input type="submit" name="submitEv" value="Update">
+		{# TODO: Port ASP logic: If Session("master") Then
+			If submit="Delete" Th... #}
+				<input type="submit" name="submitEv" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitEv" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitEv" value="Delete">
+			{# TODO: Port ASP logic: End If
+		End If... #}
+	</form>
+{% endif %}
+<p><b>{{ hint }}</b></p>
+
+{# TODO: Port ASP logic: If i>0 Then
+	'display tables of events
+	rs.Open "S... #}
+	<h3>Events</h3>
+	<style>table.c5-7r td:nth-child(n+5):nth-child(-n+7) {text-align:right} th:nth-child(n+5):nth-child(-n+7) {text-align:right};</style>
+	<table class="txtable c5-7r">
+		<tr>
+			<th>ID</th>
+			<th>{# TODO: Port ASP logic: SL "Announced","anndup","annddn"... #}</th>
+			<th>Year-end</th>
+			<th>{# TODO: Port ASP logic: SL "Type","evntup","evntdn"... #}</th>
+			<th>Amount</th>
+			<th>Val<br>in quote<br>curr.</th>
+			<th>New:<br>Old</th>
+			<th>{# TODO: Port ASP logic: SL "ex-Date","exdtdn","exdtup"... #}</th>
+			<th>Distribution</th>
+			<th>Notes</th>
+		</tr>
+		{# Do until rs.EOF
+			price=rs("price")
+			qprice=rs("priceHKD")
+			If Not isNull(price) then price=FormatNumber(price,4)
+			If Not isNull(qprice) then qprice=FormatNumber(qprice,4)
+			If price=0 then price="-" #}
+			<tr>
+				<td>{{ row.eventID }}</td>
+				<td>{{ row.Announced }}</td>
+				<td>{{ row.yearEnd }}</td>
+				<td {{ IIF(isNull(row.cancelDate),"","style='text-decoration:line-through;'") }}><a href="events.asp?ID={{ row.eventID }}">{{ row.Change }}</a></td>
+				<td>{{ row.Currency&" "&price }}</td>
+				<td>{{ qprice }}{{ IIF(isNull(row.FXdate),"","*") }}</td>
+				<td>{{ IIF(isNull(row.new),"",row.new&":"&row.old) }}</td>
+				<td style="white-space:nowrap">{{ row.exDate }}</td>
+				<td>{{ row.distDate }}</td>
+				<td style="max-width:120px">{{ row.notes }}</td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop
+		rs.Close... #}
+		</table>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conMaster,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

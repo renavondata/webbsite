@@ -1,0 +1,96 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,12)
+End If... #}
+<form method="post" action="olddom.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<p><a href="searchorgs.asp?tv=p">Find an organisation</a></p>
+<h3>{{ title }}</h3>
+{% if p>0 %}
+	<form method="post" action="olddom.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<table class="txtable">
+			<tr>
+				<th>Until</th>
+				<th>Accuracy</th>
+				<th>Old domicile</th>
+				<th>Old incID</th>
+			</tr>
+			<tr>
+				<td><input type="date" name="d" value="{{ d }}"></td>
+				<td>{{ makeSelect("da",da,",,2,M,1,Y",False) }}</td>
+				<td>{{ arrSelectZ("od",od,conMaster.Execute("SELECT ID, friendly FROM domiciles ORDER BY friendly").GetRows,False,True,"","") }}</td>
+				<td><input type="text" name="oldIncID" style="width:11em" maxlength="11" value="{{ oldIncID }}"></td>
+			</tr>
+		</table>
+		<p><b>{{ hint }}</b></p>
+		{% if ID>0 %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			<input type="submit" name="submitOD" value="Update">
+			{% if submit="Delete" %}
+				<input type="submit" name="submitOD" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitOD" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitOD" value="Delete">
+			{# TODO: Port ASP logic: End If
+		Else... #}
+			<input type="submit" name="submitOD" value="Add">	
+		{% endif %}
+	</form>
+	<form method="post" action="olddom.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitOD" value="Clear form">
+	</form>
+	<h3>Old domiciles of this organisation</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="txtable">
+			<tr>
+				<th>Our ID</th>
+				<th>Until</th>
+				<th>Accuracy</th>
+				<th>Old domicile</th>
+				<th>Old incID</th>
+			</tr>
+			{% for row in results %}
+				<tr>
+					<td>{{ row.ID }}</td>
+					<td>{{ row.dateChanged }}</td>
+					<td>{{ row.accText }}</td>
+					<td>{{ row.friendly }}</td>
+					<td>{{ row.oldIncID }}</td>
+					<td><a href='olddom.asp?ID={{ row.ID }}'>Edit</a></td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conMaster,... #}
+<hr>
+<h3>Rules</h3>
+<ol>
+	<li>Do not confuse a change of domicile with a <a href="freg.asp?p={{ p }}">foreign registration</a> or 
+	<a href="reorg.asp?p={{ p }}">reorganisation</a>. This page is 
+	only for situations in which a company has moved its domicile is domiciled 
+	from one jurisdiction to another. Such a company will typically say that it 
+	was "incorporated in X and continued in Y".</li>
+	<li>The "Until" date is the first date of the new domicile, which is when 
+	the old domicile ceases.</li>
+	<li>An organisation can only change domicile once per day.</li>
+	<li>As of 2023, HK doesn't have legislation for companies to migrate in or 
+	out, so a company will never have an "old domicile" of HK, and a HK company 
+	will never have an "old domicile" somewhere else. Instead, it may have been 
+	"reorganised from" an old company in HK or to a new company in HK.</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

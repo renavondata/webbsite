@@ -1,0 +1,41 @@
+
+{# functions1.asp functionality moved to Python helpers #}
+{# Navigation bars #}
+{# TODO: Port ASP logic: Call login... #}
+<!--#include file="../webbmail/prepmsg.asp"-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# Variables moved to Flask route #}
+<title>{{ title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+{# TODO: Port ASP logic: Call userBar(4)... #}
+<h2>{{ title }}</h2>
+{% if Not changed %}
+	<form method="post" action="changeaddr.asp">
+		<table>
+			<tr>
+				<td>Current address:</td>
+				<td>{{ session("e") }}</td>
+			</tr>
+			<tr>
+				<td>New address:</td>
+				<td><input type="text" name="newe" size="40" value="{{ email }}"></td>
+			</tr>
+			<tr>
+				<td>Retype new address:</td>
+				<td><input type="text" name="verify" size="40" value="{{ verify }}"></td>
+			</tr>
+		</table>
+		<p><input type="submit" value="Change address"></p>
+	</form>
+{% endif %}
+<p><b>{{ Hint }}</b></p>
+<!--#include file="../templates/footerws.asp"-->
+</body>
+</html>

@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{# functions1.asp functionality moved to Python helpers #}
+<!--#include virtual="/dbpub/navbars.asp"-->
+{# Variables moved to Flask route #}
+<title>Securities not in CCASS: {{ n }}</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+<body>
+{% extends "base_database.html" %}
+{% if i=0 %}
+	<h2>Estimated securities not in CCASS</h2>
+	<p><b>{{ title }}</b></p>
+{# TODO: Port ASP logic: Else
+	Call orgBar(n,p,0)
+	Call ccassholdbar(i,atDa... #}
+<form method="get" action="reghist.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="i" value="{{ i }}">
+	<div class="inputs">
+		Stock code: <input type="text" name="sc" size="5" value="">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+	<div class="inputs">
+		<p>Table rows with no holding change:
+			<input type="radio" name="o" value="1" {{ checked(o) }} onchange="this.form.submit()">include
+			<input type="radio" name="o" value="0" {{ checked(Not o) }} onchange="this.form.submit()">exclude
+		</p>
+	</div>
+	<div class="clear"></div>	
+</form>
+{% if i>0 %}
+	<h3>Estimated securities not in CCASS</h3>
+	{# TODO: Port ASP logic: If sort="dateup" Then
+		ob="atDate"
+	Else
+		ob="at... #}
+		<p><b>No records for this issue.</b></p>
+	{% else %}
+		{{ mobile(1) }}
+		<table class="numtable yscroll">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th>{# TODO: Port ASP logic: SL "Holding<br>date","dateup","datedn"... #}</th>
+			<th class="colHide2">Holding</th>
+			<th>Change</th>
+			<th>Stake<br>%</th>
+			<th class="colHide3">Issued<br>shares</th>
+			<th class="colHide1">As at date</th>
+		</tr>
+		{# Do Until rs.EOF
+			atDate=rs("atDate")
+			issued=rs("shares")
+			If not isNull(issued) Then issued=Cdbl(issued)
+			osDate=rs("maxDate")
+			If sort="dateup" Then
+				lastholding=holding
+				holding=issued-CDbl(rs("ctotal"))
+				change=holding-lastholding
+				rs.MoveNext
+			Else
+				holding=issued-CDbl(rs("ctotal"))
+				rs.MoveNext
+				If Not rs.EOF AND Not isNull(rs("shares")) Then lastholding=CDbl(rs("shares"))-CDbl(rs("ctotal"))
+				change=holding-lastholding
+			End If
+			If o Or change<>0 Then
+				cnt=cnt+1 #}
+				<tr>
+					<td class="colHide1">{{ cnt }}</td>
+					<td><a href="chldchg.asp?i={{ i }}&amp;d={{ atDate }}">{{ atDate }}</a></td>
+					<td class="colHide2">{{ "{:,.\2f}".format(holding) }}</td>
+					<td>{# TODO: Port ASP logic: If (sort="dateup" And cnt>1) Or (sort="datedn" And... #}</td>		
+					{% if not isNull(issued) %}
+						<td>{{ "{:,.\2f}".format(holding*100/issued) }}</td>
+						<td class="colHide3">{{ "{:,.\2f}".format(issued) }}</td>
+						<td class="colHide1">{{ osDate }}</td>
+					{% else %}
+						<td></td>
+						<td class="colHide3"></td>
+						<td class="colHide1"></td>
+					{% endif %}
+				</tr>
+			{# TODO: Port ASP logic: End If
+		Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+End If
+Call CloseConRs(con,rs)... #}
+{% endblock %}
+</body>
+</html>
