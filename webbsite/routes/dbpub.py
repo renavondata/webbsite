@@ -526,18 +526,21 @@ def advisers():
     """
     person_id = request.args.get('p', type=int)
     d = request.args.get('d', str(date.today()))
-    hide = request.args.get('hide', 'Y')
+    hide = request.args.get('hide', 'N')  # ASP defaults to 'N' (show history)
     u = request.args.get('u', type=bool, default=False)
     sort_param = request.args.get('sort', 'advup')
 
     if not person_id:
         return "PersonID required", 400
 
-    # Get organization name
+    # Get organization name (with Chinese name if available, like ASP fnameOrg function)
     try:
-        org_result = execute_query("SELECT name1 FROM enigma.organisations WHERE personID = %s", (person_id,))
+        org_result = execute_query("SELECT name1, cname FROM enigma.organisations WHERE personID = %s", (person_id,))
         if org_result:
-            org_name = org_result[0]['name1']
+            name1 = org_result[0]['name1']
+            cname = org_result[0].get('cname')
+            # Concatenate English and Chinese names like ASP does
+            org_name = name1 + (" " + cname if cname else "")
         else:
             org_name = "No such organisation"
             person_id = 0  # ASP sets personID to 0 for non-existent orgs
@@ -547,59 +550,48 @@ def advisers():
         org_name = "No such organisation"
         person_id = 0
 
-    # Build date filter for enigma.adviserships (using addDate/remDate with accuracy)
+    # Build date filter for enigma.webadv view
     # Note: Simplified - not using accuracy columns for MVP
-    date_filter = "(a.addDate IS NULL OR a.addDate <= %s)"
+    date_filter = "(adddate IS NULL OR adddate <= %s)"
     params = [d]
 
     if hide == 'Y':
         # Current only: remDate IS NULL OR remDate > snapshot_date OR remDate = '1000-01-01'
-        date_filter += " AND (a.remDate IS NULL OR a.remDate > %s OR a.remDate = '1000-01-01')"
+        date_filter += " AND (remdate IS NULL OR remdate > %s OR remdate = '1000-01-01')"
         params.append(d)
 
     if u:
         # Exclude unknown removal dates (1000-01-01 placeholder)
-        date_filter += " AND (a.remDate IS NULL OR a.remDate != '1000-01-01')"
+        date_filter += " AND (remdate IS NULL OR remdate != '1000-01-01')"
 
-    # Determine sort order
+    # Determine sort order (using webadv view column names)
     sort_orders = {
-        'advup': 'AdvName, a.addDate, r.role',
-        'advdn': 'AdvName DESC, a.addDate, r.role',
-        'rolup': 'r.role, AdvName, a.addDate',
-        'roldn': 'r.role DESC, AdvName, a.addDate',
-        'addup': 'a.addDate, AdvName, r.role',
-        'adddn': 'a.addDate DESC, AdvName, r.role',
-        'remup': 'a.remDate, AdvName, a.addDate, r.role',
-        'remdn': 'a.remDate DESC, AdvName, a.addDate, r.role'
+        'advup': 'adv, adddate, role',
+        'advdn': 'adv DESC, adddate, role',
+        'rolup': 'role, adv, adddate',
+        'roldn': 'role DESC, adv, adddate',
+        'addup': 'adddate, adv, role',
+        'adddn': 'adddate DESC, adv, role',
+        'remup': 'remdate, adv, adddate, role',
+        'remdn': 'remdate DESC, adv, adddate, role'
     }
-    ob = sort_orders.get(sort_param, 'AdvName, a.addDate, r.role')
+    ob = sort_orders.get(sort_param, 'adv, adddate, role')
     if sort_param not in sort_orders:
         sort_param = 'advup'
 
     # Query regular advisers (continuing roles like auditors)
+    # Use WebAdv view like ASP does - much simpler than manual joins
     regular_sql = f"""
         SELECT
-            a.personID AS AdvID,
-            COALESCE(
-                CASE
-                    WHEN p.personID IS NOT NULL THEN
-                        CASE
-                            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                            ELSE p.name1
-                        END
-                    ELSE o.name1
-                END
-            ) AS AdvName,
-            r.roleID,
-            r.role,
-            a.addDate,
-            a.remDate
-        FROM enigma.adviserships a
-        JOIN roles r ON a.roleID = r.roleID
-        LEFT JOIN enigma.persons p ON a.personID = p.personID AND p.isPerson = TRUE
-        LEFT JOIN enigma.organisations o ON a.personID = o.personid AND o.isPerson = FALSE
-        WHERE a.company = %s
-          AND a.oneTime = FALSE
+            advid AS AdvID,
+            adv AS AdvName,
+            roleid,
+            role,
+            adddate,
+            remdate
+        FROM enigma.webadv
+        WHERE NOT onetime
+          AND orgid = %s
           AND {date_filter}
         ORDER BY {ob}
     """
@@ -623,35 +615,22 @@ def advisers():
         regular_advisers = []
 
     # Query one-time advisers (transaction-specific like IFAs)
+    # Use WebAdv view like ASP does
     onetime_sql = f"""
         SELECT
-            a.personID AS AdvID,
-            COALESCE(
-                CASE
-                    WHEN p.personID IS NOT NULL THEN
-                        CASE
-                            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                            ELSE p.name1
-                        END
-                    ELSE o.name1
-                END
-            ) AS AdvName,
-            r.roleID,
-            r.role,
-            a.addDate
-        FROM enigma.adviserships a
-        JOIN roles r ON a.roleID = r.roleID
-        LEFT JOIN enigma.persons p ON a.personID = p.personID AND p.isPerson = TRUE
-        LEFT JOIN enigma.organisations o ON a.personID = o.personid AND o.isPerson = FALSE
-        WHERE a.company = %s
-          AND a.oneTime = TRUE
+            advid AS AdvID,
+            adv AS AdvName,
+            roleid,
+            role,
+            adddate
+        FROM enigma.webadv
+        WHERE onetime = TRUE
+          AND orgid = %s
           AND {date_filter}
         ORDER BY {ob}
     """
-    # One-time advisers don't have removal dates
-    params_onetime = [person_id, d]
-    if hide == 'Y':
-        params_onetime.append(d)
+    # One-time advisers use same date filter as regular
+    params_onetime = [person_id] + params
 
     try:
         onetime_results = execute_query(onetime_sql, tuple(params_onetime))
@@ -669,12 +648,17 @@ def advisers():
         current_app.logger.error(f"Error in advisers.asp (one-time): {type(ex).__name__}: {ex}", exc_info=True)
         onetime_advisers = []
 
+    # Get today's date for the clear button
+    import datetime
+    today = datetime.date.today().strftime('%Y-%m-%d')
+
     return render_template('dbpub/advisers.html',
                          person_id=person_id,
                          org_name=org_name,
                          regular_advisers=regular_advisers,
                          onetime_advisers=onetime_advisers,
                          d=d,
+                         today=today,
                          hide=hide,
                          u=u,
                          sort=sort_param)
