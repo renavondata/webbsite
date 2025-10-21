@@ -1,0 +1,86 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<h3>{{ coName }}, {{ d }}</h3>
+
+<table class="numtable">
+	<tr>
+		<th></th>
+		<th class="left">{# TODO: Port ASP logic: SL "Ultimate owner","ownup","owndn"... #}</th>
+		<th class="left">{# TODO: Port ASP logic: SL "Owner type","otup","otdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Shares","shsup","shsdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Stake","shsup","shsdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "EconStake","estkup","estkdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Weakest","wkstup","wkstdn"... #}</th>		
+	</tr>
+{# Do until rs.EOF
+		cnt=cnt+1
+		shs=rs("shares")
+		sumShs=sumShs+shs
+		stk=rs("stake")
+		sumStk=sumStk+stk
+		eStk=rs("econStake")
+		wkst=rs("weakest")
+		If isNull(eStk) Then eStk=0
+		If isNull(wkst) Then wkst=0
+		sumEstk=sumeStk+eStk
+		sumWkst= sumWkst+wkst #}
+		<tr>
+			<td>{{ cnt }}</td>
+			<td class="left"><a target="_blank" href="https://webb-site.com/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.ultimID }}">{{ row.ownerName }}</a></td>
+			<td class="left">{{ row.ownLong }}</td>
+			<td>{{ "{:,.\2f}".format(shs) }}</td>
+			<td>{{ "{:.\2%}".format(stk) }}</td>
+			<td>{{ "{:.\2%}".format(estk) }}</td>
+			<td>{{ "{:.\2%}".format(wkst) }}</td>
+		</tr>
+		{# TODO: Port ASP logic: rs.MoveNext
+	Loop
+	rs.Close... #}
+	<tr class="total">
+		<td></td>
+		<td class="left" colspan="2">Total</td>
+		<td>{{ "{:,.\2f}".format(sumShs) }}</td>
+		<td>{{ "{:.\2%}".format(sumStk) }}</td>
+		<td>{{ "{:.\2%}".format(sumEstk) }}</td>
+		<td>{{ "{:.\2%}".format(sumWkst) }}</td>
+	</tr>
+</table>
+<h3>Summary</h3>
+
+	<p>No profile found</p>
+{% else %}
+	<table class="numtable fcl">
+		<tr>
+			<td>Directors &amp; family</td>
+			<td>{{ "{:.\2%}".format(row.dirStake) }}</td>
+		</tr>
+		<tr>
+			<td>Other families</td>
+			<td>{{ "{:.\2%}".format(row.famStake) }}</td>
+		</tr>
+		<tr>
+			<td>Governments</td>
+			<td>{{ "{:.\2%}".format(row.govStake) }}</td>
+		</tr>
+		<tr>
+			<td>Asset managers</td>
+			<td>{{ "{:.\2%}".format(row.amStake) }}</td>
+		</tr>
+		<tr>
+			<td>Others known</td>
+			<td>{{ "{:.\2%}".format(row.othStake) }}</td>
+		</tr>
+		<tr>
+			<td>Total</td>
+			<td>{{ "{:.\2%}".format(row.totStake) }}</td>			
+		</tr>
+	</table>
+{# TODO: Port ASP logic: End If
+Call closeConRs(con,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

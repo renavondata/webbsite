@@ -240,7 +240,7 @@ def delisted():
         JOIN enigma.organisations o ON i.issuer = o.personid
         JOIN enigma.sectypes st ON i.typeid = st.typeid
         LEFT JOIN enigma.dlreasons dl ON sl.reasonid = dl.reasonid
-        WHERE sl.delistdate <= CURRENT_DATE
+        WHERE sl.delistdate <= NOW()
           AND {exchange_filter}
           AND {type_filter}
         ORDER BY {order_by}
@@ -536,11 +536,16 @@ def advisers():
     # Get organization name
     try:
         org_result = execute_query("SELECT name1 FROM enigma.organisations WHERE personID = %s", (person_id,))
-        org_name = org_result[0]['name1'] if org_result else "Unknown"
+        if org_result:
+            org_name = org_result[0]['name1']
+        else:
+            org_name = "No such organisation"
+            person_id = 0  # ASP sets personID to 0 for non-existent orgs
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         current_app.logger.error(f"Error getting org name for advisers.asp: {ex}")
-        org_name = "Unknown"
+        org_name = "No such organisation"
+        person_id = 0
 
     # Build date filter for enigma.adviserships (using addDate/remDate with accuracy)
     # Note: Simplified - not using accuracy columns for MVP

@@ -1608,15 +1608,15 @@ def brokhist():
     Query params:
     - i: issueID
     - sc: stock code
-    - part: partID (specific broker)
+    - sort: dateup or datedn (default: datedn)
 
-    Tables used: ccass.parthold, ccass.dailylog
+    Tables used: ccass.dailylog, enigma.issuedshares
     """
     from flask import current_app
 
     issue_id = get_int('i', 0)
     stock_code = get_str('sc', '')
-    part_id = get_int('part', 0)
+    sort = get_str('sort', 'datedn')
 
     # Lookup stock if stock code provided
     if not issue_id and stock_code:
@@ -1648,45 +1648,60 @@ def brokhist():
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock: {ex}")
 
-    # Get participant name if specified
-    participant_name = None
-    if part_id > 0:
-        try:
-            result = execute_query("""
-                SELECT partName FROM ccass.participants WHERE partID = %s
-            """, (part_id,))
-            if result:
-                participant_name = result[0]['partname']
-        except Exception as ex:
-            current_app.logger.error(f"Error getting participant: {ex}")
-
-    # Query broker holdings history
+    # Query broker holdings history with issued shares
     history = []
     if issue_id > 0:
         try:
-            if part_id > 0:
-                # Specific broker
-                sql = """
-                    SELECT ph.atDate, ph.holding
-                    FROM ccass.parthold ph
-                    WHERE ph.issueID = %s AND ph.partID = %s
-                    ORDER BY ph.atDate DESC
-                """
-                results = execute_query(sql, (issue_id, part_id))
-            else:
-                # Total broker holdings from dailylog
-                sql = """
-                    SELECT atDate, BrokHldg AS holding
-                    FROM ccass.dailylog
-                    WHERE issueid = %s
-                    ORDER BY atDate DESC
-                """
-                results = execute_query(sql, (issue_id,))
+            # Determine sort order
+            order_by = "atDate" if sort == "dateup" else "atDate DESC"
 
-            for row in results:
+            # Query matches ASP logic:
+            # SELECT BrokHldg AS holding, atDate,
+            #   (SELECT Max(atDate) FROM issuedshares WHERE atDate<=d.atDate AND issueID=i) AS maxDate,
+            #   (SELECT outstanding FROM issuedshares WHERE issueID=i AND atDate=maxDate) AS shares
+            # FROM ccass.dailylog d WHERE issueID=i ORDER BY atDate DESC
+            sql = f"""
+                SELECT
+                    d.BrokHldg AS holding,
+                    d.atDate,
+                    (SELECT MAX(i.atDate)
+                     FROM enigma.issuedshares i
+                     WHERE i.atDate <= d.atDate AND i.issueID = %s) AS max_date,
+                    (SELECT i2.outstanding
+                     FROM enigma.issuedshares i2
+                     WHERE i2.issueID = %s
+                     AND i2.atDate = (SELECT MAX(i3.atDate)
+                                      FROM enigma.issuedshares i3
+                                      WHERE i3.atDate <= d.atDate AND i3.issueID = %s)) AS shares
+                FROM ccass.dailylog d
+                WHERE d.issueID = %s
+                ORDER BY {order_by}
+            """
+            results = execute_query(sql, (issue_id, issue_id, issue_id, issue_id))
+
+            # Calculate changes between holdings (matches ASP loop logic)
+            last_holding = None
+            for idx, row in enumerate(results):
+                holding = float(row['holding']) if row['holding'] is not None else 0
+
+                if sort == "dateup":
+                    # When sorting ascending, change is current minus previous
+                    change = (holding - last_holding) if last_holding is not None else None
+                    last_holding = holding
+                else:
+                    # When sorting descending, look ahead to next row
+                    if idx + 1 < len(results):
+                        next_holding = float(results[idx + 1]['holding']) if results[idx + 1]['holding'] is not None else 0
+                        change = holding - next_holding
+                    else:
+                        change = None
+
                 history.append({
-                    'atDate': row['atdate'],
-                    'holding': row['holding']
+                    'at_date': row['atdate'],
+                    'holding': holding,
+                    'change': change,
+                    'shares': float(row['shares']) if row['shares'] is not None else None,
+                    'max_date': row['max_date']
                 })
         except Exception as ex:
             current_app.logger.error(f"Error querying broker holdings: {ex}")
@@ -1697,6 +1712,5 @@ def brokhist():
                          stock_code=stock_code,
                          stock_name=stock_name,
                          person_id=person_id,
-                         part_id=part_id,
-                         participant_name=participant_name,
+                         sort=sort,
                          history=history)

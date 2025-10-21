@@ -1,0 +1,199 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include virtual="/dbeditor/cotop.inc"-->
+<h2>{{ title }}</h2>
+{# Call pollBar(PID,PQID,IIF(PID=0,6,2)) #}
+<p><b>{{ hint }}</b></p>
+{% if PID>0 %}<p><b>Poll ID:{{ PID }}</b></p>{% endif %}
+<form method="post" action="editP.asp">
+	<p>Poll name <input type="text" name="pollName" size="40" value="{{ pollName }}"></p>
+	<p>Start time <input type="datetime-local" name="startTime" value="{{ startTime }}"> 
+	End time <input type="datetime-local" name="endTime" value="{{ endTime }}"></p>
+	<p>Introduction</p>
+	<p><textarea rows="7" name="pollIntro" cols="99">{{ pollIntro }}</textarea></p>
+	<p>
+	{% if PID>0 %}
+		<input type="hidden" name="PID" value="{{ PID }}">
+		<input type="submit" name="submitEP" value="Update poll">
+		{% if submit="Delete poll" %}
+			<input type="submit" name="submitEP" style="color:red" value="Confirm delete poll">
+		{% else %}
+			<input type="submit" name="submitEP" value="Delete poll">
+		{% endif %}
+	{% else %}
+		<input type="submit" name="submitEP" value="Add poll">
+	{% endif %}
+	</p>
+</form>
+{% if PID>0 %}
+	<h3>Questions</h3>
+	
+		<p>None found. </p>
+	{# Else
+		a=rs.GetRows #}
+		<table class="txtable lcr l2cr">
+			<tr>
+				<th colspan="{{ IIF(Ubound(a,2)>0,3,1) }}"></th>
+				<th><b>Click to edit</b></th>
+				<th><b>Type</b></th>
+				<th><b>Min Int</b></th>
+				<th><b>Max Int</b></th>
+			</tr>
+			{# TODO: Port ASP logic: For x=0 to Ubound(a,2)... #}
+				<tr>
+					{% if Ubound(a,2)>0 %}
+						<td>
+							{% if x>0 %}
+								<a href="editP.asp?PID={{ PID }}&amp;qo={{ a(1,x) }}&amp;dir=up">Move up</a>
+							{% endif %}
+						</td>
+						<td>
+							{% if x<Ubound(a,2) %}
+								<a href="editP.asp?PID={{ PID }}&amp;qo={{ a(1,x) }}&amp;dir=dn">Move down</a>
+							{% endif %}
+						</td>
+					{% endif %}
+					<td>{{ a(1,x) }}</td>
+					<td><a href="editP.asp?PQID={{ a(0,x) }}">{{ a(2,x) }}</a></td>
+					<td>{{ a(3,x) }}</td>
+					<td>{{ a(4,x) }}</td>
+					<td>{{ a(5,x) }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.close
+	Call questionBar(PID,PQID,IIF(PQ... #}
+	{{ IIF(PQID>0,"<p>Question number: "&qOrder&"</p>","") }}
+	<form method="post" action="editP.asp">
+		<input type="hidden" name="PID" value="{{ PID }}">
+		<div class="inputs">
+			{% if Not blnAns %}
+				<p>Answer type: {{ arrSelect("listTypeID",listTypeID,voteDB.Execute("SELECT * FROM listtypes").GetRows,False) }}</p>			
+			{# TODO: Port ASP logic: ElseIf listTypeID<>2 Then 'allow change in answere... #}
+				<p>Answer type: {{ arrSelect("listTypeID",listTypeID,voteDB.Execute("SELECT * FROM listtypes WHERE listTypeID<>2").GetRows,False) }}</p>
+			{% else %}
+				<input type="hidden" name="listTypeID" value="{{ listTypeID }}">
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+		{% if PQID=0 or not blnAns %}
+			<div class="inputs">
+				<input type="text" name="question" size="70" value="{{ htmlEnt(question) }}">
+			</div>
+		{% else %}
+			<p><b>Question: {{ question }}</b></p>
+		{% endif %}
+		<div class="clear"></div>
+		{% if PQID=0 or (listTypeID=2 and not blnAns) %}
+			<div class="inputs">
+				<p>Minimum: <input type="number" step="1" min="-32768" max="32766" name="MinInt" size="6" value="{{ MinInt }}"> 
+				Maximum: <input type="number" step="1" min="-32767" max="32767" name="MaxInt" size="6" value="{{ MaxInt }}">
+				</p>
+			</div>
+			<div class="clear"></div>
+		{% endif %}
+		<div class="inputs">
+			{% if PQID=0 %}
+				<input type="submit" name="submitEP" value="Add question">
+			{% else %}
+				<input type="hidden" name="PQID" value="{{ PQID }}">
+				{% if Not blnAns or listTypeID!=2 %}
+					<input type="submit" name="submitEP" value="Update question">
+				{% endif %}
+				{% if submit="Remove question" %}
+					<input type="submit" name="submitEP" style="color:red" value="Confirm remove question">
+				{% else %}
+					<input type="submit" name="submitEP" value="Remove question">
+				{% endif %}
+			{% endif %}
+		</div>
+		<div class="clear"></div>
+	</form>
+	{% if PQID>0 and listTypeID!=2 %}
+		<h3>Answers</h3>
+		
+			<p>None found. </p>
+		{# Else
+			a=rs.GetRows #}
+			<table class="txtable">
+				<tr>
+					<th colspan="{{ IIF(Ubound(a,2)>0,3,1) }}"></th>
+					<th>Click to edit</th>
+				</tr>
+				{# TODO: Port ASP logic: For x=0 to Ubound(a,2)... #}
+					<tr>
+						{% if Ubound(a,2)>0 %}
+							<td>
+								{% if a(2,x)>1 %}
+									<a href="editP.asp?PQID={{ PQID }}&dir=up&amp;ao={{ a(2,x) }}">Move up</a>
+								{% endif %}
+							</td>
+							<td>
+								{% if x<Ubound(a,2) %}
+									<a href="editP.asp?PQID={{ PQID }}&dir=dn&amp;ao={{ a(2,x) }}">Move down</a>
+								{% endif %}
+							</td>
+						{% endif %}
+						<td>{{ a(2,x) }}</td>
+						<td><a href="editP.asp?AID={{ a(0,x) }}&amp;PQID={{ PQID }}">{{ a(1,x) }}</a></td>
+					</tr>
+				{% endfor %}
+			</table>
+		{# End If
+		rs.Close
+		rs.Open "SELECT pq.PQID,pq.PID,pollName,COUNT(*)cnt FROM pollquestions pq JOIN (polls p,pollqanda pqa) ON pq.PID=p.PID AND "&_
+			"pq.PQID=pqa.PQID WHERE listTypeID<>2 AND pq.PID<>"&PID&" AND pq.QID="&QID&" AND pqa.AID NOT IN "&_
+			"(SELECT AID FROM pollqanda WHERE PQID="&PQID&") GROUP BY PQID HAVING cnt>0",voteDB
+		If Not rs.EOF Then #}
+			<p>This question is in other polls with answers that you haven't added. Select to import.</p>
+			<table class="numtable fcl">
+				<tr>
+					<th>Click to view poll</th>
+					<th>Number of answers</th>
+					<th></th>
+				</tr>
+				{% for row in results %}
+					<tr>
+						<td><a target="_blank" href='poll.asp?PID={{ row.PID }}'>{{ row.pollName }}</a></td>
+						<td>{{ row.cnt }}</td>
+						<td><a href="editP.asp?PQID={{ PQID }}&amp;PQID2={{ row.PQID }}">Import</a></td>						
+					</tr>
+					{# TODO: Port ASP logic: rs.MoveNext
+				Loop... #}
+			</table>
+		{# TODO: Port ASP logic: End If
+		rs.Close
+		Call answerBar(PQID,AID,IIF(AI... #}
+		{{ IIF(AID>0,"<p>Answer number: "&aOrder&"</p>","") }}
+		<form method="post" action="editP.asp">
+			<input type="hidden" name="PQID" value="{{ PQID }}">
+			{% if AID=0 or not blnAns %}
+				<div class="inputs">
+					<input type="text" name="answer" size="70" value="{{ htmlEnt(answer) }}">
+				</div>
+				<div class="clear"></div>
+			{% else %}
+				<p><b>Answer: {{ answer }}</b></p>
+			{% endif %}
+			<div class="inputs">
+				{% if AID=0 %}
+					<input type="submit" name="submitEP" value="Add answer">
+				{% else %}
+					<input type="hidden" name="AID" value="{{ AID }}">
+					{% if Not blnAns %}
+						<input type="submit" name="submitEP" value="Update answer">
+					{% endif %}
+					<input type="submit" name="submitEP" value="Remove answer">
+				{% endif %}
+			</div>
+			<div class="clear"></div>
+		</form>
+	{# TODO: Port ASP logic: End If
+End If... #}
+
+<!--#include virtual="/dbeditor/cofooter.asp"-->
+{% endblock %}

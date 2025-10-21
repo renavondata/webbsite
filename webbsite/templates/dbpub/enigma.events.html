@@ -1,0 +1,35 @@
+{% extends "base_database.html" %}
+
+{% block title %}Corporate Events - {{ n if n else 'Webb-site Database' }}{% endblock %}
+
+{% block content %}
+<h2>Corporate Events</h2>
+
+{% if n %}
+<h3>{{ n }}</h3>
+{% endif %}
+
+{% if events and events|length > 0 %}
+<table class="txtable">
+	<tr>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='anndup') }}">Announced</a></th>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='evntdn') }}">Event Type</a></th>
+		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='exdtdn') }}">Ex-date</a></th>
+		<th>Details</th>
+	</tr>
+	{% for event in events %}
+	<tr>
+		<td>{{ event.announced }}</td>
+		<td>{{ event.change }}</td>
+		<td>{{ event.exdate }}</td>
+		<td>
+			{% if event.currency %}{{ event.currency }}{% endif %}
+			{% if event.amount %}{{ event.amount }}{% endif %}
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No events found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{# Option Explicit
+Response.Buffer=False #}
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<p>Click on the snapshot date to add or edit your comment in the logs. Click column-heads to sort.</p>
+<p><b><a href="CSV.asp?t=admprofiles">Download CSV</a></b></p>
+<table class="numtable">
+<tr>
+	<th></th>
+	<th>PID</th>
+	<th class="left">{# TODO: Port ASP logic: SL "Issuer","issup","issdn"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Snapshot<br>date","snapup","snapdn"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Dirs &<br>family","dirdn","dirup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Other<br>families","famdn","famup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Govts","govdn","govup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Asset<br>mgrs","amdn","amup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Others known","othdn","othup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Total","totdn","totup"... #}</th>
+	<th class="left">{# TODO: Port ASP logic: SL "Largest holder","mhup","mhdn"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Max stake","mhsdn","mhsup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Econ stake","estkdn","estkup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Weakest","wkstdn","wkstup"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Control type","typeup","typedn"... #}</th>
+	<th>{# TODO: Port ASP logic: SL "Updated","modd","modu"... #}</th>
+</tr>
+
+	<tr>
+		<td>{{ cnt }}</td>
+		<td>{{ p }}</td>
+		<td class="left"><a target="_blank" href="ownerdets.asp?p={{ p }}&amp;d={{ d }}">{{ row.issuer }}</a></td>
+		<td><a target="_blank" href="snaplog.asp?p={{ p }}&d={{ d }}">{{ d }}</a></td>
+		<td>{{ "{:.\2%}".format(row.dirStake) }}</td>
+		<td>{{ "{:.\2%}".format(row.famStake) }}</td>
+		<td>{{ "{:.\2%}".format(row.govStake) }}</td>
+		<td>{{ "{:.\2%}".format(row.amStake) }}</td>
+		<td>{{ "{:.\2%}".format(row.othStake) }}</td>
+		<td>{{ "{:.\2%}".format(row.totStake) }}</td>
+		<td class="left">
+			<a target="_blank" href="https://webb-site.com/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.maxHolder }}">{{ row.MHname }}</a>
+		</td>
+		<td>{# TODO: Port ASP logic: If Not isNull(maxStake) Then Response.Write Format... #}</td>
+		<td>{# TODO: Port ASP logic: If Not isNull(eStake) Then Response.Write FormatPe... #}</td>
+		<td>{# TODO: Port ASP logic: If Not isNull(wkst) Then Response.Write FormatPerc... #}</td>
+		<td><a class="info" href="#">{{ row.ownShort }}<span>{{ row.ownLong }}</span></a></td>
+		<td>{{ MSdateTime(row.modified) }}</td>
+	</tr>
+	{# TODO: Port ASP logic: rs.MoveNext
+Loop... #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

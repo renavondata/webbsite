@@ -1,0 +1,75 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿
+
+
+
+
+<!--#include virtual="/dbeditor/cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call mailBar(3)... #}
+<p>Use % for wildcards. Leave address empty to show top 500 sorted by latest join-time or selected column.</p>
+<form method="post" action="searchusers.asp">
+	<p>Check e-mail <input type="text" id="e" name="e" size="40" value="{{ e }}"></p>
+	<p>Check username <input type="text" id="u" name="u" size="40" value="{{ u }}"></p>
+	<div class="inputs">
+		<input type="checkbox" name="mailOn" value="1" {{ checked(mailOn) }}>Show mail-on only
+		<input type="checkbox" name="live" value="1" {{ checked(live) }}>Show activated only
+	</div>
+	<div class="clear"></div>
+	<div class="inputs">
+		<input type="hidden" name="sort" value="{{ sort }}">
+		<input type="submit" value="Submit">
+		<input type="button" value="Clear" onclick="e.value='';">
+	</div>
+	<div class="clear"></div>
+</form>
+{# Call openMailrs(con,rs)
+rs.Open "SELECT *,(SELECT COUNT(*) FROM mystocks WHERE user=ID)stocks FROM liveList WHERE 1=1 "&IIF(e>""," AND mailAddr Like '"&e&"' ","") &_
+	IIF(u>""," AND name='"&apos(u)&"'","") & IIF(mailOn," AND mailOn","")&IIF(live," AND everified","")&" ORDER BY "&ob&IIF(e=""," LIMIT 500",""),con
+If rs.EOF Then #}
+	<p>Address not found.</p>
+{% else %}
+	<table class="txtable">
+	<tr>
+		<th></th>
+		<th>{# TODO: Port ASP logic: SL  "e-mail","emup","emdn"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Username","namdn","namdn"... #}</th>
+		{% if Not live %}<th>Act.</th>{% endif %}
+		{% if Not mailOn %}<th>{# TODO: Port ASP logic: SL  "Mail","emon","emoff"... #}</th>{% endif %}
+		<th>{# TODO: Port ASP logic: SL "Stocks","stkdn","stkdn"... #}</th>
+		<th>Join IP</th>
+		<th>{# TODO: Port ASP logic: SL  "Join time","joindn","joinup"... #}</th>
+		<th>Leave IP</th>
+		<th>Leave time</th>
+		<th>{# TODO: Port ASP logic: SL "Last login","logdn","logdn"... #}</th>
+		<th>Pwd token sent</th>
+		<th>Pwd changed</th>
+	</tr>
+	{# Do Until rs.EOF
+		c=c+1 #}
+		<tr>
+			<td>{{ c }}</td>
+			<td><a href='mailchange.asp?o={{ row.mailaddr }}'>{{ row.mailAddr }}</a></td>
+			<td>{{ row.name }}</td>
+			{% if Not live %}<td class="center">{{ tick(row.eVerified) }}</td>{% endif %}
+			{% if Not mailOn %}<td class="center">{{ tick(row.MailOn) }}</td>{% endif %}
+			<td>{{ row.stocks }}</td>
+			<td>{{ row.JoinIP }}</td>
+			<td>{{ MSdateTime(row.JoinTime) }}</td>
+			<td>{{ row.LeaveIP }}</td>
+			<td>{{ MSdateTime(row.LeaveTime) }}</td>
+			<td>{{ MSdateTime(row.lastLogin) }}</td>
+			<td>{{ MSdateTime(row.tokTime) }}</td>
+			<td>{{ MSdateTime(row.pwdChanged) }}</td>
+		</tr>
+		{# TODO: Port ASP logic: rs.MoveNext
+	Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(con,rs)... #}
+<!--#include virtual="/dbeditor/cofooter.asp"-->
+{% endblock %}

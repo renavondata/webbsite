@@ -1,0 +1,105 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<form method="post" action="useradmin.asp">
+	<div class="inputs">
+		Role: {{ arrSelect("r",roleID,conRole.Execute("SELECT roleID,MSuser FROM wsprivs p JOIN wsroles r ON p.roleID=r.ID WHERE uRank>=128 AND userID="&myID).GetRows,True) }}
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<hr>
+<h3>Add a new editor from the mailing list</h3>
+<form method="post" action="useradmin.asp">
+	<input type="hidden" name="r" value="{{ roleID }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		Username or e-mail address
+		<input type="text" name="e" value="{{ e }}">
+		<input type="submit" name="submitUA" value="Search">
+	</div>
+	<div class="clear"></div>
+</form>
+<hr>
+{# TODO: Port ASP logic: If targID>0 And targID<>myID And myRank>targRank A... #}
+	<h3>Add or update editor</h3>
+	<form method="post" action="useradmin.asp">
+		<input type="hidden" name="r" value="{{ roleID }}">
+		<input type="hidden" name="u" value="{{ targID }}">
+		<table class="txtable">
+			<tr>
+				<th>User ID</th>
+				<th>Username</th>
+				<th>Rank</th>
+				<th>Live</th>
+			</tr>
+			<tr>
+				<td>{{ targID }}</td>
+				<td>{{ targName }}</td>
+				<td><input type="number" step="1" min="0" max="{{ myRank-1 }}" name="targRank" value="{{ targRank }}"></td>
+				<td class="center"><input type="checkbox" name="live" value="1" {{ checked(live) }}></td>
+			</tr>
+		</table>
+		{% if blnExist %}
+			<input type="submit" name="submitUA" value="Update">
+		{% else %}
+			<input type="submit" name="submitUA" value="Add">
+		{% endif %}	
+	</form>
+{% endif %}
+
+	<p>No users with that role. </p>
+{% else %}
+	<h3>Editors for role: {{ roleName }}</h3>
+	<table class="txtable">
+		<tr>
+			<th>User ID</th>
+			<th>{# TODO: Port ASP logic: SL "Username","namup","namdn"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "Rank","rnkdn","rnkup"... #}</th>
+			<th>{# TODO: Port ASP logic: SL "live","livdn","livup"... #}</th>
+			<th></th>
+		</tr>
+		{# Do Until rs.EOF
+			userRank=CInt(rs("uRank")) #}
+			<tr>
+				<td>{{ row.userID }}</td>
+				<td>{{ row.name }}</td>
+				<td>{{ row.uRank }}</td>
+				<td>{{ tick(row.live) }}</td>
+				<td>
+					{% if myRank>userRank %}
+					<a href="useradmin.asp?r={{ roleID }}&amp;u={{ row.userID }}">Edit</a>
+					{% endif %}
+				</td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conRole,rs)... #}
+<p><b>{{ hint }}</b></p>
+<hr>
+<h3>Rules</h3>
+<ol>
+<li>Rank determines editing rights. An editor can only overwrite another editor's entries in the database if they outrank them. 
+The lowest live rank is 1.</li>
+	<li>To prevent an editor making any further changes, untick "live" and update. If you trust their previous 
+	entries, then don't downgrade their ranking, otherwise users with higher ranking could overwrite them. 
+	Alternatively, if you think their entries are unreliable, downgrade them to 0.</li>
+	<li>You can only set an editor's rank to below your own rank. So if your rank is 128, you can set ranks up to 127.</li>
+	<li>To be an admin for a role, your rank must be 128 or higher. This page will then be available to you. If you have 
+	a rank above 128, then you can promote users to admins with ranks 128 or higher, and they can then be admins for 
+	editors 
+	below their rank.</li>
+	<li>You cannot downgrade your own rank. Only an admin with higher rank can downgrade you.</li>
+	<li>To add an editor to a role, they must first open a free user account on Webb-site with an email adddress and 
+	then choose a username. When editing the database, we only display usernames. A user can change their username or 
+	email address but their internal user ID will be permanent, so all their previous entries will show the current 
+	username.</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

@@ -1,0 +1,188 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{# Option Explicit
+Session.Timeout=60 #}
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<div id="hint"><b>{{ hint }}</b></div>
+<form action="coms.asp" method="post">
+	{% if p=0 %}
+		<h3>Select company</h3>
+		<div class="inputs">
+			{{ arrSelectZ("p","",conRole.Execute("SELECT DISTINCT personID,name FROM listingsforhku ORDER BY name").GetRows,True,True,0,"Select") }}
+		</div>
+		<div class="clear"></div>
+	{% else %}
+		<input type="hidden" name="p" value="{{ p }}">
+		<table class="txtable">
+			<tr>
+				<td>Company:</td>
+				<td><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">{{ name }}</a></td>
+				<td><a href="coms.asp">Clear</a></td>
+			</tr>
+		</table>
+		{% if d="" %}
+			<div class="inputs">Snapshot date: 
+				<input type="date" name="d" value="{{ d }}" onblur="this.form.submit()">
+				<%If p>0 Then
+					rs.Open "SELECT DISTINCT DATE_FORMAT(atDate,'%Y-%m-%d'),DATE_FORMAT(atDate,'%Y-%m-%d') FROM (SELECT DISTINCT atDate FROM sholdings s JOIN issue i ON s.issueID=i.ID1 "&_
+						"WHERE Not isNull(atDate) AND i.issuer="&p&" UNION SELECT DISTINCT atDate FROM compos WHERE orgID="&p&" ORDER BY atDate)t1",conRole
+					If Not rs.EOF Then Response.Write arrSelectZ("kd","",rs.GetRows,True,True,"","Known dates")
+					rs.Close
+				End If%>
+			</div>
+			<div class="clear"></div>
+		{% else %}
+			<input type="hidden" name="d" value="{{ d }}">
+			<input type="hidden" name="f" value="1">
+			<table class="txtable">
+				<tr>
+					<td>Snapshot date:</td>
+					<td>{{ d }}</td>
+					<td><a href="coms.asp?p={{ p }}">Clear</a></td>
+				</tr>
+			</table>
+			{% if copyDate!="" %}
+				<p>Previous snapshot: {{ copyDate }}</p>
+				<input type="submit" name="submitBtn" value="Copy previous">
+			{% endif %}
+			<p><a target="_blank" href="snaplog.asp?j=1&p={{ p }}&d={{ d }}">Log this snapshot</a></p>
+			
+				<p>No committees:
+				{% for row in results %}
+					<input type="checkbox" name="nocom" value="{{ row.ID }}" {{ checked(Not isNull(row.comID)) }} onchange="this.form.submit()">{{ row.comName }}&nbsp;
+					{# TODO: Port ASP logic: rs.MoveNext
+				Loop... #}
+				</p>
+			{# End If
+			rs.Close
+			rs.Open "SELECT ID,comName FROM coms WHERE ID>3 AND ID NOT IN (SELECT DISTINCT comID FROM compos WHERE orgID="&p&" AND atDate='"&d&"') ORDER BY comName",conRole
+			If Not rs.EOF Then #}
+				<p>Add a committee	{{ arrSelectZ("c","",rs.GetRows,True,True,0,"Select") }}</p>
+			{# TODO: Port ASP logic: End If
+			rs.Close
+		End If
+	End If... #}
+	<input type="submit" name="submitBtn" value="Go">
+</form>
+{# TODO: Port ASP logic: If p>0 And d>"" Then
+	If ar Then
+		sql=""... #}
+		<p>This is an annual report date. Please enter numbers of meetings during the financial year, where known. </p>
+	{# Else
+		sql=" AND ID>0"
+	End If	
+	'present inputs
+	rs2.Open "SELECT ID,comName FROM coms LEFT JOIN compos p ON orgID="&p&" AND atDate='"&d&"' AND ID=comID "&_
+		"LEFT JOIN comex x ON x.orgID="&p&" AND x.atDate='"&d&"' AND ID=x.comID "&_
+		"WHERE isNull(x.comID) AND (ID<4 OR ID=8 OR ID="&c&" OR Not isNull(p.comID))"&sql&" GROUP BY ID",conRole
+	Do Until rs2.EOF
+		com=rs2("ID")
+		comName=rs2("comName")
+		If com>0 And com<>8 Then comName=comName & " Committee" #}
+		<h3>{{ comName }}</h3>
+		{# TODO: Port ASP logic: If ar Then
+			rs.Open "SELECT * FROM comeets c JOI... #}
+			<table class="txtable">
+				<tr>
+					<td>Meetings:</td>
+					<td><input type="number" width="3" min="0" max="255" title="0-255" required id="c{{ com }}mtngs" value="{{ mtngs }}" onblur="setComeets({{ p }},{{ com }},'{{ d }}',value)"></td>
+					<td id="c{{ com }}mod">{{ modified }}</td>
+					<td id="c{{ com }}u">{{ user }}</td>
+				</tr>
+			</table>
+			{# End If
+		rs.Open "SELECT DISTINCT director,CAST(fnameppl(name1,name2,cname) AS NCHAR) AS name,c.posn,c.modified,u.name AS user,attend,mtngs FROM directorships d JOIN (people p,positions pn) "&_
+			"ON d.director=p.personID AND d.positionID=pn.positionID LEFT JOIN compos c ON d.company=c.orgID AND d.director=c.dirID AND c.atDate='"&d&"' AND comID="&com&_
+			" JOIN users u ON c.userID=u.ID "&_
+			" WHERE pn.rank=1 AND (isNull(apptDate) OR apptDate<='"&d&"') AND (isNull(resDate) OR resDate>'"&startDate&"') AND company="&p&_
+			" ORDER BY name;",conRole #}
+		<table class="txtable">
+			<tr>
+				<th>Member</th>
+				{% if com>0 and com!=8 %}
+					<th class="center">N</th>
+					<th class="center">M</th>
+					<th class="center">C</th>
+				{% endif %}
+				<th>Modified</th>
+				<th>Last user</th>
+				{% if ar %}
+					<th>Attended</th>
+					<th>Out of</th>
+				{% endif %}
+			</tr>
+		{# Do Until rs.EOF
+			dir=rs("director")
+			posn=rs("posn") #}
+			<tr>
+				<td>{{ row.name }}</td>
+				{% if com>0 and com!=8 %}
+					{# TODO: Port ASP logic: For x=0 to 2... #}
+						<td class="center"><input type="radio" name="d{{ dir }}c{{ com }}v" id="d{{ dir }}c{{ com }}v{{ x }}" value="{{ x }}" {{ checked(x=posn) }}
+							onclick="setCompos({{ p }},{{ dir }},{{ com }},'{{ d }}',{{ x }})"></td>
+					{# TODO: Port ASP logic: Next
+				End If... #}
+				<td id="d{{ dir }}c{{ com }}m">{{ MSdateTime(row.modified) }}</td>
+				<td id="d{{ dir }}c{{ com }}u">{{ row.user }}</td>
+				{% if ar %}
+					<td><input id="d{{ dir }}c{{ com }}att" type="number" min="0" max="255" value="{{ row.attend }}" onblur="setAttend({{ p }},{{ dir }},{{ com }},'{{ d }}',value)"></td>
+					<td><input id="d{{ dir }}c{{ com }}mtngs" type="number" min="0" max="255" value="{{ row.mtngs }}" onblur="setAttend({{ p }},{{ dir }},{{ com }},'{{ d }}','',value)"></td>
+				{% endif %}
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop
+		rs.Close... #}
+		</table>
+		{# rs2.MoveNext
+	Loop
+	rs2.Close
+End If
+If p>0 Then
+	rs.Open "SELECT OldName,oldcName,MSdateAcc(dateChanged,dateAcc)chg FROM nameChanges WHERE personID="&p&" ORDER BY DateChanged DESC",conRole #}
+	<h3>Name history</h3>
+	{% if not results %}
+		<p>None found.</p>
+	{% else %}	
+		<table class="txtable">
+			<tr>
+				<th>Old English name</th>
+				<th>Old Chinese name</th>
+				<th class="right"><b>Until</b></th>
+			</tr>
+			{% for row in results %}
+				<tr>
+					<td>{{ row.OldName }}&nbsp;</td>
+					<td>{{ row.oldcName }}&nbsp;</td>		
+					<td class="right">{{ row.chg }}</td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# End If
+	rs.Close
+	rs2.Open "SELECT DISTINCT issueID FROM stocklistings s JOIN issue i ON s.issueID=i.ID1 "&_
+		"WHERE stockExID IN(1,20) AND typeID IN(0,6,7,8,10,42) AND NOT 2ndCtr AND issuer="&p,conRole
+	If Not rs2.EOF Then #}
+		<h3>Listings</h3>
+		{# Do Until rs2.EOF
+			i=rs2("issueID")
+			Call HKlistings(i)
+			rs2.moveNext
+		Loop
+	End If
+	rs2.Close #}
+	<p><a target="_blank" href="snaplog.asp?j=1&p={{ p }}">Snapshot logs for this issuer</a></p>
+	<p><a target="_blank" href="https://webb-site.com/dbpub/docs.asp?p={{ p }}">View documents for this issuer</a></p>
+{# End If
+Set rs2=Nothing
+Call CloseConRs(conRole,rs) #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

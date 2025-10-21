@@ -1,0 +1,81 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ pName }}</h2>
+<form method="post" action="stories.asp">
+	<div class="inputs">Stories category {{ arrSelectZ("c",c,con.Execute("SELECT ID,name FROM categories ORDER BY name").GetRows,True,True,0,"") }}</div>
+	<div class="clear"></div>
+</form>
+{# TODO: Port ASP logic: If p>0 Then
+	If human Then
+		Call pplBar(p,7)
+	Els... #}
+	<p>No articles found.</p>
+{# Else
+	Dim rs2
+	Set rs2=Server.CreateObject("ADODB.Recordset")
+	Do Until rs.EOF
+		sourceName=rs("SourceName")
+		summary=rs("Summary")
+		URL="story.asp?s="&rs("storyID")
+		storyID=rs("StoryID") #}
+		<div class="artsum">
+			<a href="story.asp?s={{ row.storyID }}">{% if row.sourceID=1 %}<b>{{ row.Title }}</b>{% else %}{{ row.Title }}{% endif %}</a>
+			<br>
+			<span style="color:gray">
+				{# TODO: Port ASP logic: If sourceName<>"" Then Response.Write sourceName&"... #}
+				{{ ForceDate(row.StoryDate) }}
+			</span>
+			{# TODO: Port ASP logic: If summary<>"" Then Response.write "<br>"&summary... #}
+			<ul class="navlist">
+				{# rs2.Open "SELECT name1 AS name,ps.personID FROM personstories ps JOIN organisations o ON ps.personID=o.personID "&_
+				"WHERE storyID="&storyID&" AND ps.personID<>"&p&" ORDER BY Name",con
+				If Not rs2.EOF Then #}
+					<li><a href="story.asp?s={{ storyID }}">Orgs</a>
+						<ul>
+						{# TODO: Port ASP logic: Do Until rs2.EOF... #}
+							<li><a href="stories.asp?p={{ rs2("PersonID") }}">{{ rs2("Name") }}</a></li>
+							{# TODO: Port ASP logic: rs2.MoveNext
+						Loop... #}
+						</ul>
+					</li>
+				{# End If
+				rs2.Close
+				rs2.Open "SELECT CAST(fnameppl(name1,name2,cName)AS NCHAR)name,ps.personID FROM personstories ps JOIN people p "&_
+					"ON ps.personID=p.personID WHERE storyID="&storyID&" AND ps.personID<>"&p&" ORDER BY name",con
+				If Not rs2.EOF Then #}
+					<li><a href="story.asp?s={{ StoryID }}">People</a>
+						<ul>
+						{# TODO: Port ASP logic: Do Until rs2.EOF... #}
+							<li><a href="stories.asp?p={{ rs2("PersonID") }}">{{ rs2("Name") }}</a></li>
+							{# TODO: Port ASP logic: rs2.MoveNext
+						Loop... #}
+						</ul>
+					</li>
+				{# End If
+				rs2.Close
+				rs2.Open "SELECT name,catID FROM storytags s JOIN categories c ON s.catID=c.ID "&_
+					"WHERE storyID="&storyID&" ORDER BY name",con
+				If Not rs2.EOF Then #}
+					<li><a href="story.asp?s={{ storyID }}">Topics</a>
+						<ul>
+						{# TODO: Port ASP logic: Do Until rs2.EOF... #}
+							<li><a href='../dbpub/subject.asp?c={{ rs2("catID") }}'>{{ rs2("name") }}</a></li>
+							{# TODO: Port ASP logic: rs2.MoveNext
+						Loop... #}
+						</ul>
+					</li>
+				{# TODO: Port ASP logic: End If
+				rs2.Close... #}
+			</ul>
+			<div class="clear"></div>
+		</div>
+		{# TODO: Port ASP logic: rs.MoveNext
+	Loop
+End If
+Call CloseConRs(con,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

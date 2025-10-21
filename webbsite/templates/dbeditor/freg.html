@@ -1,0 +1,112 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,11)
+End If... #}
+<form method="post" action="freg.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<p><a href="searchorgs.asp?tv=p">Find an organisation</a></p>
+<h3>{{ title }}</h3>
+{% if p>0 %}
+	<form method="post" action="freg.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<table class="txtable">
+			<tr>
+				<th>Host domicile</th>
+				<th>Registry ID</th>
+				<th>Registered date</th>
+				<th>Ceased date</th>
+			</tr>
+			<tr>
+				{% if ID=0 %}
+					<td>{{ arrSelectZ("host",host,conMaster.Execute("SELECT ID, friendly FROM domiciles WHERE ID<>1 ORDER BY friendly").GetRows,False,True,0,"") }}</td>
+					<td><input type="text" name="regID" style="width:11em" maxlength="11" value="{{ regID }}"></td>
+				{% else %}
+					<td>{{ hostName }}</td>
+					<td>{{ regID }}</td>
+				{% endif %}
+				{% if ID>0 and host=1 %}
+					<td>{{ regDate }}</td>
+				{% else %}
+					<td><input type="date" name="regDate" value="{{ regDate }}"></td>
+				{% endif %}
+				<td><input type="date" name="cesDate" value="{{ cesDate }}"></td>
+			</tr>
+		</table>
+		<p><b>{{ hint }}</b></p>
+		{% if ID>0 %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			<input type="submit" name="submitfreg" value="Update">
+			{% if submit="Delete" and host!=1 %}
+				<input type="submit" name="submitfreg" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitfreg" value="Cancel">
+			{% elif host!=1 %}
+				<input type="submit" name="submitfreg" value="Delete">
+			{# TODO: Port ASP logic: End If
+		Else... #}
+			<input type="submit" name="submitfreg" value="Add">	
+		{% endif %}
+	</form>
+	<form method="post" action="freg.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitfreg" value="Clear form">
+	</form>
+	<h3>Foreign registrations of this organisation</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="txtable">
+			<tr>
+				<th>Our ID</th>
+				<th>Host domicile</th>
+				<th>Registry ID</th>
+				<th>Registered date</th>
+				<th>Ceased date</th>
+			</tr>
+			{% for row in results %}
+				<tr>
+					<td>{{ row.ID }}</td>
+					<td>{{ row.friendly }}</td>
+					<td>{{ row.regID }}</td>
+					<td>{{ row.regDate }}</td>
+					<td>{{ row.cesDate }}</td>
+					<td><a href='freg.asp?ID={{ row.ID }}'>Edit</a></td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conMaster,... #}
+<hr>
+<h3>Rules</h3>
+<ol>
+	<li>Do not confuse a foreign registration with a 
+	<a href="olddom.asp?p={{ p }}">change of domicile</a>. This 
+	page is 
+	only for situations in which a company is domiciled in one jurisdiction and 
+	additionally, registered in another.</li>
+	<li>The "host domicile" is the place in which the foreign registration is 
+	made (for example, a HK company registered in the UK has a host domicile of 
+	United Kingdom).</li>
+	<li>&nbsp;A company can have multiple foreign registrations, but only one in 
+	each host domicile simultaneously. If it leaves, it can come back with a new 
+	registration.</li>
+	<li>After a registration has been added (requiring a host domicile and 
+	Registry ID), those 2 parameters cannot be edited. If you've made a mistake 
+	then delete the record and start again.</li>
+	<li>The host domicile and Registry ID are a unique pair. You cannot add a 
+	record with the same pair.</li>
+	<li>HK registrations are maintained automatically, so you can't add or 
+	delete them, but our system cannot collect the cessation date from the 
+	registry, so you can edit that.</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

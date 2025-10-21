@@ -1,0 +1,36 @@
+{%extends "base.html" %}
+
+{% block title %}Edit document info: {{ name }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ name }}{# TODO: Port ASP logic: If not isNull(cName) Then Response.Write "<br/>" &... #}</h2>
+{% if name!="No record found" %}
+	<h2>Enter or change filing date-time and URL of report</h2>
+	<p>The filing date and time are shown on the HKEx search results page. Do 
+	not cut-and-past the dates, as they are the wrong format so ambiguous dates 
+	will be reversed from DD/MM to MM/DD. Use only YYYY-MM-DD HH:MM (you can 
+	type a dot instead of a colon). </p>
+	<table>
+		<tr><td>Report type:</td><td>{{ docLong }}</td></tr>
+		<tr><td>Accounting date:</td><td>{{ recDate }}</td></tr>
+		<tr><td>Report dated:</td><td>{{ repDate }}</td></tr>
+		<tr><td>Report filed date-time:</td><td>{{ MSdatetime(repFiled) }} HKT</td></tr>
+		<tr><td>URL:</td><td><a target="_blank" href="{{ repURL }}">{{ repURL }}</a></td></tr>
+		{% if not changed %}
+			<tr><td>Last modified:</td><td>{{ lastMod }} HKT</td></tr>
+			<tr><td>Modified by:</td><td>{{ user }}</td></tr>
+		{% endif %}
+	</table>
+	<form method="post" action="docedit.asp">
+	<input type="hidden" name="d" value="{{ docID }}"/>
+	<p>Date and time filed: <input type="datetime-local" name="filed" value="{{ subDT }}"/> (YYYY-MM-DD HH:MM)</p>
+	<p>URL: https://www.hkexnews.hk/listedco/listconews/ <input type="text" name="subURL" value="{{ subURL }}" size="90"/></p>
+	<input type="submit" name="submit" value="Submit"/>
+	</form>
+	<p><b>{{ hint }}</b></p>
+	<p><a href="doclinks.asp?p={{ person }}">Back to list</a></p>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(con,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

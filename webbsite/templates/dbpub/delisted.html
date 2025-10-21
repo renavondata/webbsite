@@ -31,30 +31,30 @@
 	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
 {% else %}
 	<table class="numtable yscroll">
-		<tr>
-			<th class="colHide1">Row</th>
-			<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='codeup' if sort!='codeup' else 'codedn') }}">Stock<br>Code</a></th>
-			<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='typeup' if sort!='typeup' else 'typedn') }}">Sec.<br>type</a></th>
-			<th class="left"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='nameup' if sort!='nameup' else 'namedn') }}">Issuer</a></th>
-			<th class="colHide2"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='fdatedn' if sort!='fdatedn' else 'fdateup') }}">First<br>trade</a></th>
-			<th class="colHide2"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ldatedn' if sort!='ldatedn' else 'ldateup') }}">Last<br>trade</a></th>
-			<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ddatedn' if sort!='ddatedn' else 'ddateup') }}">Delist<br>date</a></th>
-			<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='lifeup' if sort!='lifeup' else 'lifedn') }}">Trade<br>life<br>(years)</a></th>
-			<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='rsnup' if sort!='rsnup' else 'rsndn') }}">Reason</a></th>
-		</tr>
-		{% for stock in stocks %}
-		<tr>
-			<td class="colHide1">{{ loop.index }}</td>
-			<td>{{ stock.StockCode }}</td>
-			<td class="left colHide3"><span class="info">{{ stock.typeShort }}<span>{{ stock.typeLong }}</span></span></td>
-			<td class="left"><a href="{{ url_for('dbpub.enigma_orgdata', p=stock.PersonID) }}">{{ stock.Name1 }}</a></td>
-			<td class="colHide2" style="white-space:nowrap">{{ stock.FirstTradeDate }}</td>
-			<td class="colHide2" style="white-space:nowrap">{{ stock.FinalTradeDate }}</td>
-			<td style="white-space:nowrap">{{ stock.DelistDate }}</td>
-			<td class="colHide3">{{ "%.1f"|format(stock.TradeLife) if stock.TradeLife else '' }}</td>
-			<td class="left colHide3">{{ stock.Reason }}</td>
-		</tr>
-		{% endfor %}
-	</table>
+	<tr>
+		<th class="colHide1">Row</th>
+		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='codeup' if sort!='codeup' else 'codedn') }}"><b>Stock Code</b></a></th>
+		<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='typeup' if sort!='typeup' else 'typedn') }}"><b>Sec.<br>type</b></a></th>
+		<th class="left"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='nameup' if sort!='nameup' else 'namedn') }}"><b>Issuer</b></a></th>
+		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='fdateup' if sort!='fdateup' else 'fdatedn') }}"><b>First trade</b></a></th>
+		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ldatedn' if sort!='ldatedn' else 'ldateup') }}"><b>Last trade</b></a></th>
+		<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ddatedn' if sort!='ddatedn' else 'ddateup') }}"><b>Delisted</b></a></th>
+		<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='lifeup' if sort!='lifeup' else 'lifedn') }}"><b>Trading<br>life,<br>years</b></a></th>
+		<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='rsnup' if sort!='rsnup' else 'rsndn') }}"><b>Reason</b></a></th>
+	</tr>
+	{% for stock in stocks %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td class="colHide3"><a href="str.asp?i={{ stock.issueID }}">{{ stock.StockCode }}</a></td>
+		<td class="left colHide3"><span class="info">{{ stock.typeShort }}<span>{{ stock.typeLong }}</span></span></td>
+		<td class="left"><a href='orgdata.asp?p={{ stock.PersonID }}'>{{ stock.Name1 }}</a></td>
+		<td class="colHide3">{{ stock.FirstTradeDate if stock.FirstTradeDate else '' }}</td>
+		<td class="colHide3">{{ stock.FinalTradeDate if stock.FinalTradeDate else '' }}</td>
+		<td>{{ stock.DelistDate if stock.DelistDate else '' }}</td>
+		<td>{% if stock.TradeLife %}{{ "%.3f"|format(stock.TradeLife) }}{% endif %}</td>
+		<td class="left colHide3">{{ stock.Reason if stock.Reason else '' }}</td>
+	</tr>
+	{% endfor %}
+</table>
 {% endif %}
 {% endblock %}

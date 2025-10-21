@@ -1,0 +1,31 @@
+﻿
+{# functions1.asp functionality moved to Python helpers #}
+{# Navigation bars #}
+<!--#include file="../webbmail/prepmsg.asp"-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# Variables moved to Flask route #}
+<title>{{ title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+{# TODO: Port ASP logic: Call userBar(3)... #}
+<h2>{{ title }}</h2>
+{% if member %}
+	<p><b>We have sent you an e-mail with a link to reset your password. If you 
+	cannot find it, please check your spam/junk folder and whitelist us. The 
+	link will expire in 12 hours or when first used.</b></p>
+{% else %}
+	<form method="post" action="forgot.asp">
+	<p>E-mail address: <input type="text" name="e" class="ws" value="{{ e }}"></p>
+	<p><b>{{ hint }}</b></p>
+	<p><input type="submit" value="Send me a reset link"></p>
+	</form>
+{% endif %}
+<!--#include file="../templates/footerws.asp"-->
+</body>
+</html>

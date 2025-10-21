@@ -1,0 +1,53 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call payBar(3)... #}
+<p>Thank you for contributing to corporate transparency in Hong Kong! This table excludes Webb-site founder David Webb and his staff. At the end of 
+2024, the top 2 volunteers by valid submissions will be invited 
+to lunch at the Hong Kong Club with David Webb, if he is medically able.</p>
+<p>Accuracy is the ratio of (1) valid submitted pay-lines entered and submitted to (2) total lines entered plus lines 
+corrected or added after submission. We only show this for editors with at least 200 valid pay-lines who have made a 
+submission in the last 14 days. If you are inactive for 14 days then your rank will drop to 1, so that others with 
+higher rank can correct any errors if you have left the project. Accuracy tends to 
+improve as you gain experience. Currently editors in the top half by accuracy have editing rank 2 and are able to edit 
+pay-lines for those with an editing rank of 1. Click on the Username to see which pay-years the editor has submitted. 
+Ranks are recalculated daily.</p>
+<table class="numtable c2l yscroll">
+	<tr>
+		<th></th>
+		<th>Username</th>
+		<th>Submissions</th>
+		<th>{# TODO: Port ASP logic: SL "Last submission","lsdn","lsup"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Valid<br>lines<br>entered","vldn","vlup"... #}</th>
+		<th>Pay-lines<br>corrected<br>after<br>submission</th>
+		<th>Pay-years<br>corrected<br>after<br>submission</th>
+		<th>{# TODO: Port ASP logic: SL "Valid<br>submissions","vsdn","vsup"... #}</th>
+		<th>{# TODO: Port ASP logic: SL "Accuracy","accdn","accup"... #}</th>
+		<th>Rank</th>
+	</tr>
+	{# TODO: Port ASP logic: For x=0 to Ubound(a,2)... #}
+		<tr>
+			<td>{{ x+1 }}</td>
+			<td><a href="paysubmitted.asp?u={{ a(0,x) }}">{{ a(1,x) }}</a></td>
+			<td>{{ a(2,x) }}</td>
+			<td>{{ MSdateTime(a(3,x)) }}</td>
+			<td>{{ a(4,x) }}</td>
+			<td>{{ a(5,x) }}</td>
+			<td>{{ a(6,x) }}</td>
+			<td>{{ a(7,x) }}</td>
+			<td>{# TODO: Port ASP logic: If a(10,x) And CLng(a(4,x))>=200 Then Response.Wri... #}</td>
+			<td>{{ a(9,x) }}</td>
+		</tr>
+	{% endfor %}
+</table>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

@@ -1,0 +1,59 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if h1>0 %}
+	<h2>{{ h1Name }}</h2>
+	{# TODO: Port ASP logic: Call pplBar(h1,6)... #}
+{% elif h2>0 %}
+	<h2>{{ h2Name }}</h2>
+	{# TODO: Port ASP logic: Call pplBar(h2,6)... #}
+{% else %}
+	<h2>{{ title }}</h2>
+{% endif %}
+<h3>Rules</h3>
+<ol>
+	<li>When combining 2 humans, make the survivor the one with the most 
+	detailed name, for example with a middle name that the other one does not 
+	show.</li>
+	<li>You can't combine people with conflicting date of birth, date of death, 
+	HKID or SFCID.</li>
+</ol>
+<hr>
+<form action="combineppl.asp" method="post">
+	<input type="hidden" name="h1" value="{{ h1 }}">
+	<input type="hidden" name="h2" value="{{ h2 }}">
+	<table class="txtable">
+		<tr>
+			<th>Select</th>
+			<th>Name</th>
+		</tr>
+		<tr>
+			<td><a href="searchpeople.asp?tv=h1">Human 1 (survivor)</a></td>
+			<td><a href="human.asp?p={{ h1 }}">{{ h1Name }}</a></td>
+		</tr>
+		<tr>
+			<td><a href="searchpeople.asp?tv=h2">Human 2 (to be deleted)</td>
+			<td><a href="human.asp?p={{ h2 }}">{{ h2Name }}</a></td>
+		</tr>
+	</table>
+	<p><b>{{ hint }}</b></p>
+	{% if ready %}
+		{% if submit="Combine" %}
+			<input type="submit" name="submitCH" style="color:red" value="CONFIRM COMBINE">
+			<input type="submit" name="submitCH" value="Cancel">
+		{% else %}
+			<input type="submit" name="submitCH" value="Combine">
+		{# TODO: Port ASP logic: End If
+	End If
+	If h1>0 Or h2>0 Then... #}
+		<input type="submit" name="submitCH" value="Swap Persons">
+	{% endif %}
+</form>
+<form method="post" action="combineppl.asp?reset=1"><input type="submit" value="Clear form"></form>
+{# Set rs2=Nothing
+Call closeConRs(conMaster,rs) #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

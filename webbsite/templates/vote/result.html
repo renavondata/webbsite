@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# functions1.asp functionality moved to Python helpers #}
+{# Variables moved to Flask route #}
+<title>{{ Title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+<ul class="navlist">
+	<li><a href="poll.asp?p={{ PID }}">Poll</a></li>
+	<li id="livebutton">Results</li>
+	<li><a href="default.asp">More polls</a> </li>
+</ul>
+<div class="clear"></div>
+<h2>{{ Title }}</h2>
+<p><b>{{ Hint }}</b></p>
+{% if blnReady %}
+	<table class="txtable">
+	<tr><td>Current time: </td><td>{{ MSdateTime(NowTime) }}</td></tr>
+	<tr><td>Closing time: </td><td>
+	{# TODO: Port ASP logic: If IsNull(EndTime) Then
+		Response.Write "Not yet ... #}
+	</td></tr></table>
+	{% if isNull(EndTime) or not blnClosed %}
+	<p><b>This poll is still open - <a href="poll.asp?p={{ PID }}">click here</a> to vote or to change your vote!</b></p>
+	{# TODO: Port ASP logic: End If
+	If PollIntro<>"" Then... #}
+		<h3>Introduction</h3>
+		<p>{{ PollIntro }}</p>
+	{# End If
+	Set Qs=Server.CreateObject("ADODB.Recordset")
+	Set Answers=Server.CreateObject("ADODB.Recordset")
+	Qs.Open "SELECT PQID,Question,MinInt,MaxInt FROM pollquestions JOIN questions on pollquestions.QID=Questions.QID WHERE PID="&PID&" ORDER BY Qorder",MailDB
+	arrQ=Qs.Getrows()
+	Qs.Close
+	qCnt=UBound(arrQ,2)
+	For y=0 to qCnt
+		If isNull(arrQ(2,y)) Then canCross=canCross+1
+	Next
+	For y=0 to qCnt #}
+		<hr>
+		<p><b>{{ 1+y&". "&arrQ(1,y) }}</b></p>
+		{# PQID=arrQ(0,y)
+		If IsNull(arrQ(2,y)) Then
+			'MinInt is Null, so Question has an Answer list
+			Answers.Open "SELECT Answer,Count(UserID) as score FROM pollqanda JOIN Answers ON pollqanda.AID=Answers.AID "&_
+				"LEFT JOIN Responses ON PollQanda.PQID=Responses.PQID AND pollqanda.AID=Responses.AID "&_		
+				"WHERE pollqanda.PQID="&PQID&" GROUP BY Answer ORDER BY Aorder",MailDB
+		Else
+			'Question had an integer range
+			If arrQ(3,y)=100 Then
+				'percentage
+				Answers.Open "SELECT Count(AID) as count,AVG(AID) AS score FROM Responses WHERE PQID="&PQID,MailDB #}
+				<p>Number of respondents: {{ Answerow.count }}</p>
+				<p>Average response: {{ "{:.\2%}".format(CDbl(Answerow.score)/100) }}</p>
+				{# Answers.MoveNext
+			Else 
+				Answers.Open "SELECT AID,Count(UserID) AS score FROM Responses WHERE PQID="&PQID&" GROUP BY AID ORDER BY AID",MailDB
+			End If
+		End If	
+		If not Answers.EOF Then
+			arrAns=Answers.Getrows()
+			Answers.Close
+			rowCount=UBound(arrAns,2)
+			colTotal=ColSum(arrAns,1) #}
+			<table class="numtable">
+			<tr>
+				<th class="left"><b>Answer</b></th>
+				<th><b>Responses</b></th>
+				<th><b>Share</b></th>
+			</tr>
+			{# TODO: Port ASP logic: For x=0 to rowCount... #}
+				<tr>
+					<td class="left">{{ arrAns(0,x) }}</td>
+					<td>{{ arrAns(1,x) }}</td>
+					<td>
+					{# TODO: Port ASP logic: If ColTotal<>0 Then
+						Response.Write FormatPer... #}
+					</td></tr>
+			{% endfor %}
+			<tr class="total">
+				<td class="left">Total</td>
+				<td>{{ colTotal }}</td>
+				<td>100.0%</td>
+			</tr>
+			</table>
+			{% if canCross>1 %}
+				<form method="get" action="crosstab.asp">
+				<input type="hidden" name="pq1" value="{{ PQID }}"/>
+				<p>Crosstab with question: <select name="pq2" onchange="this.form.submit()">
+					{# TODO: Port ASP logic: For x=0 to Ubound(arrQ,2)
+						If x<>y And isNull... #}
+						<option value="{{ arrQ(0,x) }}">{{ x+1 }}</option>
+						{# TODO: Port ASP logic: End If
+					Next... #}
+				</select>
+				<input type="submit" value="Submit"/></p>
+				</form>
+			{# End If
+		Else
+			Answers.Close
+		End If
+	Next
+	Set Qs=Nothing
+	Set Answers=Nothing
+End If
+Call CloseConRs(mailDB,rs) #}
+{% endblock %}
+</body>
+</html>

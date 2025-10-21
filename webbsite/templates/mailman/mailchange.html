@@ -1,0 +1,42 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+﻿
+
+
+
+
+<!--#include virtual="/dbeditor/cotop.inc"-->
+<h2>{{ title }}</h2>
+{# TODO: Port ASP logic: Call mailBar(1)... #}
+<form method="post" action="mailchange.asp">
+	<table class="txtable">
+		<tr>
+			<td>Old address:</td>
+			<td><input type="text" name="o" size="40" value="{{ olde }}"></td>
+		</tr>
+		<tr>
+			<td>Mail on?</td>
+			<td><input type="checkbox" name="mailOn" value="1" {{ checked(mailOn) }}></td>
+		</tr>
+		<tr>
+			<td>New address:</td>
+			<td><input type="text" name="e" size="40" value="{{ newe }}"></td>
+		</tr>
+		<tr>
+			<td>Retype new address:</td>
+			<td><input type="text" name="verify" size="40" value="{{ verify }}"></td>
+		</tr>
+	</table>
+	<p><b>{{ hint }}</b></p>
+	<div class="inputs">
+		<input type="submit" name="submitMC" value="Change address">
+		<input type="submit" name="submitMC" value="Check status">
+		<input type="submit" name="submitMC" value="Update status">
+	</div>
+	<div class="clear"></div>
+</form>
+<!--#include virtual="/dbeditor/cofooter.asp"-->
+{% endblock %}

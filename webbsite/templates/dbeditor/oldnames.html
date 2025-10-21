@@ -1,0 +1,96 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,9)
+End If... #}
+<h3>{{ title }}</h3>
+<form method="post" action="oldnames.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<p><a href="searchorgs.asp?tv=p">Find an organisation</a></p>
+{% if p>0 %}
+	{% if ID>0 %}
+		<h3>Edit an old name</h3>
+		<p><b>Record ID: {{ ID }}</b></p>
+	{% else %}
+		<h3>Add an old name</h3>
+	{% endif %}
+	<form method="post" action="oldnames.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<table class="txtable">
+			<tr>
+				<td>English name:</td>
+				<td><input type="text" name="en" style="width:40em" value="{{ en }}"></td>
+			</tr>
+			<tr>
+				<td>Chinese name:</td>
+				<td><input type="text" name="cn" style="width:40em" value="{{ cn }}"></td>
+			</tr>
+			<tr>
+				<td>Date changed:</td>
+				<td><input type="date" name="d" value="{{ d }}"></td>
+			</tr>
+			<tr>
+				<td>Date accuracy:</td>
+				<td>{{ makeSelect("da",da,",,1,Y,2,M",False) }}</td>
+			</tr>
+		</table>
+		<p><b>{{ hint }}</b></p>
+		{% if ID>0 and canEdit %}
+			<input type="hidden" name="ID" value="{{ ID }}">
+			<input type="submit" name="submitON" value="Update">		
+			{% if submit="Delete" %}
+				<input type="submit" name="submitON" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitON" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitON" value="Delete">
+			{% endif %}
+		{% elif ID=0 %}
+			<input type="submit" name="submitON" value="Add">
+		{% endif %}
+	</form>
+	<form method="post" action="oldnames.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="submit" name="submitON" value="Clear Form">
+	</form>
+	<h3>Name changes of this organisation</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="txtable fcr">
+			<tr>
+				<th>ID</th>
+				<th>Old English name</th>
+				<th>Old Chinese name</th>
+				<th>Date changed</th>
+				<th>Accuracy</th>
+				<th></th>
+			</tr>
+			{% for row in results %}
+				<tr>
+					<td>{{ row.ID }}</td>
+					<td>{{ row.oldName }}</td>
+					<td>{{ row.cn }}</td>
+					<td>{{ row.dateChanged }}</td>
+					<td>{{ row.accText }}</td>
+					<td>{% if rankingRs(rs,uRank) %}<a href="oldnames.asp?ID={{ row.ID }}">Edit</a></td>{% endif %}
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conRole,rs... #}
+<hr>
+<h3>Rules</h3>
+<ol>
+	<li>If a company has both English and Chinese names, add both to the old names table even if only one of them has changed. </li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

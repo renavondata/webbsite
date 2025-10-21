@@ -1,0 +1,20 @@
+
+{# functions1.asp functionality moved to Python helpers #}
+{# Navigation bars #}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# Variables moved to Flask route #}
+<title>{{ title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+{# TODO: Port ASP logic: Call userbar(0)... #}
+<h2>{{ title }}</h2>
+<p><b>{{ hint }}</b></p>
+<!--#include file="../templates/footerws.asp"-->
+</body>
+</html>

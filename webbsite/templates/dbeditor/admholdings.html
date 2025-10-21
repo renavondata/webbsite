@@ -1,0 +1,38 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<form method="post">
+Limit: <input type="number" name="c" value="{{ c }}">
+</form><br>
+<table class="txtable">
+	<tr>
+		<th>Issue</th>
+		<th>Holder</th>
+		<th>At date</th>
+		<th>Shares</th>
+		<th>Stake</th>
+		<th>User</th>
+		<th>Timestamp</th>
+	</tr>
+{# Do until rs.EOF
+	If rs("hType")="O" Then URL="orgdata" Else URL="natperson"
+	URL="https://webb-site.com/dbpub/"&URL&".asp?p="&rs("holderID") #}
+	<tr>
+		<td><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ row.issuerID }}">{{ row.issue }}</a></td>
+		<td><a target="_blank" href="{{ URL }}">{{ row.holderName }}</a></td>
+		<td>{{ row.atDate }}</td>
+		<td class="right">{# TODO: Port ASP logic: If Not isNull(rs("shares")) Then Response.Write Fo... #}</td>
+		<td class="right">{# TODO: Port ASP logic: If Not isNull(rs("stake")) Then Response.Write For... #}</td>
+		<td>{{ row.userName }}</td>
+		<td>{{ MSdateTime(row.modified) }}</td>
+	</tr>
+	{# TODO: Port ASP logic: rs.MoveNext
+Loop... #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

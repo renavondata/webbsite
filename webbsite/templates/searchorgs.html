@@ -4,10 +4,10 @@
 
 {% block content %}
 <h2>Search organisations</h2>
-<form method="post" action="{{ url_for('search.search_orgs') }}">
+<form method="post" action="searchorgs.asp">
 	<input type="hidden" name="sort" value="{{ sort }}">
-	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
-	<select id="st" name="st">
+	<p><input type="text" class="ws" name="n" value="{{ n }}"></p>
+	<select id="st" name="st" onchange="this.form.submit()">
 		<option value="l"{% if st == 'l' %} selected{% endif %}>Left match</option>
 		<option value="a"{% if st == 'a' %} selected{% endif %}>Any match</option>
 	</select>
@@ -36,8 +36,8 @@
 			<tr>
 				<td class="colHide1">{{ loop.index }}</td>
 				<td>{% if row.hklist %}*{% else %}&nbsp;{% endif %}</td>
-				<td><a href='/orgdata?p={{ row.personid }}'>{{ row.name1 }}</a></td>
-				<td class="colHide3"><a href='/orgdata?p={{ row.personid }}'>{{ row.cname }}</a></td>
+				<td><a href='orgdata.asp?p={{ row.personid }}'>{{ row.name1 }}</a></td>
+				<td class="colHide3"><a href='orgdata.asp?p={{ row.personid }}'>{{ row.cname if row.cname }}</a></td>
 				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
 				<td>{% if row.incdate %}{{ row.incdate }}{% endif %}</td>
 				<td class="colHide3">{% if row.disdate %}{{ row.disdate }}{% endif %}</td>
@@ -68,8 +68,8 @@
 			<tr>
 				<td class="colHide1">{{ loop.index }}</td>
 				<td>{% if row.hklist %}*{% else %}&nbsp;{% endif %}</td>
-				<td><a href='/orgdata?p={{ row.personid }}'>{{ row.name1 }}</a></td>
-				<td class="colHide3"><a href='/orgdata?p={{ row.personid }}'>{{ row.oldcname }}</a></td>
+				<td><a href='orgdata.asp?p={{ row.personid }}'>{{ row.name1 }}</a></td>
+				<td class="colHide3"><a href='orgdata.asp?p={{ row.personid }}'>{{ row.oldcname if row.oldcname }}</a></td>
 				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
 				<td>{% if row.incdate %}{{ row.incdate }}{% endif %}</td>
 				<td class="colHide3">{% if row.disdate %}{{ row.disdate }}{% endif %}</td>

@@ -1,0 +1,125 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{# @ CodePage="65001" #}
+
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+{% if p="" or d="" or j="" %}
+<form method="post" action="snaplog.asp">
+	{# sql="SELECT DISTINCT personID,name1 FROM organisations o JOIN (issue i,stocklistings s) "&_
+		"ON o.personID=i.issuer AND i.ID1=s.issueID WHERE "&_
+		"stockExID IN(1,20) and typeID NOT IN(1,2,40,41,46) ORDER BY name1" #}
+	{{ arrSelect("p",p,conRole.Execute(sql).GetRows,True) }}
+	<p>Snapshot date: <input type="date" name="d" id="d" value="{{ d }}"></p>
+	<p>Project: <input type="radio" name="j" value="0" onchange="this.form.submit()" {{ checked(j=0) }}>Holdings
+	<input type="radio" name="j" value="1" onchange="this.form.submit()" {{ checked(j=1) }}>Committees</p>
+	</form>
+{% else %}
+	<table class="txtable">
+		<tr>
+			<td>Issuer:</td>
+			<td>{{ orgName }}</td>
+		</tr>
+		<tr>
+			<td>Snapshot date: </td>
+			<td>{{ d }}</td>
+		</tr>
+		<tr>
+			<td>Project:</td>
+			<td>{# TODO: Port ASP logic: If j=1 Then Response.Write "Committees" Else Respo... #}
+			</td>
+		</tr>
+	</table>
+	{% if j=0 %}
+		<p>Project: holdings</p>
+		<h4>View holdings</h4>
+		
+				<p><a target="_blank" href="holding.asp?i={{ row.ID1 }}&amp;targDate={{ d }}">{{ row.typeLong }}</a></p>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop
+		Else... #}
+			<p><b>None found.</b></p>
+		{# TODO: Port ASP logic: End If
+		rs.close
+	Else... #}
+		<p><a href="coms.asp?p={{ p }}&d={{ d }}" target="_blank">View committees</a></p>
+	{# End If
+	rs.Open "SELECT * FROM snaplog JOIN users ON userID=ID WHERE orgID="&p&" AND snapDate='"&d&"' AND project="&j,conRole
+	If Not rs.EOF Then #}
+		<h3>Records for this snapshot</h3>
+		<table class="txtable">
+			<tr>
+				<th>User</th>
+				<th>Role</th>
+				<th>Log entered</th>
+				<th>Log updated</th>
+				<th>Approved?</th>
+				<th>Notes</th>
+			</tr>
+			{# Do until rs.EOF
+				If rs("done") Then approved="Yes" Else approved="No"
+				If rs("status") Then role="Reviewer" Else role="Author" #}
+				<tr>
+				<td>{{ row.name }}</td>
+				<td>{{ role }}</td>
+				<td>{{ MSdateTime(row.entered) }}</td>			
+				<td>{{ MSdateTime(row.modified) }}</td>
+				<td>{{ approved }}</td>
+				<td>{{ row.notes }}</td>
+				</tr>
+				{# TODO: Port ASP logic: rs.moveNext
+			Loop... #}
+		</table>			
+	{# TODO: Port ASP logic: End If
+	rs.Close... #}
+	<form method="post" action="snaplog.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="hidden" name="d" value="{{ d }}">
+		<input type="hidden" name="j" value="{{ j }}">
+		<input type="hidden" name="u" value="{{ userID }}">
+		<p><b>Are you the author or reviewer of this snapshot?</b></p>
+		<p><input type="radio" name="t" value="0" {{ checked(Not t) }}>Author
+		<input type="radio" name="t" value="1" {{ checked(t) }}>Reviewer</p>
+		<p><b>Do you {{ Session("userName") }} approve this snapshot?</b></p>
+		<p><input type="radio" name="a" value="1" {{ checked(a) }}>Yes
+		<input type="radio" name="a" value="0" {{ checked(Not a) }}>No</p>
+		<p><b>User notes</b></p>
+		<textarea rows="10" name="notes" style="width:100%">{{ notes }}</textarea><br>
+		{% if found %}
+			<input type="submit" name="submitBtn" value="Update">
+			<input type="submit" name="submitBtn" value="Delete my record">
+		{% else %}
+			<input type="submit" name="submitBtn" value="Add">
+		{% endif %}
+	</form>
+	{% if hint!="" %}
+		<p><b>{{ hint }}</b></p>
+	{% endif %}
+	<p><a href="snaplog.asp?p={{ p }}&j={{ j }}">Do another date</a></p>
+{# TODO: Port ASP logic: End If
+If p<>"" Then... #}
+	<hr>
+	<h3>Snapshots for this issuer</h3>
+	
+		<table>
+		{# Do until rs.EOF
+			d=MSdate(rs("snapDate")) #}
+			<tr><td><a href="snaplog.asp?p={{ p }}&d={{ d }}&j={{ j }}">{{ d }}</a></td></tr>		
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+		</table>
+	{% else %}
+		<p>None found.</p>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conRole,rs... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

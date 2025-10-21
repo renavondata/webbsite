@@ -1,0 +1,106 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if ID>0 %}
+	<h3>Record details</h3>
+	<p>Find the correct issuer, check the security type, then add to listings. Price history will be inserted. </p>
+	<form method="post" action="shortnames.asp">
+		<input type="hidden" name="ID" value="{{ ID }}">
+		<input type="hidden" name="stockId" value="{{ stockId }}">
+		<table class="txtable">
+			<tr>
+				<td>Stock code</td>
+				<td>{{ sc }}</td>
+			</tr>
+			<tr>
+				<td>Short name</td>
+				<td>{{ shortName }}</td>
+			</tr>
+			<tr>
+				<td>Documents on HKEX:</td>
+				<td>{# TODO: Port ASP logic: If stockId="" Then
+					Response.Write "Not found"... #}
+					<a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?category=0&lang=EN&market=SEHK&stockId={{ stockId }}">Click here</a>
+				{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>Listed</td>
+				<td>{{ firstTrade }}</td>
+			</tr>
+			<tr>
+				<td>Final trading</td>
+				<td>{{ finalTrade }}</td>
+			</tr>
+			<tr>
+				<td>Delisted</td>
+				<td>{{ delist }}</td>
+			</tr>	
+			<tr>
+				<td><a href="searchorgs.asp?tv=p">Find issuer</a></td>
+				<td>
+					{% if p>0 %}
+						<input type="hidden" name="p" value="{{ p }}">
+						{{ orgName }}
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>Security type</td>
+				<td>{{ ArrSelect("typeID",typeID,con.Execute("SELECT typeID,typeLong FROM sectypes WHERE typeID IN(2,5,40,41,46)").GetRows,False) }}</td>
+			</tr>
+		</table>
+		{% if p>0 and i=0 %}
+			{% if submit="Add" %}
+				<input type="submit" name="submitSN" style="color:red" value="CONFIRM ADD">
+			{% else %}
+				<input type="submit" name="submitSN" value="Add">
+			{% endif %}
+		{% endif %}
+	</form>
+	<form method="post" action="shortnames.asp">
+		<input type="hidden" name="ID" value="{{ ID }}">
+		<input type="hidden" name="stockId" value="{{ stockId }}">
+		Find issuer using stock code of existing listing:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+	</form>	
+	<p><b>{{ hint }}</b></p>
+	{# TODO: Port ASP logic: If slID>0 Then
+		'we just added the issue and list... #}
+		<p><a target="_blank" href="issue.asp?i={{ i }}">See the issue</a></p>
+		<p><a target="_blank" href="listing.asp?ID={{ slID }}">See the listing</a></p>
+		<p><a target="_blank" href="https://webb-site.com/dbpub/hpu.asp?i={{ i }}">See the quotes</a></p>
+	{% endif %}
+{% endif %}
+<h3>{{ title }}</h3>
+<%rs.Open "SELECT ID,stockCode,shortName,fromDate,toDate,useDate FROM ccass.shortnames WHERE fromDate>'2014-05-02' AND isNull(issueID) AND shortName NOT LIKE 'EFN%'",con
+If rs.EOF Then%>
+	<p>None found.</p>
+{% else %}
+	<table class="txtable">
+		<tr>
+			<th>Stock<br>code</th>
+			<th>Short name</th>
+			<th>From date</th>
+			<th>Last used</th>
+			<th>To date</th>
+			<th></th>
+		</tr>
+	{% for row in results %}
+		<tr>
+			<td>{{ row.stockCode }}</td>
+			<td>{{ row.shortName }}</td>
+			<td>{{ row.fromDate }}</td>
+			<td>{{ row.useDate }}</td>
+			<td>{{ row.toDate }}</td>
+			<td><a href="shortnames.asp?ID={{ row.ID }}">Select</a></td>
+		</tr>
+		{# TODO: Port ASP logic: rs.MoveNext
+	Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(con,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

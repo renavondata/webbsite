@@ -1,0 +1,82 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,6)
+End If... #}
+<h3>{{ title }}</h3>
+<form method="post" action="orgdata.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<input type="button" value="Clear" onclick="window.location.href='orgdata.asp'">
+<p><a href="searchorgs.asp?tv=p">Find a firm</a></p>
+{# TODO: Port ASP logic: If p>0 Then
+	'produce an input form to edit or add... #}
+	<h3>Add or Update record</h3>
+	<form method="post" action="orgdata.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<table>
+			<tr>
+				<td>Year-end month</td>
+				<td><input type="number" name="yem" min="1" max="12" step="1" value="{{ yem }}"></td>
+			<tr>
+			<tr>
+				<td>Year-end date</td>
+				<td><input type="number" name="yed" min="1" max="31" step="1" value="{{ yed }}"></td>
+			</tr>
+			<tr>
+				<td>Address 1</td>
+				<td><input type="text" name="a1" maxlength="255" value="{{ a1 }}"></td>
+			</tr>
+			<tr>
+				<td>Address 2</td>
+				<td><input type="text" name="a2" maxlength="127" value="{{ a2 }}"></td>
+			</tr>
+			<tr>
+				<td>Address 3</td>
+				<td><input type="text" name="a3" maxlength="127" value="{{ a3 }}"></td>
+			</tr>
+			<tr>
+				<td>District</td>
+				<td><input type="text" name="dist" maxlength="50" value="{{ dist }}"></td>
+			</tr>
+			<tr>
+				<td>Territory</td>
+				<td>{{ arrSelectz("terr",terr,conMaster.Execute("SELECT ID,friendly FROM domiciles ORDER BY friendly").GetRows,False,True,"","") }}</td>
+			</tr>
+			<tr>
+				<td>Address date</td>
+				<td><input type="date" name="ad" value="{{ ad }}"></td>
+			</tr>
+			<tr>
+				<td>Directors &amp;<br>advisers final<br>on delisting</td>
+				<td><input type="checkbox" name="daf" value="1" {{ checked(daf) }}></td>
+			</tr>
+		</table>
+		<p><b>{{ hint }}</b></p>
+		{# TODO: Port ASP logic: If found Then
+			If submit="Update" And not ready ... #}
+				<input type="submit" name="submitOD" style="color:red" value="CONFIRM DATE">
+			{% else %}
+				<input type="submit" name="submitOD" value="Update">
+			{% endif %}
+			
+			{% if submit="Delete" %}
+				<input type="submit" name="submitOD" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitOD" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitOD" value="Delete">
+			{# TODO: Port ASP logic: End If
+		Else... #}
+			<input type="submit" name="submitOD" value="Add record">		
+		{% endif %}
+	</form>
+	<form method="post" action="orgdata.asp"><input type="submit" value="Clear form"></form>
+{# TODO: Port ASP logic: End If
+Call closeConRs(conMaster,rs)... #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}

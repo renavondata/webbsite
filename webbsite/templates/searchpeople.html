@@ -1,47 +1,81 @@
 {% extends "base_database.html" %}
 
-{% block title %}Search people{% endblock %}
+{% block title %}Search people for: {{ n1 }}, {{ n2 }}{% endblock %}
 
 {% block content %}
 <h2>Search people</h2>
-<form method="post" action="{{ url_for('search.search_people') }}">
-	<input type="hidden" name="sort" value="{{ sort }}">
-	<p><input type="text" class="ws" name="n" value="{{ n }}" autofocus></p>
-	<select id="st" name="st">
-		<option value="l"{% if st == 'l' %} selected{% endif %}>Left match</option>
-		<option value="a"{% if st == 'a' %} selected{% endif %}>Any match</option>
-	</select>
+<form method="post" action="searchpeople.asp">
+	<p>Family name:<br><input type="text" class="ws" name="n1" value="{{ n1 }}"></p>
+	<p>Given names:<br><input type="text" class="ws" name="n2" value="{{ n2 }}"></p>
+	<p><input type="checkbox" name="d" id="d" value="1"{% if d %} checked{% endif %} onchange="cChange(this,'e')"> match family and given names separately</p>
+	<p><input type="checkbox" name="e" id="e" value="1"{% if e %} checked{% endif %} onchange="cChange(this,'d')"> exact match</p>
 	<input type="submit" value="search" name="search">
 </form>
-
-{% if n %}
-	<h3>Matches</h3>
-	{% if not results %}
-		<p>None.</p>
+<script type="text/javascript">
+function cChange(d,alt) {
+	if(d.checked == true) {
+		document.getElementById(alt).checked = false;
+	}
+}
+</script>
+<p>Tip: This is a whole-word search, but if the given names are 2 or more words, the last two words will
+be searched together and separately, e.g. "Xiao Ping" will also test "Xiaoping".
+To exclude matches between family and given names, tick the box.</p>
+{% if n1 or n2 %}
+	<h3>Current names</h3>
+	{% if not current_results %}
+		<p>None found. Try widening your search.</p>
 	{% else %}
-		<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
 		<table class="txtable">
-		<tr>
-			<th class="colHide1"></th>
-			<th><a href="{{ url_for('search.search_people', n=n, st=st, sort='namdn' if sort=='namup' else 'namup') }}"><b>Name</b></a></th>
-			<th class="colHide3">Chinese name</th>
-			<th style="font-size:large"><a href="{{ url_for('search.search_people', n=n, st=st, sort='domdn' if sort=='domup' else 'domup') }}"><b>&#x1f310;</b></a></th>
-			<th class="colHide3">Born</th>
-			<th class="colHide3">Died</th>
-		</tr>
-		{% for row in results %}
+			<tr>
+				<th class="colHide1"></th>
+				<th>Name</th>
+				<th class="right">&nbsp;Est. date<br/>&nbsp;of birth</th>
+				<th class="right"><b>&nbsp;Est. age<br/>in {{ now_year }}</b></th>
+				<th>Chinese<br/>name</th>
+			</tr>
+		{% for row in current_results %}
 			<tr>
 				<td class="colHide1">{{ loop.index }}</td>
-				<td><a href='/persondata?p={{ row.personid }}'>{{ row.name1 }}{% if row.name2 %}, {{ row.name2 }}{% endif %}</a></td>
-				<td class="colHide3"><a href='/persondata?p={{ row.personid }}'>{{ row.cname }}</a></td>
-				<td><span class="info">{{ row.a2 }}<span>{{ row.friendly }}</span></span></td>
-				<td class="colHide3">{% if row.birthdate %}{{ row.birthdate }}{% endif %}</td>
-				<td class="colHide3">{% if row.deathdate %}{{ row.deathdate }}{% endif %}</td>
+				<td><a href="natperson.asp?p={{ row.personid }}">{{ row.name1 }}{% if row.name2 %}, {{ row.name2 }}{% endif %}</a></td>
+				<td>{{ row.birth_display }}</td>
+				<td class="right">{{ row.est_age }}</td>
+				<td>{{ row.cname }}</td>
 			</tr>
 		{% endfor %}
 		</table>
-		{% if results|length == limit %}
-			<p><b>Only the first {{ limit }} matches are displayed. Please narrow your search.</b></p>
+		{% if current_results|length == 500 %}
+			<p><b>More than 500 results, please narrow your search.</b></p>
+		{% endif %}
+	{% endif %}
+
+	<h3>Alias or former names</h3>
+	{% if not alias_results %}
+		<p>None found.</p>
+	{% else %}
+		<table class="txtable">
+			<tr>
+				<th class="colHide1"></th>
+				<th>Name</th>
+				<th>&nbsp;Est. date<br/>&nbsp;of birth</th>
+				<th class="right"><b>&nbsp;Est. age<br/>in {{ now_year }}</b></th>
+				<th>Chinese<br/>name</th>
+				<th></th>
+			</tr>
+		{% for row in alias_results %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td><a href="natperson.asp?p={{ row.personid }}">{{ row.n1 }}{% if row.n2 %}, {{ row.n2 }}{% endif %}</a></td>
+				<td>{{ row.birth_display }}</td>
+				<td class="right">{{ row.est_age }}</td>
+				<td>{{ row.cn }}</td>
+				<td>{% if row.alias %}A{% else %}F{% endif %}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<p>A=Alias, F=Former name</p>
+		{% if alias_results|length > 500 %}
+			<p><b>More than 500 results, please narrow your search.</b></p>
 		{% endif %}
 	{% endif %}
 {% endif %}

@@ -1,0 +1,48 @@
+
+{# functions1.asp functionality moved to Python helpers #}
+{# Navigation bars #}
+<!--#include file="../webbmail/prepmsg.asp"-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+{# Variables moved to Flask route #}
+<title>{{ title }}</title>
+</head>
+<body>
+{% extends "base.html" %}
+{# TODO: Port ASP logic: Call userBar(2)... #}
+<h2>{{ title }}</h2>
+{% if joined %}
+	<p>{{ hint }}To activate your account, please check your e-mail inbox and hit the confirmation link. 
+	If you cannot find it, then check your spam/junk folder and whitelist our address or add it to your "safe senders" list.</p>
+{% else %}
+	<script src='https://www.google.com/recaptcha/api.js' async defer></script>
+	<p>Please create an account which allows you to:</p>
+<ul>
+	<li>Receive our free newsletter (opt out any time)</li>
+	<li>Store a list of stocks that you follow, with links to key data such as Webb-site Total Returns and director 
+	dealings</li>
+	<li>Volunteer to edit the board-pay database</li>
+	<li>Vote in our opinion polls</li>
+	<li>Contribute ratings to Webb-site 
+	Governance Ratings or Webb-site Trust Ratings.</li>
+</ul>
+	<form method="post" action="join.asp">
+		<p>E-mail address:<br><input type="text" name="e" class="ws" value="{{ e }}"></p>
+		<p>Retype address:<br><input type="text" name="verify" class="ws" value="{{ verify }}"></p>
+		<p>Password or phrase (minimum 8 characters):<br><input type="password" name="pwd1" class="ws" value="{{ pwd }}"></p>
+		<p>Retype password or phrase:<br><input type="password" name="pwd2" class="ws" value="{{ pwd2 }}"></p>
+		<p>Get newsletter: <input type="checkbox" name="mailOn" value="1" {% if mailOn %}checked{% endif %}></p>
+		<div class="g-recaptcha" data-size="compact" data-sitekey="{{ GetKey("CaptchaSiteKey") }}"></div>
+		<p><b>{{ Hint }}</b></p>
+		<p><input type="submit" name="submitBtn" value="Join"></p>
+	</form>
+	<p><a href="../webbmail/domainlist.asp">Who reads Webb-site.com?</a></p>
+	<p><a href="../news">What do the newsletters look like?</a></p>
+{% endif %}
+<!--#include file="../templates/footerws.asp"-->
+</body>
+</html>

@@ -1,0 +1,89 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+{% if p>0 %}
+	<h2>{{ pName }}</h2>
+	{# TODO: Port ASP logic: Call orgBar(p,13)
+End If... #}
+<form method="post" action="reorg.asp">
+	Stock code:<input type="text" name="sc" maxlength="6" size="6" value="" onchange="this.form.submit()">
+</form>
+<p><a href="searchorgs.asp?tv=p">Find a "to" organisation</a></p>
+<h3>{{ title }}</h3>
+<p><a href="searchorgs.asp?tv=frOrg">Find a "from" organisation</a></p>
+<p><b>{{ hint }}</b></p>
+{% if p>0 and frOrg>0 %}
+	<form method="post" action="reorg.asp">
+		<input type="hidden" name="p" value="{{ p }}">
+		<input type="hidden" name="frOrg" value="{{ frOrg }}">
+		<table class="txtable">
+			<tr>
+				<th>From organisation</th>
+				<th>Effective date</th>
+				<th>Date accuracy</th>
+			</tr>
+			<tr>
+				<td>{{ frName }}</td>
+				<td><input type="date" name="d" value="{{ d }}"></td>
+				<td>{{ makeSelect("da",da,",,2,M,1,Y",False) }}</td>
+			</tr>
+		</table>
+		{% if found %}
+			<input type="submit" name="submitReo" value="Update">
+			{% if submit="Delete" %}
+				<input type="submit" name="submitReo" style="color:red" value="CONFIRM DELETE">
+				<input type="submit" name="submitReo" value="Cancel">
+			{% else %}
+				<input type="submit" name="submitReo" value="Delete">
+			{# TODO: Port ASP logic: End If
+		Else... #}
+			<input type="submit" name="submitReo" value="Add">	
+		{% endif %}
+	</form>
+{# TODO: Port ASP logic: End If
+If p>0 Then... #}
+	<h3>Reorgansiations to this organisation</h3>
+	
+		<p>None found.</p>
+	{% else %}
+		<table class="txtable">
+			<tr>
+				<th>From organisation</th>
+				<th>Effective date</th>
+				<th>Accuracy</th>
+				<th></th>
+			</tr>
+			{% for row in results %}
+				<tr>
+					<td><a href="org.asp?p={{ row.fromOrg }}">{{ row.name1 }}</a></td>
+					<td>{{ row.effDate }}</td>
+					<td>{{ row.accText }}</td>
+					<td><a href='reorg.asp?p={{ p }}&amp;frOrg={{ row.fromOrg }}'>Edit</a></td>
+				</tr>
+				{# TODO: Port ASP logic: rs.MoveNext
+			Loop... #}
+		</table>
+	{# TODO: Port ASP logic: End If
+	rs.Close
+End If
+Call closeConRs(conMaster,... #}
+<hr>
+<h3>Rules</h3>
+<ol>
+	<li>Do not confuse a reorgansiation with a <a href="olddom.asp?p={{ p }}">change of domicile</a> 
+	or a <a href="freg.asp?p={{ p }}">foreign registration</a>. This page is 
+	only for situations in which one company has been superceded by another, for 
+	example, when all the shares of a HK company are swapped for shares of a new 
+	Cayman company (without existing shares), confusingly known as a redomicile. 
+	That is typically done by scheme of arrangement. For example, in 1989, all 
+	the shares of Nanyang Cotton Mill Limited (HK) were swapped for shares of 
+	Nanyang Holdings Ltd (Bermuda).</li>
+	<li>For listed company situations, if there is a straight 1:1 swap then we 
+	carry over all the directors and advisers to create a continuous record. 
+	Currently (2023) this has to be done manually.</li>
+</ol>
+<!--#include file="cofooter.asp"-->
+{% endblock %}

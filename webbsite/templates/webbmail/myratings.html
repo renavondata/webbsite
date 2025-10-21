@@ -1,0 +1,149 @@
+{# Option Explicit
+Response.Expires=-1 #}
+{# functions1.asp functionality moved to Python helpers #}
+{# Navigation bars #}
+{# TODO: Port ASP logic: Call login... #}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="rating2.js"></script>
+<style type="text/css">
+	table.rating {
+		border-collapse:collapse;
+		border:thin gray solid;
+	}
+	table.rating tr {
+		border:thin gray solid;
+	}
+	table.rating th {
+		font-weight:bold;
+		border:inherit;
+	}
+	table.rating col.radio, table.rating td.radio, table.rating th.radio {
+		border-width:0;
+		text-align:center;
+	}
+	table.rating td.center,table.rating th.center {
+	text-align:center;
+	}
+	table.rating td {
+		text-align:left;
+		border:inherit;
+	}
+</style>
+{# Variables moved to Flask route #}
+<title>{{ title }}</title>
+</head>
+<body>
+{% extends "base_database.html" %}
+{# TODO: Port ASP logic: Call userBar(7)... #}
+<h2>{{ title }}</h2>
+<p>With Webb-site One-click Ratings, just click the radio button to update your rating. 
+All ratings are anonymous. The count and average are of all user-ratings less than 1 year old. 
+If your rating is older than 1 year then the date is shown <strong>in bold</strong> and the rating will not be included in the count or 
+average. Click on the date to see the history of your ratings. To add a new 
+organisation or human to your ratings, visit the "Key Data" page for that 
+person. To get there, use the search boxes at the top of any page. Use the 
+"Stock code" box for HK stocks, the "search organisations" box or the "search 
+people" boxes.</p>
+{{ mobile(1) }}
+<h3>Governance Ratings of organisations</h3>
+
+	<p>None found.</p>
+{% else %}
+	<table class="rating">
+		<tr>
+			<th class="left" style="width:400px">Organisation</th>
+			<th class="center colHide1">Score</th>
+			<th class="center">Date</th>
+			<th>None</th>
+			<th class="radio">0</th>
+			<th class="radio">1</th>
+			<th class="radio">2</th>
+			<th class="radio">3</th>
+			<th class="radio">4</th>
+			<th class="radio">5</th>
+			<th class="colHide2">Count</th>
+			<th class="colHide2">Average</th>
+		</tr>
+		{% if row.listed %}
+			<tr><td class="left" colspan="12"><h4>HK-Listed</h4></td></tr>
+		{# End If
+		Do Until rs.EOF
+			If Not rs("listed") And Not unlisted Then
+				'first row of unlisted
+				unlisted=True #}
+				<tr><td colspan="12"><h4>Not HK-listed</h4></td></tr>
+			{# End If	
+			p=rs("orgID")
+			av=rs("av")
+			r=rs("score")
+			If isNull(r) Then r=-1
+			d=rs("atDate")
+			If d+364<Date() Then dstyle="font-weight:bold;" Else dStyle=""
+			If Not isNull(av) Then av=FormatNumber(av,2) Else av="N/A" #}
+			<tr>
+				<td class="left"><a href="../dbpub/orgdata.asp?p={{ p }}">{{ row.name }}</a></td>
+				<td class="center colHide1" id="p{{ p }}">{# TODO: Port ASP logic: If r>-1 Then Response.Write r Else Response.Write ... #}</td>
+				<td style="{{ dStyle }}"><a id="d{{ p }}" href="ratinghist.asp?p={{ p }}">{{ row.atDate }}</a></td>
+				<td class="center"><input type="radio" name="{{ p }}r" id="{{ p }}r-1" value="-1" {% if r=-1 %}checked{% endif %} onclick="setRating({{ p }},-1)"></td>				
+				{# TODO: Port ASP logic: For x=0 to 5... #}
+					<td class="radio"><input type="radio" name="{{ p }}r" id="{{ p }}r{{ x }}" value="{{ x }}" {% if r=x %}checked{% endif %} onclick="setRating({{ p }},{{ x }})"></td>
+				{% endfor %}
+				<td class="center colHide2" id="c{{ p }}">{{ row.cnt }}</td>
+				<td class="center colHide2" id="av{{ p }}">{{ av }}</td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+rs.Close... #}
+<h3>Trust Ratings of people</h3>
+
+	<p>None found.</p>
+{% else %}
+	<table class="rating">
+		<tr>
+			<th style="width:400px">Person</th>
+			<th class="center colHide1">Score</th>
+			<th class="center">Date</th>
+			<th>None</th>
+			<th class="radio">0</th>
+			<th class="radio">1</th>
+			<th class="radio">2</th>
+			<th class="radio">3</th>
+			<th class="radio">4</th>
+			<th class="radio">5</th>
+			<th class="colHide2">Count</th>
+			<th class="colHide2">Average</th>
+		</tr>
+		{# Do Until rs.EOF
+			p=rs("orgID")
+			av=rs("av")
+			r=rs("score")
+			If isNull(r) Then r=-1
+			d=rs("atDate")
+			If d+364<Date() Then dstyle="font-weight:bold;" Else dStyle=""
+			If Not isNull(av) Then av=FormatNumber(av,2) Else av="N/A" #}
+			<tr>
+				<td><a href="../dbpub/natperson.asp?p={{ p }}">{{ row.name }}</a></td>
+				<td class="center colHide1" id="p{{ p }}">{# TODO: Port ASP logic: If r>-1 Then Response.Write r Else Response.Write ... #}</td>
+				<td style="{{ dStyle }}"><a id="d{{ p }}" href="ratinghist.asp?p={{ p }}">{{ row.atDate }}</a></td>
+				<td class="center"><input type="radio" name="{{ p }}r" id="{{ p }}r-1" value="-1" {% if r=-1 %}checked{% endif %} onclick="setRating({{ p }},-1)"></td>				
+				{# TODO: Port ASP logic: For x=0 to 5... #}
+					<td class="radio"><input type="radio" name="{{ p }}r" id="{{ p }}r{{ x }}" value="{{ x }}" {% if r=x %}checked{% endif %} onclick="setRating({{ p }},{{ x }})"></td>
+				{% endfor %}
+				<td class="center colHide2" id="c{{ p }}">{{ row.cnt }}</td>
+				<td class="center colHide2" id="av{{ p }}">{{ av }}</td>
+			</tr>
+			{# TODO: Port ASP logic: rs.MoveNext
+		Loop... #}
+	</table>
+{# TODO: Port ASP logic: End If
+Call CloseConRs(con,rs)... #}
+<!--#include file="../templates/footerws.asp"-->
+</body>
+</html>

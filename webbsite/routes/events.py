@@ -66,6 +66,10 @@ def events():
             i = 0
             p = 0
 
+    # If no stock found, set error message (matches ASP findStock behavior)
+    if i == 0:
+        n = "Stock not found. "
+
     # Determine sort order (lowercased for PostgreSQL)
     sort_options = {
         'anndup': 'announced,exdate,yearend',

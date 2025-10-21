@@ -1,0 +1,64 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{# CCASS navigation bar - TODO: Implement ccassallbar helper #}
+<div class="ccass-nav">
+    {# Navigation will be added when ccassallbar is ported #}
+</div>
+
+<ul class="navlist">
+    <li class="livebutton">Holdings</li>
+    <li><a href="/ccass/ncipchg.asp?d={{ at_date }}">Changes</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="/ccass/ipstakes.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        <input type="date" name="d" id="d" value="{{ at_date }}" onblur="this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="Clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>
+NCIP=Non-Consenting Investor Participants (no names, disclosed in aggregate)<br/>
+CIP=Consenting Investor Participants (named, individual holdings)</p>
+
+{# Mobile layout helper - TODO: Implement mobile() helper #}
+<table class="numtable yscroll">
+    <tr>
+        <th class="colHide1">Row</th>
+        <th><a href="?d={{ at_date }}&sort={% if sort == 'codeup' %}codedn{% else %}codeup{% endif %}">Last<br/>Code</a></th>
+        <th style="text-align:left"><a href="?d={{ at_date }}&sort={% if sort == 'nameup' %}namedn{% else %}nameup{% endif %}">Issue</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'nipcdn' %}nipcup{% else %}nipcdn{% endif %}">NCIPs</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'cipcdn' %}cipcup{% else %}cipcdn{% endif %}">CIPs</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'ipcdn' %}ipcup{% else %}ipcdn{% endif %}">Total IPs</a></th>
+        <th><a href="?d={{ at_date }}&sort={% if sort == 'nipsdn' %}nipsup{% else %}nipsdn{% endif %}">NCIP<br>stake<br>%</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'cipsdn' %}cipsup{% else %}cipsdn{% endif %}">CIP stake</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'ipsdn' %}ipsup{% else %}ipsdn{% endif %}">IP stake</a></th>
+        <th class="colHide3"><a href="?d={{ at_date }}&sort={% if sort == 'vlndn' %}vlnup{% else %}vlndn{% endif %}">Value<br>m.</a></th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td class="colHide1">{{ loop.index }}</td>
+        <td>{{ row.stockCode }}</td>
+        <td style="text-align:left"><a href="/ccass/choldings.asp?i={{ row.ID1 }}&d={{ at_date }}">{{ row.stockName }}</a></td>
+        <td class="colHide3">{{ "{:,.0f}".format(row.NCIPcnt) if row.NCIPcnt else '' }}</td>
+        <td class="colHide3">{{ "{:,.0f}".format(row.CIPcnt) if row.CIPcnt else '' }}</td>
+        <td class="colHide3">{{ "{:,.0f}".format(row.IPcnt) if row.IPcnt else '' }}</td>
+        <td><a href="/ccass/nciphist.asp?i={{ row.ID1 }}">{{ "{:.2f}".format(row.NCIPstake * 100) if row.NCIPstake else '' }}</a></td>
+        <td class="colHide3">{{ "{:.3%}".format(row.CIPstake) if row.CIPstake else '' }}</td>
+        <td class="colHide3">{{ "{:.3%}".format(row.IPstake) if row.IPstake else '' }}</td>
+        <td class="colHide3">{{ "{:,.2f}".format(row.vln) if row.vln else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

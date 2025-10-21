@@ -1,0 +1,49 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<table class="txtable">
+	<tr>
+		<th>Name</th>
+		<th>Sex</th>
+		<th>Age in<br>{{ nowYear }}</th>
+		<th>Entered by</th>
+		<th>Timestamp</th>
+		<th></th>
+		<th></th>
+	</tr>
+	{# Do Until rs.EOF
+		p=rs("personID") #}
+		<tr>
+		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ p }}">{{ row.name }}</a></td>
+		<td>{{ row.sex }}</td>
+		<td>{{ nowYear-row.YOB }}</td>
+		<td>{{ row.userName }}</td>
+		<td>{{ MSdateTime(row.modified) }}</td>
+		{% if rankingRs(rs,uRank) %}
+			<td>
+				<form method="post" action="human.asp">
+					<input type="hidden" name="p" value="{{ p }}">
+					<input type="submit" style="color:green" value="Edit">
+				</form>
+			</td>
+			<td>
+				<form method="post" action="human.asp">
+					<input type="hidden" name="p" value="{{ p }}">
+					<input type="submit" name="submitBtn" style="color:red" value="Delete">
+				</form>
+			</td>
+		{% else %}
+			<td></td>
+			<td></td>
+		{% endif %}
+		</tr>
+		{# TODO: Port ASP logic: rs.MoveNext
+	Loop... #}
+</table>
+
+<!--#include file="cofooter.asp"-->
+{% endblock %}

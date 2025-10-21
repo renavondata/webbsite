@@ -1,0 +1,67 @@
+{%extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{# @ CodePage="65001" #}
+
+
+
+
+
+<!--#include file="cotop.inc"-->
+<h2>{{ title }}</h2>
+<p>Issuer: <a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">{{ orgName }}</a></p>
+<p>Holder: <a target="_blank" href="https://webb-site.com/dbpub/{{ pURL }}.asp?p={{ h }}">{{ holderName }}</a></p>
+
+		<form method="post" action="holding.asp">
+			<input type="hidden" name="targIssue" value="{{ i }}">
+			<h4>Issue: {{ row.typeLong }}</h4>
+			<table class="numtable">
+			<tr>
+				<th class="left">Date</th>
+				<th>Held as</th>
+				<th>Shares</th>
+				<th>Stake</th>
+				<th>User</th>		
+				<th style="text-align:center">Delete</th>
+				<th></th>
+			</tr>
+			{# Do until rs2.EOF
+				shares=rs2("shares")
+				stake=rs2("stake")
+				stakeComp=rs2("stakeComp")
+				atDate=MSdate(rs2("atDate"))
+				recID=rs2("recID") #}
+				<tr>
+				<td>{{ atDate }}</td>
+				<td>{{ rs2("heldAsTxt") }}</td>
+				<td>{# TODO: Port ASP logic: If Not isNull(shares) Then Response.Write FormatNu... #}</td>
+				<td>{# TODO: Port ASP logic: If Not isNull(stake) Then Response.Write FormatPer... #}</td>
+				<td>{{ rs2("user") }}</td>
+				{% if rankingRs(rs2,uRank) %}
+					<td style="text-align:center">
+						<input type="checkbox" name="delRec" value="{{ recID }}">
+					</td>
+					<td>
+						<a href="holding.asp?r={{ recID }}">Edit</a>
+					</td>
+				{% else %}
+					<td></td>
+					<td></td>
+				{% endif %}
+				</tr>
+				{# TODO: Port ASP logic: rs2.MoveNext
+			Loop
+			rs2.Close... #}
+			</table>
+			<br>
+			<input type="submit" name="submitBtn" style="color:red" value="Delete records">
+		</form>
+	{# End If
+	rs.MoveNext
+Loop
+Set rs2=Nothing
+Call closeConRs(conRole,rs) #}
+<!--#include file="cofooter.asp"-->
+{% endblock %}
