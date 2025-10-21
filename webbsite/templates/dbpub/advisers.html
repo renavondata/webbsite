@@ -66,18 +66,18 @@ filed on or before that date. A repository of our database and software <a href=
 			<tr>
 				<td></td>
 				<td>{{ adv.role }}</td>
-				<td class="colHide3 nowrap">{{ adv.addDate }}</td>
+				<td class="colHide3 nowrap">{{ adv.addDate or '' }}</td>
 				{% if hide != "Y" %}
-					<td class="nowrap">{{ adv.remDate }}</td>
+					<td class="nowrap">{{ adv.remDate or '' }}</td>
 				{% endif %}
 			</tr>
 		{% else %}
 			<tr class="total">
 				<td><a href="adviserships.asp?p={{ adv.AdvID }}&amp;r={{ adv.roleID }}">{{ adv.AdvName }}</a></td>
 				<td>{{ adv.role }}</td>
-				<td class="colHide3 nowrap">{{ adv.addDate }}</td>
+				<td class="colHide3 nowrap">{{ adv.addDate or '' }}</td>
 				{% if hide != "Y" %}
-					<td class="nowrap">{{ adv.remDate }}</td>
+					<td class="nowrap">{{ adv.remDate or '' }}</td>
 				{% endif %}
 			</tr>
 			{% set last_advid = adv.AdvID %}
@@ -102,13 +102,13 @@ filed on or before that date. A repository of our database and software <a href=
 			<tr>
 				<td></td>
 				<td>{{ adv.role }}</td>
-				<td>{{ adv.addDate }}</td>
+				<td>{{ adv.addDate or '' }}</td>
 			</tr>
 		{% else %}
 			<tr class="total">
 				<td><a href="adviserships.asp?p={{ adv.AdvID }}&amp;r={{ adv.roleID }}">{{ adv.AdvName }}</a></td>
 				<td>{{ adv.role }}</td>
-				<td>{{ adv.addDate }}</td>
+				<td>{{ adv.addDate or '' }}</td>
 			</tr>
 			{% set last_advid = adv.AdvID %}
 		{% endif %}
