@@ -8907,7 +8907,7 @@ def orgdata():
                 # Match ASP query pattern: nested subquery with SELECT * inner query
                 holdings_data = execute_query(f"""
                     SELECT personid, issue, holdingdate, shares, stake, friendly, a2,
-                           name, orgtype, sectype, typeshort, issuer, stakecomp,
+                           name, orgtype, sectype, typeshort, typelong, issuer, stakecomp,
                            CASE
                                WHEN incacc = 3 THEN 'U'
                                WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
