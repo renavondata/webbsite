@@ -8410,13 +8410,15 @@ def orgdata():
 
     # Convert stock code to personID if provided
     if code > 0:
+        # Pad stock code: 4 digits for Main Board (1-9999), 5 digits for GEM (80000+)
+        padded_code = str(code).zfill(5) if code >= 8000 else str(code).zfill(4)
         result = execute_query("""
             SELECT COALESCE((
                 SELECT orgID FROM enigma.WebListings
                 WHERE StockCode = %s
                 AND (DelistDate IS NULL OR DelistDate >= NOW())
             ), 0) as personID
-        """, (code,))
+        """, (padded_code,))
         if result:
             person_id = result[0]['personid']
 
