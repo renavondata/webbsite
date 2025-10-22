@@ -26,18 +26,60 @@ CREATE INDEX IF NOT EXISTS idx_organisations_name1_lower_pattern
 CREATE INDEX IF NOT EXISTS idx_namechanges_oldname_lower_pattern
   ON enigma.nameChanges (LOWER(oldName) text_pattern_ops);
 
--- Optional: Add pattern indexes for people search if needed
--- (Uncomment if searchpeople.asp also shows slowness)
--- CREATE INDEX IF NOT EXISTS idx_people_dn1_pattern
---   ON enigma.people (dn1 varchar_pattern_ops);
--- CREATE INDEX IF NOT EXISTS idx_people_dn2_pattern
---   ON enigma.people (dn2 varchar_pattern_ops);
--- CREATE INDEX IF NOT EXISTS idx_alias_dn1_pattern
---   ON enigma.alias (dn1 varchar_pattern_ops);
--- CREATE INDEX IF NOT EXISTS idx_alias_dn2_pattern
---   ON enigma.alias (dn2 varchar_pattern_ops);
+-- ================================================================================
+-- People Search Indexes (searchpeople.asp)
+-- ================================================================================
+-- searchpeople.asp uses two search modes:
+-- 1. Exact match: dn1 = 'value' AND dn2 = 'value' (needs B-tree indexes)
+-- 2. Full-text search: to_tsvector('simple', dn1) @@ to_tsquery() (needs GIN indexes)
 
--- Verification queries:
+-- B-tree indexes for exact match mode (e=1 parameter)
+-- These support: WHERE dn1 = 'value' AND dn2 = 'value'
+CREATE INDEX IF NOT EXISTS idx_people_dn1
+  ON enigma.people (dn1);
+CREATE INDEX IF NOT EXISTS idx_people_dn2
+  ON enigma.people (dn2);
+CREATE INDEX IF NOT EXISTS idx_alias_dn1
+  ON enigma.alias (dn1);
+CREATE INDEX IF NOT EXISTS idx_alias_dn2
+  ON enigma.alias (dn2);
+
+-- GIN indexes for full-text search mode (default)
+-- These support: WHERE to_tsvector('simple', dn1) @@ to_tsquery('simple', 'pattern')
+-- GIN indexes are specifically designed for full-text search performance
+CREATE INDEX IF NOT EXISTS idx_people_dn1_gin
+  ON enigma.people USING gin (to_tsvector('simple', dn1));
+CREATE INDEX IF NOT EXISTS idx_people_dn2_gin
+  ON enigma.people USING gin (to_tsvector('simple', dn2));
+CREATE INDEX IF NOT EXISTS idx_alias_dn1_gin
+  ON enigma.alias USING gin (to_tsvector('simple', dn1));
+CREATE INDEX IF NOT EXISTS idx_alias_dn2_gin
+  ON enigma.alias USING gin (to_tsvector('simple', dn2));
+
+-- Combined full-text index for cross-field searches (d=0 mode)
+-- Supports: WHERE to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ ...
+CREATE INDEX IF NOT EXISTS idx_people_dn1_dn2_combined_gin
+  ON enigma.people USING gin (to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')));
+CREATE INDEX IF NOT EXISTS idx_alias_dn1_dn2_combined_gin
+  ON enigma.alias USING gin (to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')));
+
+-- ================================================================================
+-- Verification Queries
+-- ================================================================================
 -- After applying, verify indexes are being used:
--- EXPLAIN ANALYZE SELECT personID, name1 FROM enigma.organisations WHERE name1 ILIKE 'hong%' LIMIT 10;
--- Should show "Index Scan using idx_organisations_name1_pattern" in query plan
+
+-- 1. Test organisations pattern index:
+-- EXPLAIN ANALYZE SELECT personID, name1 FROM enigma.organisations WHERE LOWER(name1) LIKE LOWER('hong%') LIMIT 10;
+-- Should show "Index Scan using idx_organisations_name1_lower_pattern"
+
+-- 2. Test people exact match:
+-- EXPLAIN ANALYZE SELECT personID, name1, name2 FROM enigma.people WHERE dn1 = 'chan' AND dn2 = 'david' LIMIT 10;
+-- Should show "Index Scan" or "Bitmap Index Scan"
+
+-- 3. Test people full-text search (separate fields):
+-- EXPLAIN ANALYZE SELECT personID FROM enigma.people WHERE to_tsvector('simple', dn1) @@ to_tsquery('simple', 'chan') LIMIT 10;
+-- Should show "Bitmap Index Scan on idx_people_dn1_gin"
+
+-- 4. Test people full-text search (combined fields):
+-- EXPLAIN ANALYZE SELECT personID FROM enigma.people WHERE to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', 'chan & david') LIMIT 10;
+-- Should show "Bitmap Index Scan on idx_people_dn1_dn2_combined_gin"
