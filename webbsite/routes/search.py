@@ -171,12 +171,15 @@ def search_people():
                 if len(words) == 1:
                     forename = f'"{words[0]}"'
                 elif len(words) > 1:
+                    # Build list of terms to avoid leading & operator
+                    forename_parts = []
                     # Add all words except last two as required
                     for word in words[:-2]:
-                        forename += f' & "{word}"'
+                        forename_parts.append(f'"{word}"')
                     # Last two words: search both separate and combined
                     # e.g., "Xiao Ping" searches for (("Xiao" & "Ping") | "XiaoPing")
-                    forename += f' & (("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")'
+                    forename_parts.append(f'(("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")')
+                    forename = ' & '.join(forename_parts)
 
             if d:
                 # Match family and given names separately
