@@ -502,13 +502,6 @@ def enigma_orgdata():
     return render_template('dbpub/orgdata.html', org=org_data)
 
 
-# Alias route for orgdata.asp (backward compatibility with ASP URLs)
-@bp.route('/orgdata.asp')
-def orgdata():
-    """Alias for enigma_orgdata() to match ASP URL pattern"""
-    return enigma_orgdata()
-
-
 @bp.route('/advisers.asp')
 def advisers():
     """
@@ -5385,14 +5378,15 @@ def govac_notes():
     return render_template('dbpub/govac_notes.html')
 
 
-@bp.route('/govacsearch.asp')
+@bp.route('/govacsearch.asp', methods=['GET', 'POST'])
 def govac_search():
     """Government accounts search - search govitems by text"""
-    from webbsite.asp_helpers import get_str, make_select
+    from webbsite.asp_helpers import make_select
+    from flask import request
 
-    # Get search parameters
-    n = get_str('n', '')  # search term
-    st = get_str('st', 'a')  # search type: 'a' = any match (full-text), 'l' = left match (LIKE)
+    # Get search parameters (check both GET and POST like ASP Request())
+    n = request.values.get('n', '')  # search term
+    st = request.values.get('st', 'a')  # search type: 'a' = any match (full-text), 'l' = left match (LIKE)
 
     # Sanitize search term (replace "Hong Kong" with "HK" case-insensitive)
     import re
@@ -8378,6 +8372,538 @@ def vefuelhist():
     return render_template('dbpub/vefuelhist.html',
                          fuel=fuel,
                          history=history)
+
+
+@bp.route('/orgdata.asp')
+def orgdata():
+    """
+    Port of dbpub/orgdata.asp
+    Comprehensive organization/company data page showing:
+    - Basic info (domicile, incorporation, type, etc.)
+    - Foreign registrations
+    - ESS COVID-19 subsidy data
+    - Name and domicile history
+    - Securities (listed equities, debt, preference shares)
+    - Governance ratings
+    - Reorganization history
+
+    Query params:
+    - p: personID (organization ID)
+    - code: stock code (converts to personID)
+    - s1, s2, s3: sort parameters for holders/holdings/debt tables
+    - x: expand parameter
+
+    Tables used: weborgs view, lsorgs, orgdata, freg, oldcrf, ess,
+                 nameChanges, domChanges, reorg, stocklistings, issue, etc.
+    """
+    from webbsite.asp_helpers import get_int, get_str, html_ent, ms_date
+
+    # Get query parameters
+    person_id = get_int('p', 0)
+    code = get_int('code', 0)
+    s1 = get_str('s1', '')
+    s2 = get_str('s2', '')
+    s3 = get_str('s3', '')
+    expand = get_str('x', 'c')
+    if expand not in ('n', 'y'):
+        expand = 'c'
+
+    # Convert stock code to personID if provided
+    if code > 0:
+        result = execute_query("""
+            SELECT COALESCE((
+                SELECT orgID FROM enigma.WebListings
+                WHERE StockCode = %s
+                AND (DelistDate IS NULL OR DelistDate >= NOW())
+            ), 0) as personID
+        """, (code,))
+        if result:
+            person_id = result[0]['personid']
+
+    # Initialize variables
+    name = "No record found"
+    org_data = None
+    title = name
+    lsid = None
+    year_end_data = None
+    registry_links = {}
+
+    # Registry URL templates by domicile ID
+    registry_url_templates = {
+        1: 'https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do',
+        2: 'https://find-and-update.company-information.service.gov.uk/company/{incid}',
+        25: 'https://www.companiesoffice.govt.nz/companies/app/ui/pages/companies/{incid}',
+        16: 'http://abr.business.gov.au/SearchByAbn.aspx?SearchText={incid_nospace}',
+        23: 'https://www.ic.gc.ca/app/scr/cc/CorporationsCanada/fdrlCrpDtls.html?corpId={incid_nodash}',
+        46: 'https://datacvr.virk.dk/data/visenhed?language=en-gb&enhedstype=virksomhed&id={incid}',
+        112: 'https://find-and-update.company-information.service.gov.uk/company/{incid}',
+        116: 'https://find-and-update.company-information.service.gov.uk/company/{incid}',
+        288: 'http://corp.sec.state.ma.us/CorpWeb/CorpSearch/CorpSummary.aspx?FEIN={incid}',
+        311: 'https://find-and-update.company-information.service.gov.uk/company/{incid}'
+    }
+
+    if person_id > 0:
+        # Get main organization data from weborgs view
+        org_result = execute_query("""
+            SELECT * FROM enigma.weborgs WHERE OrgID = %s
+        """, (person_id,))
+
+        if org_result:
+            org_data = org_result[0]
+            name = org_data['org'] if org_data['org'] else "No record found"
+            title = name
+            if org_data['cname']:
+                title = f"{title} {org_data['cname']}"
+        else:
+            # Check if this person was merged into another
+            merged = execute_query("""
+                SELECT newp FROM enigma.mergedpersons WHERE oldp = %s
+            """, (person_id,))
+            if merged:
+                # Redirect to new personID
+                from flask import redirect, url_for
+                return redirect(url_for('dbpub.orgdata', p=merged[0]['newp']))
+
+        # Get Law Society ID if applicable
+        if org_data:
+            lsorg_result = execute_query("""
+                SELECT lsid FROM enigma.lsorgs
+                WHERE NOT dead AND personID = %s
+            """, (person_id,))
+            if lsorg_result:
+                lsid = lsorg_result[0]['lsid']
+
+            # Get year-end data
+            yearend_result = execute_query("""
+                SELECT YearEndDate, YearEndMonth
+                FROM enigma.orgdata
+                WHERE PersonID = %s AND YearEndDate IS NOT NULL
+            """, (person_id,))
+            if yearend_result:
+                year_end_data = yearend_result[0]
+
+    # Foreign registrations
+    foreign_regs = []
+    if person_id > 0 and org_data:
+        foreign_regs = execute_query("""
+            SELECT f.hostDom, d.A2, f.regID, f.regDate, f.cesDate,
+                   d.friendly, o.crn as oldcrn
+            FROM enigma.freg f
+            JOIN enigma.domiciles d ON f.hostDom = d.ID
+            LEFT JOIN enigma.oldcrf o ON f.ID = o.fregID
+            WHERE f.orgID = %s
+        """, (person_id,))
+
+    # ESS COVID-19 subsidy data
+    ess_data = []
+    ess_totals = {}
+    if person_id > 0 and org_data:
+        # Check if ESS data exists
+        ess_check = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_ess
+        """, (person_id,))
+
+        if ess_check and ess_check[0]['has_ess']:
+            # Aggregate ESS data by eName/cName across phases
+            ess_data = execute_query("""
+                SELECT eName, cName,
+                       SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) as p1,
+                       SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) as p2,
+                       SUM(amt) as amt,
+                       ROUND(AVG(hds), 0) as hds,
+                       ROUND(SUM(amt) / NULLIF(AVG(hds), 0), 0) as avg
+                FROM (
+                    SELECT eName, cName, phase, SUM(amt) as amt, SUM(heads) as hds
+                    FROM enigma.ess
+                    WHERE orgID = %s
+                    GROUP BY eName, cName, phase
+                ) t
+                GROUP BY eName, cName
+                ORDER BY eName, cName
+            """, (person_id,))
+
+            # Calculate totals if multiple entries
+            if len(ess_data) > 1:
+                sum_amt = sum(row['amt'] or 0 for row in ess_data)
+                sum_hds = sum(row['hds'] or 0 for row in ess_data)
+                ess_totals = {
+                    'amt': sum_amt,
+                    'hds': sum_hds,
+                    'avg': round(sum_amt / sum_hds, 0) if sum_hds > 0 else 0
+                }
+
+    # Governance rating data (aggregate only, no user ratings yet)
+    # Note: ratings table may not exist yet - feature not implemented
+    rating_data = {}
+
+    # Name history
+    name_history = []
+    if person_id > 0 and org_data:
+        name_history = execute_query("""
+            SELECT OldName, CAST(oldcName AS TEXT) as oldcName,
+                   CASE
+                       WHEN dateAcc = 3 THEN 'U'
+                       WHEN dateAcc IN (1, 4) THEN TO_CHAR(dateChanged, 'YYYY')
+                       WHEN dateAcc IN (2, 5) THEN TO_CHAR(dateChanged, 'YYYY-MM')
+                       ELSE TO_CHAR(dateChanged, 'YYYY-MM-DD')
+                   END as chg
+            FROM enigma.nameChanges
+            WHERE (OldName IS NOT NULL OR oldCName IS NOT NULL)
+              AND personID = %s
+            ORDER BY DateChanged DESC
+        """, (person_id,))
+
+    # Domicile history
+    dom_history = []
+    if person_id > 0 and org_data:
+        dom_history = execute_query("""
+            SELECT d.fullName,
+                   CASE
+                       WHEN c.dateAcc = 3 THEN 'U'
+                       WHEN c.dateAcc IN (1, 4) THEN TO_CHAR(c.dateChanged, 'YYYY')
+                       WHEN c.dateAcc IN (2, 5) THEN TO_CHAR(c.dateChanged, 'YYYY-MM')
+                       ELSE TO_CHAR(c.dateChanged, 'YYYY-MM-DD')
+                   END as chg
+            FROM enigma.domChanges c
+            JOIN enigma.domiciles d ON c.oldDom = d.ID
+            WHERE c.orgID = %s
+            ORDER BY c.dateChanged DESC
+        """, (person_id,))
+
+    # Reorganized from
+    reorg_from = []
+    if person_id > 0 and org_data:
+        reorg_from = execute_query("""
+            SELECT r.fromOrg, o.Name1 as name, o.cname,
+                   CASE
+                       WHEN r.effAcc = 3 THEN 'U'
+                       WHEN r.effAcc IN (1, 4) THEN TO_CHAR(r.effDate, 'YYYY')
+                       WHEN r.effAcc IN (2, 5) THEN TO_CHAR(r.effDate, 'YYYY-MM')
+                       ELSE TO_CHAR(r.effDate, 'YYYY-MM-DD')
+                   END as chg
+            FROM enigma.reorg r
+            JOIN enigma.organisations o ON r.fromOrg = o.personID
+            WHERE r.toOrg = %s
+        """, (person_id,))
+
+    # Reorganized to
+    reorg_to = []
+    if person_id > 0 and org_data:
+        reorg_to = execute_query("""
+            SELECT r.toOrg, o.Name1 as name, o.cname,
+                   CASE
+                       WHEN r.effAcc = 3 THEN 'U'
+                       WHEN r.effAcc IN (1, 4) THEN TO_CHAR(r.effDate, 'YYYY')
+                       WHEN r.effAcc IN (2, 5) THEN TO_CHAR(r.effDate, 'YYYY-MM')
+                       ELSE TO_CHAR(r.effDate, 'YYYY-MM-DD')
+                   END as chg
+            FROM enigma.reorg r
+            JOIN enigma.organisations o ON r.toOrg = o.personID
+            WHERE r.fromOrg = %s
+        """, (person_id,))
+
+    # HK-listed equities (by type)
+    equity_types = []
+    if person_id > 0 and org_data:
+        equity_types = execute_query("""
+            SELECT DISTINCT sl.issueID as i, st.typeLong,
+                   COALESCE(c.currency, 'HKD') as curr,
+                   st.listord, st.typeShort, i.expmat
+            FROM enigma.stocklistings sl
+            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.sectypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+            WHERE i.typeID NOT IN (5, 40, 41, 46)
+              AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
+              AND i.issuer = %s
+            ORDER BY st.listord, st.typeShort, i.expmat
+        """, (person_id,))
+
+    # For each equity type, get detailed stock listing and navigation data
+    equity_details = []
+    for equity in equity_types:
+        issue_id = equity['i']
+
+        # Get stock listings for this issue (equivalent to HKlistings)
+        listings = execute_query("""
+            SELECT sl.*, l.shortname as exchange_name
+            FROM enigma.stocklistings sl
+            JOIN enigma.listings l ON sl.stockExID = l.stockExID
+            WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
+              AND sl.issueID = %s
+            ORDER BY sl.firstTradeDate
+        """, (issue_id,))
+
+        # Get security type for navigation logic
+        sec_type_result = execute_query("""
+            SELECT typeID FROM enigma.issue WHERE ID1 = %s
+        """, (issue_id,))
+        sec_type = sec_type_result[0]['typeid'] if sec_type_result else None
+
+        # Determine navigation flags
+        has_hk_listed = len(listings) > 0
+        latest_listing = listings[0] if listings else None
+        delist_date = latest_listing['delistdate'] if latest_listing else None
+        stock_ex_id = latest_listing['stockexid'] if latest_listing else None
+
+        # Check for buybacks (not for rights/convertible bonds)
+        has_buybacks = has_hk_listed and sec_type not in (2, 41)
+
+        # Check for outstanding shares data
+        outstanding_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+        """, (issue_id,))
+        has_outstanding = outstanding_result[0]['has_data'] if outstanding_result else False
+
+        # Check for short selling data
+        short_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+        """, (issue_id,))
+        has_short = short_result[0]['has_data'] if short_result else False
+
+        # Check for CCASS (after Jun 26 2007, not rights/convertible/notes)
+        from datetime import date as date_type
+        ccass_on = False
+        if has_hk_listed and sec_type not in (2, 40, 41):
+            if delist_date is None or delist_date >= date_type(2007, 6, 26):
+                ccass_on = True
+
+        # Check for SDI dealings
+        sdi_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+        """, (issue_id,))
+        has_sdi = sdi_result[0]['has_data'] if sdi_result else False
+
+        # Format stock codes (5 digits, zero-padded)
+        for listing in listings:
+            if listing['stockcode']:
+                listing['stockcode_formatted'] = str(listing['stockcode']).zfill(5)
+            else:
+                listing['stockcode_formatted'] = ''
+
+        equity_details.append({
+            'issue_id': issue_id,
+            'typelong': equity['typelong'],
+            'curr': equity['curr'],
+            'listings': listings,
+            'sec_type': sec_type,
+            'has_buybacks': has_buybacks,
+            'has_outstanding': has_outstanding,
+            'has_short': has_short,
+            'ccass_on': ccass_on,
+            'has_sdi': has_sdi,
+            'has_hk_listed': has_hk_listed,
+            'stock_ex_id': stock_ex_id,
+            'delist_date': delist_date
+        })
+
+    # Listed debt and preference shares
+    debt_securities = []
+    if person_id > 0 and org_data:
+        # Build ORDER BY based on s3 parameter
+        order_by_map = {
+            'cpndn': 'i.coupon DESC, i.expmat DESC',
+            'cpnup': 'i.coupon, i.expmat',
+            'ftddn': 'sl.firstTradeDate DESC, i.expmat DESC',
+            'ftdup': 'sl.firstTradeDate, i.expmat',
+            'matup': 'i.expmat, sl.firstTradeDate',
+            'osdn': 'c.currency, os DESC, sl.delistDate DESC',
+            'osup': 'c.currency, os, sl.delistDate DESC',
+            'matdn': 'i.expmat DESC, sl.firstTradeDate DESC'  # default
+        }
+        if not s3:
+            s3 = 'matdn'
+        order_by = order_by_map.get(s3, order_by_map['matdn'])
+
+        # Query debt securities
+        # Note: outstanding() function not available, using NULL for now
+        debt_securities = execute_query(f"""
+            SELECT sl.issueID, sl.stockId, sl.stockCode,
+                   sl.firstTradeDate, sl.finalTradeDate, sl.delistDate,
+                   CASE
+                       WHEN i.expAcc = 0 THEN TO_CHAR(i.expmat, 'YYYY-MM-DD')
+                       WHEN i.expAcc = 1 THEN TO_CHAR(i.expmat, 'YYYY-MM')
+                       ELSE TO_CHAR(i.expmat, 'YYYY')
+                   END as exp,
+                   st.typeShort, i.coupon, i.floating,
+                   c.currency,
+                   NULL as os
+            FROM enigma.stocklistings sl
+            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.sectypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+            WHERE i.typeID IN (5, 40, 41, 46)
+              AND i.issuer = %s
+            ORDER BY {order_by}
+        """, (person_id,))
+
+    # Unlisted securities
+    unlisted_securities = []
+    if person_id > 0 and org_data:
+        unlisted_securities = execute_query("""
+            SELECT i.ID1 as issueID, st.typeLong,
+                   EXISTS(
+                       SELECT 1 FROM enigma.issuedshares
+                       WHERE issueID = i.ID1
+                   ) as has_outstanding
+            FROM enigma.issue i
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.stocklistings sl ON i.ID1 = sl.issueID
+            WHERE sl.issueID IS NULL
+              AND i.typeID NOT IN (1, 2, 40, 41)
+              AND i.issuer = %s
+        """, (person_id,))
+
+    # Old SFC IDs
+    old_sfc_ids = []
+    if person_id > 0 and org_data and org_data.get('sfcid'):
+        old_sfc_ids = execute_query("""
+            SELECT SFCID, SFCri, TO_CHAR(until, 'YYYY-MM-DD') as until
+            FROM enigma.oldsfcids
+            WHERE orgID = %s
+            ORDER BY until DESC
+        """, (person_id,))
+
+    # Check if ever listed (for holders section)
+    ever_listed = False
+    if person_id > 0 and org_data:
+        ever_result = execute_query("""
+            SELECT enigma.everListCo(%s) as ever_listed
+        """, (person_id,))
+        if ever_result:
+            ever_listed = ever_result[0]['ever_listed']
+
+    # Navigation menu visibility checks (orgBar equivalent)
+    nav_has_directorships = False
+    nav_has_pay = False
+    nav_has_advisers = False
+    nav_has_adviserships = False
+    nav_has_sfc_licenses = False
+    nav_has_documents = False
+    nav_has_stories = False
+    nav_has_lir_team = False
+    ccass_part_id = None
+
+    if person_id > 0:
+        # Check for directorships (shows Officers + Overlaps)
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.directorships WHERE company = %s) as has_data
+        """, (person_id,))
+        nav_has_directorships = result[0]['has_data'] if result else False
+
+        # Check for pay records
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+        """, (person_id,))
+        nav_has_pay = result[0]['has_data'] if result else False
+
+        # Check for advisers
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE company = %s) as has_data
+        """, (person_id,))
+        nav_has_advisers = result[0]['has_data'] if result else False
+
+        # Check for adviserships (acts as adviser)
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE adviser = %s) as has_data
+        """, (person_id,))
+        nav_has_adviserships = result[0]['has_data'] if result else False
+
+        # Check for SFC licenses
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+        """, (person_id,))
+        nav_has_sfc_licenses = result[0]['has_data'] if result else False
+
+        # Check for CCASS participant
+        result = execute_query("""
+            SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+        """, (person_id,))
+        if result and result[0]['partid']:
+            ccass_part_id = result[0]['partid']
+
+        # Check for documents
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+        """, (person_id,))
+        nav_has_documents = result[0]['has_data'] if result else False
+
+        # Check for stories
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+        """, (person_id,))
+        nav_has_stories = result[0]['has_data'] if result else False
+
+        # Check for LIR team or is HKEX (personID 9643)
+        result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+        """, (person_id,))
+        nav_has_lir_team = result[0]['has_data'] if result else False
+        if person_id == 9643:  # HKEX, regulated by SFC
+            nav_has_lir_team = True
+
+    # Web sites data
+    websites = []
+    if person_id > 0:
+        websites = execute_query("""
+            SELECT url, dead
+            FROM enigma.web
+            WHERE personid = %s
+            ORDER BY dead, url
+        """, (person_id,))
+
+    # Generate registry links if we have org data
+    if org_data and org_data.get('incid'):
+        dom_id = org_data.get('domid')
+        inc_id = org_data['incid']
+
+        if dom_id in registry_url_templates:
+            template = registry_url_templates[dom_id]
+            registry_links[dom_id] = {
+                'url': template.format(
+                    incid=inc_id,
+                    incid_nospace=inc_id.replace(' ', ''),
+                    incid_nodash=inc_id.replace('-', '')
+                ),
+                'use_ukuri': org_data.get('ukuri', False) and dom_id in [2, 112, 116, 311]
+            }
+
+    return render_template('dbpub/orgdata.html',
+                         person_id=person_id,
+                         name=name,
+                         title=title,
+                         org=org_data,
+                         lsid=lsid,
+                         year_end_data=year_end_data,
+                         foreign_regs=foreign_regs,
+                         ess_data=ess_data,
+                         ess_totals=ess_totals,
+                         rating_data=rating_data,
+                         name_history=name_history,
+                         dom_history=dom_history,
+                         reorg_from=reorg_from,
+                         reorg_to=reorg_to,
+                         equity_details=equity_details,
+                         debt_securities=debt_securities,
+                         unlisted_securities=unlisted_securities,
+                         old_sfc_ids=old_sfc_ids,
+                         ever_listed=ever_listed,
+                         registry_links=registry_links,
+                         websites=websites,
+                         nav_has_directorships=nav_has_directorships,
+                         nav_has_pay=nav_has_pay,
+                         nav_has_advisers=nav_has_advisers,
+                         nav_has_adviserships=nav_has_adviserships,
+                         nav_has_sfc_licenses=nav_has_sfc_licenses,
+                         nav_has_documents=nav_has_documents,
+                         nav_has_stories=nav_has_stories,
+                         nav_has_lir_team=nav_has_lir_team,
+                         ccass_part_id=ccass_part_id,
+                         today=date.today(),
+                         s1=s1,
+                         s2=s2,
+                         s3=s3,
+                         expand=expand)
 
 
 # Helpers to import

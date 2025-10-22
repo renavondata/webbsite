@@ -8,23 +8,23 @@
 -- - Excluding certain security types (1,2,40,41,46)
 -- - On specific stock exchanges (1=Main Board, 20=GEM, 22/23=REITs, 38=other)
 
-DROP FUNCTION IF EXISTS everListCo(bigint);
-DROP FUNCTION IF EXISTS everListCo(integer);
+DROP FUNCTION IF EXISTS enigma.everListCo(bigint);
+DROP FUNCTION IF EXISTS enigma.everListCo(integer);
 
-CREATE OR REPLACE FUNCTION everListCo(p bigint)
+CREATE OR REPLACE FUNCTION enigma.everListCo(p bigint)
 RETURNS boolean
 LANGUAGE sql
 STABLE
 AS $$
   SELECT EXISTS (
     SELECT 1
-    FROM issue i
-    JOIN stocklistings s ON i.ID1 = s.issueID
+    FROM enigma.issue i
+    JOIN enigma.stocklistings s ON i.ID1 = s.issueID
     WHERE issuer = p
       AND i.typeID NOT IN (1, 2, 40, 41, 46)
       AND stockexID IN (1, 20, 22, 23, 38)
   )
 $$;
 
-COMMENT ON FUNCTION everListCo(bigint) IS
+COMMENT ON FUNCTION enigma.everListCo(bigint) IS
   'Returns true if organization was ever a listed company on HK exchanges';

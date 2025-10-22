@@ -124,9 +124,10 @@ routes:
   - name: "orgdata - company data page"
     path: "/dbpub/orgdata.asp"
     params:
+      - p: "16954"  # Capital Finance Holdings Limited (user example)
       - p: "1"  # HSBC personID
       - p: "12"  # China Mobile personID
-      - p: "100"  # Example personID
+      - code: "5"  # HSBC via stock code lookup
 
   # ==========================================
   # Articles (3 routes)

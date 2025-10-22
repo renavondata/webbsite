@@ -1,23 +1,534 @@
 {% extends "base_database.html" %}
 
-{% block title %}{{ org.name }} - Webb-site Database{% endblock %}
+{% block title %}{{ title }} - Webb-site Database{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+	table.rating {
+		border-collapse:collapse;
+		border:thin gray solid;
+	}
+	table.rating tr {
+		border:thin gray solid;
+	}
+	table.rating th {
+		font-weight:bold;
+		border:inherit;
+		text-align:center;
+	}
+	table.rating td {
+		text-align:center;
+	}
+</style>
+{% endblock %}
 
 {% block content %}
-<h2>{{ org.name }}</h2>
+{% if name == "No record found" %}
+	<h2>No record found</h2>
+{% else %}
+	{# Navigation bar for organization (orgBar equivalent) #}
+	<h2>{{ name }}{% if org.cname %} {{ org.cname }}{% endif %}</h2>
+	<ul class="navlist">
+		<li class="livebutton">Key Data</li>
+		{% if nav_has_directorships %}
+			<li><a href="/dbpub/officers.asp?p={{ person_id }}">Officers</a></li>
+			<li><a href="/dbpub/overlap.asp?p={{ person_id }}">Overlaps</a></li>
+		{% endif %}
+		{% if nav_has_pay %}
+			<li><a href="/dbpub/pay.asp?p={{ person_id }}">Pay</a></li>
+		{% endif %}
+		{% if nav_has_advisers %}
+			<li><a href="/dbpub/advisers.asp?p={{ person_id }}">Advisers</a></li>
+		{% endif %}
+		{% if nav_has_adviserships %}
+			<li><a href="/dbpub/adviserships.asp?p={{ person_id }}">Adviserships</a></li>
+		{% endif %}
+		{% if nav_has_sfc_licenses %}
+			<li><a href="/dbpub/SFColicrec.asp?p={{ person_id }}">SFC licenses</a></li>
+		{% endif %}
+		{% if ccass_part_id %}
+			<li><a href="/ccass/cholder.asp?part={{ ccass_part_id }}">CCASS holdings</a></li>
+		{% endif %}
+		{% if nav_has_documents %}
+			<li><a href="/dbpub/docs.asp?p={{ person_id }}">Financials</a></li>
+		{% endif %}
+		{% if ess_data %}
+			<li><a href="/dbpub/ESSraw.asp?p={{ person_id }}">ESS</a></li>
+		{% endif %}
+		{% if nav_has_stories %}
+			<li><a href="/dbpub/articles.asp?p={{ person_id }}">Webb-site Reports</a></li>
+		{% endif %}
+		{% if nav_has_lir_team %}
+			<li><a href="/dbpub/complain.asp?p={{ person_id }}">Complain</a></li>
+		{% endif %}
+	</ul>
+	<div class="clear"></div>
 
-<p><b>{{ org.message }}</b></p>
+	{# Separate FAQ link in its own navlist #}
+	<ul class="navlist">
+		<li><a target="_blank" href="FAQWWW.asp">FAQ</a></li>
+	</ul>
+	<div class="clear"></div>
 
-<p>This is a complex page showing comprehensive company/organization data including:</p>
-<ul>
-	<li>Basic company information (domicile, incorporation date, etc.)</li>
-	<li>Stock codes and current listing status</li>
-	<li>Directors and officers</li>
-	<li>Advisers (auditors, solicitors, etc.)</li>
-	<li>Major shareholders</li>
-	<li>Corporate events (dividends, rights issues, etc.)</li>
-	<li>Financial reports</li>
-	<li>Related news and articles</li>
-</ul>
+	{# Basic information table #}
+	<table>
+		{% if org.dom %}
+			<tr><td>Domicile:</td><td>{{ org.dom }}</td></tr>
+		{% endif %}
+		{% if org.typename %}
+			<tr><td>Type:</td><td>{{ org.typename }}</td></tr>
+		{% endif %}
+		{% if org.inc %}
+			<tr><td>Formed:</td><td>{{ org.inc }}</td></tr>
+		{% endif %}
+		{% if org.disdate %}
+			<tr><td>Dissolved date:</td><td>{{ org.disdate }}</td></tr>
+		{% endif %}
+		{% if org.dismodetxt %}
+			<tr><td>Status:</td><td>{{ org.dismodetxt }}</td></tr>
+		{% endif %}
+		{% if org.incid %}
+			<tr>
+				<td>Incorporation number:</td>
+				<td>
+					{% set domid = org.domid %}
+					{% if domid == 1 %}
+						<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do">{{ org.incid }}</a>
+					{% elif domid in [2, 112, 116, 311] %}
+						{% if org.ukuri %}
+							<a target="_blank" href="http://data.companieshouse.gov.uk/doc/company/{{ org.incid }}.html">{{ org.incid }}</a>
+						{% else %}
+							<a target="_blank" href="https://find-and-update.company-information.service.gov.uk/company/{{ org.incid }}">{{ org.incid }}</a>
+						{% endif %}
+					{% elif domid == 25 %}
+						<a target="_blank" href="https://www.companiesoffice.govt.nz/companies/app/ui/pages/companies/{{ org.incid }}">{{ org.incid }}</a>
+					{% elif domid == 16 %}
+						<a target="_blank" href="http://abr.business.gov.au/SearchByAbn.aspx?SearchText={{ org.incid.replace(' ', '') }}">{{ org.incid }}</a>
+					{% elif domid == 23 %}
+						<a target="_blank" href="https://www.ic.gc.ca/app/scr/cc/CorporationsCanada/fdrlCrpDtls.html?corpId={{ org.incid.replace('-', '') }}">{{ org.incid }}</a>
+					{% elif domid == 46 %}
+						<a target="_blank" href="https://datacvr.virk.dk/data/visenhed?language=en-gb&enhedstype=virksomhed&id={{ org.incid }}">{{ org.incid }}</a>
+					{% elif domid == 288 %}
+						<a target="_blank" href="http://corp.sec.state.ma.us/CorpWeb/CorpSearch/CorpSummary.aspx?FEIN={{ org.incid }}">{{ org.incid }}</a>
+					{% else %}
+						{{ org.incid }}
+					{% endif %}
+				</td>
+			</tr>
+		{% endif %}
+		{% if org.incupd %}
+			<tr>
+				<td>Last check on companies registry:</td>
+				<td>{{ org.incupd.strftime('%Y-%m-%d') if org.incupd else '' }}</td>
+			</tr>
+		{% endif %}
+		{% if org.oldcrn %}
+			<tr><td>HK company No. until 2023-12-27:</td><td>{{ org.oldcrn }}</td></tr>
+		{% endif %}
+		{% if org.sfcid %}
+			<tr>
+				<td>SFC ID:</td>
+				<td>
+					{% set sfcurl = 'ri' if org.sfcri else 'corp' %}
+					<a target="_blank" href="http://www.sfc.hk/publicregWeb/{{ sfcurl }}/{{ org.sfcid }}/licences">{{ org.sfcid }}</a>
+				</td>
+			</tr>
+			{% if old_sfc_ids %}
+				{% for old_id in old_sfc_ids %}
+					<tr>
+						<td>Old SFCID:</td>
+						<td>
+							{% set sfcurl = 'ri' if old_id.sfcri else 'corp' %}
+							<a target="_blank" href="http://www.sfc.hk/publicregWeb/{{ sfcurl }}/{{ old_id.sfcid }}/licences">{{ old_id.sfcid }}</a> until {{ old_id.until }}
+						</td>
+					</tr>
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+		{% if lsid %}
+			<tr>
+				<td>Law Society:</td>
+				<td><a target="_blank" href="https://www.hklawsoc.org.hk/en/Serve-the-Public/The-Law-List/Firm-Detail?FirmId={{ lsid }}">click here</a></td>
+			</tr>
+		{% endif %}
+		{% if year_end_data and year_end_data.yearenddate %}
+			<tr><td>Year-end:</td><td>{{ year_end_data.yearenddate }}-{% if year_end_data.yearendmonth %}{{ ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][year_end_data.yearendmonth] }}{% endif %}</td></tr>
+		{% endif %}
+	</table>
 
-<p>PersonID: {{ org.personID }}</p>
+	{# Web sites section #}
+	{% if websites %}
+		<h3>Web sites</h3>
+		{% for site in websites %}
+			{% set url = site.url %}
+			{# Strip http:// or https:// prefix for display #}
+			{% if url.startswith('http://') %}
+				{% set display_url = url[7:] %}
+			{% elif url.startswith('https://') %}
+				{% set display_url = url[8:] %}
+			{% else %}
+				{% set display_url = url %}
+			{% endif %}
+			{# Strip trailing slash #}
+			{% if display_url.endswith('/') %}
+				{% set display_url = display_url[:-1] %}
+			{% endif %}
+			{# Add http:// if no protocol #}
+			{% if not url.startswith('http://') and not url.startswith('https://') %}
+				{% set full_url = 'http://' ~ url %}
+			{% else %}
+				{% set full_url = url %}
+			{% endif %}
+			{% if site.dead %}
+				<a target="_blank" href="https://web.archive.org/web/*/{{ display_url }}">{{ display_url }} (archived)</a><br>
+			{% else %}
+				<a target="_blank" href="{{ full_url }}">{{ display_url }}</a><br>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+
+	{# Foreign registrations #}
+	{% if foreign_regs %}
+		<h3>Foreign registrations</h3>
+		<table class="txtable">
+			<tr>
+				<th>Place</th>
+				<th>ID</th>
+				<th>Registered</th>
+				<th>Ceased</th>
+			</tr>
+			{% for reg in foreign_regs %}
+				<tr>
+					<td>{{ reg.friendly }}</td>
+					<td>
+						{% if reg.hostdom == 1 %}
+							{% if reg.oldcrn and reg.oldcrn != reg.regid %}
+								<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do"><span class="info">{{ reg.regid }}<span>Until 2023-12-27: {{ reg.oldcrn }}</span></span></a>
+							{% else %}
+								<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do">{{ reg.regid }}</a>
+							{% endif %}
+						{% elif reg.hostdom == 2 %}
+							<a target="_blank" href="https://beta.companieshouse.gov.uk/company/{{ reg.regid }}">{{ reg.regid }}</a>
+						{% else %}
+							{{ reg.regid }}
+						{% endif %}
+					</td>
+					<td>{{ reg.regdate if reg.regdate else '' }}</td>
+					<td>{{ reg.cesdate if reg.cesdate else '' }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{# ESS COVID-19 subsidy data #}
+	{% if ess_data %}
+		<h3>Employment Support Subsidy (COVID-19)</h3>
+		<p>The HK Government <a href="https://www.ess.gov.hk/" target="_blank">paid</a>
+		employers a subsidy of half of staff salaries up to a subsidy cap of HK$9k per
+		month for 6 months in 2 phases covering Jun-Aug and Sep-Nov 2020. Amounts shown
+		do not include subsidiaries. P1 and p2 indicate whether a claim has been made
+		and approved in each phase. <a href="ESSraw.asp?p={{ person_id }}">Click here</a> for raw
+		filing data.</p>
+		<div class="mobile2">
+			<table class="numtable fcl c2l">
+				<tr>
+					<th>English name</th>
+					<th class="colHide3">Chinese name</th>
+					<th>Amount<br>HK$</th>
+					<th>Heads</th>
+					<th>Average<br>HK$</th>
+					<th class="colHide2">p1</th>
+					<th class="colHide2">p2</th>
+				</tr>
+				{% for row in ess_data %}
+					<tr>
+						<td>{{ row.ename }}</td>
+						<td class="colHide3">{{ row.cname if row.cname else '' }}</td>
+						<td>{{ "{:,.0f}".format(row.amt) if row.amt else '0' }}</td>
+						<td>{{ "{:,.0f}".format(row.hds) if row.hds else '0' }}</td>
+						<td>{{ "{:,.0f}".format(row.avg) if row.avg else '-' }}</td>
+						<td class="colHide2">{{ row.p1 }}</td>
+						<td class="colHide2">{{ row.p2 }}</td>
+					</tr>
+				{% endfor %}
+				{% if ess_totals %}
+					<tr class="total">
+						<td>Total</td>
+						<td class="colHide3"></td>
+						<td>{{ "{:,.0f}".format(ess_totals.amt) }}</td>
+						<td>{{ "{:,.0f}".format(ess_totals.hds) }}</td>
+						<td>{{ "{:,.0f}".format(ess_totals.avg) if ess_totals.avg else '-' }}</td>
+						<td class="colHide2"></td>
+						<td class="colHide2"></td>
+					</tr>
+				{% endif %}
+			</table>
+		</div>
+	{% endif %}
+
+	{# Webb-site Governance Rating #}
+	<h3>Webb-site Governance Rating</h3>
+	<p><a href="../webbmail/login.asp"><b>Log in</b></a> to add your anonymous rating. Webb-site users rate this organisation as follows:</p>
+	<table class="rating">
+		<tr>
+			<th>Users</th>
+			<th>Average (0-5)</th>
+		</tr>
+		<tr>
+			<td style="border-right:thin gray solid" id="usercnt">0</td>
+			<td id="score">N/A</td>
+		</tr>
+	</table>
+
+	{# Name history #}
+	{% if name_history %}
+		<h3>Name history</h3>
+		<table class="txtable">
+			<tr>
+				<th>Old English name</th>
+				<th>Old Chinese name</th>
+				<th class="right">Until</th>
+			</tr>
+			{% for name in name_history %}
+				<tr>
+					<td>{{ name.oldname if name.oldname else '' }}</td>
+					<td>{{ name.oldcname if name.oldcname else '' }}</td>
+					<td class="right">{{ name.chg }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{# Domicile history #}
+	{% if dom_history %}
+		<h3>Domicile history</h3>
+		<table class="txtable">
+			<tr>
+				<th>Old domicile</th>
+				<th class="right">Until</th>
+			</tr>
+			{% for dom in dom_history %}
+				<tr>
+					<td>{{ dom.fullname }}</td>
+					<td class="right">{{ dom.chg }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{# Reorganised from #}
+	{% if reorg_from %}
+		<h3>Reorganised from</h3>
+		<table class="txtable">
+			<tr>
+				<th>Current English name</th>
+				<th>Chinese name</th>
+				<th class="right">Effective</th>
+			</tr>
+			{% for reorg in reorg_from %}
+				<tr>
+					<td><a href='orgdata.asp?p={{ reorg.fromorg }}'>{{ reorg.name }}</a></td>
+					<td>{{ reorg.cname if reorg.cname else '' }}</td>
+					<td class="right">{{ reorg.chg }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{# Reorganised to #}
+	{% if reorg_to %}
+		<h3>Reorganised to</h3>
+		<table class="txtable">
+			<tr>
+				<th>Current English name</th>
+				<th>Chinese name</th>
+				<th class="right">Effective</th>
+			</tr>
+			{% for reorg in reorg_to %}
+				<tr>
+					<td><a href='orgdata.asp?p={{ reorg.toorg }}'>{{ reorg.name }}</a></td>
+					<td>{{ reorg.cname if reorg.cname else '' }}</td>
+					<td class="right">{{ reorg.chg }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+
+	{# HK-listed equities #}
+	{% if equity_details %}
+		<h3>HK-listed equities</h3>
+		{% for equity in equity_details %}
+			<h4>{{ equity.typelong }}: {{ equity.curr }}</h4>
+
+			{# HKlistings table #}
+			{% if equity.listings %}
+				<table class="numtable" style="margin-top:5px">
+					<tr>
+						<th class="left">Exchange</th>
+						<th>Code</th>
+						<th>Listed</th>
+						<th>Last trade</th>
+						<th>Delisted</th>
+						<th></th>
+					</tr>
+					{% for listing in equity.listings %}
+						<tr>
+							<td class="left" style="width:75px;vertical-align:middle">{{ listing.exchange_name }}</td>
+							<td style="text-align:left;vertical-align:middle">{{ listing.stockcode_formatted }}</td>
+							<td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate if listing.firsttradedate else '' }}</td>
+							<td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate if listing.finaltradedate else '' }}</td>
+							<td style="vertical-align:middle">&nbsp;{{ listing.delistdate if listing.delistdate else '' }}</td>
+							<td>
+								{% if listing.stockid %}
+									{% set doc_category = '1' if listing.delistdate and listing.delistdate <= today else '0' %}
+									{% set doc_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' ~ listing.stockid ~ '&category=' ~ doc_category %}
+									<ul class="navlist"><li><a target="_blank" href="{{ doc_url }}">Docs</a></li></ul>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</table>
+				<div class="clear"></div>
+			{% endif %}
+
+			{# Navigation menu (stockBar equivalent) #}
+			<ul class="navlist">
+				{% if equity.has_buybacks %}
+					<li><a href="/dbpub/buybacks.asp?i={{ equity.issue_id }}">Buybacks</a></li>
+				{% endif %}
+				{% if equity.has_outstanding %}
+					<li><a href="/dbpub/outstanding.asp?i={{ equity.issue_id }}">Outstanding</a></li>
+				{% endif %}
+				{% if equity.has_short %}
+					<li><a href="/dbpub/short.asp?i={{ equity.issue_id }}">Short</a></li>
+				{% endif %}
+				{% if equity.ccass_on %}
+					<li><a href="/ccass/choldings.asp?i={{ equity.issue_id }}">CCASS</a></li>
+				{% endif %}
+				{% if equity.has_hk_listed %}
+					<li><a href="/dbpub/str.asp?i={{ equity.issue_id }}">Total return</a></li>
+					<li><a href="/dbpub/ctr.asp?i1={{ equity.issue_id }}">Compare returns</a></li>
+					<li><a href="/dbpub/hpu.asp?i={{ equity.issue_id }}">Prices</a></li>
+					<li><a href="/dbpub/events.asp?i={{ equity.issue_id }}">Events</a></li>
+				{% endif %}
+				{% if equity.has_sdi %}
+					<li><a href="/dbpub/sdiissue.asp?i={{ equity.issue_id }}">Dealings</a></li>
+				{% endif %}
+				{% if equity.has_hk_listed and (not equity.delist_date or equity.delist_date > today) %}
+					{# External quote links - different URLs by security type and exchange #}
+					{% if equity.sec_type not in [46, 40, 41] and equity.stock_ex_id not in [23, 38] %}
+						<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ equity.listings[0].stockcode }}">Quote</a></li>
+					{% elif equity.stock_ex_id == 38 %}
+						<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Exchange-Traded-Products/Exchange-Traded-Products-Quote?sym={{ equity.listings[0].stockcode }}">Quote</a></li>
+					{% elif equity.stock_ex_id == 23 %}
+						<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Real-Estate-Investment-Trusts/Real-Estate-Investment-Trusts-Quote?sym={{ equity.listings[0].stockcode }}">Quote</a></li>
+					{% else %}
+						<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Debt-Securities/Debt-Securities-Quote?sym={{ equity.listings[0].stockcode }}">Quote</a></li>
+					{% endif %}
+				{% endif %}
+			</ul>
+			<div class="clear"></div>
+		{% endfor %}
+	{% endif %}
+
+	{# Listed debt and preference shares #}
+	{% if debt_securities %}
+		<h3>Listed debt and preference shares</h3>
+		<p>Hit the stock code for details. * = floating</p>
+		{% set qs = "p=" ~ person_id ~ "&x=" ~ expand ~ "&s1=" ~ s1 ~ "&s2=" ~ s2 %}
+		<div class="mobile2">
+			<table class="numtable">
+				<tr>
+					<th class="left">Type</th>
+					<th></th>
+					<th><a href="orgdata.asp?{{ qs }}&s3=osdn">Outst. m ↓</a>/<a href="orgdata.asp?{{ qs }}&s3=osup">↑</a></th>
+					<th><a href="orgdata.asp?{{ qs }}&s3=cpndn">Rate % ↓</a>/<a href="orgdata.asp?{{ qs }}&s3=cpnup">↑</a></th>
+					<th><a href="orgdata.asp?{{ qs }}&s3=matdn">Maturity ↓</a>/<a href="orgdata.asp?{{ qs }}&s3=matup">↑</a></th>
+					<th>Code</th>
+					<th class="colHide2"><a href="orgdata.asp?{{ qs }}&s3=ftddn">Listed ↓</a>/<a href="orgdata.asp?{{ qs }}&s3=ftdup">↑</a></th>
+					<th class="colHide2">Last trade</th>
+					<th class="colHide2">Delisted</th>
+					<th class="colHide3"></th>
+				</tr>
+				{% for debt in debt_securities %}
+					{% set coupon_str = '' %}
+					{% if debt.coupon %}
+						{% if debt.floating %}
+							{% set coupon_str = '*' ~ "{:.5f}".format(debt.coupon) %}
+						{% else %}
+							{% set coupon_str = "{:.5f}".format(debt.coupon) %}
+						{% endif %}
+					{% endif %}
+					{% set curr_str = debt.currency if debt.currency else '' %}
+					{% set os_str = "{:.2f}".format(debt.os) if debt.os else '' %}
+					<tr>
+						<td class="left" style="vertical-align:middle">{{ debt.typeshort }}</td>
+						<td class="left" style="vertical-align:middle">{{ curr_str }}</td>
+						<td style="vertical-align:middle">{{ os_str }}</td>
+						<td style="vertical-align:middle">{{ coupon_str }}</td>
+						<td class="left" style="vertical-align:middle">{{ debt.exp if debt.exp else '' }}</td>
+						<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i={{ debt.issueid }}">{{ debt.stockcode }}</a></td>
+						<td class="colHide2" style="vertical-align:middle">{{ debt.firsttradedate if debt.firsttradedate else '' }}</td>
+						<td class="colHide2" style="vertical-align:middle">{{ debt.finaltradedate if debt.finaltradedate else '' }}</td>
+						<td class="colHide2" style="vertical-align:middle">{{ debt.delistdate if debt.delistdate else '' }}</td>
+						<td class="colHide3">
+							{% if debt.stockid %}
+								{% set doc_cat = '1' if debt.delistdate and debt.delistdate <= today else '0' %}
+								{% set doc_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' ~ debt.stockid ~ '&category=' ~ doc_cat %}
+								<ul class="navlist">
+									<li><a target="_blank" href="{{ doc_url }}">Docs</a></li>
+								</ul>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% endif %}
+
+	{# Unlisted securities #}
+	{% if unlisted_securities %}
+		<h3>Unlisted securities</h3>
+		{% for sec in unlisted_securities %}
+			<h4>{{ sec.typelong }}</h4>
+			{% if sec.has_outstanding %}
+				<ul class="navlist">
+					<li><a href='outstanding.asp?i={{ sec.issueid }}'>Outstanding</a></li>
+				</ul>
+				<div class="clear"></div>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+
+	{# Holders section - only if not ever listed #}
+	{% if not ever_listed %}
+		{# TODO: Include holders.asp logic here - complex recursive function #}
+		<h3>Holders</h3>
+		<p>Holders information coming soon...</p>
+	{% endif %}
+
+	{# Holdings section #}
+	{# TODO: Include holdings.asp logic here #}
+	<h3>Holdings</h3>
+	<p>Holdings information coming soon...</p>
+
+{% endif %}
 {% endblock %}
+
+<style>
+	table.rating {
+		border-collapse:collapse;
+		border:thin gray solid;
+	}
+	table.rating tr {
+		border:thin gray solid;
+	}
+	table.rating th {
+		font-weight:bold;
+		border:inherit;
+		text-align:center;
+	}
+	table.rating td {
+		text-align:center;
+	}
+</style>
