@@ -48,15 +48,29 @@ def search_orgs():
             terms = ' & '.join(n.split())
             match_clause = f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
-            # Left match (starts with) - use ILIKE for case-insensitive (MySQL compatibility)
-            match_clause = f"name1 ILIKE '{apos(n)}%'"
+            # Left match (starts with) - use LOWER() + LIKE for case-insensitive with pattern index
+            match_clause = f"LOWER(name1) LIKE LOWER('{apos(n)}%')"
 
         # Search current names
+        # Use CTE to force pattern index usage, then inline everListCo() logic
         sql = f"""
-            SELECT personID, Name1, everListCo(personID) as hklist, incDate, disDate, cName, A2, friendly
-            FROM enigma.organisations o
-            LEFT JOIN enigma.domiciles d ON o.domicile = d.ID
-            WHERE {match_clause}
+            WITH matched_orgs AS (
+                SELECT o.personID, o.Name1, o.incDate, o.disDate, o.cName, o.domicile
+                FROM enigma.organisations o
+                WHERE {match_clause}
+                LIMIT {limit * 2}
+            )
+            SELECT m.personID, m.Name1,
+                   EXISTS(
+                       SELECT 1 FROM enigma.issue i
+                       JOIN enigma.stocklistings s ON i.ID1 = s.issueID
+                       WHERE i.issuer = m.personID
+                         AND i.typeID NOT IN (1, 2, 40, 41, 46)
+                         AND s.stockexID IN (1, 20, 22, 23, 38)
+                   ) as hklist,
+                   m.incDate, m.disDate, m.cName, d.A2, d.friendly
+            FROM matched_orgs m
+            LEFT JOIN enigma.domiciles d ON m.domicile = d.ID
             ORDER BY {ob}
             LIMIT {limit}
         """
@@ -66,15 +80,27 @@ def search_orgs():
         if st == 'a':
             old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
-            old_match_clause = f"oldName ILIKE '{apos(n)}%'"
+            old_match_clause = f"LOWER(oldName) LIKE LOWER('{apos(n)}%')"
 
         sql = f"""
-            SELECT n.PersonID, oldName as name1, oldcName, everListCo(o.personID) as hklist,
-                   incDate, disDate, A2, friendly
-            FROM enigma.nameChanges n
-            JOIN enigma.organisations o ON n.PersonID = o.personID
+            WITH matched_names AS (
+                SELECT n.PersonID, n.oldName, n.oldcName
+                FROM enigma.nameChanges n
+                WHERE {old_match_clause}
+                LIMIT {limit * 2}
+            )
+            SELECT m.PersonID, m.oldName as name1, m.oldcName,
+                   EXISTS(
+                       SELECT 1 FROM enigma.issue i
+                       JOIN enigma.stocklistings s ON i.ID1 = s.issueID
+                       WHERE i.issuer = o.personID
+                         AND i.typeID NOT IN (1, 2, 40, 41, 46)
+                         AND s.stockexID IN (1, 20, 22, 23, 38)
+                   ) as hklist,
+                   o.incDate, o.disDate, d.A2, d.friendly
+            FROM matched_names m
+            JOIN enigma.organisations o ON m.PersonID = o.personID
             LEFT JOIN enigma.domiciles d ON o.domicile = d.ID
-            WHERE {old_match_clause}
             ORDER BY {ob}
             LIMIT {limit}
         """
