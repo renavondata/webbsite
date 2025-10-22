@@ -542,3 +542,26 @@ def arr_sum(arr):
         if isinstance(val, (int, float)):
             total += val
     return total
+
+
+def join_row(arr, row_index):
+    """
+    Join row of a 2D array with commas - useful for Highcharts series data
+    arr: 2D array (list of lists) where arr[col][row] is the value
+    row_index: which row to extract
+    Returns: comma-separated string of values
+    """
+    if not arr or len(arr) == 0:
+        return ''
+
+    values = []
+    for col in arr:
+        if row_index < len(col):
+            val = col[row_index]
+            # Handle None/NULL as 0 for charts
+            if val is None:
+                values.append('0')
+            else:
+                values.append(str(val))
+
+    return ','.join(values)

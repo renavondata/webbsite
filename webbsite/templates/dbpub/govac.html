@@ -1,6 +1,187 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}{{ title }} - Webb-site Database{% endblock %}
+
+{% block extra_head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/highstock.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/exporting.js') }}"></script>
+{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>
+{%- for crumb in breadcrumbs -%}
+<a href="/dbpub/govac.asp?t={{ t }}&amp;g={{ g|int }}&amp;i={{ crumb.id }}">{{ crumb.txt }}</a> |
+{%- endfor -%}
+{{ title }}
+</h2>
+
+<ul class="navlist">
+    <li class='livebutton'>Accounts</li>
+    <li><a href='/dbpub/govacsearch.asp'>Search</a></li>
+    <li><a href='/dbpub/govacNotes.asp'>Notes</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="/dbpub/govac.asp">
+    <input type="hidden" name="t" value="{{ t }}">
+    <input type="checkbox" name="g" id="g" value="1"{% if g %} checked{% endif %} onchange="this.form.submit()">
+    <label for="g">Show as % of Gross Domestic Product</label>
+    <input type="hidden" name="i" value="{{ i }}">
+</form>
+
+<p>Tap a line-item in the table or a link in a chart data-point to
+drill down to more and more detail, or the headings above to go back up. On the chart, use the top-right hamburger menu to save or print.
+Tap the legend to toggle items in and out of the chart.</p>
+
+<p><b><a href="/dbpub/govacCSV.asp?t={{ t }}&amp;i={{ i }}">Download CSV</a></b></p>
+
+{% if approved %}
+<p>Approved project amount (HK$000): {{ "{:,}".format(approved) }}</p>
+{% endif %}
+
+{% if h3 %}
+<p>Accounts code: {{ h3 }}</p>
+{% endif %}
+
+<div id="chart1" style="height:500px;margin-left:0"></div>
+<div class="clear"></div>
+
+<p>Tap on the line-items to drill down or chart line-items separately.</p>
+<div class="xscroll">
+    <table class="numtable center">
+        <tr>
+            <th class="left">Year to 31 March {{ y_title }}</th>
+            {% for period in periods %}
+            <th>{{ period[:4] }}</th>
+            {% endfor %}
+        </tr>
+        {% for item_idx in range(num_items) %}
+        <tr>
+            <td class="left">
+            {% if links and items[item_idx].id != i %}
+                <a href="/dbpub/govac.asp?t={{ t }}&amp;g={{ g|int }}&amp;i={{ items[item_idx].id }}">{{ items[item_idx].txt }}</a>
+            {% else %}
+                {{ items[item_idx].txt }}
+            {% endif %}
+            </td>
+            {% for period_idx in range(num_periods) %}
+                <td>{{ "{:,.{}f}".format(results[period_idx][item_idx], y_round) }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        {% if num_items > 1 %}
+        <tr class="total">
+            <td class="left">Total</td>
+            {% for period_idx in range(num_periods) %}
+                <td>{{ "{:,.{}f}".format(totals[period_idx], y_round) }}</td>
+            {% endfor %}
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+    Highcharts.setOptions({
+        lang: {
+            thousandsSep: ','
+        }
+    });
+    Highcharts.chart('chart1', {
+        chart: {
+            type: 'column',
+            borderWidth: 1,
+            marginTop: 70,
+        },
+        title: {
+            text: '{{ graph_title|replace("'", "\\'") }}',
+            style: {
+                color: "black",
+                fontSize: '1.2em'
+            }
+        },
+        colors: ['Green','Red','MediumBlue',
+            'Orange','Olive','Navy',
+            'IndianRed','Teal','Turquoise',
+            'Tomato','YellowGreen','SteelBlue',
+            'Wheat','GreenYellow','SkyBlue',
+            'SlateGray','Sienna','Salmon',
+            'Gold'],
+        yAxis: {
+            title: {
+                text: '{{ y_title }}',
+                x: 0,
+            },
+            labels: {
+                x: 0,
+                {% if g %}
+                format: '{value}%',
+                {% endif %}
+            },
+        },
+        xAxis: {
+            categories: [{% for period in periods %}'{{ period }}'{% if not loop.last %},{% endif %}{% endfor %}]
+        },
+        rangeSelector: {
+            selected: 5,
+            labelStyle: {color: "black", fontSize: '1.2em'},
+            buttonTheme: {
+                style: {
+                    fontweight: 'bold',
+                    fontSize: '1.2em',
+                    color: 'black',
+                }
+            }
+        },
+        legend: {
+            enabled: true,
+            align: 'center',
+            verticalAlign: 'top',
+            x: 0,
+            y: 20,
+            floating: true,
+            borderColor: '#CCC',
+            borderWidth: 0,
+            shadow: false
+        },
+        tooltip: {
+            shared: false,
+            useHTML: true,
+            hideDelay: 2000,
+            style: {pointerEvents: 'auto'},
+            headerFormat: '<b>{point.key}</b><br>',
+            xDateFormat: '%a, %e %b, %Y',
+            backgroundColor: 'white'
+        },
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                dataLabels: {
+                    enabled: false
+                },
+                grouping: false,
+                dataGrouping: {
+                    approximation: 'average'
+                },
+            }
+        },
+        series: [
+        {% for item_idx in range(num_items) %}
+            {
+                name: '{{ items[item_idx].short|replace("'", "\\'") }}',
+                type: 'column',
+                tooltip: {
+                    {% if g %}
+                    valueDecimals: 3,
+                    valueSuffix: '%',
+                    {% endif %}
+                    pointFormat: '<a href="/dbpub/govac.asp?t={{ t }}&g={{ g|int }}&i={{ items[item_idx].id }}">{series.name} {point.y}</a>',
+                },
+                data: [{% for period_idx in range(num_periods) %}{{ results[period_idx][item_idx] }}{% if not loop.last %},{% endif %}{% endfor %}]
+            }{% if not loop.last %},{% endif %}
+        {% endfor %}
+        ]
+    });
+});
+</script>
+
 {% endblock %}
