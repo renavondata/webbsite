@@ -309,13 +309,13 @@ def code():
         delisted_securities = []
         for row in results:
             delisted_securities.append({
-                'Org': row['org'],
-                'OrgID': row['orgid'],
-                'SecType': row['sectype'],
-                'FirstTradeDate': row['firsttradedate'],
-                'FinalTradeDate': row['finaltradedate'],
-                'DelistDate': row['delistdate'],
-                'Reason': row['reason']
+                'org': row['org'],
+                'orgid': row['orgid'],
+                'sectype': row['sectype'],
+                'firsttradedate': row['firsttradedate'],
+                'finaltradedate': row['finaltradedate'],
+                'delistdate': row['delistdate'],
+                'reason': row['reason']
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True

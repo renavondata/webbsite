@@ -76,6 +76,7 @@ routes:
     path: "/dbpub/code.asp"
     params:
       - code: "5"  # HSBC
+      - code: "9"  # Delisted securities test case
       - code: "941"  # China Mobile
       - code: "1"  # CKH Holdings
 
@@ -128,6 +129,8 @@ routes:
       - p: "1"  # HSBC personID
       - p: "12"  # China Mobile personID
       - code: "5"  # HSBC via stock code lookup
+      - code: "5"  # HSBC via stock code with Submit=current
+        Submit: "current"
 
   # ==========================================
   # Articles (3 routes)
