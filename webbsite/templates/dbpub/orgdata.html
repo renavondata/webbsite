@@ -508,9 +508,107 @@
 	{% endif %}
 
 	{# Holdings section #}
-	{# TODO: Include holdings.asp logic here #}
-	<h3>Holdings</h3>
-	<p>Holdings information coming soon...</p>
+	{% if has_holdings %}
+		<h3 id="D0">Holdings</h3>
+		<p>Note: holdings may be incomplete and/or outdated. Holdings in listed companies are not shown as the filings are
+		currently too difficult to automate and the holdings change too rapidly.</p>
+
+		{# Simple/Expanded toggle #}
+		<ul class="navlist">
+			{% set qs = "p=" ~ person_id ~ "&s1=" ~ s1 ~ "&s3=" ~ s3 ~ "&s2=" ~ s2 %}
+			{% if expand == 'n' %}
+				<li class="livebutton">Simple</li>
+				<li><a href="orgdata.asp?{{ qs }}&x=y">Expanded</a></li>
+			{% else %}
+				<li><a href="orgdata.asp?{{ qs }}&x=n">Simple</a></li>
+				<li class="livebutton">Expanded</li>
+			{% endif %}
+		</ul>
+		<div class="clear"></div>
+
+		{% if expand == 'y' %}
+			{# Expanded mode - recursive tree #}
+			<div style="float:left;width:40px;">&nbsp;</div>
+			<div style="float:left;width:80px;"><b>Held at</b></div>
+			<div style="text-align:right;float:left;width:65px;padding-right:5px">
+				<a href="orgdata.asp?{{ qs }}&x=y&s2={% if s2 == 'stakdn' %}stakup{% else %}stakdn{% endif %}"><b>Stake</b></a>
+			</div>
+			<div>
+				<a href="orgdata.asp?{{ qs }}&x=y&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issue</b></a>
+			</div>
+			<div class="clear"></div>
+
+			<p>
+			{% for item in holdings_tree %}
+				{% set h = item.holding %}
+				{% set indent = item.level * 60 %}
+				{% set name_str = h.name %}
+				{% if h.typeshort != 'O' %}
+					{% set name_str = name_str ~ ':' ~ h.typeshort %}
+				{% endif %}
+				{% if h.orgtype == 22 %}
+					{% set name_str = '<b>' ~ name_str ~ '</b>' %}
+				{% endif %}
+
+				<div style="float:left;width:40px;">
+					{% if not item.is_cross_holding %}
+						<a name="D{{ loop.index }}"></a>{{ loop.index }}
+					{% endif %}
+					&nbsp;
+				</div>
+				<div style="float:left;min-width:80px">{{ h.holdingdate if h.holdingdate else '&nbsp;' }}</div>
+				<div style="text-align:right;float:left;width:{{ indent + 65 }}px;padding-right:5px">
+					{% if h.stakecomp %}{{ "{:.2%}".format(h.stakecomp) }}{% else %}&nbsp;{% endif %}
+				</div>
+				<div style="float:left">
+					<a href="orgdata.asp?p={{ h.issuer }}">{{ name_str|safe }}</a>
+					&nbsp;(<span class="info">{{ h.a2 }}<span>{{ h.friendly }}<br/>Incorporated: {{ h.inc }}</span></span>)
+					{% if item.is_cross_holding %}
+						&nbsp;see <a href="#D{{ item.first_occurrence_idx + 1 }}">line {{ item.first_occurrence_idx + 1 }}</a>
+					{% endif %}
+				</div>
+				<div class="clear"></div>
+			{% endfor %}
+			</p>
+		{% else %}
+			{# Simple mode - flat table #}
+			<p class="widthAlert3">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+			<table class="txtable">
+				<tr>
+					<th>
+						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issuer</b></a>
+					</th>
+					<th class="colHide3">
+						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'domiup' %}domidn{% else %}domiup{% endif %}"><b>&#x1f310;</b></a>
+					</th>
+					<th class="colHide3">
+						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'incdup' %}incddn{% else %}incdup{% endif %}"><b>Formed</b></a>
+					</th>
+					<th class="colHide3">Issue</th>
+					<th class="colHide3">Shares</th>
+					<th class="right">
+						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'stakup' %}stakdn{% else %}stakup{% endif %}"><b>Stake</b></a>
+					</th>
+					<th class="colHide3">Holding date</th>
+				</tr>
+				{% for h in holdings_data %}
+					{% set name_str = h.name %}
+					{% if h.orgtype == 22 %}
+						{% set name_str = '<b>' ~ name_str ~ '</b>' %}
+					{% endif %}
+					<tr>
+						<td><a href="orgdata.asp?p={{ h.issuer }}">{{ name_str|safe }}</a></td>
+						<td class="colHide3"><span class="info">{{ h.a2 }}<span>{{ h.friendly }}</span></span></td>
+						<td class="colHide3">{{ h.inc }}</td>
+						<td class="colHide3">{{ h.sectype }}</td>
+						<td class="colHide3 right">{% if h.shares %}{{ "{:,}".format(h.shares|int) }}{% else %}&nbsp;{% endif %}</td>
+						<td class="right">{% if h.stakecomp %}{{ "{:.2%}".format(h.stakecomp) }}{% else %}&nbsp;{% endif %}</td>
+						<td class="colHide3">{{ h.holdingdate if h.holdingdate else '&nbsp;' }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+	{% endif %}
 
 {% endif %}
 {% endblock %}

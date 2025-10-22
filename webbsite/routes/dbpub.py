@@ -8868,6 +8868,71 @@ def orgdata():
                 'use_ukuri': org_data.get('ukuri', False) and dom_id in [2, 112, 116, 311]
             }
 
+    # Holdings section - show what this organization holds in other companies
+    holdings_data = []
+    holdings_tree = []
+    has_holdings = False
+
+    if person_id > 0:
+        # Check if any holdings exist
+        check_result = execute_query("""
+            SELECT EXISTS(
+                SELECT 1 FROM enigma.webholdings3
+                WHERE personid = %s
+                  AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+            ) as has_data
+        """, (person_id,))
+        has_holdings = check_result[0]['has_data'] if check_result else False
+
+        if has_holdings:
+            # Sort order mapping (parameter s2 controls holdings sort)
+            holdings_sort_mappings = {
+                'stakup': 'stakecomp, name',
+                'stakdn': 'stakecomp DESC, name',
+                'namedn': 'name DESC',
+                'namup': 'name',
+                'incdup': 'incdate, name',
+                'incddn': 'incdate DESC, name',
+                'domiup': 'a2, name',
+                'domidn': 'a2 DESC, name'
+            }
+            holdings_sort = holdings_sort_mappings.get(s2, 'name')
+
+            if expand == 'y':
+                # Expanded mode - build recursive tree
+                org_tracker = {person_id: 0}
+                _build_holdings_tree(person_id, 0, holdings_sort, holdings_tree, org_tracker)
+            else:
+                # Simple mode - flat table
+                # Match ASP query pattern: nested subquery with SELECT * inner query
+                holdings_data = execute_query(f"""
+                    SELECT personid, issue, holdingdate, shares, stake, friendly, a2,
+                           name, orgtype, sectype, typeshort, issuer, stakecomp,
+                           CASE
+                               WHEN incacc = 3 THEN 'U'
+                               WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
+                               WHEN incacc IN (2, 5) THEN TO_CHAR(incdate, 'YYYY-MM')
+                               ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
+                           END as inc
+                    FROM (
+                        SELECT *,
+                               CASE
+                                   WHEN shares IS NULL THEN stake
+                                   ELSE shares / NULLIF(
+                                       (SELECT outstanding
+                                        FROM enigma.issuedshares
+                                        WHERE issueid = issue
+                                          AND atdate <= CURRENT_DATE
+                                        ORDER BY atdate DESC
+                                        LIMIT 1), 0)
+                               END AS stakecomp
+                        FROM enigma.webholdings3
+                        WHERE personid = %s
+                    ) AS t1
+                    WHERE shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL)
+                    ORDER BY {holdings_sort}
+                """, (person_id,))
+
     return render_template('dbpub/orgdata.html',
                          person_id=person_id,
                          name=name,
@@ -8899,6 +8964,9 @@ def orgdata():
                          nav_has_stories=nav_has_stories,
                          nav_has_lir_team=nav_has_lir_team,
                          ccass_part_id=ccass_part_id,
+                         has_holdings=has_holdings,
+                         holdings_data=holdings_data,
+                         holdings_tree=holdings_tree,
                          today=date.today(),
                          s1=s1,
                          s2=s2,
