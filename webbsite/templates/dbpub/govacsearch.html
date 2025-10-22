@@ -1,0 +1,46 @@
+{% extends "base_database.html" %}
+{% block title %}{{ title }} - Webb-site Database{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<ul class="navlist">
+    <li><a href='/dbpub/govac.asp'>Accounts</a></li>
+    <li class='livebutton'>Search</li>
+    <li><a href='/dbpub/govacNotes.asp'>Notes</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="post" action="/dbpub/govacsearch.asp">
+    <p><input type="text" class="ws" name="n" value="{{ n }}"></p>
+    {{ make_select('st', st, 'l,Left match,a,Any match', True)|safe }}
+    <input type="submit" value="search" name="search">
+</form>
+
+{% if n %}
+<h3>Matches</h3>
+{% if matches|length == 0 %}
+    <p>None.</p>
+{% else %}
+    <table>
+    {% for trail in matches %}
+        {% for item in trail %}
+        <tr>
+            {% if item.indent == 0 %}
+            <td>{{ loop.index0 + 1 }}&nbsp;</td>
+            <td><a href="/dbpub/govac.asp?i={{ item.id }}"><b>{{ item.txt }}</b></a></td>
+            {% else %}
+            <td></td>
+            <td style="padding-left:{{ item.indent * 20 }}px"><a href="/dbpub/govac.asp?i={{ item.id }}">{{ item.txt }}</a></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    {% if matches|length == limit %}
+    <p><b>Only the first {{ limit }} matches are displayed. Please narrow your search.</b></p>
+    {% endif %}
+{% endif %}
+{% endif %}
+
+{% endblock %}

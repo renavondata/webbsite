@@ -4,7 +4,7 @@ Main database homepage and related pages
 """
 from flask import Blueprint, render_template, request, abort, current_app
 from datetime import date
-from webbsite.db import execute_query
+from webbsite.db import execute_query, get_db
 
 bp = Blueprint('dbpub', __name__)
 
@@ -4971,23 +4971,513 @@ def prh_blocks():
 # Government accounts
 @bp.route('/govac.asp')
 def govac():
-    """Government accounts explorer"""
-    # TODO: Query government accounts
-    accounts = []
-    return render_template('dbpub/govac.html', accounts=accounts)
+    """Government accounts explorer - hierarchical budget data with drill-down"""
+    from webbsite.asp_helpers import get_int, get_bool, col_sum, join_row
+
+    # Parameters
+    i = get_int('i', 1251)  # govitem ID, default to Consolidated Accounts
+    t = get_int('t', 0)     # tree view (alternate classification)
+    g = get_bool('g')        # show as % of GDP
+
+    # Get current item details
+    item_query = """
+        SELECT
+            COALESCE(a.parentid, g.parentid) as parentid,
+            COALESCE(a.txt, g.txt) as txt,
+            g.txt as origtxt,
+            g.firstd,
+            g.head,
+            g.rev,
+            g.approved,
+            g.h3
+        FROM enigma.govitems g
+        LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+        WHERE g.id = %s
+    """
+    item_rows = execute_query(item_query, (t, i))
+
+    if not item_rows:
+        return "Item not found", 404
+
+    item = item_rows[0]
+    parent_id = item['parentid']
+    title = item['txt']
+    first_d = item['firstd']
+    head = item['head']
+    origtxt = item['origtxt']
+    approved = item['approved']
+    h3 = item['h3']
+    neg = 1 if item['rev'] else -1  # Revenue is positive, expenditure is negative
+
+    # Build breadcrumbs by traversing up the parent chain
+    breadcrumbs = []
+    current_parent = parent_id
+    while current_parent is not None:
+        parent_rows = execute_query("""
+            SELECT
+                COALESCE(a.parentid, g.parentid) as p,
+                COALESCE(a.txt, g.txt) as txt
+            FROM enigma.govitems g
+            LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+            WHERE g.id = %s
+        """, (t, current_parent))
+
+        if parent_rows:
+            parent = parent_rows[0]
+            breadcrumbs.insert(0, {
+                'id': current_parent,
+                'txt': parent['txt']
+            })
+            current_parent = parent['p']
+        else:
+            break
+
+    # Get all fiscal periods (annual data only)
+    periods_query = """
+        SELECT DISTINCT d::text as d
+        FROM enigma.govac
+        WHERE ann = true AND act > 0 AND d >= %s
+        ORDER BY d
+    """
+    periods_rows = execute_query(periods_query, (first_d,))
+    periods = [row['d'] for row in periods_rows]
+    num_periods = len(periods)
+
+    if num_periods == 0:
+        return "No data available for this item", 404
+
+    # Get child items (or siblings if this item has no children)
+    # Exclude transfers to funds and reimbursements (matches ASP line 98)
+    where_clause = " WHERE NOT g.transfer AND NOT g.reimb "
+
+    items_query = """
+        SELECT
+            g.id,
+            COALESCE(a.txt, g.txt) as txt,
+            g.head,
+            COALESCE(COALESCE(a.short, a.txt), COALESCE(g.short, g.txt)) as short,
+            g.rev
+        FROM enigma.govitems g
+        LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+        """ + where_clause + """
+        AND COALESCE(a.parentid, g.parentid) = %s
+        ORDER BY COALESCE(a.priority, g.priority) DESC, txt
+    """
+    items_rows = execute_query(items_query, (t, i))
+
+    links = True  # Show drill-down links
+    graph_title = title
+
+    if not items_rows:
+        # No breakdown - show this item as a sibling view
+        links = False
+        if parent_id:
+            graph_title_rows = execute_query(
+                "SELECT txt FROM enigma.govitems WHERE id = %s",
+                (parent_id,)
+            )
+            if graph_title_rows:
+                graph_title = graph_title_rows[0]['txt']
+
+        items_rows = execute_query(items_query, (t, i))
+        if not items_rows:
+            # Still no items, use current item
+            items_rows = [item]
+
+    items = items_rows
+    num_items = len(items)
+
+    # Build results matrix [period][item]
+    # Initialize with zeros
+    results = [[0 for _ in range(num_items)] for _ in range(num_periods)]
+
+    # Populate results for each item
+    for item_idx, item_row in enumerate(items):
+        item_id = item_row['id']
+        is_head = item_row['head']
+
+        # Get sum for this item (recursive for heads)
+        # Use the PARENT's neg value, not recalculate per item
+        item_data = get_govac_sum( item_id, is_head, periods, where_clause, t, neg)
+
+        for period_idx, period in enumerate(periods):
+            if period in item_data:
+                results[period_idx][item_idx] = item_data[period]
+
+    # Check for discrepancies and add "Others" row if needed
+    use_others = False
+    direct_values = get_govac_sum( i, False, periods, where_clause, t, neg)
+
+    for period_idx, period in enumerate(periods):
+        total = sum(results[period_idx])
+        direct_val = direct_values.get(period, 0)
+
+        if direct_val != 0 and direct_val != total:
+            if not use_others:
+                # Need to add "Others" row
+                use_others = True
+                num_items += 1
+                items.append({
+                    'id': i,
+                    'txt': 'Others/no breakdown',
+                    'short': 'Others/no breakdown',
+                    'head': False,
+                    'rev': item_row['rev'] if items else False
+                })
+                # Extend results matrix
+                for p_idx in range(num_periods):
+                    results[p_idx].append(0)
+
+            # Set "Others" value
+            results[period_idx][num_items - 1] = direct_val - total
+
+    # Calculate totals row
+    totals = []
+    for period_idx in range(num_periods):
+        if use_others or direct_values.get(periods[period_idx], 0) != 0:
+            totals.append(direct_values.get(periods[period_idx], 0))
+        else:
+            totals.append(sum(results[period_idx]))
+
+    # Divide by GDP if requested
+    y_title = "HK$000"
+    y_round = 0
+    if g:
+        gdp_query = """
+            SELECT d::text as d, act
+            FROM enigma.govac
+            WHERE govitem = 6060 AND d >= %s
+            ORDER BY d
+        """
+        gdp_rows = execute_query(gdp_query, (periods[0],))
+        gdp_data = {row['d']: row['act'] for row in gdp_rows}
+
+        # Divide all values by GDP
+        for period_idx, period in enumerate(periods):
+            if period in gdp_data and gdp_data[period] > 0:
+                gdp_val = gdp_data[period]
+                for item_idx in range(num_items):
+                    results[period_idx][item_idx] = results[period_idx][item_idx] / (10 * gdp_val)
+                totals[period_idx] = totals[period_idx] / (10 * gdp_val)
+
+        y_title = "% of GDP"
+        y_round = 3
+
+    # Prepare data for template
+    # Transpose results for easier template access: results_t[item][period]
+    results_transposed = [[results[p][i] for p in range(num_periods)] for i in range(num_items)]
+
+    return render_template('dbpub/govac.html',
+        i=i,
+        t=t,
+        g=g,
+        title=title,
+        breadcrumbs=breadcrumbs,
+        graph_title=graph_title,
+        periods=periods,
+        items=items,
+        results=results,  # [period][item]
+        results_t=results_transposed,  # [item][period] for join_row
+        totals=totals,
+        num_periods=num_periods,
+        num_items=num_items,
+        y_title=y_title,
+        y_round=y_round,
+        links=links,
+        approved=approved,
+        h3=h3
+    )
+
+
+def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
+    """
+    Recursively sum government account values for an item across periods.
+    Returns dict: {period: value}
+    """
+    result = {period: 0 for period in periods}
+
+    if is_head:
+        # Sum all non-head children
+        non_head_query = """
+            SELECT d::text as d, SUM(act * CASE WHEN g.rev THEN 1 ELSE -1 END) as act
+            FROM enigma.govac
+            JOIN enigma.govitems g ON govitem = g.id
+            LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+            """ + where_clause + """
+            AND NOT g.head
+            AND COALESCE(a.parentid, g.parentid) = %s
+            GROUP BY d
+            ORDER BY d
+        """
+        rows = execute_query(non_head_query, (tree_id, item_id))
+
+        for row in rows:
+            period = row['d']
+            if period in result:
+                result[period] += int(row['act']) * neg
+
+        # Recursively sum head children
+        head_children_query = """
+            SELECT g.id
+            FROM enigma.govitems g
+            LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+            """ + where_clause + """
+            AND g.head
+            AND COALESCE(a.parentid, g.parentid) = %s
+        """
+        head_children = execute_query(head_children_query, (tree_id, item_id))
+
+        for child in head_children:
+            child_data = get_govac_sum(child['id'], True, periods, where_clause, tree_id, neg)
+            for period in periods:
+                result[period] += child_data.get(period, 0)
+
+        # Also check for direct values on this head item
+        # Note: Do NOT apply where_clause filter here (no transfer/reimb check)
+        # This matches ASP line 42 which only checks "WHERE govitem=..."
+        direct_query = """
+            SELECT d::text as d, act * CASE WHEN rev THEN 1 ELSE -1 END as act
+            FROM enigma.govac
+            JOIN enigma.govitems ON govitem = id
+            WHERE govitem = %s
+            ORDER BY d
+        """
+        direct_rows = execute_query(direct_query, (item_id,))
+
+        for row in direct_rows:
+            period = row['d']
+            if period in result:
+                result[period] = int(row['act']) * neg
+
+    else:
+        # Not a head - get direct values only
+        direct_query = """
+            SELECT d::text as d, act * CASE WHEN g.rev THEN 1 ELSE -1 END as act
+            FROM enigma.govac
+            JOIN enigma.govitems g ON govitem = g.id
+            """ + where_clause + """
+            AND govitem = %s
+            ORDER BY d
+        """
+        rows = execute_query(direct_query, (item_id,))
+
+        for row in rows:
+            period = row['d']
+            if period in result:
+                result[period] = int(row['act']) * neg
+
+    return result
 
 
 @bp.route('/govacCSV.asp')
 def govac_csv():
     """Government accounts CSV export"""
-    # TODO: Generate CSV
-    return "CSV export not yet implemented", 501
+    from webbsite.asp_helpers import get_int
+    from flask import Response
+    import io
+
+    # Parameters (same as main govac route)
+    i = get_int('i', 1251)
+    t = get_int('t', 0)
+
+
+    # Get current item details
+    item_rows = execute_query("""
+        SELECT
+            COALESCE(a.txt, g.txt) as txt,
+            g.firstd,
+            g.rev
+        FROM enigma.govitems g
+        LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+        WHERE g.id = %s
+    """, (t, i))
+
+    if not item_rows:
+        return "Item not found", 404
+
+    item = item_rows[0]
+    title = item['txt']
+    first_d = item['firstd']
+    neg = 1 if item['rev'] else -1
+
+    # Get periods
+    periods_rows = execute_query("""
+        SELECT DISTINCT d::text as d
+        FROM enigma.govac
+        WHERE ann = true AND act > 0 AND d >= %s
+        ORDER BY d
+    """, (first_d,))
+    periods = [row['d'] for row in periods_rows]
+
+    if not periods:
+        return "No data available", 404
+
+    # Get child items
+    # Exclude transfers to funds and reimbursements (matches ASP line 98)
+    where_clause = " WHERE NOT g.transfer AND NOT g.reimb "
+    items_rows = execute_query("""
+        SELECT
+            g.id,
+            COALESCE(a.txt, g.txt) as txt,
+            g.head,
+            g.rev
+        FROM enigma.govitems g
+        LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
+        """ + where_clause + """
+        AND COALESCE(a.parentid, g.parentid) = %s
+        ORDER BY COALESCE(a.priority, g.priority) DESC, txt
+    """, (t, i))
+
+    if not items_rows:
+        # No children, show just this item
+        items_rows = [item]
+
+    items = [dict(row) for row in items_rows]
+
+    # Build results matrix
+    results = [[0 for _ in range(len(items))] for _ in range(len(periods))]
+
+    for item_idx, item_row in enumerate(items):
+        item_id = item_row['id']
+        is_head = item_row['head']
+
+        # Use the PARENT's neg value consistently
+        item_data = get_govac_sum( item_id, is_head, periods, where_clause, t, neg)
+
+        for period_idx, period in enumerate(periods):
+            if period in item_data:
+                results[period_idx][item_idx] = item_data[period]
+
+    # Calculate totals
+    totals = [sum(results[p]) for p in range(len(periods))]
+
+    # Build CSV
+    output = io.StringIO()
+
+    # Header row
+    header = ['Year'] + [item['txt'] for item in items] + ['Total']
+    output.write(','.join(f'"{cell}"' for cell in header) + '\n')
+
+    # Data rows
+    for period_idx, period in enumerate(periods):
+        year = period[:4]  # Extract year from YYYY-MM-DD
+        row = [year]
+        row.extend([str(results[period_idx][i]) for i in range(len(items))])
+        row.append(str(totals[period_idx]))
+        output.write(','.join(row) + '\n')
+
+    csv_content = output.getvalue()
+    output.close()
+
+    # Return CSV response
+    return Response(
+        csv_content,
+        mimetype='text/csv',
+        headers={
+            'Content-Disposition': f'attachment; filename=govac_{i}.csv'
+        }
+    )
 
 
 @bp.route('/govacNotes.asp')
 def govac_notes():
     """Government accounts notes"""
     return render_template('dbpub/govac_notes.html')
+
+
+@bp.route('/govacsearch.asp')
+def govac_search():
+    """Government accounts search - search govitems by text"""
+    from webbsite.asp_helpers import get_str, make_select
+
+    # Get search parameters
+    n = get_str('n', '')  # search term
+    st = get_str('st', 'a')  # search type: 'a' = any match (full-text), 'l' = left match (LIKE)
+
+    # Sanitize search term (replace "Hong Kong" with "HK" case-insensitive)
+    import re
+    n = re.sub(r'\bHong Kong\b', 'HK', n, flags=re.IGNORECASE)
+    n = n.strip()
+
+    title = "Search the HKSAR Government accounts"
+    limit = 50
+    matches = []
+
+    if n:
+        # Build search query based on search type
+        if st == 'a':
+            # Full-text search using PostgreSQL to_tsquery
+            # Convert space-separated terms to '&' (AND) query
+            terms = n.split()
+            if terms:
+                # Create tsquery format: term1 & term2 & term3
+                tsquery = ' & '.join(terms)
+
+                sql = """
+                    SELECT id, txt, parentid
+                    FROM enigma.govitems
+                    WHERE to_tsvector('simple', txt) @@ to_tsquery('simple', %s)
+                    ORDER BY txt
+                    LIMIT %s
+                """
+                results = execute_query(sql, (tsquery, limit))
+        else:
+            # Left match using LIKE
+            sql = """
+                SELECT id, txt, parentid
+                FROM enigma.govitems
+                WHERE txt LIKE %s
+                ORDER BY txt
+                LIMIT %s
+            """
+            results = execute_query(sql, (n + '%', limit))
+
+        # For each result, build breadcrumb trail up to root (1251)
+        for row in results:
+            item_id = row['id']
+            item_txt = row['txt']
+            parent_id = row['parentid']
+
+            # Build breadcrumb trail
+            trail = [{
+                'id': item_id,
+                'txt': item_txt,
+                'indent': 0
+            }]
+
+            # Traverse up the parent chain
+            current_id = item_id
+            current_parent = parent_id
+            indent = 1
+
+            while current_parent is not None and current_id != 1251:
+                parent_row = execute_query("""
+                    SELECT id, txt, parentid
+                    FROM enigma.govitems
+                    WHERE id = %s
+                """, (current_parent,))
+
+                if parent_row:
+                    trail.append({
+                        'id': current_parent,
+                        'txt': parent_row[0]['txt'],
+                        'indent': indent
+                    })
+                    current_id = current_parent
+                    current_parent = parent_row[0]['parentid']
+                    indent += 1
+                else:
+                    break
+
+            matches.append(trail)
+
+    return render_template('dbpub/govacsearch.html',
+                         title=title,
+                         n=n,
+                         st=st,
+                         matches=matches,
+                         limit=limit,
+                         make_select=make_select)
 
 
 # Overlap analysis
