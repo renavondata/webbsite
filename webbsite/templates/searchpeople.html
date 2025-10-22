@@ -39,8 +39,8 @@ To exclude matches between family and given names, tick the box.</p>
 				<td class="colHide1">{{ loop.index }}</td>
 				<td><a href="natperson.asp?p={{ row.personid }}">{{ row.name1 }}{% if row.name2 %}, {{ row.name2 }}{% endif %}</a></td>
 				<td>{{ row.birth_display }}</td>
-				<td class="right">{{ row.est_age }}</td>
-				<td>{{ row.cname }}</td>
+				<td class="right">{{ row.est_age or '' }}</td>
+				<td>{{ row.cname or '' }}</td>
 			</tr>
 		{% endfor %}
 		</table>
@@ -67,8 +67,8 @@ To exclude matches between family and given names, tick the box.</p>
 				<td class="colHide1">{{ loop.index }}</td>
 				<td><a href="natperson.asp?p={{ row.personid }}">{{ row.n1 }}{% if row.n2 %}, {{ row.n2 }}{% endif %}</a></td>
 				<td>{{ row.birth_display }}</td>
-				<td class="right">{{ row.est_age }}</td>
-				<td>{{ row.cn }}</td>
+				<td class="right">{{ row.est_age or '' }}</td>
+				<td>{{ row.cn or '' }}</td>
 				<td>{% if row.alias %}A{% else %}F{% endif %}</td>
 			</tr>
 		{% endfor %}
