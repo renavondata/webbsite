@@ -1,0 +1,326 @@
+{% extends "base_database.html" %}
+{% block title %}Webb-site Database: {{ person_name }}{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+	table.rating {
+		border-collapse:collapse;
+		border:thin gray solid;
+	}
+	table.rating tr {
+		border:thin gray solid;
+	}
+	table.rating th {
+		font-weight:bold;
+		border:inherit;
+		text-align:center;
+	}
+	table.rating td {
+		text-align:center;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2>{{ person_name }}</h2>
+
+{% if error %}
+    <p>{{ person_name }}</p>
+{% else %}
+    {# humanBar navigation - matching ASP humanBar function #}
+    <ul class="navlist">
+        <li class="livebutton"><a href="{{ url_for('dbpub.natperson', p=person_id) }}">Key data</a></li>
+        {% if has_positions %}
+        <li><a href="{{ url_for('dbpub.enigma_positions', p=person_id) }}">Positions</a></li>
+        {% endif %}
+        {% if has_pay %}
+        <li><a href="{{ url_for('dbpub.offpay', p=person_id) }}">Pay</a></li>
+        {% endif %}
+        {% if has_sdi %}
+        <li><a href="{{ url_for('dbpub.sdidir', p=person_id) }}">Dealings</a></li>
+        {% endif %}
+        {% if ccass_part_id %}
+        <li><a href="{{ url_for('ccass.cholder', part=ccass_part_id) }}">CCASS holdings</a></li>
+        {% endif %}
+        {% if has_stories %}
+        <li><a href="{{ url_for('dbpub.natarts', p=person_id) }}">Webb-site Reports</a></li>
+        {% endif %}
+    </ul>
+    <div class="clear"></div>
+
+    <ul class="navlist">
+        <li><a target="_blank" href="{{ url_for('dbpub.faq_www') }}">FAQ</a></li>
+    </ul>
+    <div class="clear"></div>
+
+    {# Other Names / Aliases #}
+    {% if aliases %}
+    <h4>Other names</h4>
+    <table class="txtable">
+        <tr>
+            <th>Surname</th>
+            <th>Given names</th>
+            <th>Chinese name</th>
+            <th></th>
+        </tr>
+        {% for alias in aliases %}
+        <tr>
+            <td>{{ alias.n1 }}</td>
+            <td>{{ alias.n2 }}</td>
+            <td>{{ alias.cn }}</td>
+            <td>{% if alias.alias %}A{% else %}F{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>A=Alias, F=Former name</p>
+    {% endif %}
+
+    {# Personal Information #}
+    <table class="opltable">
+        <tr>
+            <td>Gender:</td>
+            <td>{{ person.sex }}</td>
+        </tr>
+        {% if person.hkid and person.hkidsource %}
+        <tr>
+            <td>HKID:</td>
+            <td><a href="{{ person.hkidsource }}" target="_blank">Find it yourself</a></td>
+        </tr>
+        {% endif %}
+        {% if lsppl %}
+        <tr>
+            <td>Admission as HK solicitor:</td>
+            <td>
+                {% if not lsppl.dead %}
+                <a target="_blank" href="https://www.hklawsoc.org.hk/en/Serve-the-Public/The-Law-List/Member-Details?MemId={{ lsppl.lsid }}">{{ lsppl.admhk }}</a>
+                {% else %}
+                {{ lsppl.admhk }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>Estimated date of birth:</td>
+            <td>{{ dob_str }}</td>
+        </tr>
+        {% if age_str %}
+        <tr>
+            <td>Estimated age:</td>
+            <td>{{ age_str }}</td>
+        </tr>
+        {% endif %}
+        {% if person.yod or (person.name2 and person.name2.endswith('(d)')) %}
+        <tr>
+            <td>Estimated date of death:</td>
+            <td>{{ dod_str }}</td>
+        </tr>
+        {% if death_age_str %}
+        <tr>
+            <td>Estimated age on death:</td>
+            <td>{{ death_age_str }}</td>
+        </tr>
+        {% endif %}
+        {% endif %}
+        {% if person.sfcid %}
+        <tr>
+            <td>SFC ID:</td>
+            <td><a target="_blank" href="http://www.sfc.hk/publicregWeb/indi/{{ person.sfcid }}/licenceRecord">{{ person.sfcid }}</a></td>
+        </tr>
+        {% endif %}
+    </table>
+
+    {# Nationality #}
+    {% if nationalities %}
+    <table class="txtable">
+        <tr>
+            <th>Nationality</th>
+            <th>Last seen</th>
+        </tr>
+        {% for nat in nationalities %}
+        <tr>
+            <td>{{ nat.friendly }}</td>
+            <td>{{ nat.latest }}</td>
+        </tr>
+        {% endfor %}
+        <tr></tr>
+    </table>
+    {% endif %}
+
+    <p><a href="{{ url_for('search.search_people', n1=person.dn1, n2=person.dn2) }}">Find matching names</a></p>
+
+    {# Websites Section #}
+    {% if websites_list %}
+    <h3>Web sites</h3>
+    {% for site in websites_list %}
+        {% set url = site.url %}
+        {% set display_url = url %}
+        {# Strip protocol for display #}
+        {% if url.startswith('http://') %}
+            {% set display_url = url[7:] %}
+        {% elif url.startswith('https://') %}
+            {% set display_url = url[8:] %}
+        {% endif %}
+        {# Strip trailing slash #}
+        {% if display_url.endswith('/') %}
+            {% set display_url = display_url[:-1] %}
+        {% endif %}
+        {% if site.dead %}
+            <a target="_blank" href="https://web.archive.org/web/*/{{ display_url }}">{{ display_url }} (archived)</a><br>
+        {% else %}
+            {% if not url.startswith('http') %}
+                <a target="_blank" href="http://{{ url }}">{{ display_url }}</a><br>
+            {% else %}
+                <a target="_blank" href="{{ url }}">{{ display_url }}</a><br>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    {# Webb-site Trust Rating (Static) #}
+    {% if not person.yob or ((current_year - person.yob) > 18) %}
+    <h3>Webb-site Trust Rating</h3>
+    <p><a href="{{ url_for('dbpub.index') }}"><b>Log in</b></a> to add your anonymous rating. Webb-site users rate this person as follows:</p>
+    <table class="rating">
+        <tbody>
+            <tr>
+                <th>Users</th>
+                <th>Average (0-5)</th>
+            </tr>
+            <tr>
+                <td style="border-right:thin gray solid" id="usercnt">0</td>
+                <td id="score">N/A</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    {% endif %}
+
+    {# Relatives Section #}
+    {% if has_relatives %}
+    <h3>Relatives</h3>
+    <form method="get" action="{{ url_for('dbpub.natperson') }}">
+        <input type="hidden" name="p" value="{{ person_id }}">
+        <input type="hidden" name="s2" value="{{ sort2 }}">
+        <input type="hidden" name="x" value="{{ expand }}">
+        <div class="inputs">
+            Generations:
+            <select name="m" onchange="this.form.submit()">
+                <option value="0">Unlimited</option>
+                {% for i in range(1, 11) %}
+                <option value="{{ i }}" {% if i == max_gen %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="clear"></div>
+    </form>
+
+    {# Non-lineal Relatives #}
+    {% if nonlineal_relatives %}
+    <h4>Non-lineal relatives</h4>
+    <table class="txtable">
+        {% for rel in nonlineal_relatives %}
+        <tr>
+            <td><a href="{{ url_for('dbpub.natperson', p=rel.relid) }}">{{ rel.relative }}</a> ({{ rel.born }} - {{ rel.died }})</td>
+            <td>{{ rel.rel }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {# Ascendants (Parents, Grandparents, etc.) #}
+    {% if ascendants %}
+    <h4>Ascendants</h4>
+    <table>
+        <tr><th>Count</th><th>Generation, name, (birth - death)</th></tr>
+        {% for parent in ascendants %}
+            {{ render_ascendant(parent, loop.index) }}
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {# Descendants (Children, Grandchildren, etc.) #}
+    {% if descendants %}
+    <h4>Descendants</h4>
+    <table>
+        <tr><th>Count</th><th>Generation, name, (birth - death)</th></tr>
+        {% for child in descendants %}
+            {{ render_descendant(child, loop.index) }}
+        {% endfor %}
+    </table>
+    {% endif %}
+    {% endif %}
+
+    {# Holdings Section #}
+    {% if holdings_list %}
+    <h3 id="D0">Holdings</h3>
+    <p>Note: holdings may be incomplete and/or outdated. Holdings in listed companies are not shown as the filings are
+    currently too difficult to automate and the holdings change too rapidly.</p>
+    <p><a href="{{ url_for('dbpub.holdings', p=person_id) }}">View full holdings with recursive tree</a></p>
+
+    <table class="txtable">
+        <tr>
+            <th>Date</th>
+            <th>Stake</th>
+            <th>Company</th>
+        </tr>
+        {% for holding in holdings_list %}
+        <tr>
+            <td>{{ holding.holdingdate }}</td>
+            <td style="text-align:right">
+                {% if holding.stakecomp %}
+                    {{ "%.2f"|format(holding.stakecomp * 100) }}%
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('dbpub.orgdata', p=holding.issuer) }}">
+                    {% if holding.orgtype == 22 %}<b>{{ holding.name }}</b>{% else %}{{ holding.name }}{% endif %}{% if holding.typeshort and holding.typeshort != 'O' %}:{{ holding.typeshort }}{% endif %}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+{% endif %}
+{% endblock %}
+
+{# Recursive macro for rendering ascendants tree #}
+{% macro render_ascendant(person, count) %}
+<tr>
+    <td style="width:50px">{% if not person.already_seen %}<a name="D{{ count }}"></a>{{ count }}{% endif %}</td>
+    <td style="padding-left:{{ person.level * 20 }}px">
+        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub.natperson', p=person.parent_id) }}">{{ person.name }}</a>
+        ({{ person.born }}&nbsp;-&nbsp;{{ person.died }})
+        {% if person.already_seen %}
+            see <a href="#D{{ count }}">line {{ count }}</a>
+        {% endif %}
+    </td>
+</tr>
+{% if person.ancestors and not person.already_seen %}
+    {% for ancestor in person.ancestors %}
+        {{ render_ascendant(ancestor, count + loop.index) }}
+    {% endfor %}
+{% endif %}
+{% endmacro %}
+
+{# Recursive macro for rendering descendants tree #}
+{% macro render_descendant(person, count) %}
+<tr>
+    <td style="width:50px">{% if not person.already_seen %}<a name="D{{ count }}"></a>{{ count }}{% endif %}</td>
+    <td style="padding-left:{{ person.level * 20 }}px">
+        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub.natperson', p=person.child_id) }}">{{ person.name }}</a>
+        ({{ person.born }}&nbsp;-&nbsp;{{ person.died }})
+        {% if person.already_seen %}
+            see <a href="#D{{ count }}">line {{ count }}</a>
+        {% endif %}
+    </td>
+</tr>
+{% if person.descendants and not person.already_seen %}
+    {% for descendant in person.descendants %}
+        {{ render_descendant(descendant, count + loop.index) }}
+    {% endfor %}
+{% endif %}
+{% endmacro %}
