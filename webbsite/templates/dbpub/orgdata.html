@@ -600,7 +600,7 @@
 						<td><a href="orgdata.asp?p={{ h.issuer }}">{{ name_str|safe }}</a></td>
 						<td class="colHide3"><span class="info">{{ h.a2 }}<span>{{ h.friendly }}</span></span></td>
 						<td class="colHide3">{{ h.inc }}</td>
-						<td class="colHide3">{{ h.sectype }}</td>
+						<td class="colHide3">{{ h.typelong }}</td>
 						<td class="colHide3 right">{% if h.shares %}{{ "{:,}".format(h.shares|int) }}{% else %}&nbsp;{% endif %}</td>
 						<td class="right">{% if h.stakecomp %}{{ "{:.2%}".format(h.stakecomp) }}{% else %}&nbsp;{% endif %}</td>
 						<td class="colHide3">{{ h.holdingdate if h.holdingdate else '&nbsp;' }}</td>
