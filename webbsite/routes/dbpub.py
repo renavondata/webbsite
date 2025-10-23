@@ -2008,30 +2008,170 @@ def chart():
 @bp.route('/alltotrets.asp')
 def alltotrets():
     """
-    Total returns for all stocks
+    Total returns for all stocks - port of alltotrets.asp
+
+    Calculates total returns (price change + dividends) with adjustment for
+    splits/consolidations over a specified period. Also computes CAGR
+    (Compound Annual Growth Rate) for periods >= 180 days.
 
     Query params:
-    - e: exchange filter
-    - sort: sorting column
-    - from: start date
-    - to: end date
+    - d1: start date (default: 1994-01-03)
+    - d2: end date (default: max quotes date)
+    - i: include IPOs after start date (default: False)
+    - sort: sorting column (default: tretdn)
 
-    Tables used: stocklistings, totrets view
+    Tables used: stocklistings, issue, organisations, sectypes, ccass.quotes, adjustments
+    Functions used: delisted(), lastCode(), firstQuoteDate(), lastQuoteDate(), getAdjust()
     """
-    e = request.args.get('e', 'a')
-    sort_param = request.args.get('sort', 'trdn')
-    from_date = request.args.get('from', '')
-    to_date = request.args.get('to', str(date.today()))
+    from webbsite.asp_helpers import get_bool, get_date_or_default, format_percent_sig, pcsig
 
-    # TODO: Query total returns for all stocks
-    total_returns = []
+    # Get max quote dates from log table
+    max_dates = execute_query("""
+        SELECT val FROM enigma.log
+        WHERE name IN ('MBquotesDate', 'GEMquotesDate')
+        ORDER BY val
+        LIMIT 1
+    """)
+    max_date = max_dates[0]['val'] if max_dates else str(date.today())
+
+    # Parse parameters with validation
+    inc_ipo = get_bool('i')
+    sort_param = request.args.get('sort', 'tretdn')
+
+    # Get dates with bounds checking (ASP logic: Max(Min(date, maxDate), minDate))
+    d1_raw = get_date_or_default('d1', '1994-01-03')
+    d2_raw = get_date_or_default('d2', max_date)
+
+    # Apply bounds: max(min(input, max_date), '1994-01-03')
+    d1 = max(min(d1_raw, max_date), '1994-01-03')
+    d2 = max(min(d2_raw, max_date), '1994-01-03')
+
+    # Swap if d1 > d2
+    if d1 > d2:
+        d1, d2 = d2, d1
+
+    # Build ORDER BY clause based on sort parameter
+    order_by_map = {
+        'nameup': 't3.name1, t3.typeshort',
+        'namedn': 't3.name1 DESC, t3.typeshort',
+        'tretup': 't3.totret, t3.name1',
+        'tretdn': 't3.totret DESC, t3.name1',
+        'cagrup': 'cagret, t3.name1',
+        'cagrdn': 'cagret DESC, t3.name1',
+        'typeup': 't3.typeshort, t3.totret DESC',
+        'typedn': 't3.typeshort DESC, t3.totret DESC',
+        'frstup': 't3.buydate, t3.name1',
+        'frstdn': 't3.buydate DESC, t3.name1',
+        'lastup': 't3.selldate, t3.name1',
+        'lastdn': 't3.selldate DESC, t3.name1',
+        'codeup': 'lastcode, t3.buydate DESC',
+        'codedn': 'lastcode DESC, t3.buydate DESC'
+    }
+    order_by = order_by_map.get(sort_param, 't3.totret DESC, t3.name1')
+
+    # Determine the date filter for firstTradeDate based on inc_ipo
+    # If inc_ipo=True, allow stocks listed up to d2
+    # If inc_ipo=False, require stocks listed by d1
+    first_trade_filter = d2 if inc_ipo else d1
+
+    # Build the complete SQL query (inline version of allTotRets stored procedure)
+    sql = f"""
+        SELECT
+            t3.name1,
+            t3.typeshort,
+            t3.issueid,
+            enigma.delisted(t3.issueid, %s) AS delisted,
+            enigma.lastcode(t3.issueid) AS lastcode,
+            t3.buydate,
+            t3.selldate,
+            t3.totret,
+            CASE
+                WHEN (t3.selldate - t3.buydate) >= 180
+                THEN POWER(t3.totret, 365.25 / (t3.selldate - t3.buydate))
+                ELSE NULL
+            END AS cagret
+        FROM (
+            SELECT
+                t2.name1,
+                t2.typeshort,
+                t2.issueid,
+                t2.buydate,
+                t2.selldate,
+                (
+                    (SELECT closing FROM ccass.quotes WHERE issueid = t2.issueid AND atdate = t2.selldate) /
+                    (SELECT closing FROM ccass.quotes WHERE issueid = t2.issueid AND atdate = t2.buydate) *
+                    enigma.getadjust(t2.issueid, t2.buydate) /
+                    enigma.getadjust(t2.issueid, t2.selldate)
+                ) AS totret
+            FROM (
+                SELECT
+                    o.name1,
+                    st.typeshort,
+                    t1.issueid,
+                    enigma.firstquotedate(t1.issueid, %s) AS buydate,
+                    enigma.lastquotedate(t1.issueid, %s) AS selldate
+                FROM (
+                    SELECT DISTINCT sl.issueid, i.issuer, i.typeid
+                    FROM enigma.stocklistings sl
+                    JOIN enigma.issue i ON sl.issueid = i.id1
+                    WHERE sl.stockexid IN (1, 20, 23)
+                      AND i.typeid IN (0, 6, 7, 8, 10)
+                      AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+                      AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+                ) AS t1
+                JOIN enigma.organisations o ON t1.issuer = o.personid
+                JOIN enigma.sectypes st ON t1.typeid = st.typeid
+            ) AS t2
+        ) AS t3
+        WHERE t3.totret IS NOT NULL
+        ORDER BY {order_by}
+    """
+
+    # Execute query with parameters
+    # Parameters: d2 (for delisted check), d1 (buyDate), d2 (sellDate), first_trade_filter, d1
+    results = execute_query(sql, (d2, d1, d2, first_trade_filter, d1))
+
+    # Format results for display
+    count = 0
+    for row in results:
+        count += 1
+        row['row_num'] = count
+
+        # Format total return with dynamic precision
+        if row['totret'] is not None:
+            # Subtract 1 to convert from multiplier to percentage
+            totret_pct = row['totret'] - 1
+            decimals = pcsig(totret_pct)
+            row['totret_formatted'] = f"{totret_pct:.{decimals}%}"
+        else:
+            row['totret_formatted'] = '&nbsp;'
+
+        # Format CAGR with dynamic precision
+        if row['cagret'] is not None:
+            cagr_pct = row['cagret'] - 1
+            decimals = pcsig(cagr_pct)
+            row['cagr_formatted'] = f"{cagr_pct:.{decimals}%}"
+        else:
+            row['cagr_formatted'] = ''
+
+    # Build title
+    title = f"Webb-site Total Returns up to {d2} of stocks listed at {d1}"
+    if inc_ipo:
+        title += " or after"
+
+    # Build URL for sort links
+    url_base = f"?d1={d1}&d2={d2}&i={int(inc_ipo)}"
 
     return render_template('dbpub/alltotrets.html',
-                         total_returns=total_returns,
-                         e=e,
+                         title=title,
+                         results=results,
+                         count=count,
+                         d1=d1,
+                         d2=d2,
+                         inc_ipo=inc_ipo,
                          sort=sort_param,
-                         from_date=from_date,
-                         to_date=to_date)
+                         url_base=url_base,
+                         max_date=max_date)
 
 
 @bp.route('/mcap.asp')

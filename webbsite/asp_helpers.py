@@ -279,6 +279,88 @@ def if_null(value, default):
     return default if value is None else value
 
 
+# ===== TOTAL RETURNS HELPERS =====
+
+def pcsig(p):
+    """
+    Determine number of decimal places for percentage formatting
+    Based on magnitude of percentage to show meaningful precision
+
+    Examples:
+        p >= 10    -> 0 decimals (1234%)
+        p > 1      -> 1 decimal  (12.3%)
+        p < -0.999 -> dynamic    (0.001234% shows 6 decimals)
+        else       -> 2 decimals (0.12%)
+    """
+    import math
+
+    if p >= 10:
+        return 0
+    elif p > 1:
+        return 1
+    elif p < -0.999:
+        # For large negative losses, increase precision
+        # Log base 10 of the absolute value determines scale
+        return min(-int(math.log10(abs(1 + p))) - 1, 6)
+    else:
+        return 2
+
+
+def format_percent_sig(p):
+    """
+    Format percentage with appropriate precision using pcsig()
+
+    Args:
+        p: Percentage value (e.g., 0.1234 for 12.34%)
+
+    Returns:
+        Formatted string like "12.34%" or "&nbsp;" if None
+    """
+    if p is None:
+        return '&nbsp;'
+
+    try:
+        decimals = pcsig(p)
+        formatted = f"{float(p):.{decimals}%}"
+        return formatted
+    except (ValueError, TypeError):
+        return '&nbsp;'
+
+
+def get_date_or_default(name, default=None):
+    """
+    Get date parameter from request with validation and default
+    Similar to ASP getMSdef()
+
+    Args:
+        name: Parameter name
+        default: Default value if param missing or invalid
+
+    Returns:
+        Date string in YYYY-MM-DD format or default
+    """
+    val = request.args.get(name, '')
+
+    if not val:
+        return default if default else ''
+
+    # Try to parse as date
+    try:
+        # Accept various date formats
+        if isinstance(val, str):
+            # Try ISO format first
+            parsed = datetime.fromisoformat(val.replace('/', '-'))
+        elif isinstance(val, (datetime, date)):
+            parsed = val
+        else:
+            return default if default else ''
+
+        # Return as YYYY-MM-DD string
+        return parsed.strftime('%Y-%m-%d')
+    except (ValueError, AttributeError):
+        return default if default else ''
+
+
 def max_val(*args):
     """Return maximum value"""
     return max(args)

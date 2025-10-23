@@ -425,6 +425,23 @@ routes:
     params:
       - {}
 
+  - name: "alltotrets - all stock total returns"
+    path: "/dbpub/alltotrets.asp"
+    params:
+      - {}  # Default: 1994-01-03 to max date, no IPOs
+      - d1: "1994-01-03"
+        d2: "2023-08-22"
+        sort: "tretdn"  # Match user's example URL
+      - d1: "2020-01-01"
+        d2: "2024-10-01"
+        i: "1"  # Include IPOs after start date
+      - d1: "2000-01-01"
+        d2: "2024-10-01"
+        sort: "cagrdn"  # Sort by CAGR descending
+      - d1: "2024-01-01"
+        d2: "2024-10-01"
+        sort: "nameup"  # Short period, alphabetical
+
 # Normalization options
 normalize:
   strip_whitespace: true
