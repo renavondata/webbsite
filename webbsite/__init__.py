@@ -19,7 +19,7 @@ def create_app(config_class=Config):
     # URLs include .asp extension for exact match with original site
     from webbsite.routes import (search, prices, events, dbpub, ccass,
                                   articles, webbmail, vote, pollman,
-                                  mailman, contact, dbeditor)
+                                  mailman, contact, dbeditor, pages)
 
     # Main database query pages
     app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
@@ -31,6 +31,9 @@ def create_app(config_class=Config):
 
     # Articles (729 routes via stories table)
     app.register_blueprint(articles.bp, url_prefix='/articles')
+
+    # Static content pages
+    app.register_blueprint(pages.bp, url_prefix='/pages')
 
     # User features
     app.register_blueprint(webbmail.bp, url_prefix='/webbmail')
