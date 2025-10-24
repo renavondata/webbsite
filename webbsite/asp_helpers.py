@@ -11,12 +11,16 @@ import html
 # ===== REQUEST PARAMETER HELPERS =====
 
 def get_int(name, default=0):
-    """Get integer from request args, similar to ASP getInt()"""
+    """Get integer from request args, similar to ASP getInt()
+
+    Note: Unlike ASP Integer (16-bit), this returns full Python int to handle
+    database IDs that exceed 32767 (e.g., issue.id1 uses MySQL INT/PostgreSQL integer)
+    """
     val = request.args.get(name, '')
     if not val or not val.lstrip('-').isdigit():
         return default
     try:
-        return max(min(int(val), 32767), -32768)
+        return int(val)
     except (ValueError, OverflowError):
         return default
 

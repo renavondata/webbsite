@@ -405,10 +405,14 @@ routes:
     params:
       - {}
 
-  - name: "str - short-term returns"
+  - name: "str - stock total return chart"
     path: "/dbpub/str.asp"
     params:
-      - {}
+      - {}  # Empty form (no stock selected)
+      - i: "34920"  # Tianjin Construction Development Group (user example)
+      - i: "62"  # HSBC - large cap with long history
+        f: "1"  # Show directors' dealings
+        b: "1"  # Show buybacks
 
   - name: "gemgrads - GEM graduates"
     path: "/dbpub/gemgrads.asp"
