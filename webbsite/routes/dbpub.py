@@ -8689,39 +8689,425 @@ def str_route():
 
 @bp.route('/ctr.asp')
 def ctr():
-    """Chart total returns - interactive price chart with total returns"""
-    from webbsite.asp_helpers import get_int, get_str
+    """Compare Webb-site Total Returns - up to 5 stocks"""
+    from webbsite.asp_helpers import get_int, get_str, get_bool
     from webbsite.db import execute_query
-    from flask import render_template
+    from flask import render_template, request
+    from datetime import datetime, date
 
-    i = get_int('i', 0)
-    sc = get_str('sc', '')
+    # Helper function to resolve stock code or issue ID to full issue info
+    def get_issue(issue_id_param, stock_code_param, d1):
+        """Resolve stock code or issue ID to issue details"""
+        issue_id = None
+        stock_code = stock_code_param
 
-    # Get stock info
-    stock_name = "Unknown"
-    if i > 0:
-        try:
+        # Try to resolve from stock code
+        if stock_code and stock_code.isdigit():
+            if d1:
+                # Look for listing existing on that date
+                sql = """
+                    SELECT issueID FROM enigma.stocklistings
+                    WHERE stockExID IN (1,20,22,23,38)
+                    AND (firstTradeDate IS NULL OR firstTradeDate <= %s)
+                    AND (deListDate IS NULL OR deListDate > %s)
+                    AND stockCode = %s
+                """
+                result = execute_query(sql, (d1, d1, int(stock_code)))
+                if result:
+                    issue_id = result[0]['issueid']
+                else:
+                    # No listing, look for first listing after that date
+                    sql = """
+                        SELECT MIN(firstTradeDate) AS minDate
+                        FROM enigma.stocklistings
+                        WHERE stockExID IN (1,20,22,23,38)
+                        AND firstTradeDate >= %s
+                        AND stockCode = %s
+                    """
+                    result = execute_query(sql, (d1, int(stock_code)))
+                    if result and result[0]['mindate']:
+                        sql = """
+                            SELECT issueID FROM enigma.stocklistings
+                            WHERE stockExID IN (1,20,22,23,38)
+                            AND firstTradeDate = %s
+                            AND stockCode = %s
+                        """
+                        result = execute_query(sql, (result[0]['mindate'], int(stock_code)))
+                        if result:
+                            issue_id = result[0]['issueid']
+            else:
+                # No date specified, look for current stock
+                sql = """
+                    SELECT issueID FROM enigma.stocklistings
+                    WHERE stockExID IN (1,20,22,23,38)
+                    AND deListDate IS NULL
+                    AND stockCode = %s
+                """
+                result = execute_query(sql, (int(stock_code),))
+                if result:
+                    issue_id = result[0]['issueid']
+                else:
+                    # No current listing, get latest
+                    sql = """
+                        SELECT MAX(deListDate) AS maxDate
+                        FROM enigma.stocklistings
+                        WHERE stockExID IN (1,20,22,23,38)
+                        AND stockCode = %s
+                    """
+                    result = execute_query(sql, (int(stock_code),))
+                    if result and result[0]['maxdate']:
+                        sql = """
+                            SELECT issueID FROM enigma.stocklistings
+                            WHERE stockExID IN (1,20,22,23,38)
+                            AND deListDate = %s
+                            AND stockCode = %s
+                        """
+                        result = execute_query(sql, (result[0]['maxdate'], int(stock_code)))
+                        if result:
+                            issue_id = result[0]['issueid']
+
+        # If no issue_id from stock code, try issue_id parameter
+        if not issue_id and issue_id_param:
+            issue_id = issue_id_param
+
+        # Get issue details
+        if issue_id:
             sql = """
-                SELECT i.issuename, i.stockcode
+                SELECT i.id1 as issueID, o.personID, o.name1,
+                       enigma.lastCode(i.id1) as lastCode,
+                       st.typeShort,
+                       CASE WHEN i.expmat IS NOT NULL THEN
+                           TO_CHAR(i.expmat, 'YYYY-MM-DD')
+                       ELSE '' END as exp
                 FROM enigma.issue i
-                WHERE i.issueid = %s
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                WHERE i.id1 = %s
             """
-            result = execute_query(sql, (i,))
+            result = execute_query(sql, (issue_id,))
             if result:
-                stock_name = result[0]['issuename']
-                if not sc and result[0]['stockcode']:
-                    sc = result[0]['stockcode']
-        except Exception as ex:
-            current_app.logger.error(f"Error in ctr.asp: {ex}", exc_info=True)
+                return {
+                    'issueID': result[0]['issueid'],
+                    'lastCode': result[0]['lastcode'],
+                    'personID': result[0]['personid'],
+                    'name': f"{result[0]['name1']}: {result[0]['typeshort']} {result[0]['exp']}"
+                }
 
-    # TODO: Get quote data with total returns adjustments
-    chart_data = []
+        return None
+
+    # Check for reset
+    if request.args.get('r'):
+        rel = False
+        d1 = None
+        issues = []
+    else:
+        rel = get_bool('rel')
+        d1_str = get_str('d1', '')
+        d1 = None
+        if d1_str:
+            try:
+                d1 = datetime.strptime(d1_str, '%Y-%m-%d').date()
+                # Don't allow future dates
+                if d1 > date.today():
+                    d1 = date(date.today().year - 1, date.today().month, date.today().day)
+            except:
+                pass
+
+        # Get up to 5 issues
+        issues = []
+        for i in range(1, 6):
+            issue_id = get_int(f'i{i}', None)
+            stock_code = get_str(f's{i}', '')
+            issue_info = get_issue(issue_id, stock_code, d1)
+            if issue_info:
+                issues.append(issue_info)
+
+    # Get stock listings and navigation data for the first issue (if any)
+    stock_listings = []
+    nav_flags = {}
+    if issues:
+        first_issue_id = issues[0]['issueID']
+
+        # Get stock listings (equivalent to HKlistings)
+        stock_listings = execute_query("""
+            SELECT sl.*, l.shortname as exchange_name
+            FROM enigma.stocklistings sl
+            JOIN enigma.listings l ON sl.stockExID = l.stockExID
+            WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
+              AND sl.issueID = %s
+            ORDER BY sl.firstTradeDate
+        """, (first_issue_id,))
+
+        # Format stock codes (5 digits, zero-padded)
+        for listing in stock_listings:
+            if listing['stockcode']:
+                listing['stockcode_formatted'] = str(listing['stockcode']).zfill(5)
+            else:
+                listing['stockcode_formatted'] = ''
+
+        # Get security type for navigation logic
+        sec_type_result = execute_query("""
+            SELECT typeID FROM enigma.issue WHERE ID1 = %s
+        """, (first_issue_id,))
+        sec_type = sec_type_result[0]['typeid'] if sec_type_result else None
+
+        # Determine navigation flags
+        has_hk_listed = len(stock_listings) > 0
+        latest_listing = stock_listings[-1] if stock_listings else None  # Get latest (last in chronological order)
+        delist_date = latest_listing['delistdate'] if latest_listing else None
+        stock_ex_id = latest_listing['stockexid'] if latest_listing else None
+
+        # Check for buybacks (not for rights/convertible bonds)
+        # ASP code doesn't query buybacklog, just checks conditions
+        has_buybacks = has_hk_listed and sec_type not in (2, 41)
+
+        # Check for outstanding shares data
+        outstanding_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+        """, (first_issue_id,))
+        has_outstanding = outstanding_result[0]['has_data'] if outstanding_result else False
+
+        # Check for short selling data
+        short_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+        """, (first_issue_id,))
+        has_short = short_result[0]['has_data'] if short_result else False
+
+        # Check for CCASS (after Jun 26 2007, not rights/convertible/notes)
+        from datetime import date as date_type
+        ccass_on = False
+        if has_hk_listed and sec_type not in (2, 40, 41):
+            if delist_date is None or delist_date >= date_type(2007, 6, 26):
+                ccass_on = True
+
+        # Check for SDI dealings
+        sdi_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+        """, (first_issue_id,))
+        has_sdi = sdi_result[0]['has_data'] if sdi_result else False
+
+        nav_flags = {
+            'has_buybacks': has_buybacks,
+            'has_outstanding': has_outstanding,
+            'has_short': has_short,
+            'ccass_on': ccass_on,
+            'has_sdi': has_sdi,
+            'has_hk_listed': has_hk_listed,
+            'stock_ex_id': stock_ex_id,
+            'delist_date': delist_date,
+            'sec_type': sec_type
+        }
+
+        # Organization navigation flags (matching orgBar from navbars.asp)
+        person_id = issues[0]['personID']
+        org_nav = {}
+
+        # Check for officers/directorships
+        officers_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.directorships WHERE Company = %s) as has_data
+        """, (person_id,))
+        org_nav['has_officers'] = officers_result[0]['has_data'] if officers_result else False
+
+        # Check for pay data
+        pay_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_pay'] = pay_result[0]['has_data'] if pay_result else False
+
+        # Check for advisers (when company is the client)
+        advisers_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Company = %s) as has_data
+        """, (person_id,))
+        org_nav['has_advisers'] = advisers_result[0]['has_data'] if advisers_result else False
+
+        # Check for adviserships (when company is the adviser)
+        adviserships_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Adviser = %s) as has_data
+        """, (person_id,))
+        org_nav['has_adviserships'] = adviserships_result[0]['has_data'] if adviserships_result else False
+
+        # Check for SFC licenses
+        sfc_lic_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_sfc_licenses'] = sfc_lic_result[0]['has_data'] if sfc_lic_result else False
+
+        # Check for CCASS participant
+        ccass_part_result = execute_query("""
+            SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+        """, (person_id,))
+        org_nav['ccass_part_id'] = ccass_part_result[0]['partid'] if ccass_part_result else None
+
+        # Check for financial documents
+        financials_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_financials'] = financials_result[0]['has_data'] if financials_result else False
+
+        # Check for ESS data
+        ess_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_ess'] = ess_result[0]['has_data'] if ess_result else False
+
+        # Check for Webb-site articles
+        articles_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_articles'] = articles_result[0]['has_data'] if articles_result else False
+
+        # Check for complain page (HKEX or has lirorgteam)
+        complain_result = execute_query("""
+            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+        """, (person_id,))
+        org_nav['has_complain'] = complain_result[0]['has_data'] or person_id == 9643  # 9643 = HKEX
+    else:
+        org_nav = {}
+
+    # Build the data if we have issues
+    adj_data = []
+    colors = ['blue', 'green', 'red', 'black', 'olive']
+    start_date_str = ''
+
+    if issues:
+        # Default start date
+        if not d1:
+            d1 = date(1994, 1, 1)
+
+        # Find earliest common date where all stocks have quotes
+        for issue in issues:
+            sql = """
+                SELECT MIN(atDate) AS d1
+                FROM ccass.quotes
+                WHERE issueID = %s
+                AND atDate >= %s
+            """
+            result = execute_query(sql, (issue['issueID'], d1))
+            if result and result[0]['d1'] and result[0]['d1'] > d1:
+                d1 = result[0]['d1']
+
+        start_date_str = d1.strftime('%Y-%m-%d')
+
+        # Get list of dates where any stock has a quote
+        issue_list = ','.join(str(issue['issueID']) for issue in issues)
+        sql = f"""
+            SELECT DISTINCT atDate
+            FROM ccass.quotes
+            WHERE issueID IN ({issue_list})
+            AND atDate >= %s
+            ORDER BY atDate
+        """
+        date_rows = execute_query(sql, (d1,))
+        dates = [row['atdate'] for row in date_rows]
+
+        if dates:
+            # Initialize adj_data array: [date, stock1_return, stock2_return, ...]
+            adj_data = [[d] + [0.0] * len(issues) for d in dates]
+
+            # Calculate adjusted returns for each stock
+            for stock_idx, issue in enumerate(issues):
+                issue_id = issue['issueID']
+
+                # Find last exDate on or before first day with a price
+                sql = """
+                    SELECT MAX(exDate) AS maxDate
+                    FROM enigma.adjustments
+                    WHERE issueID = %s
+                    AND exDate <= enigma.firstQuoteDate(%s, %s)
+                """
+                result = execute_query(sql, (issue_id, issue_id, start_date_str))
+                last_ex_date = result[0]['maxdate'] if result and result[0]['maxdate'] else None
+
+                base_adj = 1.0
+                next_ex_date = None
+                adjustments = []
+
+                if last_ex_date is None:
+                    # No ex-dates prior to first quote
+                    last_ex_date = d1
+                    base_adj = 1.0
+                    sql = """
+                        SELECT exDate, cumAdjust
+                        FROM enigma.adjustments
+                        WHERE issueID = %s
+                        ORDER BY exDate
+                    """
+                    adj_rows = execute_query(sql, (issue_id,))
+                    if adj_rows:
+                        adjustments = [(row['exdate'], float(row['cumadjust'])) for row in adj_rows]
+                        next_ex_date = adjustments[0][0]
+                else:
+                    sql = """
+                        SELECT exDate, cumAdjust
+                        FROM enigma.adjustments
+                        WHERE issueID = %s
+                        AND exDate >= %s
+                        ORDER BY exDate
+                    """
+                    adj_rows = execute_query(sql, (issue_id, last_ex_date))
+                    adjustments = [(row['exdate'], float(row['cumadjust'])) for row in adj_rows]
+
+                    # Get base adjustment and move to next adjustment
+                    adj_idx = 0
+                    next_ex_date = last_ex_date
+                    while adj_idx < len(adjustments) and adjustments[adj_idx][0] <= last_ex_date:
+                        base_adj = adjustments[adj_idx][1]
+                        adj_idx += 1
+                        if adj_idx < len(adjustments):
+                            next_ex_date = adjustments[adj_idx][0]
+                    adjustments = adjustments[adj_idx:]
+                    if adjustments:
+                        next_ex_date = adjustments[0][0]
+
+                # Get quotes
+                sql = """
+                    SELECT atDate, closing
+                    FROM ccass.quotes
+                    WHERE issueID = %s
+                    AND atDate >= %s
+                    ORDER BY atDate
+                """
+                quote_rows = execute_query(sql, (issue_id, start_date_str))
+                quotes = {row['atdate']: float(row['closing']) for row in quote_rows}
+
+                # Find first non-zero price as base
+                base_price = None
+                for d in dates:
+                    if d in quotes and quotes[d] != 0:
+                        base_price = quotes[d]
+                        break
+
+                if base_price is None:
+                    base_price = 1.0  # Avoid division by zero
+
+                # Calculate adjusted returns
+                factor = 1.0
+                adj_idx = 0
+                closing_return = 0.0
+
+                for date_idx, at_date in enumerate(dates):
+                    # Update factor if we've reached next adjustment date
+                    while adj_idx < len(adjustments) and at_date >= adjustments[adj_idx][0]:
+                        factor = base_adj / adjustments[adj_idx][1]
+                        adj_idx += 1
+
+                    # Calculate return for this date
+                    if at_date in quotes and quotes[at_date] != 0:
+                        closing_return = (quotes[at_date] * factor / base_price - 1) * 100
+
+                    # Store return (carry forward last value for missing dates)
+                    adj_data[date_idx][stock_idx + 1] = closing_return
 
     return render_template('dbpub/ctr.html',
-                         i=i,
-                         sc=sc,
-                         stock_name=stock_name,
-                         chart_data=chart_data)
+                         issues=issues,
+                         adj_data=adj_data,
+                         rel=rel,
+                         start_date_str=start_date_str,
+                         colors=colors,
+                         stock_listings=stock_listings,
+                         nav_flags=nav_flags,
+                         org_nav=org_nav,
+                         today=date.today())
 
 
 @bp.route('/hksolsmoves.asp')

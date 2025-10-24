@@ -1,7 +1,287 @@
 {% extends "base_database.html" %}
-{% block title %}Chart total returns{% if stock_name != "Unknown" %}: {{ stock_name }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/dygraph-combined.js') }}"></script>
+{% endblock %}
+
+{% block title %}Compare Webb-site Total Returns{% endblock %}
+
 {% block content %}
-<h2>Chart total returns{% if stock_name != "Unknown" %}: {{ stock_name }}{% endif %}</h2>
-<p>Interactive price chart with total returns adjustments for stock code {{ sc or i }}.</p>
-<p><em>Chart data not yet implemented - requires Highstock integration.</em></p>
+{% if issues and issues|length > 0 %}
+<h2>Compare Webb-site Total Returns</h2>
+
+{# Organization Navigation Bar - matching orgBar from navbars.asp #}
+<ul class="navlist">
+    <li><a href="/dbpub/orgdata.asp?p={{ issues[0]['personID'] }}">Key Data</a></li>
+    {% if org_nav.has_officers %}
+        <li><a href="/dbpub/officers.asp?p={{ issues[0]['personID'] }}">Officers</a></li>
+        <li><a href="/dbpub/overlap.asp?p={{ issues[0]['personID'] }}">Overlaps</a></li>
+    {% endif %}
+    {% if org_nav.has_pay %}
+        <li><a href="/dbpub/pay.asp?p={{ issues[0]['personID'] }}">Pay</a></li>
+    {% endif %}
+    {% if org_nav.has_advisers %}
+        <li><a href="/dbpub/advisers.asp?p={{ issues[0]['personID'] }}">Advisers</a></li>
+    {% endif %}
+    {% if org_nav.has_adviserships %}
+        <li><a href="/dbpub/adviserships.asp?p={{ issues[0]['personID'] }}">Adviserships</a></li>
+    {% endif %}
+    {% if org_nav.has_sfc_licenses %}
+        <li><a href="/dbpub/SFColicrec.asp?p={{ issues[0]['personID'] }}">SFC licenses</a></li>
+    {% endif %}
+    {% if org_nav.ccass_part_id %}
+        <li><a href="/ccass/cholder.asp?part={{ org_nav.ccass_part_id }}">CCASS holdings</a></li>
+    {% endif %}
+    {% if org_nav.has_financials %}
+        <li><a href="/dbpub/docs.asp?p={{ issues[0]['personID'] }}">Financials</a></li>
+    {% endif %}
+    {% if org_nav.has_ess %}
+        <li><a href="/dbpub/ESSraw.asp?p={{ issues[0]['personID'] }}">ESS</a></li>
+    {% endif %}
+    {% if org_nav.has_articles %}
+        <li><a href="/dbpub/articles.asp?p={{ issues[0]['personID'] }}">Webb-site Reports</a></li>
+    {% endif %}
+    {% if org_nav.has_complain %}
+        <li><a href="/dbpub/complain.asp?p={{ issues[0]['personID'] }}">Complain</a></li>
+    {% endif %}
+</ul>
+<div class="clear"></div>
+
+{# Stock Listings Table - matching HKlistings from navbars.asp #}
+{% if stock_listings %}
+<table class="numtable" style="margin-top:5px">
+    <tr>
+        <th class="left">Exchange</th>
+        <th>Code</th>
+        <th>Listed</th>
+        <th>Last trade</th>
+        <th>Delisted</th>
+        <th></th>
+    </tr>
+    {% for listing in stock_listings %}
+    <tr>
+        <td class="left" style="width:75px;vertical-align:middle">{{ listing.exchange_name }}</td>
+        <td style="text-align:left;vertical-align:middle">{{ listing.stockcode_formatted }}</td>
+        <td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate.strftime('%Y-%m-%d') if listing.firsttradedate else '' }}</td>
+        <td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate.strftime('%Y-%m-%d') if listing.finaltradedate else '' }}</td>
+        <td style="vertical-align:middle">&nbsp;{{ listing.delistdate.strftime('%Y-%m-%d') if listing.delistdate else '' }}</td>
+        <td>
+            {% if listing.stockid %}
+                {% if not listing.delistdate or listing.delistdate > today %}
+                    {% set docs_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' + listing.stockid|string + '&category=0' %}
+                {% else %}
+                    {% set docs_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' + listing.stockid|string + '&category=1' %}
+                {% endif %}
+                <ul class="navlist"><li><a target="_blank" href="{{ docs_url }}">Docs</a></li></ul>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="clear"></div>
+{% endif %}
+
+{# Stock Navigation Bar - matching stockBar from navbars.asp #}
+<ul class="navlist">
+    {% if nav_flags.has_buybacks %}
+        <li><a href="/dbpub/buybacks.asp?i={{ issues[0]['issueID'] }}">Buybacks</a></li>
+    {% endif %}
+    {% if nav_flags.has_outstanding %}
+        <li><a href="/dbpub/outstanding.asp?i={{ issues[0]['issueID'] }}">Outstanding</a></li>
+    {% endif %}
+    {% if nav_flags.has_short %}
+        <li><a href="/dbpub/short.asp?i={{ issues[0]['issueID'] }}">Short</a></li>
+    {% endif %}
+    {% if nav_flags.ccass_on %}
+        <li><a href="/ccass/choldings.asp?i={{ issues[0]['issueID'] }}">CCASS</a></li>
+    {% endif %}
+    {% if nav_flags.has_hk_listed %}
+        <li><a href="/dbpub/str.asp?i={{ issues[0]['issueID'] }}">Total return</a></li>
+        <li><a class="active" href="/dbpub/ctr.asp?i1={{ issues[0]['issueID'] }}">Compare returns</a></li>
+        <li><a href="/dbpub/hpu.asp?i={{ issues[0]['issueID'] }}">Prices</a></li>
+        <li><a href="/dbpub/events.asp?i={{ issues[0]['issueID'] }}">Events</a></li>
+    {% endif %}
+    {% if nav_flags.has_sdi %}
+        <li><a href="/dbpub/sdiissue.asp?i={{ issues[0]['issueID'] }}">Dealings</a></li>
+    {% endif %}
+    {% if nav_flags.has_hk_listed and stock_listings and stock_listings|length > 0 %}
+        {% set latest_listing = stock_listings[-1] %}
+        {% if not latest_listing.delistdate or latest_listing.delistdate > today %}
+            {% set stock_code = latest_listing.stockcode|int %}
+            {% if nav_flags.sec_type not in [46, 40, 41] and nav_flags.stock_ex_id not in [23, 38] %}
+                <li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_code }}">Quote</a></li>
+            {% elif nav_flags.stock_ex_id == 38 %}
+                <li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Exchange-Traded-Products/Exchange-Traded-Products-Quote?sym={{ stock_code }}">Quote</a></li>
+            {% elif nav_flags.stock_ex_id == 23 %}
+                <li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Real-Estate-Investment-Trusts/Real-Estate-Investment-Trusts-Quote?sym={{ stock_code }}">Quote</a></li>
+            {% else %}
+                <li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Debt-Securities/Debt-Securities-Quote?sym={{ stock_code }}">Quote</a></li>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</ul>
+<div class="clear"></div>
+
+{% else %}
+<h2>Compare Webb-site Total Returns</h2>
+{% endif %}
+
+<ul class="navlist">
+    <li><a href="/dbpub/TRnotes.asp" target="_blank">Notes</a></li>
+    <li><a href="/dbpub/alltotrets.asp">All total returns</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="/dbpub/ctr.asp">
+    {% for i in range(1, 6) %}
+        {% if issues and i <= issues|length %}
+            <input type="hidden" name="i{{ i }}" value="{{ issues[i-1]['issueID'] }}">
+        {% endif %}
+    {% endfor %}
+
+    {% for i in range(1, 6) %}
+        Stock {{ i }}: <input type="text" name="s{{ i }}" size="5" value="">
+        {% if issues and i <= issues|length %}
+            <a href="/dbpub/str.asp?i={{ issues[i-1]['issueID'] }}" style="color:{{ colors[i-1] }}">
+                {{ issues[i-1]['lastCode'] }}&nbsp;{{ issues[i-1]['name'] }}
+            </a>
+        {% endif %}
+        <br>
+    {% endfor %}
+
+    <p>
+        <label>
+            <input type="checkbox" name="rel" value="1" {% if rel %}checked{% endif %}>
+            Show returns relative to Stock 1
+            {% if issues|length == 1 and rel %}<b> (please add another stock)</b>{% endif %}
+        </label>
+    </p>
+
+    {% if issues|length > 0 %}
+        <p>Graph starts at: {{ start_date_str }}.
+        <a href="/dbpub/ctr.asp?{% for issue in issues %}i{{ loop.index }}={{ issue['issueID'] }}&{% endfor %}rel={% if rel %}1{% else %}0{% endif %}&d1={{ start_date_str }}">Link to this graph</a></p>
+    {% endif %}
+
+    <div class="inputs">
+        Start date: <input type="date" id="d1" name="d1" value="{{ start_date_str }}">
+    </div>
+    <div class="inputs">
+        <input type="button" value="Earliest common date" onclick="document.getElementById('d1').value='';this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" name="r" value="Reset">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>Pick up to 5 HK-listed stock codes. If you want <a href="/dbpub/listed.asp"><strong>current stocks</strong></a>
+back to their earliest common date, then leave the date blank.
+If you want <a href="/dbpub/delisted.asp" target="_blank"><strong>delisted stocks</strong></a>, pick a date on which they were listed.
+For more help, see <b><a href="/dbpub/TRnotes.asp" target="_blank">the notes</a></b>. Please
+<b><a href="/contact">report</a></b> any errors or desired features.</p>
+
+{% if adj_data|length > 0 %}
+    <div id="graphdiv" class="chart" style="width:95%"></div>
+
+    {% if not rel or issues|length == 1 %}
+        {% set chart_title = "Absolute Webb-site Total Returns %" %}
+        {% set show_rel = false %}
+    {% else %}
+        {% set chart_title = "Relative Webb-site Total Returns %" %}
+        {% set show_rel = true %}
+    {% endif %}
+
+    {# Build CSV data for Dygraph #}
+    {% set csv_lines = [] %}
+    {% set legend_parts = ['Date'] %}
+
+    {% if show_rel %}
+        {% for i in range(1, issues|length) %}
+            {% set _ = legend_parts.append(issues[i]['lastCode']) %}
+        {% endfor %}
+    {% else %}
+        {% for issue in issues %}
+            {% set _ = legend_parts.append(issue['lastCode']) %}
+        {% endfor %}
+    {% endif %}
+
+    {% set _ = csv_lines.append(legend_parts|join(',')) %}
+
+    {% for row in adj_data %}
+        {% set line_parts = [row[0].strftime('%Y-%m-%d')] %}
+        {% if not show_rel %}
+            {% for i in range(1, issues|length + 1) %}
+                {% set _ = line_parts.append('%.2f'|format(row[i])) %}
+            {% endfor %}
+        {% elif row[1] != -100 %}
+            {% for i in range(2, issues|length + 1) %}
+                {% set rel_return = 100 * ((row[i] + 100) / (row[1] + 100) - 1) %}
+                {% set _ = line_parts.append('%.2f'|format(rel_return)) %}
+            {% endfor %}
+        {% endif %}
+        {% set _ = csv_lines.append(line_parts|join(',')) %}
+    {% endfor %}
+
+    {# Build color array #}
+    {% set color_list = [] %}
+    {% if show_rel %}
+        {% for i in range(1, issues|length) %}
+            {% set _ = color_list.append("'" + colors[i] + "'") %}
+        {% endfor %}
+    {% else %}
+        {% for i in range(0, issues|length) %}
+            {% set _ = color_list.append("'" + colors[i] + "'") %}
+        {% endfor %}
+    {% endif %}
+
+    <script type="text/javascript">
+    var csv_data = {{ csv_lines|join('\n')|tojson }};
+    g = new Dygraph(
+        document.getElementById("graphdiv"),
+        csv_data,
+        {
+        title: '{{ chart_title }}',
+        colors: [{{ color_list|join(',')|safe }}],
+        axisLabelFontSize: 12,
+        yAxisLabelWidth: 28,
+        xPixelsPerLabel: 30,
+        titleHeight: 24,
+        labelsDivStyles: {
+            'backgroundColor': 'transparent'
+            }
+        }
+    );
+    </script>
+    <p></p>
+
+    <table class="numtable center yscroll">
+        <tr>
+            <th class="left">Date</th>
+            {% for issue in issues %}
+                <th {% if loop.index > 4 %}class="colHide3"{% endif %}>Stock<br>{{ issue['lastCode'] }}<br>%</th>
+            {% endfor %}
+            {% if show_rel %}
+                {% for i in range(1, issues|length) %}
+                    <th {% if issues|length > 2 %}class="colHide3"{% endif %}>Stock<br>{{ issues[i]['lastCode'] }}<br>rel. %</th>
+                {% endfor %}
+            {% endif %}
+        </tr>
+        {% for row in adj_data|reverse %}
+        <tr>
+            <td>{{ row[0].strftime('%Y-%m-%d') }}</td>
+            {% for i in range(1, issues|length + 1) %}
+                <td {% if i > 4 %}class="colHide3"{% endif %}>{{ "%.2f"|format(row[i]) }}</td>
+            {% endfor %}
+            {% if show_rel %}
+                {% for i in range(2, issues|length + 1) %}
+                    {% set rel_return = 100 * ((row[i] + 100) / (row[1] + 100) - 1) %}
+                    <td {% if issues|length > 2 %}class="colHide3"{% endif %}>{{ "%.2f"|format(rel_return) }}</td>
+                {% endfor %}
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 {% endblock %}
