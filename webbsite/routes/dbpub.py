@@ -8635,8 +8635,8 @@ def lirteams():
 # Single stock total returns (STR)
 @bp.route('/str.asp')
 def str_route():
-    """Webb-site Single stock Total Return chart"""
-    from webbsite.asp_helpers import get_int, get_bool
+    """Webb-site Single stock Total Return chart - port of str.asp"""
+    from webbsite.asp_helpers import get_int, get_bool, get_str
     from webbsite.db import execute_query
     from flask import render_template
 
@@ -8645,12 +8645,19 @@ def str_route():
     show_deals = get_bool('f')  # Show directors' dealings
     show_bb = get_bool('b')  # Show buybacks
 
-    # Find enigma.issue ID from stock code if needed
+    stock_name = ""
+    stock_type = ""
+    stock_exp = ""
+
+    # Find enigma.issue ID from stock code if needed (ASP: Call findStock)
     if sc > 0 and i == 0:
         issue_sql = """
-            SELECT i.id1
+            SELECT i.id1, o.name1, st.typeshort,
+                   COALESCE(enigma.msdateacc(i.expmat, i.expacc), '') as exp
             FROM enigma.issue i
             JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+            JOIN enigma.organisations o ON i.issuer = o.personid
+            JOIN enigma.sectypes st ON i.typeid = st.typeid
             WHERE sl.stockcode = %s
               AND NOT sl."2ndCtr"
             ORDER BY sl.firsttradedate DESC
@@ -8660,49 +8667,288 @@ def str_route():
             issue_result = execute_query(issue_sql, (sc,))
             if issue_result:
                 i = issue_result[0]['id1']
+                stock_name = issue_result[0]['name1']
+                stock_type = issue_result[0]['typeshort']
+                stock_exp = issue_result[0]['exp']
         except:
             pass
 
-    if i > 0:
-        # Get stock name
-        name_sql = """
-            SELECT o.name1
-            FROM enigma.issue i
-            JOIN enigma.organisations o ON i.issuer = o.personid
-            WHERE i.id1 = %s
-        """
+    # Initialize data structures
+    quotes = []
+    sdi_flags = []
+    bb_flags = []
+    stock_listings = []
+    nav_flags = {}
+    org_nav = {}
+    person_id = None
 
-        # Get adjusted quotes
+    if i > 0:
+        # Get stock details if not already loaded
+        if not stock_name:
+            name_sql = """
+                SELECT o.name1, o.personid, st.typeshort,
+                       COALESCE(enigma.msdateacc(i.expmat, i.expacc), '') as exp
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personid
+                JOIN enigma.sectypes st ON i.typeid = st.typeid
+                WHERE i.id1 = %s
+            """
+            try:
+                name_result = execute_query(name_sql, (i,))
+                if name_result:
+                    stock_name = name_result[0]['name1']
+                    stock_type = name_result[0]['typeshort']
+                    stock_exp = name_result[0]['exp']
+                    person_id = name_result[0]['personid']
+            except:
+                pass
+        else:
+            # Get personID if we have stock name but not person_id
+            try:
+                person_result = execute_query("""
+                    SELECT o.personid
+                    FROM enigma.issue i
+                    JOIN enigma.organisations o ON i.issuer = o.personid
+                    WHERE i.id1 = %s
+                """, (i,))
+                if person_result:
+                    person_id = person_result[0]['personid']
+            except:
+                pass
+
+        # Build full stock display name
+        stock_display = f"{stock_name}: {stock_type} {stock_exp}".strip()
+
+        # Get stock listings (matching HKlistings from navbars.asp)
+        try:
+            stock_listings = execute_query("""
+                SELECT sl.*, l.shortname as exchange_name
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockExID = l.stockExID
+                WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
+                  AND sl.issueID = %s
+                ORDER BY sl.firstTradeDate
+            """, (i,))
+
+            # Format stock codes (5 digits, zero-padded)
+            from datetime import date as date_type
+            today = date_type.today()
+            for listing in stock_listings:
+                if listing['stockcode']:
+                    listing['stockcode_formatted'] = str(listing['stockcode']).zfill(5)
+                else:
+                    listing['stockcode_formatted'] = ''
+        except:
+            stock_listings = []
+            today = None
+
+        # Get security type for navigation logic
+        try:
+            sec_type_result = execute_query("""
+                SELECT typeID FROM enigma.issue WHERE ID1 = %s
+            """, (i,))
+            sec_type = sec_type_result[0]['typeid'] if sec_type_result else None
+        except:
+            sec_type = None
+
+        # Build navigation flags (matching stockBar from navbars.asp)
+        has_hk_listed = len(stock_listings) > 0
+        latest_listing = stock_listings[-1] if stock_listings else None
+        delist_date = latest_listing['delistdate'] if latest_listing else None
+        stock_ex_id = latest_listing['stockexid'] if latest_listing else None
+
+        # Check for buybacks (not for rights/convertible bonds)
+        has_buybacks = has_hk_listed and sec_type not in (2, 41)
+
+        # Check for outstanding shares data
+        try:
+            outstanding_result = execute_query("""
+                SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+            """, (i,))
+            has_outstanding = outstanding_result[0]['has_data'] if outstanding_result else False
+        except:
+            has_outstanding = False
+
+        # Check for short selling data
+        try:
+            short_result = execute_query("""
+                SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+            """, (i,))
+            has_short = short_result[0]['has_data'] if short_result else False
+        except:
+            has_short = False
+
+        # Check for CCASS (after Jun 26 2007, not rights/convertible/notes)
+        ccass_on = False
+        if has_hk_listed and sec_type not in (2, 40, 41):
+            if delist_date is None or delist_date >= date_type(2007, 6, 26):
+                ccass_on = True
+
+        # Check for SDI dealings
+        try:
+            sdi_result = execute_query("""
+                SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+            """, (i,))
+            has_sdi = sdi_result[0]['has_data'] if sdi_result else False
+        except:
+            has_sdi = False
+
+        nav_flags = {
+            'has_buybacks': has_buybacks,
+            'has_outstanding': has_outstanding,
+            'has_short': has_short,
+            'ccass_on': ccass_on,
+            'has_sdi': has_sdi,
+            'has_hk_listed': has_hk_listed,
+            'stock_ex_id': stock_ex_id,
+            'delist_date': delist_date,
+            'sec_type': sec_type
+        }
+
+        # Organization navigation flags (matching orgBar from navbars.asp)
+        if person_id:
+            try:
+                # Check for officers/directorships
+                officers_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.directorships WHERE Company = %s) as has_data
+                """, (person_id,))
+                org_nav['has_officers'] = officers_result[0]['has_data'] if officers_result else False
+
+                # Check for pay data
+                pay_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_pay'] = pay_result[0]['has_data'] if pay_result else False
+
+                # Check for advisers (when company is the client)
+                advisers_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Company = %s) as has_data
+                """, (person_id,))
+                org_nav['has_advisers'] = advisers_result[0]['has_data'] if advisers_result else False
+
+                # Check for adviserships (when company is the adviser)
+                adviserships_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Adviser = %s) as has_data
+                """, (person_id,))
+                org_nav['has_adviserships'] = adviserships_result[0]['has_data'] if adviserships_result else False
+
+                # Check for SFC licenses
+                sfc_lic_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_sfc_licenses'] = sfc_lic_result[0]['has_data'] if sfc_lic_result else False
+
+                # Check for CCASS participant
+                ccass_part_result = execute_query("""
+                    SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+                """, (person_id,))
+                org_nav['ccass_part_id'] = ccass_part_result[0]['partid'] if ccass_part_result else None
+
+                # Check for financial documents
+                financials_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_financials'] = financials_result[0]['has_data'] if financials_result else False
+
+                # Check for ESS data
+                ess_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_ess'] = ess_result[0]['has_data'] if ess_result else False
+
+                # Check for Webb-site articles
+                articles_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_articles'] = articles_result[0]['has_data'] if articles_result else False
+
+                # Check for complain page (HKEX or has lirorgteam)
+                complain_result = execute_query("""
+                    SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+                """, (person_id,))
+                org_nav['has_complain'] = complain_result[0]['has_data'] or person_id == 9643  # 9643 = HKEX
+            except Exception as ex:
+                from flask import current_app
+                current_app.logger.error(f"Error building org_nav: {ex}", exc_info=True)
+
+        # Get adjusted quotes using getadjust() function (ASP lines 19-36)
         quotes_sql = """
             SELECT
-                EXTRACT(EPOCH FROM atdate) * 1000 AS timestamp,
-                ROUND(vol / COALESCE(NULLIF(splitadj, 0), 1)) AS adj_vol,
-                ROUND(closing * COALESCE(NULLIF(splitadj, 0), 1), 5) AS adj_close
+                EXTRACT(EPOCH FROM atDate) * 1000 AS timestamp,
+                ROUND((vol / enigma.getadjust(%s, atDate))::numeric) AS adj_vol,
+                ROUND((closing * enigma.getadjust(%s, atDate))::numeric, 5) AS adj_close
             FROM ccass.quotes
-            WHERE issueid = %s
-            ORDER BY atdate
+            WHERE issueID = %s
+            ORDER BY atDate
+        """
+
+        # Get SDI (directors' dealings) data (ASP lines 38-46)
+        sdi_sql = """
+            SELECT
+                relDate,
+                CASE WHEN probReason IN(21,1101,1113) THEN 'Bought' ELSE 'Sold' END AS action,
+                shsInv,
+                CONCAT(p.name1, ', ', p.name2) AS person_name,
+                dir AS person_id,
+                s.ID AS sdi_id,
+                COALESCE(avPrice, hiPrice) AS price,
+                c.currency
+            FROM enigma.sdi s
+            JOIN enigma.sdievent ON s.id = sdiID
+            JOIN enigma.people p ON dir = personID
+            JOIN enigma.currencies c ON curr = c.ID
+            WHERE serNoSuper IS NULL
+              AND probReason IN(21,22,23,1101,1113,1201,1213,1302)
+              AND (hiPrice IS NOT NULL OR avPrice IS NOT NULL)
+              AND issueID = %s
+            ORDER BY relDate
+        """
+
+        # Get buyback data (ASP lines 48-54)
+        buyback_sql = """
+            SELECT
+                effDate,
+                -shares AS shares,
+                value
+            FROM enigma.capchanges
+            WHERE capChangeType IN(1,6)
+              AND issueID = %s
         """
 
         try:
-            name_result = execute_query(name_sql, (i,))
-            stock_name = name_result[0]['name1'] if name_result else f"Issue {i}"
+            quotes = execute_query(quotes_sql, (i, i, i))
 
-            quotes = execute_query(quotes_sql, (i,))
+            # Fill in gaps in closing prices with previous close (ASP lines 24-28)
+            if quotes:
+                last_close = None
+                for quote in quotes:
+                    if quote['adj_close'] and quote['adj_close'] > 0:
+                        last_close = quote['adj_close']
+                    elif last_close is not None:
+                        quote['adj_close'] = last_close
+
+            sdi_flags = execute_query(sdi_sql, (i,))
+            bb_flags = execute_query(buyback_sql, (i,))
+
         except Exception as ex:
             current_app.logger.error(f"Error in str.asp: {ex}", exc_info=True)
-            stock_name = f"Issue {i}"
-            quotes = []
     else:
-        stock_name = "Unknown"
-        quotes = []
+        stock_display = "Stock not found."
 
     return render_template('dbpub/str.html',
                          i=i,
                          sc=sc,
-                         stock_name=stock_name,
+                         stock_name=stock_display,
                          quotes=quotes,
+                         sdi_flags=sdi_flags,
+                         bb_flags=bb_flags,
                          show_deals=show_deals,
-                         show_bb=show_bb)
+                         show_bb=show_bb,
+                         stock_listings=stock_listings,
+                         nav_flags=nav_flags,
+                         org_nav=org_nav,
+                         person_id=person_id,
+                         today=today if 'today' in locals() else None)
 
 
 @bp.route('/ctr.asp')
