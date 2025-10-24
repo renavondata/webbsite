@@ -55,6 +55,10 @@ def listed():
     title = exchange_titles.get(e, exchange_titles['a']) + type_suffixes.get(t, ' shares')
 
     # Build ORDER BY clause based on sort parameter (lowercase for PostgreSQL)
+    # Note: PostgreSQL defaults differ from MySQL for NULL sorting:
+    # - MySQL: ASC=NULLS FIRST, DESC=NULLS LAST
+    # - PostgreSQL: ASC=NULLS LAST, DESC=NULLS FIRST
+    # We explicitly specify NULLS FIRST/LAST to match MySQL behavior
     order_by_map = {
         'namedn': 'o.name1 DESC',
         'codeup': 'sl.stockcode',
@@ -63,6 +67,12 @@ def listed():
         'typedn': 'st.typeshort DESC, o.name1',
         'datedn': 'sl.firsttradedate DESC, o.name1',
         'dateup': 'sl.firsttradedate, o.name1',
+        'totrdn': 'totret DESC NULLS LAST, sl.firsttradedate',
+        'totrup': 'totret NULLS FIRST, sl.firsttradedate DESC',
+        'cagretdn': 'cagret DESC NULLS LAST, sl.firsttradedate',
+        'cagretup': 'cagret NULLS FIRST, sl.firsttradedate DESC',
+        'cagreldn': 'cagrel DESC NULLS LAST, sl.firsttradedate',
+        'cagrelup': 'cagrel NULLS FIRST, sl.firsttradedate DESC',
         'nameup': 'o.name1, sl.stockcode'  # default
     }
     order_by = order_by_map.get(sort_param, order_by_map['nameup'])
@@ -87,9 +97,7 @@ def listed():
     }
     type_filter = type_filters.get(t, type_filters['s'])
 
-    # Query for listed stocks (lowercase columns for PostgreSQL)
-    # Note: Simplified without total returns calculations for now
-    # totRet, CAGRet, CAGRel functions need to be ported from MySQL
+    # Query for listed stocks with total returns calculations
     sql = f"""
         SELECT
             sl.stockcode,
@@ -98,7 +106,10 @@ def listed():
             st.typelong,
             o.name1,
             o.personid,
-            sl.firsttradedate
+            sl.firsttradedate,
+            enigma.totRet(sl.issueid, sl.firsttradedate, %s) - 1 AS totret,
+            enigma.CAGRet(sl.issueid, sl.firsttradedate, %s) - 1 AS cagret,
+            enigma.CAGRel(sl.issueid, sl.firsttradedate, %s) - 1 AS cagrel
         FROM enigma.stocklistings sl
         JOIN enigma.issue i ON sl.issueid = i.id1
         JOIN enigma.organisations o ON i.issuer = o.personid
@@ -112,9 +123,14 @@ def listed():
     """
 
     try:
-        results = execute_query(sql, (d, d))
+        results = execute_query(sql, (d, d, d, d, d))
         stocks = []
         for row in results:
+            # Format return percentages (NULL becomes empty string, values multiplied by 100 and formatted to 2 decimals)
+            totret = '' if row['totret'] is None else f"{row['totret'] * 100:.2f}"
+            cagret = '' if row['cagret'] is None else f"{row['cagret'] * 100:.2f}"
+            cagrel = '' if row['cagrel'] is None else f"{row['cagrel'] * 100:.2f}"
+
             stocks.append({
                 'StockCode': row['stockcode'],
                 'issueID': row['issueid'],
@@ -122,8 +138,10 @@ def listed():
                 'typeLong': row['typelong'],
                 'Name1': row['name1'],
                 'PersonID': row['personid'],
-                'FirstTradeDate': row['firsttradedate']
-                # TODO: Add totRet, CAGret, CAGrel when functions are ported
+                'FirstTradeDate': row['firsttradedate'],
+                'totRet': totret,
+                'CAGret': cagret,
+                'CAGrel': cagrel
             })
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
