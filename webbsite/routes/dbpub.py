@@ -8687,10 +8687,13 @@ def str_route():
         if not stock_name:
             name_sql = """
                 SELECT o.name1, o.personid, st.typeshort,
-                       COALESCE(enigma.msdateacc(i.expmat, i.expacc), '') as exp
+                       COALESCE(enigma.msdateacc(i.expmat, i.expacc), '') as exp,
+                       i.floating, i.coupon,
+                       COALESCE(c.currency, 'HKD') as curr
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.sectypes st ON i.typeid = st.typeid
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
                 WHERE i.id1 = %s
             """
             try:
@@ -8700,6 +8703,9 @@ def str_route():
                     stock_type = name_result[0]['typeshort']
                     stock_exp = name_result[0]['exp']
                     person_id = name_result[0]['personid']
+                    floating = name_result[0]['floating']
+                    coupon = name_result[0]['coupon']
+                    currency = name_result[0]['curr']
             except:
                 pass
         else:
@@ -8716,8 +8722,19 @@ def str_route():
             except:
                 pass
 
-        # Build full stock display name
-        stock_display = f"{stock_name}: {stock_type} {stock_exp}".strip()
+        # Build full stock display name (matching ASP issueName function)
+        # Format: Name: [Floating] typeShort currency [coupon%] [due exp]
+        stock_display = f"{stock_name}: "
+        if 'floating' in locals() and floating:
+            stock_display += "Floating "
+        stock_display += f"{stock_type}"
+        if 'currency' in locals() and currency:
+            stock_display += f" {currency}"
+        if 'coupon' in locals() and coupon:
+            stock_display += f" {coupon}%"
+        if stock_exp:
+            stock_display += f" due {stock_exp}"
+        stock_display = stock_display.strip()
 
         # Get stock listings (matching HKlistings from navbars.asp)
         try:

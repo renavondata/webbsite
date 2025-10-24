@@ -97,16 +97,37 @@
         <li><a href="/ccass/choldings.asp?i={{ i }}">CCASS</a></li>
     {% endif %}
     {% if nav_flags.has_hk_listed %}
-        <li><a class="active" href="/dbpub/str.asp?i={{ i }}">Total return</a></li>
+        <li class="livebutton">Total return</li>
         <li><a href="/dbpub/ctr.asp?i1={{ i }}">Compare returns</a></li>
-        <li><a href="/dbpub/prices.asp?i={{ i }}">Prices</a></li>
+        <li><a href="/dbpub/hpu.asp?i={{ i }}">Prices</a></li>
         <li><a href="/dbpub/events.asp?i={{ i }}">Events</a></li>
     {% endif %}
     {% if nav_flags.has_sdi %}
-        <li><a href="/dbpub/sdico.asp?i={{ i }}">Dealings</a></li>
+        <li><a href="/dbpub/sdiissue.asp?i={{ i }}">Dealings</a></li>
     {% endif %}
-    {% if nav_flags.has_hk_listed %}
-        <li><a href="/dbpub/quote.asp?i={{ i }}">Quote</a></li>
+    {# Quote button - external HKEX links based on security type #}
+    {% if nav_flags.has_hk_listed and (not nav_flags.delist_date or nav_flags.delist_date > today) %}
+        {% if nav_flags.sec_type not in [46, 40, 41] and nav_flags.stock_ex_id not in [23, 38] %}
+            {# Regular equities #}
+            {% if stock_listings and stock_listings[-1].stockcode %}
+                <li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_listings[-1].stockcode }}">Quote</a></li>
+            {% endif %}
+        {% elif nav_flags.stock_ex_id == 38 %}
+            {# Exchange-Traded Products #}
+            {% if stock_listings and stock_listings[-1].stockcode %}
+                <li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Exchange-Traded-Products/Exchange-Traded-Products-Quote?sym={{ stock_listings[-1].stockcode }}">Quote</a></li>
+            {% endif %}
+        {% elif nav_flags.stock_ex_id == 23 %}
+            {# REITs #}
+            {% if stock_listings and stock_listings[-1].stockcode %}
+                <li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Real-Estate-Investment-Trusts/Real-Estate-Investment-Trusts-Quote?sym={{ stock_listings[-1].stockcode }}">Quote</a></li>
+            {% endif %}
+        {% else %}
+            {# Debt securities #}
+            {% if stock_listings and stock_listings[-1].stockcode %}
+                <li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Debt-Securities/Debt-Securities-Quote?sym={{ stock_listings[-1].stockcode }}">Quote</a></li>
+            {% endif %}
+        {% endif %}
     {% endif %}
 </ul>
 <div class="clear"></div>
