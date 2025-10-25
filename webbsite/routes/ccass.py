@@ -1714,3 +1714,424 @@ def brokhist():
                          person_id=person_id,
                          sort=sort,
                          history=history)
+
+
+@bp.route('/chldchg.asp')
+def chldchg():
+    """CCASS holding changes - port of chldchg.asp
+    Shows ownership changes for a stock between two dates"""
+    from flask import current_app
+    from datetime import date, timedelta
+
+    # Get parameters
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+    sort_param = request.args.get('sort', 'chngdn')
+    d2_param = request.args.get('d', '')  # End date
+    d1_param = request.args.get('d1', '')  # Start date
+
+    # Lookup stock if stock code provided
+    if not issue_id and stock_code:
+        try:
+            result = execute_query("""
+                SELECT issueID FROM enigma.stocklistings
+                WHERE stockCode = %s AND toDate IS NULL
+                ORDER BY fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock code: {ex}")
+
+    # Get stock name and person_id
+    stock_name = "No stock specified"
+    person_id = 0
+    if issue_id > 0:
+        try:
+            result = execute_query("""
+                SELECT o.name1, o.personID
+                FROM enigma.issue i
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                WHERE i.id1 = %s
+            """, (issue_id,))
+            if result:
+                stock_name = result[0]['name1']
+                person_id = result[0]['personid']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock: {ex}")
+
+    if issue_id == 0:
+        return render_template('ccass/chldchg.html',
+                             issue_id=0,
+                             stock_name=stock_name)
+
+    # Determine sort order
+    sort_orders = {
+        'nameup': 'partName',
+        'namedn': 'partName DESC',
+        'ccidup': 'CCASSID, partName',
+        'cciddn': 'CCASSID DESC, partName DESC',
+        'holdup': 'holding, partName',
+        'holddn': 'holding DESC, partName',
+        'lastdn': 'lastDate DESC, partName',
+        'lastup': 'lastDate, partName',
+        'chngup': 'hldchg, partName',
+        'chngdn': 'hldchg DESC, partName'
+    }
+    order_by = sort_orders.get(sort_param, 'hldchg DESC, partName')
+    if sort_param not in sort_orders:
+        sort_param = 'chngdn'
+
+    # Get date range constraints - CCASS history starts 2007-06-27
+    try:
+        # Constrain d2 to actual history - get max date <= requested date
+        if d2_param:
+            result = execute_query("""
+                SELECT MAX(atDate) as maxDate
+                FROM ccass.dailylog
+                WHERE issueID = %s AND atDate <= %s
+            """, (issue_id, d2_param))
+            d2 = result[0]['maxdate'] if result and result[0]['maxdate'] else None
+        else:
+            # Default to yesterday
+            result = execute_query("""
+                SELECT MAX(atDate) as maxDate
+                FROM ccass.dailylog
+                WHERE issueID = %s AND atDate <= %s
+            """, (issue_id, date.today() - timedelta(days=1)))
+            d2 = result[0]['maxdate'] if result and result[0]['maxdate'] else None
+
+        # If still no date, try minimum date
+        if not d2:
+            result = execute_query("""
+                SELECT MIN(atDate) as minDate
+                FROM ccass.dailylog
+                WHERE issueID = %s
+            """, (issue_id,))
+            d2 = result[0]['mindate'] if result and result[0]['mindate'] else None
+
+        # Check if we have any CCASS records
+        if not d2:
+            return render_template('ccass/chldchg.html',
+                                 issue_id=issue_id,
+                                 stock_code=stock_code,
+                                 stock_name=stock_name,
+                                 person_id=person_id,
+                                 no_records=True)
+
+        # Get d1 (start date) - default to d2 - 1 day
+        if d1_param:
+            d1_date = datetime.strptime(d1_param, '%Y-%m-%d').date() if isinstance(d1_param, str) else d1_param
+            if d1_date >= d2:
+                d1_date = d2 - timedelta(days=1)
+        else:
+            d1_date = d2 - timedelta(days=1)
+
+        # Constrain d1 to actual history
+        result = execute_query("""
+            SELECT MAX(atDate) as maxDate
+            FROM ccass.dailylog
+            WHERE issueID = %s AND atDate <= %s
+        """, (issue_id, d1_date))
+        d1 = result[0]['maxdate'] if result and result[0]['maxdate'] else None
+
+        # If no d1 found, use minimum date
+        if not d1:
+            result = execute_query("""
+                SELECT MIN(atDate) as minDate
+                FROM ccass.dailylog
+                WHERE issueID = %s
+            """, (issue_id,))
+            d1 = result[0]['mindate'] if result and result[0]['mindate'] else d2 - timedelta(days=1)
+
+    except Exception as e:
+        current_app.logger.error(f"Error getting date range for chldchg: {e}")
+        return render_template('ccass/chldchg.html',
+                             issue_id=issue_id,
+                             stock_code=stock_code,
+                             stock_name=stock_name,
+                             person_id=person_id,
+                             error=str(e))
+
+    # Get holding changes data - convert hldchgext2 stored procedure to inline SQL
+    try:
+        # Get split adjustment factor for d2 (if split occurred on that exact date)
+        sa_result = execute_query("""
+            SELECT COALESCE(
+                (SELECT adjust FROM enigma.events
+                 WHERE issueID = %s AND eventType = 4 AND exDate = %s
+                   AND cancelDate IS NULL),
+                1.0) AS sa
+        """, (issue_id, d2))
+        sa = float(sa_result[0]['sa']) if sa_result else 1.0
+
+        # Main holdings change query - port of hldchgext2 stored procedure
+        holdings_changes = execute_query(f"""
+            WITH
+            -- Get latest holdings at d2 for each participant
+            latest_holdings AS (
+                SELECT partID, MAX(atDate) as lastDate
+                FROM ccass.holdings
+                WHERE issueID = %s AND atDate <= %s AND atDate > %s
+                GROUP BY partID
+            ),
+            -- Get previous holdings at d1 for each participant
+            prev_holdings AS (
+                SELECT partID, MAX(atDate) as prevDate
+                FROM ccass.holdings
+                WHERE issueID = %s AND atDate <= %s
+                GROUP BY partID
+            ),
+            -- Get actual holding values with adjustments
+            current_data AS (
+                SELECT
+                    lh.partID,
+                    lh.lastDate,
+                    h.holding /
+                        COALESCE((
+                            SELECT EXP(SUM(LN(adjust)))
+                            FROM enigma.events
+                            WHERE issueID = %s AND cancelDate IS NULL
+                              AND eventType IN (4, 5)
+                              AND exDate > lh.lastDate AND exDate <= %s
+                        ), 1.0) AS holding
+                FROM latest_holdings lh
+                JOIN ccass.holdings h ON h.issueID = %s AND h.partID = lh.partID
+                                      AND h.atDate = lh.lastDate
+            ),
+            prev_data AS (
+                SELECT
+                    ph.partID,
+                    ph.prevDate,
+                    CASE WHEN h.holding IS NULL OR h.holding = 0 THEN 0
+                         ELSE h.holding /
+                            COALESCE((
+                                SELECT EXP(SUM(LN(adjust)))
+                                FROM enigma.events
+                                WHERE issueID = %s AND cancelDate IS NULL
+                                  AND eventType IN (4, 5)
+                                  AND exDate > ph.prevDate AND exDate <= %s
+                            ), 1.0) /
+                            COALESCE(e.adjust, 1.0)
+                    END AS prevhldg
+                FROM prev_holdings ph
+                JOIN ccass.holdings h ON h.issueID = %s AND h.partID = ph.partID
+                                      AND h.atDate = ph.prevDate
+                LEFT JOIN enigma.events e ON e.issueID = %s
+                                          AND ph.prevDate = e.exDate
+                                          AND e.cancelDate IS NULL
+                                          AND e.eventType = 4
+            )
+            SELECT
+                cd.partID,
+                cd.holding / %s AS holding,
+                COALESCE(pd.prevhldg, 0) AS prevhldg,
+                ROUND((cd.holding / %s - COALESCE(pd.prevhldg, 0))::numeric, 0) AS hldchg,
+                p.CCASSID,
+                p.partName,
+                cd.lastDate
+            FROM current_data cd
+            LEFT JOIN prev_data pd ON cd.partID = pd.partID
+            JOIN ccass.participants p ON p.partID = cd.partID
+            WHERE ROUND((cd.holding / %s - COALESCE(pd.prevhldg, 0))::numeric, 0) <> 0
+            ORDER BY {order_by}
+        """, (issue_id, d2, d1,  # latest_holdings CTE
+              issue_id, d1,  # prev_holdings CTE
+              issue_id, d2,  # current_data adjustments
+              issue_id,  # current_data holdings join
+              issue_id, d2,  # prev_data adjustments
+              issue_id,  # prev_data holdings join
+              issue_id,  # prev_data events join
+              sa, sa, sa))  # Final SELECT divisions and WHERE clause
+
+    except Exception as e:
+        current_app.logger.error(f"Error querying holdings changes: {e}")
+        holdings_changes = []
+
+    # Get outstanding shares and split adjustments
+    try:
+        # Get outstanding shares at d2
+        os_result = execute_query("""
+            SELECT atDate, outstanding
+            FROM enigma.issuedshares
+            WHERE issueID = %s AND atDate <= %s
+            ORDER BY atDate DESC
+            LIMIT 1
+        """, (issue_id, d2))
+        issued = float(os_result[0]['outstanding']) if os_result and os_result[0]['outstanding'] else 0
+        issued_date = os_result[0]['atdate'] if os_result else None
+
+        # Get cumulative adjustment factor for splits/bonus between d1 and d2
+        adj_result = execute_query("""
+            SELECT COALESCE(
+                (SELECT EXP(SUM(LN(adjust)))
+                 FROM enigma.events
+                 WHERE issueID = %s AND exDate > %s AND exDate <= %s
+                   AND cancelDate IS NULL AND eventType IN (4, 5)),
+                1.0) AS adj
+        """, (issue_id, d1, d2))
+        adj = float(adj_result[0]['adj']) if adj_result else 1.0
+
+        # Get old outstanding shares (at d1, adjusted to d2 basis)
+        old_os_result = execute_query("""
+            SELECT enigma.outstanding(%s, %s) AS os
+        """, (issue_id, d1))
+        old_issued = float(old_os_result[0]['os']) if old_os_result and old_os_result[0]['os'] else 0
+        if old_issued:
+            old_issued = old_issued / adj
+
+        issued_chg = issued - old_issued if old_issued else 0
+        issued_pc = issued_chg / old_issued if old_issued > 0 else 0
+
+    except Exception as e:
+        current_app.logger.error(f"Error calculating outstanding shares: {e}")
+        issued = 0
+        issued_date = None
+        adj = 1.0
+        old_issued = 0
+        issued_chg = 0
+        issued_pc = 0
+        sa = 1.0
+
+    # Calculate summary rows from dailylog
+    try:
+        # Get dailylog data for d2
+        daily2 = execute_query("""
+            SELECT NCIPhldg, intermedHldg, CIPhldg, intermedCnt, CIPcnt, NCIPcnt
+            FROM ccass.dailylog
+            WHERE issueID = %s AND atDate = %s
+        """, (issue_id, d2))
+        if daily2:
+            ncip_hldg = round(float(daily2[0]['nciphldg']) / sa, 0) if daily2[0]['nciphldg'] else 0
+            intermed_hldg = round(float(daily2[0]['intermedhldg']) / sa, 0) if daily2[0]['intermedhldg'] else 0
+            cip_hldg = round(float(daily2[0]['ciphldg']) / sa, 0) if daily2[0]['ciphldg'] else 0
+            intermed_cnt = daily2[0]['intermedcnt'] if daily2[0]['intermedcnt'] else 0
+            cip_cnt = daily2[0]['cipcnt'] if daily2[0]['cipcnt'] else 0
+            ncip_cnt = daily2[0]['ncipcnt'] if daily2[0]['ncipcnt'] else 0
+        else:
+            ncip_hldg = intermed_hldg = cip_hldg = 0
+            intermed_cnt = cip_cnt = ncip_cnt = 0
+
+        # Get dailylog data for d1
+        daily1 = execute_query("""
+            SELECT NCIPhldg
+            FROM ccass.dailylog
+            WHERE issueID = %s AND atDate = %s
+        """, (issue_id, d1))
+        if daily1:
+            ncip_chg = ncip_hldg - (float(daily1[0]['nciphldg']) / adj if daily1[0]['nciphldg'] else 0)
+        else:
+            ncip_chg = ncip_hldg
+
+        # Calculate summary totals
+        sum_hold = sum(float(row['holding']) for row in holdings_changes)
+        sum_hldchg = sum(float(row['hldchg']) for row in holdings_changes)
+
+        nam_hldg = intermed_hldg + cip_hldg
+        unch_hldg = nam_hldg - sum_hold
+        ctot = ncip_hldg + cip_hldg + intermed_hldg
+        non_ccass = issued - ncip_hldg - intermed_hldg - cip_hldg
+        non_ccass_chg = issued_chg - ncip_chg - sum_hldchg
+
+    except Exception as e:
+        current_app.logger.error(f"Error calculating summary rows: {e}")
+        sum_hold = sum_hldchg = 0
+        ncip_hldg = intermed_hldg = cip_hldg = 0
+        intermed_cnt = cip_cnt = ncip_cnt = 0
+        ncip_chg = nam_hldg = unch_hldg = ctot = non_ccass = non_ccass_chg = 0
+
+    # Get trading volume/turnover for settlement date range
+    try:
+        # Get trade date range from calendar
+        trade_dates = execute_query("""
+            SELECT MIN(tradeDate) as t1, MAX(tradeDate) as t2
+            FROM ccass.calendar
+            WHERE settleDate > %s AND settleDate <= %s
+        """, (d1, d2))
+        if trade_dates and trade_dates[0]['t1']:
+            t1 = trade_dates[0]['t1']
+            t2 = trade_dates[0]['t2']
+
+            # Get volume and turnover
+            vol_result = execute_query("""
+                SELECT SUM(vol) AS vol, SUM(turn) AS turn
+                FROM ccass.quotes
+                WHERE atDate >= %s AND atDate <= %s AND issueID = %s
+            """, (t1, t2, issue_id))
+            if vol_result and vol_result[0]['vol'] is not None:
+                vol = float(vol_result[0]['vol'])
+                turn = float(vol_result[0]['turn']) if vol_result[0]['turn'] else 0
+            else:
+                vol = turn = None
+                t1 = t2 = None
+        else:
+            vol = turn = None
+            t1 = t2 = None
+    except Exception as e:
+        current_app.logger.error(f"Error getting trading volume: {e}")
+        vol = turn = None
+        t1 = t2 = None
+
+    # Get HK stock listings for navigation bar
+    try:
+        hk_listings = execute_query("""
+            SELECT sl.*, l.shortName, sl.stockCode, sl.firstTradeDate,
+                   sl.finalTradeDate, sl.deListDate, h.stockId
+            FROM enigma.stocklistings sl
+            JOIN enigma.listings l ON sl.stockExID = l.stockExID
+            LEFT JOIN enigma.hkexdata h ON sl.issueID = h.issueID
+            WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71) AND sl.issueID = %s
+            ORDER BY sl.firstTradeDate
+        """, (issue_id,))
+    except Exception as e:
+        current_app.logger.error(f"Error fetching HK listings: {e}")
+        hk_listings = []
+
+    # Get current stock code for HKEX quote link
+    try:
+        stock_code_result = execute_query("""
+            SELECT stockCode
+            FROM enigma.stocklistings
+            WHERE issueID = %s AND toDate IS NULL
+            ORDER BY fromDate DESC
+            LIMIT 1
+        """, (issue_id,))
+        current_stock_code = stock_code_result[0]['stockcode'] if stock_code_result else None
+    except Exception as e:
+        current_app.logger.error(f"Error fetching stock code: {e}")
+        current_stock_code = None
+
+    return render_template('ccass/chldchg.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         stock_name=stock_name,
+                         person_id=person_id,
+                         sort=sort_param,
+                         d1=d1,
+                         d2=d2,
+                         holdings_changes=holdings_changes,
+                         adj=adj,
+                         issued=issued,
+                         issued_date=issued_date,
+                         old_issued=old_issued,
+                         issued_chg=issued_chg,
+                         issued_pc=issued_pc,
+                         sum_hold=sum_hold,
+                         sum_hldchg=sum_hldchg,
+                         nam_hldg=nam_hldg,
+                         unch_hldg=unch_hldg,
+                         ncip_hldg=ncip_hldg,
+                         ncip_chg=ncip_chg,
+                         ctot=ctot,
+                         non_ccass=non_ccass,
+                         non_ccass_chg=non_ccass_chg,
+                         intermed_cnt=intermed_cnt,
+                         cip_cnt=cip_cnt,
+                         ncip_cnt=ncip_cnt,
+                         vol=vol,
+                         turn=turn,
+                         t1=t1,
+                         t2=t2,
+                         hk_listings=hk_listings,
+                         current_stock_code=current_stock_code,
+                         now=datetime.now())

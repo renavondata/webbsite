@@ -3477,8 +3477,12 @@ def buybacks():
     """Share buyback transactions for a specific stock"""
     from flask import current_app
     from datetime import date
+    from webbsite.asp_helpers import get_int, get_bool
     issue_id = get_int('i', 0)
-    stock_code = request.args.get('sc', '')
+    stock_code = request.args.get('sc', '').strip()
+    # Zero-pad stock code to 4 digits for database lookup (matches stored format)
+    if stock_code and stock_code.isdigit():
+        stock_code = stock_code.zfill(4)
     freq = request.args.get('f', 'd')  # d=daily, m=monthly, y=yearly
     unadj = get_bool('u')  # Show unadjusted for splits
     show_method = get_bool('e')  # Show exchange method
@@ -3489,39 +3493,161 @@ def buybacks():
         freq = 'd'
 
     # Get stock info from stock code if provided
+    # Note: Stock code takes precedence over issue_id parameter (ASP behavior)
     stock_name = ''
     org_id = 0
-    if stock_code and not issue_id:
+    if stock_code:
         try:
             result = execute_query("""
-                SELECT i.ID1 AS issueID, o.name1, o.personID
+                SELECT i.ID1 AS issueID, o.name1, o.personID, st.typeshort,
+                       COALESCE(c.currency, 'HKD') AS currency
                 FROM enigma.stockListings sl
                 JOIN enigma.issue i ON sl.issueID = i.ID1
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                WHERE sl.stockCode = %s AND sl.toDate IS NULL
-                ORDER BY sl.fromDate DESC LIMIT 1
+                JOIN enigma.sectypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+                WHERE sl.stockCode = %s
+                  AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
+                ORDER BY sl.firstTradeDate DESC NULLS LAST
+                LIMIT 1
             """, (stock_code,))
             if result:
                 issue_id = result[0]['issueid']
-                stock_name = result[0]['name1']
+                # Format: "Name1: TypeShort Currency"
+                stock_name = f"{result[0]['name1']}: {result[0]['typeshort']}"
+                if result[0]['currency']:
+                    stock_name += f" {result[0]['currency']}"
                 org_id = result[0]['personid']
         except Exception as e:
             current_app.logger.error(f"Error looking up stock code: {e}")
 
-    # Get stock info if we have issueID
+    # Get stock info if we have issueID but no stock name yet
     if issue_id and not stock_name:
         try:
             result = execute_query("""
-                SELECT o.name1, o.personID
+                SELECT o.name1, o.personID, st.typeshort,
+                       COALESCE(c.currency, 'HKD') AS currency
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.sectypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
                 WHERE i.ID1 = %s
             """, (issue_id,))
             if result:
-                stock_name = result[0]['name1']
+                # Format: "Name1: TypeShort Currency"
+                stock_name = f"{result[0]['name1']}: {result[0]['typeshort']}"
+                if result[0]['currency']:
+                    stock_name += f" {result[0]['currency']}"
                 org_id = result[0]['personid']
         except Exception as e:
             current_app.logger.error(f"Error getting stock info: {e}")
+
+    # Get navigation flags and stock listings data for navbar and HKlistings table
+    nav_flags = {}
+    listings_data = []
+    sec_type = None
+    stock_ex_id = None
+    delist_date = None
+
+    if org_id:
+        try:
+            # orgBar navigation flags
+            nav_flags['has_directorships'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.directorships WHERE Company = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_pay'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_advisers'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Company = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_adviserships'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE Adviser = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_sfc_licenses'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_documents'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_ess'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) AS exists",
+                (org_id,))[0]['exists']
+            nav_flags['has_stories'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) AS exists",
+                (org_id,))[0]['exists']
+            # 9643=HKEX, regulated by SFC
+            nav_flags['has_lir_team'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) AS exists",
+                (org_id,))[0]['exists'] or (org_id == 9643)
+
+            # Get CCASS participant ID if exists
+            part_result = execute_query(
+                "SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1",
+                (org_id,))
+            nav_flags['ccass_part_id'] = part_result[0]['partid'] if part_result else None
+
+        except Exception as e:
+            current_app.logger.error(f"Error getting orgBar navigation flags: {e}")
+
+    if issue_id:
+        try:
+            # Get security type and stock exchange info for stockBar
+            sec_info = execute_query("""
+                SELECT i.typeID, sl.stockExID, sl.delistDate
+                FROM enigma.issue i
+                LEFT JOIN enigma.stockListings sl ON i.ID1 = sl.issueID
+                WHERE i.ID1 = %s AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
+                ORDER BY sl.delistDate LIMIT 1
+            """, (issue_id,))
+            if sec_info:
+                sec_type = sec_info[0]['typeid']
+                stock_ex_id = sec_info[0]['stockexid']
+                delist_date = sec_info[0]['delistdate']
+
+            # stockBar navigation flags
+            nav_flags['has_outstanding'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) AS exists",
+                (issue_id,))[0]['exists']
+            nav_flags['has_short'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) AS exists",
+                (issue_id,))[0]['exists']
+            nav_flags['has_sdi'] = execute_query(
+                "SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) AS exists",
+                (issue_id,))[0]['exists']
+
+            # Determine if CCASS data is available
+            # No CCASS for rights (typeID=2), convertible bonds (40) or notes (41)
+            # Only available after 2007-06-26 for delisted stocks
+            from datetime import date as dt
+            ccass_cutoff = dt(2007, 6, 26)
+            nav_flags['ccass_on'] = (
+                sec_type not in [2, 40, 41] and
+                (delist_date is None or delist_date >= ccass_cutoff)
+            )
+
+            # Get stock listings for HKlistings table
+            listings_data = execute_query("""
+                SELECT l.shortName AS exchange_name,
+                       sl.stockCode,
+                       sl.firstTradeDate, sl.finalTradeDate, sl.delistDate,
+                       sl.stockId
+                FROM enigma.stockListings sl
+                JOIN enigma.listings l ON sl.stockExID = l.stockExID
+                WHERE sl.issueID = %s
+                  AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
+                ORDER BY sl.firstTradeDate
+            """, (issue_id,))
+
+            # Format stock codes to 5 digits with leading zeros
+            for listing in listings_data:
+                if listing['stockcode']:
+                    listing['stockcode_formatted'] = str(listing['stockcode']).zfill(5)
+                else:
+                    listing['stockcode_formatted'] = ''
+
+        except Exception as e:
+            current_app.logger.error(f"Error getting stockBar navigation flags or listings: {e}")
 
     # Build ORDER BY based on frequency and sort
     if freq == 'd':
@@ -3554,13 +3680,16 @@ def buybacks():
     totals = []
     if issue_id:
         try:
-            # Build the query based on frequency and adjustment
-            table = 'enigma.WebBuyBacks' if unadj else 'enigma.buybacksAdj'
+            # Always use webbuybacks - the u parameter only affects outstanding shares adjustment, not buyback shares
+            table = 'enigma.webbuybacks'
 
             if freq == 'd':
-                # Daily data
-                select_fields = 'effDate, shares, value, currency, exchName'
-                group_by = 'effDate, currency, exchName'
+                # Daily data - no aggregation needed, views already have daily granularity
+                select_fields = 'effDate, SUM(shares) AS shares, SUM(value) AS value, currency'
+                group_by = 'effDate, currency'
+                if show_method:
+                    select_fields = 'effDate, SUM(shares) AS shares, SUM(value) AS value, currency, exchName'
+                    group_by = 'effDate, currency, exchName'
             elif freq == 'm':
                 # Monthly data
                 select_fields = 'EXTRACT(YEAR FROM effDate)::INTEGER AS y, EXTRACT(MONTH FROM effDate)::INTEGER AS m, SUM(shares) AS shares, SUM(value) AS value, currency'
@@ -3575,11 +3704,28 @@ def buybacks():
                     select_fields += ', exchName'
                     group_by += ', exchName'
 
+            # Build split adjustment divisor based on unadj parameter
+            # When unadj=False, divide outstanding shares by enigma.splitadj to match ASP behavior
+            # splitadj returns adjustments AFTER the date, so it shows unadjusted shares by default
+            denom = "1" if unadj else f"enigma.splitadj({issue_id}, os.atDate)"
+            # For initial_os query, use atDate directly (not os.atDate) since no LATERAL join
+            denom_initial = "1" if unadj else f"enigma.splitadj({issue_id}, atDate)"
+
+            # Build date condition for LATERAL join based on frequency
+            # This must be built at Python level, not as SQL CASE, because column names differ by frequency
+            if freq == 'd':
+                date_condition = "bb.effDate"
+            elif freq == 'm':
+                date_condition = "MAKE_DATE(bb.y, bb.m, 1)"
+            else:  # yearly
+                date_condition = "MAKE_DATE(bb.y, 1, 1)"
+
             # Get buybacks with outstanding shares calculation
             buybacks_data = execute_query(f"""
                 SELECT bb.*, os.outstanding, os.atDate AS osd,
+                       (os.outstanding / {denom}) AS os,
                        CASE WHEN os.outstanding > 0
-                            THEN bb.shares * 100.0 / os.outstanding
+                            THEN bb.shares * 100.0 / (os.outstanding / {denom})
                             ELSE NULL END AS stake,
                        CASE WHEN bb.shares > 0
                             THEN bb.value / bb.shares
@@ -3595,11 +3741,7 @@ def buybacks():
                     SELECT outstanding, atDate
                     FROM enigma.issuedshares
                     WHERE issueID = %s
-                      AND atDate <= CASE
-                                     WHEN {repr(freq)} = 'd' THEN bb.effDate
-                                     WHEN {repr(freq)} = 'm' THEN MAKE_DATE(bb.y, bb.m, 1)
-                                     ELSE MAKE_DATE(bb.y, 1, 1)
-                                    END
+                      AND atDate <= {date_condition}
                     ORDER BY atDate DESC
                     LIMIT 1
                 ) os ON TRUE
@@ -3609,26 +3751,45 @@ def buybacks():
 
             # Get totals by currency
             totals = execute_query(f"""
-                SELECT SUM(shares) AS shares, SUM(value) AS value,
+                SELECT SUM(shares)::DOUBLE PRECISION AS shares, SUM(value)::DOUBLE PRECISION AS value,
                        currency,
                        CASE WHEN SUM(shares) > 0
-                            THEN SUM(value) / SUM(shares)
+                            THEN (SUM(value) / SUM(shares))::DOUBLE PRECISION
                             ELSE NULL END AS price
                 FROM {table}
                 WHERE issueID = %s
                 GROUP BY currency
             """, (issue_id,))
 
+            # Get initial outstanding shares for totals calculation
+            # This is the outstanding shares at the date before the first buyback
+            initial_os_result = execute_query(f"""
+                SELECT (outstanding / {denom_initial})::DOUBLE PRECISION AS os, atDate AS osd
+                FROM enigma.issuedshares
+                WHERE issueID = %s
+                  AND atDate <= (SELECT MIN(effDate) FROM enigma.webbuybacks WHERE issueID = %s)
+                ORDER BY atDate DESC
+                LIMIT 1
+            """, (issue_id, issue_id))
+
+            initial_os = initial_os_result[0]['os'] if initial_os_result else None
+            initial_osd = initial_os_result[0]['osd'] if initial_os_result else None
+
         except Exception as e:
             current_app.logger.error(f"Error querying buybacks: {e}")
             buybacks_data = []
             totals = []
+            initial_os = None
+            initial_osd = None
 
     return render_template('dbpub/buybacks.html',
                          issue_id=issue_id, stock_name=stock_name, org_id=org_id,
                          buybacks=buybacks_data, totals=totals,
+                         initial_os=initial_os, initial_osd=initial_osd,
                          freq=freq, unadj=unadj, show_method=show_method,
-                         sort=sort_param, current_year=date.today().year)
+                         sort=sort_param, now=date.today(), current_year=date.today().year,
+                         nav_flags=nav_flags, listings_data=listings_data,
+                         sec_type=sec_type, stock_ex_id=stock_ex_id, delist_date=delist_date)
 
 
 @bp.route('/buybacksum.asp')
@@ -10228,6 +10389,46 @@ def orgdata():
                          s2=s2,
                          s3=s3,
                          expand=expand)
+
+
+# ============================================================================
+# Stub routes (to be implemented)
+# ============================================================================
+
+@bp.route('/adviserships.asp')
+def adviserships():
+    """Organizations where this entity acts as an adviser (stub)"""
+    person_id = get_int('p', 0)
+    return f"<h2>Adviserships</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+
+
+@bp.route('/SFColicrec.asp')
+def sfcolicrec():
+    """SFC license records for an organization (stub)"""
+    person_id = get_int('p', 0)
+    return f"<h2>SFC Licenses</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+
+
+@bp.route('/ESSraw.asp')
+def essraw():
+    """Employment Support Subsidy raw data (stub)"""
+    person_id = get_int('p', 0)
+    return f"<h2>ESS Raw Data</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+
+
+@bp.route('/complain.asp')
+def complain():
+    """Complaint form for regulatory organizations (stub)"""
+    person_id = get_int('p', 0)
+    return f"<h2>Complain</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+
+
+@bp.route('/hpu.asp')
+def hpu():
+    """Daily price history (stub)"""
+    issue_id = get_int('i', 0)
+    sort_param = request.args.get('sort', 'datedn')
+    return f"<h2>Daily Prices</h2><p>Route stub - issue_id: {issue_id}, sort: {sort_param}</p><p><a href='/dbpub/buybacks.asp?i={issue_id}'>Back to Buybacks</a></p>"
 
 
 # Helpers to import
