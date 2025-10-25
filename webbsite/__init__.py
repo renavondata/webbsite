@@ -15,6 +15,33 @@ def create_app(config_class=Config):
     from webbsite import db
     db.init_app(app)
 
+    # Register template filters and globals from asp_helpers
+    from webbsite.asp_helpers import (
+        sig, sig2, mobile, checked, selected, tick,
+        ms_date, force_date, date_str, int_str, pc_str, digits,
+        iif, if_null, sp_date, yn
+    )
+
+    app.jinja_env.filters['sig'] = sig
+    app.jinja_env.filters['sig2'] = sig2
+    app.jinja_env.filters['ms_date'] = ms_date
+    app.jinja_env.filters['force_date'] = force_date
+    app.jinja_env.filters['date_str'] = date_str
+    app.jinja_env.filters['int_str'] = int_str
+    app.jinja_env.filters['pc_str'] = pc_str
+    app.jinja_env.filters['digits'] = digits
+    app.jinja_env.filters['sp_date'] = sp_date
+    app.jinja_env.filters['yn'] = yn
+
+    # Register as global functions (can be called directly)
+    app.jinja_env.globals['mobile'] = mobile
+    app.jinja_env.globals['checked'] = checked
+    app.jinja_env.globals['selected'] = selected
+    app.jinja_env.globals['tick'] = tick
+    app.jinja_env.globals['sig'] = sig
+    app.jinja_env.globals['iif'] = iif
+    app.jinja_env.globals['if_null'] = if_null
+
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site
     from webbsite.routes import (search, prices, events, dbpub, ccass,
