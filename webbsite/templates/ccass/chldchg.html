@@ -17,9 +17,7 @@
 	{% else %}
 		{# Navigation bars #}
 		{{ orgbar(stock_name, person_id, issue_id, 0) }}
-		{{ stockbar(issue_id, 4, current_stock_code) }}
-		{{ hklistings(hk_listings) }}
-		{{ ccassbar(issue_id, d2, 2) }}
+		{{ ccassbar(issue_id, d2, 2, current_stock_code, hk_listings) }}
 		{# Stock and date selection form #}
 		<form method="get" action="{{ url_for('ccass.chldchg') }}">
 			<input type="hidden" name="sort" value="{{ sort }}">
@@ -41,7 +39,7 @@
 		</form>
 
 		{% if d1 and d2 %}
-			<h3>CCASS Holding Changes from {{ d1.strftime('%Y-%m-%d') }} to {{ d2.strftime('%Y-%m-%d') }}</h3>
+			<h3>CCASS holding changes from {{ d1.strftime('%Y-%m-%d') }} to {{ d2.strftime('%Y-%m-%d') }}</h3>
 
 			<p>Hit the "stake change" to see the holder's history.</p>
 			{% if adj and adj != 1.0 %}

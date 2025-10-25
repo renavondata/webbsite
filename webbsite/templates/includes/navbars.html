@@ -38,7 +38,7 @@
 		<th></th>
 		</tr>
 		{% for listing in listings %}
-			{% set hkcode = ('%05d' % listing.stockcode) if listing.stockcode else '' %}
+			{% set hkcode = ('%05d' % listing.stockcode|int) if listing.stockcode else '' %}
 			{% set delist_date = listing.delistdate %}
 			{% set stock_id = listing.stockid %}
 			<tr>
@@ -60,7 +60,9 @@
 	{% endif %}
 {%- endmacro %}
 
-{% macro stockbar(issue_id, target, stock_code=None) -%}
+{% macro stockbar(issue_id, target, stock_code=None, listings=None) -%}
+	{# Call hklistings first (like ASP stockBar calls HKlistings) #}
+	{{ hklistings(listings) }}
 	{% if issue_id and issue_id > 0 %}
 	<ul class="navlist">
 		{{ btn(1, url_for('dbpub.buybacks', i=issue_id), 'Buybacks', target) }}
@@ -73,14 +75,16 @@
 		{{ btn(8, url_for('dbpub.enigma_events', i=issue_id), 'Events', target) }}
 		{{ btn(9, url_for('dbpub.sdiissue', i=issue_id), 'Dealings', target) }}
 		{% if stock_code %}
-			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_code }}">Quote</a></li>
+			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_code|int }}">Quote</a></li>
 		{% endif %}
 	</ul>
 	<div class="clear"></div>
 	{% endif %}
 {%- endmacro %}
 
-{% macro ccassbar(issue_id, date, target) -%}
+{% macro ccassbar(issue_id, date, target, stock_code=None, listings=None) -%}
+	{# Call stockbar first with target=4 to highlight CCASS button (like ASP ccassbar calls stockBar) #}
+	{{ stockbar(issue_id, 4, stock_code, listings) }}
 	{% if issue_id and issue_id > 0 %}
 		{# Ensure date is formatted properly #}
 		{% set d = date.strftime('%Y-%m-%d') if date else '' %}

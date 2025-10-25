@@ -2075,13 +2075,12 @@ def chldchg():
     # Get HK stock listings for navigation bar
     try:
         hk_listings = execute_query("""
-            SELECT sl.*, l.shortName, sl.stockCode, sl.firstTradeDate,
-                   sl.finalTradeDate, sl.deListDate, h.stockId
+            SELECT sl.*, l.shortname, sl.stockcode, sl.firsttradedate,
+                   sl.finaltradedate, sl.delistdate, sl.stockid
             FROM enigma.stocklistings sl
-            JOIN enigma.listings l ON sl.stockExID = l.stockExID
-            LEFT JOIN enigma.hkexdata h ON sl.issueID = h.issueID
-            WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71) AND sl.issueID = %s
-            ORDER BY sl.firstTradeDate
+            JOIN enigma.listings l ON sl.stockexid = l.stockexid
+            WHERE sl.stockexid IN (1, 20, 22, 23, 38, 71) AND sl.issueid = %s
+            ORDER BY sl.firsttradedate
         """, (issue_id,))
     except Exception as e:
         current_app.logger.error(f"Error fetching HK listings: {e}")
@@ -2090,10 +2089,10 @@ def chldchg():
     # Get current stock code for HKEX quote link
     try:
         stock_code_result = execute_query("""
-            SELECT stockCode
+            SELECT stockcode
             FROM enigma.stocklistings
-            WHERE issueID = %s AND toDate IS NULL
-            ORDER BY fromDate DESC
+            WHERE issueid = %s AND delistdate IS NULL
+            ORDER BY firsttradedate DESC
             LIMIT 1
         """, (issue_id,))
         current_stock_code = stock_code_result[0]['stockcode'] if stock_code_result else None
