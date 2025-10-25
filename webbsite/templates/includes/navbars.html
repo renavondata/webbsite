@@ -9,7 +9,7 @@
 {%- endmacro %}
 
 {% macro orgbar(name, person_id, issue_id, target) -%}
-	<h2>{{ name }}{% if issue_id > 0 %}:  O HKD{% endif %}</h2>
+	<h2>{{ name }}</h2>
 	{% if person_id > 0 %}
 	<ul class="navlist">
 		{{ btn(1, url_for('dbpub.orgdata', p=person_id), 'Key Data', target) }}
@@ -117,9 +117,9 @@
 	{% endif %}
 {%- endmacro %}
 
-{% macro ccassholdbar(issue_id, date, target) -%}
+{% macro ccassholdbar(issue_id, date, target, stock_code=None, listings=None) -%}
 	{# Submenu bar under Holdings #}
-	{{ ccassbar(issue_id, date, 1) }}
+	{{ ccassbar(issue_id, date, 1, stock_code, listings) }}
 	{% if issue_id and issue_id > 0 %}
 		<ul class="navlist">
 			{{ btn(1, url_for('ccass.choldings', i=issue_id), 'Snapshot', target) }}
