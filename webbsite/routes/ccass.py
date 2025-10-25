@@ -1492,24 +1492,316 @@ def ncipchg():
 @bp.route('/nciphist.asp')
 def nciphist():
     """
-    Non-CIP holdings history for a stock
+    Non-CIP (unnamed investor participant) holdings history for a stock - port of nciphist.asp
+    Shows holdings with Highstock chart and data table
 
     Query params:
     - i: issueID
-    - sc: stock code
+    - sc: stock code (alternative to i)
+    - s: show mode (0=chart+table, 1=chart only, 2=table only) - stored in session
+    - a: adjust for splits/bonuses (0/1) - stored in session
+    - p: use price on holding date (1) vs trade date (0) - stored in session
+    - o: include rows with no holding change (0/1) - stored in session
 
-    Tables used: ccass.dailylog
+    Tables used: ccass.quotes, ccass.calendar, ccass.dailylog, enigma.events
     """
+    from flask import current_app, session
+    import json
+
     issue_id = get_int('i', 0)
     stock_code = get_str('sc', '')
 
-    # TODO: Query NCIP holdings over time
+    # Lookup stock if stock code provided
+    if not issue_id and stock_code:
+        try:
+            result = execute_query("""
+                SELECT issueID FROM enigma.stocklistings
+                WHERE stockCode = %s AND toDate IS NULL
+                ORDER BY fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock code: {ex}")
+
+    # Session-managed parameters
+    # s: show mode (0=chart+table, 1=chart only, 2=table only)
+    if request.args.get('s') is not None:
+        s = get_int('s', 0)
+        session['showdata'] = s
+    else:
+        s = session.get('showdata', 0)
+
+    # o: include rows with no holding change
+    if request.args.get('o') is not None:
+        o = get_bool('o')
+        session['nochange'] = o
+    else:
+        o = session.get('nochange', False)
+
+    # a: adjust for splits and bonuses
+    if request.args.get('a') is not None:
+        a = get_bool('a')
+        session['splitAdj'] = a
+    else:
+        a = session.get('splitAdj', True)  # Default to adjusted
+
+    # p: use price on holding date (True) vs trade date (False)
+    if request.args.get('p') is not None:
+        p = get_bool('p')
+        session['pHolding'] = p
+    else:
+        p = session.get('pHolding', False)  # Default to trade date
+
+    pword = "holding" if p else "trade"
+
+    # Get stock name and person using helper function
+    stock_name = "No stock specified"
+    person_id = 0
+    last_hold_date = None
+    if issue_id > 0:
+        try:
+            from webbsite.asp_helpers import issue_name_func
+            stock_name, person_id = issue_name_func(issue_id)
+
+            # Get last holding date
+            last_date_result = execute_query("""
+                SELECT MAX(atDate) AS d
+                FROM ccass.dailylog
+                WHERE issueID = %s
+            """, (issue_id,))
+            if last_date_result and last_date_result[0]['d']:
+                last_hold_date = last_date_result[0]['d']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock: {ex}")
+
+    # Build SQL query based on parameters
     history = []
+    price_js = "[]"
+    holdings_js = "[]"
+
+    if issue_id > 0:
+        try:
+            # Four different SQL queries based on (a, p) combinations
+            if not a:
+                # Don't adjust for splits and bonus issues
+                if p:
+                    # Use prices on holding date
+                    sql = """
+                        SELECT q.atDate, closing, NCIPhldg AS holding,
+                               enigma.outstanding(%s, q.atDate) AS os,
+                               tradeDate, 1 as adjBonus, NCIPcnt AS holders
+                        FROM ccass.quotes q
+                        JOIN ccass.calendar c ON q.atDate = c.settleDate
+                        LEFT JOIN ccass.dailylog d ON q.atDate = d.atDate AND d.issueID = %s
+                        WHERE q.issueID = %s AND NOT c.deferred
+                          AND settleDate >= '2007-06-26'
+                        ORDER BY atDate
+                    """
+                    params = (issue_id, issue_id, issue_id)
+                else:
+                    # Use prices on trading date
+                    sql = """
+                        SELECT settleDate AS atDate, closing, NCIPhldg AS holding,
+                               enigma.outstanding(%s, settleDate) AS os,
+                               tradeDate, 1 as adjBonus, NCIPcnt AS holders
+                        FROM ccass.quotes q
+                        JOIN ccass.calendar c ON q.atDate = c.tradeDate
+                        LEFT JOIN ccass.dailylog d ON c.settleDate = d.atDate AND d.issueID = %s
+                        WHERE q.issueID = %s AND NOT c.deferred
+                          AND settleDate >= '2007-06-26'
+                        ORDER BY tradeDate
+                    """
+                    params = (issue_id, issue_id, issue_id)
+            else:
+                # Adjust for splits and bonus issues
+                if p:
+                    # Use prices on holding date
+                    sql = """
+                        SELECT atDate, closing * scripAdj as closing,
+                               ROUND((holding / scripAdj / adjSplit)::numeric, 0) AS holding,
+                               enigma.outstanding(%s, atDate) / scripAdj AS os,
+                               tradeDate, adjBonus, holders
+                        FROM (
+                            SELECT NCIPhldg AS holding, NCIPcnt AS holders, q.atDate,
+                                   enigma.splitAdj(%s, q.atDate) AS scripAdj,
+                                   closing, tradeDate,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 4
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 5
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
+                            FROM ccass.quotes q
+                            JOIN ccass.calendar c ON q.atDate = c.settleDate
+                            LEFT JOIN ccass.dailylog d ON q.atDate = d.atDate AND d.issueID = %s
+                            WHERE q.issueID = %s AND NOT c.deferred
+                              AND c.settleDate >= '2007-06-26'
+                        ) AS t1
+                        ORDER BY atDate
+                    """
+                    params = (issue_id, issue_id, issue_id, issue_id, issue_id, issue_id)
+                else:
+                    # Use prices on trading date (S-2)
+                    sql = """
+                        SELECT atDate, closing * priceAdj as closing,
+                               ROUND((holding / holdAdj / adjSplit)::numeric, 0) AS holding,
+                               enigma.outstanding(%s, atDate) / holdAdj AS os,
+                               tradeDate, adjBonus, holders
+                        FROM (
+                            SELECT NCIPhldg AS holding, NCIPcnt AS holders, c.settleDate AS atDate,
+                                   enigma.splitAdj(%s, c.tradeDate) AS priceAdj,
+                                   enigma.splitAdj(%s, c.settleDate) AS holdAdj,
+                                   closing, tradeDate,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 4
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 5
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
+                            FROM ccass.quotes q
+                            JOIN ccass.calendar c ON q.atDate = c.tradeDate
+                            LEFT JOIN ccass.dailylog d ON c.settleDate = d.atDate AND d.issueID = %s
+                            WHERE q.issueID = %s AND NOT c.deferred
+                              AND c.settleDate >= '2007-06-26'
+                        ) AS t1
+                        ORDER BY tradeDate
+                    """
+                    params = (issue_id, issue_id, issue_id, issue_id, issue_id, issue_id, issue_id)
+
+            results = execute_query(sql, params)
+
+            if results:
+                # Convert to list for processing
+                data = []
+                for row in results:
+                    data.append({
+                        'atDate': row['atdate'],
+                        'closing': float(row['closing']) if row['closing'] else 0,
+                        'holding': float(row['holding']) if row['holding'] is not None else None,
+                        'os': float(row['os']) if row['os'] else None,
+                        'tradeDate': row['tradedate'],
+                        'adjBonus': float(row['adjbonus']) if row['adjbonus'] else 1,
+                        'holders': int(row['holders']) if row['holders'] else None
+                    })
+
+                if data:
+                    # Fill in blanks with previous price and holding (ASP lines 124-140)
+                    last_close = data[0]['closing']
+                    if data[0]['holding'] is None:
+                        last_hold = 0
+                        data[0]['holding'] = 0
+                    else:
+                        last_hold = data[0]['holding']
+
+                    for i in range(1, len(data)):
+                        # Fill missing prices
+                        if data[i]['closing'] == 0:
+                            data[i]['closing'] = last_close
+                        else:
+                            last_close = data[i]['closing']
+
+                        # Fill missing holdings (adjust for bonus issue)
+                        if data[i]['holding'] is None:
+                            last_hold = last_hold * data[i]['adjBonus']
+                            data[i]['holding'] = last_hold
+                        else:
+                            last_hold = data[i]['holding']
+
+                    # Build JavaScript arrays for chart
+                    price_data = []
+                    holdings_data = []
+                    for i, row in enumerate(data):
+                        # Use holding date or trade date based on parameter p
+                        date_for_chart = row['atDate'] if p else row['tradeDate']
+                        # Convert date to datetime if needed
+                        if hasattr(date_for_chart, 'timestamp'):
+                            timestamp = int(date_for_chart.timestamp() * 1000)
+                        else:
+                            # date object - convert to datetime at midnight
+                            dt = datetime.combine(date_for_chart, datetime.min.time())
+                            timestamp = int(dt.timestamp() * 1000)
+
+                        # Add price data
+                        price_data.append([timestamp, round(row['closing'], 3)])
+
+                        # Add holdings data (skip last point if using trade date)
+                        if p or i < len(data) - 1:
+                            holdings_data.append([timestamp, round(row['holding'], 0)])
+
+                    price_js = json.dumps(price_data)
+                    holdings_js = json.dumps(holdings_data)
+
+                    # Build table data with changes
+                    for i in range(len(data) - 1, -1, -1):  # Reverse order for display
+                        row = data[i]
+                        change = None
+                        if i > 0:
+                            change = row['holding'] - data[i-1]['holding']
+
+                        # Filter based on 'o' parameter and last_hold_date
+                        if o or change is None or change != 0 or (last_hold_date and row['atDate'] > last_hold_date):
+                            history.append({
+                                'atDate': row['atDate'],
+                                'closing': row['closing'],
+                                'holding': row['holding'],
+                                'change': change,
+                                'os': row['os'],
+                                'tradeDate': row['tradeDate'],
+                                'holders': row['holders']
+                            })
+
+        except Exception as ex:
+            current_app.logger.error(f"Error querying NCIP history: {ex}", exc_info=True)
+            history = []
+
+    # Get HK listings for navigation bar
+    hk_listings = []
+    current_stock_code = None
+    at_date = last_hold_date
+    if issue_id > 0:
+        try:
+            hk_listings = execute_query("""
+                SELECT sl.*, l.shortname
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.stockexid IN (1, 20, 22, 23, 38, 71) AND sl.issueid = %s
+                ORDER BY sl.firsttradedate
+            """, (issue_id,))
+        except Exception as e:
+            current_app.logger.error(f"Error fetching HK listings: {e}")
+
+        # Get current stock code
+        try:
+            stock_code_result = execute_query("""
+                SELECT stockcode
+                FROM enigma.stocklistings
+                WHERE issueid = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC
+                LIMIT 1
+            """, (issue_id,))
+            current_stock_code = stock_code_result[0]['stockcode'] if stock_code_result else None
+        except Exception as e:
+            current_app.logger.error(f"Error fetching stock code: {e}")
 
     return render_template('ccass/nciphist.html',
                          issue_id=issue_id,
                          stock_code=stock_code,
-                         history=history)
+                         stock_name=stock_name,
+                         person_id=person_id,
+                         history=history,
+                         s=s,
+                         a=a,
+                         p=p,
+                         o=o,
+                         pword=pword,
+                         price_js=price_js,
+                         holdings_js=holdings_js,
+                         last_hold_date=last_hold_date,
+                         hk_listings=hk_listings,
+                         current_stock_code=current_stock_code,
+                         at_date=at_date,
+                         now=datetime.now())
 
 
 @bp.route('/portchg.asp')
