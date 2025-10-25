@@ -1,26 +1,21 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-{# functions1.asp functionality moved to Python helpers #}
-<!--#include virtual="/dbpub/navbars.asp"-->
-{# Variables moved to Flask route #}
-<title>Total holdings in CCASS: {{ n }}</title>
-<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
-</head>
-<body>
 {% extends "base_database.html" %}
-{% if i=0 %}
+{% from 'includes/navbars.html' import orgbar, ccassholdbar %}
+
+{% block title %}Total holdings in CCASS: {{ stock_name }}{% endblock %}
+
+{% block content %}
+{% if issue_id == 0 %}
 	<h2>Total holdings in CCASS</h2>
-	<p><b>{{ n }}</b></p>
-{# TODO: Port ASP logic: Else
-	Call orgBar(n,p,0)
-	Call ccassholdbar(i,atDa... #}
+	<p><b>{{ stock_name }}</b></p>
+{% else %}
+	{# Navigation bars - orgbar shows h2 + org nav, ccassholdbar shows stock info + CCASS nav #}
+	{{ orgbar(stock_name, person_id, issue_id, 0) }}
+	{{ ccassholdbar(issue_id, at_date, 5, current_stock_code, hk_listings) }}
+{% endif %}
+
 <form method="get" action="ctothist.asp">
 	<input type="hidden" name="sort" value="{{ sort }}">
-	<input type="hidden" name="i" value="{{ i }}">
+	<input type="hidden" name="i" value="{{ issue_id }}">
 	<div class="inputs">
 		Stock code: <input type="text" name="sc" size="5" value="">
 		<input type="submit" value="Go">
@@ -28,25 +23,29 @@
 	<div class="clear"></div>
 	<div class="inputs">
 		<p>Table rows with no holding change:
-			<input type="radio" name="o" value="1" {{ checked(o) }} onchange="this.form.submit()">include
-			<input type="radio" name="o" value="0" {{ checked(Not o) }} onchange="this.form.submit()">exclude
+			<input type="radio" name="o" value="1"{% if o %} checked{% endif %} onchange="this.form.submit()">include
+			<input type="radio" name="o" value="0"{% if not o %} checked{% endif %} onchange="this.form.submit()">exclude
 		</p>
 	</div>
 	<div class="clear"></div>
 </form>
-{% if i>0 %}
+
+{% if issue_id > 0 %}
 	<h3>Total holdings in CCASS</h3>
-	{# TODO: Port ASP logic: If sort="dateup" Then
-		ob="atDate"
-	Else
-		ob="at... #}
+	{% if not history %}
 		<p><b>No records for this issue.</b></p>
 	{% else %}
-		{{ mobile(1) }}
+		{# TODO: Add mobile() function for responsive tables when needed #}
 		<table class="numtable yscroll">
 		<tr>
 			<th class="colHide1">Row</th>
-			<th class="colHide3">{# TODO: Port ASP logic: SL "Holding<br>date","dateup","datedn"... #}</th>
+			<th class="colHide3">
+				{% if sort == 'dateup' %}
+					<a href="?i={{ issue_id }}&sort=datedn&o={{ '1' if o else '0' }}">Holding<br>date</a>
+				{% else %}
+					<a href="?i={{ issue_id }}&sort=dateup&o={{ '1' if o else '0' }}">Holding<br>date</a>
+				{% endif %}
+			</th>
 			<th>Holding</th>
 			<th class="colHide3">Change</th>
 			<th>Holders</th>
@@ -54,48 +53,31 @@
 			<th class="colHide2">Issued<br>shares</th>
 			<th class="colHide1">As at date</th>
 		</tr>
-		{# Do Until rs.EOF
-			atDate=rs("atDate")
-			issued=rs("shares")
-			If not isNull(issued) Then issued=Cdbl(issued)
-			osDate=rs("maxDate")
-			holders=rs("holders")
-			If sort="dateup" Then
-				lastholding=holding
-				holding=CDbl(rs("holding"))
-				change=holding-lastholding
-				rs.MoveNext
-			Else
-				holding=CDbl(rs("holding"))
-				rs.MoveNext
-				If Not rs.EOF Then lastholding=CDbl(rs("holding"))
-				change=holding-lastholding
-			End If
-			If o Or change<>0 Then
-				cnt=cnt+1 #}
-				<tr>
-					<td class="colHide1">{{ cnt }}</td>
-					<td><a href="chldchg.asp?i={{ i }}&amp;d={{ atDate }}">{{ atDate }}</a></td>
-					<td class="colHide3">{{ "{:,.\2f}".format(holding) }}</td>
-					<td class="colHide3">{# TODO: Port ASP logic: If (sort="dateup" And cnt>1) Or (sort="datedn" And... #}</td>
-					<td>{{ holders }}</td>
-				{% if not isNull(issued) %}
-					<td>{{ "{:,.\2f}".format(holding*100/issued) }}</td>
-					<td class="colHide2">{{ "{:,.\2f}".format(issued) }}</td>
-					<td class="colHide1">{{ osDate }}</td>
-				{% else %}
-					<td></td>
-					<td class="colHide2"></td>
-					<td class="colHide1"></td>
-				{# TODO: Port ASP logic: End If
-			End If... #}
-			</tr>
+		{% for row in history %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td><a href="chldchg.asp?i={{ issue_id }}&d={{ row.atDate.strftime('%Y-%m-%d') }}">{{ row.atDate.strftime('%Y-%m-%d') }}</a></td>
+			<td class="colHide3">{{ "{:,.0f}".format(row.holding) }}</td>
+			<td class="colHide3">
+				{# ASP line 99: If (sort="dateup" And cnt>1) Or (sort="datedn" And Not rs.EOF) #}
+				{% if (sort == 'dateup' and loop.index > 1) or (sort == 'datedn' and not loop.last) %}
+					{{ "{:,.0f}".format(row.change) }}
+				{% endif %}
+			</td>
+			<td>{{ row.holders }}</td>
+			{% if row.shares is not none %}
+				<td>{{ "{:,.4f}".format(row.holding * 100 / row.shares) }}</td>
+				<td class="colHide2">{{ "{:,.0f}".format(row.shares) }}</td>
+				<td class="colHide1">{{ row.maxDate.strftime('%Y-%m-%d') if row.maxDate else '' }}</td>
+			{% else %}
+				<td></td>
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			{% endif %}
+		</tr>
 		{% endfor %}
 		</table>
-	{# TODO: Port ASP logic: End If
-	rs.Close
-End If
-Call CloseConRs(con,rs)... #}
+	{% endif %}
+{% endif %}
+
 {% endblock %}
-</body>
-</html>

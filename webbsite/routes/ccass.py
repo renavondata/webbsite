@@ -1052,17 +1052,24 @@ def ctothist():
     Query params:
     - i: issueID
     - sc: stock code
-    - sort: sorting column
-    - o: include rows with no change (0/1)
+    - sort: dateup (chronological) or datedn (reverse chronological)
+    - o: include rows with no change (0/1, stored in session)
 
-    Tables used: ccass.dailylog, enigma.issuedshares
+    Tables used: ccass.dailylog, enigma.issuedshares, issue, organisations
     """
-    from flask import current_app
+    from flask import current_app, session
 
     issue_id = get_int('i', 0)
     stock_code = get_str('sc', '')
     sort_param = request.args.get('sort', 'datedn')
-    o = get_bool('o')  # Include rows with no holding change
+
+    # Get 'o' parameter from request or session (ASP uses Session variable)
+    # Whether to show rows with no holding change
+    if request.args.get('o') is not None:
+        o = get_bool('o')
+        session['nochange'] = o
+    else:
+        o = session.get('nochange', False)  # Default to excluding unchanged rows (ASP line 15)
 
     # Lookup stock if stock code provided
     if not issue_id and stock_code:
@@ -1077,22 +1084,24 @@ def ctothist():
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    # Get stock name
+    # Get stock name and personID
     stock_name = "No stock specified"
     person_id = 0
     if issue_id > 0:
         try:
             result = execute_query("""
-                SELECT o.name1, o.personID
+                SELECT o.name1 || ':' || st.typeShort AS stockName, o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE i.id1 = %s
             """, (issue_id,))
             if result:
-                stock_name = result[0]['name1']
+                stock_name = result[0]['stockname']
                 person_id = result[0]['personid']
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock: {ex}")
+            stock_name = f"Stock {issue_id}"
 
     # Determine sort order
     if sort_param == 'dateup':
@@ -1100,6 +1109,49 @@ def ctothist():
     else:
         ob = 'atDate DESC'
         sort_param = 'datedn'
+
+    # Get HK listings for stock info table (for ccassholdbar macro)
+    hk_listings = []
+    current_stock_code = None
+    at_date = None
+    if issue_id > 0:
+        try:
+            hk_listings = execute_query("""
+                SELECT sl.*, l.shortname
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.stockexid IN (1, 20, 22, 23, 38, 71) AND sl.issueid = %s
+                ORDER BY sl.firsttradedate
+            """, (issue_id,))
+        except Exception as e:
+            current_app.logger.error(f"Error fetching HK listings: {e}")
+            hk_listings = []
+
+        # Get current stock code for quote links
+        try:
+            stock_code_result = execute_query("""
+                SELECT stockcode
+                FROM enigma.stocklistings
+                WHERE issueid = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC
+                LIMIT 1
+            """, (issue_id,))
+            current_stock_code = stock_code_result[0]['stockcode'] if stock_code_result else None
+        except Exception as e:
+            current_app.logger.error(f"Error fetching stock code: {e}")
+            current_stock_code = None
+
+        # Get latest CCASS date for navigation
+        try:
+            date_result = execute_query("""
+                SELECT MAX(atDate) as maxDate
+                FROM ccass.dailylog
+                WHERE issueID = %s
+            """, (issue_id,))
+            at_date = date_result[0]['maxdate'] if date_result and date_result[0]['maxdate'] else None
+        except Exception as e:
+            current_app.logger.error(f"Error fetching latest CCASS date: {e}")
+            at_date = None
 
     # Query total holdings history
     history = []
@@ -1115,33 +1167,53 @@ def ctothist():
                      WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
                     (SELECT outstanding
                      FROM enigma.issuedshares
-                     WHERE issueid = %s AND atDate = maxDate) AS shares
+                     WHERE issueid = %s AND atDate = (
+                         SELECT MAX(i2.atDate)
+                         FROM enigma.issuedshares i2
+                         WHERE i2.atDate <= d.atDate AND i2.issueID = %s
+                     )) AS shares
                 FROM ccass.dailylog d
                 WHERE issueid = %s
                 ORDER BY {ob}
             """
-            results = execute_query(sql, (issue_id, issue_id, issue_id))
+            results = execute_query(sql, (issue_id, issue_id, issue_id, issue_id))
 
-            prev_holding = None
+            # Convert to list for processing
+            rows = []
             for row in results:
-                holding = row['holding']
-                change = holding - prev_holding if prev_holding is not None else None
+                rows.append({
+                    'atDate': row['atdate'],
+                    'holding': float(row['holding']) if row['holding'] else 0,
+                    'holders': int(row['holders']) if row['holders'] else 0,
+                    'shares': float(row['shares']) if row['shares'] else None,
+                    'maxDate': row['maxdate']
+                })
 
-                # Include based on filter
-                if o or change is None or change != 0:
-                    history.append({
-                        'atDate': row['atdate'],
-                        'holding': holding,
-                        'change': change,
-                        'holders': row['holders'],
-                        'shares': row['shares'],
-                        'stake': (holding / row['shares'] if row['shares'] and row['shares'] > 0 else None)
-                    })
+            # Calculate changes between consecutive rows
+            # ASP logic differs based on sort order (see lines 81-91 of ctothist.asp)
+            last_holding = 0
+            for idx, row in enumerate(rows):
+                if sort_param == 'dateup':
+                    # Chronological: compare to previous row
+                    change = row['holding'] - last_holding
+                    last_holding = row['holding']
+                    row['change'] = change if idx > 0 else None
+                else:
+                    # Reverse chronological: compare to next row
+                    if idx < len(rows) - 1:
+                        change = row['holding'] - rows[idx + 1]['holding']
+                        row['change'] = change
+                    else:
+                        row['change'] = None
 
-                prev_holding = holding
+            # Filter out unchanged rows if requested
+            if not o:
+                rows = [r for r in rows if r['change'] is None or r['change'] != 0]
+
+            history = rows
 
         except Exception as ex:
-            current_app.logger.error(f"Error querying total holdings history: {ex}")
+            current_app.logger.error(f"Error querying total holdings history: {ex}", exc_info=True)
             history = []
 
     return render_template('ccass/ctothist.html',
@@ -1151,7 +1223,11 @@ def ctothist():
                          person_id=person_id,
                          history=history,
                          sort=sort_param,
-                         o=o)
+                         o=o,
+                         hk_listings=hk_listings,
+                         current_stock_code=current_stock_code,
+                         at_date=at_date,
+                         now=datetime.now())
 
 
 @bp.route('/custhist.asp')

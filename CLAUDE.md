@@ -654,3 +654,4 @@ Ported from Classic ASP functions1.asp:
 - `get_bool(value)` - Boolean parameter parsing
 - `apos(text)` - SQL escaping (deprecated - use parameterized queries)
 - `rem_space(text)` - Whitespace normalization
+- assume flask is always running with the latest code, and never stop or start it unless told to explicitly
