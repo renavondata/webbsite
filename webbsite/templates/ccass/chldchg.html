@@ -1,0 +1,174 @@
+{% extends "base_database.html" %}
+{% from 'includes/navbars.html' import orgbar, stockbar, hklistings, ccassbar, btn %}
+
+{% block title %}CCASS holding changes{% endblock %}
+
+{% block content %}
+	{% if bot_message %}
+		<p><b>{{ bot_message }}</b></p>
+	{% elif error %}
+		<p><b>Error: {{ error }}</b></p>
+	{% elif issue_id == 0 %}
+		<h2>CCASS holding changes</h2>
+		<p><b>{{ stock_name if stock_name else 'No stock selected' }}</b></p>
+	{% elif no_records %}
+		<h2>CCASS holding changes</h2>
+		<p><b>There are no records of CCASS holdings.</b></p>
+	{% else %}
+		{# Navigation bars #}
+		{{ orgbar(stock_name, person_id, issue_id, 0) }}
+		{{ stockbar(issue_id, 4, current_stock_code) }}
+		{{ hklistings(hk_listings) }}
+		{{ ccassbar(issue_id, d2, 2) }}
+		{# Stock and date selection form #}
+		<form method="get" action="{{ url_for('ccass.chldchg') }}">
+			<input type="hidden" name="sort" value="{{ sort }}">
+			<input type="hidden" name="i" value="{{ issue_id }}">
+			<div class="inputs">
+				Stock code: <input type="text" name="sc" size="5" value="">
+			</div>
+			<div class="inputs">
+				From <input type="date" name="d1" id="d1" value="{{ d1.strftime('%Y-%m-%d') if d1 else '' }}" onblur="this.form.submit()">
+			</div>
+			<div class="inputs">
+				to <input type="date" name="d" id="d2" value="{{ d2.strftime('%Y-%m-%d') if d2 else '' }}" onblur="this.form.submit()">
+			</div>
+			<div class="inputs">
+				<input type="submit" value="Go">
+				<input type="submit" value="Clear" onclick="document.getElementById('d1').value='';document.getElementById('d2').value=''; return false;">
+			</div>
+			<div class="clear"></div>
+		</form>
+
+		{% if d1 and d2 %}
+			<h3>CCASS Holding Changes from {{ d1.strftime('%Y-%m-%d') }} to {{ d2.strftime('%Y-%m-%d') }}</h3>
+
+			<p>Hit the "stake change" to see the holder's history.</p>
+			{% if adj and adj != 1.0 %}
+				<p>Prior holdings are adjusted for splits and/or bonus issues</p>
+			{% endif %}
+			<p class="widthAlert1">Some data are hidden to fit your display. <span class="portrait"> Rotate?</span></p>
+
+			<table class="optable yscroll">
+				<tr>
+					<th class="colHide1">Row</th>
+					<th class="colHide3"><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=ccidup'><b>CCASS ID</b></a></th>
+					<th class="left"><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=nameup'><b>Name</b></a></th>
+					<th class="colHide3"><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=holddn'><b>Holding</b></a></th>
+					<th class="colHide3"><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=chngup'><b>Change</b></a></th>
+					<th><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=holddn'><b>Stake<br>%</b></a></th>
+					<th><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=chngup'><b>Stake<br>&#x0394; %</b></a></th>
+					<th class="colHide1"><a href='/ccass/chldchg.asp?i={{ issue_id }}&d1={{ d1.strftime('%Y-%m-%d') }}&d={{ d2.strftime('%Y-%m-%d') }}&sort=lastdn'><b>Last<br>holding</b></a></th>
+				</tr>
+
+				{% for row in holdings_changes %}
+					{% set stake = (row.holding / issued * 100) if issued > 0 else 0 %}
+					{% set stkchg = ((row.holding / issued - row.prevhldg / old_issued) * 100) if (issued > 0 and old_issued > 0) else 0 %}
+					<tr>
+						<td class="colHide1">{{ loop.index }}</td>
+						<td class="colHide3">{{ row.ccassid }}</td>
+						<td class="left"><a href="{{ url_for('ccass.portchg', p=row.partid, d1=d1.strftime('%Y-%m-%d'), d=d2.strftime('%Y-%m-%d')) }}">{{ row.partname }}</a></td>
+						<td class="colHide3">{{ '{:,.0f}'.format(row.holding) }}</td>
+						<td class="colHide3">{{ '{:,.0f}'.format(row.hldchg) }}</td>
+						<td>{{ '{:.2f}'.format(stake) if stake else '' }}</td>
+						<td><a href="{{ url_for('ccass.chistory', i=issue_id, part=row.partid) }}">{{ '{:.2f}'.format(stkchg) if stkchg else '' }}</a></td>
+						<td class="colHide1 nowrap">{{ row.lastdate.strftime('%Y-%m-%d') if row.lastdate else '' }}</td>
+					</tr>
+				{% endfor %}
+
+				{# Summary rows #}
+				<tr class="total">
+					<td class="colHide1">{{ holdings_changes|length }}</td>
+					<td class="colHide3"></td>
+					<td class="left">Total changed named holdings</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(sum_hold) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(sum_hldchg) }}</td>
+					<td>{{ '{:.2f}'.format(sum_hold / issued * 100) if issued != 0 else '' }}</td>
+					<td>{{ '{:.2f}'.format((sum_hold / issued - (sum_hold - sum_hldchg) / old_issued) * 100) if (issued != 0 and old_issued != 0) else '' }}</td>
+					<td class="colHide1"></td>
+				</tr>
+				<tr>
+					<td class="colHide1">{{ intermed_cnt + cip_cnt - holdings_changes|length }}</td>
+					<td class="colHide3"></td>
+					<td class="left">Unchanged named holdings</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(unch_hldg) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(0) }}</td>
+					<td>{{ '{:.2f}'.format(unch_hldg * 100 / issued) if issued != 0 else '' }}</td>
+					<td>{{ '{:.2f}'.format((unch_hldg / issued - unch_hldg / old_issued) * 100) if (issued != 0 and old_issued != 0) else '' }}</td>
+					<td class="colHide1"></td>
+				</tr>
+				<tr class="total">
+					<td class="colHide1">{{ intermed_cnt + cip_cnt }}</td>
+					<td class="colHide3"></td>
+					<td class="left">Total named holdings</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(nam_hldg) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(sum_hldchg) }}</td>
+					<td>{{ '{:.2f}'.format(nam_hldg * 100 / issued) if issued != 0 else '' }}</td>
+					<td>{{ '{:.2f}'.format((sum_hldchg / issued - sum_hldchg / old_issued) * 100) if (issued != 0 and old_issued != 0) else '' }}</td>
+					<td class="colHide1"></td>
+				</tr>
+				<tr>
+					<td class="colHide1">{{ '{:,.0f}'.format(ncip_cnt) }}</td>
+					<td class="colHide3"></td>
+					<td class="left">Unnamed Investor Participants</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(ncip_hldg) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(ncip_chg) }}</td>
+					<td>{{ '{:.2f}'.format(ncip_hldg * 100 / issued) if issued != 0 else '' }}</td>
+					<td><a href="{{ url_for('ccass.nciphist', i=issue_id) }}">{{ '{:.2f}'.format((ncip_hldg / issued - (ncip_hldg - ncip_chg) / old_issued) * 100) if issued != 0 else '' }}</a></td>
+					<td class="colHide1"></td>
+				</tr>
+				<tr class="total">
+					<td class="colHide1">{{ '{:,.0f}'.format(ncip_cnt + intermed_cnt + cip_cnt) }}</td>
+					<td class="colHide3"></td>
+					<td class="left">Total securities in CCASS</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(ctot) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(ncip_chg + sum_hldchg) }}</td>
+					<td>{{ '{:.2f}'.format(ctot * 100 / issued) if issued != 0 else '' }}</td>
+					<td><a href="{{ url_for('ccass.ctothist', i=issue_id) }}">{{ '{:.2f}'.format((ctot / issued - (ctot - ncip_chg - sum_hldchg) / old_issued) * 100) if (issued != 0 and old_issued != 0) else '' }}</a></td>
+					<td class="colHide1"></td>
+				</tr>
+				{% if issued != 0 %}
+					<tr>
+						<td class="colHide1"></td>
+						<td class="colHide3"></td>
+						<td class="left">Securities not in CCASS</td>
+						<td class="colHide3">{{ '{:,.0f}'.format(non_ccass) }}</td>
+						<td class="colHide3">{{ '{:,.0f}'.format(non_ccass_chg) }}</td>
+						<td>{{ '{:.2f}'.format(non_ccass * 100 / issued) }}</td>
+						<td><a href="{{ url_for('ccass.reghist', i=issue_id) }}">{{ '{:.2f}'.format((non_ccass / issued - (non_ccass - non_ccass_chg) / old_issued) * 100) if old_issued != 0 else '' }}</a></td>
+						<td class="colHide1"></td>
+					</tr>
+					<tr class="total">
+						<td class="colHide1"></td>
+						<td class="colHide3"></td>
+						<td class="left">Issued securities</td>
+						<td class="colHide3">{{ '{:,.0f}'.format(issued) }}</td>
+						<td class="colHide3">{{ '{:,.0f}'.format(issued_chg) }}</td>
+						<td>100.00</td>
+						<td><a href="{{ url_for('dbpub.outstanding', i=issue_id) }}">{{ '{:.2f}'.format(issued_pc * 100) }}</a></td>
+						<td class="colHide1">{{ issued_date.strftime('%Y-%m-%d') if issued_date else '' }}</td>
+					</tr>
+				{% endif %}
+			</table>
+
+			{# Trading volume/turnover section #}
+			{% if vol is not none %}
+				<h3>Trades that settled in this date range</h3>
+				<p>These data are not adjusted for splits or bonus issues during the period.</p>
+				<table class="numtable fcl">
+					{% if t2 and t1 and t2 > t1 %}
+						<tr><td>First trading date</td><td>{{ t1.strftime('%Y-%m-%d') }}</td></tr>
+						<tr><td>Last trading date</td><td>{{ t2.strftime('%Y-%m-%d') }}</td></tr>
+					{% elif t1 %}
+						<tr><td>Trading date</td><td>{{ t1.strftime('%Y-%m-%d') }}</td></tr>
+					{% endif %}
+					<tr><td>Volume</td><td>{{ '{:,.0f}'.format(vol) }}</td></tr>
+					<tr><td>Turnover</td><td>{{ '{:,.0f}'.format(turn) if turn else '0' }}</td></tr>
+					{% if vol and vol > 0 %}
+						<tr><td>Average price</td><td>{{ '{:.3f}'.format(turn / vol) }}</td></tr>
+					{% endif %}
+				</table>
+			{% endif %}
+		{% endif %}
+	{% endif %}
+{% endblock %}

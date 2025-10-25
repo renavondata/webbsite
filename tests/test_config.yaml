@@ -201,6 +201,27 @@ routes:
       - i: "12"  # China Mobile issueID
         d: "2024-10-01"
 
+  - name: "chldchg - CCASS holding changes"
+    path: "/ccass/chldchg.asp"
+    params:
+      - i: "1088"  # HSBC Holdings (user example from implementation)
+        d1: "2024-10-09"
+        d: "2024-10-10"
+        sort: "chngdn"
+      - i: "1088"  # Auto-calculate d1 (defaults to 1 month before d)
+        d: "2024-10-10"
+      - i: "1088"  # Test different sort option
+        d1: "2024-10-09"
+        d: "2024-10-10"
+        sort: "nameup"
+      - i: "62"  # HSBC issueID (different from 1088)
+        d1: "2024-10-01"
+        d: "2024-10-02"
+        sort: "chngdn"
+      - i: "12"  # China Mobile
+        d1: "2024-10-01"
+        d: "2024-10-02"
+
   # ==========================================
   # Additional CCASS Routes (8 routes)
   # ==========================================
@@ -445,6 +466,25 @@ routes:
       - d1: "2024-01-01"
         d2: "2024-10-01"
         sort: "nameup"  # Short period, alphabetical
+
+  - name: "buybacks - share buyback transactions"
+    path: "/dbpub/buybacks.asp"
+    params:
+      - i: "31946"  # User example (test with stock code parameter)
+        sc: "5"
+        f: "d"
+        sort: "datedn"
+      - i: "62"  # HSBC - large cap likely has buybacks
+        f: "d"
+      - i: "62"  # Monthly aggregation
+        f: "m"
+      - i: "62"  # Yearly aggregation, unadjusted
+        f: "y"
+        u: "1"
+      - i: "62"  # Show method, sort by value
+        f: "d"
+        e: "1"
+        sort: "valudn"
 
 # Normalization options
 normalize:

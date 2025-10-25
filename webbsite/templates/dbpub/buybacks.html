@@ -1,6 +1,257 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+
+{% block title %}Buybacks: {{ stock_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if issue_id == 0 %}
+	<h2>Buybacks</h2>
+	<p><b>{{ stock_name }}</b></p>
+{% else %}
+	{# orgBar navigation - company-level navigation #}
+	{% if stock_name and org_id %}
+	<h2>{{ stock_name }}</h2>
+	<ul class="navlist">
+		<li><a href="{{ url_for('dbpub.orgdata', p=org_id) }}">Key Data</a></li>
+		{% if nav_flags.get('has_directorships') %}
+			<li><a href="{{ url_for('dbpub.officers', p=org_id) }}">Officers</a></li>
+			<li><a href="{{ url_for('dbpub.overlap', p=org_id) }}">Overlaps</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_pay') %}
+			<li><a href="{{ url_for('dbpub.pay', p=org_id) }}">Pay</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_advisers') %}
+			<li><a href="{{ url_for('dbpub.advisers', p=org_id) }}">Advisers</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_adviserships') %}
+			<li><a href="{{ url_for('dbpub.adviserships', p=org_id) }}">Adviserships</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_sfc_licenses') %}
+			<li><a href="{{ url_for('dbpub.sfcolicrec', p=org_id) }}">SFC licenses</a></li>
+		{% endif %}
+		{% if nav_flags.get('ccass_part_id') %}
+			<li><a href="{{ url_for('ccass.cholder', part=nav_flags['ccass_part_id']) }}">CCASS holdings</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_documents') %}
+			<li><a href="{{ url_for('dbpub.docs', p=org_id) }}">Financials</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_ess') %}
+			<li><a href="{{ url_for('dbpub.essraw', p=org_id) }}">ESS</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_stories') %}
+			<li><a href="{{ url_for('dbpub.articles', p=org_id) }}">Webb-site Reports</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_lir_team') %}
+			<li><a href="{{ url_for('dbpub.complain', p=org_id) }}">Complain</a></li>
+		{% endif %}
+	</ul>
+	<div class="clear"></div>
+	{% endif %}
+
+	{# HKlistings table - stock exchange listings #}
+	{% if listings_data %}
+		<table class="numtable" style="margin-top:5px">
+			<tr>
+				<th class="left">Exchange</th>
+				<th>Code</th>
+				<th>Listed</th>
+				<th>Last trade</th>
+				<th>Delisted</th>
+				<th></th>
+			</tr>
+			{% for listing in listings_data %}
+				<tr>
+					<td class="left" style="width:75px;vertical-align:middle">{{ listing.exchange_name }}</td>
+					<td style="text-align:left;vertical-align:middle">{{ listing.stockcode_formatted }}</td>
+					<td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate.strftime('%Y-%m-%d') if listing.firsttradedate else '' }}</td>
+					<td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate.strftime('%Y-%m-%d') if listing.finaltradedate else '' }}</td>
+					<td style="vertical-align:middle">&nbsp;{{ listing.delistdate.strftime('%Y-%m-%d') if listing.delistdate else '' }}</td>
+					<td>
+						{% if listing.stockid %}
+							{% if listing.delistdate and listing.delistdate <= now %}
+								{% set doc_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' ~ listing.stockid ~ '&category=1' %}
+							{% else %}
+								{% set doc_url = 'https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=' ~ listing.stockid ~ '&category=0' %}
+							{% endif %}
+							<ul class="navlist"><li><a target="_blank" href="{{ doc_url }}">Docs</a></li></ul>
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+		<div class="clear"></div>
+	{% endif %}
+
+	{# stockBar navigation - issue-level navigation #}
+	<ul class="navlist">
+		<li class="livebutton">Buybacks</li>
+		{% if nav_flags.get('has_outstanding') %}
+			<li><a href="{{ url_for('dbpub.outstanding', i=issue_id) }}">Outstanding</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_short') %}
+			<li><a href="{{ url_for('dbpub.short', i=issue_id) }}">Short</a></li>
+		{% endif %}
+		{% if nav_flags.get('ccass_on') %}
+			<li><a href="{{ url_for('ccass.choldings', i=issue_id) }}">CCASS</a></li>
+		{% endif %}
+		{% if listings_data %}
+			<li><a href="{{ url_for('dbpub.str_route', i=issue_id) }}">Total return</a></li>
+			<li><a href="{{ url_for('dbpub.ctr', i1=issue_id) }}">Compare returns</a></li>
+			<li><a href="{{ url_for('dbpub.hpu', i=issue_id) }}">Prices</a></li>
+			<li><a href="{{ url_for('events.events', i=issue_id) }}">Events</a></li>
+		{% endif %}
+		{% if nav_flags.get('has_sdi') %}
+			<li><a href="{{ url_for('dbpub.sdiissue', i=issue_id) }}">Dealings</a></li>
+		{% endif %}
+		{% if listings_data and (not delist_date or delist_date > now) %}
+			{# External quote links - different URLs by security type and exchange #}
+			{% if sec_type not in [46, 40, 41] and stock_ex_id not in [23, 38] %}
+				<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+			{% elif stock_ex_id == 38 %}
+				<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Exchange-Traded-Products/Exchange-Traded-Products-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+			{% elif stock_ex_id == 23 %}
+				<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Real-Estate-Investment-Trusts/Real-Estate-Investment-Trusts-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+			{% else %}
+				<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Debt-Securities/Debt-Securities-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+			{% endif %}
+		{% endif %}
+	</ul>
+	<div class="clear"></div>
+
+	{# Frequency navigation - Daily/Monthly/Yearly #}
+	<ul class="navlist">
+		<li{% if freq == 'd' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='d') }}">Daily</a></li>
+		<li{% if freq == 'm' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='m') }}">Monthly</a></li>
+		<li{% if freq == 'y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='y') }}">Yearly</a></li>
+		<li><a href="{{ url_for('dbpub.buybacksum', u=unadj|int, y=current_year, m=(now.month if freq == 'm' else 0), d=(now.day if freq == 'd' else 0)) }}">All stocks</a></li>
+	</ul>
+	<div class="clear"></div>
+{% endif %}
+
+<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+	<input type="hidden" name="f" value="{{ freq }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="i" value="{{ issue_id }}">
+	<div class="inputs">
+		Stock code: <input type="text" name="sc" size="5" value="">
+		<input type="checkbox" name="u" id="u" value="1"{% if unadj %} checked{% endif %} onchange="this.form.submit()"> <label for="u">Show unadjusted for splits and bonus shares</label>
+		<input type="checkbox" name="e" id="e" value="1"{% if show_method %} checked{% endif %} onchange="this.form.submit()"> <label for="e">Show method</label>
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if issue_id > 0 %}
+	<h2>Buybacks</h2>
+	{% if buybacks and buybacks|length > 0 %}
+		{% if freq == 'd' %}
+			<p>In the daily list, click on the date to see CCASS movements on the settlement date.</p>
+		{% endif %}
+		<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+		<table class="numtable yscroll">
+			<tr>
+				<th class="colHide1">Row</th>
+				<th>
+					{% if sort == 'datedn' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='dateup') }}">
+							{{ 'Date' if freq == 'd' else ('Year' if freq == 'y' else 'Month') }}
+						</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='datedn') }}">
+							{{ 'Date' if freq == 'd' else ('Year' if freq == 'y' else 'Month') }}
+						</a>
+					{% endif %}
+				</th>
+				<th class="colHide3">
+					{% if sort == 'shrsdn' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsup') }}">Number</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsdn') }}">Number</a>
+					{% endif %}
+				</th>
+				<th>
+					{% if sort == 'valudn' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valuup') }}">Value</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valudn') }}">Value</a>
+					{% endif %}
+				</th>
+				<th>
+					{% if sort == 'currup' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currdn') }}">Curr.</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currup') }}">Curr.</a>
+					{% endif %}
+				</th>
+				<th>
+					{% if sort == 'pricdn' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricup') }}">Av.<br>price</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricdn') }}">Av.<br>price</a>
+					{% endif %}
+				</th>
+				<th class="colHide2">Out-<br>standing</th>
+				<th class="colHide2">at Date</th>
+				<th class="colHide3">
+					{% if sort == 'stkdn' %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkup') }}">Stake %</a>
+					{% else %}
+						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkdn') }}">Stake %</a>
+					{% endif %}
+				</th>
+				{% if show_method %}
+					<th class="colHide3">Method</th>
+				{% endif %}
+			</tr>
+			{% for row in buybacks %}
+			<tr>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td style="white-space:nowrap">
+				{% if freq == 'm' %}
+					{{ '%04d-%02d'|format(row.y, row.m) }}
+				{% elif freq == 'y' %}
+					{{ row.y }}
+				{% else %}
+					{% if row.settledate and row.settledate < now %}
+						<a href="{{ url_for('ccass.chldchg', i=issue_id, d=row.settledate.strftime('%Y-%m-%d')) }}">{{ row.effdate.strftime('%Y-%m-%d') }}</a>
+					{% else %}
+						{{ row.effdate.strftime('%Y-%m-%d') }}
+					{% endif %}
+				{% endif %}
+				</td>
+				<td class="colHide3">{{ '{:,.0f}'.format(row.shares) if row.shares else '-' }}</td>
+				<td>{{ '{:,.0f}'.format(row.value) if row.value else '-' }}</td>
+				<td>{{ row.currency }}</td>
+				<td>{{ '{:.3f}'.format(row.price) if row.price else '-' }}</td>
+				<td class="colHide2">{{ '{:,.0f}'.format(row.os) if row.os else '-' }}</td>
+				<td class="colHide2">{{ row.osd.strftime('%Y-%m-%d') if row.osd else '-' }}</td>
+				<td class="colHide3">{{ '{:.3f}'.format(row.stake) if row.stake else '-' }}</td>
+				{% if show_method %}
+					<td class="colHide3">{{ row.exchname if row.exchname else '' }}</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+
+			{# Totals rows grouped by currency #}
+			{% for total in totals %}
+			<tr class="total">
+				<td>Total</td>
+				<td class="colHide1"></td>
+				<td class="colHide3">{{ '{:,.0f}'.format(total.shares) if total.shares else '-' }}</td>
+				<td>{{ '{:,.0f}'.format(total.value) if total.value else '-' }}</td>
+				<td>{{ total.currency }}</td>
+				<td>{{ '{:.3f}'.format(total.price) if total.price else '-' }}</td>
+				{% if initial_os and initial_os > 0 %}
+					<td class="colHide2">{{ '{:,.0f}'.format(initial_os) }}</td>
+					<td class="colHide2">{{ initial_osd.strftime('%Y-%m-%d') if initial_osd else '' }}</td>
+					<td class="colHide2">{{ '{:.3f}'.format(total.shares * 100 / initial_os) if total.shares else '-' }}</td>
+				{% else %}
+					<td class="colHide2" colspan="3"></td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p><b>None found.</b></p>
+	{% endif %}
+{% endif %}
 {% endblock %}

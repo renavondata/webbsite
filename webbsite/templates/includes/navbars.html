@@ -1,0 +1,133 @@
+{# Navigation bar macros - ported from Webb-site ASP files/dbpub/navbars.asp #}
+
+{% macro btn(num, url, label, target) -%}
+	{% if num == target %}
+		<li class='livebutton'>{{ label }}</li>
+	{% else %}
+		<li><a href='{{ url }}'>{{ label }}</a></li>
+	{% endif %}
+{%- endmacro %}
+
+{% macro orgbar(name, person_id, issue_id, target) -%}
+	<h2>{{ name }}{% if issue_id > 0 %}:  O HKD{% endif %}</h2>
+	{% if person_id > 0 %}
+	<ul class="navlist">
+		{{ btn(1, url_for('dbpub.orgdata', p=person_id), 'Key Data', target) }}
+		{{ btn(2, url_for('dbpub.officers', p=person_id), 'Officers', target) }}
+		{{ btn(3, url_for('dbpub.overlap', p=person_id), 'Overlaps', target) }}
+		{{ btn(4, url_for('dbpub.pay', p=person_id), 'Pay', target) }}
+		{{ btn(5, url_for('dbpub.advisers', p=person_id), 'Advisers', target) }}
+		{{ btn(6, url_for('dbpub.adviserships', p=person_id), 'Adviserships', target) }}
+		{{ btn(7, url_for('dbpub.docs', p=person_id), 'Financials', target) }}
+		{{ btn(8, url_for('dbpub.articles', p=person_id), 'Webb-site Reports', target) }}
+		{{ btn(9, url_for('dbpub.complain', p=person_id), 'Complain', target) }}
+	</ul>
+	<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
+
+{% macro hklistings(listings) -%}
+	{% if listings %}
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		{% for listing in listings %}
+			{% set hkcode = ('%05d' % listing.stockcode) if listing.stockcode else '' %}
+			{% set delist_date = listing.delistdate %}
+			{% set stock_id = listing.stockid %}
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">{{ listing.shortname }}</td>
+				<td style="text-align:left;vertical-align:middle">{{ hkcode }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate.strftime('%Y-%m-%d') if listing.firsttradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate.strftime('%Y-%m-%d') if listing.finaltradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ delist_date.strftime('%Y-%m-%d') if delist_date else '' }}</td>
+				<td>
+				{% if stock_id %}
+					{% set cat = '1' if delist_date and delist_date <= now else '0' %}
+					<ul class="navlist"><li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId={{ stock_id }}&category={{ cat }}">Docs</a></li></ul>
+				{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
+
+{% macro stockbar(issue_id, target, stock_code=None) -%}
+	{% if issue_id and issue_id > 0 %}
+	<ul class="navlist">
+		{{ btn(1, url_for('dbpub.buybacks', i=issue_id), 'Buybacks', target) }}
+		{{ btn(2, url_for('dbpub.outstanding', i=issue_id), 'Outstanding', target) }}
+		{{ btn(3, url_for('dbpub.short', i=issue_id), 'Short', target) }}
+		{{ btn(4, url_for('ccass.choldings', i=issue_id), 'CCASS', target) }}
+		{{ btn(5, url_for('dbpub.str_route', i=issue_id), 'Total return', target) }}
+		{{ btn(6, url_for('dbpub.ctr', i1=issue_id), 'Compare returns', target) }}
+		{{ btn(7, url_for('dbpub.hpu', i=issue_id), 'Prices', target) }}
+		{{ btn(8, url_for('dbpub.enigma_events', i=issue_id), 'Events', target) }}
+		{{ btn(9, url_for('dbpub.sdiissue', i=issue_id), 'Dealings', target) }}
+		{% if stock_code %}
+			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_code }}">Quote</a></li>
+		{% endif %}
+	</ul>
+	<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
+
+{% macro ccassbar(issue_id, date, target) -%}
+	{% if issue_id and issue_id > 0 %}
+		{# Ensure date is formatted properly #}
+		{% set d = date.strftime('%Y-%m-%d') if date else '' %}
+		<ul class="navlist">
+			{{ btn(1, url_for('ccass.choldings', i=issue_id, d=d), 'Holdings', target) }}
+			{{ btn(2, url_for('ccass.chldchg', i=issue_id, d=d, sort='chngdn'), 'Changes', target) }}
+			{{ btn(4, url_for('ccass.bigchangesissue', i=issue_id), 'Big changes', target) }}
+			{{ btn(3, url_for('ccass.cconchist', i=issue_id), 'Concentration', target) }}
+			<li><a href="{{ url_for('ccass.bigchanges', d=d) }}">Big changes all stocks</a></li>
+			<li><a href="{{ url_for('ccass.cparticipants') }}">Participants</a></li>
+			<li><a target="_blank" href="{{ url_for('ccass.ccass_notes') }}">About CCASS</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
+
+{% macro ccassbarpart(part_id, date, target) -%}
+	{# Navigation bar for a CCASS participant page #}
+	{% if part_id and part_id > 0 %}
+		{% set d = date.strftime('%Y-%m-%d') if date else '' %}
+		<ul class="navlist">
+			{{ btn(1, url_for('ccass.cholder', part=part_id, d=d), 'Holdings', target) }}
+			{{ btn(2, url_for('ccass.portchg', p=part_id, d=d), 'Changes', target) }}
+			{{ btn(3, url_for('ccass.bigchangespart', p=part_id), 'Big changes', target) }}
+			<li><a href="{{ url_for('ccass.bigchanges', d=d) }}">Big changes all stocks</a></li>
+			<li><a href="{{ url_for('ccass.cparticipants') }}">Participants</a></li>
+			<li><a target="_blank" href="{{ url_for('ccass.ccass_notes') }}">About CCASS</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
+
+{% macro ccassholdbar(issue_id, date, target) -%}
+	{# Submenu bar under Holdings #}
+	{{ ccassbar(issue_id, date, 1) }}
+	{% if issue_id and issue_id > 0 %}
+		<ul class="navlist">
+			{{ btn(1, url_for('ccass.choldings', i=issue_id), 'Snapshot', target) }}
+			{{ btn(2, url_for('ccass.custhist', i=issue_id), 'Custodians', target) }}
+			{{ btn(3, url_for('ccass.brokhist', i=issue_id), 'Brokers', target) }}
+			{{ btn(4, url_for('ccass.nciphist', i=issue_id), 'Investors', target) }}
+			{{ btn(5, url_for('ccass.ctothist', i=issue_id), 'CCASS total', target) }}
+			{{ btn(6, url_for('ccass.reghist', i=issue_id), 'Non-CCASS', target) }}
+			{% if target == 7 %}
+				{{ btn(7, '', 'History', target) }}
+			{% endif %}
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+{%- endmacro %}
