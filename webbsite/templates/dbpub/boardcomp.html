@@ -19,7 +19,18 @@ directors.</p>
 are claimed to be independent and are subject to election in shareholder
 meetings (INE), the number of directors who are female, and the
 proportions they represent of the board, for each company with a current HK primary
-listing. Click on the column headings to sort the list.</p>
+listing. Click on the column headings to sort the
+list. Use the snapshot feature to roll back the clock - we have all directors since 1990, including delisted companies
+up to the delisted date. Current company names are
+used.</p>
+<p>Visit the <a href="/dbpub/">Webb-site Who's Who home page</a> to find
+analyses of these data under "HK Listed Boards".</p>
+
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
 
 <form method="get" action="/dbpub/boardcomp.asp">
     <input type="hidden" name="sort" value="{{ sort }}">
@@ -33,29 +44,35 @@ listing. Click on the column headings to sort the list.</p>
     <div class="clear"></div>
 </form>
 
+{{ mobile_alert|safe }}
 <table class="numtable yscroll">
     <tr>
-        <th></th>
-        <th><a href="?d={{ d }}&sort=stkup">Stock<br>code</a> | <a href="?d={{ d }}&sort=stkdn">▼</a></th>
-        <th class="left"><a href="?d={{ d }}&sort=namup">Name</a> | <a href="?d={{ d }}&sort=namdn">▼</a></th>
-        <th><a href="?d={{ d }}&sort=dirdn">No.<br>of<br>dirs</a> | <a href="?d={{ d }}&sort=dirup">▲</a></th>
-        <th><a href="?d={{ d }}&sort=inedn">INE</a> | <a href="?d={{ d }}&sort=ineup">▲</a></th>
-        <th><a href="?d={{ d }}&sort=inpdn">INE %</a> | <a href="?d={{ d }}&sort=inpup">▲</a></th>
-        <th><a href="?d={{ d }}&sort=femdn">Female</a> | <a href="?d={{ d }}&sort=femup">▲</a></th>
-        <th><a href="?d={{ d }}&sort=fmpdn">F %</a> | <a href="?d={{ d }}&sort=fmpup">▲</a></th>
-        <th><a href="?d={{ d }}&sort=agedn">Avg<br>Age</a> | <a href="?d={{ d }}&sort=ageup">▲</a></th>
+        <th class="colHide3"></th>
+        <th class="colHide3">{{ sort_links.stock|safe }}</th>
+        <th class="left">{{ sort_links.name|safe }}</th>
+        <th>{{ sort_links.dirs|safe }}</th>
+        <th>{{ sort_links.ine|safe }}</th>
+        <th>{{ sort_links.female|safe }}</th>
+        <th>{{ sort_links.inepropn|safe }}</th>
+        <th class="colHide3">{{ sort_links.fempropn|safe }}</th>
+        <th class="colHide3">{{ sort_links.age|safe }}</th>
     </tr>
     {% for board in boards %}
     <tr>
-        <td>{{ loop.index }}</td>
-        <td><a href="/dbpub/orgdata.asp?p={{ board.orgid }}">{{ board.sc or '—' }}</a></td>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ board.orgid }}">{{ board.name }}</a></td>
+        <td class="colHide3">{{ loop.index }}</td>
+        <td class="colHide3">{{ board.sc }}</td>
+        <td class="left"><a href="/dbpub/officers.asp?p={{ board.personid }}&hide=Y&d={{ d_str }}&u=1">{{ board.name }}</a></td>
         <td>{{ board.dirs }}</td>
         <td>{{ board.ine }}</td>
-        <td>{{ '%.1f'|format(board.inepropn) }}</td>
         <td>{{ board.female }}</td>
-        <td>{{ '%.1f'|format(board.fempropn) }}</td>
-        <td>{{ board.age or '—' }}</td>
+        {% if board.dirs == 0 %}
+        <td></td>
+        <td colspan="2" class="colHide3"></td>
+        {% else %}
+        <td>{{ '%.3f'|format(board.inepropn) }}</td>
+        <td class="colHide3">{{ '%.3f'|format(board.fempropn) }}</td>
+        <td class="colHide3">{% if board.age %}{{ '%.3f'|format(board.age) }}{% endif %}</td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>
