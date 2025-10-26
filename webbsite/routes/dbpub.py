@@ -2,9 +2,14 @@
 Database routes - Direct port from dbpub/default.asp
 Main database homepage and related pages
 """
-from flask import Blueprint, render_template, request, abort, current_app
+from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date
+import calendar
+import io
+import re
 from webbsite.db import execute_query, get_db
+from webbsite.asp_helpers import get_int, get_bool, get_str
+
 
 bp = Blueprint('dbpub', __name__)
 
@@ -660,8 +665,7 @@ def advisers():
         onetime_advisers = []
 
     # Get today's date for the clear button
-    import datetime
-    today = datetime.date.today().strftime('%Y-%m-%d')
+    today = date.today().strftime('%Y-%m-%d')
 
     return render_template('dbpub/advisers.html',
                          person_id=person_id,
@@ -3828,7 +3832,6 @@ def buybacksum():
 
     # Validate day range
     if m > 0:
-        import calendar
         max_day = calendar.monthrange(y, m)[1]
         if y == 1991 and m == 11:
             d = max(d, 27) if d > 0 else 0
@@ -3844,7 +3847,6 @@ def buybacksum():
         freq = 'y'
     elif d == 0:
         # Monthly: whole month
-        import calendar
         dstart = date(y, m, 1)
         dend = date(y, m, calendar.monthrange(y, m)[1])
         freq = 'm'
@@ -6649,10 +6651,6 @@ def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
 @bp.route('/govacCSV.asp')
 def govac_csv():
     """Government accounts CSV export"""
-    from webbsite.asp_helpers import get_int
-    from flask import Response
-    import io
-
     # Parameters (same as main govac route)
     i = get_int('i', 1251)
     t = get_int('t', 0)
@@ -6773,7 +6771,6 @@ def govac_search():
     st = request.values.get('st', 'a')  # search type: 'a' = any match (full-text), 'l' = left match (LIKE)
 
     # Sanitize search term (replace "Hong Kong" with "HK" case-insensitive)
-    import re
     n = re.sub(r'\bHong Kong\b', 'HK', n, flags=re.IGNORECASE)
     n = n.strip()
 
@@ -7562,10 +7559,6 @@ def bornday():
     People born on a specific day/month
     Query params: d (day), m (month), sort
     """
-    from datetime import date
-    from webbsite.asp_helpers import get_int, get_str
-    import calendar
-
     # Get current date as default
     today = date.today()
     m = get_int('m', today.month)
@@ -9659,26 +9652,57 @@ def prhdistricts():
 # HK flights data
 @bp.route('/HKflights.asp')
 def hkflights():
-    """Hong Kong flight statistics"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Hong Kong flight statistics (simplified)"""
+    from webbsite.asp_helpers import get_str, get_int
+    from datetime import datetime, timedelta
 
-    date_param = get_str('d', '')
+    d = get_str('d', '')
+    arr = get_int('arr', 1)  # 1 = arrivals, 0 = departures
 
-    # Stub - would need flights tables
-    return render_template('dbpub/hkflights.html', d=date_param, flights=[])
+    # Default to today if no date provided
+    if not d:
+        d = datetime.now().strftime('%Y-%m-%d')
+
+    # Query flights for the specified date
+    data = execute_query(f"""
+        SELECT flightno, airline, sched, actual, terminal, gate, status
+        FROM enigma.flights
+        WHERE DATE(sched) = %s
+          AND arrival = %s
+          AND cargo = FALSE
+        ORDER BY sched
+        LIMIT 200
+    """, (d, arr == 1))
+
+    return render_template('dbpub/hkflights.html', d=d, arr=arr, data=data)
 
 
 # HK flights cancellations
 @bp.route('/HKflightscan.asp')
 def hkflightscan():
-    """Hong Kong flight cancellations"""
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Hong Kong flight cancellations (simplified)"""
+    from webbsite.asp_helpers import get_str, get_int
+    from datetime import datetime, timedelta
 
-    # Stub - would need flights tables
-    return render_template('dbpub/hkflightscan.html', cancellations=[])
+    d = get_str('d', '')
+    arr = get_int('arr', 1)  # 1 = arrivals, 0 = departures
+
+    # Default to today if no date provided
+    if not d:
+        d = datetime.now().strftime('%Y-%m-%d')
+
+    # Query cancelled flights for the specified date
+    data = execute_query(f"""
+        SELECT flightno, airline, sched, terminal, status
+        FROM enigma.flights
+        WHERE DATE(sched) = %s
+          AND arrival = %s
+          AND cancelled = TRUE
+        ORDER BY sched
+        LIMIT 100
+    """, (d, arr == 1))
+
+    return render_template('dbpub/hkflightscan.html', d=d, arr=arr, data=data)
 
 
 # Tenders
@@ -10782,201 +10806,277 @@ def jail():
 
 @bp.route('/tuntraff.asp')
 def tuntraff():
-    """Tunnel and bridge traffic statistics"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    """Tunnel and bridge traffic statistics (simplified)"""
+    y = get_int('y', 0)
+    tunid = get_int('tunid', 0)
 
-    y = get_int('y', date.today().year)
+    # Build WHERE clause
+    where_parts = []
+    if y > 0:
+        where_parts.append(f"EXTRACT(YEAR FROM d) = {y}")
+    if tunid > 0:
+        where_parts.append(f"tt.tunid = {tunid}")
+    where = " AND ".join(where_parts) if where_parts else "1=1"
 
-    # TODO: Query tunnel/bridge traffic from transport tables
-    traffic_data = []
+    # Aggregate traffic by tunnel
+    data = execute_query(f"""
+        SELECT t.name,
+               SUM(tt.defcnt) AS default_count,
+               SUM(tt.altcnt) AS alternate_count,
+               SUM(tt.defcnt + tt.altcnt) AS total_count
+        FROM enigma.tuntraff tt
+        JOIN enigma.tunnels t ON tt.tunid = t.id
+        WHERE {where}
+        GROUP BY t.name
+        ORDER BY SUM(tt.defcnt + tt.altcnt) DESC
+    """)
 
-    return render_template('dbpub/tuntraff.html',
-                         y=y,
-                         traffic_data=traffic_data)
+    # Get tunnel list for dropdown
+    tunnels = execute_query("SELECT id, name FROM enigma.tunnels ORDER BY name")
+
+    return render_template('dbpub/tuntraff.html', y=y, tunid=tunid, data=data, tunnels=tunnels)
 
 
 @bp.route('/veFR.asp')
 def vefr():
-    """Vehicle first registrations"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
-
-    y = get_int('y', date.today().year)
+    """Vehicle first registrations - simplified version showing totals by brand"""
+    y = get_int('y', 0)
     m = get_int('m', 0)
+    vc = get_int('vc', 1)  # vehicle class
 
-    # TODO: Query vehicle first registrations from transport tables
-    registrations = []
+    # Get date range
+    date_range = execute_query("SELECT MIN(d) AS mind, MAX(d) AS maxd FROM enigma.vehiclefr")
+    mind = date_range[0]['mind'] if date_range else None
+    maxd = date_range[0]['maxd'] if date_range else None
 
-    return render_template('dbpub/vefr.html',
-                         y=y,
-                         m=m,
-                         registrations=registrations)
+    # Build WHERE clause
+    where_parts = [f"vc = {vc}"]
+    if y > 0:
+        where_parts.append(f"EXTRACT(YEAR FROM d) = {y}")
+    if m > 0:
+        where_parts.append(f"EXTRACT(MONTH FROM d) = {m}")
+    where_clause = " AND ".join(where_parts)
+
+    # Simplified query: totals by brand (skip pivot table for now)
+    data = execute_query(f"""
+        SELECT vm.make, SUM(vf.freg) AS total
+        FROM enigma.vehiclefr vf
+        JOIN enigma.vehiclemakes vm ON vf.makeid = vm.id
+        WHERE {where_clause}
+        GROUP BY vm.make
+        ORDER BY total DESC
+        LIMIT 100
+    """)
+
+    # Get vehicle classes for dropdown
+    classes = execute_query("SELECT id, des FROM enigma.vehicleclass WHERE id IN (1,2,27,28,29) ORDER BY id")
+
+    return render_template('dbpub/vefr.html', data=data, y=y, m=m, vc=vc,
+                         mind=mind, maxd=maxd, classes=classes)
 
 
 @bp.route('/veFRtype.asp')
 def vefrtype():
-    """Vehicle first registrations by type"""
-    from webbsite.asp_helpers import get_int, get_str
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    """Vehicle first registrations by type - simplified"""
+    y = get_int('y', 0)
 
-    y = get_int('y', date.today().year)
-    m = get_int('m', 0)
-    vt = get_str('vt', '')  # vehicle type
+    # Basic aggregation by vehicle class
+    where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT vc.des, SUM(vf.freg) AS total
+        FROM enigma.vehiclefr vf
+        JOIN enigma.vehicleclass vc ON vf.vc = vc.id
+        WHERE {where}
+        GROUP BY vc.des
+        ORDER BY total DESC
+    """)
 
-    # TODO: Query vehicle first registrations by type
-    registrations = []
-
-    return render_template('dbpub/vefrtype.html',
-                         y=y,
-                         m=m,
-                         vt=vt,
-                         registrations=registrations)
+    return render_template('dbpub/vefrtype.html', y=y, data=data)
 
 
 @bp.route('/veFRtypehist.asp')
 def vefrtypehist():
-    """Vehicle first registrations by type - historical trend"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Vehicle first registrations by type - historical trend (simplified)"""
+    vc = get_int('vc', 0)
 
-    vt = get_str('vt', '')  # vehicle type
+    # Historical trend by year for specific vehicle class or all
+    where = f"vc = {vc}" if vc > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT EXTRACT(YEAR FROM d) AS year, SUM(freg) AS total
+        FROM enigma.vehiclefr
+        WHERE {where}
+        GROUP BY EXTRACT(YEAR FROM d)
+        ORDER BY year DESC
+        LIMIT 25
+    """)
 
-    # TODO: Query historical vehicle registrations by type
-    history = []
+    # Get vehicle class name if specified
+    vcname = ''
+    if vc > 0:
+        vcdata = execute_query(f"SELECT des FROM enigma.vehicleclass WHERE id = {vc}")
+        vcname = vcdata[0]['des'] if vcdata else ''
 
-    return render_template('dbpub/vefrtypehist.html',
-                         vt=vt,
-                         history=history)
+    return render_template('dbpub/vefrtypehist.html', vc=vc, vcname=vcname, data=data)
 
 
 @bp.route('/veJourneyhist.asp')
 def vejourneyhist():
-    """Vehicle journey history"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Vehicle journey history (simplified)"""
+    vc = get_int('vc', 0)
 
-    reg = get_str('reg', '')  # registration number
+    # Historical journey statistics by year
+    where = f"vc = {vc}" if vc > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT EXTRACT(YEAR FROM d) AS year,
+               SUM(j) AS total_journeys,
+               SUM(km) AS total_km
+        FROM enigma.tdjourneys
+        WHERE {where}
+        GROUP BY EXTRACT(YEAR FROM d)
+        ORDER BY year DESC
+        LIMIT 25
+    """)
 
-    # TODO: Query vehicle journey history
-    journeys = []
+    # Get vehicle class name if specified
+    vcname = ''
+    if vc > 0:
+        vcdata = execute_query(f"SELECT des FROM enigma.vehicleclass WHERE id = {vc}")
+        vcname = vcdata[0]['des'] if vcdata else ''
 
-    return render_template('dbpub/vejourneyhist.html',
-                         reg=reg,
-                         journeys=journeys)
+    return render_template('dbpub/vejourneyhist.html', vc=vc, vcname=vcname, data=data)
 
 
 @bp.route('/veJourneys.asp')
 def vejourneys():
-    """Vehicle journeys summary"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    """Vehicle journeys summary (simplified)"""
+    y = get_int('y', 0)
 
-    y = get_int('y', date.today().year)
+    # Journey statistics by vehicle class
+    where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT vc.des AS vehicle_class,
+               SUM(tj.j) AS total_journeys,
+               SUM(tj.km) AS total_km
+        FROM enigma.tdjourneys tj
+        JOIN enigma.vehicleclass vc ON tj.vc = vc.id
+        WHERE {where}
+        GROUP BY vc.des
+        ORDER BY SUM(tj.j) DESC
+    """)
 
-    # TODO: Query vehicle journey statistics
-    journeys = []
-
-    return render_template('dbpub/vejourneys.html',
-                         y=y,
-                         journeys=journeys)
+    return render_template('dbpub/vejourneys.html', y=y, data=data)
 
 
 @bp.route('/vebrandhist.asp')
 def vebrandhist():
-    """Vehicle brand registration history"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Vehicle brand registration history (simplified)"""
+    makeid = get_int('makeid', 0)
 
-    brand = get_str('brand', '')
+    # Historical trend by year for specific brand or all
+    where = f"makeid = {makeid}" if makeid > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT EXTRACT(YEAR FROM d) AS year, SUM(freg) AS total
+        FROM enigma.vehiclefr
+        WHERE {where}
+        GROUP BY EXTRACT(YEAR FROM d)
+        ORDER BY year DESC
+        LIMIT 25
+    """)
 
-    # TODO: Query vehicle brand registration history
-    history = []
+    # Get brand name if specified
+    brandname = ''
+    if makeid > 0:
+        branddata = execute_query(f"SELECT make FROM enigma.vehiclemakes WHERE id = {makeid}")
+        brandname = branddata[0]['make'] if branddata else ''
 
-    return render_template('dbpub/vebrandhist.html',
-                         brand=brand,
-                         history=history)
+    return render_template('dbpub/vebrandhist.html', makeid=makeid, brandname=brandname, data=data)
 
 
 @bp.route('/vedet.asp')
 def vedet():
-    """Vehicle details"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Vehicle details - simplified to show brand totals"""
+    brand = get_int('brand', 0)
+    y = get_int('y', 0)
 
-    reg = get_str('reg', '')  # registration number
+    where_parts = []
+    if brand > 0:
+        where_parts.append(f"makeid = {brand}")
+    if y > 0:
+        where_parts.append(f"EXTRACT(YEAR FROM d) = {y}")
+    where = " AND ".join(where_parts) if where_parts else "1=1"
 
-    # TODO: Query vehicle details (make, model, year, etc.)
-    vehicle = None
+    data = execute_query(f"""
+        SELECT vm.make, COUNT(*) AS cnt, SUM(freg) AS total
+        FROM enigma.vehiclefr vf
+        JOIN enigma.vehiclemakes vm ON vf.makeid = vm.id
+        WHERE {where}
+        GROUP BY vm.make
+        ORDER BY total DESC
+        LIMIT 50
+    """)
 
-    return render_template('dbpub/vedet.html',
-                         reg=reg,
-                         vehicle=vehicle)
+    return render_template('dbpub/vedet.html', brand=brand, y=y, data=data)
 
 
 @bp.route('/veengine.asp')
 def veengine():
-    """Vehicle engine types summary"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    """Vehicle engine types summary - simplified"""
+    y = get_int('y', 0)
 
-    y = get_int('y', date.today().year)
+    where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT es.des, SUM(ve.fr) AS total_fr, SUM(ve.totreg) AS total_reg
+        FROM enigma.veengine ve
+        JOIN enigma.enginesize es ON ve.engid = es.id
+        WHERE {where}
+        GROUP BY es.des
+        ORDER BY es.id
+    """)
 
-    # TODO: Query vehicle engine type statistics
-    engines = []
-
-    return render_template('dbpub/veengine.html',
-                         y=y,
-                         engines=engines)
+    return render_template('dbpub/veengine.html', y=y, data=data)
 
 
 @bp.route('/vefuel.asp')
 def vefuel():
-    """Vehicle fuel types summary"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    """Vehicle fuel types summary - simplified"""
+    y = get_int('y', 0)
 
-    y = get_int('y', date.today().year)
+    where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT vf.friendly AS fuel, SUM(v.freg) AS total
+        FROM enigma.vehiclefr v
+        JOIN enigma.vehiclefuel vf ON v.fuelid = vf.id
+        WHERE {where}
+        GROUP BY vf.friendly
+        ORDER BY total DESC
+    """)
 
-    # TODO: Query vehicle fuel type statistics
-    fuels = []
-
-    return render_template('dbpub/vefuel.html',
-                         y=y,
-                         fuels=fuels)
+    return render_template('dbpub/vefuel.html', y=y, data=data)
 
 
 @bp.route('/vefuelhist.asp')
 def vefuelhist():
-    """Vehicle fuel types - historical trend"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Vehicle fuel types - historical trend (simplified)"""
+    fuelid = get_int('fuelid', 0)
 
-    fuel = get_str('fuel', '')
+    # Historical trend by year for specific fuel type or all
+    where = f"fuelid = {fuelid}" if fuelid > 0 else "1=1"
+    data = execute_query(f"""
+        SELECT EXTRACT(YEAR FROM d) AS year, SUM(freg) AS total
+        FROM enigma.vehiclefr
+        WHERE {where}
+        GROUP BY EXTRACT(YEAR FROM d)
+        ORDER BY year DESC
+        LIMIT 25
+    """)
 
-    # TODO: Query historical vehicle fuel type statistics
-    history = []
+    # Get fuel type name if specified
+    fuelname = ''
+    if fuelid > 0:
+        fueldata = execute_query(f"SELECT friendly FROM enigma.vehiclefuel WHERE id = {fuelid}")
+        fuelname = fueldata[0]['friendly'] if fueldata else ''
 
-    return render_template('dbpub/vefuelhist.html',
-                         fuel=fuel,
-                         history=history)
+    return render_template('dbpub/vefuelhist.html', fuelid=fuelid, fuelname=fuelname, data=data)
 
 
 @bp.route('/orgdata.asp')
