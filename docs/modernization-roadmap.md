@@ -1214,11 +1214,12 @@ The tasks below focus exclusively on porting the Classic ASP web interface to Fl
 ### Overview
 **Total ASP Files:** 180 files in Webb-site ASP files/dbpub/
 **Flask Routes Created:** 152 routes in dbpub.py
-**Routes Missing or Not at Parity:** ~52 routes (31 stubs + 21 missing entirely)
+**Routes Missing or Not at Parity:** ~44 routes (23 stubs + 21 missing entirely)
+**Routes Completed Since Oct 19:** +8 routes (Tier 1-2 complete)
 
 ### Current Status by Category
 
-#### ✅ Fully Implemented (Working with SQL): ~139+ routes
+#### ✅ Fully Implemented (Working with SQL): ~147+ routes
 These routes return real data and match ASP functionality:
 - Core search, browse, stock listings, company data
 - CCASS analysis (16 routes)
@@ -1227,6 +1228,7 @@ These routes return real data and match ASP functionality:
 - SFC licensees, HK solicitors data
 - Corporate actions, advisers, officers
 - Stock performance metrics
+- **NEW (Oct 26):** Domicile, name changes, legal judgments, ESS data, corporate roles (8 routes)
 
 #### ⚠️ Stub Routes (Placeholder Implementations): 23 routes
 
@@ -1334,17 +1336,17 @@ Requires JavaScript/Highcharts integration:
 
 ### Implementation Targets
 
-**Minimum Target (Week of Oct 28-Nov 1):**
+**Minimum Target (Week of Oct 28-Nov 1):** ✅ **ACHIEVED Oct 26, 2025**
 - Complete Tier 1 (3 routes) = **100% parity on index-linked routes**
-- Status: All routes on /dbpub/ index page fully functional
+- Status: ✅ All routes on /dbpub/ index page fully functional
 
-**Recommended Target (November 2025):**
+**Recommended Target (November 2025):** ✅ **ACHIEVED Oct 26, 2025 (AHEAD OF SCHEDULE)**
 - Complete Tier 1-2 (8 routes) = **Essential data coverage**
-- Status: All high-value simple routes operational
+- Status: ✅ All high-value simple routes operational
 
-**Stretch Target (Q4 2025):**
+**Stretch Target (Q4 2025):** 🔄 **IN PROGRESS (Started Oct 26, 2025)**
 - Complete Tier 1-3 (21 routes) = **Comprehensive transport data**
-- Status: All major data categories represented
+- Status: Tier 1-2 complete (8/21), Tier 3 in progress (0/13)
 
 **Future Enhancement (Q1 2026):**
 - Complete Tier 4 (4 routes) = **Full charting capabilities**
