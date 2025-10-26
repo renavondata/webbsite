@@ -1228,19 +1228,10 @@ These routes return real data and match ASP functionality:
 - Corporate actions, advisers, officers
 - Stock performance metrics
 
-#### ⚠️ Stub Routes (Placeholder Implementations): 31 routes
+#### ⚠️ Stub Routes (Placeholder Implementations): 23 routes
 
-**High Priority Stubs (Linked from /dbpub/ index):**
-1. **domicile.asp** - Companies by domicile with counts/percentages
-2. **domicilechange.asp** - Companies that changed domicile
-3. **namechangeHKlisted.asp** - Name changes for HK-listed companies
-
-**Medium Priority Stubs (Good data available):**
-4. **namechangeHK.asp** - All company name changes (unlisted too)
-5. **judgments.asp** - Legal judgments database
-6. **roles.asp** - Corporate roles/positions analysis
-7. **searchESS.asp** - Employee share schemes search
-8. **ESStop.asp** - Top ESS data
+**MOVED TO FULLY IMPLEMENTED (Oct 26, 2025):**
+~~1-8. domicile.asp, domicilechange.asp, namechangeHKlisted.asp, namechangeHK.asp, judgments.asp, roles.asp, searchESS.asp, ESStop.asp~~ - All now working with SQL ✅
 
 **Vehicle/Transport Routes (11 routes - tables available):**
 9. **veFR.asp** - Vehicle first registrations by brand/fuel/body type
@@ -1303,23 +1294,23 @@ These routes return real data and match ASP functionality:
 
 ### Implementation Priority Tiers
 
-#### Tier 1: Critical for Parity (3 routes - 1-2 days)
+#### Tier 1: Critical for Parity (3 routes - ✅ COMPLETED Oct 26, 2025)
 Essential routes linked from main index, simple SQL implementation:
-1. domicile.asp
-2. domicilechange.asp
-3. namechangeHKlisted.asp
+1. ✅ domicile.asp - Companies by domicile with counts/percentages
+2. ✅ domicilechange.asp - Companies that changed domicile
+3. ✅ namechangeHKlisted.asp - Name changes for HK-listed companies
 
-**Impact:** Completes all high-visibility routes on dbpub index page
+**Impact:** Completes all high-visibility routes on dbpub index page ✅ ACHIEVED
 
-#### Tier 2: High Value, Simple (5 routes - 2-3 days)
+#### Tier 2: High Value, Simple (5 routes - ✅ COMPLETED Oct 26, 2025)
 Good data availability, straightforward queries:
-4. namechangeHK.asp
-5. judgments.asp
-6. roles.asp
-7. searchESS.asp
-8. ESStop.asp
+4. ✅ namechangeHK.asp - All company name changes
+5. ✅ judgments.asp - Legal judgments database with filtering
+6. ✅ roles.asp - Corporate roles/positions analysis
+7. ✅ searchESS.asp - Employee share schemes search
+8. ✅ ESStop.asp - Top 5,000 ESS recipients with statistics
 
-**Impact:** Adds legal, corporate governance, and employee compensation data
+**Impact:** Adds legal, corporate governance, and employee compensation data ✅ ACHIEVED
 
 #### Tier 3: Vehicle/Transport (13 routes - 4-5 days)
 Comprehensive transport data, moderate complexity:
