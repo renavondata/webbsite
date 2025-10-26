@@ -520,6 +520,34 @@ def btn(button_id, url, text, target_id):
         return f"<li><a href='{url}'>{text}</a></li>"
 
 
+def sl(text, def_sort, alt_sort, current_sort, base_url):
+    """
+    Write a column header with a sort link that toggles between two sort orders
+    Port of ASP SL() function
+
+    Args:
+        text: Column header text (can include HTML like <br>)
+        def_sort: Default sort parameter value
+        alt_sort: Alternate sort parameter value
+        current_sort: Current sort parameter value
+        base_url: Base URL (should already include other query params if any)
+
+    Returns:
+        HTML link that toggles between def_sort and alt_sort
+    """
+    # If current sort matches default, switch to alternate
+    sort_value = alt_sort if current_sort == def_sort else def_sort
+
+    # Build URL - if it ends with .asp add "?", otherwise add "&"
+    url = base_url
+    if url.endswith('.asp'):
+        url += '?'
+    else:
+        url += '&amp;'
+
+    return f"<a href='{url}sort={sort_value}'><b>{text}</b></a>"
+
+
 def write_nav(val, param_values, labels, base_url):
     """
     Write a navigation bar with buttons linking to a common URL with 1 parameter

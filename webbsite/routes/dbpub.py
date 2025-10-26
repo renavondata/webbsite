@@ -5693,20 +5693,340 @@ def pay():
 
 @bp.route('/payleague.asp')
 def payleague():
-    """Director pay league"""
-    year = get_int('y', date.today().year)
-    # TODO: Query pay league
-    league = []
-    return render_template('dbpub/payleague.html', year=year, league=league)
+    """
+    HK-listed directors pay league table
+    Shows director pay aggregated across all companies
+    Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
+    """
+    from webbsite.asp_helpers import get_int, get_bool, get_str
+
+    # Constants
+    MAX_YEAR = 2024
+    LIMIT = 1000
+
+    # Parameters
+    year = get_int('y', MAX_YEAR)
+    if year < 2005:
+        year = 2005
+    elif year > MAX_YEAR:
+        year = MAX_YEAR
+
+    currency = get_int('c', 0)  # 0 = HKD
+    ined_only = get_bool('i')  # Only INED positions
+    exclude_share = get_bool('s')  # Exclude share-based pay from total
+    sort_param = get_str('sort', 'totdn')
+
+    # Get available currencies
+    curr_query = """
+        SELECT DISTINCT curr1 as id, currency
+        FROM enigma.currpair p
+        JOIN enigma.currencies c ON p.curr1 = c.id
+        UNION SELECT 18, 'MOP'
+        UNION SELECT 0, 'HKD'
+        ORDER BY currency
+    """
+    currencies = execute_query(curr_query)
+
+    # Count companies with missing pay data
+    todo_query = """
+        SELECT COUNT(DISTINCT p.orgid)
+        FROM enigma.pay p
+        JOIN enigma.documents d ON p.orgid = d.orgid AND p.d = d.recorddate
+        WHERE d.doctypeid = 0
+          AND NOT d.pay
+          AND EXTRACT(YEAR FROM p.d) = %s
+    """
+    todo_count = execute_query(todo_query, (year,))
+    todo = todo_count[0]['count'] if todo_count else 0
+
+    # Sort mapping
+    sort_map = {
+        'feedn': 'fee DESC, name',
+        'feeup': 'fee, name',
+        'saldn': 'sal DESC, name',
+        'salup': 'sal, name',
+        'bondn': 'bon DESC, name',
+        'bonup': 'bon, name',
+        'retdn': 'ret DESC, name',
+        'retup': 'ret, name',
+        'shadn': 'sha DESC, name',
+        'shaup': 'sha, name',
+        'totdn': 'tot DESC, name',
+        'totup': 'tot, name',
+        'cntdn': 'c DESC, name',
+        'cntup': 'c, name'
+    }
+    order_by = sort_map.get(sort_param, 'tot DESC, name')
+
+    # Total calculation - optionally exclude share-based
+    total_calc = "total - COALESCE(share, 0)" if exclude_share else "total"
+
+    # Build query
+    if ined_only:
+        # For INED only - need to check position status at time of pay record
+        sql = f"""
+            SELECT
+                pplid,
+                CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, '')) as name,
+                COALESCE(ROUND(SUM(f * fee)::numeric)::integer, 0) as fee,
+                COALESCE(ROUND(SUM(f * sal)::numeric)::integer, 0) as sal,
+                COALESCE(ROUND(SUM(f * bon)::numeric)::integer, 0) as bon,
+                COALESCE(ROUND(SUM(f * ret)::numeric)::integer, 0) as ret,
+                COALESCE(ROUND(SUM(f * sha)::numeric)::integer, 0) as sha,
+                COALESCE(ROUND(SUM(f * tot)::numeric)::integer, 0) as tot,
+                COUNT(*) as c
+            FROM (
+                SELECT
+                    orgid, pplid, currid, p.d,
+                    fees as fee, salary as sal, bonus as bon,
+                    retire as ret, share as sha, {total_calc} as tot,
+                    (
+                        SELECT status
+                        FROM enigma.directorships d
+                        JOIN enigma.positions pn ON d.positionid = pn.positionid
+                        WHERE d.director = p.pplid
+                          AND d.company = p.orgid
+                          AND pn.rank = 1
+                          AND (d.apptdate IS NULL OR d.apptdate <= p.d)
+                          AND (d.resdate IS NULL OR d.resdate > COALESCE(
+                              (SELECT recorddate FROM enigma.documents
+                               WHERE doctypeid = 0 AND orgid = p.orgid
+                                 AND recorddate < p.d
+                               ORDER BY recorddate DESC LIMIT 1),
+                              p.d - INTERVAL '1 year'
+                          ))
+                        ORDER BY d.apptdate DESC LIMIT 1
+                    ) as stat
+                FROM enigma.pay p
+                WHERE EXTRACT(YEAR FROM p.d) = %s AND p.prank = 1
+            ) t
+            JOIN enigma.documents d ON t.orgid = d.orgid
+                AND d.doctypeid = 0
+                AND t.d = d.recorddate
+            JOIN enigma.payfx f ON t.d = f.d
+                AND t.currid = f.repcurr
+                AND f.dispcurr = %s
+            JOIN enigma.people pl ON t.pplid = pl.personid
+            WHERE stat = 3 AND d.pay
+            GROUP BY pplid, name
+            ORDER BY {order_by}
+            LIMIT {LIMIT}
+        """
+        params = (year, currency)
+    else:
+        # All directors
+        sql = f"""
+            SELECT
+                pplid,
+                CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, '')) as name,
+                COALESCE(ROUND(SUM(f * fees)::numeric)::integer, 0) as fee,
+                COALESCE(ROUND(SUM(f * salary)::numeric)::integer, 0) as sal,
+                COALESCE(ROUND(SUM(f * bonus)::numeric)::integer, 0) as bon,
+                COALESCE(ROUND(SUM(f * retire)::numeric)::integer, 0) as ret,
+                COALESCE(ROUND(SUM(f * share)::numeric)::integer, 0) as sha,
+                COALESCE(ROUND(SUM(f * {total_calc})::numeric)::integer, 0) as tot,
+                COUNT(*) as c
+            FROM enigma.pay p
+            JOIN enigma.documents d ON p.orgid = d.orgid
+                AND d.doctypeid = 0
+                AND p.d = d.recorddate
+            JOIN enigma.payfx f ON p.d = f.d
+                AND p.currid = f.repcurr
+                AND f.dispcurr = %s
+            JOIN enigma.people pl ON p.pplid = pl.personid
+            WHERE EXTRACT(YEAR FROM p.d) = %s
+              AND p.prank = 1
+              AND d.pay
+            GROUP BY pplid, name
+            ORDER BY {order_by}
+            LIMIT {LIMIT}
+        """
+        params = (currency, year)
+
+    try:
+        league = execute_query(sql, params)
+    except Exception as ex:
+        current_app.logger.error(f"Error in payleague.asp: {ex}", exc_info=True)
+        league = []
+
+    return render_template('dbpub/payleague.html',
+                         year=year,
+                         currency=currency,
+                         currencies=currencies,
+                         ined_only=ined_only,
+                         exclude_share=exclude_share,
+                         sort=sort_param,
+                         league=league,
+                         todo=todo,
+                         max_year=MAX_YEAR)
 
 
 @bp.route('/payleagueorg.asp')
 def payleague_org():
-    """Company pay league"""
-    year = get_int('y', date.today().year)
-    # TODO: Query company pay totals
-    league = []
-    return render_template('dbpub/payleague_org.html', year=year, league=league)
+    """
+    HK-listed board pay league table (by company)
+    Shows total pay per company aggregated across all directors
+    Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
+    """
+    from webbsite.asp_helpers import get_int, get_bool, get_str
+
+    # Constants
+    MAX_YEAR = 2024
+    LIMIT = 10000
+
+    # Parameters
+    year = get_int('y', MAX_YEAR)
+    if year < 2005:
+        year = 2005
+    elif year > MAX_YEAR:
+        year = MAX_YEAR
+
+    currency = get_int('c', 0)  # 0 = HKD
+    ined_only = get_bool('i')  # Only INED positions
+    exclude_share = get_bool('s')  # Exclude share-based pay from total
+    sort_param = get_str('sort', 'totdn')
+
+    # Get available currencies
+    curr_query = """
+        SELECT DISTINCT curr1 as id, currency
+        FROM enigma.currpair p
+        JOIN enigma.currencies c ON p.curr1 = c.id
+        UNION SELECT 18, 'MOP'
+        UNION SELECT 0, 'HKD'
+        ORDER BY currency
+    """
+    currencies = execute_query(curr_query)
+
+    # Count companies with missing pay data
+    todo_query = """
+        SELECT COUNT(DISTINCT p.orgid)
+        FROM enigma.pay p
+        JOIN enigma.documents d ON p.orgid = d.orgid AND p.d = d.recorddate
+        WHERE d.doctypeid = 0
+          AND NOT d.pay
+          AND EXTRACT(YEAR FROM p.d) = %s
+    """
+    todo_count = execute_query(todo_query, (year,))
+    todo = todo_count[0]['count'] if todo_count else 0
+
+    # Sort mapping
+    sort_map = {
+        'feedn': 'fee DESC, name',
+        'feeup': 'fee, name',
+        'saldn': 'sal DESC, name',
+        'salup': 'sal, name',
+        'bondn': 'bon DESC, name',
+        'bonup': 'bon, name',
+        'retdn': 'ret DESC, name',
+        'retup': 'ret, name',
+        'shadn': 'sha DESC, name',
+        'shaup': 'sha, name',
+        'totdn': 'tot DESC, name',
+        'totup': 'tot, name'
+    }
+    order_by = sort_map.get(sort_param, 'tot DESC, name')
+
+    # Total calculation - optionally exclude share-based
+    total_calc = "total - COALESCE(share, 0)" if exclude_share else "total"
+
+    # Build query
+    if ined_only:
+        # For INED only - need to check position status at time of pay record
+        sql = f"""
+            SELECT
+                t.orgid,
+                name1 as name,
+                COALESCE(ROUND(SUM(f * fee)::numeric)::integer, 0) as fee,
+                COALESCE(ROUND(SUM(f * sal)::numeric)::integer, 0) as sal,
+                COALESCE(ROUND(SUM(f * bon)::numeric)::integer, 0) as bon,
+                COALESCE(ROUND(SUM(f * ret)::numeric)::integer, 0) as ret,
+                COALESCE(ROUND(SUM(f * sha)::numeric)::integer, 0) as sha,
+                COALESCE(ROUND(SUM(f * tot)::numeric)::integer, 0) as tot,
+                t.d
+            FROM (
+                SELECT
+                    orgid, pplid, currid, p.d,
+                    fees as fee, salary as sal, bonus as bon,
+                    retire as ret, share as sha, {total_calc} as tot,
+                    (
+                        SELECT status
+                        FROM enigma.directorships d
+                        JOIN enigma.positions pn ON d.positionid = pn.positionid
+                        WHERE d.director = p.pplid
+                          AND d.company = p.orgid
+                          AND pn.rank = 1
+                          AND (d.apptdate IS NULL OR d.apptdate <= p.d)
+                          AND (d.resdate IS NULL OR d.resdate > COALESCE(
+                              (SELECT recorddate FROM enigma.documents
+                               WHERE doctypeid = 0 AND orgid = p.orgid
+                                 AND recorddate < p.d
+                               ORDER BY recorddate DESC LIMIT 1),
+                              p.d - INTERVAL '1 year'
+                          ))
+                        ORDER BY d.apptdate DESC LIMIT 1
+                    ) as stat
+                FROM enigma.pay p
+                WHERE EXTRACT(YEAR FROM p.d) = %s AND p.prank = 1
+            ) t
+            JOIN enigma.documents d ON t.orgid = d.orgid
+                AND d.doctypeid = 0
+                AND t.d = d.recorddate
+            JOIN enigma.payfx f ON t.d = f.d
+                AND t.currid = f.repcurr
+                AND f.dispcurr = %s
+            JOIN enigma.organisations o ON t.orgid = o.personid
+            WHERE stat = 3 AND d.pay
+            GROUP BY t.orgid, name, t.d
+            ORDER BY {order_by}
+            LIMIT {LIMIT}
+        """
+        params = (year, currency)
+    else:
+        # All directors
+        sql = f"""
+            SELECT
+                p.orgid,
+                name1 as name,
+                COALESCE(ROUND(SUM(f * fees)::numeric)::integer, 0) as fee,
+                COALESCE(ROUND(SUM(f * salary)::numeric)::integer, 0) as sal,
+                COALESCE(ROUND(SUM(f * bonus)::numeric)::integer, 0) as bon,
+                COALESCE(ROUND(SUM(f * retire)::numeric)::integer, 0) as ret,
+                COALESCE(ROUND(SUM(f * share)::numeric)::integer, 0) as sha,
+                COALESCE(ROUND(SUM(f * {total_calc})::numeric)::integer, 0) as tot,
+                p.d
+            FROM enigma.pay p
+            JOIN enigma.documents d ON p.orgid = d.orgid
+                AND d.doctypeid = 0
+                AND p.d = d.recorddate
+            JOIN enigma.payfx f ON p.d = f.d
+                AND p.currid = f.repcurr
+                AND f.dispcurr = %s
+            JOIN enigma.organisations o ON p.orgid = o.personid
+            WHERE EXTRACT(YEAR FROM p.d) = %s
+              AND p.prank = 1
+              AND d.pay
+            GROUP BY p.orgid, name, p.d
+            ORDER BY {order_by}
+            LIMIT {LIMIT}
+        """
+        params = (currency, year)
+
+    try:
+        league = execute_query(sql, params)
+    except Exception as ex:
+        current_app.logger.error(f"Error in payleagueorg.asp: {ex}", exc_info=True)
+        league = []
+
+    return render_template('dbpub/payleague_org.html',
+                         year=year,
+                         currency=currency,
+                         currencies=currencies,
+                         ined_only=ined_only,
+                         exclude_share=exclude_share,
+                         sort=sort_param,
+                         league=league,
+                         todo=todo,
+                         max_year=MAX_YEAR)
 
 
 # Public housing
@@ -6413,7 +6733,7 @@ def boardcomp():
     Query params: d (snapshot date), sort
     """
     from datetime import date
-    from webbsite.asp_helpers import get_str
+    from webbsite.asp_helpers import get_str, mobile, sl
 
     # Get snapshot date
     d_str = get_str('d', '')
@@ -6422,8 +6742,10 @@ def boardcomp():
             d = date.fromisoformat(d_str)
         except ValueError:
             d = date.today()
+            d_str = d.isoformat()
     else:
         d = date.today()
+        d_str = d.isoformat()
 
     # Get sort parameter
     sort_param = get_str('sort', 'dirdn')
@@ -6447,55 +6769,96 @@ def boardcomp():
     }
     order_by = order_by_map.get(sort_param, order_by_map['dirdn'])
 
-    # Query board composition - aggregate directors per company
+    # Query board composition - direct port from hkbdanalsnap stored procedure
     sql = f"""
-        WITH company_boards AS (
-            SELECT
-                d.company,
-                o.name1 as name,
-                COUNT(*) as dirs,
-                COUNT(CASE WHEN pn.postype = 3 THEN 1 END) as ine,
-                COUNT(CASE WHEN p.sex = 'F' THEN 1 END) as female,
-                ROUND(AVG(EXTRACT(YEAR FROM %s) - p.yob), 1) as age,
-                MIN(sl.stockcode) as sc
-            FROM enigma.directorships d
-            JOIN enigma.organisations o ON d.company = o.personid
-            JOIN enigma.people p ON d.director = p.personid
-            JOIN enigma.positions pn ON d.positionid = pn.positionid
-            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-            LEFT JOIN enigma.stocklistings sl ON lc.issueid = sl.issueid
-                AND sl.firsttradedate <= %s
-                AND (sl.delistdate IS NULL OR sl.delistdate > %s)
-                AND sl."2ndCtr" = FALSE
-            WHERE pn.rank = 1
-              AND (d.apptdate IS NULL OR d.apptdate <= %s)
-              AND (d.resdate IS NULL OR d.resdate > %s)
-            GROUP BY d.company, o.name1
-        )
         SELECT
-            company as orgid,
+            issuer as personid,
             name,
             dirs,
             ine,
             female,
-            age,
+            CASE WHEN avg_yob IS NOT NULL THEN EXTRACT(YEAR FROM CAST(%s AS date)) - avg_yob END as age,
             sc,
-            CASE WHEN dirs > 0 THEN ROUND(100.0 * ine / dirs, 1) ELSE 0 END as inepropn,
-            CASE WHEN dirs > 0 THEN ROUND(100.0 * female / dirs, 1) ELSE 0 END as fempropn
-        FROM company_boards
+            ine::numeric / NULLIF(dirs, 0) as inepropn,
+            female::numeric / NULLIF(dirs, 0) as fempropn
+        FROM (
+            SELECT
+                t2.issuer,
+                t2.name,
+                t2.sc,
+                COUNT(DISTINCT d.director) as dirs,
+                SUM(CASE WHEN pn.status = 3 THEN 1 ELSE 0 END) as ine,
+                SUM(CASE WHEN p.sex = 'F' THEN 1 ELSE 0 END) as female,
+                AVG(p.yob) as avg_yob
+            FROM (
+                SELECT DISTINCT
+                    i.issuer,
+                    o.name1 as name,
+                    (
+                        SELECT sl2.stockcode
+                        FROM enigma.issue i2
+                        JOIN enigma.stocklistings sl2 ON i2.id1 = sl2.issueid
+                        WHERE i2.issuer = i.issuer
+                          AND i2.typeid NOT IN (1, 2, 40, 41, 46)
+                          AND sl2.stockexid IN (1, 20, 22, 23, 38)
+                          AND sl2."2ndCtr" = FALSE
+                          AND (sl2.firsttradedate IS NULL OR sl2.firsttradedate <= %s)
+                          AND (sl2.delistdate IS NULL OR sl2.delistdate > %s)
+                        ORDER BY sl2.stockcode
+                        LIMIT 1
+                    ) as sc
+                FROM enigma.issue i
+                JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+                JOIN enigma.organisations o ON i.issuer = o.personid
+                WHERE sl.stockexid IN (1, 20)
+                  AND i.typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+                  AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+            ) t2
+            LEFT JOIN enigma.directorships d ON t2.issuer = d.company
+                AND (d.apptdate IS NULL OR d.apptdate <= %s)
+                AND (d.resdate IS NULL OR d.resdate > %s)
+            LEFT JOIN enigma.people p ON d.director = p.personid
+            LEFT JOIN enigma.positions pn ON d.positionid = pn.positionid
+            WHERE pn.rank = 1 OR d.director IS NULL
+            GROUP BY t2.issuer, t2.name, t2.sc
+        ) t4
         ORDER BY {order_by}
     """
 
     try:
-        results = execute_query(sql, (d, d, d, d, d))
+        results = execute_query(sql, (d, d, d, d, d, d, d))
     except Exception as ex:
         current_app.logger.error(f"Error in boardcomp.asp: {ex}", exc_info=True)
         results = []
 
+    title = f"Board composition per HK-listed company on {d}"
+
+    # Build base URL for sort links
+    base_url = '/dbpub/boardcomp.asp'
+    if d_str:
+        base_url += f'?d={d_str}'
+
+    # Generate sort links using sl() function (port of ASP SL function)
+    sort_links = {
+        'stock': sl('Stock<br>code', 'stkup', 'stkdn', sort_param, base_url),
+        'name': sl('Name', 'namup', 'namdn', sort_param, base_url),
+        'dirs': sl('No.<br>of<br>dirs', 'dirdn', 'dirup', sort_param, base_url),
+        'ine': sl('INE', 'inedn', 'ineup', sort_param, base_url),
+        'female': sl("<span style='font-size:large'>&#x2640;</span>", 'femdn', 'femup', sort_param, base_url),
+        'inepropn': sl('INE<br>Ratio', 'inpdn', 'inpup', sort_param, base_url),
+        'fempropn': sl('Fem.<br>Ratio', 'fmpdn', 'fmpup', sort_param, base_url),
+        'age': sl(f'Mean<br>age in<br>{d.year}', 'agedn', 'ageup', sort_param, base_url),
+    }
+
     return render_template('dbpub/boardcomp.html',
                          boards=results,
                          d=d,
-                         sort=sort_param)
+                         d_str=d_str,
+                         sort=sort_param,
+                         title=title,
+                         mobile_alert=mobile(3),
+                         sort_links=sort_links)
 
 
 # Listing trend by year
