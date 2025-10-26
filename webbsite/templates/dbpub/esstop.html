@@ -1,6 +1,215 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}Employment Support Scheme top 5,000 recipients{% if p > 0 %}: phase {{ p }}{% else %}: both phases{% endif %}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>Employment Support Scheme top 5,000 recipients{% if p > 0 %}: phase {{ p }}{% else %}: both phases{% endif %}</h2>
+
+<p>The ESS was a <a href="../articles/ESS.asp">misguided</a> HK Government
+subsidy scheme for employers, which covers half of salaries up to a subsidy cap
+of HK$9,000 per month for 6 months from June to November 2020, divided into 2
+phases each of 3 months. Each phase had to be separately claimed. We've taken the
+PDFs from the
+<a href="https://www.ess.gov.hk/en/granted_companies.html" target="_blank" rel="noopener">Government web site</a> and matched employers, as far as possible, with known
+entities in Webb-site Who's Who. If an employer has multiple claims for
+different branches (for example, different schools, churches or restaurants
+under the same entity) then these are grouped into one line. Click the name to see details.</p>
+
+<p>After a 13-month wait, the final batches of data were published on
+11-Feb-2022 after Webb-site filed a second request under the Code on Access to
+Information, to push them along. Amounts do not include
+an entity's subsidiaries. "Heads" means the "committed headcount under payroll".
+This is the total number of employees (paid or not) in March 2020 MPF filings.
+Employers could choose an earlier month between Dec-2019 and Mar-2020 for the
+amount of subsidies based on payroll for that month, so in some cases where
+staff were made redundant between Dec-2019 and Mar-2020, there is zero committed
+headcount, or the average exceeds $27k per employee per phase. It must all be spent on
+wages for the
+remaining employees (including new hires) or clawed back to Government.</p>
+
+<p>If you choose both phases then P1 and p2 indicate
+whether a claim was made and approved in each phase.</p>
+
+<ul class="navlist">
+    <li{% if p == 1 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=1) }}">Phase 1</a></li>
+    <li{% if p == 2 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=2) }}">Phase 2</a></li>
+    <li{% if p == 0 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=0) }}">Both</a></li>
+</ul>
+<div class="clear"></div>
+
+<h3>Statistics</h3>
+
+{% if p == 0 %}
+    {# Both phases - show phase-by-phase stats #}
+    <table class="numtable">
+        <tr>
+            <th>Phase</th>
+            <th>Claims<br>approved</th>
+            <th>Amount HK$</th>
+            <th>Heads</th>
+            <th class="colHide3">Average<br>HK$</th>
+        </tr>
+        {% set sumcnt = 0 %}
+        {% set sumamt = 0 %}
+        {% set sumhds = 0 %}
+        {% set x = 0 %}
+        {% for row in stats_data %}
+            {% set sumcnt = sumcnt + row.cnt %}
+            {% set sumamt = sumamt + row.amt %}
+            {% set sumhds = sumhds + row.hds %}
+            {% set x = x + 1 %}
+            <tr>
+                <td>{{ row.phase }}</td>
+                <td>{{ "{:,.0f}".format(row.cnt) }}</td>
+                <td>{{ "{:,.0f}".format(row.amt) }}</td>
+                <td>{{ "{:,.0f}".format(row.hds) }}</td>
+                <td class="colHide3">{{ "{:,.0f}".format(row.avg) if row.avg else '' }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td>Both</td>
+            <td>{{ "{:,.0f}".format(sumcnt / x) if x > 0 else '' }}</td>
+            <td>{{ "{:,.0f}".format(sumamt) }}</td>
+            <td>{{ "{:,.0f}".format(sumhds / x) if x > 0 else '' }}</td>
+            <td class="colHide3">{{ "{:,.0f}".format(sumamt / sumhds * x) if sumhds > 0 else '' }}</td>
+        </tr>
+    </table>
+{% else %}
+    {# Specific phase - show matched vs unmatched #}
+    {% if matched_stats %}
+    <table class="numtable fcl">
+        <tr>
+            <th></th>
+            <th>Claims</th>
+            <th>Amount HK$</th>
+            <th>Heads</th>
+            <th>Average<br>HK$</th>
+            <th class="colHide2">Amount<br>%</th>
+            <th class="colHide2">Heads<br>%</th>
+        </tr>
+        <tr>
+            <td>Matched entities</td>
+            <td>{{ "{:,.0f}".format(matched_stats.matched['cnt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.matched['amt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.matched['hds']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.matched['avg']) if matched_stats.matched['avg'] else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(matched_stats.matched['amt'] / matched_stats.total['amt'] * 100) if matched_stats.total['amt'] > 0 else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(matched_stats.matched['hds'] / matched_stats.total['hds'] * 100) if matched_stats.total['hds'] > 0 else '' }}</td>
+        </tr>
+        <tr>
+            <td>Unmatched entities</td>
+            <td>{{ "{:,.0f}".format(matched_stats.unmatched['cnt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.unmatched['amt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.unmatched['hds']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.unmatched['avg']) if matched_stats.unmatched['avg'] else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(100 - matched_stats.matched['amt'] * 100 / matched_stats.total['amt']) if matched_stats.total['amt'] > 0 else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(100 - matched_stats.matched['hds'] * 100 / matched_stats.total['hds']) if matched_stats.total['hds'] > 0 else '' }}</td>
+        </tr>
+        <tr class="total">
+            <td>Total approved claims</td>
+            <td>{{ "{:,.0f}".format(matched_stats.total['cnt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.total['amt']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.total['hds']) }}</td>
+            <td>{{ "{:,.0f}".format(matched_stats.total['amt'] / matched_stats.total['hds']) if matched_stats.total['hds'] > 0 else '' }}</td>
+            <td class="colHide2">100.00</td>
+            <td class="colHide2">100.00</td>
+        </tr>
+    </table>
+    {% endif %}
+
+    {# Claim size analysis #}
+    {% if claim_analysis %}
+    <h3>Analysis of claim amount (ungrouped)</h3>
+    <table class="numtable">
+        <tr>
+            <th>Claim<br>size HK$</th>
+            <th>Claims</th>
+            <th>Amount HK$</th>
+            <th>Heads</th>
+            <th>Average<br>HK$</th>
+            <th class="colHide2">Amount<br>%</th>
+            <th class="colHide2">Heads<br>%</th>
+        </tr>
+        {% for row in claim_analysis %}
+        <tr>
+            <td>{{ row.amtrange }}</td>
+            <td>{{ "{:,.0f}".format(row.cnt) }}</td>
+            <td>{{ "{:,.0f}".format(row.amt) }}</td>
+            <td>{{ "{:,.0f}".format(row.hds) }}</td>
+            <td>{{ "{:,.0f}".format(row.avg) if row.avg else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(100 * row.amt / matched_stats.total['amt']) if matched_stats and matched_stats.total['amt'] > 0 else '' }}</td>
+            <td class="colHide2">{{ "{:.2f}".format(100 * row.hds / matched_stats.total['hds']) if matched_stats and matched_stats.total['hds'] > 0 else '' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+{% endif %}
+
+<h3>The Top 5,000</h3>
+<p>Click the headings to sort. To search all approved claims,
+<a href="{{ url_for('dbpub.searchess') }}"><strong>click here</strong></a>.</p>
+
+<table class="numtable c2l">
+    <tr>
+        <th></th>
+        <th class="left">
+            {% if sort_param == 'namdn' %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='namup') }}"><b>Name</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='namdn') }}">Name</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'amtdn' %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='amtup') }}"><b>Amount<br>HK$</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='amtdn') }}">Amount<br>HK$</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'hdsdn' %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='hdsup') }}"><b>Heads</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='hdsdn') }}">Heads</a>
+            {% endif %}
+        </th>
+        <th class="colHide2">
+            {% if sort_param == 'avgdn' %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='avgup') }}"><b>Average<br>HK$</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.esstop', p=p, sort='avgdn') }}">Average<br>HK$</a>
+            {% endif %}
+        </th>
+        {% if p == 0 %}
+            <th class="colHide2">p1</th>
+            <th class="colHide2">p2</th>
+        {% endif %}
+    </tr>
+    {% set sumamt = 0 %}
+    {% set sumhds = 0 %}
+    {% for row in top_data %}
+        {% set sumamt = sumamt + row.amt %}
+        {% set sumhds = sumhds + row.hds %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                {% if row.orgid %}
+                    <a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.name }}</a>
+                {% else %}
+                    {{ row.name }}
+                {% endif %}
+            </td>
+            <td>{{ "{:,.0f}".format(row.amt) if row.amt else '' }}</td>
+            <td>{{ "{:,.0f}".format(row.hds) if row.hds else '' }}</td>
+            <td class="colHide2">{{ "{:,.0f}".format(row.avg) if row.avg else '-' }}</td>
+            {% if p == 0 %}
+                <td class="colHide2">{{ row.p1 }}</td>
+                <td class="colHide2">{{ row.p2 }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+</table>
+
+<p>Total amount in top 5000 HK$: {{ "{:,.0f}".format(sumamt) }}</p>
+<p>Committed headcount in top 5000: {{ "{:,.0f}".format(sumhds) }}</p>
+<p>Average per head HK$: {{ "{:,.0f}".format(sumamt / sumhds) if sumhds > 0 else '0' }}</p>
+
 {% endblock %}

@@ -1,6 +1,51 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}Name changes of HK-incorporated companies in the last 30 days{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Name changes of HK-incorporated companies in the last 30 days</h2>
+
+<table class="txtable" style="font-size:10pt">
+    <tr>
+        <th>
+            {% if sort_param == 'newup' %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='newdn') }}"><b>Current Name</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='newup') }}">Current Name</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'oldup' %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='olddn') }}"><b>Old Name</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='oldup') }}">Old Name</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'datup' %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='datdn') }}"><b>Until</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.namechange_hk', sort='datup') }}">Until</a>
+            {% endif %}
+        </th>
+    </tr>
+    {% for row in changes_data %}
+    {% set cur_name = row.name1 %}
+    {% if row.cname %}
+        {% set cur_name = cur_name ~ "<br>" ~ row.cname %}
+    {% endif %}
+    {% set old_name = "" %}
+    {% if not row.oldname %}
+        {% set old_name = row.oldcname or "" %}
+    {% elif not row.oldcname %}
+        {% set old_name = row.oldname %}
+    {% else %}
+        {% set old_name = row.oldname ~ "<br>" ~ row.oldcname %}
+    {% endif %}
+    <tr>
+        <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.personid) }}'>{{ cur_name|safe }}</a></td>
+        <td>{{ old_name|safe }}</td>
+        <td>{{ row.datechanged.strftime('%Y-%m-%d') if row.datechanged else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}

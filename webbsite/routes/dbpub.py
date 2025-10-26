@@ -6917,10 +6917,22 @@ def functions1():
 # Roles
 @bp.route('/roles.asp')
 def roles():
-    """Directory of position roles"""
-    # TODO: Query roles
-    roles = []
-    return render_template('dbpub/roles.html', roles=roles)
+    """
+    Webb-site League Tables - Directory of adviser roles
+
+    Shows count of positions for each adviser role (auditors, bankers, IFAs, etc.)
+    """
+    from webbsite.db import execute_query
+    from flask import render_template
+
+    # Query the WebCountAdvByRole view
+    roles_data = execute_query("""
+        SELECT roleid, role, onetime, countofrole
+        FROM enigma.webcountadvbyrole
+        ORDER BY role
+    """)
+
+    return render_template('dbpub/roles.html', roles_data=roles_data)
 
 
 @bp.route('/possum.asp')
@@ -9163,29 +9175,127 @@ def qt():
 # Judgments database
 @bp.route('/judgments.asp')
 def judgments():
-    """Legal judgments database"""
-    from webbsite.asp_helpers import get_str
+    """
+    Legal judgments database browser
+
+    Filters: court (c), case type (t), year (y), month (m), day (d), sort
+    Shows judgments from Hong Kong courts
+    """
+    from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
+    from datetime import datetime
 
-    search = get_str('q', '')
+    # Get filter parameters
+    y = get_int('y', 0)
+    m = get_int('m', 0) if y > 0 else 0
+    d = get_int('d', 0) if m > 0 else 0
+    c = get_int('c', 0)  # court ID
+    t = get_int('t', 0)  # case type ID
+    sort_param = request.args.get('sort', 'jddn')
 
-    if search:
-        sql = """
-            SELECT personid, name1, cname
-            FROM enigma.organisations
-            WHERE name1 ILIKE %s OR cname ILIKE %s
-            LIMIT 100
-        """
-        try:
-            results = execute_query(sql, (f'%{search}%', f'%{search}%'))
-        except Exception as ex:
-            current_app.logger.error(f"Error in judgments.asp: {ex}", exc_info=True)
-            results = []
-    else:
-        results = []
+    limit = 1000
 
-    return render_template('dbpub/judgments.html', results=results, q=search)
+    # Sort mappings
+    sort_mappings = {
+        'jddn': 'jdate DESC, caseyear, caseseq',
+        'jdup': 'jdate, caseyear, caseseq',
+        'psup': 'parties, jdate DESC',
+        'psdn': 'parties DESC, jdate',
+        'cnup': 'casenum, jdate DESC',
+        'cndn': 'casenum DESC, jdate',
+        'ncup': 'neutcit, jdate DESC',
+        'ncdn': 'neutcit DESC, jdate',
+        'rpdn': 'rep DESC, casenum, jdate DESC',
+        'rpup': 'rep, casenum, jdate'
+    }
+    ob = sort_mappings.get(sort_param, 'jdate DESC, caseyear, caseseq')
+
+    # Get list of courts for dropdown
+    courts = execute_query("SELECT id, des FROM enigma.courts ORDER BY des")
+
+    # Get case types for selected court
+    case_types = []
+    ct_name = ""
+    type_name = ""
+    if c > 0:
+        ct_result = execute_query("SELECT des FROM enigma.courts WHERE id = %s", (c,))
+        if ct_result:
+            ct_name = ct_result[0]['des']
+        case_types = execute_query(
+            "SELECT id, des FROM enigma.casetypes WHERE courtid = %s ORDER BY des",
+            (c,)
+        )
+        # Validate case type matches court
+        if t > 0 and case_types:
+            type_result = execute_query(
+                "SELECT des FROM enigma.casetypes WHERE id = %s AND courtid = %s",
+                (t, c)
+            )
+            if type_result:
+                type_name = type_result[0]['des']
+            else:
+                t = 0  # Reset if mismatch
+
+    # Build SQL query
+    sql = """
+        SELECT j.jdate, j.dis, j.casenum, j.neutcit, j.parties,
+               t.des AS tdes, c.des AS cdes, j.rv, j.rs, j.rep,
+               j.caseyear, j.caseseq
+        FROM enigma.judgments j
+        JOIN enigma.casetypes t ON j.casetype = t.id
+        JOIN enigma.courts c ON t.courtid = c.id
+        WHERE 1=1
+    """
+    params = []
+
+    # Date filters
+    if y > 0:
+        sql += " AND EXTRACT(YEAR FROM j.jdate) = %s"
+        params.append(y)
+        if m > 0:
+            sql += " AND EXTRACT(MONTH FROM j.jdate) = %s"
+            params.append(m)
+            if d > 0:
+                sql += " AND EXTRACT(DAY FROM j.jdate) = %s"
+                params.append(d)
+
+    # Court and case type filters
+    if c > 0:
+        sql += " AND t.courtid = %s"
+        params.append(c)
+        if t > 0:
+            sql += " AND j.casetype = %s"
+            params.append(t)
+
+    sql += f" ORDER BY {ob} LIMIT {limit}"
+
+    # Execute query
+    judgments_data = execute_query(sql, tuple(params)) if params else execute_query(sql)
+
+    # Build title
+    title = "Judgments"
+    if c > 0:
+        title += f" of {ct_name}"
+    if y > 0:
+        if d > 0:
+            title += f" dated on {y:04d}-{m:02d}-{d:02d}"
+        elif m > 0:
+            title += f" dated in {y:04d}-{m:02d}"
+        else:
+            title += f" dated in {y:04d}"
+    if type_name:
+        title += f": {type_name}"
+
+    return render_template('dbpub/judgments.html',
+                         judgments_data=judgments_data,
+                         courts=courts,
+                         case_types=case_types,
+                         y=y, m=m, d=d, c=c, t=t,
+                         sort_param=sort_param,
+                         title=title,
+                         limit=limit,
+                         current_year=datetime.now().year)
 
 
 # Vaccination data
@@ -9202,24 +9312,234 @@ def vax():
 # ESS (Employee Stock Scheme) top holdings
 @bp.route('/ESStop.asp')
 def esstop():
-    """Top Employee Stock Scheme holdings"""
-    from webbsite.db import execute_query
-    from flask import render_template
+    """
+    Employment Support Scheme top 5,000 recipients
+    Shows statistics and top recipients by phase or both phases
+    """
+    p = get_int('p', 0)  # 0=both phases, 1=phase 1, 2=phase 2
+    if p < 0 or p > 2:
+        p = 0
 
-    # Stub - would need ESS-specific data
-    return render_template('dbpub/esstop.html', data=[])
+    sort_param = get_str('sort', 'amtdn')
+
+    # Define sort order
+    sort_map = {
+        'hdsup': 'hds, name',
+        'hdsdn': 'hds DESC, name',
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'avgup': 'avg, name',
+        'avgdn': 'avg DESC, name',
+        'amtup': 'amt, name',
+        'amtdn': 'amt DESC, name',
+    }
+    order_by = sort_map.get(sort_param, 'amt DESC, name')
+
+    # Statistics queries
+    stats_data = []
+    matched_stats = None
+    claim_analysis = None
+
+    if p == 0:
+        # Statistics for both phases
+        stats_data = execute_query("""
+            SELECT phase, COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
+                   SUM(amt)::numeric / SUM(heads) AS avg
+            FROM enigma.ess
+            GROUP BY phase
+            ORDER BY phase
+        """)
+    else:
+        # Statistics for specific phase - matched vs unmatched
+        total_stats = execute_query("""
+            SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds
+            FROM enigma.ess
+            WHERE phase = %s
+        """, (p,))
+
+        matched_data = execute_query("""
+            SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
+                   SUM(amt)::numeric / SUM(heads) AS avg
+            FROM enigma.ess
+            WHERE orgid IS NOT NULL AND phase = %s
+        """, (p,))
+
+        if total_stats and matched_data:
+            total = total_stats[0]
+            matched = matched_data[0]
+            matched_stats = {
+                'matched': matched,
+                'total': total,
+                'unmatched': {
+                    'cnt': total['cnt'] - matched['cnt'],
+                    'amt': total['amt'] - matched['amt'],
+                    'hds': total['hds'] - matched['hds'],
+                    'avg': (total['amt'] - matched['amt']) / (total['hds'] - matched['hds']) if (total['hds'] - matched['hds']) > 0 else 0
+                }
+            }
+
+        # Claim size analysis
+        claim_analysis = execute_query("""
+            SELECT
+                CASE
+                    WHEN amt < 100000 THEN '<100k'
+                    WHEN amt >= 100000 AND amt < 1000000 THEN '100k to <1m'
+                    WHEN amt >= 1000000 AND amt < 10000000 THEN '1m to <10m'
+                    WHEN amt >= 10000000 AND amt < 100000000 THEN '10m to <100m'
+                    ELSE '>100m'
+                END AS amtrange,
+                MIN(CASE
+                    WHEN amt < 100000 THEN 1
+                    WHEN amt >= 100000 AND amt < 1000000 THEN 2
+                    WHEN amt >= 1000000 AND amt < 10000000 THEN 3
+                    WHEN amt >= 10000000 AND amt < 100000000 THEN 4
+                    ELSE 5
+                END) AS sort_order,
+                COUNT(*) AS cnt,
+                SUM(amt) AS amt,
+                SUM(heads) AS hds,
+                SUM(amt)::numeric / NULLIF(SUM(heads), 0) AS avg
+            FROM enigma.ess
+            WHERE phase = %s
+            GROUP BY amtrange
+            ORDER BY sort_order
+        """, (p,))
+
+    # Main query for top 5000
+    # Build the queries differently to avoid ORDER BY inside UNION
+    if p > 0:
+        # Specific phase - simplified query
+        sql = """
+            WITH top_ess AS (
+                SELECT orgid, NULL::text AS name, SUM(amt) AS amt, SUM(heads) AS hds
+                FROM enigma.ess
+                WHERE orgid IS NOT NULL AND phase = %s
+                GROUP BY orgid
+                UNION ALL
+                SELECT NULL, COALESCE(ename, cname), SUM(amt) AS amt, SUM(heads) AS hds
+                FROM enigma.ess
+                WHERE orgid IS NULL AND phase = %s
+                GROUP BY ename, cname
+            )
+            SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
+                   t.amt, t.hds,
+                   (t.amt::numeric / NULLIF(t.hds, 0)) AS avg
+            FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
+            LEFT JOIN enigma.organisations o ON t.orgid = o.personid
+            ORDER BY """ + order_by
+        top_data = execute_query(sql, (p, p))
+    else:
+        # Both phases - show p1/p2 indicators
+        sql = """
+            WITH top_ess AS (
+                SELECT orgid, NULL::text AS name,
+                       SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
+                       SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
+                       SUM(amt) AS amt,
+                       AVG(hds) AS hds_avg
+                FROM (
+                    SELECT orgid, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                    FROM enigma.ess
+                    WHERE orgid IS NOT NULL
+                    GROUP BY orgid, phase
+                ) t1
+                GROUP BY orgid
+                UNION ALL
+                SELECT NULL, COALESCE(ename, cname),
+                       SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
+                       SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
+                       SUM(amt) AS amt,
+                       AVG(hds) AS hds_avg
+                FROM (
+                    SELECT ename, cname, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                    FROM enigma.ess
+                    WHERE orgid IS NULL
+                    GROUP BY ename, cname, phase
+                ) t2
+                GROUP BY ename, cname
+            )
+            SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
+                   t.amt, ROUND(t.hds_avg, 0) AS hds,
+                   ROUND(t.amt::numeric / NULLIF(t.hds_avg, 0), 0) AS avg,
+                   t.p1, t.p2
+            FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
+            LEFT JOIN enigma.organisations o ON t.orgid = o.personid
+            ORDER BY """ + order_by
+        top_data = execute_query(sql)
+
+    return render_template('dbpub/esstop.html',
+                         p=p,
+                         sort_param=sort_param,
+                         stats_data=stats_data,
+                         matched_stats=matched_stats,
+                         claim_analysis=claim_analysis,
+                         top_data=top_data)
 
 
 # ESS search
 @bp.route('/searchESS.asp')
 def searchess():
-    """Search Employee Stock Schemes"""
-    from webbsite.asp_helpers import get_str
-    from webbsite.db import execute_query
-    from flask import render_template
+    """
+    Search Employment Support Scheme recipients
+    Search by English name with full-text or left-match
+    Aggregates by employer name and phase
+    """
+    n = get_str('n', '')
+    st = get_str('st', 'a')  # 'a' for any match, 'l' for left match
+    sort_param = get_str('sort', 'namup')
 
-    search = get_str('q', '')
-    return render_template('dbpub/searchess.html', q=search, results=[])
+    # Define sort order
+    sort_map = {
+        'amtup': 'amt, ename',
+        'amtdn': 'amt DESC, ename',
+        'hdsup': 'hds, ename',
+        'hdsdn': 'hds DESC, ename',
+        'namup': 'ename',
+        'namdn': 'ename DESC',
+    }
+    order_by = sort_map.get(sort_param, 'ename, amt DESC')
+
+    results = []
+    limit = 500
+
+    if n:
+        # Build WHERE clause based on search type
+        if st == 'a':
+            # Full-text search - convert space-separated words to AND query
+            search_terms = ' & '.join(n.split())
+            where_clause = "to_tsvector('simple', ename) @@ to_tsquery('simple', %s)"
+            params = (search_terms,)
+        else:  # st == 'l' for left match
+            where_clause = "ename LIKE %s"
+            params = (n + '%',)
+
+        # Complex query that aggregates by name and phase
+        sql = f"""
+            SELECT orgid, ename, cname,
+                   SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
+                   SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
+                   SUM(amt) AS amt,
+                   ROUND(AVG(hds), 0) AS hds,
+                   CASE WHEN AVG(hds) > 0 THEN ROUND(SUM(amt)/AVG(hds), 0) ELSE NULL END AS avg
+            FROM (
+                SELECT orgid, ename, cname, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                FROM enigma.ess
+                WHERE {where_clause}
+                GROUP BY orgid, ename, cname, phase
+            ) t2
+            GROUP BY orgid, ename, cname
+            ORDER BY {order_by}
+            LIMIT %s
+        """
+
+        results = execute_query(sql, params + (limit,))
+
+    return render_template('dbpub/searchess.html',
+                         n=n,
+                         st=st,
+                         sort_param=sort_param,
+                         results=results,
+                         limit=limit)
 
 
 # HKID index

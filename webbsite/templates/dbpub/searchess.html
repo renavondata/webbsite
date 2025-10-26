@@ -1,6 +1,85 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}Search Employment Support Scheme recipients{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>Search Employment Support Scheme recipients</h2>
+
+<p>This form allows you to search the English names of the raw data from the
+<a href="https://www.ess.gov.hk/en/granted_companies.html" target="_blank" rel="noopener">
+Employment Support Scheme</a> files, grouped by name and phase. Some employers
+made more than one claim, for example, for different restaurants under the same
+name. These are aggregated. P1 and
+p2 indicate an approved claim in the 2 phases. To see
+the top 5,000 claimants by value, <a href="{{ url_for('dbpub.esstop') }}"><strong>click here</strong></a>.</p>
+
+<form method="get" action="{{ url_for('dbpub.searchess') }}">
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+    <p><input type="text" class="ws" name="n" value="{{ n }}"></p>
+    <div class="inputs">
+        <select name="st">
+            <option value="a"{% if st == 'a' %} selected{% endif %}>Any match</option>
+            <option value="l"{% if st == 'l' %} selected{% endif %}>Left match</option>
+        </select>
+    </div>
+    <input type="submit" value="search" name="search">
+</form>
+
+{% if n %}
+    <h3>Matches in ESS filings</h3>
+    {% if results|length == 0 %}
+        <p>None.</p>
+    {% else %}
+        <table class="numtable c2l">
+            <tr>
+                <th class="colHide2"></th>
+                <th>
+                    {% if sort_param == 'namdn' %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='namup') }}"><b>English name</b></a>
+                    {% else %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='namdn') }}">English name</a>
+                    {% endif %}
+                </th>
+                <th class="colHide3 left">Chinese name</th>
+                <th>
+                    {% if sort_param == 'amtdn' %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='amtup') }}"><b>Amount<br>HK$</b></a>
+                    {% else %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='amtdn') }}">Amount<br>HK$</a>
+                    {% endif %}
+                </th>
+                <th>
+                    {% if sort_param == 'hdsdn' %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='hdsup') }}"><b>Heads</b></a>
+                    {% else %}
+                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='hdsdn') }}">Heads</a>
+                    {% endif %}
+                </th>
+                <th>Average<br>HK$</th>
+                <th class="colHide2">p1</th>
+                <th class="colHide2">p2</th>
+            </tr>
+            {% for row in results %}
+            <tr>
+                <td class="colHide2">{{ loop.index }}</td>
+                {% if row.orgid %}
+                    <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.ename }}</a></td>
+                    <td class="colHide3 left"><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.cname or '' }}</a></td>
+                {% else %}
+                    <td>{{ row.ename }}</td>
+                    <td class="colHide3 left">{{ row.cname or '' }}</td>
+                {% endif %}
+                <td>{{ "{:,.0f}".format(row.amt) if row.amt else '' }}</td>
+                <td>{{ "{:,.0f}".format(row.hds) if row.hds else '' }}</td>
+                <td>{{ "{:,.0f}".format(row.avg) if row.avg else '-' }}</td>
+                <td class="colHide2">{{ row.p1 }}</td>
+                <td class="colHide2">{{ row.p2 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% if results|length == limit %}
+            <p><b>Only the first {{ limit }} matches are displayed. Please narrow your
+            search.</b></p>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
 {% endblock %}
