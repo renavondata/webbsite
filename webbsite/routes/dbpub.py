@@ -5513,55 +5513,78 @@ def dirs_per_listco_hk():
     Query params:
     - d: snapshot date (defaults to today)
 
-    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    Tables used: enigma.directorships, enigma.issue, enigma.stocklistings, enigma.people, enigma.positions
     """
     from flask import current_app
+    from webbsite.asp_helpers import get_str
 
-    d = request.args.get('d', str(date.today()))
-    snap_year = int(d[:4]) if d else date.today().year
-
-    # Query distribution of directors per company
-    distribution = []
+    d = get_str('d', str(date.today()))
     try:
+        snapshot_date = date.fromisoformat(d)
+    except ValueError:
+        snapshot_date = date.today()
+
+    snap_year = snapshot_date.year
+
+    # Query distribution of directors per company - matches HKdirsDistnCos stored procedure
+    distribution = []
+    total_cos = 0
+    try:
+        # First get the total count of listed companies at the snapshot date
+        total_cos_result = execute_query("""
+            SELECT COUNT(DISTINCT i.issuer) AS cnt
+            FROM enigma.issue i
+            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+            WHERE sl.stockexid IN (1, 20)
+              AND i.typeid NOT IN (1, 2, 40, 41, 46)
+              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+              AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+        """, (snapshot_date, snapshot_date))
+        total_cos = total_cos_result[0]['cnt'] if total_cos_result else 0
+
+        # Get distribution of directors per company
         distribution = execute_query("""
-            WITH company_counts AS (
+            WITH listed_issuers AS (
+                SELECT DISTINCT i.issuer
+                FROM enigma.issue i
+                JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+                WHERE sl.stockexid IN (1, 20)
+                  AND i.typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+                  AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+            ),
+            company_director_counts AS (
                 SELECT
-                    d.company,
-                    COUNT(*) AS numSeats,
-                    SUM(CASE WHEN p.sex = 'F' THEN 1 ELSE 0 END) AS femSeats,
-                    AVG(p.YOB) AS avg_yob
-                FROM enigma.directorships d
-                JOIN enigma.positions pn ON d.positionID = pn.positionID
-                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-                JOIN enigma.people p ON d.director = p.personID
-                WHERE pn.rank = 1
-                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
-                  AND (d.resDate IS NULL OR d.resDate > %s)
-                GROUP BY d.company
+                    li.issuer,
+                    COUNT(DISTINCT d.director) AS numSeats,
+                    SUM(CASE WHEN p.sex = 'F' THEN 1 ELSE 0 END) AS female,
+                    AVG(p.yob) AS yob1
+                FROM listed_issuers li
+                JOIN enigma.directorships d ON li.issuer = d.company
+                JOIN enigma.positions pos ON d.positionid = pos.positionid
+                JOIN enigma.people p ON d.director = p.personid
+                WHERE pos.rank = 1
+                  AND (d.apptdate IS NULL OR d.apptdate <= %s)
+                  AND (d.resdate IS NULL OR d.resdate > %s)
+                GROUP BY li.issuer
             )
             SELECT
                 numSeats,
-                COUNT(*) AS numCos,
-                SUM(femSeats) AS femSeats,
-                AVG(avg_yob) AS yob_avg
-            FROM company_counts
+                COUNT(issuer) AS numCos,
+                SUM(female) AS femSeats,
+                AVG(yob1) AS yob2
+            FROM company_director_counts
             GROUP BY numSeats
-            ORDER BY numSeats
-        """, (d, d))
-
-        # Get total company count
-        total_cos_result = execute_query("""
-            SELECT COUNT(DISTINCT issuer) AS cnt
-            FROM enigma.listedcoshk
-        """)
-        total_cos = total_cos_result[0]['cnt'] if total_cos_result else 0
+            ORDER BY numSeats DESC
+        """, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
 
     except Exception as ex:
-        current_app.logger.error(f"Error querying dirs per listco distribution: {ex}")
-        total_cos = 0
+        current_app.logger.error(f"Error querying dirs per listco distribution: {ex}", exc_info=True)
 
     return render_template('dbpub/dirs_per_listco_hk.html',
-                         distribution=distribution, d=d, snap_year=snap_year,
+                         distribution=distribution,
+                         d=snapshot_date.isoformat(),
+                         snap_year=snap_year,
                          total_cos=total_cos)
 
 
@@ -8967,18 +8990,29 @@ def fdirsperlistcohkdstn():
         snapshot_date = date.today()
 
     # Query distribution of female directors
+    # Matches HKfdirsDistn stored procedure logic
     sql = """
-        WITH board_data AS (
+        WITH listed_companies AS (
+            SELECT DISTINCT i.issuer
+            FROM enigma.issue i
+            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+            WHERE sl.stockexid IN (1, 20)
+              AND i.typeid NOT IN (1, 2, 40, 41, 46)
+              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+              AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+        ),
+        board_data AS (
             SELECT
                 d.company,
-                COUNT(DISTINCT d.director) FILTER (WHERE p.sex = 'F') AS fdirs
-            FROM enigma.directorships d
+                COUNT(DISTINCT d.director) AS fdirs
+            FROM listed_companies lc
+            JOIN enigma.directorships d ON lc.issuer = d.company
             JOIN enigma.people p ON d.director = p.personid
             JOIN enigma.positions pos ON d.positionid = pos.positionid
-            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
             WHERE pos.rank = 1
+              AND p.sex = 'F'
+              AND (d.apptdate IS NULL OR d.apptdate <= %s)
               AND (d.resdate IS NULL OR d.resdate > %s)
-              AND d.apptdate <= %s
             GROUP BY d.company
         )
         SELECT
@@ -8991,11 +9025,20 @@ def fdirsperlistcohkdstn():
     """
 
     try:
-        results = execute_query(sql, (snapshot_date, snapshot_date))
+        results = execute_query(sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
 
-        # Get total listed company count
-        count_sql = "SELECT COUNT(*) AS cnt FROM enigma.listedcoshk"
-        count_result = execute_query(count_sql)
+        # Get total listed company count at snapshot date
+        # Matches listcoCntAtDate() function logic
+        count_sql = """
+            SELECT COUNT(DISTINCT i.issuer) AS cnt
+            FROM enigma.issue i
+            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+            WHERE sl.stockexid IN (1, 20)
+              AND i.typeid NOT IN (1, 2, 40, 41, 46)
+              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+              AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+        """
+        count_result = execute_query(count_sql, (snapshot_date, snapshot_date))
         total_cos = count_result[0]['cnt'] if count_result else 0
     except Exception as ex:
         current_app.logger.error(f"Error in FDirsPerListcoHKdstn.asp: {ex}", exc_info=True)
