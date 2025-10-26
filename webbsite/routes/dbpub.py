@@ -5591,117 +5591,392 @@ def dirs_per_listco_hk():
 @bp.route('/DirsHKDistnPeople.asp')
 def dirs_hk_distn_people():
     """
-    Distribution of HK-listed directorships per person - port of DirsHKDistnPeople.asp
-    Shows how many people hold 1, 2, 3... directorships
-
-    Query params:
-    - d: snapshot date (defaults to today)
-
-    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    Distribution of people by number of HK-listed directorships
+    Port of DirsHKDistnPeople.asp
+    Query params: d (snapshot date)
     """
-    from flask import current_app
+    from datetime import date
+    from webbsite.asp_helpers import get_str, mobile
 
-    d = request.args.get('d', str(date.today()))
+    # Get snapshot date with validation
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+            if d < date(1990, 1, 1):
+                d = date(1990, 1, 1)
+            elif d > date.today():
+                d = date.today()
+            d_str = d.isoformat()
+        except ValueError:
+            d = date.today()
+            d_str = d.isoformat()
+    else:
+        d = date.today()
+        d_str = d.isoformat()
 
-    # Query distribution of directorships per person
-    distribution = []
-    try:
-        distribution = execute_query("""
-            WITH person_counts AS (
-                SELECT
-                    d.director,
-                    COUNT(DISTINCT d.company) AS numSeats,
-                    MAX(p.sex) AS sex
-                FROM enigma.directorships d
-                JOIN enigma.positions pn ON d.positionID = pn.positionID
-                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-                JOIN enigma.people p ON d.director = p.personID
-                WHERE pn.rank = 1
-                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
-                  AND (d.resDate IS NULL OR d.resDate > %s)
-                GROUP BY d.director
-            )
+    # Port of HKdirsDistnPpl stored procedure
+    sql = """
+        SELECT
+            numSeats,
+            COUNT(director) AS numPeople,
+            SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female
+        FROM (
             SELECT
-                numSeats,
-                COUNT(*) AS numPeople,
-                SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female
-            FROM person_counts
-            GROUP BY numSeats
-            ORDER BY numSeats
-        """, (d, d))
+                director,
+                COUNT(issuer) AS numSeats,
+                sex
+            FROM (
+                SELECT DISTINCT issuer
+                FROM enigma.issue
+                JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+                WHERE stockexid IN (1, 20)
+                  AND typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                  AND (delistdate IS NULL OR delistdate > %s)
+            ) AS t1
+            JOIN enigma.directorships ON t1.issuer = directorships.company
+            JOIN enigma.people ON directorships.director = people.personid
+            JOIN enigma.positions ON directorships.positionid = positions.positionid
+            WHERE positions.rank = 1
+              AND (apptdate IS NULL OR apptdate <= %s)
+              AND (resdate IS NULL OR resdate > %s)
+            GROUP BY director, sex
+        ) AS t3
+        GROUP BY numSeats
+        ORDER BY numSeats DESC
+    """
 
-    except Exception as ex:
-        current_app.logger.error(f"Error querying dirs HK distn people: {ex}")
+    try:
+        distribution = execute_query(sql, (d_str, d_str, d_str, d_str))
 
-    return render_template('dbpub/dirs_hk_distn_people.html',
-                         distribution=distribution, d=d)
+        # Calculate cumulative values and statistics
+        cum_seats = 0
+        cum_female_seats = 0
+        cum_people = 0
+        cum_female = 0
+
+        for row in distribution:
+            num_seats = row['numseats']
+            num_people = row['numpeople']
+            female = row['female']
+
+            cum_seats += num_seats * num_people
+            cum_female_seats += num_seats * female
+            cum_people += num_people
+            cum_female += female
+
+            # Add cumulative values to row
+            row['cum_seats'] = cum_seats
+            row['cum_female_seats'] = cum_female_seats
+            row['cum_people'] = cum_people
+            row['cum_female'] = cum_female
+
+        # Calculate statistics
+        stats = {}
+        if cum_people > 0:
+            stats['avg_seats'] = cum_seats / cum_people
+            stats['pct_female_dirs'] = (cum_female / cum_people) * 100
+        else:
+            stats['avg_seats'] = 0
+            stats['pct_female_dirs'] = 0
+
+        if cum_female > 0:
+            stats['avg_female_seats'] = cum_female_seats / cum_female
+        else:
+            stats['avg_female_seats'] = 0
+
+        if cum_seats > 0:
+            stats['pct_female_seats'] = (cum_female_seats / cum_seats) * 100
+        else:
+            stats['pct_female_seats'] = 0
+
+        return render_template('dbpub/dirs_hk_distn_people.html',
+                             title=f"Distribution of HK-listed directorships per person at {d_str}",
+                             distribution=distribution,
+                             stats=stats,
+                             d=d_str,
+                             mobile_alert=mobile(3))
+    except Exception as e:
+        current_app.logger.error(f"Error in dirs_hk_distn_people: {e}")
+        abort(500)
 
 
 @bp.route('/DirsHKAgeDistn.asp')
 def dirs_hk_age_distn():
     """
-    Distribution of HK-listed directors by age - port of DirsHKAgeDistn.asp
-    Shows how many directors were born in each year
-
-    Query params:
-    - d: snapshot date (defaults to today)
-    - sort: YOBup or YOBdn
-
-    Tables used: enigma.directorships, enigma.listedcoshk, enigma.people, enigma.positions
+    Distribution of HK-listed directors by age
+    Port of DirsHKAgeDistn.asp
+    Query params: d (snapshot date), sort
     """
-    from flask import current_app
+    from datetime import date
+    from webbsite.asp_helpers import get_str, mobile, sl
 
-    d = request.args.get('d', str(date.today()))
-    sort_param = request.args.get('sort', 'YOBup')
-    snap_year = int(d[:4]) if d else date.today().year
+    # Get snapshot date with validation
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+            if d < date(1990, 1, 1):
+                d = date(1990, 1, 1)
+            elif d > date.today():
+                d = date.today()
+            d_str = d.isoformat()
+        except ValueError:
+            d = date.today()
+            d_str = d.isoformat()
+    else:
+        d = date.today()
+        d_str = d.isoformat()
 
-    # Build sort order
-    ob = "p.YOB DESC" if sort_param == "YOBdn" else "p.YOB"
+    year_now = d.year
 
-    # Query age distribution
-    distribution = []
-    try:
-        distribution = execute_query(f"""
-            WITH director_counts AS (
-                SELECT
-                    d.director,
-                    p.YOB,
-                    p.sex,
-                    COUNT(DISTINCT d.company) AS seats
-                FROM enigma.directorships d
-                JOIN enigma.positions pn ON d.positionID = pn.positionID
-                JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-                JOIN enigma.people p ON d.director = p.personID
-                WHERE pn.rank = 1
-                  AND (d.apptDate IS NULL OR d.apptDate <= %s)
-                  AND (d.resDate IS NULL OR d.resDate > %s)
-                GROUP BY d.director, p.YOB, p.sex
-            )
+    # Get sort parameter
+    sort_param = get_str('sort', 'YOBup')
+    order_by_map = {
+        'YOBdn': 'YOB DESC',
+        'YOBup': 'YOB'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['YOBup'])
+
+    # Port of HKdirsAgeDistn stored procedure
+    sql = f"""
+        SELECT
+            YOB,
+            COUNT(director) AS dirs,
+            SUM(numCos) AS seats,
+            SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female,
+            SUM(CASE WHEN sex = 'F' THEN numCos ELSE 0 END) AS femSeats
+        FROM (
             SELECT
+                director,
+                COUNT(company) AS numCos,
                 YOB,
-                COUNT(*) AS dirs,
-                SUM(seats) AS seats,
-                SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female,
-                SUM(CASE WHEN sex = 'F' THEN seats ELSE 0 END) AS femSeats
-            FROM director_counts
-            GROUP BY YOB
-            ORDER BY {ob}
-        """, (d, d))
+                sex
+            FROM (
+                SELECT DISTINCT issuer
+                FROM enigma.issue
+                JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+                WHERE stockexid IN (1, 20)
+                  AND typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                  AND (delistdate IS NULL OR delistdate > %s)
+            ) AS t1
+            JOIN enigma.directorships ON t1.issuer = directorships.company
+            JOIN enigma.people ON directorships.director = people.personid
+            JOIN enigma.positions ON directorships.positionid = positions.positionid
+            WHERE positions.rank = 1
+              AND (apptdate IS NULL OR apptdate <= %s)
+              AND (resdate IS NULL OR resdate > %s)
+            GROUP BY director, YOB, sex
+        ) AS t3
+        GROUP BY YOB
+        ORDER BY {order_by}
+    """
 
-    except Exception as ex:
-        current_app.logger.error(f"Error querying dirs HK age distn: {ex}")
+    try:
+        distribution = execute_query(sql, (d_str, d_str, d_str, d_str))
 
-    return render_template('dbpub/dirs_hk_age_distn.html',
-                         distribution=distribution, d=d, snap_year=snap_year,
-                         sort=sort_param)
+        # Calculate cumulative values and age statistics
+        cum_seats = 0
+        cum_dirs = 0
+        cum_female = 0
+        cum_female_seats = 0
+        total_age = 0
+        female_age = 0
+        unk_dirs = 0
+        unk_female = 0
+
+        for row in distribution:
+            yob = row['yob']
+            seats = int(row['seats'])
+            dirs = int(row['dirs'])
+            female = int(row['female'])
+            fem_seats = int(row['femseats'])
+
+            if yob is None:
+                row['age'] = '?'
+                unk_dirs = dirs
+                unk_female = female
+            else:
+                age = year_now - yob
+                row['age'] = age
+                total_age += dirs * age
+                female_age += female * age
+
+            cum_seats += seats
+            cum_dirs += dirs
+            cum_female += female
+            cum_female_seats += fem_seats
+
+            # Add cumulative values to row
+            row['cum_dirs'] = cum_dirs
+            row['cum_seats'] = cum_seats
+            row['cum_female'] = cum_female
+            row['cum_female_seats'] = cum_female_seats
+
+        # Calculate summary statistics
+        stats = {
+            'cum_dirs': cum_dirs,
+            'cum_seats': cum_seats,
+            'cum_female': cum_female,
+            'cum_female_seats': cum_female_seats,
+            'male_dirs': cum_dirs - cum_female,
+            'male_seats': cum_seats - cum_female_seats,
+        }
+
+        if cum_dirs > 0:
+            stats['avg_seats_all'] = cum_seats / cum_dirs
+        else:
+            stats['avg_seats_all'] = 0
+
+        if cum_dirs - cum_female > 0:
+            stats['avg_seats_male'] = stats['male_seats'] / stats['male_dirs']
+        else:
+            stats['avg_seats_male'] = 0
+
+        if cum_female > 0:
+            stats['avg_seats_female'] = cum_female_seats / cum_female
+        else:
+            stats['avg_seats_female'] = 0
+
+        # Average age calculations (excluding unknowns)
+        if cum_dirs - unk_dirs > 0:
+            stats['avg_age_all'] = total_age / (cum_dirs - unk_dirs)
+        else:
+            stats['avg_age_all'] = 0
+
+        if stats['male_dirs'] - unk_dirs + unk_female > 0:
+            stats['avg_age_male'] = (total_age - female_age) / (stats['male_dirs'] - unk_dirs + unk_female)
+        else:
+            stats['avg_age_male'] = 0
+
+        if cum_female - unk_female > 0:
+            stats['avg_age_female'] = female_age / (cum_female - unk_female)
+        else:
+            stats['avg_age_female'] = 0
+
+        # Build sort links
+        base_url = f'/dbpub/DirsHKAgeDistn.asp?d={d_str}'
+        sort_links = {
+            'yob_age': sl(f'Year<br>of<br>birth', 'YOBup', 'YOBdn', sort_param, base_url)
+        }
+
+        return render_template('dbpub/dirs_hk_age_distn.html',
+                             title="Distribution of HK-listed directors by age",
+                             distribution=distribution,
+                             stats=stats,
+                             year_now=year_now,
+                             d=d_str,
+                             sort=sort_param,
+                             sort_links=sort_links,
+                             mobile_alert=mobile(3))
+    except Exception as e:
+        current_app.logger.error(f"Error in dirs_hk_age_distn: {e}")
+        abort(500)
 
 
 @bp.route('/HKdirsTypeSex.asp')
 def hk_dirs_type_sex():
-    """HK directors by type and gender"""
-    # TODO: Generate stats
-    stats = []
-    return render_template('dbpub/hk_dirs_type_sex.html', stats=stats)
+    """
+    HK-listed directorships by type and gender
+    Port of HKdirsTypeSex.asp
+    Query params: d (snapshot date)
+    """
+    from datetime import date
+    from webbsite.asp_helpers import get_str
+
+    # Get snapshot date with validation
+    d_str = get_str('d', '')
+    if d_str:
+        try:
+            d = date.fromisoformat(d_str)
+            if d < date(1990, 1, 1):
+                d = date(1990, 1, 1)
+            elif d > date.today():
+                d = date.today()
+            d_str = d.isoformat()
+        except ValueError:
+            d = date.today()
+            d_str = d.isoformat()
+    else:
+        d = date.today()
+        d_str = d.isoformat()
+
+    # Port of HKdirsTypeSex stored procedure
+    sql = """
+        SELECT
+            sex,
+            SUM(dirs) AS seats,
+            SUM(NED) AS NEDs,
+            SUM(INED) AS INEDs
+        FROM (
+            SELECT
+                COUNT(director) AS dirs,
+                issuer,
+                sex,
+                SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) AS NED,
+                SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS INED
+            FROM (
+                SELECT DISTINCT issuer
+                FROM enigma.issue
+                JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+                WHERE stockexid IN (1, 20)
+                  AND typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                  AND (delistdate IS NULL OR delistdate > %s)
+            ) AS t1
+            JOIN enigma.directorships ON t1.issuer = directorships.company
+            JOIN enigma.people ON directorships.director = people.personid
+            JOIN enigma.positions ON directorships.positionid = positions.positionid
+            JOIN enigma.status ON positions.status = status.statusid
+            WHERE positions.rank = 1
+              AND (apptdate IS NULL OR apptdate <= %s)
+              AND (resdate IS NULL OR resdate > %s)
+            GROUP BY issuer, sex
+        ) AS t3
+        GROUP BY sex
+        ORDER BY sex
+    """
+
+    try:
+        results = execute_query(sql, (d_str, d_str, d_str, d_str))
+
+        # Organize results by sex
+        data = {'F': {}, 'M': {}, 'U': {}}
+        for row in results:
+            sex = row['sex'] if row['sex'] else 'U'
+            data[sex] = {
+                'seats': int(row['seats']),
+                'neds': int(row['neds']),
+                'ineds': int(row['ineds'])
+            }
+
+        # Fill in missing sex categories with zeros
+        for sex in ['F', 'M', 'U']:
+            if sex not in data or not data[sex]:
+                data[sex] = {'seats': 0, 'neds': 0, 'ineds': 0}
+
+        # Calculate EDs (Executive Directors)
+        for sex in data:
+            data[sex]['eds'] = data[sex]['seats'] - data[sex]['neds'] - data[sex]['ineds']
+
+        # Calculate totals
+        totals = {
+            'seats': sum(d['seats'] for d in data.values()),
+            'eds': sum(d['eds'] for d in data.values()),
+            'neds': sum(d['neds'] for d in data.values()),
+            'ineds': sum(d['ineds'] for d in data.values())
+        }
+
+        return render_template('dbpub/hk_dirs_type_sex.html',
+                             title=f"HK-listed directorships by type and gender at {d_str}",
+                             data=data,
+                             totals=totals,
+                             d=d_str)
+    except Exception as e:
+        current_app.logger.error(f"Error in hk_dirs_type_sex: {e}")
+        abort(500)
 
 
 # Pay stats
@@ -6661,21 +6936,25 @@ def possum():
 def latest_dirs_hk():
     """
     Recent HK-listed director appointments
-    Query params: d1, d2 (date range), sort
+    Port of latestdirsHK.asp
+    Query params: d1 (start date), d2 (end date), sort
     """
     from datetime import date, timedelta
-    from webbsite.asp_helpers import get_str
+    from webbsite.asp_helpers import get_str, mobile, sl
 
-    # Get date parameters (default: last 60 days)
+    # Get end date (defaults to today)
     d2_str = get_str('d2', '')
     if d2_str:
         try:
             d2 = date.fromisoformat(d2_str)
+            if d2 > date.today():
+                d2 = date.today()
         except ValueError:
             d2 = date.today()
     else:
         d2 = date.today()
 
+    # Get start date (defaults to 60 days before end date)
     d1_str = get_str('d1', '')
     if d1_str:
         try:
@@ -6685,67 +6964,146 @@ def latest_dirs_hk():
     else:
         d1 = d2 - timedelta(days=59)
 
-    # Ensure d1 <= d2 and range <= 366 days
-    if d1 > d2:
+    # Validate date range
+    if d2 < d1:
         d1 = d2 - timedelta(days=59)
-    if (d2 - d1).days > 366:
+    if (d2 - d1).days > 365:
         d1 = d2 - timedelta(days=365)
+
+    d1_str = d1.isoformat()
+    d2_str = d2.isoformat()
+    now_year = d2.year
 
     # Get sort parameter
     sort_param = get_str('sort', 'dirup')
     order_by_map = {
-        'dirup': 'dir, apptdate',
-        'dirdn': 'dir DESC, apptdate',
-        'appup': 'apptdate, dir',
-        'appdn': 'apptdate DESC, dir',
-        'posup': 'posshort, dir, apptdate',
-        'posdn': 'posshort DESC, dir, apptdate',
-        'agedn': 'yob, dir, apptdate',
-        'ageup': 'yob DESC, apptdate',
-        'sexup': 'sex, dir, org',
-        'sexdn': 'sex DESC, dir, org',
-        'orgdn': 'org DESC, apptdate, dir',
-        'orgup': 'org, apptdate, dir'
+        'dirup': 'Dir, ApptDate',
+        'dirdn': 'Dir DESC, ApptDate',
+        'appup': 'ApptDate, Dir',
+        'appdn': 'ApptDate DESC, Dir',
+        'posup': 'posShort, Dir, ApptDate',
+        'posdn': 'posShort DESC, Dir, ApptDate',
+        'agedn': 'YOB, Dir, ApptDate',
+        'ageup': 'YOB DESC, ApptDate',
+        'sexup': 'sex, Dir, org',
+        'sexdn': 'sex DESC, Dir, org',
+        'orgdn': 'org DESC, apptDate, dir',
+        'orgup': 'org, apptDate, dir'
     }
     order_by = order_by_map.get(sort_param, order_by_map['dirup'])
 
-    # Query recent appointments
+    # Direct SQL query (no stored procedure in ASP)
     sql = f"""
         SELECT
-            CASE WHEN p.name2 IS NULL THEN p.name1
-                 ELSE p.name1 || ', ' || p.name2
-            END as dir,
-            d.director as dirid,
-            d.company as orgid,
-            o.name1 as org,
-            p.sex,
-            d.apptdate as appt,
-            pn.posshort,
-            pn.poslong,
-            p.yob
+            p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '') AS dir,
+            director AS dirID,
+            company AS orgID,
+            o.name1 AS org,
+            sex,
+            TO_CHAR(apptDate, 'YYYY-MM-DD') AS appt,
+            posShort,
+            posLong,
+            YOB
         FROM enigma.directorships d
-        JOIN enigma.people p ON d.director = p.personid
-        JOIN enigma.organisations o ON d.company = o.personid
-        JOIN enigma.positions pn ON d.positionid = pn.positionid
-        JOIN enigma.listedcoshkever lc ON d.company = lc.issuer
-        WHERE d.apptdate >= %s
-          AND d.apptdate <= %s
-          AND pn.rank = 1
+        JOIN enigma.listedcoshkever ON company = issuer
+        JOIN enigma.people p ON director = p.personID
+        JOIN enigma.organisations o ON company = o.personID
+        JOIN enigma.positions pn ON d.positionID = pn.positionID
+        WHERE apptDate <= %s
+          AND apptDate >= %s
+          AND rank = 1
         ORDER BY {order_by}
     """
 
     try:
-        results = execute_query(sql, (d1, d2))
-    except Exception as ex:
-        current_app.logger.error(f"Error in latestdirsHK.asp: {ex}", exc_info=True)
-        results = []
+        appointments = execute_query(sql, (d2_str, d1_str))
 
-    return render_template('dbpub/latest_dirs_hk.html',
-                         appointments=results,
-                         d1=d1,
-                         d2=d2,
-                         sort=sort_param,
-                         period_days=(d2-d1).days + 1)
+        # Calculate statistics
+        male = 0
+        female = 0
+        nosex = 0
+        mage = 0
+        fage = 0
+        nage = 0
+        magecnt = 0
+        fagecnt = 0
+        nagecnt = 0
+
+        for row in appointments:
+            yob = row['yob']
+            sex = row['sex']
+
+            # Calculate age
+            if yob:
+                row['age'] = now_year - yob
+            else:
+                row['age'] = None
+
+            # Count by sex
+            if sex == 'M':
+                male += 1
+                if yob:
+                    magecnt += 1
+                    mage += yob
+            elif sex == 'F':
+                female += 1
+                if yob:
+                    fagecnt += 1
+                    fage += yob
+            else:
+                nosex += 1
+                if yob:
+                    nagecnt += 1
+                    nage += yob
+
+        # Calculate analysis statistics
+        total = len(appointments)
+        stats = {
+            'male': male,
+            'female': female,
+            'nosex': nosex,
+            'total': total,
+            'male_pct': (male / total * 100) if total > 0 else 0,
+            'female_pct': (female / total * 100) if total > 0 else 0,
+            'nosex_pct': (nosex / total * 100) if total > 0 else 0,
+            'male_age_cnt': magecnt,
+            'female_age_cnt': fagecnt,
+            'nosex_age_cnt': nagecnt,
+            'total_age_cnt': magecnt + fagecnt + nagecnt,
+            'male_avg_age': (now_year - mage / magecnt) if magecnt > 0 else None,
+            'female_avg_age': (now_year - fage / fagecnt) if fagecnt > 0 else None,
+            'nosex_avg_age': (now_year - nage / nagecnt) if nagecnt > 0 else None,
+            'total_avg_age': (now_year - (mage + fage + nage) / (magecnt + fagecnt + nagecnt)) if (magecnt + fagecnt + nagecnt) > 0 else None
+        }
+
+        # Calculate period length
+        period_days = (d2 - d1).days + 1
+
+        # Build sort links
+        base_url = f'/dbpub/latestdirsHK.asp?d1={d1_str}&d2={d2_str}'
+        sort_links = {
+            'director': sl('Director', 'dirup', 'dirdn', sort_param, base_url),
+            'sex': sl("<span style='font-size:large'>&#x26A5;</span>", 'sexup', 'sexdn', sort_param, base_url),
+            'age': sl(f'Age in<br>{now_year}', 'agedn', 'ageup', sort_param, base_url),
+            'position': sl('Position', 'posup', 'posdn', sort_param, base_url),
+            'from': sl('From', 'appdn', 'appup', sort_param, base_url),
+            'company': sl('Company', 'orgup', 'orgdn', sort_param, base_url)
+        }
+
+        return render_template('dbpub/latest_dirs_hk.html',
+                             title="Recent HK-listed director appointments",
+                             appointments=appointments,
+                             stats=stats,
+                             d1=d1_str,
+                             d2=d2_str,
+                             now_year=now_year,
+                             period_days=period_days,
+                             sort=sort_param,
+                             sort_links=sort_links,
+                             mobile_alert=mobile(2))
+    except Exception as e:
+        current_app.logger.error(f"Error in latest_dirs_hk: {e}")
+        abort(500)
 
 
 # Board composition per company
@@ -7607,57 +7965,108 @@ def oldest_hk_cos():
 @bp.route('/dirsHKPerPerson.asp')
 def dirs_hk_per_person():
     """
-    Distribution of enigma.directorships per person
-    Shows how many people have 1, 2, 3... enigma.directorships
-    Query params: d (snapshot date)
+    Directors per person at a snapshot date
+    Port of dirsHKPerPerson.asp - shows directors of HK-listed companies
+    Query params: d (snapshot date), sort
     """
     from datetime import date
-    from webbsite.asp_helpers import get_str
+    from webbsite.asp_helpers import get_str, mobile, sl
 
-    # Get snapshot date
+    # Get snapshot date with validation (1990-01-01 to today)
     d_str = get_str('d', '')
     if d_str:
         try:
             d = date.fromisoformat(d_str)
+            # Validate range
+            if d < date(1990, 1, 1):
+                d = date(1990, 1, 1)
+            elif d > date.today():
+                d = date.today()
+            d_str = d.isoformat()
         except ValueError:
             d = date.today()
+            d_str = d.isoformat()
     else:
         d = date.today()
+        d_str = d.isoformat()
 
-    # Query distribution of enigma.directorships per person
-    sql = """
-        WITH person_counts AS (
-            SELECT
-                d.director,
-                COUNT(DISTINCT d.company) as dirs
-            FROM enigma.directorships d
-            JOIN enigma.positions pn ON d.positionid = pn.positionid
-            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-            WHERE pn.rank = 1
-              AND (d.apptdate IS NULL OR d.apptdate <= %s)
-              AND (d.resdate IS NULL OR d.resdate > %s)
-            GROUP BY d.director
-        )
+    snap_year = d.year
+
+    # Get sort parameter
+    sort_param = get_str('sort', 'cntdn')
+    order_by_map = {
+        'cntdn': 'numSeats DESC, name',
+        'cntup': 'numSeats, YOB, name',
+        'inedn': 'INED DESC, name',
+        'ineup': 'INED, YOB, name',
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'sexno': 'sex, numSeats DESC, name',
+        'sexna': 'sex, name',
+        'agedn': 'YOB, numSeats DESC, name',
+        'ageup': 'YOB DESC, name'
+    }
+    order_by = order_by_map.get(sort_param, order_by_map['cntdn'])
+
+    # Port of HKdirsPerPerson stored procedure - inline SQL for PostgreSQL
+    sql = f"""
         SELECT
-            dirs as enigma.directorships,
-            COUNT(*) as people
-        FROM person_counts
-        GROUP BY dirs
-        ORDER BY dirs
+            director,
+            name1 || COALESCE(', ' || name2, '') || COALESCE(' ' || cName, '') AS name,
+            COUNT(company) AS numSeats,
+            SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS INED,
+            YOB,
+            sex
+        FROM (
+            SELECT DISTINCT issuer
+            FROM enigma.issue
+            JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+            WHERE stockexid IN (1, 20)
+              AND typeid NOT IN (1, 2, 40, 41, 46)
+              AND (firsttradedate IS NULL OR firsttradedate <= %s)
+              AND (delistdate IS NULL OR delistdate > %s)
+        ) AS t1
+        JOIN enigma.directorships ON t1.issuer = directorships.company
+        JOIN enigma.people ON directorships.director = people.personid
+        JOIN enigma.positions ON directorships.positionid = positions.positionid
+        WHERE positions.rank = 1
+          AND (apptdate IS NULL OR apptdate <= %s)
+          AND (resdate IS NULL OR resdate > %s)
+        GROUP BY director, name1, name2, cName, YOB, sex
+        ORDER BY {order_by}
     """
 
     try:
-        results = execute_query(sql, (d, d))
-        total_people = sum(row['people'] for row in results)
-    except Exception as ex:
-        current_app.logger.error(f"Error in dirsHKPerPerson.asp: {ex}", exc_info=True)
-        results = []
-        total_people = 0
+        directors = execute_query(sql, (d_str, d_str, d_str, d_str))
 
-    return render_template('dbpub/dirs_hk_per_person.html',
-                         distribution=results,
-                         d=d,
-                         total=total_people)
+        # Build sort links using sl() helper
+        base_url = f'/dbpub/dirsHKPerPerson.asp?d={d_str}'
+        sort_links = {
+            'name': sl('Name', 'namup', 'namdn', sort_param, base_url),
+            'count': sl('No.<br>of<br>seats', 'cntdn', 'cntup', sort_param, base_url),
+            'ined': sl('No.<br>INED', 'inedn', 'ineup', sort_param, base_url),
+            'sex': sl('Sex', 'sexno', 'sexna', sort_param, base_url),
+            'age': sl(f'Age in<br>{snap_year}', 'agedn', 'ageup', sort_param, base_url)
+        }
+
+        # Calculate ages
+        for director in directors:
+            if director['yob']:
+                director['age'] = snap_year - director['yob']
+            else:
+                director['age'] = None
+
+        return render_template('dbpub/dirs_hk_per_person.html',
+                             title=f"HK-listed directorships per person at {d_str}",
+                             directors=directors,
+                             d=d_str,
+                             snap_year=snap_year,
+                             sort=sort_param,
+                             sort_links=sort_links,
+                             mobile_alert=mobile(3))
+    except Exception as e:
+        current_app.logger.error(f"Error in dirs_hk_per_person: {e}")
+        abort(500)
 
 
 # Gem graduates - performance since transfer from GEM to Main Board

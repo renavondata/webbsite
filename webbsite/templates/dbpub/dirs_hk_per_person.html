@@ -1,38 +1,55 @@
 {% extends "base_database.html" %}
 
-{% block title %}Distribution of directorships per person{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h2>Distribution of directorships per person</h2>
+<h2>{{ title }}</h2>
+<p>This table shows the directors of companies with a
+HK primary listing
+and the number of seats they held on any snapshot date since 1-Jan-1990. For a
+distribution of INED seats per person, <a href="/dbpub/INEDHKDistnPeople.asp?d={{ d }}">click here</a>,
+and for distribution of all seats per person, <a href="/dbpub/DirsHKDistnPeople.asp">click here</a>.
+For a league table of average annual relative returns, <a href="/dbpub/leagueDirsHK.asp">click here.</a></p>
 
-<p>This table shows how many people hold 1, 2, 3... HK-listed directorships.</p>
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
 
 <form method="get" action="/dbpub/dirsHKPerPerson.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
     <div class="inputs">
-        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
     </div>
     <div class="inputs">
         <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';"/>
     </div>
+    <div class="clear"></div>
 </form>
 
-<table class="numtable">
+<p>Number of people who are directors on the snapshot date: {{ directors|length }}</p>
+
+{{ mobile_alert|safe }}
+<table class="numtable yscroll">
     <tr>
-        <th>No. of Directorships</th>
-        <th>No. of People</th>
-        <th>Percentage</th>
+        <th class="colHide3"></th>
+        <th class="left">{{ sort_links.name|safe }}</th>
+        <th>{{ sort_links.count|safe }}</th>
+        <th>{{ sort_links.ined|safe }}</th>
+        <th>{{ sort_links.sex|safe }}</th>
+        <th>{{ sort_links.age|safe }}</th>
     </tr>
-    {% for row in distribution %}
+    {% for director in directors %}
     <tr>
-        <td>{{ row.directorships }}</td>
-        <td>{{ row.people }}</td>
-        <td>{{ '%.2f%%'|format((row.people * 100.0 / total) if total > 0 else 0) }}</td>
+        <td class="colHide3">{{ loop.index }}</td>
+        <td class="left"><a href='/dbpub/positions.asp?p={{ director.director }}'>{{ director.name }}</a></td>
+        <td>{{ director.numseats }}</td>
+        <td>{{ director.ined }}</td>
+        <td>{{ director.sex }}</td>
+        <td>{% if director.age %}{{ director.age }}{% else %}-{% endif %}</td>
     </tr>
     {% endfor %}
-    <tr class="total">
-        <td><strong>Total</strong></td>
-        <td><strong>{{ total }}</strong></td>
-        <td><strong>100.00%</strong></td>
-    </tr>
 </table>
 {% endblock %}

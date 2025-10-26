@@ -1,14 +1,21 @@
 {% extends "base_database.html" %}
 
-{% block title %}Recent HK-listed director appointments{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<h2>Recent HK-listed director appointments</h2>
+<h2>{{ title }}</h2>
 <p>This table shows appointments (including changes of position) of directors of HK-listed companies.
 Pick an inclusive start date and end date then click Go. The default range is the last 60 days.
 If you change the end date to earlier than the start date then the range will be
-60 days up to the end date. The maximum range is 366 days. Appointments are usually captured from
+60 days up to the end date.
+The maximum range is 366 days. Appointments are usually captured from
 announcements by the next working day but sometimes we have trouble keeping up.</p>
+
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
 
 <form method="get" action="/dbpub/latestdirsHK.asp">
     <input type="hidden" name="sort" value="{{ sort }}">
@@ -20,37 +27,76 @@ announcements by the next working day but sometimes we have trouble keeping up.<
     </div>
     <div class="inputs">
         <input type="submit" value="Go">
-        <input type="button" value="Clear" onclick="document.getElementById('d1').value='';document.getElementById('d2').value='';this.form.submit()">
+        <input type="submit" value="Clear" onclick="document.getElementById('d1').value='';document.getElementById('d2').value=''">
     </div>
     <div class="clear"></div>
 </form>
 
 <p>Period length: {{ period_days }} days.</p>
 
-<table class="numtable yscroll">
+{{ mobile_alert|safe }}
+<table class="txtable yscroll">
     <tr>
-        <th></th>
-        <th class="left"><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=dirup">Director</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=dirdn">▼</a></th>
-        <th class="left"><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=orgup">Company</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=orgdn">▼</a></th>
-        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=appup">Appt<br>Date</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=appdn">▼</a></th>
-        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=posup">Position</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=posdn">▼</a></th>
-        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=sexup">Sex</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=sexdn">▼</a></th>
-        <th><a href="?d1={{ d1 }}&d2={{ d2 }}&sort=ageup">YOB</a> | <a href="?d1={{ d1 }}&d2={{ d2 }}&sort=agedn">▼</a></th>
+        <th class="colHide1"></th>
+        <th>{{ sort_links.director|safe }}</th>
+        <th>{{ sort_links.sex|safe }}</th>
+        <th class="right">{{ sort_links.age|safe }}</th>
+        <th>{{ sort_links.position|safe }}</th>
+        <th>{{ sort_links.from|safe }}</th>
+        <th class="colHide2">{{ sort_links.company|safe }}</th>
     </tr>
     {% for appt in appointments %}
     <tr>
-        <td>{{ loop.index }}</td>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ appt.dirid }}">{{ appt.dir }}</a></td>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ appt.orgid }}">{{ appt.org }}</a></td>
+        <td class="right colHide1">{{ loop.index }}</td>
+        <td><a href="/dbpub/positions.asp?p={{ appt.dirid }}">{{ appt.dir }}</a></td>
+        <td>{{ appt.sex }}</td>
+        <td class="right">{% if appt.age %}{{ appt.age }}{% endif %}</td>
+        <td><span class="info">{{ appt.posshort }}<span>{{ appt.poslong }}</span></span></td>
         <td>{{ appt.appt }}</td>
-        <td title="{{ appt.poslong }}">{{ appt.posshort }}</td>
-        <td>{{ appt.sex or '—' }}</td>
-        <td>{{ appt.yob or '—' }}</td>
+        <td class="colHide2"><a href="/dbpub/officers.asp?p={{ appt.orgid }}">{{ appt.org }}</a></td>
     </tr>
     {% endfor %}
 </table>
 
-{% if not appointments %}
-<p>No appointments found in this period.</p>
-{% endif %}
+<h3>Analysis</h3>
+<h4>Gender</h4>
+<table class="numtable">
+    <tr>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Unknown</th>
+    </tr>
+    <tr>
+        <td>{{ stats.male }}</td>
+        <td>{{ stats.female }}</td>
+        <td>{{ stats.nosex }}</td>
+    </tr>
+    <tr>
+        <td>{{ '%.2f%%'|format(stats.male_pct) }}</td>
+        <td>{{ '%.2f%%'|format(stats.female_pct) }}</td>
+        <td>{{ '%.2f%%'|format(stats.nosex_pct) }}</td>
+    </tr>
+</table>
+
+<h4>Average age in {{ now_year }}</h4>
+<table class="numtable">
+    <tr>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Unknown</th>
+        <th>Total</th>
+    </tr>
+    <tr>
+        <td>{{ stats.male_age_cnt }}</td>
+        <td>{{ stats.female_age_cnt }}</td>
+        <td>{{ stats.nosex_age_cnt }}</td>
+        <td>{{ stats.total_age_cnt }}</td>
+    </tr>
+    <tr>
+        <td>{% if stats.male_avg_age %}{{ '%.2f'|format(stats.male_avg_age) }}{% endif %}</td>
+        <td>{% if stats.female_avg_age %}{{ '%.2f'|format(stats.female_avg_age) }}{% endif %}</td>
+        <td>{% if stats.nosex_avg_age %}{{ '%.2f'|format(stats.nosex_avg_age) }}{% endif %}</td>
+        <td>{% if stats.total_avg_age %}{{ '%.2f'|format(stats.total_avg_age) }}{% endif %}</td>
+    </tr>
+</table>
 {% endblock %}
