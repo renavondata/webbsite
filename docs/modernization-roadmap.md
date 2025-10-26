@@ -1209,4 +1209,173 @@ The tasks below focus exclusively on porting the Classic ASP web interface to Fl
 
 ---
 
+## Route Parity Analysis (Oct 26, 2025)
+
+### Overview
+**Total ASP Files:** 180 files in Webb-site ASP files/dbpub/
+**Flask Routes Created:** 152 routes in dbpub.py
+**Routes Missing or Not at Parity:** ~52 routes (31 stubs + 21 missing entirely)
+
+### Current Status by Category
+
+#### ✅ Fully Implemented (Working with SQL): ~139+ routes
+These routes return real data and match ASP functionality:
+- Core search, browse, stock listings, company data
+- CCASS analysis (16 routes)
+- Directors & statistics (boardcomp, payleague, distributions, etc.)
+- Articles system
+- SFC licensees, HK solicitors data
+- Corporate actions, advisers, officers
+- Stock performance metrics
+
+#### ⚠️ Stub Routes (Placeholder Implementations): 31 routes
+
+**High Priority Stubs (Linked from /dbpub/ index):**
+1. **domicile.asp** - Companies by domicile with counts/percentages
+2. **domicilechange.asp** - Companies that changed domicile
+3. **namechangeHKlisted.asp** - Name changes for HK-listed companies
+
+**Medium Priority Stubs (Good data available):**
+4. **namechangeHK.asp** - All company name changes (unlisted too)
+5. **judgments.asp** - Legal judgments database
+6. **roles.asp** - Corporate roles/positions analysis
+7. **searchESS.asp** - Employee share schemes search
+8. **ESStop.asp** - Top ESS data
+
+**Vehicle/Transport Routes (11 routes - tables available):**
+9. **veFR.asp** - Vehicle first registrations by brand/fuel/body type
+10. **veFRtype.asp** - Vehicle type analysis
+11. **veFRtypehist.asp** - Vehicle type history
+12. **veJourneys.asp** - Vehicle journey statistics
+13. **veJourneyhist.asp** - Vehicle journey history
+14. **vebrandhist.asp** - Vehicle brand registration history
+15. **vedet.asp** - Vehicle details (make/model/year)
+16. **veengine.asp** - Vehicle engine type statistics
+17. **vefuel.asp** - Vehicle fuel type current
+18. **vefuelhist.asp** - Vehicle fuel type history
+19. **tuntraff.asp** - Tunnel/bridge traffic statistics
+
+**Flight Routes (2 routes - tables available):**
+20. **HKflights.asp** - HK flight data
+21. **HKflightscan.asp** - Flight scanner
+
+**Complex/Charting Routes (4 routes - require Highcharts):**
+22. **landreg.asp** - Land registry with Highcharts (complex)
+23. **lrvaluecats.asp** - Land registry value categories
+24. **HKDtender.asp** - HKD tender data
+25. **EFBS.asp** - Exchange Fund Bills/Securities
+
+**Lower Priority/Deferred:**
+26-31. **vax.asp, qt.asp, jail.asp, hksolsmoves.asp, prhdistricts.asp** - Various specialty routes
+
+#### ❌ Missing Routes (Not Created Yet): 21 routes
+
+**Search Routes (2 routes - exist in search.py, not dbpub.py):**
+- searchorgs.asp, searchpeople.asp (handled by separate search.py blueprint)
+
+**Database Editor Routes (in dbeditor.py, not dbpub.py):**
+- Various admin/editing routes properly separated
+
+**Specialty Routes (19 routes):**
+- HKsolsadmhk.asp, HKsolsadmos.asp, HKsolsdom.asp
+- advbyrole.asp, campaigns.asp, cosperdomHK.asp, donations.asp
+- events.asp (in separate events.py), govacsearch.asp, govest.asp
+- hpup.asp, hpw.asp, lirstaff.asp, lirstaffhist.asp
+- prhfloors.asp, prhunits.asp, sfclicrec.asp, sfcolicrec.asp
+- yearendcos.asp
+
+### Database Table Availability
+
+**✅ Tables Confirmed Available in PostgreSQL:**
+- domchanges (for domicile.asp, domicilechange.asp)
+- namechanges (for namechangeHK.asp, namechangeHKlisted.asp)
+- judgments (for judgments.asp)
+- roles (for roles.asp)
+- ess (for searchESS.asp, ESStop.asp)
+- vehiclefr, vehiclemakes, fueltype, bodytype (for all vehicle routes)
+- flights, airlines, airports (for HKflights.asp, HKflightscan.asp)
+- landreg, stats (for landreg.asp, lrvaluecats.asp)
+- transport (for tuntraff.asp and other transport routes)
+
+**❌ Tables Not Available/Incomplete:**
+- prh (public housing data - prhdistricts.asp, prhfloors.asp, prhunits.asp)
+- quarantine (COVID data - vax.asp, qt.asp - outdated anyway)
+
+### Implementation Priority Tiers
+
+#### Tier 1: Critical for Parity (3 routes - 1-2 days)
+Essential routes linked from main index, simple SQL implementation:
+1. domicile.asp
+2. domicilechange.asp
+3. namechangeHKlisted.asp
+
+**Impact:** Completes all high-visibility routes on dbpub index page
+
+#### Tier 2: High Value, Simple (5 routes - 2-3 days)
+Good data availability, straightforward queries:
+4. namechangeHK.asp
+5. judgments.asp
+6. roles.asp
+7. searchESS.asp
+8. ESStop.asp
+
+**Impact:** Adds legal, corporate governance, and employee compensation data
+
+#### Tier 3: Vehicle/Transport (13 routes - 4-5 days)
+Comprehensive transport data, moderate complexity:
+- All vehicle routes (veFR.asp, veFRtype.asp, etc.) - 11 routes
+- Flight routes (HKflights.asp, HKflightscan.asp) - 2 routes
+
+**Impact:** Unlocks extensive Hong Kong transport statistics (unique dataset)
+
+#### Tier 4: Complex/Charting (4 routes - 3-4 days)
+Requires JavaScript/Highcharts integration:
+- landreg.asp, lrvaluecats.asp (land registry charts)
+- HKDtender.asp, EFBS.asp (government finance charts)
+
+**Impact:** Advanced visualization features for government data
+
+#### Deferred/Out of Scope
+- vax.asp, qt.asp (COVID data - outdated)
+- prhdistricts.asp, prhfloors.asp, prhunits.asp (missing prh tables)
+- jail.asp (requires complex event-type-to-sentence mapping)
+- hksolsmoves.asp (complex solicitor career tracking)
+
+### Implementation Targets
+
+**Minimum Target (Week of Oct 28-Nov 1):**
+- Complete Tier 1 (3 routes) = **100% parity on index-linked routes**
+- Status: All routes on /dbpub/ index page fully functional
+
+**Recommended Target (November 2025):**
+- Complete Tier 1-2 (8 routes) = **Essential data coverage**
+- Status: All high-value simple routes operational
+
+**Stretch Target (Q4 2025):**
+- Complete Tier 1-3 (21 routes) = **Comprehensive transport data**
+- Status: All major data categories represented
+
+**Future Enhancement (Q1 2026):**
+- Complete Tier 4 (4 routes) = **Full charting capabilities**
+- Status: Advanced visualizations for all government datasets
+
+### Success Criteria
+
+**By Nov 1, 2025:**
+- ✅ Zero 404s on routes linked from /dbpub/ index
+- ✅ All stub routes upgraded to SQL implementation for Tier 1
+- ✅ Documentation updated with implementation status
+
+**By Dec 31, 2025:**
+- 🎯 Tier 1-2 complete (8 routes)
+- 🎯 User feedback on most-requested missing features
+- 🎯 Analytics showing which stub routes have highest traffic
+
+**By Mar 31, 2026:**
+- 🎯 Tier 3 complete (transport data)
+- 🎯 Performance optimization for complex queries
+- 🎯 Mobile responsiveness for all new routes
+
+---
+
 *This roadmap honors David Webb's legacy by ensuring the Webb-site platform continues to provide free, public access to Hong Kong financial data for decades to come, even after the original server shuts down on October 31, 2025.*
