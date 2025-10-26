@@ -1,6 +1,141 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+<p>This table summarises the classification of Directors (Executive,
+Non-Executive and Independent Non-Executive) on the boards of companies with
+a HK primary listing and their genders on any snapshot date since 1-Jan-1990.</p>
+
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
+
+<form method="get" action="/dbpub/HKdirsTypeSex.asp">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value=''">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<h3>Seats</h3>
+<table class="numtable">
+    <tr>
+        <th style="font-size:large">&#x26A5;</th>
+        <th>All seats</th>
+        <th>ED</th>
+        <th>NED</th>
+        <th>INED</th>
+    </tr>
+    <tr>
+        <td>F</td>
+        <td>{{ data.F.seats }}</td>
+        <td>{{ data.F.eds }}</td>
+        <td>{{ data.F.neds }}</td>
+        <td>{{ data.F.ineds }}</td>
+    </tr>
+    <tr>
+        <td>M</td>
+        <td>{{ data.M.seats }}</td>
+        <td>{{ data.M.eds }}</td>
+        <td>{{ data.M.neds }}</td>
+        <td>{{ data.M.ineds }}</td>
+    </tr>
+    {% if data.U.seats > 0 %}
+    <tr>
+        <td>?</td>
+        <td>{{ data.U.seats }}</td>
+        <td>{{ data.U.eds }}</td>
+        <td>{{ data.U.neds }}</td>
+        <td>{{ data.U.ineds }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>All</td>
+        <td>{{ totals.seats }}</td>
+        <td>{{ totals.eds }}</td>
+        <td>{{ totals.neds }}</td>
+        <td>{{ totals.ineds }}</td>
+    </tr>
+</table>
+
+<h3>Share of gender</h3>
+<table class="numtable">
+    <tr>
+        <th style="font-size:large">&#x26A5;</th>
+        <th>ED</th>
+        <th>NED</th>
+        <th>INED</th>
+    </tr>
+    <tr>
+        <td>F</td>
+        <td>{% if data.F.seats > 0 %}{{ '%.2f%%'|format(data.F.eds / data.F.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.F.seats > 0 %}{{ '%.2f%%'|format(data.F.neds / data.F.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.F.seats > 0 %}{{ '%.2f%%'|format(data.F.ineds / data.F.seats * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    <tr>
+        <td>M</td>
+        <td>{% if data.M.seats > 0 %}{{ '%.2f%%'|format(data.M.eds / data.M.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.M.seats > 0 %}{{ '%.2f%%'|format(data.M.neds / data.M.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.M.seats > 0 %}{{ '%.2f%%'|format(data.M.ineds / data.M.seats * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    {% if data.U.seats > 0 %}
+    <tr>
+        <td>?</td>
+        <td>{% if data.U.seats > 0 %}{{ '%.2f%%'|format(data.U.eds / data.U.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.U.seats > 0 %}{{ '%.2f%%'|format(data.U.neds / data.U.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if data.U.seats > 0 %}{{ '%.2f%%'|format(data.U.ineds / data.U.seats * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>All</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(totals.eds / totals.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(totals.neds / totals.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(totals.ineds / totals.seats * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+</table>
+
+<h3>Share of seat type</h3>
+<table class="numtable">
+    <tr>
+        <th style="font-size:large">&#x26A5;</th>
+        <th>All seats</th>
+        <th>ED</th>
+        <th>NED</th>
+        <th>INED</th>
+    </tr>
+    <tr>
+        <td>F</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(data.F.seats / totals.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.eds > 0 %}{{ '%.2f%%'|format(data.F.eds / totals.eds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.neds > 0 %}{{ '%.2f%%'|format(data.F.neds / totals.neds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.ineds > 0 %}{{ '%.2f%%'|format(data.F.ineds / totals.ineds * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    <tr>
+        <td>M</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(data.M.seats / totals.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.eds > 0 %}{{ '%.2f%%'|format(data.M.eds / totals.eds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.neds > 0 %}{{ '%.2f%%'|format(data.M.neds / totals.neds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.ineds > 0 %}{{ '%.2f%%'|format(data.M.ineds / totals.ineds * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    {% if data.U.seats > 0 %}
+    <tr>
+        <td>?</td>
+        <td>{% if totals.seats > 0 %}{{ '%.2f%%'|format(data.U.seats / totals.seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.eds > 0 %}{{ '%.2f%%'|format(data.U.eds / totals.eds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.neds > 0 %}{{ '%.2f%%'|format(data.U.neds / totals.neds * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if totals.ineds > 0 %}{{ '%.2f%%'|format(data.U.ineds / totals.ineds * 100) }}{% else %}-{% endif %}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<p><a href="/dbpub/boardcomp.asp?sort=dirdn&d={{ d }}">Click here</a> to see the list
+of companies and their board composition on the snapshot date.</p>
 {% endblock %}

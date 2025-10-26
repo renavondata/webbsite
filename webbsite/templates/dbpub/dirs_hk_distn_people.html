@@ -1,6 +1,76 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+<p>This table summarises the number of HK-listed directorships held by directors
+of companies with a HK primary listing
+on any snapshot date since 1-Jan-1990. To see a list of directors,
+<a href="/dbpub/dirsHKPerPerson.asp?d={{ d }}">click here</a>.</p>
+
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
+
+<form method="get" action="/dbpub/DirsHKDistnPeople.asp">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';"/>
+    </div>
+    <div class="clear"></div>
+</form>
+
+{{ mobile_alert|safe }}
+<table class="numtable">
+    <tr>
+        <th>No.<br>of<br>seats</th>
+        <th>No.<br>of<br>people</th>
+        <th>Female</th>
+        <th>Cumul-<br>ative<br>people</th>
+        <th>Cumul-<br>ative<br>female</th>
+        <th class="colHide3">Cumul-<br>ative<br>seats</th>
+        <th class="colHide3">Cumul-<br>ative<br>female<br>seats</th>
+    </tr>
+    {% for row in distribution %}
+    <tr>
+        <td>{{ row.numseats }}</td>
+        <td>{{ row.numpeople }}</td>
+        <td>{{ row.female }}</td>
+        <td>{{ row.cum_people }}</td>
+        <td>{{ row.cum_female }}</td>
+        <td class="colHide3">{{ row.cum_seats }}</td>
+        <td class="colHide3">{{ row.cum_female_seats }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<table class="opltable">
+    <tr>
+        <th>Statistic</th>
+        <th>Result</th>
+    </tr>
+    <tr>
+        <td>Average number of directorships per person</td>
+        <td>{{ '%.3f'|format(stats.avg_seats) }}</td>
+    </tr>
+    <tr>
+        <td>Average number of directorships per female</td>
+        <td>{{ '%.3f'|format(stats.avg_female_seats) }}</td>
+    </tr>
+    <tr>
+        <td>Percentage of directorships held by females</td>
+        <td>{{ '%.2f%%'|format(stats.pct_female_seats) }}</td>
+    </tr>
+    <tr>
+        <td>Percentage of directors who are female</td>
+        <td>{{ '%.2f%%'|format(stats.pct_female_dirs) }}</td>
+    </tr>
+</table>
 {% endblock %}

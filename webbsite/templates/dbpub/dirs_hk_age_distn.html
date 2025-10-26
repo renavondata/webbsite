@@ -1,6 +1,109 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+<p>This table summarises the age distribution of directors of HK primary-listed
+companies on any snapshot date since 1-Jan-1990. Biographies were not required
+in annual reports until 1995, so some age data is missing for directors who
+resigned before that. Biographies were not required upon appointment until
+31-Mar-2004, so if a director was appointed and left between successive annual
+reports, then he could avoid his biography being published. For a list of
+directors ranked by age, <a href="/dbpub/dirsHKPerPerson.asp?sort=agedn">click here</a>.</p>
+
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+now available</strong></a>.</div>
+
+<form method="get" action="/dbpub/DirsHKAgeDistn.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+
+{{ mobile_alert|safe }}
+<table class="numtable yscroll">
+    <tr>
+        <th>{{ sort_links.yob_age|safe }}</th>
+        <th>{{ sort_links.yob_age|safe }}</th>
+        <th>No.<br>of<br>dirs</th>
+        <th>Total<br>seats<br>held</th>
+        <th>Female</th>
+        <th>Female<br>seats</th>
+        <th class="colHide3">Cumul-<br>ative<br>dirs</th>
+        <th class="colHide3">Cumul-<br>ative<br>seats</th>
+        <th class="colHide3">Cumul-<br>ative<br>females</th>
+        <th class="colHide3">Cumul-<br>ative<br>female<br>seats</th>
+    </tr>
+    {% for row in distribution %}
+    <tr>
+        <td>{% if row.yob %}{{ row.yob }}{% else %}?{% endif %}</td>
+        <td>{{ row.age }}</td>
+        <td>{{ row.dirs }}</td>
+        <td>{{ row.seats }}</td>
+        <td>{{ row.female }}</td>
+        <td>{{ row.femseats }}</td>
+        <td class="colHide3">{{ row.cum_dirs }}</td>
+        <td class="colHide3">{{ row.cum_seats }}</td>
+        <td class="colHide3">{{ row.cum_female }}</td>
+        <td class="colHide3">{{ row.cum_female_seats }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br/>
+<table class="numtable fcl">
+    <tr>
+        <th></th>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Total</th>
+    </tr>
+    <tr>
+        <td>Directors</td>
+        <td>{{ stats.male_dirs }}</td>
+        <td>{{ stats.cum_female }}</td>
+        <td>{{ stats.cum_dirs }}</td>
+    </tr>
+    <tr>
+        <td>Seats</td>
+        <td>{{ stats.male_seats }}</td>
+        <td>{{ stats.cum_female_seats }}</td>
+        <td>{{ stats.cum_seats }}</td>
+    </tr>
+    <tr>
+        <td>Average seats</td>
+        <td>{{ '%.3f'|format(stats.avg_seats_male) }}</td>
+        <td>{{ '%.3f'|format(stats.avg_seats_female) }}</td>
+        <td>{{ '%.3f'|format(stats.avg_seats_all) }}</td>
+    </tr>
+    <tr>
+        <td>Share of directors</td>
+        <td>{% if stats.cum_dirs > 0 %}{{ '%.2f%%'|format(stats.male_dirs / stats.cum_dirs * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if stats.cum_dirs > 0 %}{{ '%.2f%%'|format(stats.cum_female / stats.cum_dirs * 100) }}{% else %}-{% endif %}</td>
+        <td>100.00%</td>
+    </tr>
+    <tr>
+        <td>Share of seats</td>
+        <td>{% if stats.cum_seats > 0 %}{{ '%.2f%%'|format(stats.male_seats / stats.cum_seats * 100) }}{% else %}-{% endif %}</td>
+        <td>{% if stats.cum_seats > 0 %}{{ '%.2f%%'|format(stats.cum_female_seats / stats.cum_seats * 100) }}{% else %}-{% endif %}</td>
+        <td>100.00%</td>
+    </tr>
+    <tr>
+        <td>Average age in {{ year_now }}</td>
+        <td>{% if stats.avg_age_male > 0 %}{{ '%.1f'|format(stats.avg_age_male) }}{% else %}-{% endif %}</td>
+        <td>{% if stats.avg_age_female > 0 %}{{ '%.1f'|format(stats.avg_age_female) }}{% else %}-{% endif %}</td>
+        <td>{% if stats.avg_age_all > 0 %}{{ '%.1f'|format(stats.avg_age_all) }}{% else %}-{% endif %}</td>
+    </tr>
+</table>
+<p>Note: the average age excludes any people whose ages are unknown.</p>
 {% endblock %}
