@@ -1,6 +1,71 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}Distribution of directors per HK-listed company at {{ d }}{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Distribution of directors per HK-listed company at {{ d }}</h2>
+<p>This table summarises the number of Directors on the boards of companies with
+a HK primary listing, the average age of the boards and the gender composition on any snapshot date since 1-Jan-1990.</p>
+<div class="letterbox">Please note that due to the planned <a href="/articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="/articles/repository.asp"><strong>is
+	now available</strong></a>.</div>
+<form method="get" action="/dbpub/DirsPerListcoHKdstn.asp">
+    <div class="inputs">
+        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable">
+    <tr>
+        <th>No.<br>of<br>dirs</th>
+        <th>No.<br>of<br>Cos</th>
+        <th>Share<br>of<br>Cos</th>
+        <th>Total<br>seats</th>
+        <th>Fem.<br>seats</th>
+        <th>Mean<br>age in<br>{{ snap_year }}</th>
+        <th class="colHide3">Cumul-<br>ative<br>Cos</th>
+        <th class="colHide3">Cumul-<br>ative<br>seats</th>
+        <th class="colHide3">Cumul-<br>ative<br>female</th>
+    </tr>
+    {% set ns = namespace(cum_cos=0, cum_seats=0, cum_fem=0) %}
+    {% for row in distribution %}
+    {% set seats = row.numseats|int * row.numcos|int %}
+    {% set ns.cum_seats = ns.cum_seats + seats %}
+    {% set ns.cum_cos = ns.cum_cos + row.numcos|int %}
+    {% set ns.cum_fem = ns.cum_fem + (row.femseats|int if row.femseats else 0) %}
+    <tr>
+        <td>{{ row.numseats }}</td>
+        <td>{{ row.numcos }}</td>
+        <td>{{ '%.1f'|format(row.numcos / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>{{ seats }}</td>
+        <td>{{ row.femseats if row.femseats else 0 }}</td>
+        <td>{{ '%.2f'|format(snap_year - row.yob2) if row.yob2 else '-' }}</td>
+        <td class="colHide3">{{ ns.cum_cos }}</td>
+        <td class="colHide3">{{ ns.cum_seats }}</td>
+        <td class="colHide3">{{ ns.cum_fem }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>0</td>
+        <td>{{ total_cos - ns.cum_cos }}</td>
+        <td>{{ '%.1f'|format((total_cos - ns.cum_cos) / total_cos * 100) if total_cos > 0 else '0.0' }}%</td>
+        <td>0</td>
+        <td>0</td>
+        <td>-</td>
+        <td class="colHide3">{{ total_cos }}</td>
+        <td class="colHide3">{{ ns.cum_seats }}</td>
+        <td class="colHide3">{{ ns.cum_fem }}</td>
+    </tr>
+</table>
+<p>On the snapshot date:</p>
+<p>Average number of directors per company: <b>{{ '%.2f'|format(ns.cum_seats / total_cos) if total_cos > 0 else '0.00' }}.</b></p>
+<p>Average number of female directors per company: <b>{{ '%.2f'|format(ns.cum_fem / total_cos) if total_cos > 0 else '0.00' }}.</b></p>
+<p>Share of seats held by women: <b>{{ '%.2f'|format(ns.cum_fem / ns.cum_seats * 100) if ns.cum_seats > 0 else '0.00' }}%</b></p>
+<p><a href="/dbpub/boardcomp.asp?sort=dirdn&d={{ d }}">Click here</a> to see the list
+of companies and their board composition on the snapshot date.</p>
 {% endblock %}
