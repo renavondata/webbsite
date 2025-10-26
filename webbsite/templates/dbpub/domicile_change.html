@@ -1,6 +1,71 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}Domicile Changes{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Domicile changes</h2>
+
+<p>This table is a list of companies which have changed their domicile by
+continuation in a new jurisdiction. There
+are two ways to change domicile; some companies simply change their domicile from one
+place to another, "continuing" the existence of the same legal entity, like a
+human changing nationality. Some jurisdictions, such as Hong Kong, do not allow
+this, while others, such as the Cayman Islands, do.</p>
+
+<p>More often, a listed company
+becomes a wholly-owned subsidiary of an empty shell company newly-incorporated
+in the chosen jurisdiction, using a "scheme of arrangement" in which each share in the
+listed company is exchanged for one share in the shell, then the shell becomes
+listed instead. In that case, we treat the new vehicle as the continuation of
+the listed company in a new domicile, and we also carry over the directorships
+and adviserships from the previously listed company.</p>
+
+<p>The following is a list of companies redomiciled by continuation.</p>
+
+<table class="txtable yscroll">
+    <tr>
+        <th>
+            {% if sort_param == 'namup' %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='namdn') }}"><b>Current name</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='namup') }}">Current name</a>
+            {% endif %}
+        </th>
+        <th class="colHide3">
+            {% if sort_param == 'newup' %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='newdn') }}"><b>Current domicile</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='newup') }}">Current domicile</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'oldup' %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='olddn') }}"><b>Old domicile</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='oldup') }}">Old domicile</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'dateup' %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='datedn') }}"><b>Until</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile_change', sort='dateup') }}">Until</a>
+            {% endif %}
+        </th>
+    </tr>
+    {% for row in changes_data %}
+    <tr>
+        <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.name1 }}</a></td>
+        <td class="colHide3">{{ row.newdom }}</td>
+        <td>{{ row.olddom }}</td>
+        <td class="nowrap">
+            {# Format date with accuracy indicator if available #}
+            {% if row.dateacc and row.dateacc != 1 %}
+                {{ row.datechanged.strftime('%Y-%m') if row.datechanged else '' }}
+            {% else %}
+                {{ row.datechanged.strftime('%Y-%m-%d') if row.datechanged else '' }}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}

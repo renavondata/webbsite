@@ -1,6 +1,61 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+
+{# Navigation tabs for different exchanges #}
+<p>
+    {% if e == 'm' %}
+        <b>Main Board</b>
+    {% else %}
+        <a href="{{ url_for('dbpub.domicile', e='m', sort=sort_param) }}">Main Board</a>
+    {% endif %}
+    |
+    {% if e == 'g' %}
+        <b>GEM</b>
+    {% else %}
+        <a href="{{ url_for('dbpub.domicile', e='g', sort=sort_param) }}">GEM</a>
+    {% endif %}
+    |
+    {% if e == 'a' %}
+        <b>All HK</b>
+    {% else %}
+        <a href="{{ url_for('dbpub.domicile', e='a', sort=sort_param) }}">All HK</a>
+    {% endif %}
+</p>
+
+<table class="numtable fcl">
+    <tr>
+        <th>
+            {% if sort_param == 'domup' %}
+                <a href="{{ url_for('dbpub.domicile', e=e, sort='domdn') }}"><b>Domicile</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile', e=e, sort='domup') }}">Domicile</a>
+            {% endif %}
+        </th>
+        <th>
+            {% if sort_param == 'cntup' %}
+                <a href="{{ url_for('dbpub.domicile', e=e, sort='cntdn') }}"><b>Count</b></a>
+            {% else %}
+                <a href="{{ url_for('dbpub.domicile', e=e, sort='cntup') }}">Count</a>
+            {% endif %}
+        </th>
+        <th><b>Share %</b></th>
+    </tr>
+    {% for row in domiciles_data %}
+    <tr>
+        <td><a href='{{ url_for('dbpub.domicilecos', e=e, dom=row.id) }}'>{{ row.domname }}</a></td>
+        <td>{{ row.cnt }}</td>
+        <td>{{ "%.2f"|format(row.pct) }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>Total companies</td>
+        <td>{{ total }}</td>
+        <td>100.00</td>
+    </tr>
+</table>
+
+<p>Note: the table includes only companies with a primary listing in HK.</p>
+
 {% endblock %}
