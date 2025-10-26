@@ -27,30 +27,37 @@ The Webb-site codebase is a multi-tier financial data platform that scrapes, pro
 - Weekly database dumps uploaded to Google Drive
 - Automated import to Render PostgreSQL
 
-### Current Migration Status (Oct 19, 2025)
+### Current Migration Status (Oct 26, 2025)
 
-**✅ Completed:**
-- Flask application structure with 192 routes created
-- PostgreSQL database imported locally (all tables, indexes, functions)
-- **24 routes fully working** with SQL implementation (MVP target exceeded!)
+**✅ PRODUCTION DEPLOYED - Mission Accomplished! 🎉**
+- **Site live on Render.com** with continuous deployment (5 days ahead of Oct 31 deadline)
+- **279 routes created** (up from 192 initial estimate)
+- **139+ routes fully working** with SQL implementation (600% above MVP target of 20!)
+- PostgreSQL database operational in production (pro-4gb plan, 80GB disk)
 - Templates and CSS extracted from legacy ASP
 - ASP helper functions ported to Python (asp_helpers.py)
+- **CI/CD active:** GitHub master branch auto-deploys to Render.com
 
 **⚠️ In Progress:**
-- 165 skeleton routes need SQL implementation
-- Deployment to Render.com staging environment
-- Performance testing and optimization
+- 70 routes with stub implementations (lower priority pages)
+- holders.asp recursive ownership trees (complex algorithm)
+- Performance optimization and caching
+- Automated database imports from Google Drive
 
-**❌ Not Started:**
-- 109 specialty routes not yet created
-- Production deployment and domain setup
+**❌ Deferred (Post-Launch):**
+- Authentication system (webbmail, vote, pollman - 36 routes)
+- Database editing interface (dbeditor - 53 routes)
+- Specialty routes (qt.asp, HKflights.asp, etc.)
+- User personalization features
 
-**Working Routes:**
-- Core search: searchorgs.asp, searchpeople.asp
-- Stock data: prices.asp, quotes.asp, events.asp, listed.asp, delisted.asp, code.asp
-- Company data: orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp
-- Articles: All article routes (index, individual articles)
-- CCASS: bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cparticipants.asp, ipstakes.asp, choldings.asp
+**Working Routes (139+ routes):**
+- Core search: searchorgs.asp, searchpeople.asp, natperson.asp
+- Stock data: prices.asp, quotes.asp, events.asp, listed.asp, delisted.asp, code.asp, ctr.asp, str.asp
+- Company data: orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp, govac.asp
+- Articles: All article routes (index, individual articles) + FAQ and static pages
+- CCASS (16 routes): bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cconchist.asp, cparticipants.asp, ipstakes.asp, choldings.asp, ctothist.asp, nciphist.asp, cholder.asp, brokhist.asp, etc.
+- Directors & Statistics: boardcomp.asp, dirsHKPerPerson.asp, incHKannual.asp, auditorchanges.asp, etc.
+- 70+ additional statistical and analysis routes
 
 See `docs/modernization-roadmap.md` for complete migration plan.
 
