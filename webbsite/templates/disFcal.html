@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<title>{{ title }}</title>
+</head>
+<body>
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<p>This page shows the non-HK companies which were registered in HK and either
+departed or were dissolved (whichever comes first) in the chosen period, since records begin in 1946.
+A change in registration requirements took effect on 31-Aug-1984; it is possible
+that there were other foreign companies with a place of business in HK before
+that which were not registered with the Companies Registry.</p>
+
+<p>Note: data on deregistrations are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
+and name-changes, without stating domicile.</p>
+
+<form method="get" action="{{ url_for('dbpub.enigma_disFcal') }}">
+    <div class="inputs"><b>Departure/dissolution date</b>&nbsp;</div>
+    <div class="inputs">
+        <select name="y" onchange="this.form.submit()">
+            {% for year in range(2025, 1945, -1) %}
+                <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <select name="m" onchange="this.form.submit()">
+            <option value="0" {% if m == 0 %}selected{% endif %}>Any month</option>
+            {% for month in range(1, 13) %}
+                <option value="{{ month }}" {% if month == m %}selected{% endif %}>{{ "%02d"|format(month) }}</option>
+            {% endfor %}
+        </select>
+        <select name="d" onchange="this.form.submit()">
+            <option value="0" {% if d == 0 %}selected{% endif %}>Any day</option>
+            {% for day in range(1, 32) %}
+                <option value="{{ day }}" {% if day == d %}selected{% endif %}>{{ "%02d"|format(day) }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs"><input type="submit" value="Go"></div>
+    <div class="clear"></div>
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+</form>
+
+{% if results|length == 0 %}
+    <p>None found.</p>
+{% else %}
+    <table class="numtable">
+        <tr>
+            <th class="colHide1"></th>
+            <th class="colHide1">
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                    Reg no.
+                </a>
+            </th>
+            <th class="left">
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='namup' if sort_param != 'namup' else 'namdn') }}">
+                    Name
+                </a>
+            </th>
+            <th class="colHide3">
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                    Registered
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='cesdn' if sort_param != 'cesdn' else 'cesup') }}">
+                    Left HK
+                </a>
+            </th>
+            <th class="colHide2">
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
+                    Dissolved
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.enigma_disFcal', y=y, m=m, d=d, sort='domup' if sort_param != 'domup' else 'domdn') }}">
+                    Domicile
+                </a>
+            </th>
+        </tr>
+        {% for row in results %}
+        <tr>
+            <td class="colHide1">{{ loop.index }}</td>
+            <td class="colHide1">{{ row[8] if row[8] else '' }}&nbsp;</td>
+            <td class="left">
+                <a href="{{ url_for('dbpub.enigma_orgdata', p=row[0]) }}">
+                    {{ row[1] }}
+                </a>
+            </td>
+            <td class="colHide3 nowrap">{{ row[2].strftime('%Y-%m-%d') if row[2] else '' }}</td>
+            <td class="nowrap">{{ row[4].strftime('%Y-%m-%d') if row[4] else '' }}</td>
+            <td class="colHide2 nowrap">{{ row[3].strftime('%Y-%m-%d') if row[3] else '' }}</td>
+            <td>{{ row[7] if row[7] else '' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% if results|length == limit %}
+        <p>Only the first {{ limit }} records are shown. Try narrowing your search to a specific month or day.</p>
+    {% endif %}
+{% endif %}
+
+{% include 'footer.html' %}
+</body>
+</html>

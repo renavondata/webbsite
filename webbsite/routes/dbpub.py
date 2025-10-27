@@ -13390,6 +13390,405 @@ def enigma_domregHK():
                           total=total)
 
 
+@bp.route('/incFcal.asp')
+def enigma_incFcal():
+    """Foreign companies registered in HK by year/month/day"""
+    from datetime import datetime
+    import calendar
+
+    conn = get_db_connection()
+
+    current_year = datetime.now().year
+    y = get_int('y', 0)
+    m = get_int('m', 0)
+    d = get_int('d', 0)
+    dom = get_int('dom', 0)
+    sort_param = request.args.get('sort', 'namup')
+
+    # If neither year nor domicile specified, default to current year
+    if dom == 0 and y == 0:
+        y = current_year
+
+    # Validate ranges
+    if y < 0:
+        y = 0
+    elif y > current_year:
+        y = current_year
+
+    if y == 0:
+        m = 0
+        d = 0
+    else:
+        if m < 0 or m > 12:
+            m = 0
+        if m > 0:
+            max_day = calendar.monthrange(y, m)[1]
+            if d < 0 or d > max_day:
+                d = 0
+        else:
+            d = 0
+
+    # Sort mapping
+    sort_map = {
+        'namdn': 'name1 DESC',
+        'renup': 'f.reg_id',
+        'rendn': 'f.reg_id DESC',
+        'regup': 'f.reg_date, name1',
+        'regdn': 'f.reg_date DESC, name1',
+        'cesdn': 'f.ces_date DESC, name1',
+        'cesup': 'f.ces_date, name1',
+        'disdn': 'o.dis_date DESC, name1',
+        'disup': 'o.dis_date, name1',
+        'domup': 'd.friendly, name1',
+        'domdn': 'd.friendly DESC, name1',
+        'namup': 'name1'
+    }
+    order_by = sort_map.get(sort_param, 'name1')
+    if sort_param not in sort_map:
+        sort_param = 'namup'
+
+    # Calculate date range
+    if y > 0:
+        start_month = m if m > 0 else 1
+        end_month = m if m > 0 else 12
+        start_day = d if d > 0 else 1
+        end_day = d if d > 0 else calendar.monthrange(y, end_month)[1]
+
+        start_date = f"{y}-{start_month:02d}-{start_day:02d}"
+        end_date = f"{y}-{end_month:02d}-{end_day:02d}"
+        date_clause = f"AND f.reg_date BETWEEN '{start_date}' AND '{end_date}'"
+    else:
+        date_clause = ""
+
+    # Build domicile clause
+    if dom > 0:
+        dom_clause = f"AND o.domicile = {dom}"
+    else:
+        dom_clause = ""
+
+    # Build query (limit 2000 records)
+    query = f"""
+        SELECT
+            o.person_id,
+            o.name1 AS name,
+            f.reg_date,
+            o.dis_date,
+            f.ces_date,
+            d.friendly,
+            f.reg_id
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.person_id = f.org_id
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE f.host_dom = 1
+          {date_clause}
+          {dom_clause}
+        ORDER BY {order_by}
+        LIMIT 2000
+    """
+
+    results = conn.execute(query).fetchall()
+
+    # Get available domiciles for dropdown
+    domiciles = conn.execute("""
+        SELECT DISTINCT o.domicile, d.friendly
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.person_id = f.org_id
+        JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE f.host_dom = 1
+        ORDER BY d.friendly
+    """).fetchall()
+
+    conn.close()
+
+    # Build title
+    title = "Foreign companies registered in HK"
+    if y > 0:
+        if d > 0:
+            title += f" on {y}-{m:02d}-{d:02d}"
+        elif m > 0:
+            title += f" in {y}-{m:02d}"
+        else:
+            title += f" in {y}"
+
+    return render_template('incFcal.html',
+                          title=title,
+                          y=y,
+                          m=m,
+                          d=d,
+                          dom=dom,
+                          sort_param=sort_param,
+                          results=results,
+                          domiciles=domiciles,
+                          limit=2000)
+
+
+@bp.route('/disFcal.asp')
+def enigma_disFcal():
+    """Non-HK companies departed/dissolved in HK by year/month/day"""
+    from datetime import datetime
+    import calendar
+
+    conn = get_db_connection()
+
+    current_year = datetime.now().year
+    y = get_int('y', current_year)
+    m = get_int('m', 0)
+    d = get_int('d', 0)
+    sort_param = request.args.get('sort', 'namup')
+
+    # Validate ranges
+    if y < 1946 or y > current_year:
+        y = current_year
+
+    if m < 0 or m > 12:
+        m = 0
+
+    if m > 0:
+        max_day = calendar.monthrange(y, m)[1]
+        if d < 0 or d > max_day:
+            d = 0
+    else:
+        d = 0
+
+    # Sort mapping
+    sort_map = {
+        'namdn': 'name1 DESC',
+        'regup': 'f.reg_date, name1',
+        'regdn': 'f.reg_date DESC, name1',
+        'cesdn': 'f.ces_date DESC, name1',
+        'cesup': 'f.ces_date, name1',
+        'disdn': 'o.dis_date DESC, name1',
+        'disup': 'o.dis_date, name1',
+        'domup': 'd.friendly, name1',
+        'domdn': 'd.friendly DESC, name1',
+        'namup': 'name1'
+    }
+    order_by = sort_map.get(sort_param, 'name1')
+    if sort_param not in sort_map:
+        sort_param = 'namup'
+
+    # Calculate date range
+    start_month = m if m > 0 else 1
+    end_month = m if m > 0 else 12
+    start_day = d if d > 0 else 1
+    end_day = d if d > 0 else calendar.monthrange(y, end_month)[1]
+
+    start_date = f"{y}-{start_month:02d}-{start_day:02d}"
+    end_date = f"{y}-{end_month:02d}-{end_day:02d}"
+
+    # Build query with subquery for rel_date (earliest of ces_date or dis_date)
+    query = f"""
+        SELECT
+            person_id,
+            name,
+            reg_date,
+            dis_date,
+            ces_date,
+            rel_date,
+            friendly,
+            reg_id
+        FROM (
+            SELECT
+                o.person_id,
+                o.name1 AS name,
+                f.reg_date,
+                o.dis_date,
+                f.ces_date,
+                LEAST(COALESCE(f.ces_date, o.dis_date), COALESCE(o.dis_date, f.ces_date)) AS rel_date,
+                d.friendly,
+                f.reg_id
+            FROM enigma.organisations o
+            JOIN enigma.freg f ON o.person_id = f.org_id
+            LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+            WHERE f.host_dom = 1
+        ) AS t1
+        WHERE rel_date BETWEEN '{start_date}' AND '{end_date}'
+        ORDER BY {order_by}
+        LIMIT 2000
+    """
+
+    results = conn.execute(query).fetchall()
+
+    conn.close()
+
+    # Build title
+    title = "Non-HK companies departed/dissolved HK "
+    if d > 0:
+        title += f"on {y}-{m:02d}-{d:02d}"
+    elif m > 0:
+        title += f"in {y}-{m:02d}"
+    else:
+        title += f"in {y}"
+
+    return render_template('disFcal.html',
+                          title=title,
+                          y=y,
+                          m=m,
+                          d=d,
+                          sort_param=sort_param,
+                          results=results,
+                          limit=2000)
+
+
+@bp.route('/incUKcaltype.asp')
+def enigma_incUKcaltype():
+    """Entities formed in UK by year/month/day"""
+    from datetime import datetime
+    import calendar
+
+    conn = get_db_connection()
+
+    current_year = datetime.now().year
+    y = get_int('y', current_year)
+    m = get_int('m', 0)
+    d = get_int('d', 0)
+    t = get_int('t', 0)
+    dom = get_int('dom', 116)  # Default to England & Wales
+    sort_param = request.args.get('sort', 'namup')
+    limit = 5000
+
+    # Validate ranges
+    if y < 1663 or y > current_year:
+        y = current_year
+
+    if m < 0 or m > 12:
+        m = 0
+
+    if m > 0:
+        max_day = calendar.monthrange(y, m)[1]
+        if d < 0 or d > max_day:
+            d = 0
+    else:
+        d = 0
+
+    # Get domicile name
+    dom_names = {
+        116: "England & Wales",
+        311: "Northern Ireland",
+        112: "Scotland"
+    }
+    dom_name = dom_names.get(dom, "Unknown")
+
+    # Get type name if specified
+    type_name = ""
+    if t > 0:
+        result = conn.execute(
+            "SELECT type_name FROM enigma.orgtypes WHERE org_type = %s",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+
+    # Sort mapping
+    sort_map = {
+        'namdn': 'name DESC',
+        'regup': 'inc_id',
+        'regdn': 'inc_id DESC',
+        'incup': 'inc_date, name',
+        'incdn': 'inc_date DESC, name',
+        'disdn': 'dis_date DESC, name',
+        'disup': 'dis_date, name',
+        'typup': 'type_name, name',
+        'typdn': 'type_name DESC, name',
+        'namup': 'name'
+    }
+    order_by = sort_map.get(sort_param, 'name')
+    if sort_param not in sort_map:
+        sort_param = 'namup'
+
+    # Calculate date range
+    start_month = m if m > 0 else 1
+    end_month = m if m > 0 else 12
+    start_day = d if d > 0 else 1
+    end_day = d if d > 0 else calendar.monthrange(y, end_month)[1]
+
+    start_date = f"{y}-{start_month:02d}-{start_day:02d}"
+    end_date = f"{y}-{end_month:02d}-{end_day:02d}"
+
+    # Build query
+    if t == 0:
+        # Include type information
+        query = f"""
+            SELECT
+                person_id,
+                name,
+                c_name,
+                inc_id,
+                inc_date,
+                dis_date,
+                org_type,
+                type_name
+            FROM (
+                SELECT
+                    o.person_id,
+                    o.name1 AS name,
+                    o.c_name,
+                    o.inc_date,
+                    o.dis_date,
+                    o.inc_id,
+                    o.org_type
+                FROM enigma.organisations o
+                WHERE o.domicile = {dom}
+                  AND o.inc_date BETWEEN '{start_date}' AND '{end_date}'
+                LIMIT {limit}
+            ) t
+            JOIN enigma.orgtypes ot ON t.org_type = ot.org_type
+            ORDER BY {order_by}
+        """
+    else:
+        # Specific type only
+        query = f"""
+            SELECT
+                person_id,
+                name1 AS name,
+                c_name,
+                inc_date,
+                dis_date,
+                inc_id
+            FROM enigma.organisations
+            WHERE domicile = {dom}
+              AND org_type = {t}
+              AND inc_date BETWEEN '{start_date}' AND '{end_date}'
+            ORDER BY {order_by}
+            LIMIT {limit}
+        """
+
+    results = conn.execute(query).fetchall()
+
+    # Get org types for dropdown (specific UK types)
+    org_types = conn.execute("""
+        SELECT org_type, type_name
+        FROM enigma.orgtypes
+        WHERE org_type IN (7,9,19,20,21,23,25,26,35,37,38,41)
+        ORDER BY type_name
+    """).fetchall()
+
+    conn.close()
+
+    # Build title
+    title = f"Entities formed in {dom_name}"
+    if d > 0:
+        title += f" on {y}-{m:02d}-{d:02d}"
+    elif m > 0:
+        title += f" in {y}-{m:02d}"
+    else:
+        title += f" in {y}"
+    if t > 0 and type_name:
+        title += f": {type_name}"
+
+    return render_template('incUKcaltype.html',
+                          title=title,
+                          y=y,
+                          m=m,
+                          d=d,
+                          t=t,
+                          dom=dom,
+                          dom_name=dom_name,
+                          sort_param=sort_param,
+                          results=results,
+                          org_types=org_types,
+                          limit=limit)
+
+
 # ============================================================================
 # Stub routes (to be implemented)
 # ============================================================================
