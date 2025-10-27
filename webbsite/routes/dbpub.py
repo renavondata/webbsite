@@ -13140,6 +13140,256 @@ def enigma_oldestHKcos():
                           limit=limit)
 
 
+@bp.route('/incHKsurvive.asp')
+def enigma_incHKsurvive():
+    """Survival of HK companies at a date"""
+    from datetime import datetime
+
+    conn = get_db_connection()
+
+    # Get date parameter (default to today)
+    d = request.args.get('d', datetime.now().strftime('%Y-%m-%d'))
+    t = get_int('t', -1)
+
+    # Validate date format
+    try:
+        date_obj = datetime.strptime(d, '%Y-%m-%d')
+        d = date_obj.strftime('%Y-%m-%d')
+    except ValueError:
+        d = datetime.now().strftime('%Y-%m-%d')
+
+    # Get company type name if specified
+    title = f"Survival of HK companies at {d}"
+    type_name = ""
+    ot_str = ""
+
+    if t > 0:
+        result = conn.execute(
+            "SELECT COALESCE((SELECT type_name FROM enigma.orgtypes WHERE org_type = %s), '')",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+        if type_name:
+            title = f"{title}: {type_name}"
+        ot_str = f" AND org_type = {t}"
+
+    # Build query with WITH RECURSIVE for year series
+    # Note: Using hardcoded date in SQL for performance (parameterized would be better but follows ASP pattern)
+    query = f"""
+        WITH RECURSIVE years(y) AS (
+            SELECT 1865
+            UNION ALL
+            SELECT y + 1
+            FROM years
+            WHERE y + 1 <= EXTRACT(YEAR FROM '{d}'::date)
+        )
+        SELECT
+            y,
+            COALESCE(cnt, 0) AS cnt,
+            COALESCE(survive, 0) AS survive
+        FROM years
+        LEFT JOIN (
+            SELECT
+                COUNT(*) AS cnt,
+                SUM(CASE WHEN dis_date IS NULL OR dis_date > '{d}'::date THEN 1 ELSE 0 END) AS survive,
+                EXTRACT(YEAR FROM inc_date)::integer AS inc_year
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+              AND inc_date <= '{d}'::date
+            GROUP BY inc_year
+        ) t ON y = t.inc_year
+        ORDER BY y
+    """
+
+    results = conn.execute(query).fetchall()
+
+    # Get org types for dropdown (only specific types)
+    org_types = conn.execute(
+        "SELECT org_type, type_name FROM enigma.orgtypes WHERE org_type IN (1,19,21,26,28) ORDER BY type_name"
+    ).fetchall()
+
+    # Calculate cumulative totals for table
+    table_data = []
+    inc_tot = 0
+    surv_tot = 0
+
+    for row in results:
+        inc = row[1]
+        surv = row[2]
+        inc_tot += inc
+        surv_tot += surv
+
+        # Calculate percentages
+        if inc > 0:
+            survival_pct = round(surv / inc * 100, 2)
+        else:
+            survival_pct = None
+
+        if inc_tot > 0:
+            total_survival_pct = round(surv_tot / inc_tot * 100, 2)
+        else:
+            total_survival_pct = None
+
+        table_data.append({
+            'year': row[0],
+            'inc': inc,
+            'surv': surv,
+            'survival_pct': survival_pct,
+            'inc_tot': inc_tot,
+            'surv_tot': surv_tot,
+            'total_survival_pct': total_survival_pct
+        })
+
+    conn.close()
+
+    return render_template('incHKsurvive.html',
+                          title=title,
+                          d=d,
+                          t=t,
+                          results=results,
+                          table_data=table_data,
+                          org_types=org_types)
+
+
+@bp.route('/regHKannual.asp')
+def enigma_regHKannual():
+    """Non-HK companies registered in HK by year"""
+    from datetime import datetime
+
+    conn = get_db_connection()
+
+    title = "Non-HK companies in HK"
+    current_year = datetime.now().year
+
+    # Build query with WITH RECURSIVE for year series
+    query = f"""
+        WITH RECURSIVE dates(d) AS (
+            SELECT '1946-01-01'::date
+            UNION ALL
+            SELECT d + INTERVAL '1 year'
+            FROM dates
+            WHERE d + INTERVAL '1 year' <= '{current_year}-01-01'::date
+        )
+        SELECT
+            d,
+            COALESCE(reg_cnt, 0) AS reg,
+            COALESCE(ces_cnt, 0) AS ces
+        FROM dates
+        LEFT JOIN (
+            SELECT COUNT(*) AS reg_cnt, EXTRACT(YEAR FROM f.reg_date)::integer AS y
+            FROM enigma.organisations o
+            JOIN enigma.freg f ON o.person_id = f.org_id
+            WHERE f.host_dom = 1
+              AND f.reg_id ~ '^F[0-9]'
+            GROUP BY y
+        ) reg ON EXTRACT(YEAR FROM d) = reg.y
+        LEFT JOIN (
+            SELECT COUNT(*) AS ces_cnt, EXTRACT(YEAR FROM LEAST(COALESCE(f.ces_date, o.dis_date), COALESCE(o.dis_date, f.ces_date)))::integer AS y
+            FROM enigma.organisations o
+            JOIN enigma.freg f ON o.person_id = f.org_id
+            WHERE f.host_dom = 1
+              AND f.reg_id ~ '^F[0-9]'
+            GROUP BY y
+        ) ces ON EXTRACT(YEAR FROM d) = ces.y
+        ORDER BY d
+    """
+
+    results = conn.execute(query).fetchall()
+
+    # Calculate cumulative totals for table
+    table_data = []
+    reg_tot = 0
+    ces_tot = 0
+
+    for row in results:
+        year_date = row[0]
+        reg = row[1]
+        ces = row[2]
+        reg_tot += reg
+        ces_tot += ces
+        net = reg - ces
+        net_alive = reg_tot - ces_tot
+
+        table_data.append({
+            'year': year_date.year,
+            'reg': reg,
+            'ces': ces,
+            'net': net,
+            'reg_tot': reg_tot,
+            'ces_tot': ces_tot,
+            'net_alive': net_alive
+        })
+
+    conn.close()
+
+    return render_template('regHKannual.html',
+                          title=title,
+                          results=results,
+                          table_data=table_data)
+
+
+@bp.route('/domregHK.asp')
+def enigma_domregHK():
+    """Domicile of HK-registered foreign companies"""
+    conn = get_db_connection()
+
+    sort_param = request.args.get('sort', 'cntdn')
+
+    # Sort mapping
+    if sort_param == 'cntup':
+        order_by = 'dom_cnt, friendly'
+    elif sort_param == 'domup':
+        order_by = 'friendly'
+    elif sort_param == 'domdn':
+        order_by = 'friendly DESC'
+    else:
+        sort_param = 'cntdn'
+        order_by = 'dom_cnt DESC, friendly'
+
+    title = "Domicile of HK-registered foreign companies"
+
+    # Get total count
+    total_result = conn.execute("""
+        SELECT COUNT(o.domicile)
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.person_id = f.org_id
+        WHERE o.dis_date IS NULL
+          AND f.ces_date IS NULL
+          AND f.host_dom = 1
+          AND f.reg_id ~ '^F[0-9]'
+    """).fetchone()
+    total = total_result[0] if total_result else 0
+
+    # Get domicile breakdown
+    query = f"""
+        SELECT
+            o.domicile,
+            d.friendly,
+            COUNT(*) AS dom_cnt
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.person_id = f.org_id
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE f.host_dom = 1
+          AND f.reg_id ~ '^F[0-9]'
+          AND o.dis_date IS NULL
+          AND f.ces_date IS NULL
+        GROUP BY o.domicile, d.friendly
+        ORDER BY {order_by}
+    """
+
+    results = conn.execute(query).fetchall()
+
+    conn.close()
+
+    return render_template('domregHK.html',
+                          title=title,
+                          sort_param=sort_param,
+                          results=results,
+                          total=total)
+
+
 # ============================================================================
 # Stub routes (to be implemented)
 # ============================================================================

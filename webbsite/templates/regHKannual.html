@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    // Chart 1: Stacked column chart (registered + departed/dissolved)
+    var data1 = new google.visualization.DataTable();
+    data1.addColumn('number', 'Year');
+    data1.addColumn('number', 'Registered');
+    data1.addColumn('number', 'Departed/dissolved');
+    data1.addRows([
+        {% for row in results %}
+            [{{ row[0].year }}, {{ row[1] }}, -{{ row[2] }}],
+        {% endfor %}
+    ]);
+
+    var options1 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: '{{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            format: '',
+            maxValue: {{ results[-1][0].year if results|length > 0 else 2025 }}
+        },
+        vAxis: {baseline:0},
+        isStacked: true,
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'}
+    };
+    var chart1 = new google.visualization.ColumnChart(document.getElementById('chart1'));
+    chart1.draw(data1, options1);
+
+    // Chart 2: Net change
+    var data2 = new google.visualization.DataTable();
+    data2.addColumn('number', 'Year');
+    data2.addColumn('number', 'Net change');
+    data2.addRows([
+        {% for row in results %}
+            [{{ row[0].year }}, {{ row[1] - row[2] }}],
+        {% endfor %}
+    ]);
+
+    var options2 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: 'Net change in {{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {format: ''},
+        vAxis: {baseline:0},
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'}
+    };
+    var chart2 = new google.visualization.ColumnChart(document.getElementById('chart2'));
+    chart2.draw(data2, options2);
+
+    // Chart 3: Running total
+    var data3 = new google.visualization.DataTable();
+    data3.addColumn('number', 'Year');
+    data3.addColumn('number', 'Total');
+    data3.addRows([
+        {% for row in table_data %}
+            [{{ row['year'] }}, {{ row['net_alive'] }}],
+        {% endfor %}
+    ]);
+
+    var options3 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: 'Total {{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {format: ''},
+        vAxis: {baseline:0},
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'}
+    };
+    var chart3 = new google.visualization.ColumnChart(document.getElementById('chart3'));
+    chart3.draw(data3, options3);
+}
+</script>
+<title>{{ title }}</title>
+</head>
+<body onresize="drawChart();">
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<p>This page shows the number of non-HK companies registered and dissolved/departed in HK per year.
+A company which ceases to be registered in HK may still carry on business
+elsewhere, or it may later dissolve. Click and drag to zoom,
+double-click to reset.</p>
+
+<p>Note: data on deregistrations are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
+and name-changes, without stating domicile.</p>
+
+<div id="chart1" class="chart"></div>
+<p></p>
+<div id="chart2" class="chart"></div>
+<p></p>
+<div id="chart3" class="chart"></div>
+<p></p>
+
+<table class="numtable center">
+    <tr>
+        <th>Year</th>
+        <th>Reg.</th>
+        <th>Dep./<br>Diss.</th>
+        <th>Net</th>
+        <th class="colHide3">Total<br/>reg.</th>
+        <th class="colHide3">Total<br/>dep./<br>diss.</th>
+        <th>Net alive</th>
+    </tr>
+    {% for row in table_data %}
+    <tr>
+        <td>{{ row['year'] }}</td>
+        <td><a href="{{ url_for('dbpub.enigma_incFcal', y=row['year']) }}">{{ "{:,}".format(row['reg']) }}</a></td>
+        <td><a href="{{ url_for('dbpub.enigma_disFcal', y=row['year']) }}">{{ "{:,}".format(row['ces']) }}</a></td>
+        <td>{{ "{:,}".format(row['net']) }}</td>
+        <td class="colHide3">{{ "{:,}".format(row['reg_tot']) }}</td>
+        <td class="colHide3">{{ "{:,}".format(row['ces_tot']) }}</td>
+        <td>{{ "{:,}".format(row['net_alive']) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'footer.html' %}
+</body>
+</html>
