@@ -1859,12 +1859,7 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker):
 #     pass
 
 
-@bp.route('/pricesCSV.asp')
-def prices_csv():
-    """CSV export of price data"""
-    # TODO: Generate CSV export
-    # Similar to prices.asp but returns CSV
-    return "CSV export not yet implemented", 501
+# pricesCSV.asp implemented below at line ~11684 (removed duplicate stub)
 
 
 @bp.route('/chart.asp')
@@ -5984,11 +5979,113 @@ def hk_dirs_type_sex():
 # Pay stats
 @bp.route('/pay.asp')
 def pay():
-    """Director remuneration details"""
-    pay_id = get_int('id', 0)
-    # TODO: Query pay record
-    pay = {}
-    return render_template('dbpub/pay.html', pay_id=pay_id, pay=pay)
+    """
+    Director remuneration details by company and year
+
+    Query params:
+    - p: organization personID
+    - d: record date (financial year end)
+    - sort: fee/sal/bon/ret/sha/tot/nam/pos
+
+    Tables used: enigma.pay, enigma.people, enigma.directorships, enigma.documents
+    """
+    from datetime import date as dt
+
+    person_id = get_int('p', 0)
+    d = request.args.get('d', '')
+    sort_param = request.args.get('sort', 'nam')
+
+    # Get organization name
+    org_name = ''
+    if person_id:
+        org_result = execute_query("""
+            SELECT name1 FROM enigma.organisations WHERE personID = %s
+        """, (person_id,))
+        if org_result:
+            org_name = org_result[0]['name1']
+
+    # If no date provided or invalid, get latest pay record date
+    found = False
+    rep_url = ''
+    if d and person_id:
+        # Check if we have a pay record for this date
+        doc_result = execute_query("""
+            SELECT d.url, d.paypage
+            FROM enigma.documents d
+            JOIN enigma.repfilings r ON d.repid = r.id
+            WHERE d.orgid = %s
+              AND d.doctypeid = 0
+              AND d.recorddate = %s
+              AND d.pay
+        """, (person_id, d))
+        if doc_result:
+            rep_url = f"https://www.hkexnews.hk/listedco/listconews/{doc_result[0]['url']}#page={doc_result[0]['paypage']}"
+            found = True
+
+    if not found or not d:
+        # Get most recent pay record date
+        date_result = execute_query("""
+            SELECT MAX(recorddate) AS d
+            FROM enigma.documents
+            WHERE doctypeid = 0 AND pay AND orgid = %s
+        """, (person_id,))
+        if date_result and date_result[0]['d']:
+            d = str(date_result[0]['d'])
+            found = True
+
+    # Build order by
+    sort_map = {
+        'fee': 'fees DESC, dirname',
+        'sal': 'salary DESC, dirname',
+        'bon': 'bonus DESC, dirname',
+        'ret': 'retire DESC, dirname',
+        'sha': 'share DESC, dirname',
+        'tot': 'total DESC, dirname',
+        'pos': 'posshort, dirname',
+        'nam': 'dirname'
+    }
+    ob = sort_map.get(sort_param, 'dirname')
+
+    # Query pay records
+    pay_records = []
+    if person_id and d and found:
+        pay_records = execute_query(f"""
+            SELECT
+                pay.pplid,
+                CONCAT_WS(' ', COALESCE(p.name1, ''), COALESCE(p.name2, '')) AS dirname,
+                (SELECT pos.posshort
+                 FROM enigma.directorships d
+                 JOIN enigma.positions pos ON d.positionid = pos.positionid
+                 WHERE d.director = pay.pplid
+                   AND d.company = %s
+                   AND pos.rank = pay.prank
+                   AND (d.from IS NULL OR d.from <= pay.d)
+                 ORDER BY d.from DESC
+                 LIMIT 1) AS posshort,
+                pay.fees,
+                pay.salary,
+                pay.bonus,
+                pay.retire,
+                pay.share,
+                pay.total,
+                pay.prank,
+                c.currency
+            FROM enigma.pay pay
+            JOIN enigma.people p ON pay.pplid = p.personid
+            JOIN enigma.currencies c ON pay.currid = c.id
+            WHERE pay.orgid = %s
+              AND pay.d = %s
+            ORDER BY c.currency, pay.prank, {ob}
+        """, (person_id, person_id, d))
+
+    return render_template('dbpub/pay.html',
+                         person_id=person_id,
+                         org_name=org_name,
+                         d=d,
+                         sort=sort_param,
+                         rep_url=rep_url,
+                         found=found,
+                         pay_records=pay_records)
 
 
 @bp.route('/payleague.asp')
@@ -6858,22 +6955,141 @@ def govac_search():
 # Overlap analysis
 @bp.route('/overlap.asp')
 def overlap():
-    """Director overlap between companies"""
-    p1 = get_int('p1', 0)
-    p2 = get_int('p2', 0)
-    # TODO: Find common directors
-    overlap = []
-    return render_template('dbpub/overlap.html', p1=p1, p2=p2, overlap=overlap)
+    """
+    Director overlap between companies - shows organizations that share directors
+
+    Query params:
+    - p: organization personID
+    - d: date for overlap analysis (default: today)
+    - sort: nam=by name, cnt=by overlap count
+
+    Tables used: enigma.directorships, enigma.organisations, enigma.stockListings
+    """
+    from datetime import date as dt
+
+    person_id = get_int('p', 0)
+    d = request.args.get('d', str(dt.today()))
+    sort_param = request.args.get('sort', 'cnt')
+
+    # Get organization name
+    org_name = ''
+    if person_id:
+        org_result = execute_query("""
+            SELECT name1 FROM enigma.organisations WHERE personID = %s
+        """, (person_id,))
+        if org_result:
+            org_name = org_result[0]['name1']
+
+    # Build order by
+    if sort_param == 'nam':
+        order_by = "o.name1"
+    else:
+        order_by = "cd DESC, o.name1"
+
+    # Find overlapping organizations
+    overlaps = []
+    if person_id:
+        overlaps = execute_query(f"""
+            SELECT t.company AS orgid,
+                   COUNT(t.director) AS cd,
+                   o.name1,
+                   sl.stockexid
+            FROM (
+                SELECT DISTINCT d2.company, d2.director
+                FROM enigma.directorships d1
+                JOIN enigma.directorships d2 ON d1.director = d2.director
+                WHERE d2.company <> %s
+                  AND d1.company = %s
+                  AND (d1.until IS NULL OR d1.until > %s)
+                  AND (d2.until IS NULL OR d2.until > %s)
+                  AND (d1.from IS NULL OR d1.from <= %s)
+                  AND (d2.from IS NULL OR d2.from <= %s)
+            ) t
+            JOIN enigma.organisations o ON t.company = o.personid
+            LEFT JOIN LATERAL (
+                SELECT stockexid
+                FROM enigma.stocklistings sl
+                WHERE sl.issuer = o.personid
+                  AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+                  AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+                LIMIT 1
+            ) sl ON TRUE
+            GROUP BY t.company, o.name1, sl.stockexid
+            ORDER BY {order_by}
+        """, (person_id, person_id, d, d, d, d, d, d))
+
+    return render_template('dbpub/overlap.html',
+                         person_id=person_id,
+                         org_name=org_name,
+                         d=d,
+                         sort=sort_param,
+                         overlaps=overlaps)
 
 
 # Outstanding shares
 @bp.route('/outstanding.asp')
 def outstanding():
-    """Outstanding shares history"""
+    """
+    Outstanding shares history with market capitalization
+
+    Query params:
+    - i: issueID (via findStock from sc stock code)
+    - sc: stock code
+
+    Tables used: enigma.issuedshares, ccass.quotes, enigma.splitpends
+    """
     issue_id = get_int('i', 0)
-    # TODO: Query outstanding shares
+    stock_code = request.args.get('sc', '')
+
+    # Resolve stock code to issueID if provided
+    if stock_code and not issue_id:
+        result = execute_query("""
+            SELECT issueID FROM enigma.stockListings
+            WHERE stockCode = %s
+            ORDER BY FirstTradeDate DESC LIMIT 1
+        """, (stock_code,))
+        if result:
+            issue_id = result[0]['issueid']
+
+    # Get company name
+    company_name = ''
+    if issue_id:
+        org_result = execute_query("""
+            SELECT o.name1
+            FROM enigma.issue i
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            WHERE i.ID1 = %s
+        """, (issue_id,))
+        if org_result:
+            company_name = org_result[0]['name1']
+
+    # Query outstanding shares history with market cap
     history = []
-    return render_template('dbpub/outstanding.html', issue_id=issue_id, history=history)
+    if issue_id:
+        history = execute_query("""
+            SELECT
+                iss.atDate,
+                iss.outstanding,
+                (SELECT MAX(q.atDate)
+                 FROM ccass.quotes q
+                 WHERE q.issueID = %s AND q.atDate <= iss.atDate) AS maxDate,
+                (SELECT q.closing
+                 FROM ccass.quotes q
+                 WHERE q.issueID = %s AND q.atDate <= iss.atDate
+                 ORDER BY q.atDate DESC LIMIT 1) AS closing,
+                (SELECT COALESCE(SUM(sharesPost - sharesPre), 0)
+                 FROM enigma.splitpends
+                 WHERE issueID = %s AND effDate > iss.atDate) AS pendsh
+            FROM enigma.issuedshares iss
+            WHERE iss.issueID = %s
+            ORDER BY iss.atDate DESC
+        """, (issue_id, issue_id, issue_id, issue_id))
+
+    return render_template('dbpub/outstanding.html',
+                         issue_id=issue_id,
+                         stock_code=stock_code,
+                         company_name=company_name,
+                         history=history)
 
 
 # CSV exports
@@ -11679,6 +11895,253 @@ def orgdata():
                          s2=s2,
                          s3=s3,
                          expand=expand)
+
+
+@bp.route('/pricesCSV.asp')
+def pricescsv():
+    """
+    Port of dbpub/pricesCSV.asp
+    Export historical prices/returns to CSV format
+
+    Query params:
+    - i: issueID (required)
+    - f: frequency (d=daily, w=weekly, m=monthly, y=yearly, default=daily)
+    - wd: weekday for weekly aggregation (2-6, default=6 for Friday)
+
+    Tables used: ccass.quotes, ccass.calendar, enigma.getAdjust()
+    """
+    issue_id = get_int('i', 0)
+    freq = request.args.get('f', 'd')
+    wd = get_int('wd', 6)  # Friday
+
+    if issue_id == 0:
+        abort(400, "Missing required parameter: i (issueID)")
+
+    # Validate parameters
+    if freq not in ['d', 'w', 'm', 'y']:
+        freq = 'd'
+    if wd < 2 or wd > 6:
+        wd = 6
+
+    # Get current adjustment factor
+    with get_db() as conn:
+        result = conn.execute(
+            "SELECT enigma.getAdjust(%s, CURRENT_DATE) as adj",
+            (issue_id,)
+        ).fetchone()
+        current_adj = result['adj'] if result else 1.0
+
+        # Build query based on frequency
+        if freq == 'd':
+            # Daily query
+            query = """
+                SELECT
+                    q.atDate,
+                    c.settleDate,
+                    CAST(q.susp AS INTEGER) AS susp,
+                    q.closing,
+                    q.bid,
+                    q.ask,
+                    q.low,
+                    q.high,
+                    q.vol,
+                    q.turn,
+                    CASE WHEN q.vol > 0 THEN q.turn / q.vol ELSE 0 END AS vwap,
+                    q.closing * (%s / enigma.getAdjust(%s, q.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getAdjust(%s, q.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getAdjust(%s, q.atDate)) AS adjAsk,
+                    q.low * (%s / enigma.getAdjust(%s, q.atDate)) AS adjLow,
+                    q.high * (%s / enigma.getAdjust(%s, q.atDate)) AS adjHigh,
+                    ROUND(q.vol / (%s / enigma.getAdjust(%s, q.atDate)), 0) AS adjVol,
+                    CASE WHEN q.vol > 0 THEN (q.turn * (%s / enigma.getAdjust(%s, q.atDate))) / q.vol ELSE 0 END AS adjVWAP
+                FROM ccass.quotes q
+                JOIN ccass.calendar c ON q.atDate = c.tradeDate
+                WHERE q.issueID = %s
+                ORDER BY q.atDate DESC
+            """
+            params = (current_adj, issue_id, current_adj, issue_id, current_adj, issue_id,
+                     current_adj, issue_id, current_adj, issue_id, current_adj, issue_id,
+                     current_adj, issue_id, issue_id)
+
+        elif freq == 'm':
+            # Monthly aggregation
+            query = """
+                WITH monthly_agg AS (
+                    SELECT
+                        DATE_TRUNC('month', q.atDate)::date + INTERVAL '1 month' - INTERVAL '1 day' AS month_end,
+                        MAX(q.atDate) AS atDate,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        SUM(q.turn) AS turn,
+                        SUM(CAST(q.susp AS INTEGER)) AS susp,
+                        COUNT(*) AS days
+                    FROM ccass.quotes q
+                    WHERE q.issueID = %s
+                    GROUP BY DATE_TRUNC('month', q.atDate)
+                )
+                SELECT
+                    ma.atDate,
+                    c.settleDate,
+                    ma.susp,
+                    ma.days,
+                    q.closing,
+                    q.bid,
+                    q.ask,
+                    ma.turn,
+                    q.closing * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjAsk,
+                    ma.adjLow,
+                    ma.adjHigh,
+                    ma.adjVol,
+                    CASE WHEN ma.adjVol <> 0 THEN ma.turn / ma.adjVol ELSE 0 END AS adjVWAP
+                FROM monthly_agg ma
+                JOIN ccass.quotes q ON ma.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.calendar c ON ma.atDate = c.tradeDate
+                ORDER BY ma.atDate DESC
+            """
+            params = (current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id,
+                     current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id)
+
+        elif freq == 'y':
+            # Yearly aggregation
+            query = """
+                WITH yearly_agg AS (
+                    SELECT
+                        DATE_TRUNC('year', q.atDate)::date + INTERVAL '1 year' - INTERVAL '1 day' AS year_end,
+                        MAX(q.atDate) AS atDate,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        SUM(q.turn) AS turn,
+                        SUM(CAST(q.susp AS INTEGER)) AS susp,
+                        COUNT(*) AS days
+                    FROM ccass.quotes q
+                    WHERE q.issueID = %s
+                    GROUP BY DATE_TRUNC('year', q.atDate)
+                )
+                SELECT
+                    ya.atDate,
+                    c.settleDate,
+                    ya.susp,
+                    ya.days,
+                    q.closing,
+                    q.bid,
+                    q.ask,
+                    ya.turn,
+                    q.closing * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjAsk,
+                    ya.adjLow,
+                    ya.adjHigh,
+                    ya.adjVol,
+                    CASE WHEN ya.adjVol <> 0 THEN ya.turn / ya.adjVol ELSE 0 END AS adjVWAP
+                FROM yearly_agg ya
+                JOIN ccass.quotes q ON ya.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.calendar c ON ya.atDate = c.tradeDate
+                ORDER BY ya.atDate DESC
+            """
+            params = (current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id,
+                     current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id)
+
+        else:  # freq == 'w'
+            # Weekly aggregation (end on specified weekday)
+            offset = 7 - wd
+            query = """
+                WITH weekly_agg AS (
+                    SELECT
+                        MAX(q.atDate) AS atDate,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        SUM(q.turn) AS turn,
+                        SUM(CAST(q.susp AS INTEGER)) AS susp,
+                        COUNT(*) AS days
+                    FROM ccass.quotes q
+                    WHERE q.issueID = %s
+                    GROUP BY EXTRACT(YEAR FROM q.atDate + INTERVAL '%s days'),
+                             EXTRACT(WEEK FROM q.atDate + INTERVAL '%s days')
+                )
+                SELECT
+                    wa.atDate,
+                    c.settleDate,
+                    wa.susp,
+                    wa.days,
+                    q.closing,
+                    q.bid,
+                    q.ask,
+                    wa.turn,
+                    q.closing * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjAsk,
+                    wa.adjLow,
+                    wa.adjHigh,
+                    wa.adjVol,
+                    CASE WHEN wa.adjVol <> 0 THEN wa.turn / wa.adjVol ELSE 0 END AS adjVWAP
+                FROM weekly_agg wa
+                JOIN ccass.quotes q ON wa.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.calendar c ON wa.atDate = c.tradeDate
+                ORDER BY wa.atDate DESC
+            """
+            params = (current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id,
+                     offset, offset, current_adj, issue_id, current_adj, issue_id, current_adj, issue_id, issue_id)
+
+        # Execute query and get results
+        results = conn.execute(query, params).fetchall()
+
+        # Build CSV output
+        if not results:
+            abort(404, f"No price data found for issueID {issue_id}")
+
+        # Generate CSV
+        output = io.StringIO()
+
+        # Write header
+        if freq == 'd':
+            header = ['atDate', 'settleDate', 'susp', 'closing', 'bid', 'ask', 'low', 'high',
+                     'vol', 'turn', 'vwap', 'adjClose', 'adjBid', 'adjAsk', 'adjLow', 'adjHigh',
+                     'adjVol', 'adjVWAP', 'totalRet']
+        else:
+            header = ['atDate', 'settleDate', 'susp', 'days', 'closing', 'bid', 'ask', 'turn',
+                     'adjClose', 'adjBid', 'adjAsk', 'adjLow', 'adjHigh', 'adjVol', 'adjVWAP', 'totalRet']
+
+        output.write(','.join(header) + '\n')
+
+        # Write data rows with total return calculation
+        prev_adj_close = None
+        for row in results:
+            row_data = []
+            for col in header[:-1]:  # All columns except totalRet
+                val = row[col.lower()] if col.lower() in row.keys() else None
+                if val is None:
+                    row_data.append('')
+                elif isinstance(val, (int, bool)):
+                    row_data.append(str(val))
+                elif isinstance(val, float):
+                    row_data.append(f"{val:.5f}" if abs(val) < 1000 else f"{val:.2f}")
+                else:
+                    row_data.append(str(val))
+
+            # Calculate total return
+            adj_close = row['adjclose']
+
+            if prev_adj_close is not None and prev_adj_close != 0 and adj_close != 0:
+                total_ret = adj_close / prev_adj_close - 1
+                row_data.append(f"{total_ret:.5f}")
+            else:
+                row_data.append('')
+
+            prev_adj_close = adj_close
+            output.write(','.join(row_data) + '\n')
+
+        # Create response
+        csv_data = output.getvalue()
+        response = Response(csv_data, mimetype='text/csv')
+        filename = f"prices{freq}{issue_id}.csv"
+        response.headers['Content-Disposition'] = f'attachment;filename={filename}'
+
+        return response
 
 
 # ============================================================================
