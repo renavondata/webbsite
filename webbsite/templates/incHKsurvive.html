@@ -48,7 +48,7 @@ function drawChart() {
 
 <h2>{{ title }}</h2>
 
-<form method="get" action="{{ url_for('dbpub.enigma_incHKsurvive') }}">
+<form method="get" action="{{ url_for('dbpub.incHKsurvive') }}">
     <div class="inputs">
         <input type="date" id="d" name="d" value="{{ d }}">
     </div>
@@ -102,11 +102,7 @@ incorporations and name-changes.</p>
     <tr>
         <td class="colHide3">{{ loop.index }}</td>
         <td>{{ row['year'] }}</td>
-        <td>
-            <a href="{{ url_for('dbpub.enigma_incHKcaltype', t=t if t > 0 else 0, y=row['year']) }}">
-                {{ "{:,}".format(row['inc']) }}
-            </a>
-        </td>
+        <td>{{ "{:,}".format(row['inc']) }}</td>
         <td>{{ "{:,}".format(row['surv']) }}</td>
         <td>{% if row['survival_pct'] is not none %}{{ "{:.2f}".format(row['survival_pct']) }}{% else %}-{% endif %}</td>
         <td class="colHide2">{{ "{:,}".format(row['inc_tot']) }}</td>

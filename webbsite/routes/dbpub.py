@@ -14337,5 +14337,167 @@ def domregHK():
                           total=total)
 
 
+@bp.route('/incHKsurvive.asp')
+def incHKsurvive():
+    """Company survival analysis by incorporation year"""
+    from datetime import date
+
+    conn = get_db_connection()
+
+    # Parameters
+    d = get_str('d', str(date.today()))
+    t = get_int('t', -1)
+
+    # Get company type name if specified
+    type_name = ''
+    if t > 0:
+        type_row = conn.execute(
+            "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s",
+            (t,)
+        ).fetchone()
+        if type_row:
+            type_name = type_row['typename']
+
+    # Build title
+    title = f"Survival of HK companies at {d}"
+    if type_name:
+        title += f": {type_name}"
+
+    # Build org type filter
+    ot_filter = f" AND orgtype = {t}" if t > 0 else ""
+
+    # Main query: generate years from 1865 to chosen date, join with incorporations
+    # Note: ASP used hardcoded '2023-12-13' for survival check, we use chosen date 'd'
+    results = conn.execute(f"""
+        WITH RECURSIVE years(y) AS (
+            SELECT 1865
+            UNION ALL
+            SELECT y + 1 FROM years WHERE y + 1 <= EXTRACT(YEAR FROM %s::date)
+        )
+        SELECT y, COALESCE(cnt, 0) AS cnt, COALESCE(survive, 0) AS survive
+        FROM years
+        LEFT JOIN (
+            SELECT COUNT(*) AS cnt,
+                   SUM(CASE WHEN disdate IS NULL OR disdate > %s::date THEN 1 ELSE 0 END) AS survive,
+                   EXTRACT(YEAR FROM incdate) AS incyear
+            FROM enigma.organisations
+            WHERE domicile = 1{ot_filter}
+              AND incid ~ '^[0-9]'
+              AND incdate <= %s::date
+            GROUP BY EXTRACT(YEAR FROM incdate)
+        ) t ON y = t.incyear
+        ORDER BY y
+    """, (d, d, d)).fetchall()
+
+    # Calculate running totals for table
+    inc_tot = 0
+    surv_tot = 0
+    table_data = []
+
+    for row in results:
+        year = row['y']
+        inc = row['cnt']
+        surv = row['survive']
+
+        inc_tot += inc
+        surv_tot += surv
+
+        survival_pct = (surv / inc * 100) if inc > 0 else None
+        total_survival_pct = (surv_tot / inc_tot * 100) if inc_tot > 0 else None
+
+        table_data.append({
+            'year': year,
+            'inc': inc,
+            'surv': surv,
+            'survival_pct': survival_pct,
+            'inc_tot': inc_tot,
+            'surv_tot': surv_tot,
+            'total_survival_pct': total_survival_pct
+        })
+
+    # Get organization types for dropdown (matching ASP filter)
+    org_types = conn.execute("""
+        SELECT orgtype AS org_type, typename AS type_name
+        FROM enigma.orgtypes
+        WHERE orgtype IN (1, 19, 21, 26, 28)
+        ORDER BY typename
+    """).fetchall()
+
+    conn.close()
+
+    return render_template('incHKsurvive.html',
+                          title=title,
+                          d=d,
+                          t=t,
+                          results=results,  # For chart
+                          table_data=table_data,  # For table with running totals
+                          org_types=org_types)
+
+
+@bp.route('/regHKannual.asp')
+def regHKannual():
+    """Annual registration statistics for non-HK companies in HK"""
+    from datetime import date
+
+    conn = get_db_connection()
+
+    title = "Non-HK companies in HK"
+    current_year = date.today().year
+
+    # Main query: generate years from 1946 to current, count registrations and cessations
+    results = conn.execute(f"""
+        WITH RECURSIVE dates(d) AS (
+            SELECT '1946-01-01'::date
+            UNION ALL
+            SELECT (d + INTERVAL '1 year')::date FROM dates WHERE (d + INTERVAL '1 year')::date <= %s::date
+        )
+        SELECT d, COALESCE(regcnt, 0) AS reg, COALESCE(cescnt, 0) AS ces
+        FROM dates
+        LEFT JOIN (
+            SELECT COUNT(*) AS regcnt, EXTRACT(YEAR FROM regdate) AS y
+            FROM enigma.organisations
+            JOIN enigma.freg ON personid = orgid
+            WHERE hostdom = 1 AND regid ~ '^F[0-9]'
+            GROUP BY y
+        ) reg ON EXTRACT(YEAR FROM d) = reg.y
+        LEFT JOIN (
+            SELECT COUNT(*) AS cescnt, EXTRACT(YEAR FROM LEAST(
+                COALESCE(cesdate, disdate),
+                COALESCE(disdate, cesdate)
+            )) AS y
+            FROM enigma.organisations
+            JOIN enigma.freg ON personid = orgid
+            WHERE hostdom = 1 AND regid ~ '^F[0-9]'
+            GROUP BY y
+        ) ces ON EXTRACT(YEAR FROM d) = ces.y
+        ORDER BY d
+    """, (f"{current_year}-01-01",)).fetchall()
+
+    # Calculate running totals for chart 3
+    total = 0
+    table_data = []
+    for row in results:
+        year = row['d'].year
+        reg = row['reg']
+        ces = row['ces']
+        net = reg - ces
+        total += net
+
+        table_data.append({
+            'year': year,
+            'reg': reg,
+            'ces': ces,
+            'net': net,
+            'total': total
+        })
+
+    conn.close()
+
+    return render_template('regHKannual.html',
+                          title=title,
+                          results=results,
+                          table_data=table_data)
+
+
 # Helpers to import
 from webbsite.asp_helpers import get_int, get_str, get_bool
