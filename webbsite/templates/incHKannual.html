@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', {packages:['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    // Chart 1: Stacked column chart (incorporated + dissolved)
+    var data1 = new google.visualization.DataTable();
+    data1.addColumn('number', 'Year');
+    data1.addColumn('number', 'Incorporated');
+    data1.addColumn('number', 'Dissolved');
+    data1.addRows([
+        {% for row in results %}
+            [{{ row['d'].year }}, {{ row['inc'] }}, -{{ row['dis'] }}],
+        {% endfor %}
+    ]);
+
+    var options1 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: '{{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            format: '',
+            maxValue: {{ results[-1]['d'].year if results else 2025 }}
+        },
+        vAxis: {baseline:0},
+        isStacked: true,
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'},
+    };
+    var chart1 = new google.visualization.ColumnChart(document.getElementById('chart1'));
+    chart1.draw(data1, options1);
+
+    // Chart 2: Net change
+    var data2 = new google.visualization.DataTable();
+    data2.addColumn('number', 'Year');
+    data2.addColumn('number', 'Net change');
+    data2.addRows([
+        {% for row in results %}
+            [{{ row['d'].year }}, {{ row['inc'] - row['dis'] }}],
+        {% endfor %}
+    ]);
+
+    var options2 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: 'Net change in {{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            format: '',
+        },
+        vAxis: {baseline:0},
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'},
+    };
+    var chart2 = new google.visualization.ColumnChart(document.getElementById('chart2'));
+    chart2.draw(data2, options2);
+
+    // Chart 3: Running total
+    var data3 = new google.visualization.DataTable();
+    data3.addColumn('number', 'Year');
+    data3.addColumn('number', 'Total');
+    data3.addRows([
+        {% set total = namespace(value=0) %}
+        {% for row in results %}
+            {% set total.value = total.value + row['inc'] - row['dis'] %}
+            [{{ row['d'].year }}, {{ total.value }}],
+        {% endfor %}
+    ]);
+
+    var options3 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: 'Total {{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            format: '',
+        },
+        vAxis: {baseline:0},
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'},
+    };
+    var chart3 = new google.visualization.ColumnChart(document.getElementById('chart3'));
+    chart3.draw(data3, options3);
+}
+</script>
+<title>{{ title }}</title>
+</head>
+<body onresize="drawChart();">
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+<ul class="navlist">
+    <li class="livebutton">Yearly</li>
+    <li><a href="{{ url_for('dbpub.enigma_incHKmonth', t=t) }}">Monthly</a></li>
+</ul>
+<div class="clear"></div>
+
+<p>This page shows the number of companies newly-incorporated and dissolved in HK per year,
+on a gross and net basis.
+Earliest records from the 19th century are understated due to lost records of
+dissolved companies. Registration was not required until 1911. Click and drag to zoom,
+right-click to reset. You can select the type of company below, but keep in mind
+that this is based on their latest recorded status, so for example, a company
+that is no longer listed on the stock exchange will no longer be categorised as
+a listed company.</p>
+
+<p>Note: data on dissolutions are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new
+incorporations and name-changes.</p>
+
+<form method="get" action="{{ url_for('dbpub.enigma_incHKannual') }}">
+    <div class="inputs">
+        Company type:
+        <select name="t" onchange="this.form.submit()">
+            <option value="-1" {% if t == -1 %}selected{% endif %}>Any type</option>
+            {% for ot in org_types %}
+                <option value="{{ ot['org_type'] }}" {% if t == ot['org_type'] %}selected{% endif %}>
+                    {{ ot['type_name'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="clear"></div>
+</form>
+
+<div id="chart1" class="chart"></div>
+<p></p>
+<div id="chart2" class="chart"></div>
+<p></p>
+<div id="chart3" class="chart"></div>
+<p></p>
+
+<p>There is 1 company with an unknown incorporation date, number 699, "The General Commercial Company, Limited", dissolved on 20-Aug-1926.
+The company migrated from the Shanghai register and the HK Companies Registry
+has been unable to determine when it was incorporated.</p>
+
+<table class="numtable center yscroll">
+    <tr>
+        <th>Year</th>
+        <th>Inc.</th>
+        <th>Diss.</th>
+        <th>Net</th>
+        <th class="colHide3">Total<br>inc.</th>
+        <th class="colHide3">Total<br>diss.</th>
+        <th>Net<br>alive</th>
+    </tr>
+    {% for row in table_data %}
+    <tr>
+        <td>{{ row['year'] }}</td>
+        <td><a href="{{ url_for('dbpub.enigma_incHKcaltype', y=row['year'], t=t) }}">{{ "{:,}".format(row['inc']) }}</a></td>
+        <td><a href="{{ url_for('dbpub.enigma_disHKcaltype', y=row['year'], t=t) }}">{{ "{:,}".format(row['dis']) }}</a></td>
+        <td>{{ "{:,}".format(row['net']) }}</td>
+        <td class="colHide3">{{ "{:,}".format(row['inc_tot']) }}</td>
+        <td class="colHide3">{{ "{:,}".format(row['dis_tot']) }}</td>
+        <td>{{ "{:,}".format(row['net_alive']) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'footer.html' %}
+</body>
+</html>
