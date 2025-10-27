@@ -12774,6 +12774,282 @@ def enigma_incHKmonth():
                           initial_total=initial_total)
 
 
+@bp.route('/incHKcaltype.asp')
+def enigma_incHKcaltype():
+    """Companies incorporated in HK by year/month/day"""
+    from datetime import datetime
+    import calendar
+
+    conn = get_db_connection()
+
+    current_year = datetime.now().year
+    y = get_int('y', current_year)
+    m = get_int('m', 0)  # 0 = any month
+    d = get_int('d', 0)  # 0 = any day
+    t = get_int('t', 0)  # 0 = any type
+    sort_param = request.args.get('sort', 'namup')
+
+    # Validate ranges
+    if y < 1865 or y > current_year:
+        y = current_year
+    if m < 0 or m > 12:
+        m = 0
+    if m > 0:
+        max_day = calendar.monthrange(y, m)[1]
+        if d < 0 or d > max_day:
+            d = 0
+    else:
+        d = 0
+
+    # Get type name if specified
+    type_name = ""
+    if t > 0:
+        result = conn.execute(
+            "SELECT type_name FROM enigma.orgtypes WHERE org_type = %s",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+
+    # Build sort order
+    sort_map = {
+        'namdn': 'name1 DESC',
+        'regup': 'inc_id',
+        'regdn': 'inc_id DESC',
+        'incup': 'inc_date, name1',
+        'incdn': 'inc_date DESC, name1',
+        'disdn': 'dis_date DESC, name1',
+        'disup': 'dis_date, name1',
+        'typup': 'type_name, name1',
+        'typdn': 'type_name DESC, name1',
+        'namup': 'name1'
+    }
+    order_by = sort_map.get(sort_param, 'name1')
+    if sort_param not in sort_map:
+        sort_param = 'namup'
+
+    # Calculate date range
+    start_month = m if m > 0 else 1
+    end_month = m if m > 0 else 12
+    start_day = d if d > 0 else 1
+    end_day = d if d > 0 else calendar.monthrange(y, end_month)[1]
+
+    start_date = f"{y}-{start_month:02d}-{start_day:02d}"
+    end_date = f"{y}-{end_month:02d}-{end_day:02d}"
+
+    # Build query
+    limit = 5000
+
+    if t == 0:
+        # Include type information
+        query = f"""
+            SELECT o.person_id, o.name1, o.c_name, o.inc_id, o.inc_date, o.dis_date,
+                   t.org_type, t.type_name
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes t ON o.org_type = t.org_type
+            WHERE o.domicile = 1
+              AND o.inc_id IS NOT NULL
+              AND o.inc_date BETWEEN %s AND %s
+            ORDER BY {order_by}
+            LIMIT %s
+        """
+        results = conn.execute(query, (start_date, end_date, limit)).fetchall()
+    else:
+        # Specific type only
+        query = f"""
+            SELECT person_id, name1, c_name, inc_id, inc_date, dis_date
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id IS NOT NULL
+              AND inc_date BETWEEN %s AND %s
+              AND org_type = %s
+            ORDER BY {order_by}
+            LIMIT %s
+        """
+        results = conn.execute(query, (start_date, end_date, t, limit)).fetchall()
+
+    # Get org types for dropdown
+    org_types = conn.execute("""
+        SELECT org_type, type_name
+        FROM enigma.orgtypes
+        WHERE org_type IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
+        ORDER BY type_name
+    """).fetchall()
+
+    conn.close()
+
+    # Build title
+    date_str = f"{y}"
+    if m > 0:
+        date_str = f"{y}-{m:02d}"
+    if d > 0:
+        date_str = f"{y}-{m:02d}-{d:02d}"
+
+    preposition = "on" if d > 0 else "in"
+    title = f"Entities formed in HK {preposition} {date_str}"
+    if type_name:
+        title += f": {type_name}"
+
+    # Generate year, month, day options
+    years = list(range(1865, current_year + 1))
+    months = list(range(1, 13))
+    if m > 0:
+        max_day_for_month = calendar.monthrange(y, m)[1]
+        days = list(range(1, max_day_for_month + 1))
+    else:
+        days = []
+
+    return render_template('incHKcaltype.html',
+                          title=title,
+                          y=y, m=m, d=d, t=t,
+                          sort_param=sort_param,
+                          results=results,
+                          org_types=org_types,
+                          type_name=type_name,
+                          years=years,
+                          months=months,
+                          days=days,
+                          limit=limit,
+                          show_type_column=(t == 0))
+
+
+@bp.route('/disHKcaltype.asp')
+def enigma_disHKcaltype():
+    """Companies dissolved in HK by year/month/day"""
+    from datetime import datetime
+    import calendar
+
+    conn = get_db_connection()
+
+    current_year = datetime.now().year
+    y = get_int('y', current_year)
+    m = get_int('m', 0)  # 0 = any month
+    d = get_int('d', 0)  # 0 = any day
+    t = get_int('t', 0)  # 0 = any type
+    sort_param = request.args.get('sort', 'namup')
+
+    # Validate ranges
+    if y < 1865 or y > current_year:
+        y = current_year
+    if m < 0 or m > 12:
+        m = 0
+    if m > 0:
+        max_day = calendar.monthrange(y, m)[1]
+        if d < 0 or d > max_day:
+            d = 0
+    else:
+        d = 0
+
+    # Get type name if specified
+    type_name = ""
+    if t > 0:
+        result = conn.execute(
+            "SELECT type_name FROM enigma.orgtypes WHERE org_type = %s",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+
+    # Build sort order
+    sort_map = {
+        'namdn': 'name1 DESC',
+        'regup': 'inc_id',
+        'regdn': 'inc_id DESC',
+        'incup': 'inc_date, name1',
+        'incdn': 'inc_date DESC, name1',
+        'disdn': 'dis_date DESC, name1',
+        'disup': 'dis_date, name1',
+        'typup': 'type_name, name1',
+        'typdn': 'type_name DESC, name1',
+        'namup': 'name1'
+    }
+    order_by = sort_map.get(sort_param, 'name1')
+    if sort_param not in sort_map:
+        sort_param = 'namup'
+
+    # Calculate date range
+    start_month = m if m > 0 else 1
+    end_month = m if m > 0 else 12
+    start_day = d if d > 0 else 1
+    end_day = d if d > 0 else calendar.monthrange(y, end_month)[1]
+
+    start_date = f"{y}-{start_month:02d}-{start_day:02d}"
+    end_date = f"{y}-{end_month:02d}-{end_day:02d}"
+
+    # Build query
+    limit = 5000
+
+    if t == 0:
+        # Include type information
+        query = f"""
+            SELECT o.person_id, o.name1, o.c_name, o.inc_id, o.inc_date, o.dis_date,
+                   t.org_type, t.type_name
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes t ON o.org_type = t.org_type
+            WHERE o.domicile = 1
+              AND o.inc_id IS NOT NULL
+              AND o.dis_date BETWEEN %s AND %s
+            ORDER BY {order_by}
+            LIMIT %s
+        """
+        results = conn.execute(query, (start_date, end_date, limit)).fetchall()
+    else:
+        # Specific type only
+        query = f"""
+            SELECT person_id, name1, c_name, inc_id, inc_date, dis_date
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id IS NOT NULL
+              AND dis_date BETWEEN %s AND %s
+              AND org_type = %s
+            ORDER BY {order_by}
+            LIMIT %s
+        """
+        results = conn.execute(query, (start_date, end_date, t, limit)).fetchall()
+
+    # Get org types for dropdown
+    org_types = conn.execute("""
+        SELECT org_type, type_name
+        FROM enigma.orgtypes
+        WHERE org_type IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
+        ORDER BY type_name
+    """).fetchall()
+
+    conn.close()
+
+    # Build title
+    date_str = f"{y}"
+    if m > 0:
+        date_str = f"{y}-{m:02d}"
+    if d > 0:
+        date_str = f"{y}-{m:02d}-{d:02d}"
+
+    preposition = "on" if d > 0 else "in"
+    title = f"Entities dissolved in HK {preposition} {date_str}"
+    if type_name:
+        title += f": {type_name}"
+
+    # Generate year, month, day options
+    years = list(range(1865, current_year + 1))
+    months = list(range(1, 13))
+    if m > 0:
+        max_day_for_month = calendar.monthrange(y, m)[1]
+        days = list(range(1, max_day_for_month + 1))
+    else:
+        days = []
+
+    return render_template('disHKcaltype.html',
+                          title=title,
+                          y=y, m=m, d=d, t=t,
+                          sort_param=sort_param,
+                          results=results,
+                          org_types=org_types,
+                          type_name=type_name,
+                          years=years,
+                          months=months,
+                          days=days,
+                          limit=limit,
+                          show_type_column=(t == 0))
+
+
 # ============================================================================
 # Stub routes (to be implemented)
 # ============================================================================

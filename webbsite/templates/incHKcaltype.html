@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<title>{{ title }}</title>
+</head>
+<body>
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<p>This page shows the companies newly-incorporated in HK by year, month or date and by type.
+Earliest records from the 19th century are understated due to lost records of
+dissolved companies. Registration was not required until 1911.</p>
+
+<p>Note: data on dissolutions are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new
+incorporations and name-changes.</p>
+
+<form method="get" action="{{ url_for('dbpub.enigma_incHKcaltype') }}">
+    <div class="inputs"><b>Incorporation date</b>&nbsp;</div>
+    <div class="inputs">
+        <select name="y" onchange="this.form.submit()">
+            {% for year in years %}
+                <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <select name="m" onchange="this.form.submit()">
+            <option value="0" {% if m == 0 %}selected{% endif %}>Any month</option>
+            {% for month in months %}
+                <option value="{{ month }}" {% if month == m %}selected{% endif %}>{{ "%02d"|format(month) }}</option>
+            {% endfor %}
+        </select>
+        <select name="d" onchange="this.form.submit()">
+            <option value="0" {% if d == 0 %}selected{% endif %}>Any day</option>
+            {% for day in days %}
+                <option value="{{ day }}" {% if day == d %}selected{% endif %}>{{ "%02d"|format(day) }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <b>Type</b>
+        <select name="t" onchange="this.form.submit()">
+            <option value="0" {% if t == 0 %}selected{% endif %}>Any type</option>
+            {% for ot in org_types %}
+                <option value="{{ ot['org_type'] }}" {% if t == ot['org_type'] %}selected{% endif %}>
+                    {{ ot['type_name'] }}
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+</form>
+
+{% if results|length == 0 %}
+    <p>None found. Try widening your search.</p>
+{% else %}
+    <table class="txtable fcr">
+        <tr>
+            <th class="colHide1"></th>
+            <th class="colHide2">
+                <a href="{{ url_for('dbpub.enigma_incHKcaltype', y=y, m=m, d=d, t=t, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                    Reg no.
+                </a>
+            </th>
+            <th class="left">
+                <a href="{{ url_for('dbpub.enigma_incHKcaltype', y=y, m=m, d=d, t=t, sort='namup' if sort_param != 'namup' else 'namdn') }}">
+                    Name
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.enigma_incHKcaltype', y=y, m=m, d=d, t=t, sort='incup' if sort_param != 'incup' else 'incdn') }}">
+                    Incorp-<br>orated
+                </a>
+            </th>
+            <th class="colHide2">
+                <a href="{{ url_for('dbpub.enigma_incHKcaltype', y=y, m=m, d=d, t=t, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
+                    Dissolved
+                </a>
+            </th>
+            {% if show_type_column %}
+                <th class="colHide1">
+                    <a href="{{ url_for('dbpub.enigma_incHKcaltype', y=y, m=m, d=d, t=t, sort='typup' if sort_param != 'typup' else 'typdn') }}">
+                        Type
+                    </a>
+                </th>
+            {% endif %}
+        </tr>
+        {% for row in results %}
+        <tr>
+            <td class="colHide1">{{ loop.index }}</td>
+            <td class="colHide2">{{ row['inc_id'] if row['inc_id'] else '' }}&nbsp;</td>
+            <td class="left">
+                <a href="{{ url_for('dbpub.enigma_orgdata', p=row['person_id']) }}">
+                    {{ row['name1'] }}
+                    {% if row['c_name'] %}<br>{{ row['c_name'] }}{% endif %}
+                </a>
+            </td>
+            <td class="nowrap">{{ row['inc_date'].strftime('%Y-%m-%d') if row['inc_date'] else '' }}</td>
+            <td class="nowrap colHide2">{{ row['dis_date'].strftime('%Y-%m-%d') if row['dis_date'] else '' }}</td>
+            {% if show_type_column %}
+                <td class="colHide1">{{ row['type_name'] if row.get('type_name') else '' }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% if results|length == limit %}
+        <p>Only the first {{ limit }} records are shown. Try narrowing your search to a specific month or day.</p>
+    {% endif %}
+{% endif %}
+
+{% include 'footer.html' %}
+</body>
+</html>
