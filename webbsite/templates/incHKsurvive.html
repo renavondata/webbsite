@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('number', 'Year');
+    data.addColumn('number', 'Surviving');
+    data.addColumn('number', 'Dissolved');
+    data.addRows([
+        {% for row in results %}
+            [{{ row[0] }}, {{ row[2] }}, {{ row[1] - row[2] }}],
+        {% endfor %}
+    ]);
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    var options = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: '{{ title }}',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            title: 'Year of incorporation',
+            format: ''
+        },
+        vAxis: {baseline:0},
+        isStacked: true,
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'}
+    };
+    chart.draw(data, options);
+}
+</script>
+<title>{{ title }}</title>
+</head>
+<body onresize="drawChart();">
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<form method="get" action="{{ url_for('dbpub.enigma_incHKsurvive') }}">
+    <div class="inputs">
+        <input type="date" id="d" name="d" value="{{ d }}">
+    </div>
+    <div class="inputs">
+        Company type:
+        <select name="t" onchange="this.form.submit()">
+            <option value="-1" {% if t == -1 %}selected{% endif %}>Any type</option>
+            {% for ot in org_types %}
+                <option value="{{ ot['org_type'] }}" {% if t == ot['org_type'] %}selected{% endif %}>
+                    {{ ot['type_name'] }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="button" value="clear" onclick="document.getElementById('d').value='';document.getElementById('t').value='-1';this.form.submit();">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>This page shows, at the chosen date, the number of surviving
+and dissolved HK-incorporated companies for each year of incorporation.
+Earliest records from the 19th century are understated due to
+lost records of dissolved companies. Registration was not required until 1911.
+Click and drag to zoom, right-click to zoom out.</p>
+
+<p>Note: data on dissolutions are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new
+incorporations and name-changes.</p>
+
+<div id="chart_div" class="chart"></div>
+<p></p>
+
+<table class="numtable center">
+    <tr>
+        <th class="colHide3"></th>
+        <th>Year</th>
+        <th>Inc.</th>
+        <th>live</th>
+        <th>Survival<br>%</th>
+        <th class="colHide2">Total<br>inc.</th>
+        <th class="colHide2">Total<br>live</th>
+        <th class="">Total<br>survival<br>%</th>
+    </tr>
+    {% for row in table_data %}
+    <tr>
+        <td class="colHide3">{{ loop.index }}</td>
+        <td>{{ row['year'] }}</td>
+        <td>
+            <a href="{{ url_for('dbpub.enigma_incHKcaltype', t=t if t > 0 else 0, y=row['year']) }}">
+                {{ "{:,}".format(row['inc']) }}
+            </a>
+        </td>
+        <td>{{ "{:,}".format(row['surv']) }}</td>
+        <td>{% if row['survival_pct'] is not none %}{{ "{:.2f}".format(row['survival_pct']) }}{% else %}-{% endif %}</td>
+        <td class="colHide2">{{ "{:,}".format(row['inc_tot']) }}</td>
+        <td class="colHide2">{{ "{:,}".format(row['surv_tot']) }}</td>
+        <td class="">{% if row['total_survival_pct'] is not none %}{{ "{:.2f}".format(row['total_survival_pct']) }}{% else %}-{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'footer.html' %}
+</body>
+</html>
