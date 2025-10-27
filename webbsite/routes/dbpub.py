@@ -12544,6 +12544,236 @@ def pricescsv():
         return response
 
 
+@bp.route('/incHKannual.asp')
+def enigma_incHKannual():
+    """HK company incorporations and dissolutions by year"""
+    from datetime import datetime
+
+    conn = get_db_connection()
+    t = get_int('t', -1)
+
+    # Get company type name if specified
+    title = "HK companies"
+    type_name = ""
+    ot_str = ""
+
+    if t > 0:
+        result = conn.execute(
+            "SELECT COALESCE((SELECT typeName FROM enigma.orgtypes WHERE orgType = %s), '')",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+        if type_name:
+            title = f"{title}: {type_name}"
+        ot_str = f" AND orgtype = {t}"
+
+    # Get current year
+    current_year = datetime.now().year
+
+    # Build query with WITH RECURSIVE for year series
+    # PostgreSQL equivalent of MySQL's WITH RECURSIVE
+    query = f"""
+        WITH RECURSIVE dates(d) AS (
+            SELECT '1865-01-01'::date
+            UNION ALL
+            SELECT d + INTERVAL '1 year'
+            FROM dates
+            WHERE d + INTERVAL '1 year' <= '{current_year}-01-01'::date
+        )
+        SELECT
+            d,
+            COALESCE(inc_cnt, 0) AS inc,
+            COALESCE(dis_cnt, 0) AS dis
+        FROM dates
+        LEFT JOIN (
+            SELECT COUNT(*) AS inc_cnt, EXTRACT(YEAR FROM inc_date)::integer AS y
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+            GROUP BY y
+        ) inc ON EXTRACT(YEAR FROM d) = inc.y
+        LEFT JOIN (
+            SELECT COUNT(*) AS dis_cnt, EXTRACT(YEAR FROM dis_date)::integer AS y
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+            GROUP BY y
+        ) dis ON EXTRACT(YEAR FROM d) = dis.y
+        ORDER BY d
+    """
+
+    results = conn.execute(query).fetchall()
+    conn.close()
+
+    # Get org types for dropdown
+    conn2 = get_db_connection()
+    org_types = conn2.execute(
+        "SELECT org_type, type_name FROM enigma.orgtypes WHERE org_type IN (1,19,21,26,28) ORDER BY org_type"
+    ).fetchall()
+    conn2.close()
+
+    # Calculate running totals for table
+    inc_tot = 0
+    dis_tot = 0
+    table_data = []
+
+    for row in results:
+        year = row['d'].year
+        inc_count = int(row['inc'])
+        dis_count = int(row['dis'])
+        inc_tot += inc_count
+        dis_tot += dis_count
+
+        table_data.append({
+            'year': year,
+            'inc': inc_count,
+            'dis': dis_count,
+            'net': inc_count - dis_count,
+            'inc_tot': inc_tot,
+            'dis_tot': dis_tot,
+            'net_alive': inc_tot - dis_tot
+        })
+
+    return render_template('incHKannual.html',
+                          title=title,
+                          t=t,
+                          results=results,
+                          table_data=table_data,
+                          org_types=org_types)
+
+
+@bp.route('/incHKmonth.asp')
+def enigma_incHKmonth():
+    """HK company incorporations and dissolutions by month"""
+    from datetime import datetime, date
+
+    conn = get_db_connection()
+    t = get_int('t', -1)
+
+    # Get company type name if specified
+    title = "HK companies"
+    type_name = ""
+    ot_str = ""
+
+    if t > 0:
+        result = conn.execute(
+            "SELECT COALESCE((SELECT typeName FROM enigma.orgtypes WHERE orgType = %s), '')",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+        if type_name:
+            title = f"{title}: {type_name}"
+        ot_str = f" AND orgtype = {t}"
+
+    # Start month and end month
+    startm = "1985-01-01"
+    current_date = datetime.now()
+    endm = f"{current_date.year}-{current_date.month:02d}-01"
+
+    # Get initial totals (before start month)
+    inc_tot_start = conn.execute(
+        f"""SELECT COUNT(*) FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+              AND (inc_date IS NULL OR inc_date < %s)""",
+        (startm,)
+    ).fetchone()[0]
+
+    dis_tot_start = conn.execute(
+        f"""SELECT COUNT(*) FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+              AND dis_date < %s""",
+        (startm,)
+    ).fetchone()[0]
+
+    # Build query with WITH RECURSIVE for month series
+    # PostgreSQL equivalent: DATE_TRUNC for first of month
+    query = f"""
+        WITH RECURSIVE dates(d) AS (
+            SELECT '{startm}'::date
+            UNION ALL
+            SELECT d + INTERVAL '1 month'
+            FROM dates
+            WHERE d + INTERVAL '1 month' <= '{endm}'::date
+        )
+        SELECT
+            d,
+            COALESCE(inc_cnt, 0) AS inc,
+            COALESCE(dis_cnt, 0) AS dis
+        FROM dates
+        LEFT JOIN (
+            SELECT COUNT(*) AS inc_cnt, DATE_TRUNC('month', inc_date)::date AS mstart
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+              AND inc_date >= '{startm}'
+            GROUP BY mstart
+        ) inc ON dates.d = inc.mstart
+        LEFT JOIN (
+            SELECT COUNT(*) AS dis_cnt, DATE_TRUNC('month', dis_date)::date AS mstart
+            FROM enigma.organisations
+            WHERE domicile = 1
+              AND inc_id ~ '^[0-9]'
+              {ot_str}
+              AND dis_date >= '{startm}'
+            GROUP BY mstart
+        ) dis ON dates.d = dis.mstart
+        ORDER BY d
+    """
+
+    results = conn.execute(query).fetchall()
+    conn.close()
+
+    # Get org types for dropdown
+    conn2 = get_db_connection()
+    org_types = conn2.execute(
+        "SELECT org_type, type_name FROM enigma.orgtypes WHERE org_type IN (1,19,21,26,28) ORDER BY org_type"
+    ).fetchall()
+    conn2.close()
+
+    # Calculate running totals for table
+    inc_tot = inc_tot_start
+    dis_tot = dis_tot_start
+    table_data = []
+
+    for row in results:
+        inc_count = int(row['inc'])
+        dis_count = int(row['dis'])
+        inc_tot += inc_count
+        dis_tot += dis_count
+
+        month_date = row['d']
+        table_data.append({
+            'month_str': f"{month_date.year}-{month_date.month:02d}",
+            'year': month_date.year,
+            'month': month_date.month,
+            'inc': inc_count,
+            'dis': dis_count,
+            'net': inc_count - dis_count,
+            'inc_tot': inc_tot,
+            'dis_tot': dis_tot,
+            'net_alive': inc_tot - dis_tot
+        })
+
+    # Initial total for chart
+    initial_total = inc_tot_start - dis_tot_start
+
+    return render_template('incHKmonth.html',
+                          title=title,
+                          t=t,
+                          startm=startm,
+                          results=results,
+                          table_data=table_data,
+                          org_types=org_types,
+                          initial_total=initial_total)
+
+
 # ============================================================================
 # Stub routes (to be implemented)
 # ============================================================================
