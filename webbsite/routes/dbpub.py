@@ -14280,5 +14280,62 @@ def buybacks():
                           now=date.today())
 
 
+@bp.route('/domregHK.asp')
+def domregHK():
+    """
+    Domicile of HK-registered foreign companies - Port of dbpub/domregHK.asp
+    Ranks foreign companies by domicile
+
+    Query params:
+    - sort: sorting column (domup/domdn/cntup/cntdn)
+    """
+    conn = get_db_connection()
+
+    sort_param = request.args.get('sort', 'cntdn')
+
+    # Sort mapping
+    sort_map = {
+        'cntup': 'domcnt, friendly',
+        'cntdn': 'domcnt DESC, friendly',
+        'domup': 'friendly',
+        'domdn': 'friendly DESC'
+    }
+    order_by = sort_map.get(sort_param, 'domcnt DESC, friendly')
+
+    # Get total count
+    total_result = conn.execute("""
+        SELECT COUNT(domicile) as total
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.personid = f.orgid
+        WHERE f.hostdom = 1
+          AND f.regid ~ '^F[0-9]'
+          AND o.dis_date IS NULL
+          AND f.cesdate IS NULL
+    """).fetchone()
+    total = total_result['total'] if total_result else 0
+
+    # Get domicile breakdown
+    results = conn.execute(f"""
+        SELECT o.domicile, d.friendly, COUNT(*) as domcnt
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.personid = f.orgid
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE f.hostdom = 1
+          AND f.regid ~ '^F[0-9]'
+          AND o.dis_date IS NULL
+          AND f.cesdate IS NULL
+        GROUP BY o.domicile, d.friendly
+        ORDER BY {order_by}
+    """).fetchall()
+
+    conn.close()
+
+    return render_template('domregHK.html',
+                          title="Domicile of HK-registered foreign companies",
+                          sort_param=sort_param,
+                          results=results,
+                          total=total)
+
+
 # Helpers to import
 from webbsite.asp_helpers import get_int, get_str, get_bool

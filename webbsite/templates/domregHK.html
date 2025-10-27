@@ -20,7 +20,7 @@ companies are not listed.</p>
 started our last complete scan of the registry. On 22-Nov-2020, the registry
 implemented a new captcha system, preventing further data collection. The
 limited data available on
-<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&file-content=no" target="_blank">
 data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
 and name-changes, without stating domicile.</p>
 
@@ -28,27 +28,19 @@ and name-changes, without stating domicile.</p>
     <tr>
         <th></th>
         <th class="left">
-            <a href="{{ url_for('dbpub.enigma_domregHK', sort='domup' if sort_param != 'domup' else 'domdn') }}">
-                Domicile
-            </a>
+            <a href="{{ url_for('dbpub.domregHK', sort=('domup' if sort_param == 'domdn' else 'domdn')) }}">Domicile</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub.enigma_domregHK', sort='cntdn' if sort_param != 'cntdn' else 'cntup') }}">
-                Companies
-            </a>
+            <a href="{{ url_for('dbpub.domregHK', sort=('cntup' if sort_param == 'cntdn' else 'cntdn')) }}">Companies</a>
         </th>
         <th><b>Share %</b></th>
     </tr>
     {% for row in results %}
     <tr>
         <td>{{ loop.index }}</td>
-        <td class="left">
-            <a href="{{ url_for('dbpub.enigma_incFcal', dom=row[0]) }}">
-                {{ row[1] if row[1] else 'Unknown' }}
-            </a>
-        </td>
-        <td>{{ "{:,}".format(row[2]) }}</td>
-        <td>{{ "{:.2f}".format(row[2] * 100 / total) if total > 0 else "0.00" }}</td>
+        <td class="left"><a href="{{ url_for('dbpub.incFcal', dom=row['domicile']) }}">{{ row['friendly'] if row['friendly'] else 'Unknown' }}</a></td>
+        <td>{{ "{:,}".format(row['domcnt']) }}</td>
+        <td>{{ "{:.2f}".format(row['domcnt'] * 100.0 / total) if total > 0 else '0.00' }}</td>
     </tr>
     {% endfor %}
     <tr>
