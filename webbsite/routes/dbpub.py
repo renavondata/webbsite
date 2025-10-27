@@ -7318,6 +7318,18 @@ def faq_www():
     return render_template('dbpub/faq_www.html')
 
 
+@bp.route('/auditornotes.asp')
+def auditor_notes():
+    """Notes on auditor changes - static explanatory page"""
+    return render_template('dbpub/auditor_notes.html')
+
+
+@bp.route('/LIRteamNotes.asp')
+def lir_team_notes():
+    """About the Listing Teams of SEHK - static explanatory page"""
+    return render_template('dbpub/lir_team_notes.html')
+
+
 # Navbars (shared components)
 @bp.route('/navbars.asp')
 def navbars():

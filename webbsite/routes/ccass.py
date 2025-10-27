@@ -21,10 +21,17 @@ def bigchanges():
     sqletf = "" if etf else " AND o.orgType<>4"
 
     # Get latest CCASS date if none specified
-    # TODO: Get from log table when database is loaded
-    # d = execute_query("SELECT getLog('CCASSdateDone')")[0][0] if not d else d
     if not d:
-        d = '2025-10-17'  # Placeholder until database loaded
+        try:
+            result = execute_query("SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'")
+            if result and result[0]['val']:
+                d = result[0]['val']
+            else:
+                d = '2025-10-17'  # Fallback if log entry doesn't exist
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.warning(f"Could not get CCASSdateDone from log: {ex}")
+            d = '2025-10-17'  # Fallback date
 
     # Get max settlement date <= requested date
     try:
@@ -108,9 +115,17 @@ def cconc():
     sqletf = "" if etf else " AND o.orgType<>4"
 
     # Get latest CCASS date if none specified
-    # TODO: Get from log table when database is loaded
     if not d:
-        d = '2025-10-17'  # Placeholder until database loaded
+        try:
+            result = execute_query("SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'")
+            if result and result[0]['val']:
+                d = result[0]['val']
+            else:
+                d = '2025-10-17'  # Fallback if log entry doesn't exist
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.warning(f"Could not get CCASSdateDone from log: {ex}")
+            d = '2025-10-17'  # Fallback date
 
     # Determine sort order
     sort_orders = {

@@ -1,0 +1,26 @@
+{% extends "dbheader.html" %}
+
+{% block title %}Notes on auditor changes{% endblock %}
+
+{% block content %}
+<h2>Notes on auditor changes of current HK-listed companies</h2>
+<ul class="navlist">
+    <li><a href="{{ url_for('dbpub.auditorchanges') }}">Auditor changes</a></li>
+    <li class="livebutton">Notes</li>
+</ul>
+<div class="clear"></div>
+<ol>
+    <li>The "Removed" date is the date on which the auditor resigned or was
+    replaced, terminated or not re-elected.</li>
+    <li>Before 31-Mar-04, HK-listed companies were not required to announce
+    changes of auditors. In some cases the Memorandum &amp; Articles of Association
+    or Bye-laws require the company to call a shareholder meeting to approve the
+    change, in which case the change was public knowledge. In others, the M&amp;A
+    entitle the board to appoint a new auditor without shareholders' approval.
+    So some dates are approximate, as the auditors were only revealed when the
+    accounts were published.</li>
+    <li>"U" means unknown date of removal/resignation.</li>
+    <li>When a company is first listed, we treat the prospectus date as the date
+    of appointment of all advisers, including auditors.</li>
+</ol>
+{% endblock %}
