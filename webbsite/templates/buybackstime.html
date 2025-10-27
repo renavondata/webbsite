@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<title>{{ title }}</title>
+</head>
+<body>
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<ul class="navlist">
+    <li><a href="{{ url_for('dbpub.buybacksum', y=max_date.year if max_date else 2024, m=max_date.month if max_date else 12, d=max_date.day if max_date else 31) }}">Calendar</a></li>
+    <li class="active">Lookback</li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="{{ url_for('dbpub.buybackstime') }}">
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+    <div class="inputs">
+        Last
+        <select name="hist" onchange="this.form.submit()">
+            {% for days, label in lookback_options %}
+                <option value="{{ days }}" {% if days == hist %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</form>
+
+{% if max_date %}
+<p>Latest buyback found: {{ max_date }}</p>
+{% endif %}
+
+<p>Note: share repurchases on SEHK have been permitted since 1991-11-27.
+This table comprises on-market buybacks by HK-listed issuers whether executed
+on SEHK or on another exchange.</p>
+
+<table class="numtable c2l">
+    <tr>
+        <th></th>
+        <th>
+            <a href="{{ url_for('dbpub.buybackstime', hist=hist, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
+        </th>
+        <th>
+            <a href="{{ url_for('dbpub.buybackstime', hist=hist, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
+        </th>
+        <th>
+            <a href="{{ url_for('dbpub.buybackstime', hist=hist, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
+        </th>
+    </tr>
+    {% for row in buybacks %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td><a href="{{ url_for('dbpub.buybacks', i=row['issueid']) }}">{{ row['name'] }}</a></td>
+        <td>{{ "{:,.0f}".format(row['sumvalue']) if row['sumvalue'] else '-' }}</td>
+        <td>{{ row['currency'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'footer.html' %}
+</body>
+</html>

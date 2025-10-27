@@ -3,7 +3,7 @@ Database routes - Direct port from dbpub/default.asp
 Main database homepage and related pages
 """
 from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date
+from datetime import date, timedelta
 import calendar
 import io
 import re
@@ -13827,6 +13827,246 @@ def hpu():
     issue_id = get_int('i', 0)
     sort_param = request.args.get('sort', 'datedn')
     return f"<h2>Daily Prices</h2><p>Route stub - issue_id: {issue_id}, sort: {sort_param}</p><p><a href='/dbpub/buybacks.asp?i={issue_id}'>Back to Buybacks</a></p>"
+
+
+@bp.route('/buybacksum.asp')
+def buybacksum():
+    """
+    Buybacks calendar view - Port of dbpub/buybacksum.asp
+    Shows market-wide buybacks on a specific date/month/year
+
+    Query params:
+    - y: year
+    - m: month (0 = all months)
+    - d: day (0 = all days in month)
+    - u: unadjusted flag
+    - sort: sorting column
+    """
+    conn = get_db_connection()
+
+    # Get max buyback date
+    max_date_result = conn.execute("""
+        SELECT MAX(effdate) as maxdate FROM enigma.webbuybacks
+    """).fetchone()
+    max_date = max_date_result['maxdate'] if max_date_result else date.today()
+
+    # Parameters
+    y = get_int('y', max_date.year if max_date else date.today().year)
+    m = get_int('m', max_date.month if max_date else date.today().month)
+    d = get_int('d', 0)  # 0 = all days
+    u = get_bool('u')  # unadjusted
+    sort_param = request.args.get('sort', 'valdn')
+
+    # Constrain parameters
+    current_year = date.today().year
+    y = max(1991, min(y, current_year))
+    m = max(0, min(m, 12))
+    if y == 1991 and m > 0:
+        m = max(11, m)  # Nov 1991 earliest
+    if y == current_year:
+        m = min(m, date.today().month)
+
+    # Calculate date range
+    if d > 0 and m > 0:
+        # Specific day
+        d = max(1, min(d, calendar.monthrange(y, m)[1]))
+        # Skip weekends
+        dt = date(y, m, d)
+        if dt > max_date:
+            dt = max_date
+        if dt.weekday() == 5:  # Saturday
+            dt = dt - timedelta(days=1)
+        elif dt.weekday() == 6:  # Sunday
+            dt = dt - timedelta(days=2)
+        y, m, d = dt.year, dt.month, dt.day
+        start_date = dt
+        end_date = dt
+        f = 'd'  # Link to daily view
+    elif m > 0:
+        # Specific month
+        start_date = date(y, m, 1)
+        end_date = date(y, m, calendar.monthrange(y, m)[1])
+        f = 'm'  # Link to monthly view
+    else:
+        # Entire year
+        start_date = date(y, 1, 1)
+        end_date = date(y, 12, 31)
+        f = 'y'  # Link to yearly view
+
+    # Sort mapping
+    sort_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'codup': 'stockcode',
+        'coddn': 'stockcode DESC',
+        'valup': 'value, name',
+        'valdn': 'value DESC, name',
+        'curup': 'currency, value DESC',
+        'curdn': 'currency, value',
+        'stkdn': 'stake DESC, name',
+        'stkup': 'stake, name'
+    }
+    order_by = sort_map.get(sort_param, 'value DESC, name')
+
+    # Build query based on adjustment flag
+    table_name = 'enigma.webbuybacks' if u else 'enigma.buybacksadj'
+
+    if u:
+        # Unadjusted query
+        query = f"""
+            SELECT b.issueid, stockcode, name, currency,
+                   SUM(shares) as shares,
+                   SUM(value) as value,
+                   outstanding as os, osd,
+                   SUM(shares) * 100.0 / NULLIF(outstanding, 0) as stake
+            FROM {table_name} b
+            LEFT JOIN (
+                SELECT m.issueid, osd, outstanding as outstanding
+                FROM (
+                    SELECT issueid, MAX(atdate) as osd
+                    FROM enigma.issuedshares
+                    WHERE atdate <= %s
+                    GROUP BY issueid
+                ) m
+                JOIN enigma.issuedshares s ON m.issueid = s.issueid AND m.osd = s.atdate
+            ) t ON b.issueid = t.issueid
+            WHERE effdate BETWEEN %s AND %s
+            GROUP BY b.issueid, stockcode, name, currency, outstanding, osd
+            ORDER BY {order_by}
+        """
+        params = (start_date, start_date, end_date)
+    else:
+        # Split-adjusted query
+        query = f"""
+            SELECT b.issueid, stockcode, name, currency,
+                   shares, value, osd,
+                   os / enigma.splitadj(b.issueid, osd) as os,
+                   shares * 100.0 * enigma.splitadj(b.issueid, osd) / NULLIF(os, 0) as stake
+            FROM (
+                SELECT issueid, stockcode, name, currency,
+                       SUM(shares) as shares,
+                       SUM(value) as value
+                FROM {table_name}
+                WHERE effdate BETWEEN %s AND %s
+                GROUP BY issueid, stockcode, name, currency
+            ) b
+            LEFT JOIN (
+                SELECT m.issueid, osd, outstanding as os
+                FROM (
+                    SELECT issueid, MAX(atdate) as osd
+                    FROM enigma.issuedshares
+                    WHERE atdate <= %s
+                    GROUP BY issueid
+                ) m
+                JOIN enigma.issuedshares s ON m.issueid = s.issueid AND m.osd = s.atdate
+            ) t ON b.issueid = t.issueid
+            ORDER BY {order_by}
+        """
+        params = (start_date, end_date, start_date)
+
+    buybacks = conn.execute(query, params).fetchall()
+    conn.close()
+
+    # Build title
+    if d > 0:
+        title = f"Buybacks on {y}-{m:02d}-{d:02d}"
+    elif m > 0:
+        title = f"Buybacks in {y}-{m:02d}"
+    else:
+        title = f"Buybacks in {y}"
+
+    # Generate dropdown options
+    years = list(range(1991, current_year + 1))
+    months = list(range(1, 13))
+    if m > 0:
+        days = list(range(1, calendar.monthrange(y, m)[1] + 1))
+    else:
+        days = []
+
+    return render_template('buybacksum.html',
+                          title=title,
+                          y=y, m=m, d=d, u=u, f=f,
+                          sort_param=sort_param,
+                          buybacks=buybacks,
+                          years=years,
+                          months=months,
+                          days=days,
+                          max_date=max_date)
+
+
+@bp.route('/buybackstime.asp')
+def buybackstime():
+    """
+    Buybacks lookback analysis - Port of dbpub/buybackstime.asp
+    Shows buybacks over a trailing time period (10 days to all-time)
+
+    Query params:
+    - hist: number of days to look back (default 10)
+    - sort: sorting column
+    """
+    conn = get_db_connection()
+
+    hist = get_int('hist', 10)
+    sort_param = request.args.get('sort', 'valdn')
+
+    # Sort mapping
+    sort_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'valup': 'sumvalue, name',
+        'valdn': 'sumvalue DESC, name',
+        'curup': 'currency, sumvalue DESC',
+        'curdn': 'currency, sumvalue'
+    }
+    order_by = sort_map.get(sort_param, 'sumvalue DESC, name')
+
+    # Calculate lookback date
+    from datetime import timedelta
+    lookback_date = date.today() - timedelta(days=hist)
+
+    # Get max buyback date
+    max_date_result = conn.execute("""
+        SELECT MAX(effdate) as maxdate FROM enigma.webbuybacks
+    """).fetchone()
+    max_date = max_date_result['maxdate'] if max_date_result else None
+
+    # Get buybacks since lookback date
+    buybacks = conn.execute(f"""
+        SELECT issueid, name, currency, SUM(value) as sumvalue
+        FROM enigma.webbuybacks
+        WHERE effdate >= %s
+        GROUP BY issueid, name, currency
+        ORDER BY {order_by}
+    """, (lookback_date,)).fetchall()
+
+    conn.close()
+
+    # Build title
+    title = f"Buybacks since {lookback_date} inclusive"
+
+    # Lookback options for dropdown
+    all_time_days = (date.today() - date(1991, 11, 27)).days
+    lookback_options = [
+        (10, "10 days"),
+        (30, "30 days"),
+        (60, "60 days"),
+        (90, "90 days"),
+        (180, "180 days"),
+        (365, "1 year"),
+        (730, "2 years"),
+        (1826, "5 years"),
+        (3652, "10 years"),
+        (all_time_days, "Since 1991-11-27")
+    ]
+
+    return render_template('buybackstime.html',
+                          title=title,
+                          hist=hist,
+                          sort_param=sort_param,
+                          buybacks=buybacks,
+                          lookback_date=lookback_date,
+                          max_date=max_date,
+                          lookback_options=lookback_options)
 
 
 @bp.route('/buybacks.asp')

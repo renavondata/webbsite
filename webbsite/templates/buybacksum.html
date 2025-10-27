@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<title>{{ title }}</title>
+</head>
+<body>
+{% include 'header.html' %}
+
+<h2>{{ title }}</h2>
+
+<ul class="navlist">
+    <li class="active">Calendar</li>
+    <li><a href="{{ url_for('dbpub.buybackstime') }}">Lookback</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="{{ url_for('dbpub.buybacksum') }}">
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+    <div class="inputs">
+        Buyback date
+        <select name="y" onchange="this.form.submit()">
+            {% for year in years %}
+                <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <select name="m" onchange="this.form.submit()">
+            <option value="0" {% if m == 0 %}selected{% endif %}>Any month</option>
+            {% for month in months %}
+                <option value="{{ month }}" {% if month == m %}selected{% endif %}>{{ "%02d"|format(month) }}</option>
+            {% endfor %}
+        </select>
+        <select name="d" onchange="this.form.submit()">
+            <option value="0" {% if d == 0 %}selected{% endif %}>Any day</option>
+            {% for day in days %}
+                <option value="{{ day }}" {% if day == d %}selected{% endif %}>{{ "%02d"|format(day) }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <label>
+            <input type="checkbox" name="u" value="1" {% if u %}checked{% endif %} onchange="this.form.submit()">
+            Show unadjusted for splits and bonus shares
+        </label>
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>Note: share repurchases on SEHK have been permitted since 1991-11-27.
+This table comprises buybacks by HK-listed companies whether executed
+on SEHK or on another exchange. By default, we adjust repurchased shares and
+outstanding shares for subsequent splits/consolidations and bonus issues. For
+the years 1991-2002, manual data collection of outstanding shares is a work in
+progress.</p>
+
+<div class="mobile-hint" style="display:none; font-size:small; color:#666;">
+    On mobile: Tap header to show/hide columns
+</div>
+
+<table class="numtable c3l yscroll">
+    <tr>
+        <th class="colHide1">Row</th>
+        <th class="colHide2">
+            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('codup' if sort_param == 'coddn' else 'coddn')) }}">Stock<br>code</a>
+        </th>
+        <th>
+            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
+        </th>
+        <th>
+            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
+        </th>
+        <th>
+            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
+        </th>
+        <th class="colHide2">Number</th>
+        <th class="colHide2">Av.<br>price</th>
+        <th class="colHide1">Outstanding</th>
+        <th class="colHide1">at Date</th>
+        <th class="colHide2">
+            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
+        </th>
+    </tr>
+    {% for row in buybacks %}
+    <tr>
+        <td class="colHide1">{{ loop.index }}</td>
+        <td class="colHide2">{{ "%05d"|format(row['stockcode']|int) if row['stockcode'] else '' }}</td>
+        <td><a href="{{ url_for('dbpub.buybacks', i=row['issueid'], f=f) }}">{{ row['name'] }}</a></td>
+        <td>{{ row['currency'] }}</td>
+        <td>{{ "{:,.0f}".format(row['value']) if row['value'] else '-' }}</td>
+        <td class="colHide2">{{ "{:,.0f}".format(row['shares']) if row['shares'] else '-' }}</td>
+        <td class="colHide2">{{ "{:,.3f}".format(row['value'] / row['shares']) if row['shares'] and row['shares'] > 0 else '-' }}</td>
+        <td class="colHide1">{{ "{:,.0f}".format(row['os']) if row['os'] else '-' }}</td>
+        <td class="colHide1">{{ row['osd'] if row['osd'] else '' }}</td>
+        <td class="colHide2">{{ "{:,.3f}".format(row['stake']) if row['stake'] else '-' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% include 'footer.html' %}
+</body>
+</html>
