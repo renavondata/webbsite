@@ -13050,6 +13050,96 @@ def enigma_disHKcaltype():
                           show_type_column=(t == 0))
 
 
+@bp.route('/oldestHKcos.asp')
+def enigma_oldestHKcos():
+    """Oldest HK-incorporated companies"""
+    conn = get_db_connection()
+
+    t = get_int('t', 0)  # 0 = all types
+    a = get_int('a', 0)  # 1 = surviving only
+    sort_param = request.args.get('sort', 'incup')
+    limit = 5000
+
+    # Get type name if specified
+    type_name = ""
+    if t > 0:
+        result = conn.execute(
+            "SELECT type_name FROM enigma.orgtypes WHERE org_type = %s",
+            (t,)
+        ).fetchone()
+        type_name = result[0] if result else ""
+
+    # Build title
+    title = f"The oldest {limit}"
+    if a:
+        title += " surviving"
+    title += " HK-incorporated companies"
+    if type_name:
+        title += f", {type_name}"
+
+    # Build sort order
+    sort_map = {
+        'namup': 'name',
+        'namdn': 'name DESC',
+        'regup': 'inc_id',
+        'regdn': 'inc_id DESC',
+        'incup': 'inc_date, name',
+        'incdn': 'inc_date DESC, name',
+        'disdn': 'dis_date DESC, name',
+        'disup': 'dis_date, name',
+        'typup': 'type_name, name',
+        'typdn': 'type_name DESC, name'
+    }
+    order_by = sort_map.get(sort_param, 'inc_date, name')
+    if sort_param not in sort_map:
+        sort_param = 'incup'
+
+    # Build conditions
+    conditions = ["domicile = 1", "inc_id ~ '^[0-9]'"]
+    if a:
+        conditions.append("dis_date IS NULL")
+    if t > 0:
+        conditions.append(f"o.org_type = {t}")
+
+    where_clause = " AND ".join(conditions)
+
+    # Subquery to get oldest companies, then sort by user preference
+    query = f"""
+        SELECT person_id, name, c_name, inc_date, dis_date, type_name, inc_id
+        FROM (
+            SELECT o.person_id, o.name1 AS name, o.c_name, o.inc_date, o.dis_date,
+                   ot.type_name, o.inc_id
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes ot ON o.org_type = ot.org_type
+            WHERE {where_clause}
+            ORDER BY inc_date
+            LIMIT {limit}
+        ) AS t1
+        ORDER BY {order_by}
+    """
+
+    results = conn.execute(query).fetchall()
+
+    # Get org types for dropdown
+    org_types = conn.execute("""
+        SELECT org_type, type_name
+        FROM enigma.orgtypes
+        WHERE org_type IN (1,19,21,22,26,28)
+        ORDER BY type_name
+    """).fetchall()
+
+    conn.close()
+
+    return render_template('oldestHKcos.html',
+                          title=title,
+                          t=t,
+                          a=a,
+                          sort_param=sort_param,
+                          results=results,
+                          org_types=org_types,
+                          limit=limit)
+
+
 # ============================================================================
 # Stub routes (to be implemented)
 # ============================================================================
