@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<title>Buybacks: {{ stock_name }}</title>
+</head>
+<body>
+{% include 'header.html' %}
+
+{% if not issue_id %}
+<h2>Buybacks</h2>
+<p>Please enter a stock code to view buyback data.</p>
+
+<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+    <div class="inputs">
+        Stock code: <input type="text" name="sc" size="5" value="">
+        <input type="submit" value="Go">
+    </div>
+</form>
+
+{% else %}
+
+{# Company navigation bar #}
+<div class="navbuttons">
+    <a href="{{ url_for('dbpub.orgdata', p=issuer_id) }}">{{ stock_name }}</a>
+</div>
+
+{# Frequency selector #}
+<ul class="navlist">
+    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='d', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'd' %} class="active"{% endif %}>Daily</a></li>
+    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='m', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'm' %} class="active"{% endif %}>Monthly</a></li>
+    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='y', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'y' %} class="active"{% endif %}>Yearly</a></li>
+    <li><a href="{{ url_for('dbpub.buybacksum', u=u|int, y=2024, m=(12 if f=='m' else 0), d=(31 if f=='d' else 0)) }}">All stocks</a></li>
+</ul>
+<div class="clear"></div>
+
+{# Filter form #}
+<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+    <input type="hidden" name="f" value="{{ f }}">
+    <input type="hidden" name="sort" value="{{ sort_param }}">
+    <input type="hidden" name="i" value="{{ issue_id }}">
+    <div class="inputs">
+        Stock code: <input type="text" name="sc" size="5" value="">
+        <label>
+            <input type="checkbox" name="u" value="1" {% if u %}checked{% endif %} onchange="this.form.submit()">
+            Show unadjusted for splits and bonus shares
+        </label>
+        <label>
+            <input type="checkbox" name="e" value="1" {% if e %}checked{% endif %} onchange="this.form.submit()">
+            Show method
+        </label>
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+</form>
+
+<h2>Buybacks</h2>
+
+{% if buybacks %}
+    {% if f == 'd' %}
+    <p>In the daily list, click on the date to see CCASS movements on the settlement date.</p>
+    {% endif %}
+
+    {# Mobile column hiding hint #}
+    <div class="mobile-hint" style="display:none; font-size:small; color:#666;">
+        On mobile: Tap header to show/hide columns
+    </div>
+
+    <table class="numtable yscroll">
+        <tr>
+            <th class="colHide1"></th>
+            <th>
+                {% if f == 'd' %}
+                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Date</a>
+                {% elif f == 'm' %}
+                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Month</a>
+                {% else %}
+                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Year</a>
+                {% endif %}
+            </th>
+            <th class="colHide3">
+                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('shrsup' if sort_param == 'shrsdn' else 'shrsdn')) }}">Number</a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('valuup' if sort_param == 'valudn' else 'valudn')) }}">Value</a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('currup' if sort_param == 'currdn' else 'currdn')) }}">Curr.</a>
+            </th>
+            <th>
+                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('pricup' if sort_param == 'pricdn' else 'pricdn')) }}">Av.<br>price</a>
+            </th>
+            <th class="colHide2">Out-<br>standing</th>
+            <th class="colHide2">at Date</th>
+            <th class="colHide3">
+                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
+            </th>
+            {% if e %}
+            <th class="colHide3">Method</th>
+            {% endif %}
+        </tr>
+        {% for row in buybacks %}
+        <tr>
+            <td class="colHide1">{{ loop.index }}</td>
+            <td style="white-space:nowrap">
+                {% if f == 'm' %}
+                    {{ "%04d-%02d"|format(row['y'], row['m']) }}
+                {% elif f == 'y' %}
+                    {{ row['y'] }}
+                {% else %}
+                    {% if row['settledate'] and row['settledate'] < now %}
+                        <a href="{{ url_for('ccass.chldchg', i=issue_id, d=row['settledate']) }}">{{ row['effdate'] }}</a>
+                    {% else %}
+                        {{ row['effdate'] }}
+                    {% endif %}
+                {% endif %}
+            </td>
+            <td class="colHide3">{{ "{:,.0f}".format(row['shares']) if row['shares'] else '-' }}</td>
+            <td>{{ "{:,.0f}".format(row['value']) if row['value'] else '-' }}</td>
+            <td>{{ row['currency'] }}</td>
+            <td>{{ "{:,.3f}".format(row['price']) if row['price'] else '-' }}</td>
+            <td class="colHide2">{{ "{:,.0f}".format(row['os']) if row['os'] else '-' }}</td>
+            <td class="colHide2">{{ row['osd'] if row['osd'] else '' }}</td>
+            <td class="colHide3">{{ "{:,.3f}".format(row['stake']) if row['stake'] else '-' }}</td>
+            {% if e %}
+            <td class="colHide3">{{ row['exchname'] if row['exchname'] else '' }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+
+        {# Totals row(s) #}
+        {% for total in totals %}
+        <tr class="total">
+            <td>Total</td>
+            <td class="colHide1"></td>
+            <td class="colHide3">{{ "{:,.0f}".format(total['shares']) if total['shares'] else '-' }}</td>
+            <td>{{ "{:,.0f}".format(total['value']) if total['value'] else '-' }}</td>
+            <td>{{ total['currency'] }}</td>
+            <td>{{ "{:,.3f}".format(total['price']) if total['price'] else '-' }}</td>
+            {% if earliest_os > 0 %}
+                <td class="colHide2">{{ "{:,.0f}".format(earliest_os) }}</td>
+                <td class="colHide2">{{ earliest_osd }}</td>
+                <td class="colHide2">{{ "{:,.3f}".format(total['shares'] * 100.0 / earliest_os) if total['shares'] and earliest_os else '' }}</td>
+            {% else %}
+                <td class="colHide2" colspan="3"></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+
+{% else %}
+    <p><b>None found.</b></p>
+{% endif %}
+
+{% endif %}
+
+{% include 'footer.html' %}
+</body>
+</html>

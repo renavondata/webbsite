@@ -13829,5 +13829,216 @@ def hpu():
     return f"<h2>Daily Prices</h2><p>Route stub - issue_id: {issue_id}, sort: {sort_param}</p><p><a href='/dbpub/buybacks.asp?i={issue_id}'>Back to Buybacks</a></p>"
 
 
+@bp.route('/buybacks.asp')
+def buybacks():
+    """
+    Share buybacks - Port of dbpub/buybacks.asp
+    Shows buyback history for a stock with filtering by frequency and adjustments
+
+    Query params:
+    - sc: stock code (preferred)
+    - i: issue ID (fallback)
+    - f: frequency (d=daily, m=monthly, y=yearly)
+    - u: unadjusted flag (0=adjusted for splits, 1=raw)
+    - e: show exchange/method flag
+    - sort: sorting column
+
+    Uses splitadj() function to adjust shares for splits/bonus issues
+    """
+    conn = get_db_connection()
+
+    # Get stock code or issue ID
+    sc = get_int('sc', 0)
+    issue_id = get_int('i', 0)
+
+    # Find issue from stock code if provided
+    if sc > 0:
+        result = conn.execute("""
+            SELECT sl.issueID, o.name1, i.issuer
+            FROM enigma.stocklistings sl
+            JOIN enigma.issue i ON sl.issueID = i.id1
+            JOIN enigma.organisations o ON i.issuer = o.personid
+            WHERE CAST(sl.stockcode AS INTEGER) = %s
+              AND sl.stockexid IN (1,20,22,23,38,71)
+              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= CURRENT_DATE)
+              AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+            LIMIT 1
+        """, (sc,)).fetchone()
+        if result:
+            issue_id = result['issueid']
+            stock_name = result['name1']
+            issuer_id = result['issuer']
+    elif issue_id > 0:
+        # Get issue name
+        result = conn.execute("""
+            SELECT o.name1, i.issuer
+            FROM enigma.issue i
+            JOIN enigma.organisations o ON i.issuer = o.personid
+            WHERE i.id1 = %s
+        """, (issue_id,)).fetchone()
+        if result:
+            stock_name = result['name1']
+            issuer_id = result['issuer']
+        else:
+            stock_name = "Unknown"
+            issuer_id = 0
+    else:
+        stock_name = ""
+        issuer_id = 0
+
+    # Parameters
+    f = get_str('f', 'd')  # frequency: d/m/y
+    if f not in ('d', 'm', 'y'):
+        f = 'd'
+    u = get_bool('u')  # unadjusted flag
+    e = get_bool('e')  # show exchange/method
+    sort_param = request.args.get('sort', 'datedn')
+
+    # Build ORDER BY clause
+    sort_map = {
+        'dateup': 'datefields, currency' + (', exchname' if e else ''),
+        'datedn': 'datedn, currency' + (', exchname' if e else ''),
+        'shrsup': 'shares, datefields',
+        'shrsdn': 'shares DESC, datedn',
+        'valuup': 'currency, value, datefields',
+        'valudn': 'currency, value DESC, datedn',
+        'currup': 'currency, datedn' + (', exchname' if e else ''),
+        'currdn': 'currency DESC, datefields' + (', exchname' if e else ''),
+        'pricup': 'currency, price, datedn',
+        'pricdn': 'currency, price DESC, datedn',
+        'stkdn': 'stake DESC, datedn',
+        'stkup': 'stake, datefields'
+    }
+    order_by = sort_map.get(sort_param, 'datedn, currency' + (', exchname' if e else ''))
+
+    buybacks = []
+    totals = []
+    earliest_os = None
+    earliest_osd = None
+
+    if issue_id > 0:
+        # Determine date fields based on frequency
+        if f == 'd':
+            datefields = 'effdate'
+            datedn = 'effdate DESC'
+        elif f == 'm':
+            datefields = 'y, m'
+            datedn = 'y DESC, m DESC'
+        else:  # yearly
+            datefields = 'y'
+            datedn = 'y DESC'
+
+        # Build SELECT clause for date
+        if f == 'd':
+            date_select = 'effdate'
+            date_group = 'effdate'
+            date_agg = 'effdate'
+        elif f == 'm':
+            date_select = 'EXTRACT(YEAR FROM effdate)::INTEGER AS y, EXTRACT(MONTH FROM effdate)::INTEGER AS m'
+            date_group = 'EXTRACT(YEAR FROM effdate), EXTRACT(MONTH FROM effdate)'
+            date_agg = 'MAKE_DATE(y, m, 1)'
+        else:  # yearly
+            date_select = 'EXTRACT(YEAR FROM effdate)::INTEGER AS y'
+            date_group = 'EXTRACT(YEAR FROM effdate)'
+            date_agg = 'MAKE_DATE(y, 1, 1)'
+
+        # Build table name (adjusted or raw)
+        table_name = 'enigma.webbuybacks' if u else 'enigma.buybacksadj'
+
+        # Build split adjustment divisor for outstanding shares
+        if u:
+            denom = ''  # No adjustment
+        else:
+            denom = ' / enigma.splitadj(%s, osd)' % issue_id
+
+        # Main query - aggregated buybacks with outstanding shares
+        query = f"""
+            SELECT
+                {datefields},
+                {', cal.settledate,' if f == 'd' else ''}
+                shares, value, currency, osd,
+                outstanding{denom} AS os,
+                shares * 100.0 / NULLIF(outstanding{denom}, 0) AS stake,
+                value / NULLIF(shares, 0) AS price
+                {', exchname' if e else ''}
+            FROM (
+                SELECT
+                    {date_select if f != 'd' else 'effdate'},
+                    SUM(shares) AS shares,
+                    SUM(value) AS value,
+                    currency
+                    {', exchname' if e else ''},
+                    (SELECT MAX(atdate)
+                     FROM enigma.issuedshares
+                     WHERE issueid = %s
+                       AND atdate <= {date_agg if f != 'd' else 'effdate'}
+                    ) AS osd
+                FROM {table_name}
+                WHERE issueid = %s
+                GROUP BY {date_group if f != 'd' else 'effdate'}, currency{', exchname' if e else ''}
+            ) u
+            {f'LEFT JOIN ccass.calendar cal ON u.effdate = cal.tradedate' if f == 'd' else ''}
+            LEFT JOIN enigma.issuedshares i ON i.issueid = %s AND u.osd = i.atdate
+            ORDER BY {order_by}
+        """
+
+        # Replace datefields/datedn placeholders in ORDER BY
+        order_by_final = order_by.replace('datefields', datefields).replace('datedn', datedn)
+
+        # Execute with proper parameters
+        params = [issue_id, issue_id]
+        if f == 'd':
+            params.append(issue_id)
+
+        buybacks = conn.execute(query.replace(order_by, order_by_final), tuple(params)).fetchall()
+
+        # Get earliest outstanding shares before first buyback
+        earliest_result = conn.execute(f"""
+            SELECT outstanding{denom} AS os, osd
+            FROM (
+                SELECT outstanding AS outstanding, atdate AS osd
+                FROM enigma.issuedshares
+                WHERE issueid = %s
+                  AND atdate <= (
+                      SELECT MIN(effdate) FROM {table_name} WHERE issueid = %s
+                  )
+                ORDER BY atdate DESC
+                LIMIT 1
+            ) t
+        """, (issue_id, issue_id)).fetchone()
+
+        if earliest_result:
+            earliest_os = earliest_result['os']
+            earliest_osd = earliest_result['osd']
+
+        # Get totals by currency
+        totals = conn.execute(f"""
+            SELECT
+                SUM(shares) AS shares,
+                SUM(value) AS value,
+                currency,
+                SUM(value) / NULLIF(SUM(shares), 0) AS price
+            FROM {table_name}
+            WHERE issueid = %s
+            GROUP BY currency
+        """, (issue_id,)).fetchall()
+
+    conn.close()
+
+    return render_template('buybacks.html',
+                          issue_id=issue_id,
+                          stock_name=stock_name,
+                          issuer_id=issuer_id,
+                          f=f,
+                          u=u,
+                          e=e,
+                          sort_param=sort_param,
+                          buybacks=buybacks,
+                          totals=totals,
+                          earliest_os=earliest_os if earliest_os else 0,
+                          earliest_osd=earliest_osd,
+                          now=date.today())
+
+
 # Helpers to import
-from webbsite.asp_helpers import get_int, get_str
+from webbsite.asp_helpers import get_int, get_str, get_bool
