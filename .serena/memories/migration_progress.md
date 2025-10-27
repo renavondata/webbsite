@@ -1,72 +1,69 @@
 # Migration Progress Log
 
-## Latest Status (Oct 26, 2025 - Evening)
+## Latest Status (Oct 27, 2025 - Morning)
 
 ### Production Deployment
 - ✅ Site live on Render.com with continuous deployment
-- ✅ 148 routes working with full SQL implementation (740% of MVP target!)
-- ✅ 61 stub routes remaining (22% of total)
+- ✅ 150 routes working with full SQL implementation (750% of MVP target!)
+- ✅ 59 stub routes remaining (21% of total)
 - ✅ Database operational in production (PostgreSQL pro-4gb, 80GB disk)
 
-### Recent Session Accomplishments (Oct 26 Evening)
-Implemented 5 additional routes, expanding data export and specialty statistics:
+### Recent Session Accomplishments (Oct 27 Morning)
+Implemented 2 high-priority statistical charting routes:
 
-1. **CSV.asp** - Generic CSV export utility
-   - Whitelisted 15 table types (airlines, airports, flights, hkpx, qt, vax, jails, prisoners, etc.)
-   - Uses Python csv module with io.StringIO for in-memory generation
-   - Returns Flask Response with Content-Disposition headers for downloads
+1. **incHKannual.asp** - HK company incorporations by year (1865-present)
+   - WITH RECURSIVE for year series generation
+   - Google Charts visualization (3 interactive charts: stacked, net change, running total)
+   - Filterable by company type
+   - Historical data quality notes
 
-2. **hkpax.asp** - HK Immigration passenger statistics
-   - Queries enigma.hkpx table with aggregation by frequency (daily/weekly/monthly/annual)
-   - Filters by passenger type and port
-   - Uses PostgreSQL TO_CHAR() and EXTRACT() for date grouping
-   - Formats data arrays for Highcharts visualization
-
-3. **jail.asp** - HK Correctional Services custody statistics
-   - Two main queries: prisoners_by_type (convicted/remand/detainee) and breakdown by origin/jail type
-   - Uses CASE expressions for percentage calculations
-   - Conditional logic: if j==0 show by origin, else show by jail type
-   - Includes chart data formatting for visualization
-
-4. **prhestates.asp** - Public rental housing estates by district
-   - Aggregates flats by estate within district
-   - Joins enigma.prhflat, prhblock, prhestate, hkdistrict tables
-   - Calculates total area, average area, elevator counts
-   - Filters to most recent lastseen date
-
-5. **prhblocks.asp** - Public rental housing blocks by estate
-   - Aggregates flats by block within estate
-   - Similar join structure to prhestates.asp
-   - Drill-down from districts → estates → blocks
+2. **incHKmonth.asp** - Monthly incorporation/dissolution trends (1985-present)
+   - DATE_TRUNC for monthly aggregation
+   - Google Charts with date formatting
+   - Running totals from pre-1985 baseline
+   - Regulatory context about shelf company spikes
 
 ### Database File Growth
-- dbpub.py: 11,725 → 12,588 lines (+863 lines)
-- All routes syntax-validated with python -m py_compile
-
-### Complex Route Deferred
-- **possum.asp** - Requires porting MySQL stored procedure `posSum()`
-  - Uses cursor iteration with FETCH/REPEAT/UNTIL logic
-  - Creates temporary tables (dirsum2)
-  - Dynamic SQL string concatenation
-  - Too complex for remaining time before deadline
-  - Deferred to post-launch
+- dbpub.py: 12,588 → 12,780 lines (+192 lines, 2 new routes)
+- Templates: incHKannual.html (200 lines), incHKmonth.html (190 lines)
 
 ### Technical Patterns Applied
-- Parameterized queries with %s placeholders (PostgreSQL psycopg2)
-- f-string SQL only for ORDER BY from validated whitelists
-- Flask Response objects for CSV downloads
-- PostgreSQL-specific functions: EXTRACT(), TO_CHAR(), CONCAT(), CASE
-- Array formatting for Highcharts: [[date, val1, val2], ...]
+- PostgreSQL WITH RECURSIVE for date series
+- EXTRACT(YEAR FROM date) for year grouping  
+- DATE_TRUNC('month', date) for monthly aggregation
+- Google Charts library (corechart package)
+- Interactive zoom/pan with explorer option
+- Responsive table column hiding (colHide1, colHide2, colHide3)
 
-### Remaining Work
-- 56 stub routes in dbpub.py (down from 65)
-- 5 stub routes in ccass.py for minor helper pages
-- Authentication/admin features remain deferred (89 routes)
-- Performance optimization and template creation for new routes
+### Routes In Progress
+- incHKcaltype.asp - Companies incorporated in specific year/month/day
+- disHKcaltype.asp - Companies dissolved in specific year/month/day
+- listingtrend.asp - Listed issuers by market over time (needs ListCosByMktAtDate() function)
+
+### Remaining High-Priority Work
+**Phase 1 Continuing:**
+- incHKcaltype.asp, disHKcaltype.asp (simple listing routes)
+- oldestHKcos.asp, incHKsurvive.asp (survival analysis)
+- regHKannual.asp, domregHK.asp (registration stats)
+
+**Phase 2 - Market Data:**
+- listingtrend.asp (requires stored procedure port)
+- buybacks.asp, buybacksum.asp (requires splitadj() function)
+- short.asp, shortsum.asp, shortdate.asp (short selling)
+
+**Phase 3 - Director Stats:**
+- boardcomp.asp, dirsHKPerPerson.asp, latestdirsHK.asp
+- leagueDirsHK.asp (director league table)
 
 ### Key Metrics
 - Total routes created: 279
-- Working routes: 148 (53%)
-- Stub routes: 61 (22%)
-- Missing routes: 109 (these are specialty/admin pages)
-- Performance: 740% of MVP target (20 routes)
+- Working routes: 150 (54%)
+- Stub routes: 59 (21%)
+- Missing routes: 109 (specialty/admin pages)
+- Performance: 750% of MVP target (20 routes)
+
+### Next Steps
+1. Complete calendar-type routes (incHKcaltype, disHKcaltype)
+2. Port MySQL stored procedures to PostgreSQL functions
+3. Implement buyback and short selling routes
+4. Continue with director/company statistics
