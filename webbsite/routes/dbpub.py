@@ -6429,19 +6429,159 @@ def payleague_org():
 # Public housing
 @bp.route('/prhestates.asp')
 def prh_estates():
-    """Public rental housing estates"""
-    # TODO: Query PRH estates
-    estates = []
-    return render_template('dbpub/prh_estates.html', estates=estates)
+    """
+    Hong Kong public rental housing estates in a district
+    Port of dbpub/prhestates.asp
+
+    Query params:
+    - dis: district ID (1-18, default=1)
+    - sort: en/end/cn/cnd/tota/totad/a/ad/c/cd
+
+    Tables used: enigma.prhestate, enigma.prhblock, enigma.prhflat, enigma.hkdistrict
+    """
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    dis = get_int('dis', 1)
+    if dis < 1 or dis > 18:
+        dis = 1
+
+    sort_param = request.args.get('sort', 'en')
+
+    # Map sort parameters to ORDER BY clauses
+    order_by_map = {
+        'en': 'en',
+        'end': 'en DESC',
+        'cn': 'cn',
+        'cnd': 'cn DESC',
+        'tota': 'tota',
+        'totad': 'tota DESC',
+        'a': 'a',
+        'ad': 'a DESC',
+        'c': 'c, en',
+        'cd': 'c DESC, en'
+    }
+    order_by = order_by_map.get(sort_param, 'en')
+
+    # Get district name
+    district_info = execute_query("""
+        SELECT CONCAT(en, ' ', cn) as name FROM enigma.hkdistrict WHERE id = %s
+    """, (dis,))
+    dis_name = district_info[0]['name'] if district_info else ''
+
+    # Query estates in district with aggregated flat data
+    estates = execute_query(f"""
+        SELECT
+            e.id,
+            e.en,
+            e.cn,
+            COUNT(*) as c,
+            SUM(f.area) as tota,
+            CASE WHEN COUNT(*) > 0 THEN SUM(f.area) / COUNT(*) ELSE 0 END as a,
+            SUM(f.elevator) as elev,
+            e.latitude,
+            e.longitude
+        FROM enigma.prhflat f
+        JOIN enigma.prhblock b ON f.blockid = b.id
+        JOIN enigma.prhestate e ON b.estateid = e.id
+        WHERE e.district = %s
+          AND f.lastseen >= (SELECT DATE(MAX(lastseen)) FROM enigma.prhflat)
+        GROUP BY e.id, e.en, e.cn, e.latitude, e.longitude
+        ORDER BY {order_by}
+    """, (dis,))
+
+    return render_template('dbpub/prh_estates.html',
+                         dis=dis,
+                         dis_name=dis_name,
+                         sort_param=sort_param,
+                         estates=estates)
 
 
 @bp.route('/prhblocks.asp')
 def prh_blocks():
-    """PRH blocks"""
-    estate_id = get_int('e', 0)
-    # TODO: Query blocks
-    blocks = []
-    return render_template('dbpub/prh_blocks.html', estate_id=estate_id, blocks=blocks)
+    """
+    Hong Kong public rental housing blocks in an estate
+    Port of dbpub/prhblocks.asp
+
+    Query params:
+    - e: estate ID (required)
+    - sort: en/end/cn/cnd/tota/totad/a/ad/c/cd
+
+    Tables used: enigma.prhblock, enigma.prhestate, enigma.prhflat, enigma.hkdistrict
+    """
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    estate_id = get_int('e', 1)
+    sort_param = request.args.get('sort', 'en')
+
+    # Map sort parameters to ORDER BY clauses
+    order_by_map = {
+        'en': 'en',
+        'end': 'en DESC',
+        'cn': 'cn',
+        'cnd': 'cn DESC',
+        'tota': 'tota',
+        'totad': 'tota DESC',
+        'a': 'a',
+        'ad': 'a DESC',
+        'c': 'c, en',
+        'cd': 'c DESC, en'
+    }
+    order_by = order_by_map.get(sort_param, 'en')
+
+    # Get estate and district info
+    estate_info = execute_query("""
+        SELECT
+            d.id as dis,
+            CONCAT(e.en, ' ', e.cn) as est_name,
+            CONCAT(d.en, ' ', d.cn) as dis_name,
+            e.latitude,
+            e.longitude
+        FROM enigma.prhestate e
+        JOIN enigma.hkdistrict d ON e.district = d.id
+        WHERE e.id = %s
+    """, (estate_id,))
+
+    if estate_info:
+        dis = estate_info[0]['dis']
+        est_name = estate_info[0]['est_name']
+        dis_name = estate_info[0]['dis_name']
+        coords = f"{estate_info[0]['latitude']},{estate_info[0]['longitude']}"
+    else:
+        dis = 1
+        est_name = ''
+        dis_name = ''
+        coords = ''
+
+    # Query blocks in estate with aggregated flat data
+    blocks = execute_query(f"""
+        SELECT
+            b.id,
+            b.en,
+            b.cn,
+            COUNT(*) as c,
+            SUM(f.area) as tota,
+            CASE WHEN COUNT(*) > 0 THEN SUM(f.area) / COUNT(*) ELSE 0 END as a,
+            SUM(f.elevator) as elev
+        FROM enigma.prhflat f
+        JOIN enigma.prhblock b ON f.blockid = b.id
+        WHERE b.estateid = %s
+          AND f.lastseen >= (SELECT DATE(MAX(lastseen)) FROM enigma.prhflat)
+        GROUP BY b.id, b.en, b.cn
+        ORDER BY {order_by}
+    """, (estate_id,))
+
+    return render_template('dbpub/prh_blocks.html',
+                         estate_id=estate_id,
+                         dis=dis,
+                         est_name=est_name,
+                         dis_name=dis_name,
+                         coords=coords,
+                         sort_param=sort_param,
+                         blocks=blocks)
 
 
 # Government accounts
@@ -7095,9 +7235,74 @@ def outstanding():
 # CSV exports
 @bp.route('/CSV.asp')
 def csv():
-    """Generic CSV export utility"""
-    # TODO: Handle various CSV export types
-    return "CSV export utility", 200
+    """
+    Generic CSV export utility
+    Port of dbpub/CSV.asp
+
+    Query params:
+    - t: table name to export (airlines, airports, destor, flights, hkpx, hkpxtypes,
+         hkports, qt, qtcentres, vax, jails, jailtypes, prisoners, vaxcohorts)
+
+    Tables used: various enigma schema tables for COVID/transport data
+    """
+    from flask import request, Response
+    from webbsite.db import get_db
+    import csv
+    import io
+
+    table = request.args.get('t', '')
+
+    # Whitelist of allowed tables and queries
+    valid_exports = {
+        'airlines': 'SELECT * FROM enigma.airlines',
+        'airports': 'SELECT * FROM enigma.airports',
+        'destor': 'SELECT * FROM enigma.destor',
+        'flights': 'SELECT * FROM enigma.flights',
+        'hkpx': 'SELECT * FROM enigma.hkpx',
+        'hkpxtypes': 'SELECT * FROM enigma.hkpxtypes',
+        'hkports': 'SELECT * FROM enigma.hkports',
+        'qt': 'SELECT * FROM enigma.qt',
+        'qtcentres': 'SELECT * FROM enigma.qtcentres',
+        'vax': 'SELECT * FROM enigma.vax',
+        'vaxcohorts': 'SELECT id, minage, popn, mpopn, fpopn FROM enigma.vaxcohorts',
+        'jails': 'SELECT * FROM enigma.jails',
+        'jailtypes': 'SELECT * FROM enigma.jailtypes',
+        'prisoners': 'SELECT * FROM enigma.prisoners',
+        'prisorigin': 'SELECT * FROM enigma.prisorigin'
+    }
+
+    if table not in valid_exports:
+        return Response("Not a valid download", mimetype='text/plain'), 400
+
+    # Execute query
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute(valid_exports[table])
+
+        # Get column names
+        columns = [desc[0] for desc in cursor.description]
+
+        # Create CSV in memory
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # Write header
+        writer.writerow(columns)
+
+        # Write data rows
+        for row in cursor:
+            writer.writerow(row)
+
+        # Get CSV content
+        csv_content = output.getvalue()
+        output.close()
+
+    # Return CSV response
+    return Response(
+        csv_content,
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={table}.csv'}
+    )
 
 
 # FAQ pages
@@ -10990,34 +11195,229 @@ def hksolsmoves_lowercase():
 
 @bp.route('/hkpax.asp')
 def hkpax():
-    """HK passenger statistics (airport, border crossings)"""
+    """
+    HK Immigration Department passenger statistics
+    Port of dbpub/hkpax.asp
+
+    Query params:
+    - t: passenger type ID (0=all passengers, default=0)
+    - p: port ID (0=all ports, -1=all except airport, default=0)
+    - f: frequency (0=daily, 1=weekly Sun-Sat, 2=weekly Mon-Sun, 3=monthly, 4=annual, default=4)
+
+    Tables used: enigma.hkpx, enigma.hkpxtypes, enigma.hkports
+    """
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    from flask import render_template, request
 
-    y = get_int('y', date.today().year)
+    t = get_int('t', 0)  # passenger type
+    p = get_int('p', 0)  # port
+    f = get_int('f', 4)  # frequency (default to annual)
 
-    # TODO: Query passenger statistics from transport tables
-    pax_data = []
+    # Validate frequency parameter
+    if f < 0 or f > 4:
+        f = 4
+
+    # Get passenger type and port names for display
+    pxtypes = execute_query("""
+        SELECT 0 as id, 'All passengers' as name
+        UNION
+        SELECT id, name FROM enigma.hkpxtypes ORDER BY id
+    """)
+
+    ports = execute_query("""
+        SELECT 0 as id, 'All ports' as name
+        UNION
+        SELECT -1 as id, 'All ports except airport' as name
+        UNION
+        SELECT id, name FROM enigma.hkports ORDER BY name
+    """)
+
+    # Get selected names
+    px_name = next((row['name'] for row in pxtypes if row['id'] == t), 'All passengers')
+    port_name = next((row['name'] for row in ports if row['id'] == p), 'All ports')
+
+    # Build WHERE clause
+    where_parts = []
+    if t > 0:
+        where_parts.append(f"pxtype = {t}")
+    if p > 0:
+        where_parts.append(f"port = {p}")
+    elif p == -1:
+        where_parts.append("port <> 1")
+
+    where_clause = " AND " + " AND ".join(where_parts) if where_parts else ""
+
+    # Determine grouping based on frequency
+    freq_groups = {
+        0: 'd',  # daily
+        1: 'TO_CHAR(d, \'IYYY-IW\')',  # weekly Sun-Sat (ISO week)
+        2: 'TO_CHAR(d - INTERVAL \'1 day\', \'IYYY-IW\')',  # weekly Mon-Sun
+        3: 'EXTRACT(YEAR FROM d), EXTRACT(MONTH FROM d)',  # monthly
+        4: 'EXTRACT(YEAR FROM d)'  # annual
+    }
+    fgroup = freq_groups.get(f, freq_groups[4])
+
+    # Query passenger data with aggregation
+    pax_data = execute_query(f"""
+        SELECT
+            MIN(d) as d,
+            SUM(arrivals) as arrivals,
+            -SUM(departures) as departures,
+            SUM(arrivals - departures) as net
+        FROM enigma.hkpx
+        WHERE 1=1 {where_clause}
+        GROUP BY {fgroup}
+        ORDER BY MIN(d)
+    """)
+
+    # Format data for Highcharts (convert to list for JSON serialization)
+    chart_data = [[str(row['d']), int(row['arrivals']), int(row['departures']), int(row['net'])] for row in pax_data]
 
     return render_template('dbpub/hkpax.html',
-                         y=y,
-                         pax_data=pax_data)
+                         t=t,
+                         p=p,
+                         f=f,
+                         px_name=px_name,
+                         port_name=port_name,
+                         pxtypes=pxtypes,
+                         ports=ports,
+                         pax_data=pax_data,
+                         chart_data=chart_data)
 
 
 @bp.route('/jail.asp')
 def jail():
-    """Directors who went to jail"""
-    from webbsite.db import execute_query
-    from flask import render_template
+    """
+    Hong Kong Correctional Services Department custody statistics
+    Port of dbpub/jail.asp
 
-    # TODO: Query enigma.directorships where person has jail-related enigma.events
-    # Need to identify which eventTypeIDs correspond to jail sentences
-    jail_data = []
+    Query params:
+    - j: jail/institution ID (0=all institutions, default=0)
+
+    Tables used: enigma.prisoners, enigma.jails, enigma.jailtypes, enigma.prisorigin
+    """
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    j = get_int('j', 0)  # jail ID
+
+    # Get jail/institution details
+    jail_name = "all institutions"
+    type_txt = "all institutions"
+    jail_type = 0
+
+    if j > 0:
+        jail_info = execute_query("""
+            SELECT j.name, j.type, jt.txt
+            FROM enigma.jails j
+            JOIN enigma.jailtypes jt ON j.type = jt.id
+            WHERE j.id = %s
+        """, (j,))
+        if jail_info:
+            jail_name = jail_info[0]['name']
+            jail_type = jail_info[0]['type']
+            type_txt = jail_info[0]['txt'] + "s"
+
+    # Build WHERE clause for prisoner queries
+    where_clause = f" AND jail = {j}" if j > 0 else ""
+
+    # Query 1: Prisoners by type (convicted, remand, detainee) for selected institution(s)
+    prisoners_by_type = execute_query(f"""
+        SELECT
+            d,
+            SUM(convict) as c,
+            SUM(remand) as r,
+            SUM(detain) as dt,
+            SUM(convict + remand + detain) as t,
+            CASE WHEN SUM(convict + remand + detain) > 0
+                 THEN ROUND(100.0 * SUM(convict) / SUM(convict + remand + detain), 2)
+                 ELSE 0 END as c_pct,
+            CASE WHEN SUM(convict + remand + detain) > 0
+                 THEN ROUND(100.0 * SUM(remand) / SUM(convict + remand + detain), 2)
+                 ELSE 0 END as r_pct,
+            CASE WHEN SUM(convict + remand + detain) > 0
+                 THEN ROUND(100.0 * SUM(detain) / SUM(convict + remand + detain), 2)
+                 ELSE 0 END as dt_pct
+        FROM enigma.prisoners
+        WHERE 1=1 {where_clause}
+        GROUP BY d
+        ORDER BY d
+    """)
+
+    # Query 2: Breakdown by origin (for all institutions) OR by type (for specific jail type)
+    if j == 0:
+        # Breakdown by origin for all institutions
+        prisoners_breakdown = execute_query("""
+            SELECT
+                d,
+                local as val1,
+                mtm as val2,
+                nonlocal as val3,
+                local + mtm + nonlocal as t,
+                CASE WHEN local + mtm + nonlocal > 0
+                     THEN ROUND(100.0 * local / (local + mtm + nonlocal), 2)
+                     ELSE 0 END as val1_pct,
+                CASE WHEN local + mtm + nonlocal > 0
+                     THEN ROUND(100.0 * mtm / (local + mtm + nonlocal), 2)
+                     ELSE 0 END as val2_pct,
+                CASE WHEN local + mtm + nonlocal > 0
+                     THEN ROUND(100.0 * nonlocal / (local + mtm + nonlocal), 2)
+                     ELSE 0 END as val3_pct
+            FROM enigma.prisorigin
+            GROUP BY d, local, mtm, nonlocal
+            ORDER BY d
+        """)
+    else:
+        # Breakdown by type for this jail type
+        prisoners_breakdown = execute_query(f"""
+            SELECT
+                d,
+                SUM(convict) as val1,
+                SUM(remand) as val2,
+                SUM(detain) as val3,
+                SUM(convict + remand + detain) as t,
+                CASE WHEN SUM(convict + remand + detain) > 0
+                     THEN ROUND(100.0 * SUM(convict) / SUM(convict + remand + detain), 2)
+                     ELSE 0 END as val1_pct,
+                CASE WHEN SUM(convict + remand + detain) > 0
+                     THEN ROUND(100.0 * SUM(remand) / SUM(convict + remand + detain), 2)
+                     ELSE 0 END as val2_pct,
+                CASE WHEN SUM(convict + remand + detain) > 0
+                     THEN ROUND(100.0 * SUM(detain) / SUM(convict + remand + detain), 2)
+                     ELSE 0 END as val3_pct
+            FROM enigma.prisoners p
+            JOIN enigma.jails j ON p.jail = j.id
+            WHERE j.type = {jail_type}
+            GROUP BY d
+            ORDER BY d
+        """)
+
+    # Get list of jails for dropdown
+    jails_list = execute_query("""
+        SELECT 0 as id, 'All institutions' as name
+        UNION
+        SELECT id, name FROM enigma.jails ORDER BY id <> 0, name
+    """)
+
+    # Format data for Highcharts
+    chart1_data = [[str(row['d']), int(row['c']), int(row['r']), int(row['dt'])] for row in prisoners_by_type]
+    chart2_data = [[str(row['d']), float(row['c_pct']), float(row['r_pct']), float(row['dt_pct'])] for row in prisoners_by_type]
+    chart3_data = [[str(row['d']), int(row['val1']), int(row['val2']), int(row['val3'])] for row in prisoners_breakdown] if prisoners_breakdown else []
+    chart4_data = [[str(row['d']), float(row['val1_pct']), float(row['val2_pct']), float(row['val3_pct'])] for row in prisoners_breakdown] if prisoners_breakdown else []
 
     return render_template('dbpub/jail.html',
-                         jail_data=jail_data)
+                         j=j,
+                         jail_name=jail_name,
+                         type_txt=type_txt,
+                         jails_list=jails_list,
+                         prisoners_by_type=prisoners_by_type,
+                         prisoners_breakdown=prisoners_breakdown,
+                         chart1_data=chart1_data,
+                         chart2_data=chart2_data,
+                         chart3_data=chart3_data,
+                         chart4_data=chart4_data)
 
 
 @bp.route('/tuntraff.asp')
