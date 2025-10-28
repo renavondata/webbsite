@@ -49,13 +49,16 @@
 
     <h3>Participant: {{ part_name }}</h3>
 
-    {% if holdings_data|length == 0 %}
-        <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
-        <p><i>This page will display a Highstock chart showing holdings history and price over time.</i></p>
+    {% if part_id == 0 %}
+        <p><b>No participant specified</b></p>
+    {% elif issue_id == 0 %}
+        <p><b>No stock specified</b></p>
+    {% elif holdings_data|length == 0 %}
+        <p><b>No holdings data available for this participant in this stock.</b></p>
     {% else %}
         {# Chart container (shown if s == 0 or s == 1) #}
         {% if s != 2 %}
-            <div id="chart1" style="height: 500px; margin: 20px 0;"></div>
+            <div id="chart1" style="height: 600px; margin: 20px 0; border: 1px solid black; background-color: #FFFFFF;"></div>
         {% endif %}
 
         {# Table (shown if s == 0 or s == 2) #}
@@ -73,13 +76,13 @@
                 </tr>
                 {% for row in table_data %}
                 <tr>
-                    <td>{{ row.atDate.strftime('%Y-%m-%d') if row.atDate else '' }}</td>
+                    <td><a href="{{ url_for('ccass.chldchg', i=issue_id, d=row.atDate) }}">{{ row.atDate.strftime('%Y-%m-%d') if row.atDate else '' }}</a></td>
                     <td>{{ row.tradeDate.strftime('%Y-%m-%d') if row.tradeDate else '' }}</td>
-                    <td>{{ "{:.3f}".format(row.closing) if row.closing else '' }}</td>
-                    <td>{{ "{:,.0f}".format(row.holding) if row.holding else '0' }}</td>
-                    <td>{{ "{:+,.0f}".format(row.change) if row.change else '' }}</td>
-                    <td>{{ "{:.2f}".format(row.pct_outstanding * 100) if row.pct_outstanding else '' }}</td>
-                    <td>{{ "{:,.0f}".format(row.value) if row.value else '' }}</td>
+                    <td class="num">{{ "{:.3f}".format(row.closing) if row.closing else '' }}</td>
+                    <td class="num">{{ "{:,.0f}".format(row.holding) if row.holding else '0' }}</td>
+                    <td class="num">{{ "{:+,.0f}".format(row.change) if row.change is not none else '' }}</td>
+                    <td class="num">{{ "{:.2f}%".format(row.pct_outstanding * 100) if row.pct_outstanding else '' }}</td>
+                    <td class="num">{{ "{:,.0f}".format(row.value) if row.value else '' }}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -97,7 +100,9 @@
 
             Highcharts.stockChart('chart1', {
                 chart: {
-                    zoomType: 'x'
+                    backgroundColor: '#FFFFFF',
+                    borderWidth: 1,
+                    borderColor: 'black'
                 },
                 rangeSelector: {
                     selected: 5,
@@ -121,57 +126,104 @@
                         count: 1,
                         text: '1y'
                     }, {
+                        type: 'year',
+                        count: 3,
+                        text: '3y'
+                    }, {
+                        type: 'year',
+                        count: 5,
+                        text: '5y'
+                    }, {
+                        type: 'year',
+                        count: 10,
+                        text: '10y'
+                    }, {
                         type: 'all',
                         text: 'All'
-                    }]
+                    }],
+                    inputDateFormat: '%e %b %Y'
                 },
                 title: {
-                    text: '{{ stock_name }} - {{ part_name }}'
+                    text: '<b>{{ stock_name|safe }}</b>',
+                    margin: 10,
+                    style: {
+                        fontSize: '1em'
+                    }
+                },
+                subtitle: {
+                    text: 'Participant: {{ part_name|safe }}',
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '1em'
+                    }
                 },
                 xAxis: {
                     type: 'datetime'
                 },
                 yAxis: [{
                     title: {
-                        text: 'Holdings (shares)'
+                        text: 'Price'
                     },
+                    height: '64%',
+                    gridLineColor: 'gray',
+                    minorTickInterval: 'auto',
+                    lineWidth: 1,
+                    min: null,
+                    opposite: false,
+                    labels: {
+                        format: '{value:.3f}'
+                    }
+                }, {
+                    title: {
+                        text: 'Holding'
+                    },
+                    top: '65%',
+                    height: '35%',
+                    offset: 0,
+                    lineWidth: 1,
                     opposite: false,
                     labels: {
                         format: '{value:,.0f}'
                     }
-                }, {
-                    title: {
-                        text: 'Price (HK$)'
-                    },
-                    opposite: true,
-                    labels: {
-                        format: '{value:.2f}'
-                    }
                 }],
                 tooltip: {
-                    shared: true,
-                    valueDecimals: 2
+                    backgroundColor: 'yellow',
+                    xDateFormat: '%a, %e %b, %Y',
+                    headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>',
+                    shared: true
                 },
                 series: [{
-                    name: 'Holdings',
-                    data: {{ holdings_data|tojson }},
-                    yAxis: 0,
-                    type: 'area',
-                    color: '#4682B4',
-                    fillOpacity: 0.3
-                }, {
-                    name: 'Price',
-                    data: {{ price_data|tojson }},
-                    yAxis: 1,
                     type: 'line',
-                    color: '#FF6347'
+                    name: 'Price',
+                    id: 'adjClose',
+                    data: {{ price_data|tojson }},
+                    yAxis: 0,
+                    dataGrouping: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.3f}</b><br>"
+                    }
+                }, {
+                    type: 'column',
+                    name: 'Holding',
+                    data: {{ holdings_data|tojson }},
+                    color: 'grey',
+                    yAxis: 1,
+                    dataGrouping: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>"
+                    }
                 }],
-                exporting: {
+                credits: {
                     enabled: true,
-                    buttons: {
-                        contextButton: {
-                            menuItems: ['downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS']
-                        }
+                    position: {
+                        align: 'left',
+                        x: 5,
+                        verticalAlign: 'bottom',
+                        y: -5
                     }
                 }
             });
