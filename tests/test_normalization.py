@@ -3,6 +3,7 @@
 
 import re
 
+
 def normalize_html(html):
     """Normalize HTML for comparison"""
     # Remove HTML comments
@@ -24,11 +25,12 @@ def normalize_html(html):
 
     return "\n".join(normalized_lines)
 
+
 # Load files
-with open('outputs/searchorgs_-_company_search_case_1_flask.html', 'r') as f:
+with open("outputs/searchorgs_-_company_search_case_1_flask.html", "r") as f:
     flask_html = f.read()
 
-with open('outputs/searchorgs_-_company_search_case_1_asp.html', 'r') as f:
+with open("outputs/searchorgs_-_company_search_case_1_asp.html", "r") as f:
     asp_html = f.read()
 
 # Normalize

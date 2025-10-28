@@ -1,6 +1,7 @@
 """
 Securities and Futures Commission (SFC) licensee data
 """
+
 from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date, timedelta
 import calendar
@@ -9,9 +10,10 @@ import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
-bp = Blueprint('dbpub_sfc', __name__)
+bp = Blueprint("dbpub_sfc", __name__)
 
-@bp.route('/SFClicensees.asp')
+
+@bp.route("/SFClicensees.asp")
 def sfc_licensees():
     """
     SFC licensed persons at a firm - port of SFClicensees.asp
@@ -27,21 +29,25 @@ def sfc_licensees():
     Tables used: enigma.directorships (for all activities) or enigma.licrec (for specific activity)
     """
     from flask import current_app
-    person_id = get_int('p', 0)
-    d = request.args.get('d', str(date.today()))
-    act = get_int('a', 0)
-    hide = get_str('hide', 'Y')
-    sort_param = request.args.get('sort', 'namup')
+
+    person_id = get_int("p", 0)
+    d = request.args.get("d", str(date.today()))
+    act = get_int("a", 0)
+    hide = get_str("hide", "Y")
+    sort_param = request.args.get("sort", "namup")
 
     # Get organization name
     org_name = "No organisation was specified"
     if person_id:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT name1 FROM enigma.organisations WHERE personID = %s
-            """, (person_id,))
+            """,
+                (person_id,),
+            )
             if result:
-                org_name = result[0]['name1']
+                org_name = result[0]["name1"]
         except Exception as ex:
             current_app.logger.error(f"Error getting org name: {ex}")
 
@@ -56,24 +62,24 @@ def sfc_licensees():
     # Build hide filter
     hide_str = f" AND (({appt_var} IS NULL) OR ({appt_var} <= %s))"
     params = [person_id, d]
-    if hide == 'Y':
+    if hide == "Y":
         hide_str += f" AND (({res_var} IS NULL) OR ({res_var} > %s))"
         params.append(d)
 
     # Build sort order
     sort_map = {
-        'namup': f"name,{appt_var}",
-        'namdn': f"name DESC,{appt_var}",
-        'appup': f"{appt_var},name",
-        'appdn': f"{appt_var} DESC,name",
-        'resup': f"{res_var},name",
-        'resdn': f"{res_var} DESC,name",
-        'rolup': f"role,name,{appt_var}",
-        'roldn': f"role DESC,name,{appt_var}",
-        'agedn': f"YOB,name,{appt_var}",
-        'ageup': f"YOB DESC,name,{appt_var}",
-        'sexup': f"sex,name,{appt_var}",
-        'sexdn': f"sex DESC,name,{appt_var}"
+        "namup": f"name,{appt_var}",
+        "namdn": f"name DESC,{appt_var}",
+        "appup": f"{appt_var},name",
+        "appdn": f"{appt_var} DESC,name",
+        "resup": f"{res_var},name",
+        "resdn": f"{res_var} DESC,name",
+        "rolup": f"role,name,{appt_var}",
+        "roldn": f"role DESC,name,{appt_var}",
+        "agedn": f"YOB,name,{appt_var}",
+        "ageup": f"YOB DESC,name,{appt_var}",
+        "sexup": f"sex,name,{appt_var}",
+        "sexdn": f"sex DESC,name,{appt_var}",
     }
     ob = sort_map.get(sort_param, f"name,{appt_var}")
 
@@ -114,7 +120,7 @@ def sfc_licensees():
 
         # Add role text
         for lic in licensees:
-            lic['role_text'] = 'RO' if lic['role'] == 1 else 'Rep'
+            lic["role_text"] = "RO" if lic["role"] == 1 else "Rep"
 
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC licensees: {ex}")
@@ -123,23 +129,31 @@ def sfc_licensees():
     act_name = "All activities"
     if act > 0:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT actName FROM enigma.activity WHERE ID = %s
-            """, (act,))
+            """,
+                (act,),
+            )
             if result:
-                act_name = result[0]['actname']
+                act_name = result[0]["actname"]
         except:
             pass
 
-    return render_template('dbpub/sfc_licensees.html',
-                         person_id=person_id, org_name=org_name,
-                         licensees=licensees, d=d, act=act, act_name=act_name,
-                         hide=hide, sort=sort_param)
+    return render_template(
+        "dbpub/sfc_licensees.html",
+        person_id=person_id,
+        org_name=org_name,
+        licensees=licensees,
+        d=d,
+        act=act,
+        act_name=act_name,
+        hide=hide,
+        sort=sort_param,
+    )
 
 
-
-
-@bp.route('/SFChistall.asp')
+@bp.route("/SFChistall.asp")
 def sfc_hist_all():
     """
     SFC licensing history for all firms - port of SFChistall.asp
@@ -151,39 +165,45 @@ def sfc_hist_all():
     Tables used: enigma.licrecsum
     """
     from flask import current_app
-    act = get_int('a', 0)
+
+    act = get_int("a", 0)
 
     # Get activity name
     act_name = "All activities"
     if act > 0:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT actName FROM enigma.activity WHERE ID = %s
-            """, (act,))
+            """,
+                (act,),
+            )
             if result:
-                act_name = result[0]['actname']
+                act_name = result[0]["actname"]
         except:
             pass
 
     # Query historic licensee counts
     history = []
     try:
-        history = execute_query("""
+        history = execute_query(
+            """
             SELECT d, RO, total - RO AS reps, total, (total - RO) / NULLIF(total, 0) AS rep_ratio
             FROM enigma.licrecsum
             WHERE actType = %s
             ORDER BY d DESC
-        """, (act,))
+        """,
+            (act,),
+        )
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC hist all: {ex}")
 
-    return render_template('dbpub/sfc_hist_all.html',
-                         act=act, act_name=act_name, history=history)
+    return render_template(
+        "dbpub/sfc_hist_all.html", act=act, act_name=act_name, history=history
+    )
 
 
-
-
-@bp.route('/SFChistfirm.asp')
+@bp.route("/SFChistfirm.asp")
 def sfc_hist_firm():
     """
     SFC licensing history for a specific firm - port of SFChistfirm.asp
@@ -200,21 +220,24 @@ def sfc_hist_firm():
     from datetime import date as dt_date
     from calendar import monthrange
 
-    person_id = get_int('p', 0)
-    act = get_int('a', 0)
-    freq = get_str('f', 'y')
-    if freq not in ['m', 'y']:
-        freq = 'y'
+    person_id = get_int("p", 0)
+    act = get_int("a", 0)
+    freq = get_str("f", "y")
+    if freq not in ["m", "y"]:
+        freq = "y"
 
     # Get organization name
     org_name = "FIRM NOT FOUND"
     if person_id:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT name1 FROM enigma.organisations WHERE personID = %s
-            """, (person_id,))
+            """,
+                (person_id,),
+            )
             if result:
-                org_name = result[0]['name1']
+                org_name = result[0]["name1"]
         except:
             pass
 
@@ -222,11 +245,14 @@ def sfc_hist_firm():
     act_name = "All activities"
     if act > 0:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT actName FROM enigma.activity WHERE ID = %s
-            """, (act,))
+            """,
+                (act,),
+            )
             if result:
-                act_name = result[0]['actname']
+                act_name = result[0]["actname"]
         except:
             pass
 
@@ -236,7 +262,7 @@ def sfc_hist_firm():
         today = dt_date.today()
         dates = []
 
-        if freq == 'm':
+        if freq == "m":
             # Monthly snapshots
             year = today.year
             month = today.month
@@ -266,7 +292,8 @@ def sfc_hist_firm():
         for snap_date in dates:
             try:
                 if act > 0:
-                    result = execute_query("""
+                    result = execute_query(
+                        """
                         SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
                         FROM (SELECT DISTINCT staffID, role
                               FROM enigma.licrec
@@ -275,9 +302,12 @@ def sfc_hist_firm():
                                 AND (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
                         ) t
-                    """, (person_id, act, snap_date, snap_date))
+                    """,
+                        (person_id, act, snap_date, snap_date),
+                    )
                 else:
-                    result = execute_query("""
+                    result = execute_query(
+                        """
                         SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
                         FROM (SELECT DISTINCT staffID, role
                               FROM enigma.licrec
@@ -285,34 +315,44 @@ def sfc_hist_firm():
                                 AND (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
                         ) t
-                    """, (person_id, snap_date, snap_date))
+                    """,
+                        (person_id, snap_date, snap_date),
+                    )
 
                 if result:
-                    total = result[0]['total'] or 0
-                    ros = result[0]['ros'] or 0
+                    total = result[0]["total"] or 0
+                    ros = result[0]["ros"] or 0
                     reps = total - ros
                     rep_ratio = reps / total if total > 0 else 0
 
                     # Only include if not leading zeros
                     if total > 0 or not history:
-                        history.append({
-                            'd': snap_date,
-                            'ros': ros,
-                            'reps': reps,
-                            'total': total,
-                            'rep_ratio': rep_ratio
-                        })
+                        history.append(
+                            {
+                                "d": snap_date,
+                                "ros": ros,
+                                "reps": reps,
+                                "total": total,
+                                "rep_ratio": rep_ratio,
+                            }
+                        )
             except Exception as ex:
-                current_app.logger.error(f"Error querying SFC hist firm for {snap_date}: {ex}")
+                current_app.logger.error(
+                    f"Error querying SFC hist firm for {snap_date}: {ex}"
+                )
 
-    return render_template('dbpub/sfc_hist_firm.html',
-                         person_id=person_id, org_name=org_name,
-                         act=act, act_name=act_name, freq=freq, history=history)
+    return render_template(
+        "dbpub/sfc_hist_firm.html",
+        person_id=person_id,
+        org_name=org_name,
+        act=act,
+        act_name=act_name,
+        freq=freq,
+        history=history,
+    )
 
 
-
-
-@bp.route('/SFCchanges.asp')
+@bp.route("/SFCchanges.asp")
 def sfc_changes():
     """
     Recent SFC licensing changes - port of SFCchanges.asp
@@ -327,8 +367,8 @@ def sfc_changes():
     from flask import current_app
     from datetime import timedelta
 
-    d = request.args.get('d', str(date.today()))
-    sort_param = request.args.get('sort', 'orgup')
+    d = request.args.get("d", str(date.today()))
+    sort_param = request.args.get("sort", "orgup")
 
     # Calculate start date (14 days before end date)
     try:
@@ -340,19 +380,20 @@ def sfc_changes():
 
     # Build sort order
     sort_map = {
-        'pplup': "pplName,orgName,apptDate",
-        'ppldn': "pplName DESC,orgName,apptDate",
-        'orgup': "orgName,pplName,apptDate",
-        'orgdn': "orgName DESC,pplName,apptDate",
-        'datup': "relDate,orgName,pplName",
-        'datdn': "relDate DESC,orgName,pplName"
+        "pplup": "pplName,orgName,apptDate",
+        "ppldn": "pplName DESC,orgName,apptDate",
+        "orgup": "orgName,pplName,apptDate",
+        "orgdn": "orgName DESC,pplName,apptDate",
+        "datup": "relDate,orgName,pplName",
+        "datdn": "relDate DESC,orgName,pplName",
     }
     ob = sort_map.get(sort_param, "orgName,pplName,apptDate")
 
     # Query changes
     changes = []
     try:
-        changes = execute_query(f"""
+        changes = execute_query(
+            f"""
             SELECT o.name1 AS orgName,
                    CONCAT(COALESCE(p.name1,''),
                           CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
@@ -368,23 +409,27 @@ def sfc_changes():
               AND ((d.apptDate >= %s AND d.apptDate <= %s)
                    OR (d.resDate >= %s AND d.resDate <= %s))
             ORDER BY {ob}
-        """, (start_date, start_date, start_date, d, start_date, d))
+        """,
+            (start_date, start_date, start_date, d, start_date, d),
+        )
 
         # Add role text
         for change in changes:
-            change['posText'] = 'Rep' if change['positionid'] == 394 else 'RO'
+            change["posText"] = "Rep" if change["positionid"] == 394 else "RO"
 
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC changes: {ex}")
 
-    return render_template('dbpub/sfc_changes.html',
-                         changes=changes, d=d, start_date=str(start_date),
-                         sort=sort_param)
+    return render_template(
+        "dbpub/sfc_changes.html",
+        changes=changes,
+        d=d,
+        start_date=str(start_date),
+        sort=sort_param,
+    )
 
 
-
-
-@bp.route('/SFClicount.asp')
+@bp.route("/SFClicount.asp")
 def sfc_licount():
     """
     SFC licensee count league table - port of SFClicount.asp
@@ -402,7 +447,7 @@ def sfc_licount():
     from datetime import timedelta
 
     # Get dates
-    da = request.args.get('da', str(date.today()))
+    da = request.args.get("da", str(date.today()))
     try:
         date_a = date.fromisoformat(da)
         default_db = date_a - timedelta(days=365)
@@ -410,7 +455,7 @@ def sfc_licount():
         date_a = date.today()
         default_db = date_a - timedelta(days=365)
 
-    db = request.args.get('db', str(max(date(2003, 4, 1), default_db)))
+    db = request.args.get("db", str(max(date(2003, 4, 1), default_db)))
 
     # Ensure db <= da
     try:
@@ -420,37 +465,54 @@ def sfc_licount():
     except:
         pass
 
-    act = get_int('a', 0)
-    sort_param = request.args.get('sort', 'acntdn')
+    act = get_int("a", 0)
+    sort_param = request.args.get("sort", "acntdn")
 
     # Get activity name
     act_name = "All activities"
     if act > 0:
         try:
-            result = execute_query("""
+            result = execute_query(
+                """
                 SELECT actName FROM enigma.activity WHERE ID = %s
-            """, (act,))
+            """,
+                (act,),
+            )
             if result:
-                act_name = result[0]['actname']
+                act_name = result[0]["actname"]
         except:
             pass
 
     # Build sort order
     sort_map = {
-        'namup': "name", 'namdn': "name DESC",
-        'arepup': "arep,name", 'arepdn': "arep DESC,name",
-        'aroup': "aRO,name", 'arodn': "aRO DESC,name",
-        'acntup': "acnt,name", 'acntdn': "acnt DESC,name",
-        'brepup': "brep,name", 'brepdn': "brep DESC,name",
-        'broup': "bRO,name", 'brodn': "bRO DESC,name",
-        'bcntup': "bcnt,name", 'bcntdn': "bcnt DESC,name",
-        'crepup': "crep,name", 'crepdn': "crep DESC,name",
-        'croup': "cRO,name", 'crodn': "cRO DESC,name",
-        'ccntup': "ccnt,name", 'ccntdn': "ccnt DESC,name",
-        'aratup': "arat,name", 'aratdn': "arat DESC,name",
-        'bratup': "brat,name", 'bratdn': "brat DESC,name",
-        'sddn': "startDate DESC,name", 'sdup': "startDate,name",
-        'eddn': "endDate DESC,name", 'edup': "endDate,name"
+        "namup": "name",
+        "namdn": "name DESC",
+        "arepup": "arep,name",
+        "arepdn": "arep DESC,name",
+        "aroup": "aRO,name",
+        "arodn": "aRO DESC,name",
+        "acntup": "acnt,name",
+        "acntdn": "acnt DESC,name",
+        "brepup": "brep,name",
+        "brepdn": "brep DESC,name",
+        "broup": "bRO,name",
+        "brodn": "bRO DESC,name",
+        "bcntup": "bcnt,name",
+        "bcntdn": "bcnt DESC,name",
+        "crepup": "crep,name",
+        "crepdn": "crep DESC,name",
+        "croup": "cRO,name",
+        "crodn": "cRO DESC,name",
+        "ccntup": "ccnt,name",
+        "ccntdn": "ccnt DESC,name",
+        "aratup": "arat,name",
+        "aratdn": "arat DESC,name",
+        "bratup": "brat,name",
+        "bratdn": "brat DESC,name",
+        "sddn": "startDate DESC,name",
+        "sdup": "startDate,name",
+        "eddn": "endDate DESC,name",
+        "edup": "endDate,name",
     }
     ob = sort_map.get(sort_param, "acnt DESC,name")
 
@@ -546,15 +608,21 @@ def sfc_licount():
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC licount: {ex}")
 
-    return render_template('dbpub/sfc_licount.html',
-                         stats=stats, da=da, db=db, act=act, act_name=act_name,
-                         sort=sort_param)
+    return render_template(
+        "dbpub/sfc_licount.html",
+        stats=stats,
+        da=da,
+        db=db,
+        act=act,
+        act_name=act_name,
+        sort=sort_param,
+    )
 
 
 # Buybacks routes
 
 
-@bp.route('/SFColicrec.asp')
+@bp.route("/SFColicrec.asp")
 def sfcolicrec():
     """
     SFC license records for an organization - Port of dbpub/sfcolicrec.asp
@@ -567,46 +635,50 @@ def sfcolicrec():
 
     Tables: enigma.olicrec, enigma.activity, enigma.organisations
     """
-    person_id = get_int('p', 0)
-    sort_param = request.args.get('sort', 'actup')
-    hide = request.args.get('h', 'N')
+    person_id = get_int("p", 0)
+    sort_param = request.args.get("sort", "actup")
+    hide = request.args.get("h", "N")
 
     if not person_id:
-        return render_template('error.html', message="Missing organization ID"), 400
+        return render_template("error.html", message="Missing organization ID"), 400
 
     # Get organization info
-    org_info = execute_query("""
+    org_info = execute_query(
+        """
         SELECT name1, SFCID, SFCri
         FROM enigma.organisations
         WHERE personID = %s
-    """, (person_id,))
+    """,
+        (person_id,),
+    )
 
     if not org_info:
-        return render_template('error.html', message="Organization not found"), 404
+        return render_template("error.html", message="Organization not found"), 404
 
-    org_name = org_info[0]['name1']
-    sfcid = org_info[0]['sfcid']
-    is_ri = org_info[0]['sfcri']
-    ptype = 'ri' if is_ri else 'corp'
+    org_name = org_info[0]["name1"]
+    sfcid = org_info[0]["sfcid"]
+    is_ri = org_info[0]["sfcri"]
+    ptype = "ri" if is_ri else "corp"
 
     # Determine sort order
     sort_map = {
-        'actup': 'actName, startDate',
-        'actdn': 'actName DESC, startDate',
-        'appup': 'startDate, endDate, actName',
-        'appdn': 'startDate DESC, endDate DESC, actName',
-        'resup': 'endDate, startDate, actName',
-        'resdn': 'endDate DESC, startDate DESC, actName',
+        "actup": "actName, startDate",
+        "actdn": "actName DESC, startDate",
+        "appup": "startDate, endDate, actName",
+        "appdn": "startDate DESC, endDate DESC, actName",
+        "resup": "endDate, startDate, actName",
+        "resdn": "endDate DESC, startDate DESC, actName",
     }
-    order_by = sort_map.get(sort_param, 'actName, startDate, endDate')
+    order_by = sort_map.get(sort_param, "actName, startDate, endDate")
 
     # Build WHERE clause for hiding history
     hide_clause = ""
-    if hide == 'Y':
+    if hide == "Y":
         hide_clause = " AND (endDate IS NULL OR endDate > CURRENT_DATE)"
 
     # Query license records
-    licenses = execute_query(f"""
+    licenses = execute_query(
+        f"""
         SELECT
             o.ri,
             o.actType,
@@ -617,17 +689,17 @@ def sfcolicrec():
         JOIN enigma.activity a ON o.actType = a.ID
         WHERE o.orgID = %s {hide_clause}
         ORDER BY {order_by}
-    """, (person_id,))
+    """,
+        (person_id,),
+    )
 
-    return render_template('dbpub/sfcolicrec.html',
-                         person_id=person_id,
-                         org_name=org_name,
-                         sfcid=sfcid,
-                         ptype=ptype,
-                         licenses=licenses,
-                         sort=sort_param,
-                         hide=hide)
-
-
-
-
+    return render_template(
+        "dbpub/sfcolicrec.html",
+        person_id=person_id,
+        org_name=org_name,
+        sfcid=sfcid,
+        ptype=ptype,
+        licenses=licenses,
+        sort=sort_param,
+        hide=hide,
+    )

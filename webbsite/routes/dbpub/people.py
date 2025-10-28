@@ -1,6 +1,7 @@
 """
 People and organization lookup
 """
+
 from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date, timedelta
 import calendar
@@ -9,9 +10,10 @@ import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
-bp = Blueprint('dbpub_people', __name__)
+bp = Blueprint("dbpub_people", __name__)
 
-@bp.route('/natperson.asp')
+
+@bp.route("/natperson.asp")
 def natperson():
     """
     Port of dbpub/natperson.asp
@@ -26,16 +28,18 @@ def natperson():
     Tables used: enigma.people, enigma.alias, enigma.lsppl, enigma.nationality,
                  enigma.ukchnats, enigma.domiciles, enigma.relatives, enigma.relationships
     """
-    person_id = request.args.get('p', type=int)
-    max_gen = request.args.get('m', type=int, default=0)
-    sort2 = request.args.get('s2', '')
-    expand = request.args.get('x', '')
+    person_id = request.args.get("p", type=int)
+    max_gen = request.args.get("m", type=int, default=0)
+    sort2 = request.args.get("s2", "")
+    expand = request.args.get("x", "")
 
     if not person_id:
-        return render_template('dbpub/natperson.html',
-                             person_name="No human was specified",
-                             person_id=0,
-                             error=True)
+        return render_template(
+            "dbpub/natperson.html",
+            person_name="No human was specified",
+            person_id=0,
+            error=True,
+        )
 
     # Get person details
     try:
@@ -55,44 +59,60 @@ def natperson():
             merged_rows = execute_query(merged_sql, (person_id,))
             if merged_rows:
                 from flask import redirect, url_for
-                return redirect(url_for('dbpub.natperson', p=merged_rows[0]['newp']))
 
-            return render_template('dbpub/natperson.html',
-                                 person_name="No such human",
-                                 person_id=0,
-                                 error=True)
+                return redirect(url_for("dbpub.natperson", p=merged_rows[0]["newp"]))
+
+            return render_template(
+                "dbpub/natperson.html",
+                person_name="No such human",
+                person_id=0,
+                error=True,
+            )
 
         person = dict(person_rows[0])
 
         # Format person name
-        person_name = person['name1']
-        if person['name2']:
-            person_name += ', ' + person['name2']
-        if person['cname']:
-            person_name += ' ' + person['cname']
+        person_name = person["name1"]
+        if person["name2"]:
+            person_name += ", " + person["name2"]
+        if person["cname"]:
+            person_name += " " + person["cname"]
 
         # Calculate ages
         from datetime import date as dt_date
+
         today = dt_date.today()
         current_year = today.year
 
         # Format date of birth with hyperlinks (matching ASP lines 219-224)
-        dob_str = _format_dob_with_links(person['yob'], person['mob'], person['dob'])
+        dob_str = _format_dob_with_links(person["yob"], person["mob"], person["dob"])
 
         # Format date of death
-        dod_str = _format_partial_date(person['yod'], person['mond'], person['dod'])
+        dod_str = _format_partial_date(person["yod"], person["mond"], person["dod"])
 
         # Calculate current age (if alive)
         age_str = None
-        if person['yob'] and not person['yod']:
-            age_str = _calculate_age(person['yob'], person['mob'], person['dob'],
-                                     today.year, today.month, today.day)
+        if person["yob"] and not person["yod"]:
+            age_str = _calculate_age(
+                person["yob"],
+                person["mob"],
+                person["dob"],
+                today.year,
+                today.month,
+                today.day,
+            )
 
         # Calculate age at death
         death_age_str = None
-        if person['yob'] and person['yod']:
-            death_age_str = _calculate_age(person['yob'], person['mob'], person['dob'],
-                                           person['yod'], person['mond'], person['dod'])
+        if person["yob"] and person["yod"]:
+            death_age_str = _calculate_age(
+                person["yob"],
+                person["mob"],
+                person["dob"],
+                person["yod"],
+                person["mond"],
+                person["dod"],
+            )
 
         # Get aliases
         aliases_sql = """
@@ -124,7 +144,9 @@ def natperson():
             GROUP BY d.friendly
             ORDER BY latest DESC
         """
-        nationalities = [dict(row) for row in execute_query(nationality_sql, (person_id,))]
+        nationalities = [
+            dict(row) for row in execute_query(nationality_sql, (person_id,))
+        ]
 
         # Get websites (matching websites.asp include)
         websites_sql = """
@@ -152,31 +174,42 @@ def natperson():
         holdings_list = [dict(row) for row in execute_query(holdings_sql, (person_id,))]
 
         # Check for humanBar navigation tabs (matching ASP humanBar function)
-        has_positions = bool(execute_query(
-            "SELECT 1 FROM enigma.directorships WHERE director = %s LIMIT 1",
-            (person_id,)
-        ))
-        has_pay = bool(execute_query(
-            "SELECT 1 FROM enigma.directorships d JOIN enigma.documents a ON d.company = a.orgid WHERE a.doctypeid = 0 AND d.director = %s LIMIT 1",
-            (person_id,)
-        ))
-        has_sdi = bool(execute_query(
-            "SELECT 1 FROM enigma.sdi WHERE dir = %s LIMIT 1",
-            (person_id,)
-        ))
+        has_positions = bool(
+            execute_query(
+                "SELECT 1 FROM enigma.directorships WHERE director = %s LIMIT 1",
+                (person_id,),
+            )
+        )
+        has_pay = bool(
+            execute_query(
+                "SELECT 1 FROM enigma.directorships d JOIN enigma.documents a ON d.company = a.orgid WHERE a.doctypeid = 0 AND d.director = %s LIMIT 1",
+                (person_id,),
+            )
+        )
+        has_sdi = bool(
+            execute_query(
+                "SELECT 1 FROM enigma.sdi WHERE dir = %s LIMIT 1", (person_id,)
+            )
+        )
 
         # Check for CCASS participant ID
-        ccass_part_sql = "SELECT partid FROM ccass.participants WHERE personid = %s LIMIT 1"
+        ccass_part_sql = (
+            "SELECT partid FROM ccass.participants WHERE personid = %s LIMIT 1"
+        )
         ccass_result = execute_query(ccass_part_sql, (person_id,))
-        ccass_part_id = ccass_result[0]['partid'] if ccass_result else None
+        ccass_part_id = ccass_result[0]["partid"] if ccass_result else None
 
-        has_stories = bool(execute_query(
-            "SELECT 1 FROM enigma.personstories WHERE personid = %s LIMIT 1",
-            (person_id,)
-        ))
+        has_stories = bool(
+            execute_query(
+                "SELECT 1 FROM enigma.personstories WHERE personid = %s LIMIT 1",
+                (person_id,),
+            )
+        )
 
         # Get relatives data
-        has_relatives_sql = "SELECT 1 FROM enigma.relatives WHERE rel1 = %s OR rel2 = %s LIMIT 1"
+        has_relatives_sql = (
+            "SELECT 1 FROM enigma.relatives WHERE rel1 = %s OR rel2 = %s LIMIT 1"
+        )
         has_relatives = bool(execute_query(has_relatives_sql, (person_id, person_id)))
 
         ascendants = []
@@ -194,7 +227,9 @@ def natperson():
             # Try to use webRels3 stored procedure, fallback to direct query
             try:
                 nonlineal_sql = "SELECT * FROM enigma.webRels3(%s)"
-                nonlineal_relatives = [dict(row) for row in execute_query(nonlineal_sql, (person_id,))]
+                nonlineal_relatives = [
+                    dict(row) for row in execute_query(nonlineal_sql, (person_id,))
+                ]
             except:
                 # Procedure doesn't exist, query directly
                 # This finds siblings and other relatives where relid != 0 (0 = parent/child)
@@ -215,53 +250,65 @@ def natperson():
                       AND r.relid != 0
                     ORDER BY p.yob, p.mob, p.name1, p.name2
                 """
-                nonlineal_rows = execute_query(nonlineal_sql, (person_id, person_id, person_id, person_id))
+                nonlineal_rows = execute_query(
+                    nonlineal_sql, (person_id, person_id, person_id, person_id)
+                )
                 nonlineal_relatives = []
                 for row in nonlineal_rows:
                     row_dict = dict(row)
-                    row_dict['born'] = _format_partial_date(row['yob'], row['mob'], row['dob'])
-                    row_dict['died'] = _format_partial_date(row['yod'], row['mond'], row['dod'])
+                    row_dict["born"] = _format_partial_date(
+                        row["yob"], row["mob"], row["dob"]
+                    )
+                    row_dict["died"] = _format_partial_date(
+                        row["yod"], row["mond"], row["dod"]
+                    )
                     nonlineal_relatives.append(row_dict)
 
     except Exception as ex:
-        current_app.logger.error(f"Error in natperson.asp: {type(ex).__name__}: {ex}", exc_info=True)
-        return render_template('dbpub/natperson.html',
-                             person_name="Error loading person",
-                             person_id=person_id,
-                             error=True)
+        current_app.logger.error(
+            f"Error in natperson.asp: {type(ex).__name__}: {ex}", exc_info=True
+        )
+        return render_template(
+            "dbpub/natperson.html",
+            person_name="Error loading person",
+            person_id=person_id,
+            error=True,
+        )
 
-    return render_template('dbpub/natperson.html',
-                         person_id=person_id,
-                         person_name=person_name,
-                         person=person,
-                         dob_str=dob_str,
-                         dod_str=dod_str,
-                         age_str=age_str,
-                         death_age_str=death_age_str,
-                         current_year=current_year,
-                         aliases=aliases,
-                         lsppl=lsppl,
-                         nationalities=nationalities,
-                         websites_list=websites_list,
-                         holdings_list=holdings_list,
-                         has_positions=has_positions,
-                         has_pay=has_pay,
-                         has_sdi=has_sdi,
-                         ccass_part_id=ccass_part_id,
-                         has_stories=has_stories,
-                         has_relatives=has_relatives,
-                         ascendants=ascendants,
-                         descendants=descendants,
-                         nonlineal_relatives=nonlineal_relatives,
-                         max_gen=max_gen,
-                         sort2=sort2,
-                         expand=expand)
+    return render_template(
+        "dbpub/natperson.html",
+        person_id=person_id,
+        person_name=person_name,
+        person=person,
+        dob_str=dob_str,
+        dod_str=dod_str,
+        age_str=age_str,
+        death_age_str=death_age_str,
+        current_year=current_year,
+        aliases=aliases,
+        lsppl=lsppl,
+        nationalities=nationalities,
+        websites_list=websites_list,
+        holdings_list=holdings_list,
+        has_positions=has_positions,
+        has_pay=has_pay,
+        has_sdi=has_sdi,
+        ccass_part_id=ccass_part_id,
+        has_stories=has_stories,
+        has_relatives=has_relatives,
+        ascendants=ascendants,
+        descendants=descendants,
+        nonlineal_relatives=nonlineal_relatives,
+        max_gen=max_gen,
+        sort2=sort2,
+        expand=expand,
+    )
 
 
 def _format_partial_date(year, month, day):
     """Format a partial date (year, month, day) to string"""
     if not year:
-        return ''
+        return ""
 
     parts = [str(year)]
     if month:
@@ -269,7 +316,7 @@ def _format_partial_date(year, month, day):
         if day:
             parts.append(f"{day:02d}")
 
-    return '-'.join(parts)
+    return "-".join(parts)
 
 
 def _format_dob_with_links(year, month, day):
@@ -279,7 +326,7 @@ def _format_dob_with_links(year, month, day):
     """
     from markupsafe import Markup
 
-    out_str = ''
+    out_str = ""
 
     # Build month-day part first (if available)
     if month and day:
@@ -289,9 +336,12 @@ def _format_dob_with_links(year, month, day):
 
     # Build year part (if available)
     if year:
-        out_str = f"<a href='bornyear.asp?y={year}&m={month if month else ''}'>{year}</a>" + out_str
+        out_str = (
+            f"<a href='bornyear.asp?y={year}&m={month if month else ''}'>{year}</a>"
+            + out_str
+        )
 
-    return Markup(out_str) if out_str else ''
+    return Markup(out_str) if out_str else ""
 
 
 def _calculate_age(yob, mob, dob, yod, mond, dod):
@@ -314,6 +364,7 @@ def _calculate_age(yob, mob, dob, yod, mond, dod):
                 diff_y -= 1
                 # Calculate days since last birthday
                 from datetime import date as dt_date
+
                 try:
                     last_bday = dt_date(yod - 1, mob, adjusted_dob)
                     death_date = dt_date(yod, mond, dod)
@@ -324,6 +375,7 @@ def _calculate_age(yob, mob, dob, yod, mond, dod):
             else:
                 # Calculate days since birthday this year
                 from datetime import date as dt_date
+
                 try:
                     this_bday = dt_date(yod, mob, adjusted_dob)
                     death_date = dt_date(yod, mond, dod)
@@ -381,18 +433,22 @@ def _build_ascendants_tree(person_id, max_gen, level=0, seen=None):
 
         for parent in parents:
             parent_dict = dict(parent)
-            parent_dict['born'] = _format_partial_date(parent['yob'], parent['mob'], parent['dob'])
-            parent_dict['died'] = _format_partial_date(parent['yod'], parent['mond'], parent['dod'])
-            parent_dict['level'] = level
-            parent_dict['already_seen'] = parent['parent_id'] in seen
+            parent_dict["born"] = _format_partial_date(
+                parent["yob"], parent["mob"], parent["dob"]
+            )
+            parent_dict["died"] = _format_partial_date(
+                parent["yod"], parent["mond"], parent["dod"]
+            )
+            parent_dict["level"] = level
+            parent_dict["already_seen"] = parent["parent_id"] in seen
 
             # Recursively get ancestors
-            if not parent_dict['already_seen']:
-                parent_dict['ancestors'] = _build_ascendants_tree(
-                    parent['parent_id'], max_gen, level + 1, seen
+            if not parent_dict["already_seen"]:
+                parent_dict["ancestors"] = _build_ascendants_tree(
+                    parent["parent_id"], max_gen, level + 1, seen
                 )
             else:
-                parent_dict['ancestors'] = []
+                parent_dict["ancestors"] = []
 
             result.append(parent_dict)
 
@@ -437,18 +493,22 @@ def _build_descendants_tree(person_id, max_gen, level=0, seen=None):
 
         for child in children:
             child_dict = dict(child)
-            child_dict['born'] = _format_partial_date(child['yob'], child['mob'], child['dob'])
-            child_dict['died'] = _format_partial_date(child['yod'], child['mond'], child['dod'])
-            child_dict['level'] = level
-            child_dict['already_seen'] = child['child_id'] in seen
+            child_dict["born"] = _format_partial_date(
+                child["yob"], child["mob"], child["dob"]
+            )
+            child_dict["died"] = _format_partial_date(
+                child["yod"], child["mond"], child["dod"]
+            )
+            child_dict["level"] = level
+            child_dict["already_seen"] = child["child_id"] in seen
 
             # Recursively get descendants
-            if not child_dict['already_seen']:
-                child_dict['descendants'] = _build_descendants_tree(
-                    child['child_id'], max_gen, level + 1, seen
+            if not child_dict["already_seen"]:
+                child_dict["descendants"] = _build_descendants_tree(
+                    child["child_id"], max_gen, level + 1, seen
                 )
             else:
-                child_dict['descendants'] = []
+                child_dict["descendants"] = []
 
             result.append(child_dict)
 
@@ -456,7 +516,3 @@ def _build_descendants_tree(person_id, max_gen, level=0, seen=None):
     except Exception as ex:
         current_app.logger.error(f"Error building descendants tree: {ex}")
         return []
-
-
-
-

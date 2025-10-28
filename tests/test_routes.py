@@ -31,6 +31,7 @@ init(autoreset=True)
 
 class ServerError(Exception):
     """Raised when a 500-level error is encountered"""
+
     pass
 
 
@@ -79,10 +80,14 @@ class RouteComparator:
             # Check for 500-level errors and stop immediately
             if 500 <= response.status_code < 600:
                 print(f"\n{Fore.RED}{'='*60}{Style.RESET_ALL}")
-                print(f"{Fore.RED}🛑 HTTP {response.status_code} SERVER ERROR{Style.RESET_ALL}")
+                print(
+                    f"{Fore.RED}🛑 HTTP {response.status_code} SERVER ERROR{Style.RESET_ALL}"
+                )
                 print(f"{Fore.RED}{'='*60}{Style.RESET_ALL}")
                 print(f"{Fore.YELLOW}URL: {url}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}Stopping test suite - fix this error before continuing{Style.RESET_ALL}\n")
+                print(
+                    f"{Fore.YELLOW}Stopping test suite - fix this error before continuing{Style.RESET_ALL}\n"
+                )
                 raise ServerError(f"HTTP {response.status_code} error from {url}")
 
             response.raise_for_status()
@@ -114,13 +119,13 @@ class RouteComparator:
         import re
 
         # Remove HTML comments
-        html = re.sub(r'<!--.*?-->', '', html, flags=re.DOTALL)
+        html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
 
         # Remove viewport meta tag (may differ between ASP and Flask)
-        html = re.sub(r'<meta name="viewport"[^>]*>', '', html)
+        html = re.sub(r'<meta name="viewport"[^>]*>', "", html)
 
         # Remove title tag (may differ or be missing)
-        html = re.sub(r'<title>.*?</title>', '', html, flags=re.DOTALL)
+        html = re.sub(r"<title>.*?</title>", "", html, flags=re.DOTALL)
 
         # Normalize CSS paths: ../templates/main.css or /static/css/main.css -> main.css
         html = re.sub(r'href="[^"]*/(main\.css)"', r'href="\1"', html)
@@ -129,10 +134,10 @@ class RouteComparator:
         html = re.sub(r'src="[^"]*/([^/"]+\.(png|jpg|gif|svg))"', r'src="\1"', html)
 
         # Normalize multiple whitespace to single space
-        html = re.sub(r'\s+', ' ', html)
+        html = re.sub(r"\s+", " ", html)
 
         # Normalize whitespace around tags
-        html = re.sub(r'>\s+<', '><', html)
+        html = re.sub(r">\s+<", "><", html)
 
         return html.strip()
 
@@ -162,29 +167,32 @@ class RouteComparator:
         # (database collation differences cause different row orders but same content)
         from bs4 import BeautifulSoup
 
-        flask_soup = BeautifulSoup(flask_html, 'html.parser')
-        asp_soup = BeautifulSoup(asp_html, 'html.parser')
+        flask_soup = BeautifulSoup(flask_html, "html.parser")
+        asp_soup = BeautifulSoup(asp_html, "html.parser")
 
         # Try txtable first, then numtable (for listed.asp, delisted.asp, etc.)
-        flask_tables = flask_soup.find_all('table', class_='txtable')
-        asp_tables = asp_soup.find_all('table', class_='txtable')
+        flask_tables = flask_soup.find_all("table", class_="txtable")
+        asp_tables = asp_soup.find_all("table", class_="txtable")
 
         if not flask_tables:
-            flask_tables = flask_soup.find_all('table', class_='numtable')
+            flask_tables = flask_soup.find_all("table", class_="numtable")
         if not asp_tables:
-            asp_tables = asp_soup.find_all('table', class_='numtable')
+            asp_tables = asp_soup.find_all("table", class_="numtable")
 
         if flask_tables and asp_tables:
             # Compare number of tables
             if len(flask_tables) != len(asp_tables):
-                return False, f"Different number of tables: Flask has {len(flask_tables)}, ASP has {len(asp_tables)}"
+                return (
+                    False,
+                    f"Different number of tables: Flask has {len(flask_tables)}, ASP has {len(asp_tables)}",
+                )
 
             # Compare row counts in each table with hybrid threshold
             # Allow differences if: abs_diff <= 2 OR percent_diff <= 1%
             # This handles database sync lag while still catching template bugs
             for i, (flask_table, asp_table) in enumerate(zip(flask_tables, asp_tables)):
-                flask_rows = flask_table.find_all('tr')
-                asp_rows = asp_table.find_all('tr')
+                flask_rows = flask_table.find_all("tr")
+                asp_rows = asp_table.find_all("tr")
 
                 flask_count = len(flask_rows)
                 asp_count = len(asp_rows)
@@ -192,14 +200,21 @@ class RouteComparator:
                 if flask_count != asp_count:
                     abs_diff = abs(flask_count - asp_count)
                     # Avoid division by zero
-                    percent_diff = (abs_diff / asp_count * 100) if asp_count > 0 else 100
+                    percent_diff = (
+                        (abs_diff / asp_count * 100) if asp_count > 0 else 100
+                    )
 
                     # Apply hybrid threshold: pass if within 2 rows OR within 1%
                     if abs_diff <= 2 or percent_diff <= 1.0:
                         # Lenient pass - log warning but don't fail
-                        print(f"  ⚠ Table {i+1}: Row count difference within threshold (Flask={flask_count}, ASP={asp_count}, diff={abs_diff}, {percent_diff:.1f}%)")
+                        print(
+                            f"  ⚠ Table {i+1}: Row count difference within threshold (Flask={flask_count}, ASP={asp_count}, diff={abs_diff}, {percent_diff:.1f}%)"
+                        )
                     else:
-                        return False, f"Table {i+1}: Different row counts - Flask has {flask_count} rows, ASP has {asp_count} rows (diff={abs_diff}, {percent_diff:.1f}%)"
+                        return (
+                            False,
+                            f"Table {i+1}: Different row counts - Flask has {flask_count} rows, ASP has {asp_count} rows (diff={abs_diff}, {percent_diff:.1f}%)",
+                        )
 
             # All tables have matching or acceptable row counts - consider it a pass
             return True, None
@@ -282,7 +297,9 @@ class RouteComparator:
                     diff_lines = diff.splitlines()
                     if len(diff_lines) > max_lines:
                         result["diff_preview"] = "\n".join(diff_lines[:max_lines])
-                        result["diff_preview"] += f"\n... ({len(diff_lines) - max_lines} more lines)"
+                        result[
+                            "diff_preview"
+                        ] += f"\n... ({len(diff_lines) - max_lines} more lines)"
                     else:
                         result["diff_preview"] = diff
 
@@ -303,7 +320,10 @@ class RouteComparator:
             f.write(html)
 
     def run_all_tests(
-        self, route_filter: Optional[str] = None, verbose: bool = False, save_outputs: bool = False
+        self,
+        route_filter: Optional[str] = None,
+        verbose: bool = False,
+        save_outputs: bool = False,
     ) -> bool:
         """
         Run all tests from config
@@ -349,7 +369,9 @@ class RouteComparator:
 
                 # Handle skipped tests (ASP server unavailable)
                 if result.get("skipped"):
-                    print(f"  {Fore.YELLOW}⊘ {result['name']} - SKIPPED{Style.RESET_ALL}")
+                    print(
+                        f"  {Fore.YELLOW}⊘ {result['name']} - SKIPPED{Style.RESET_ALL}"
+                    )
                     if "error" in result:
                         print(f"    {Fore.YELLOW}└─ {result['error']}{Style.RESET_ALL}")
                     continue
@@ -372,16 +394,24 @@ class RouteComparator:
                     print(f"{Fore.RED}🛑 TEST FAILED - STOPPING{Style.RESET_ALL}")
                     print(f"{Fore.RED}{'='*60}{Style.RESET_ALL}")
                     print(f"{Fore.YELLOW}Route: {route_name}{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}Flask output does not match ASP ground truth{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}Fix this route before continuing to next routes{Style.RESET_ALL}\n")
+                    print(
+                        f"{Fore.YELLOW}Flask output does not match ASP ground truth{Style.RESET_ALL}"
+                    )
+                    print(
+                        f"{Fore.YELLOW}Fix this route before continuing to next routes{Style.RESET_ALL}\n"
+                    )
                     return False
 
             # Route summary
             if route_passed == route_total:
-                print(f"  {Fore.GREEN}All {route_total} test(s) passed{Style.RESET_ALL}\n")
+                print(
+                    f"  {Fore.GREEN}All {route_total} test(s) passed{Style.RESET_ALL}\n"
+                )
             else:
                 failed = route_total - route_passed
-                print(f"  {Fore.RED}{failed}/{route_total} test(s) failed{Style.RESET_ALL}\n")
+                print(
+                    f"  {Fore.RED}{failed}/{route_total} test(s) failed{Style.RESET_ALL}\n"
+                )
                 failed_routes.append(route_name)
 
             self.results.extend(results)
@@ -394,11 +424,15 @@ class RouteComparator:
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
         if passed_tests == total_tests:
-            print(f"{Fore.GREEN}✓ All {total_tests} tests passed! (100%){Style.RESET_ALL}\n")
+            print(
+                f"{Fore.GREEN}✓ All {total_tests} tests passed! (100%){Style.RESET_ALL}\n"
+            )
             return True
         else:
             failed = total_tests - passed_tests
-            print(f"{Fore.RED}✗ {failed}/{total_tests} tests failed ({success_rate:.1f}% passed){Style.RESET_ALL}\n")
+            print(
+                f"{Fore.RED}✗ {failed}/{total_tests} tests failed ({success_rate:.1f}% passed){Style.RESET_ALL}\n"
+            )
 
             if failed_routes:
                 print(f"{Fore.YELLOW}Failed routes:{Style.RESET_ALL}")
