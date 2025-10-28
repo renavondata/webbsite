@@ -886,53 +886,317 @@ def chistory():
     - o: include rows with no change (0/1)
 
     Tables used: ccass.holdings, ccass.quotes, ccass.participants, ccass.calendar
-
-    This is a COMPLEX page with:
-    - Highstock.js charting
-    - Complex SQL for split adjustments
-    - Dual-axis chart (holdings and price)
-    - Multiple display options
     """
-    issue_id = request.args.get('i', type=int, default=0)
-    stock_code = request.args.get('sc', '')
-    part_id = request.args.get('part', type=int, default=0)
-    s = request.args.get('s', type=int, default=0)  # Show mode
-    a = request.args.get('a', type=int, default=1)  # Adjust splits
-    p = request.args.get('p', type=int, default=0)  # Price date
-    o = request.args.get('o', type=int, default=0)  # Include no-change rows
+    from flask import current_app, session
+    import json
+    from datetime import datetime
 
-    # TODO: Look up stock name, participant name
-    stock_name = f"Stock {issue_id}" if issue_id > 0 else "No stock specified"
-    part_name = f"Participant {part_id}" if part_id > 0 else "No participant specified"
+    issue_id = get_int('i', 0)
+    stock_code = get_str('sc', '')
+    part_id = get_int('part', 0)
 
-    # TODO: Complex query with split adjustments
-    # See original ASP for 4 different SQL queries depending on (a, p) combinations:
-    # 1. Adjusted holdings, price on holding date
-    # 2. Adjusted holdings, price on trading date
-    # 3. Unadjusted holdings, price on holding date
-    # 4. Unadjusted holdings, price on trading date
-    #
-    # Query joins: ccass.holdings, ccass.quotes, ccass.calendar
-    # Uses splitAdj() function and outstanding() function
-    # Fills in missing dates with previous values
+    # Lookup stock if stock code provided
+    if not issue_id and stock_code:
+        try:
+            result = execute_query("""
+                SELECT issueID FROM enigma.stocklistings
+                WHERE stockCode = %s AND toDate IS NULL
+                ORDER BY fromDate DESC LIMIT 1
+            """, (stock_code,))
+            if result:
+                issue_id = result[0]['issueid']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    # Mock data for chart
-    price_data = []  # [[timestamp, price], ...]
-    holdings_data = []  # [[timestamp, shares], ...]
-    table_data = []  # For table display
+    # Session-managed parameters
+    if request.args.get('s') is not None:
+        s = get_int('s', 0)
+        session['showdata'] = s
+    else:
+        s = session.get('showdata', 0)
+
+    if request.args.get('o') is not None:
+        o = get_bool('o')
+        session['nochange'] = o
+    else:
+        o = session.get('nochange', False)
+
+    if request.args.get('a') is not None:
+        a = get_bool('a')
+        session['splitAdj'] = a
+    else:
+        a = session.get('splitAdj', True)  # Default to adjusted
+
+    if request.args.get('p') is not None:
+        p = get_bool('p')
+        session['pHolding'] = p
+    else:
+        p = session.get('pHolding', False)  # Default to trade date
+
+    # Get stock name and person
+    stock_name = "No stock specified"
+    person_id = 0
+    last_hold_date = None
+    if issue_id > 0:
+        try:
+            from webbsite.asp_helpers import issue_name_func
+            stock_name, person_id = issue_name_func(issue_id)
+
+            # Get last holding date for this participant
+            last_date_result = execute_query("""
+                SELECT MAX(atDate) AS d
+                FROM ccass.holdings
+                WHERE issueID = %s AND partID = %s
+            """, (issue_id, part_id))
+            if last_date_result and last_date_result[0]['d']:
+                last_hold_date = last_date_result[0]['d']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up stock: {ex}")
+
+    # Get participant name
+    part_name = "No participant specified"
+    if part_id > 0:
+        try:
+            part_result = execute_query("""
+                SELECT partname FROM ccass.participants WHERE partID = %s
+            """, (part_id,))
+            if part_result:
+                part_name = part_result[0]['partname']
+        except Exception as ex:
+            current_app.logger.error(f"Error looking up participant: {ex}")
+
+    # Build SQL query based on parameters
+    history = []
+    price_data = []
+    holdings_data = []
+
+    if issue_id > 0 and part_id > 0:
+        try:
+            # Four different SQL queries based on (a, p) combinations
+            if not a:
+                # Don't adjust for splits and bonus issues
+                if p:
+                    # Use prices on holding date
+                    sql = """
+                        SELECT q.atDate, closing, holding,
+                               enigma.outstanding(%s, q.atDate) AS os,
+                               tradeDate, 1 as adjBonus
+                        FROM ccass.quotes q
+                        JOIN ccass.calendar c ON q.atDate = c.settleDate
+                        LEFT JOIN ccass.holdings h ON q.atDate = h.atDate
+                                  AND h.partID = %s AND h.issueID = %s
+                        WHERE q.issueID = %s AND NOT c.deferred
+                          AND settleDate >= '2007-06-26'
+                        ORDER BY atDate
+                    """
+                    params = (issue_id, part_id, issue_id, issue_id)
+                else:
+                    # Use prices on trading date
+                    sql = """
+                        SELECT settleDate AS atDate, closing,
+                               (SELECT holding FROM ccass.holdings
+                                WHERE atDate <= c.settleDate AND partID = %s AND issueID = %s
+                                ORDER BY atDate DESC LIMIT 1) AS holding,
+                               enigma.outstanding(%s, settleDate) AS os,
+                               tradeDate, 1 as adjBonus
+                        FROM ccass.quotes q
+                        JOIN ccass.calendar c ON q.atDate = c.tradeDate
+                        WHERE q.issueID = %s AND NOT c.deferred
+                          AND settleDate >= '2007-06-26'
+                        ORDER BY tradeDate
+                    """
+                    params = (part_id, issue_id, issue_id, issue_id)
+            else:
+                # Adjust for splits and bonus issues
+                if p:
+                    # Use prices on holding date
+                    sql = """
+                        SELECT atDate, closing * scripAdj as closing,
+                               ROUND((holding / scripAdj / adjSplit)::numeric, 0) AS holding,
+                               enigma.outstanding(%s, atDate) / scripAdj AS os,
+                               tradeDate, adjBonus
+                        FROM (
+                            SELECT holding, q.atDate,
+                                   enigma.splitAdj(%s, q.atDate) AS scripAdj,
+                                   closing, tradeDate,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 4
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 5
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
+                            FROM ccass.quotes q
+                            JOIN ccass.calendar c ON q.atDate = c.settleDate
+                            LEFT JOIN ccass.holdings h ON q.atDate = h.atDate
+                                      AND h.partID = %s AND h.issueID = %s
+                            WHERE q.issueID = %s AND NOT c.deferred
+                              AND c.settleDate >= '2007-06-26'
+                        ) AS t1
+                        ORDER BY atDate
+                    """
+                    params = (issue_id, issue_id, issue_id, issue_id, part_id, issue_id, issue_id)
+                else:
+                    # Use prices on trading date
+                    sql = """
+                        SELECT atDate, closing * priceAdj as closing,
+                               ROUND((holding / holdAdj / adjSplit)::numeric, 0) AS holding,
+                               enigma.outstanding(%s, atDate) / holdAdj AS os,
+                               tradeDate, adjBonus
+                        FROM (
+                            SELECT (SELECT holding FROM ccass.holdings
+                                    WHERE atDate <= c.settleDate AND partID = %s AND issueID = %s
+                                    ORDER BY atDate DESC LIMIT 1) AS holding,
+                                   c.settleDate AS atDate,
+                                   enigma.splitAdj(%s, c.tradeDate) AS priceAdj,
+                                   enigma.splitAdj(%s, c.settleDate) AS holdAdj,
+                                   closing, tradeDate,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 4
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
+                                   COALESCE((SELECT adjust FROM enigma.events
+                                             WHERE issueID = %s AND eventType = 5
+                                               AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
+                            FROM ccass.quotes q
+                            JOIN ccass.calendar c ON q.atDate = c.tradeDate
+                            WHERE q.issueID = %s AND NOT c.deferred
+                              AND c.settleDate >= '2007-06-26'
+                        ) AS t1
+                        ORDER BY tradeDate
+                    """
+                    params = (issue_id, part_id, issue_id, issue_id, issue_id, issue_id, issue_id, issue_id)
+
+            results = execute_query(sql, params)
+
+            if results:
+                # Convert to list for processing
+                data = []
+                for row in results:
+                    data.append({
+                        'atDate': row['atdate'],
+                        'closing': float(row['closing']) if row['closing'] else 0,
+                        'holding': float(row['holding']) if row['holding'] is not None else None,
+                        'os': float(row['os']) if row['os'] else None,
+                        'tradeDate': row['tradedate'],
+                        'adjBonus': float(row['adjbonus']) if row['adjbonus'] else 1
+                    })
+
+                if data:
+                    # Fill in blanks with previous price and holding
+                    last_close = data[0]['closing']
+                    if data[0]['holding'] is None:
+                        last_hold = 0
+                        data[0]['holding'] = 0
+                    else:
+                        last_hold = data[0]['holding']
+
+                    for i in range(1, len(data)):
+                        # Fill missing prices
+                        if data[i]['closing'] == 0:
+                            data[i]['closing'] = last_close
+                        else:
+                            last_close = data[i]['closing']
+
+                        # Fill missing holdings (adjust for bonus issue)
+                        if data[i]['holding'] is None:
+                            last_hold = last_hold * data[i]['adjBonus']
+                            data[i]['holding'] = last_hold
+                        else:
+                            last_hold = data[i]['holding']
+
+                    # Build JavaScript arrays for chart
+                    price_js = []
+                    holdings_js = []
+                    for i, row in enumerate(data):
+                        # Use holding date or trade date based on parameter p
+                        date_for_chart = row['atDate'] if p else row['tradeDate']
+                        # Convert date to datetime if needed
+                        if hasattr(date_for_chart, 'timestamp'):
+                            timestamp = int(date_for_chart.timestamp() * 1000)
+                        else:
+                            # date object - convert to datetime at midnight
+                            dt = datetime.combine(date_for_chart, datetime.min.time())
+                            timestamp = int(dt.timestamp() * 1000)
+
+                        # Add price data
+                        price_js.append([timestamp, round(row['closing'], 3)])
+
+                        # Add holdings data (skip last point if using trade date)
+                        if p or i < len(data) - 1:
+                            holdings_js.append([timestamp, round(row['holding'], 0)])
+
+                    price_data = price_js
+                    holdings_data = holdings_js
+
+                    # Build table data with changes
+                    for i in range(len(data) - 1, -1, -1):  # Reverse order for display
+                        row = data[i]
+                        change = None
+                        if i > 0:
+                            change = row['holding'] - data[i-1]['holding']
+
+                        # Filter based on 'o' parameter and last_hold_date
+                        if o or change is None or change != 0 or (last_hold_date and row['atDate'] > last_hold_date):
+                            pct_outstanding = (row['holding'] / row['os']) if row['os'] and row['os'] > 0 else None
+                            value = row['holding'] * row['closing'] if row['holding'] and row['closing'] else None
+
+                            history.append({
+                                'atDate': row['atDate'],
+                                'closing': row['closing'],
+                                'holding': row['holding'],
+                                'change': change,
+                                'pct_outstanding': pct_outstanding,
+                                'value': value,
+                                'tradeDate': row['tradeDate']
+                            })
+
+        except Exception as ex:
+            current_app.logger.error(f"Error querying holdings history: {ex}", exc_info=True)
+            history = []
+
+    # Get HK listings for navigation
+    hk_listings = []
+    current_stock_code = None
+    if issue_id > 0:
+        try:
+            hk_listings = execute_query("""
+                SELECT sl.*, l.shortname
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.stockexid IN (1, 20, 22, 23, 38, 71) AND sl.issueid = %s
+                ORDER BY sl.firsttradedate
+            """, (issue_id,))
+        except Exception as e:
+            current_app.logger.error(f"Error fetching HK listings: {e}")
+
+        try:
+            stock_code_result = execute_query("""
+                SELECT stockcode
+                FROM enigma.stocklistings
+                WHERE issueid = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC
+                LIMIT 1
+            """, (issue_id,))
+            current_stock_code = stock_code_result[0]['stockcode'] if stock_code_result else None
+        except Exception as e:
+            current_app.logger.error(f"Error fetching stock code: {e}")
 
     return render_template('ccass/chistory.html',
                          issue_id=issue_id,
+                         stock_code=stock_code,
                          stock_name=stock_name,
+                         person_id=person_id,
                          part_id=part_id,
                          part_name=part_name,
                          price_data=price_data,
                          holdings_data=holdings_data,
-                         table_data=table_data,
+                         table_data=history,
                          s=s,
                          a=a,
                          p=p,
-                         o=o)
+                         o=o,
+                         hk_listings=hk_listings,
+                         current_stock_code=current_stock_code,
+                         last_hold_date=last_hold_date)
 
 
 @bp.route('/CCASSnotes.asp')
