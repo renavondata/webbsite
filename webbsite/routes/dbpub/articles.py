@@ -2,7 +2,7 @@
 Articles and content management
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
+from flask import Blueprint, render_template, request, abort, current_app, Response, redirect
 from datetime import date, timedelta
 import calendar
 import io
