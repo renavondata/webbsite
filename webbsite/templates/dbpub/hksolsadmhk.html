@@ -1,24 +1,83 @@
-{% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% extends "dbheader.html" %}
+
+{% block title %}{{ role_name }} in HK law firms by year of admission to HK{% endblock %}
+
+{% block head_extra %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+    var data1 = google.visualization.arrayToDataTable([
+        ['Year', 'Number'],
+        {% for row in results %}
+        [{{ row.year|int }}, {{ row.count|int }}],
+        {% endfor %}
+    ]);
+
+    var options1 = {
+        chartArea: {width:'85%', height:'75%', left:'10%'},
+        title: '{{ role_name }} in HK law firms by year of admission to HK',
+        titleTextStyle: {fontSize:20},
+        backgroundColor: {strokeWidth:2, stroke:'blue'},
+        hAxis: {
+            format: '####',
+            {% if results %}maxValue: {{ results[-1].year|int }}{% endif %}
+        },
+        vAxis: {baseline:0},
+        isStacked: true,
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            axis: 'horizontal'
+        },
+        legend: {position:'in'}
+    };
+    var chart1 = new google.visualization.ColumnChart(document.getElementById('chart1'));
+    chart1.draw(data1, options1);
+}
+
+window.addEventListener('resize', drawChart);
+</script>
+{% endblock %}
+
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
+<h2>{{ role_name }} in HK law firms by year of admission to HK</h2>
+{# TODO: Add solsBar navigation when implemented #}
+
+<form method="get">
+    <p>Role:
+        <select name="p" onchange="this.form.submit()">
+            <option value="0" {% if p == 0 %}selected{% endif %}>All</option>
+            {% for role in roles %}
+            <option value="{{ role.id }}" {% if p == role.id %}selected{% endif %}>{{ role.lstxt }}s</option>
+            {% endfor %}
+        </select>
+    </p>
+</form>
+
+<p>Click and drag to zoom, right-click to reset.</p>
+<div id="chart1" class="chart" style="width:100%; height:500px;"></div>
+
+<p>This table groups all current HK Solicitors associated with HK Solicitors' Firms seen in the
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">Law Society's Law List</a> by year of admission.</p>
+
+<table class="numtable center">
+    <tr>
+        <th>Year</th>
+        <th>Number</th>
+        <th>Cumulative</th>
+        <th>Cumulative %</th>
+    </tr>
+    {% set cumulative = namespace(value=0) %}
+    {% for row in results %}
+    {% set cumulative.value = cumulative.value + row.count|int %}
+    <tr>
+        <td>{{ row.year|int if row.year else '?' }}</td>
+        <td>{{ row.count|int }}</td>
+        <td>{{ cumulative.value }}</td>
+        <td>{{ "%.2f"|format(cumulative.value / total_count * 100) if total_count > 0 else '0.00' }}%</td>
+    </tr>
     {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
 </table>
-{% else %}
-<p>No results found.</p>
-{% endif %}
 {% endblock %}

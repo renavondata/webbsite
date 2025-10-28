@@ -1,24 +1,58 @@
-{% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% extends "dbheader.html" %}
+
+{% block title %}HK solicitors admitted to {{ jurisdiction }}{% endblock %}
+
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
+<h2>HK solicitors admitted to {{ jurisdiction }}</h2>
+{# TODO: Add solsBar navigation when implemented #}
+
+<form method="get" action="hksolsdom.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        Domicile:
+        <select name="dom" onchange="this.form.submit()">
+            {% for jur in jurisdictions %}
+            <option value="{{ jur.domid }}" {% if jur.domid == dom %}selected{% endif %}>{{ jur.friendly }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="clear"></div>
+</form>
+
+<p>This table shows all solicitors admitted in HK and currently seen in the
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">Law Society's Law List</a>, whether practising or not,
+who have been admitted to the chosen jurisdiction.
+Click a column heading to sort.</p>
+
+<table class="fcr txtable">
+    <tr>
+        <th class="colHide3"></th>
+        <th>
+            {% if sort == 'namedn' %}<a href="?dom={{ dom }}&sort=nameup">Name ↓</a>
+            {% else %}<a href="?dom={{ dom }}&sort=namedn">Name ↑</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'admhdn' %}<a href="?dom={{ dom }}&sort=admhup">Admitted<br>to HK ↓</a>
+            {% else %}<a href="?dom={{ dom }}&sort=admhdn">Admitted<br>to HK ↑</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'admodn' %}<a href="?dom={{ dom }}&sort=admoup">Admitted<br>overseas ↓</a>
+            {% else %}<a href="?dom={{ dom }}&sort=admodn">Admitted<br>overseas ↑</a>{% endif %}
+        </th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td class="colHide3">{{ loop.index }}</td>
+        <td>
+            {% if row.personid %}
+            <a href="natperson.asp?id={{ row.personid }}">{{ row.name }}</a>
+            {% else %}
+            {{ row.name }}
+            {% endif %}
+        </td>
+        <td>{{ row.admhk if row.admhk else '' }}</td>
+        <td>{{ row.admos if row.admos else '' }}</td>
+    </tr>
     {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
 </table>
-{% else %}
-<p>No results found.</p>
-{% endif %}
 {% endblock %}

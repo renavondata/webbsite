@@ -9398,97 +9398,231 @@ def hksolfirms():
 # HK solicitors admitted in HK
 @bp.route('/hksolsadmhk.asp')
 def hksolsadmhk():
-    """HK solicitors admitted in Hong Kong"""
+    """
+    HK solicitors by year of admission to HK with Google Charts
+
+    Shows distribution of solicitors currently in HK law firms by their
+    year of admission to Hong Kong. Includes role filter (partner, consultant, etc.)
+    """
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
-    from flask import render_template
-    from datetime import date
+    from flask import render_template, current_app
 
-    y = get_int('y', date.today().year)
+    # Get role filter parameter (0 = all, 1-5 = specific role)
+    p = get_int('p', 0)
 
-    sql = """
-        SELECT
-            d.director AS personid,
-            CASE WHEN p.name2 IS NULL THEN p.name1
-                 ELSE p.name1 || ', ' || p.name2
-            END AS name,
-            d.apptdate AS admitted
-        FROM enigma.directorships d
-        JOIN enigma.people p ON d.director = p.personid
-        WHERE d.positionid IN (394, 395)
-          AND EXTRACT(YEAR FROM d.apptdate) = %s
-        ORDER BY d.apptdate DESC, name
-        LIMIT 1000
-    """
+    # Build SQL filter for role
+    role_filter = ""
+    role_name = "All solicitors"
+    if p > 0:
+        role_filter = " AND post = %s"
+        try:
+            role_result = execute_query(
+                "SELECT lstxt FROM enigma.lsroles WHERE id = %s", (p,)
+            )
+            if role_result:
+                role_name = role_result[0]['lstxt'] + "s"
+        except Exception:
+            pass
 
+    # Get total count
     try:
-        results = execute_query(sql, (y,))
+        if p > 0:
+            total_count = execute_query(
+                "SELECT COUNT(DISTINCT lsppl) FROM enigma.lsposts WHERE NOT dead AND post = %s",
+                (p,)
+            )[0]['count']
+        else:
+            total_count = execute_query(
+                "SELECT COUNT(DISTINCT lsppl) FROM enigma.lsposts WHERE NOT dead"
+            )[0]['count']
+    except Exception:
+        total_count = 0
+
+    # Get data grouped by year of admission
+    try:
+        if p > 0:
+            results = execute_query("""
+                SELECT EXTRACT(YEAR FROM admhk) AS year,
+                       COUNT(DISTINCT lsppl) AS count
+                FROM enigma.lsposts ps
+                JOIN enigma.lsppl p ON ps.lsppl = p.lsid
+                WHERE NOT ps.dead AND post = %s
+                GROUP BY EXTRACT(YEAR FROM admhk)
+                ORDER BY year
+            """, (p,))
+        else:
+            results = execute_query("""
+                SELECT EXTRACT(YEAR FROM admhk) AS year,
+                       COUNT(DISTINCT lsppl) AS count
+                FROM enigma.lsposts ps
+                JOIN enigma.lsppl p ON ps.lsppl = p.lsid
+                WHERE NOT ps.dead
+                GROUP BY EXTRACT(YEAR FROM admhk)
+                ORDER BY year
+            """)
     except Exception as ex:
         current_app.logger.error(f"Error in hksolsadmhk.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/hksolsadmhk.html', solicitors=results, y=y)
+    # Get role options for dropdown
+    try:
+        roles = execute_query(
+            "SELECT id, lstxt FROM enigma.lsroles WHERE id <> 4 ORDER BY id"
+        )
+    except Exception:
+        roles = []
+
+    return render_template('dbpub/hksolsadmhk.html',
+                         results=results,
+                         p=p,
+                         role_name=role_name,
+                         total_count=total_count,
+                         roles=roles)
 
 
 # HK solicitors admitted overseas
 @bp.route('/hksolsadmos.asp')
 def hksolsadmos():
-    """HK solicitors admitted overseas"""
-    from webbsite.db import execute_query
-    from flask import render_template
-
-    # This is a stub - would need additional data on overseas admissions
-    sql = """
-        SELECT
-            d.director AS personid,
-            CASE WHEN p.name2 IS NULL THEN p.name1
-                 ELSE p.name1 || ', ' || p.name2
-            END AS name
-        FROM enigma.directorships d
-        JOIN enigma.people p ON d.director = p.personid
-        WHERE d.positionid IN (394, 395)
-          AND d.resdate IS NULL
-        ORDER BY name
-        LIMIT 100
     """
+    HK solicitors admitted to overseas jurisdictions
 
+    Shows HK solicitors grouped by overseas jurisdiction where they've also
+    been admitted. Displays counts of lawyers admitted before/after HK admission.
+    """
+    from webbsite.asp_helpers import get_str
+    from webbsite.db import execute_query
+    from flask import render_template, current_app, request
+
+    sort_param = get_str('sort', 'cntdn')
+
+    # Determine sort order
+    sort_orders = {
+        'jurup': 'jur',
+        'jurdn': 'jur DESC',
+        'cntup': 'cnt, jur',
+        'cntdn': 'cnt DESC, friendly',
+        'befdn': 'bef DESC, jur',
+        'befup': 'bef, jur',
+        'aftdn': 'aft DESC, jur',
+        'aftup': 'aft, jur',
+        'shrdn': 'share DESC, jur',
+        'shrup': 'share, jur'
+    }
+    ob = sort_orders.get(sort_param, 'cnt DESC, friendly')
+    if sort_param not in sort_orders:
+        sort_param = 'cntdn'
+
+    # Query overseas admissions grouped by jurisdiction
     try:
-        results = execute_query(sql)
+        results = execute_query(f"""
+            SELECT d.domid,
+                   d.friendly AS jur,
+                   COUNT(*) AS cnt,
+                   SUM(CASE WHEN a.adm < p.admhk THEN 1 ELSE 0 END) AS bef,
+                   SUM(CASE WHEN a.adm >= p.admhk THEN 1 ELSE 0 END) AS aft,
+                   SUM(CASE WHEN a.adm < p.admhk THEN 1 ELSE 0 END)::FLOAT / COUNT(*) AS share
+            FROM enigma.lsppl p
+            JOIN enigma.lsadm a ON p.lsid = a.lsid
+            JOIN enigma.lsdoms ld ON a.lsdom = ld.lsdom
+            JOIN enigma.domiciles d ON ld.domid = d.id
+            WHERE NOT p.dead
+            GROUP BY d.domid, d.friendly
+            ORDER BY {ob}
+        """)
     except Exception as ex:
         current_app.logger.error(f"Error in hksolsadmos.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/hksolsadmos.html', solicitors=results)
+    return render_template('dbpub/hksolsadmos.html',
+                         results=results,
+                         sort=sort_param)
 
 
-# HK solicitors by domicile
+# HK solicitors by overseas domicile
 @bp.route('/hksolsdom.asp')
 def hksolsdom():
-    """HK solicitors grouped by domicile"""
-    from webbsite.db import execute_query
-    from flask import render_template
-
-    sql = """
-        SELECT
-            p.domicile,
-            d.domname,
-            COUNT(DISTINCT dir.director) AS sol_count
-        FROM enigma.directorships dir
-        JOIN enigma.people p ON dir.director = p.personid
-        LEFT JOIN enigma.domiciles d ON p.domicile = d.id
-        WHERE dir.positionid IN (394, 395)
-          AND dir.until IS NULL
-        GROUP BY p.domicile, d.domname
-        ORDER BY sol_count DESC
     """
+    HK solicitors admitted to a specific overseas jurisdiction
 
+    Shows list of HK solicitors who have also been admitted to the selected
+    overseas jurisdiction, with admission dates for both.
+    """
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template, current_app
+
+    dom = get_int('dom', 116)  # Default to England & Wales
+    sort_param = get_str('sort', 'nameup')
+
+    # Get jurisdiction name
+    jurisdiction = "Unknown"
     try:
-        results = execute_query(sql)
+        result = execute_query(
+            "SELECT friendly FROM enigma.domiciles WHERE id = %s", (dom,)
+        )
+        if result:
+            jurisdiction = result[0]['friendly']
+    except Exception:
+        pass
+
+    # Determine sort order
+    sort_orders = {
+        'admoup': 'adm, name',
+        'admodn': 'adm DESC, name',
+        'admhup': 'admhk, name',
+        'admhdn': 'admhk DESC, name',
+        'namedn': 'name DESC, admhk DESC',
+        'nameup': 'name, admhk'
+    }
+    ob = sort_orders.get(sort_param, 'name, admhk')
+    if sort_param not in sort_orders:
+        sort_param = 'nameup'
+
+    # Get solicitors admitted to this jurisdiction
+    try:
+        results = execute_query(f"""
+            SELECT DISTINCT
+                p.personid,
+                p.admhk,
+                a.adm AS admos,
+                CASE
+                    WHEN p.cname IS NOT NULL AND p.cname <> ''
+                    THEN COALESCE(p.name1, '') || COALESCE(', ' || p.name2, '') || ' ' || p.cname
+                    ELSE COALESCE(p.name1, '') || COALESCE(', ' || p.name2, '')
+                END AS name
+            FROM enigma.lsppl p
+            JOIN enigma.lsadm a ON p.lsid = a.lsid
+            JOIN enigma.lsdoms ld ON a.lsdom = ld.lsdom
+            JOIN enigma.domiciles d ON ld.domid = d.id
+            WHERE NOT p.dead
+              AND d.id = %s
+            ORDER BY {ob}
+        """, (dom,))
     except Exception as ex:
         current_app.logger.error(f"Error in hksolsdom.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/hksolsdom.html', enigma_domiciles=results)
+    # Get list of jurisdictions for dropdown
+    try:
+        jurisdictions = execute_query("""
+            SELECT DISTINCT d.id AS domid, d.friendly
+            FROM enigma.lsppl p
+            JOIN enigma.lsadm a ON p.lsid = a.lsid
+            JOIN enigma.lsdoms ld ON a.lsdom = ld.lsdom
+            JOIN enigma.domiciles d ON ld.domid = d.id
+            WHERE NOT p.dead
+            ORDER BY d.friendly
+        """)
+    except Exception:
+        jurisdictions = []
+
+    return render_template('dbpub/hksolsdom.html',
+                         results=results,
+                         dom=dom,
+                         jurisdiction=jurisdiction,
+                         jurisdictions=jurisdictions,
+                         sort=sort_param)
 
 
 # HK solicitors employer search
