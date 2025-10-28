@@ -10393,12 +10393,72 @@ def lrvaluecats():
 # Public rental housing districts
 @bp.route('/prhdistricts.asp')
 def prhdistricts():
-    """Public rental housing by district"""
-    from webbsite.db import execute_query
-    from flask import render_template
+    """
+    Public rental housing by district - Port of dbpub/prhdistricts.asp
+    Shows HK Housing Authority's public rental units by district
 
-    # Stub - would need PRH tables
-    return render_template('dbpub/prhdistricts.html', districts=[])
+    Query params:
+    - sort: sorting column
+
+    Tables: enigma.prhflat, enigma.prhblock, enigma.prhestate, enigma.hkdistrict, enigma.hkregion
+    """
+    sort_param = request.args.get('sort', 'r')
+
+    # Determine sort order
+    sort_map = {
+        'en': 'en',
+        'end': 'en DESC',
+        'cn': 'cn',
+        'cnd': 'cn DESC',
+        'tota': 'tota',
+        'totad': 'tota DESC',
+        'a': 'a',
+        'ad': 'a DESC',
+        'c': 'c, en',
+        'cd': 'c DESC, en',
+        'r': 'region, en',
+        'rd': 'region DESC, en',
+    }
+    order_by = sort_map.get(sort_param, 'region, en')
+
+    # Query districts with aggregated PRH data
+    districts = execute_query(f"""
+        SELECT
+            d.ID,
+            d.en,
+            d.cn,
+            COUNT(*) AS c,
+            SUM(f.area) AS tota,
+            SUM(f.area) / COUNT(*) AS a,
+            CONCAT(r.en, ' ', r.cn) AS region,
+            SUM(CASE WHEN f.elevator THEN 1 ELSE 0 END) AS elev
+        FROM enigma.prhflat f
+        JOIN enigma.prhblock b ON f.blockID = b.ID
+        JOIN enigma.prhestate e ON b.estateID = e.ID
+        JOIN enigma.hkdistrict d ON e.district = d.ID
+        JOIN enigma.hkregion r ON d.regionID = r.ID
+        WHERE f.lastseen >= (SELECT DATE(MAX(lastSeen)) FROM enigma.prhflat)
+        GROUP BY d.ID, d.en, d.cn, r.en, r.cn
+        ORDER BY {order_by}
+    """)
+
+    # Calculate totals
+    total_units = sum(d['c'] for d in districts) if districts else 0
+    total_area = sum(d['tota'] for d in districts) if districts else 0
+    total_elev = sum(d['elev'] for d in districts) if districts else 0
+    avg_area = total_area / total_units if total_units > 0 else 0
+
+    # Adjust sort for URL (if sorting by region, show by en for drill-down)
+    url_sort = 'en' if sort_param == 'r' else sort_param
+
+    return render_template('dbpub/prhdistricts.html',
+                         districts=districts,
+                         sort=sort_param,
+                         url_sort=url_sort,
+                         total_units=total_units,
+                         total_area=total_area,
+                         total_elev=total_elev,
+                         avg_area=avg_area)
 
 
 # HK flights data
@@ -14126,23 +14186,329 @@ def enigma_incUKcaltype():
 
 @bp.route('/adviserships.asp')
 def adviserships():
-    """Organizations where this entity acts as an adviser (stub)"""
+    """
+    Adviserships - Port of dbpub/adviserships.asp
+    Shows organizations where this entity acts as an adviser (auditor, solicitor, sponsor, etc.)
+
+    Query params:
+    - p: personID (adviser)
+    - r: roleID (specific role, defaults to most popular)
+    - sort: sorting column
+    - hide: hide history (Y/N)
+    - f: from date (optional)
+    - t: to date (optional)
+    - y: years for performance period (for one-time roles)
+    - c: include new appointments after start date (boolean)
+
+    Tables: enigma.adviserships, enigma.roles, enigma.organisations, enigma.issue
+    Note: Total returns calculations are complex and require stored functions
+    """
     person_id = get_int('p', 0)
-    return f"<h2>Adviserships</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+    role_id = get_int('r', -1)
+    sort_param = request.args.get('sort', 'orgup')
+    hide = request.args.get('hide', 'N')
+    from_date = request.args.get('f', '')
+    to_date = request.args.get('t', '')
+    years = get_dbl('y', 1.0)
+    include_new = get_bool('c')
+
+    if not person_id:
+        return render_template('error.html', message="Missing person ID"), 400
+
+    # Get organization name
+    org_name = execute_query(
+        "SELECT name1 FROM enigma.organisations WHERE personID = %s",
+        (person_id,)
+    )
+    if not org_name:
+        return render_template('error.html', message="Organization not found"), 404
+    org_name = org_name[0]['name1']
+
+    # Get list of roles this entity has
+    all_roles = execute_query("""
+        SELECT DISTINCT roleID, roleLong
+        FROM enigma.adviserships
+        JOIN enigma.roles ON adviserships.role = roles.roleID
+        WHERE adviser = %s
+        ORDER BY roleLong
+    """, (person_id,))
+
+    # If no specific role selected, default to most popular
+    if role_id == -1 and all_roles:
+        default_role = execute_query("""
+            SELECT roleID, COUNT(DISTINCT company) cnt, roleLong, oneTime
+            FROM enigma.adviserships a
+            JOIN enigma.roles r ON a.role = r.roleID
+            WHERE adviser = %s
+            GROUP BY roleID, roleLong, oneTime
+            ORDER BY cnt DESC
+            LIMIT 1
+        """, (person_id,))
+        if default_role:
+            role_id = default_role[0]['roleid']
+            role_name = default_role[0]['rolelong']
+            one_time = default_role[0]['onetime']
+    else:
+        role_info = execute_query("""
+            SELECT roleID, roleLong, oneTime
+            FROM enigma.roles
+            WHERE roleID = %s
+        """, (role_id,))
+        if role_info:
+            role_name = role_info[0]['rolelong']
+            one_time = role_info[0]['onetime']
+        else:
+            role_name = None
+            one_time = False
+
+    if not role_name:
+        return render_template('dbpub/adviserships.html',
+                             person_id=person_id,
+                             org_name=org_name,
+                             all_roles=all_roles,
+                             adviserships=[],
+                             role_id=role_id,
+                             role_name=None)
+
+    # Determine sort order
+    sort_map = {
+        'orgup': 'org, addDate',
+        'orgdn': 'org DESC, addDate',
+        'addup': 'addDate, org',
+        'adddn': 'addDate DESC, org',
+        'remup': 'remDate, org',
+        'remdn': 'remDate DESC, org',
+    }
+    order_by = sort_map.get(sort_param, 'org, addDate')
+
+    # Build WHERE clause for date filtering
+    where_clauses = []
+    params = [role_id, person_id]
+
+    if hide == 'Y' and not from_date and not to_date:
+        where_clauses.append("(remDate IS NULL OR remDate > CURRENT_DATE)")
+
+    if from_date:
+        where_clauses.append("(remDate IS NULL OR remDate > %s)")
+        params.append(from_date)
+        if not include_new:
+            where_clauses.append("(addDate IS NULL OR addDate <= %s)")
+            params.append(from_date)
+
+    if to_date:
+        if not from_date or include_new:
+            where_clauses.append("(addDate IS NULL OR addDate <= %s)")
+            params.append(to_date)
+
+    where_clause = " AND " + " AND ".join(where_clauses) if where_clauses else ""
+
+    # Query adviserships (simplified without total returns for now)
+    adviserships = execute_query(f"""
+        SELECT
+            company AS orgID,
+            o.name1 AS org,
+            a.ID1 AS issueID,
+            addDate,
+            remDate,
+            i.name1 AS issue_name
+        FROM enigma.adviserships adv
+        JOIN enigma.organisations o ON adv.company = o.personID
+        JOIN enigma.issue a ON adv.company = a.issuer
+        JOIN enigma.issue i ON a.ID1 = i.ID1
+        WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
+          AND adv.role = %s
+          AND adv.adviser = %s
+          AND a.ID1 IN (
+              SELECT DISTINCT issueID
+              FROM enigma.stocklistings
+              WHERE stockExID IN (1, 20, 23)
+          )
+          {where_clause}
+        ORDER BY {order_by}
+    """, tuple(params))
+
+    return render_template('dbpub/adviserships.html',
+                         person_id=person_id,
+                         org_name=org_name,
+                         all_roles=all_roles,
+                         adviserships=adviserships,
+                         role_id=role_id,
+                         role_name=role_name,
+                         one_time=one_time,
+                         sort=sort_param,
+                         hide=hide,
+                         from_date=from_date,
+                         to_date=to_date,
+                         years=years,
+                         include_new=include_new)
 
 
 @bp.route('/SFColicrec.asp')
 def sfcolicrec():
-    """SFC license records for an organization (stub)"""
+    """
+    SFC license records for an organization - Port of dbpub/sfcolicrec.asp
+    Shows SFC regulated activity licenses across all activities
+
+    Query params:
+    - p: personID
+    - sort: sorting column
+    - h: hide history (Y/N)
+
+    Tables: enigma.olicrec, enigma.activity, enigma.organisations
+    """
     person_id = get_int('p', 0)
-    return f"<h2>SFC Licenses</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+    sort_param = request.args.get('sort', 'actup')
+    hide = request.args.get('h', 'N')
+
+    if not person_id:
+        return render_template('error.html', message="Missing organization ID"), 400
+
+    # Get organization info
+    org_info = execute_query("""
+        SELECT name1, SFCID, SFCri
+        FROM enigma.organisations
+        WHERE personID = %s
+    """, (person_id,))
+
+    if not org_info:
+        return render_template('error.html', message="Organization not found"), 404
+
+    org_name = org_info[0]['name1']
+    sfcid = org_info[0]['sfcid']
+    is_ri = org_info[0]['sfcri']
+    ptype = 'ri' if is_ri else 'corp'
+
+    # Determine sort order
+    sort_map = {
+        'actup': 'actName, startDate',
+        'actdn': 'actName DESC, startDate',
+        'appup': 'startDate, endDate, actName',
+        'appdn': 'startDate DESC, endDate DESC, actName',
+        'resup': 'endDate, startDate, actName',
+        'resdn': 'endDate DESC, startDate DESC, actName',
+    }
+    order_by = sort_map.get(sort_param, 'actName, startDate, endDate')
+
+    # Build WHERE clause for hiding history
+    hide_clause = ""
+    if hide == 'Y':
+        hide_clause = " AND (endDate IS NULL OR endDate > CURRENT_DATE)"
+
+    # Query license records
+    licenses = execute_query(f"""
+        SELECT
+            o.ri,
+            o.actType,
+            o.startDate,
+            o.endDate,
+            a.actName
+        FROM enigma.olicrec o
+        JOIN enigma.activity a ON o.actType = a.ID
+        WHERE o.orgID = %s {hide_clause}
+        ORDER BY {order_by}
+    """, (person_id,))
+
+    return render_template('dbpub/sfcolicrec.html',
+                         person_id=person_id,
+                         org_name=org_name,
+                         sfcid=sfcid,
+                         ptype=ptype,
+                         licenses=licenses,
+                         sort=sort_param,
+                         hide=hide)
 
 
 @bp.route('/ESSraw.asp')
 def essraw():
-    """Employment Support Subsidy raw data (stub)"""
+    """
+    Employment Support Subsidy raw data - Port of dbpub/ESSraw.asp
+    Shows raw ESS filings from HK government COVID scheme for an organization
+
+    Query params:
+    - p: personID
+    - sort: sorting column
+
+    Tables: enigma.ess
+    """
     person_id = get_int('p', 0)
-    return f"<h2>ESS Raw Data</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+    sort_param = request.args.get('sort', 'phaup')
+
+    if not person_id:
+        return render_template('error.html', message="Missing organization ID"), 400
+
+    # Get organization name
+    org_name = execute_query(
+        "SELECT name1 FROM enigma.organisations WHERE personID = %s",
+        (person_id,)
+    )
+    if not org_name:
+        return render_template('error.html', message="Organization not found"), 404
+    org_name = org_name[0]['name1']
+
+    # Determine sort order
+    sort_map = {
+        'amtup': 'amt, eName, phase',
+        'amtdn': 'amt DESC, eName, phase',
+        'hdsup': 'heads, eName, phase',
+        'hdsdn': 'heads DESC, eName',
+        'namup': 'eName',
+        'namdn': 'eName DESC',
+        'avgup': 'amt/NULLIF(heads,0), eName',
+        'avgdn': 'amt/NULLIF(heads,0) DESC, eName',
+        'phaup': 'phase, eName',
+        'phadn': 'phase, amt DESC',
+    }
+    order_by = sort_map.get(sort_param, 'phase, eName')
+
+    # Query ESS filings
+    filings = execute_query(f"""
+        SELECT
+            eName,
+            cName,
+            phase,
+            amt,
+            heads,
+            CASE WHEN heads = 0 THEN NULL ELSE amt::numeric / heads END AS avg
+        FROM enigma.ess
+        WHERE orgID = %s
+        ORDER BY {order_by}
+    """, (person_id,))
+
+    # Query totals by phase
+    phase_totals = []
+    if filings:
+        phase_totals = execute_query("""
+            SELECT
+                phase,
+                SUM(amt) AS amt,
+                SUM(heads) AS hds,
+                CASE WHEN SUM(heads) = 0 THEN NULL
+                     ELSE SUM(amt)::numeric / SUM(heads)
+                END AS avg
+            FROM enigma.ess
+            WHERE orgID = %s
+            GROUP BY phase
+            ORDER BY phase
+        """, (person_id,))
+
+    # Calculate grand totals if multiple phases
+    grand_total = None
+    if len(phase_totals) > 1:
+        total_amt = sum(p['amt'] for p in phase_totals)
+        total_hds = sum(p['hds'] for p in phase_totals)
+        grand_total = {
+            'amt': total_amt,
+            'hds': total_hds / 2,  # Divide by 2 as per ASP logic (same person counted twice)
+            'avg': total_amt / total_hds if total_hds > 0 else None
+        }
+
+    return render_template('dbpub/essraw.html',
+                         person_id=person_id,
+                         org_name=org_name,
+                         filings=filings,
+                         phase_totals=phase_totals,
+                         grand_total=grand_total,
+                         sort=sort_param)
 
 
 @bp.route('/complain.asp')
@@ -14154,10 +14520,71 @@ def complain():
 
 @bp.route('/hpu.asp')
 def hpu():
-    """Daily price history (stub)"""
+    """
+    Parallel trading quotes - Port of dbpub/hpup.asp
+    Shows daily prices from parallel trading counter (archaic HKEX practice during splits)
+
+    Query params:
+    - i: issueID
+    - sort: sorting column (datedn, dateup, turndn, turnup)
+
+    Tables: ccass.pquotes
+    """
     issue_id = get_int('i', 0)
     sort_param = request.args.get('sort', 'datedn')
-    return f"<h2>Daily Prices</h2><p>Route stub - issue_id: {issue_id}, sort: {sort_param}</p><p><a href='/dbpub/buybacks.asp?i={issue_id}'>Back to Buybacks</a></p>"
+
+    if not issue_id:
+        return render_template('error.html', message="Missing issue ID"), 400
+
+    # Get stock info
+    stock_info = execute_query("""
+        SELECT
+            i.name1,
+            o.personID
+        FROM enigma.issue i
+        JOIN enigma.organisations o ON i.issuer = o.personID
+        WHERE i.ID1 = %s
+    """, (issue_id,))
+
+    if not stock_info:
+        return render_template('error.html', message="Stock not found"), 404
+
+    stock_name = stock_info[0]['name1']
+    person_id = stock_info[0]['personid']
+
+    # Determine sort order
+    sort_map = {
+        'turndn': 'turn DESC, atDate',
+        'turnup': 'turn, atDate',
+        'dateup': 'atDate',
+        'datedn': 'atDate DESC',
+    }
+    order_by = sort_map.get(sort_param, 'atDate DESC')
+
+    # Query parallel trading quotes
+    quotes = execute_query(f"""
+        SELECT
+            atDate,
+            susp,
+            closing,
+            bid,
+            ask,
+            high,
+            low,
+            vol,
+            turn,
+            CASE WHEN vol = 0 THEN 0 ELSE turn::numeric / vol END AS vwap
+        FROM ccass.pquotes
+        WHERE issueID = %s
+        ORDER BY {order_by}
+    """, (issue_id,))
+
+    return render_template('dbpub/hpu.html',
+                         issue_id=issue_id,
+                         person_id=person_id,
+                         stock_name=stock_name,
+                         quotes=quotes,
+                         sort=sort_param)
 
 
 @bp.route('/buybacksum.asp')

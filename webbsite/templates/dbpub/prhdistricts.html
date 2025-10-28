@@ -1,6 +1,90 @@
-{% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Housing Authority public rental housing by District{% endblock %}
+
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+{% include 'header.html' %}
+
+<h2>Housing Authority public rental housing by District</h2>
+
+<p>This page shows the HK Housing Authority's stock of Public Rental units, by District. Data are
+<a href="https://data.gov.hk/en-datasets/provider/hk-housing" target="_blank">sourced here</a>. Click on a District to drill down to Estates, Blocks, Floors
+and Units.</p>
+
+{% if districts %}
+    <table class="numtable c2l c3l">
+        <tr>
+            <th class="colHide2"></th>
+            <th>
+                {% if sort == 'en' %}
+                    <a href="?sort=end">District ▼</a>
+                {% else %}
+                    <a href="?sort=en">District</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'cn' %}
+                    <a href="?sort=cnd">Chinese ▼</a>
+                {% else %}
+                    <a href="?sort=cn">Chinese</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'cd' %}
+                    <a href="?sort=c">Units ▲</a>
+                {% else %}
+                    <a href="?sort=cd">Units</a>
+                {% endif %}
+            </th>
+            <th class="colHide2">Units<br>with<br>elevator</th>
+            <th>
+                {% if sort == 'totad' %}
+                    <a href="?sort=tota">Total<br>internal<br>floor<br>area sq.m. ▲</a>
+                {% else %}
+                    <a href="?sort=totad">Total<br>internal<br>floor<br>area sq.m.</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'ad' %}
+                    <a href="?sort=a">Average<br>internal<br>floor<br>area sq.m. ▲</a>
+                {% else %}
+                    <a href="?sort=ad">Average<br>internal<br>floor<br>area sq.m.</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'r' %}
+                    <a href="?sort=rd">Region ▼</a>
+                {% else %}
+                    <a href="?sort=r">Region</a>
+                {% endif %}
+            </th>
+        </tr>
+        {% for district in districts %}
+        <tr>
+            <td class="colHide2">{{ loop.index }}</td>
+            <td><a href="/dbpub/prhestates.asp?sort={{ url_sort }}&dis={{ district.id }}">{{ district.en }}</a></td>
+            <td><a href="/dbpub/prhestates.asp?sort={{ url_sort }}&dis={{ district.id }}">{{ district.cn }}</a></td>
+            <td>{{ "{:,.0f}".format(district.c) }}</td>
+            <td class="colHide2">{{ "{:,.0f}".format(district.elev) }}</td>
+            <td>{{ "{:,.0f}".format(district.tota) }}</td>
+            <td>{{ "%.2f"|format(district.a) if district.c > 0 else '-' }}</td>
+            <td>{{ district.region }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="total">
+            <td class="colHide2"></td>
+            <td>Total</td>
+            <td></td>
+            <td>{{ "{:,.0f}".format(total_units) }}</td>
+            <td class="colHide2">{{ "{:,.0f}".format(total_elev) }}</td>
+            <td>{{ "{:,.0f}".format(total_area) }}</td>
+            <td>{{ "%.2f"|format(avg_area) }}</td>
+            <td></td>
+        </tr>
+    </table>
+{% else %}
+    <p>No data found.</p>
+{% endif %}
+
+{% include 'footer.html' %}
 {% endblock %}

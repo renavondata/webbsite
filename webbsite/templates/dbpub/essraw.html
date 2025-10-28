@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Raw ESS filings{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+{% if person_id > 0 %}
+    {# Organization navigation bar would go here - simplified for now #}
+    <h2>{{ org_name }}</h2>
+
+    <h3>Raw ESS filings</h3>
+
+    <p>This page shows the raw filings from the
+    <a href="https://www.ess.gov.hk/en/granted_companies.html" target="_blank">
+    Employment Support Scheme</a> files attributed to this organisation in
+    Webb-site Who's Who. <a href="/dbpub/searchESS.asp">
+    Click here</a> to search all approved ESS claims.</p>
+
+    {% if filings %}
+        <table class="numtable c2l">
+            <tr>
+                <th>
+                    {% if sort == 'phaup' %}
+                        <a href="?p={{ person_id }}&sort=phadn">Phase ▼</a>
+                    {% else %}
+                        <a href="?p={{ person_id }}&sort=phaup">Phase</a>
+                    {% endif %}
+                </th>
+                <th>
+                    {% if sort == 'namup' %}
+                        <a href="?p={{ person_id }}&sort=namdn">English name ▼</a>
+                    {% else %}
+                        <a href="?p={{ person_id }}&sort=namup">English name</a>
+                    {% endif %}
+                </th>
+                <th class="colHide3 left">Chinese name</th>
+                <th>
+                    {% if sort == 'amtdn' %}
+                        <a href="?p={{ person_id }}&sort=amtup">Amount<br>HK$ ▲</a>
+                    {% else %}
+                        <a href="?p={{ person_id }}&sort=amtdn">Amount<br>HK$</a>
+                    {% endif %}
+                </th>
+                <th>
+                    {% if sort == 'hdsdn' %}
+                        <a href="?p={{ person_id }}&sort=hdsup">Heads ▲</a>
+                    {% else %}
+                        <a href="?p={{ person_id }}&sort=hdsdn">Heads</a>
+                    {% endif %}
+                </th>
+                <th>
+                    {% if sort == 'avgdn' %}
+                        <a href="?p={{ person_id }}&sort=avgup">Average<br>HK$ ▲</a>
+                    {% else %}
+                        <a href="?p={{ person_id }}&sort=avgdn">Average<br>HK$</a>
+                    {% endif %}
+                </th>
+            </tr>
+            {% for filing in filings %}
+            <tr>
+                <td>{{ filing.phase }}</td>
+                <td>{{ filing.ename }}</td>
+                <td class="colHide3 left">{{ filing.cname or '' }}</td>
+                <td>{{ "{:,.0f}".format(filing.amt) }}</td>
+                <td>{{ "{:,.0f}".format(filing.heads) }}</td>
+                <td>{{ "{:,.0f}".format(filing.avg) if filing.avg else '-' }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if phase_totals|length > 1 %}
+            <h3>Totals</h3>
+            <table class="numtable">
+                <tr>
+                    <th>Phase</th>
+                    <th>Amount<br>HK$</th>
+                    <th>Heads</th>
+                    <th>Average<br>HK$</th>
+                </tr>
+                {% for total in phase_totals %}
+                <tr>
+                    <td>{{ total.phase }}</td>
+                    <td>{{ "{:,.0f}".format(total.amt) }}</td>
+                    <td>{{ "{:,.0f}".format(total.hds) }}</td>
+                    <td>{{ "{:,.0f}".format(total.avg) if total.avg else '-' }}</td>
+                </tr>
+                {% endfor %}
+                {% if grand_total %}
+                <tr>
+                    <td>Both</td>
+                    <td>{{ "{:,.0f}".format(grand_total.amt) }}</td>
+                    <td>{{ "{:,.0f}".format(grand_total.hds) }}</td>
+                    <td>{{ "{:,.0f}".format(grand_total.avg) if grand_total.avg else '-' }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        {% endif %}
+    {% else %}
+        <p>None found.</p>
+    {% endif %}
+{% endif %}
+
+{% include 'footer.html' %}
+{% endblock %}
