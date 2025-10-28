@@ -7365,6 +7365,191 @@ def roles():
     return render_template('dbpub/roles.html', roles_data=roles_data)
 
 
+@bp.route('/advltsnap.asp')
+def advltsnap():
+    """
+    Adviser league table snapshot
+
+    Shows advisers (auditors, bankers, IFAs, etc.) and their client counts
+    at a specific snapshot date. Shows only continuing roles (not one-time).
+    """
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template, current_app
+    from datetime import date
+
+    r = get_int('r', 0)  # Role ID
+    d = get_str('d', str(date.today()))  # Snapshot date
+    sort_param = get_str('sort', 'cntdn')
+
+    # Get role information
+    role_name = "Advisers"
+    try:
+        role_result = execute_query(
+            "SELECT rolelong FROM enigma.roles WHERE NOT onetime AND roleid = %s", (r,)
+        )
+        if role_result:
+            role_name = role_result[0]['rolelong']
+    except Exception:
+        pass
+
+    # Determine sort order
+    sort_orders = {
+        'nameup': 'name1',
+        'namedn': 'name1 DESC',
+        'cntup': 'c, name1',
+        'cntdn': 'c DESC, name1 DESC'
+    }
+    ob = sort_orders.get(sort_param, 'c DESC, name1 DESC')
+    if sort_param not in sort_orders:
+        sort_param = 'cntdn'
+
+    # Query advisers at snapshot date
+    try:
+        results = execute_query(f"""
+            SELECT o.personid, o.name1,
+                   COUNT(a.company) AS c
+            FROM enigma.adviserships a
+            JOIN enigma.organisations o ON a.adviser = o.personid
+            WHERE a.company IN (
+                SELECT DISTINCT s.issuer
+                FROM enigma.stocklistings s
+                JOIN enigma.issue i ON s.issueid = i.id
+                WHERE i.typeid IN (0,6,7,10,42)
+                  AND s.stockexid IN (1,20,23)
+                  AND (s.firsttradedate IS NULL OR s.firsttradedate <= %s)
+                  AND (s.delistdate IS NULL OR s.delistdate > %s)
+            )
+            AND a.role = %s
+            AND (a.adddate IS NULL OR a.adddate <= %s)
+            AND (a.remdate IS NULL OR a.remdate > %s)
+            GROUP BY o.personid, o.name1
+            ORDER BY {ob}
+        """, (d, d, r, d, d))
+
+        # Calculate total
+        total = sum(row['c'] for row in results) if results else 0
+    except Exception as ex:
+        current_app.logger.error(f"Error in advltsnap.asp: {ex}", exc_info=True)
+        results = []
+        total = 0
+
+    # Get role options for dropdown
+    try:
+        roles = execute_query(
+            "SELECT roleid, rolelong FROM enigma.roles WHERE NOT onetime ORDER BY rolelong"
+        )
+    except Exception:
+        roles = []
+
+    return render_template('dbpub/advltsnap.html',
+                         results=results,
+                         r=r,
+                         d=d,
+                         role_name=role_name,
+                         total=total,
+                         roles=roles,
+                         sort=sort_param)
+
+
+@bp.route('/HKBRcheck.asp')
+def hkbrcheck():
+    """
+    Hong Kong Business Registration number check digit calculator
+
+    Takes first 7 digits of BR number and calculates the 8th check digit
+    using the formula: (8*d1 + d2 + 2*d3 + 3*d4 + 6*d5 + 7*d6 + 8*d7) mod 10
+    """
+    from flask import render_template, request
+
+    b = request.args.get('b', '').strip()
+    hint = ""
+    check_digit = None
+
+    if b:
+        if len(b) != 7:
+            hint = "Enter the first 7 digits. "
+        elif not b.isdigit():
+            hint = "The first 7 digits must be numerals. "
+        else:
+            # Calculate check digit using the formula
+            check_digit = (
+                8 * int(b[0]) +
+                int(b[1]) +
+                2 * int(b[2]) +
+                3 * int(b[3]) +
+                6 * int(b[4]) +
+                7 * int(b[5]) +
+                8 * int(b[6])
+            ) % 10
+            hint = f"The last digit is: {check_digit}"
+
+    return render_template('dbpub/hkbrcheck.html',
+                         b=b,
+                         hint=hint,
+                         check_digit=check_digit)
+
+
+@bp.route('/cosperdomHK.asp')
+def cosperdomhk():
+    """
+    Foreign companies registered in HK per domicile
+
+    Shows foreign companies currently registered in Hong Kong,
+    grouped by their domicile. Displays surviving companies only.
+    """
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template, current_app
+
+    dom = get_int('dom', 2)  # Default to BVI (domicile 2)
+    sort_param = get_str('sort', 'namup')
+
+    # Get domicile name
+    friendly = "Unknown"
+    try:
+        result = execute_query(
+            "SELECT friendly FROM enigma.domiciles WHERE id = %s", (dom,)
+        )
+        if result:
+            friendly = result[0]['friendly']
+    except Exception:
+        pass
+
+    # Determine sort order
+    sort_orders = {
+        'namdn': 'name DESC, regdate DESC',
+        'regup': 'regdate, name',
+        'regdn': 'regdate DESC, name DESC',
+        'namup': 'name, regdate'
+    }
+    ob = sort_orders.get(sort_param, 'name, regdate')
+    if sort_param not in sort_orders:
+        sort_param = 'namup'
+
+    # Query foreign companies registered in HK
+    try:
+        results = execute_query(f"""
+            SELECT o.personid, o.name1 AS name, f.regdate
+            FROM enigma.organisations o
+            JOIN enigma.freg f ON o.personid = f.orgid
+            WHERE f.hostdom = 1
+              AND o.cesdate IS NULL
+              AND o.disdate IS NULL
+              AND o.domicile = %s
+            ORDER BY {ob}
+        """, (dom,))
+    except Exception as ex:
+        current_app.logger.error(f"Error in cosperdomHK.asp: {ex}", exc_info=True)
+        results = []
+
+    return render_template('dbpub/cosperdomhk.html',
+                         results=results,
+                         dom=dom,
+                         friendly=friendly,
+                         sort=sort_param)
+
+
 @bp.route('/possum.asp')
 def possum():
     """Position summary"""
