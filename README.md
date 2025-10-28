@@ -1,27 +1,27 @@
-# Webb-site Repository
+# Renavon Hong Kong Database
 
-## From David M Webb MBE
+## Data Attribution
 
-> Read the [COPYRIGHT](COPYRIGHT) file first! Then explore the "Setting up the Webb-site database" folder.
->
-> Carpe diem!
->
-> David M Webb MBE
+**This database contains data originally compiled by [Webb-site.com](https://webb-site.com), founded and operated by David M. Webb MBE since 1998.**
+
+David Webb generously released the Webb-site database schemas and scrapers as open source in October 2025 under the Creative Commons CC-BY 4.0 license. We gratefully acknowledge his 35-year contribution to transparency in Hong Kong's financial markets.
+
+> Read the [COPYRIGHT](COPYRIGHT) file for full attribution and licensing information.
 
 ## Mission
 
-This repository preserves and maintains **David Webb's Hong Kong financial transparency platform** - a 35-year archive of Hong Kong stock market data, corporate governance records, and beneficial ownership tracking.
+Renavon Hong Kong Database preserves and provides public access to a comprehensive archive of Hong Kong financial market data spanning over 35 years. This platform promotes transparency, accountability, and independent research in Hong Kong's capital markets.
 
 Our purpose is to:
 
-- **Preserve** David Webb's legacy of financial transparency and corporate governance activism
-- **Maintain** the continuous operation of data collection and publication systems
-- **Modernize** the platform for deployment on modern cloud infrastructure
-- **Ensure** public access to Hong Kong financial data remains free and open
+- **Preserve** 35 years of Hong Kong financial data for public access
+- **Maintain** freely accessible database query tools
+- **Support** research, journalism, and public interest analysis
+- **Honor** the CC-BY 4.0 license by proper attribution to Webb-site.com
 
-## What is Webb-site?
+## What Data is Included?
 
-The Webb-site platform is a comprehensive multi-tier financial data system tracking:
+The Renavon platform provides access to:
 
 - **CCASS holdings** - Beneficial ownership data from Hong Kong's Central Clearing system (2007-present)
 - **Stock quotes and corporate actions** - Historical price data and dividends since 1994
@@ -29,109 +29,151 @@ The Webb-site platform is a comprehensive multi-tier financial data system track
 - **SFC licensees** - Securities and Futures Commission registered professionals
 - **Cross-border structures** - Hong Kong and UK company relationships
 - **Financial reports** - Automated collection from HKEX announcements
+- **Law Society records** - Hong Kong solicitor admissions and firm positions
 
-### System Components
+### What is NOT Included
 
-1. **VB.NET scrapers** - 15+ automated data collectors from HKEX, SFC, Companies Registry, etc.
-2. **MySQL databases** - 5 schemas (enigma, ccass, private, iplog, mailvote) with 35 years of data
-3. **Classic ASP web interface** - Public query system for holdings, ownership trees, events
-4. **Access frontend** - Database editing system with role-based access control
+**Editorial content** from Webb-site Reports (articles, analysis, and opinions published 1998-2025) remains copyright David M. Webb and is NOT included in this repository or covered by the CC-BY 4.0 license.
 
-## Current Status
+Where this site references Webb-site articles, links direct to [Archive.org](https://web.archive.org/web/*/webb-site.com/articles/) preserved copies for historical reference only.
 
-**Production**: Windows-based system running VB.NET scrapers on scheduled tasks, IIS hosting Classic ASP pages, master-slave MySQL replication between Hong Kong and USA servers.
+## System Components
 
-**In Progress**: Migration to cloud-native architecture (Python scrapers, modern web framework, containerized deployment) for operation on platforms like Render.com or AWS.
+1. **Data scrapers** - Automated collectors from HKEX, SFC, Companies Registry, Law Society, etc.
+2. **PostgreSQL database** - Core data storage with 35 years of financial records
+3. **Flask web interface** - Public-facing query and reporting system
+4. **Legacy VB.NET scrapers** - Original data collection modules (being modernized)
+
+## Technology Stack
+
+**Current Production** (as of October 2025):
+- **Frontend**: Flask + Jinja2 + HTMX (Python 3.11+)
+- **Database**: PostgreSQL 16 on Render.com (managed cloud database)
+- **Hosting**: Render.com Web Service (cloud platform)
+- **Backend scrapers**: VB.NET modules (continue operating on Windows backend)
+
+**Legacy Components** (being phased out):
+- Classic ASP web pages
+- MySQL 8.0.37 databases
+- Windows Server 2016 IIS hosting
 
 ## Quick Start
 
 ### For Users
 
-Browse the documentation:
-1. Start with [COPYRIGHT](COPYRIGHT) - License and attribution
-2. Read [docs/architecture/overview.md](docs/architecture/overview.md) - System architecture
-3. Review [docs/database/setup.md](docs/database/setup.md) - Database setup guide
+**Live Site**: [Browse the database](https://renavon.com) (replace with actual URL when deployed)
+
+**Data Access**:
+- Search companies and individuals
+- Track CCASS beneficial ownership changes
+- View corporate actions and stock prices
+- Analyze board compositions and adviser networks
 
 ### For Developers
 
 **Prerequisites:**
-- MySQL 8.0.37+ (or 8.4.5 LTS)
+- PostgreSQL 14+ (or MySQL 8.0.37+ for legacy setup)
+- Python 3.11+
 - For legacy scrapers: Visual Studio 2022, Windows 10+
-- For new development: Python 3.11+, Docker
+
+**Local Development:**
+```bash
+# Clone repository
+git clone https://github.com/yourusername/webbsite.git
+cd webbsite
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Configure database connection
+export DATABASE_URL="postgresql://user:pass@localhost:5432/enigma_pg"
+
+# Run Flask development server
+flask run
+```
 
 **Database Setup:**
-1. Install MySQL with configuration from [docs/database/setup.md](docs/database/setup.md)
-2. Restore schemas from `CCASS schema/`, `Enigma schema/`, etc.
-3. Configure DSNs or connection strings per [docs/database/setup.md](docs/database/setup.md)
+1. Install PostgreSQL (or MySQL for legacy compatibility)
+2. Restore schemas from database dump files
+3. Configure connection strings in `.env` file
 
-**See detailed setup instructions in [docs/database/setup.md](docs/database/setup.md)**
+**See detailed setup instructions in the repository documentation**
 
 ## Documentation
 
-Comprehensive documentation is available in the [`docs/`](docs/) folder:
-
-### Architecture & Design
-- [Architecture Overview](docs/architecture/overview.md) - System design and data flow
-- [Technology Stack](docs/architecture/technology-stack.md) - Current and target technologies
+Comprehensive documentation is available in this repository:
 
 ### Database
-- [Database Setup Guide](docs/database/setup.md) - MySQL configuration and schema restoration
-- [CCASS Schema](docs/database/ccass-schema.md) - Beneficial ownership tracking system
-- [Enigma Schema](docs/database/enigma-schema.md) - Core company and person data (35 years)
-- [Mailvote Schema](docs/database/mailvote-schema.md) - User authentication and polling
-- [Iplog Schema](docs/database/iplog-schema.md) - Bot protection and rate limiting
-- [MySQL Configuration](docs/database/mysql-configuration.md) - Critical MySQL settings
+- CCASS Schema documentation - Beneficial ownership tracking
+- Enigma Schema documentation - Core company and person data
+- Database setup guides
 
 ### Scrapers
-- [Scraper Overview](docs/scrapers/overview.md) - Data collection architecture
-- [Compilation Guide](docs/scrapers/compilation.md) - Building VB.NET scrapers
-- [Scheduling](docs/scrapers/scheduling.md) - Scraper run times and dependencies
-- [Scraper Reference](docs/scrapers/reference.md) - Individual scraper documentation
+- Scraper overview and architecture
+- VB.NET compilation guide
+- Scheduling and dependencies
 
 ### Web Interface
-- [ASP Architecture](docs/web/asp-architecture.md) - Classic ASP structure and patterns
-- [Editing System](docs/web/editing-system.md) - Database editing and access control
-- [Authentication](docs/web/authentication.md) - Login and security system
-
-### Migration & Modernization
-- [Modernization Roadmap](docs/modernization-roadmap.md) - High-level priorities
-- [Cloud Migration Roadmap](docs/migration/cloud-roadmap.md) - Detailed migration plan
+- Flask application structure
+- ASP compatibility helpers
+- Authentication system (for future features)
 
 ## Data & Licensing
 
-All Webb-site datasets and software are released under the **Creative Commons CC-BY 4.0 license** - free for commercial or non-commercial use with attribution.
+### License
 
-Users are encouraged to:
-- Mirror this repository on their own servers with public access
-- Build upon these datasets and make them freely available
-- Acknowledge Webb-site.com as the source when republishing
+The **database structure, data compilation, and software** are released under **Creative Commons Attribution 4.0 International (CC-BY 4.0)** license.
 
-Data are provided "as is" without liability. See [COPYRIGHT](COPYRIGHT) for full terms.
+**You are free to:**
+- Share — copy and redistribute the data
+- Adapt — remix, transform, and build upon the data for any purpose, including commercially
+
+**Under the following terms:**
+- **Attribution** — Credit Webb-site.com as the original compiler, provide a link to CC-BY 4.0 license, and indicate changes made
+
+**Suggested Attribution**: "Data from Renavon Hong Kong Database, originally compiled by Webb-site.com | CC-BY 4.0"
+
+### Disclaimer
+
+Data is provided "as is" without warranty. While we strive for accuracy, we make no guarantees about completeness, reliability, or suitability for any purpose.
+
+**Not investment advice.** This database is for informational and research purposes only.
+
+## Data Sources
+
+All data is sourced from publicly available sources including:
+- Hong Kong Exchanges and Clearing (HKEX)
+- Securities and Futures Commission (SFC)
+- Companies Registry Hong Kong
+- Companies House UK
+- Hong Kong Law Society
+- Hong Kong Monetary Authority (HKMA)
+- Other government and regulatory bodies
 
 ## Contributing
 
-This project honors David Webb's commitment to transparency and public interest. Contributions that support these values are welcome:
-
-- Bug fixes and maintenance
+This is a data preservation project. Contributions are welcome for:
+- Bug fixes and error corrections
+- Database query improvements
+- Additional data sources (with proper licensing)
 - Documentation improvements
-- Modernization efforts (Python scrapers, cloud deployment, modern web interface)
-- Data quality improvements
 
-Please ensure all contributions:
-- Maintain data integrity and historical accuracy
-- Preserve public access and CC-BY 4.0 licensing
-- Include appropriate attribution
+Please ensure contributions respect the CC-BY 4.0 license and maintain attribution to Webb-site.com.
 
-## Project History
+## Support
 
-Created by **David M Webb MBE**, Hong Kong's leading corporate governance activist and independent investor, who has tracked Hong Kong market data since 1990. This repository represents his life's work making financial data freely accessible to promote market transparency.
+For questions or issues:
+- Open a GitHub issue
+- Contact via website form (link TBD)
 
-## Contact & Links
+## Acknowledgments
 
-- Original site: [Webb-site.com](https://webb-site.com) (legacy platform)
-- License: [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- Documentation: [docs/](docs/)
+**Primary Attribution**: This database would not exist without David M. Webb's 35 years of meticulous data collection, analysis, and advocacy for transparency in Hong Kong's financial markets. We are deeply grateful for his decision to release this invaluable resource under an open license.
+
+**Data Sources**: We thank all the public agencies and regulators who make their data available to the public.
+
+**Open Source Community**: This project builds on countless open source tools and libraries.
 
 ---
 
-*Carpe diem!*
+**For more information about David Webb and the original Webb-site.com, see:** https://webb-site.com/pages/aboutus.asp (archived at Archive.org)
