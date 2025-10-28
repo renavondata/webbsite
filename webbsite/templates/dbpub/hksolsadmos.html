@@ -1,24 +1,51 @@
-{% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% extends "dbheader.html" %}
+
+{% block title %}HK solicitors admitted overseas{% endblock %}
+
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
+<h2>HK solicitors admitted overseas</h2>
+{# TODO: Add solsBar navigation when implemented #}
+
+<p>This table analyses all solicitors admitted in HK and currently seen in the
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">Law Society's Law List</a>, whether practising or not.
+To which other jurisdictions they have been admitted, before or after being
+admitted to HK? Click a column heading to sort. Click a jurisdiction to see
+lawyers who have been admitted both there and in HK.</p>
+
+{% set mobile_cols = 3 %}
+<table class="c2l numtable">
+    <tr>
+        <th class="colHide3"></th>
+        <th>
+            {% if sort == 'jurdn' %}<a href="?sort=jurup">Jurisdiction ↓</a>
+            {% else %}<a href="?sort=jurdn">Jurisdiction ↑</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'cntup' %}<a href="?sort=cntdn">Lawyers ↑</a>
+            {% else %}<a href="?sort=cntup">Lawyers ↓</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'befup' %}<a href="?sort=befdn">Before<br>HK ↑</a>
+            {% else %}<a href="?sort=befup">Before<br>HK ↓</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'aftup' %}<a href="?sort=aftdn">On or<br>after<br>HK ↑</a>
+            {% else %}<a href="?sort=aftup">On or<br>after<br>HK ↓</a>{% endif %}
+        </th>
+        <th class="colHide3">
+            {% if sort == 'shrup' %}<a href="?sort=shrdn">Share<br>before ↑</a>
+            {% else %}<a href="?sort=shrup">Share<br>before ↓</a>{% endif %}
+        </th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td class="colHide3">{{ loop.index }}</td>
+        <td><a href="hksolsdom.asp?dom={{ row.domid }}">{{ row.jur }}</a></td>
+        <td>{{ row.cnt }}</td>
+        <td>{{ row.bef }}</td>
+        <td>{{ row.aft }}</td>
+        <td class="colHide3">{{ "%.1f"|format(row.share * 100) if row.share else '0.0' }}%</td>
+    </tr>
     {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
 </table>
-{% else %}
-<p>No results found.</p>
-{% endif %}
 {% endblock %}
