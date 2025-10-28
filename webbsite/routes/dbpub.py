@@ -4523,208 +4523,37 @@ def docs():
 @bp.route('/articles.asp')
 def articles():
     """
-    Articles index - shows recent Webb-site articles
-
-    Query params:
-    - p: personID (show articles mentioning this person/org)
-
-    Tables used: stories, personstories, organisations, people
+    DEPRECATED: Redirects to archive.org
+    Editorial content remains copyright David M. Webb
     """
-    person_id = get_int('p', 0)
-
-    if person_id:
-        # Articles mentioning specific person/org
-        articles_data = execute_query("""
-            SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
-                   s.image, sr.sourcename, s.sourceid,
-                   sn.storyid AS snid
-            FROM enigma.personstories ps
-            JOIN enigma.stories s ON ps.storyid = s.storyid
-            LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
-            LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
-            WHERE ps.personid = %s
-              AND s.pubdate <= CURRENT_TIMESTAMP
-            ORDER BY s.storydate DESC
-            LIMIT 500
-        """, (person_id,))
-    else:
-        # Recent articles
-        articles_data = execute_query("""
-            SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
-                   s.image, sr.sourcename, s.sourceid,
-                   sn.storyid AS snid
-            FROM enigma.stories s
-            LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
-            LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
-            WHERE s.sourceid = 1
-              AND s.pubdate <= CURRENT_TIMESTAMP
-            ORDER BY s.storydate DESC
-            LIMIT 100
-        """)
-
-    # Get related entities for each article
-    for article in articles_data:
-        story_id = article['storyid']
-
-        # Get organizations mentioned
-        article['orgs'] = execute_query("""
-            SELECT ps.personid, o.name1
-            FROM enigma.personstories ps
-            JOIN enigma.organisations o ON ps.personid = o.personid
-            WHERE ps.storyid = %s
-            ORDER BY o.name1
-        """, (story_id,))
-
-        # Get people mentioned
-        article['people'] = execute_query("""
-            SELECT ps.personid,
-                   p.name1 || COALESCE(', ' || p.name2, '') AS name
-            FROM enigma.personstories ps
-            JOIN enigma.people p ON ps.personid = p.personid
-            WHERE ps.storyid = %s
-            ORDER BY p.name1, p.name2
-        """, (story_id,))
-
-        # Get tags
-        article['tags'] = execute_query("""
-            SELECT st.catid, c.name
-            FROM enigma.storytags st
-            JOIN enigma.categories c ON st.catid = c.id
-            WHERE st.storyid = %s
-            ORDER BY c.name
-        """, (story_id,))
-
-    return render_template('dbpub/articles.html',
-                         articles=articles_data,
-                         person_id=person_id)
+    # Redirect to archive.org's article index
+    return redirect("https://web.archive.org/web/2/https://webb-site.com/dbpub/articles.asp" +
+                   ('?p=' + request.args.get('p') if request.args.get('p') else ''),
+                   code=301)
 
 
 @bp.route('/articlesyear.asp')
 def articles_year():
     """
-    Articles by publication year
-
-    Query params:
-    - y: year (default current year)
-
-    Shows all Webb-site articles published in a specific year
+    DEPRECATED: Redirects to archive.org
+    Editorial content remains copyright David M. Webb
     """
-    from datetime import date
-    year = get_int('y', date.today().year)
-
-    # Query articles for this year
-    articles_data = execute_query("""
-        SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text
-        FROM enigma.stories s
-        WHERE s.sourceid = 1
-          AND EXTRACT(YEAR FROM s.storydate) = %s
-          AND s.pubdate <= CURRENT_TIMESTAMP
-        ORDER BY s.storydate DESC
-    """, (year,))
-
-    # Get related entities for each article
-    for article in articles_data:
-        story_id = article['storyid']
-
-        # Get organizations mentioned
-        article['orgs'] = execute_query("""
-            SELECT ps.personid, o.name1
-            FROM enigma.personstories ps
-            JOIN enigma.organisations o ON ps.personid = o.personid
-            WHERE ps.storyid = %s
-            ORDER BY o.name1
-        """, (story_id,))
-
-        # Get people mentioned
-        article['people'] = execute_query("""
-            SELECT ps.personid,
-                   p.name1 || COALESCE(', ' || p.name2, '') AS name
-            FROM enigma.personstories ps
-            JOIN enigma.people p ON ps.personid = p.personid
-            WHERE ps.storyid = %s
-            ORDER BY p.name1, p.name2
-        """, (story_id,))
-
-        # Get tags
-        article['tags'] = execute_query("""
-            SELECT st.catid, c.name
-            FROM enigma.storytags st
-            JOIN enigma.categories c ON st.catid = c.id
-            WHERE st.storyid = %s
-            ORDER BY c.name
-        """, (story_id,))
-
-    return render_template('dbpub/articlesyear.html',
-                         year=year,
-                         articles=articles_data)
+    year_param = request.args.get('y', '')
+    return redirect("https://web.archive.org/web/2/https://webb-site.com/dbpub/articlesyear.asp" +
+                   ('?y=' + year_param if year_param else ''),
+                   code=301)
 
 
 @bp.route('/artlinks.asp')
 def artlinks():
     """
-    Article links - shows organizations, people, and tags for a specific article
-
-    Query params:
-    - s: storyID
-
-    Shows all entities and tags associated with an article
+    DEPRECATED: Redirects to archive.org
+    Editorial content remains copyright David M. Webb
     """
-    story_id = get_int('s', 0)
-
-    if not story_id:
-        return "Story ID required", 400
-
-    # Get article details
-    article_data = execute_query("""
-        SELECT s.storyid, s.title, s.summary, s.storydate, s.url, s.url2, s.url2text,
-               sr.sourcename, s.sourceid,
-               sn.storyid AS snid, sn.titleEN, sn.titleTC
-        FROM enigma.stories s
-        LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
-        LEFT JOIN enigma.sfcnews sn ON s.storyid = sn.storyid
-        WHERE s.storyid = %s
-    """, (story_id,))
-
-    if not article_data:
-        return "Article not found", 404
-
-    article = article_data[0]
-
-    # Get organizations mentioned
-    orgs_data = execute_query("""
-        SELECT ps.personid, o.name1, o.cname
-        FROM enigma.personstories ps
-        JOIN enigma.organisations o ON ps.personid = o.personid
-        WHERE ps.storyid = %s
-        ORDER BY o.name1
-    """, (story_id,))
-
-    # Get people mentioned
-    people_data = execute_query("""
-        SELECT ps.personid,
-               p.name1 || COALESCE(', ' || p.name2, '') AS name,
-               p.cname
-        FROM enigma.personstories ps
-        JOIN enigma.people p ON ps.personid = p.personid
-        WHERE ps.storyid = %s
-        ORDER BY p.name1, p.name2
-    """, (story_id,))
-
-    # Get tags
-    tags_data = execute_query("""
-        SELECT st.catid, c.name
-        FROM enigma.storytags st
-        JOIN enigma.categories c ON st.catid = c.id
-        WHERE st.storyid = %s
-        ORDER BY c.name
-    """, (story_id,))
-
-    return render_template('dbpub/artlinks.html',
-                         story_id=story_id,
-                         article=article,
-                         orgs=orgs_data,
-                         people=people_data,
-                         tags=tags_data)
+    story_param = request.args.get('s', '')
+    return redirect("https://web.archive.org/web/2/https://webb-site.com/dbpub/artlinks.asp" +
+                   ('?s=' + story_param if story_param else ''),
+                   code=301)
 
 
 @bp.route('/cat.asp')
@@ -4776,79 +4605,13 @@ def cat():
 @bp.route('/subject.asp')
 def subject():
     """
-    Articles by subject tag
-
-    Query params:
-    - c: category ID (subject tag)
-
-    Shows all articles tagged with a specific subject
-    Tables used: storytags, stories, categories
+    DEPRECATED: Redirects to archive.org
+    Editorial content remains copyright David M. Webb
     """
-    cat_id = get_int('c', 0)
-
-    if not cat_id:
-        return "Category ID required", 400
-
-    # Get category name
-    cat_result = execute_query("""
-        SELECT name FROM enigma.categories WHERE id = %s
-    """, (cat_id,))
-
-    if not cat_result:
-        return "Subject not found", 404
-
-    subject_name = cat_result[0]['name']
-
-    # Get articles with this tag
-    articles_data = execute_query("""
-        SELECT s.title, s.storyid, s.storydate, s.url, s.summary,
-               s.sourceid, sr.sourcename, s.url2, s.url2text, s.image,
-               sn.storyid AS snid
-        FROM enigma.storytags st
-        JOIN enigma.stories s ON st.storyid = s.storyid
-        LEFT JOIN enigma.sources sr ON s.sourceid = sr.sourceid
-        LEFT JOIN enigma.sfcnews sn ON st.storyid = sn.storyid
-        WHERE st.catid = %s
-          AND s.pubdate <= CURRENT_TIMESTAMP
-        ORDER BY s.storydate DESC
-    """, (cat_id,))
-
-    # Get related entities for each article
-    for article in articles_data:
-        story_id = article['storyid']
-
-        # Get organizations mentioned
-        article['orgs'] = execute_query("""
-            SELECT ps.personid, o.name1
-            FROM enigma.personstories ps
-            JOIN enigma.organisations o ON ps.personid = o.personid
-            WHERE ps.storyid = %s
-            ORDER BY o.name1
-        """, (story_id,))
-
-        # Get people mentioned
-        article['people'] = execute_query("""
-            SELECT ps.personid,
-                   p.name1 || COALESCE(', ' || p.name2, '') AS name
-            FROM enigma.personstories ps
-            JOIN enigma.people p ON ps.personid = p.personid
-            WHERE ps.storyid = %s
-            ORDER BY p.name1, p.name2
-        """, (story_id,))
-
-        # Get other tags
-        article['tags'] = execute_query("""
-            SELECT st.catid, c.name
-            FROM enigma.storytags st
-            JOIN enigma.categories c ON st.catid = c.id
-            WHERE st.storyid = %s
-            ORDER BY c.name
-        """, (story_id,))
-
-    return render_template('dbpub/subject.html',
-                         cat_id=cat_id,
-                         subject_name=subject_name,
-                         articles=articles_data)
+    cat_param = request.args.get('c', '')
+    return redirect("https://web.archive.org/web/2/https://webb-site.com/dbpub/subject.asp" +
+                   ('?c=' + cat_param if cat_param else ''),
+                   code=301)
 
 
 # HK Solicitors

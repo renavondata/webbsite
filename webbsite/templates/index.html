@@ -1,6 +1,6 @@
 {% extends "base_reports.html" %}
 
-{% block title %}Webb-site Reports: non-profit news, analysis and opinions | Webb-site Database{% endblock %}
+{% block title %}Renavon Hong Kong Database: financial data archive{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -50,7 +50,7 @@
 		}
 	}
 </style>
-<link rel="alternate" type="application/rss+xml" href="/rss.asp" title="Webb-site.com latest news">
+<link rel="alternate" type="application/rss+xml" href="/rss.asp" title="Renavon latest news">
 {% endblock %}
 
 {% block content %}
@@ -62,13 +62,13 @@
 	{% for story in stories %}
 		<div class="artsum">
 			{% if story.sourceid == 1 %}
-				{# Webb-site original content - bold #}
-				<a style="font-weight:bold" href="/articles/{{ story.url }}">{{ story.title }}</a>
+				{# Webb-site original content - link to archive.org #}
+				<a style="font-weight:bold" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url }}" target="_blank">{{ story.title }}</a>
 				{% if story.url2text %}
-					|&nbsp;<a href="/articles/{{ story.url2 }}"><b>{{ story.url2text }}</b></a>
+					|&nbsp;<a href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url2 }}" target="_blank"><b>{{ story.url2text }}</b></a>
 				{% endif %}
 				<br>
-				<span style="color:blue">Webb-site.com, {{ story.storydate.strftime('%-d-%b-%Y') }}</span>
+				<span style="color:blue">Webb-site.com (archived), {{ story.storydate.strftime('%-d-%b-%Y') }}</span>
 				{% if story.summary %}
 					<br>{{ story.summary }}
 				{% endif %}
@@ -95,12 +95,12 @@
 
 	{# Two-column layout for desktop #}
 	<div class="col1of2">
-		<h3>Our stories</h3>
+		<h3>Webb-site Reports (archived)</h3>
 		{% for story in our_stories %}
 			<div class="artsum">
-				<a target="_self" href="{{ story.url if story.url.startswith('http') else (story.url[3:] if story.url.startswith('../') else 'articles/' + story.url) }}"><b>{{ story.title }}</b></a>
+				<a target="_blank" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url }}"><b>{{ story.title }}</b></a>
 				{% if story.url2text %}
-					|&nbsp;<a target="{{ '_blank' if story.url2 and story.url2.startswith('http') else '_self' }}" href="{{ story.url2 if story.url2.startswith('http') else (story.url2[3:] if story.url2.startswith('../') else 'articles/' + story.url2) }}"><b>{{ story.url2text }}</b></a>
+					|&nbsp;<a target="_blank" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url2 }}"><b>{{ story.url2text }}</b></a>
 				{% endif %}
 				<br>
 				{% if story.summary %}{{ story.summary }}&nbsp;{% endif %}({{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }})
@@ -131,8 +131,8 @@
 		{% endfor %}
 	</div>
 	<div class="clear"></div>
-	<div class="artsum"><strong><a href="/articles/">Previously on Webb-site.com</a></strong><br>
-	Check out our full list of articles in the archive, since our launch in 1998.</div>
+	<div class="artsum"><strong><a href="https://web.archive.org/web/2/https://webb-site.com/articles/" target="_blank">Webb-site.com article archive</a></strong><br>
+	Browse the full archive of Webb-site Reports articles (1998-2025) on Archive.org.</div>
 </div>
 
 <div class="sidebar">
