@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}SFC licences of {{ org_name }}{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<h2>{{ org_name }}</h2>
+
+<ul class="navlist">
+    <li><a href="?p={{ person_id }}&sort={{ sort }}&h=Y" {% if hide == 'Y' %}class="selected"{% endif %}>Current</a></li>
+    <li><a href="?p={{ person_id }}&sort={{ sort }}&h=N" {% if hide == 'N' %}class="selected"{% endif %}>History</a></li>
+    {% if sfcid %}
+    <li><a target="_blank" href="http://www.sfc.hk/publicregWeb/{{ ptype }}/{{ sfcid }}/licences">SFC web</a></li>
+    {% endif %}
+    <li><a target="_blank" href="/dbpub/FAQWWW.asp">FAQ</a></li>
+</ul>
+<div class="clear"></div>
+
+{% if licenses %}
+    <h3>SFC licenses</h3>
+    <p>C=licensed corporation (regulated by SFC), R=Registered Institution (regulated by HKMA).
+    If there is no starting date then the entity has been in that activity since at least 1-Apr-2003 when the current register began.</p>
+
+    <table class="opltable">
+        <tr>
+            <th>C/R</th>
+            <th>
+                {% if sort == 'actup' %}
+                    <a href="?p={{ person_id }}&sort=actdn&h={{ hide }}">Activity ▼</a>
+                {% else %}
+                    <a href="?p={{ person_id }}&sort=actup&h={{ hide }}">Activity</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'appup' %}
+                    <a href="?p={{ person_id }}&sort=appdn&h={{ hide }}">From ▼</a>
+                {% else %}
+                    <a href="?p={{ person_id }}&sort=appup&h={{ hide }}">From</a>
+                {% endif %}
+            </th>
+            <th>
+                {% if sort == 'resup' %}
+                    <a href="?p={{ person_id }}&sort=resdn&h={{ hide }}">Until ▼</a>
+                {% else %}
+                    <a href="?p={{ person_id }}&sort=resup&h={{ hide }}">Until</a>
+                {% endif %}
+            </th>
+        </tr>
+        {% set last_act = '' %}
+        {% for license in licenses %}
+        {% set show_act = (license.actname != last_act) or (sort[:3] != 'act') %}
+        <tr class="total">
+            <td>{{ 'R' if license.ri else 'C' }}</td>
+            <td>{{ license.actname if show_act else '' }}</td>
+            <td class="nowrap">{{ license.startdate.strftime('%Y-%m-%d') if license.startdate else '' }}</td>
+            <td class="nowrap">{{ license.enddate.strftime('%Y-%m-%d') if license.enddate else '' }}</td>
+        </tr>
+        {% set last_act = license.actname %}
+        {% endfor %}
+    </table>
+{% else %}
+    <p>None found.</p>
+{% endif %}
+
+{% include 'footer.html' %}
+{% endblock %}

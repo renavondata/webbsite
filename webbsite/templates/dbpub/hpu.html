@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Parallel trading: {{ stock_name }}{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+{% if issue_id > 0 %}
+    <h2>{{ stock_name }}</h2>
+
+    {# Simplified navigation - in production would include full prices bar #}
+    <ul class="navlist">
+        <li><a href="/dbpub/orgdata.asp?p={{ person_id }}">Key Data</a></li>
+        <li><a href="/dbpub/prices.asp?i={{ issue_id }}">Daily Prices</a></li>
+        <li class="selected">Parallel trading</li>
+    </ul>
+    <div class="clear"></div>
+
+    <p>Note: These figures are from the counter used for "parallel trading" of
+    shares represented by old certificates, in parallel with trading on the main
+    counter (or stock code) after a split, consolidation or change of board lot
+    size. It's an archaic practice because we have had electronic settlement
+    with a central counterparty by book-entry since 1993, so in reality no
+    certificates change hands. It was due to be
+    <a target="_blank" href="http://www.hkex.com.hk/eng/newsconsul/hkexnews/2008/080422news.htm">
+    abolished</a> on 3-Nov-08, but abolition has been
+    <a target="_blank" href="http://www.hkex.com.hk/eng/newsconsul/hkexnews/2008/080723news.htm">
+    delayed</a> indefinitely. S=1 if suspended.</p>
+
+    {% if quotes %}
+        <table class="numtable yscroll">
+            <tr>
+                <th>
+                    {% if sort == 'datedn' %}
+                        <a href="?i={{ issue_id }}&sort=dateup">Trade date ▲</a>
+                    {% else %}
+                        <a href="?i={{ issue_id }}&sort=datedn">Trade date</a>
+                    {% endif %}
+                </th>
+                <th>S</th>
+                <th>Close</th>
+                <th>Bid</th>
+                <th>Ask</th>
+                <th>Low</th>
+                <th>High</th>
+                <th>Volume</th>
+                <th>
+                    {% if sort == 'turndn' %}
+                        <a href="?i={{ issue_id }}&sort=turnup">Turnover $ ▲</a>
+                    {% else %}
+                        <a href="?i={{ issue_id }}&sort=turndn">Turnover $</a>
+                    {% endif %}
+                </th>
+                <th>VWAP</th>
+            </tr>
+            {% for quote in quotes %}
+            <tr>
+                <td style="text-align:right">{{ quote.atdate.strftime('%Y-%m-%d') if quote.atdate else '' }}</td>
+                <td>{{ 1 if quote.susp else 0 }}</td>
+                <td>{{ "%.3f"|format(quote.closing) if quote.closing else '' }}</td>
+                <td>{{ "%.3f"|format(quote.bid) if quote.bid else '' }}</td>
+                <td>{{ "%.3f"|format(quote.ask) if quote.ask else '' }}</td>
+                <td>{{ "%.3f"|format(quote.low) if quote.low else '' }}</td>
+                <td>{{ "%.3f"|format(quote.high) if quote.high else '' }}</td>
+                <td>{{ "{:,.0f}".format(quote.vol) if quote.vol else '0' }}</td>
+                <td>{{ "{:,.0f}".format(quote.turn) if quote.turn else '0' }}</td>
+                <td>
+                    {% if quote.vwap and quote.vwap > 0 %}
+                        {{ "%.4f"|format(quote.vwap) }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p><b>None found.</b></p>
+    {% endif %}
+{% endif %}
+
+{% include 'footer.html' %}
+{% endblock %}
