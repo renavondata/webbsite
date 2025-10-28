@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Hong Kong Business Registration Number check digit generator{% endblock %}
+
+{% block content %}
+<h2>Hong Kong Business Registration Number check digit generator</h2>
+<p>Enter the first 7 digits of the Business Registration number (without the last digit) and we will tell you the last
+(8th) digit, also known as a checkdigit.</p>
+
+<form method="get" action="HKBRcheck.asp">
+    <input type="text" name="b" value="{{ b }}" size="10" maxlength="7">
+    <input type="submit" value="Submit">
+</form>
+
+<p><b>{{ hint }}</b></p>
+
+{% if check_digit is not none %}
+<p>So, how did we do this? The formula we discovered is: reading from left to right, multiply the digits by 8, 1,
+2, 3, 6, 7 and 8 respectively, then add them together. The last digit of the result (that is, Modulo 10) is the
+check-digit.</p>
+{% endif %}
+
+<p>Note: we do not store the number submitted. To try the same trick with your HKID number, <a href="idcheck.asp">click here</a>.</p>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "dbheader.html" %}
+
+{% block title %}Webb-site League Table: {{ role_name }} at {{ d }}{% endblock %}
+
+{% block content %}
+<h2>Webb-site League Table: {{ role_name }} at {{ d }}</h2>
+<ul class="navlist">
+    <li><a href="leagueNotesA.asp">Notes</a></li>
+    <li><a href="roles.asp">All league tables</a></li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="advltsnap.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">
+        <select name="r" onchange="this.form.submit()">
+            {% for role in roles %}
+            <option value="{{ role.roleid }}" {% if role.roleid == r %}selected{% endif %}>{{ role.rolelong }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        Clients at: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit();">
+    </div>
+    <div class="inputs">
+        <input type="submit" value="Go">
+        <input type="submit" value="Clear" onclick="document.getElementById('d').value='';">
+    </div>
+    <div class="clear"></div>
+</form>
+
+{% if total > 0 %}
+<table class="numtable">
+    <tr>
+        <th></th>
+        <th>
+            {% if sort == 'cntup' %}<a href="?r={{ r }}&d={{ d }}&sort=cntdn">Roles ↑</a>
+            {% else %}<a href="?r={{ r }}&d={{ d }}&sort=cntup">Roles ↓</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'cntup' %}<a href="?r={{ r }}&d={{ d }}&sort=cntdn">Share % ↑</a>
+            {% else %}<a href="?r={{ r }}&d={{ d }}&sort=cntup">Share % ↓</a>{% endif %}
+        </th>
+        <th class="left">
+            {% if sort == 'namedn' %}<a href="?r={{ r }}&d={{ d }}&sort=nameup">Name ↓</a>
+            {% else %}<a href="?r={{ r }}&d={{ d }}&sort=namedn">Name ↑</a>{% endif %}
+        </th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ row.c }}</td>
+        <td>{{ "%.2f"|format(row.c / total * 100) if total > 0 else '0.00' }}</td>
+        <td class="left"><a href="adviserships.asp?p={{ row.personid }}&r={{ r }}&sort=cagdn">{{ row.name1 }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>None found.</p>
+{% endif %}
+{% endblock %}

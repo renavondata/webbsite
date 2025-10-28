@@ -1,0 +1,30 @@
+{% extends "dbheader.html" %}
+
+{% block title %}Foreign companies registered in HK{% endblock %}
+
+{% block content %}
+<h2>Foreign companies registered in HK</h2>
+<h3><a href="domregHK.asp">Domicile:</a>&nbsp;{{ friendly }}</h3>
+<p>Note: These are foreign companies that have registered a place of business in Hong Kong.</p>
+
+<table class="txtable">
+    <tr>
+        <th>Count</th>
+        <th>
+            {% if sort == 'namdn' %}<a href="?dom={{ dom }}&sort=namup">Name ↓</a>
+            {% else %}<a href="?dom={{ dom }}&sort=namdn">Name ↑</a>{% endif %}
+        </th>
+        <th>
+            {% if sort == 'regdn' %}<a href="?dom={{ dom }}&sort=regup">Registered ↓</a>
+            {% else %}<a href="?dom={{ dom }}&sort=regdn">Registered ↑</a>{% endif %}
+        </th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td><a href="orgdata.asp?p={{ row.personid }}">{{ row.name }}</a></td>
+        <td>{{ row.regdate if row.regdate else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
