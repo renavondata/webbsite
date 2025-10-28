@@ -44,14 +44,14 @@ def create_app(config_class=Config):
 
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site
-    from webbsite.routes import (search, prices, events, dbpub, ccass,
+    from webbsite.routes import (search, prices, ccass,
                                   articles, webbmail, vote, pollman,
                                   mailman, contact, dbeditor, pages)
+    from webbsite.routes import dbpub
 
-    # Main database query pages
-    app.register_blueprint(dbpub.bp, url_prefix='/dbpub')
+    # Main database query pages - dbpub is now split into multiple sub-modules
+    dbpub.register_blueprints(app)
     app.register_blueprint(search.bp, url_prefix='/dbpub')
-    app.register_blueprint(events.bp, url_prefix='/dbpub')
     app.register_blueprint(ccass.bp, url_prefix='/ccass')
     # Note: prices blueprint imported but not registered
     # prices.asp exists in codebase but was never deployed to production server
