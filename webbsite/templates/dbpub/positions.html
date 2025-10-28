@@ -1,28 +1,63 @@
 {% extends "base_database.html" %}
 
-{% block title %}Positions - Webb-site Database{% endblock %}
+{% block title %}Positions of {{ person_name }} - Renavon Hong Kong Database{% endblock %}
 
 {% block content %}
-<h2>Director Positions</h2>
+<h2>Positions of {{ person_name }}</h2>
 
-{% if positions and positions|length > 0 %}
-<table class="txtable">
-	<tr>
-		<th><a href="{{ url_for('dbpub.positions', p=p, sort='orgup', hide=hide) }}">Organisation</a></th>
-		<th><a href="{{ url_for('dbpub.positions', p=p, sort='posup', hide=hide) }}">Position</a></th>
-		<th><a href="{{ url_for('dbpub.positions', p=p, sort='appup', hide=hide) }}">From</a></th>
-		<th><a href="{{ url_for('dbpub.positions', p=p, sort='resup', hide=hide) }}">Until</a></th>
-	</tr>
-	{% for position in positions %}
-	<tr>
-		<td><a href="{{ url_for('dbpub.officers', p=position.company) }}">{{ position.name1 }}</a></td>
-		<td>{{ position.posshort }}</td>
-		<td>{{ position.app }}</td>
-		<td>{{ position.res if position.res else 'current' }}</td>
-	</tr>
+<!-- Filter controls -->
+<form method="get" action="{{ url_for('dbpub_corporate.positions') }}">
+	<input type="hidden" name="p" value="{{ p }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		start date: <input type="date" name="f" id="f" value="{{ from_date }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		end date: <input type="date" name="t" id="t" value="{{ to_date }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<label><input type="checkbox" name="c" value="1" {% if c %}checked{% endif %} onchange="this.form.submit()"> include new appointments after start date</label>
+	</div>
+	<div class="inputs">
+		<label><input type="checkbox" name="n" value="1" {% if n %}checked{% endif %} onchange="this.form.submit()"> show old organisation names</label>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="button" value="clear" onclick="document.getElementById('f').value='';document.getElementById('t').value='';this.form.submit();">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<!-- Toggle current/history -->
+<p>
+	{% if hide == 'Y' %}
+		<a href="{{ url_for('dbpub_corporate.positions', p=p, sort=sort, f=from_date, t=to_date, c=c, n=n, hide='N') }}">Show history</a>
+	{% else %}
+		<a href="{{ url_for('dbpub_corporate.positions', p=p, sort=sort, f=from_date, t=to_date, c=c, n=n, hide='Y') }}">Current only</a>
+	{% endif %}
+</p>
+
+{% if rank_data and rank_data|length > 0 %}
+	{% for rank in rank_data %}
+	<h3>{{ rank.rank_text }}</h3>
+	<table class="opltable">
+		<tr>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='orgup' if sort != 'orgup' else 'orgdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Organisation</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='posup' if sort != 'posup' else 'posdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Position</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='appup' if sort != 'appup' else 'appdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">From</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='resup' if sort != 'resup' else 'resdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Until</a></th>
+		</tr>
+		{% for position in rank.positions %}
+		<tr>
+			<td><a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a></td>
+			<td title="{{ position.poslong }}">{{ position.posshort }}</td>
+			<td>{{ position.apptdate if position.apptdate else '' }}</td>
+			<td>{{ position.resdate if position.resdate else 'current' }}</td>
+		</tr>
+		{% endfor %}
+	</table>
 	{% endfor %}
-</table>
 {% else %}
-<p>No positions found.</p>
+<p>None found.</p>
 {% endif %}
 {% endblock %}

@@ -50,7 +50,7 @@
 					<td>{{ IIF(row.hklist,"*","&nbsp;") }}</td>
 					{% if tv>"" %}<td><input type="radio" name="{{ tv }}" value="{{ p }}"></td>{% endif %}
 					<td><span class="info">{{ row.A2 }}<span>{{ row.friendly }}</span></span></td>
-					<td><a href='https://webb-site.com/dbpub/orgdata.asp?p={{ row.PersonID }}' target="_blank">{{ row.Name1 }}</a></td>
+					<td><a href='/dbpub/orgdata.asp?p={{ row.PersonID }}' target="_blank">{{ row.Name1 }}</a></td>
 					<td>{{ row.incDate }}</td>
 					<td>{{ row.disDate }}</td>
 					<td>{{ row.name }}</td>
@@ -99,7 +99,7 @@
 				<td>{{ IIF(row.hklist,"*","&nbsp;") }}</td>
 				{% if tv>"" %}<td><input type="radio" name="{{ tv }}" value="{{ row.PersonID }}"></td>{% endif %}
 				<td><span class="info">{{ row.A2 }}<span>{{ row.friendly }}</span></span></td>
-				<td><a href='https://webb-site.com/dbpub/orgdata.asp?p={{ row.PersonID }}' target="_blank">{{ row.oldName }}</a></td>
+				<td><a href='/dbpub/orgdata.asp?p={{ row.PersonID }}' target="_blank">{{ row.oldName }}</a></td>
 				<td>{{ row.dateChanged }}</td>		
 				<td>{{ row.name1 }}</td>
 				<td>{{ row.name }}</td>

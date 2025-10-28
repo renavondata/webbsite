@@ -6322,8 +6322,10 @@ def ctr():
 
 @bp.route("/hksolsmoves.asp")
 def hksolsmoves_lowercase():
-    """Lowercase alias for HKsolsmoves.asp"""
-    return hk_sols_moves()
+    """Lowercase alias for HKsolsmoves.asp - redirect to uppercase version"""
+    from flask import redirect, url_for, request
+    # Preserve query parameters when redirecting
+    return redirect(url_for('dbpub_solicitors.hk_sols_moves', **request.args), code=301)
 
 
 @bp.route("/hkpax.asp")

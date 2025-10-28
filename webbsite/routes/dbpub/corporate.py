@@ -430,8 +430,177 @@ def splits():
 
 @bp.route("/positions.asp")
 def positions():
-    """Alias for enigma_positions() to match ASP URL pattern"""
-    return enigma_positions()
+    """
+    Port of dbpub/positions.asp
+    Shows executive positions held by a person or organization across multiple companies
+
+    Query params:
+    - p: personID of person/organization
+    - f: from date (start date filter)
+    - t: to date (end date filter)
+    - c: include new appointments after start date (boolean)
+    - n: show old organization names (boolean)
+    - hide: Y=current only, N=show history
+    - sort: sorting parameter
+    - y: years for CAGR calculation (default 1)
+
+    Tables used: enigma.directorships, positions, organisations, rank, hklistedordsever
+    """
+    person_id = get_int("p", 0)
+    if not person_id:
+        return "PersonID required", 400
+
+    # Get parameters
+    from_date = request.args.get("f", "")
+    to_date = request.args.get("t", "")
+    c = get_bool("c")  # include new appointments
+    n = get_bool("n")  # show old org names
+    hide = request.args.get("hide", "Y")  # default to current only
+    sort_param = request.args.get("sort", "orgup")
+    years = request.args.get("y", type=float, default=1.0)
+    days = round(years * 365.25, 0)
+
+    # Get person/org name
+    try:
+        # Try organization first
+        org_result = execute_query(
+            "SELECT name1, cname, 'org' as type FROM enigma.organisations WHERE personID = %s",
+            (person_id,),
+        )
+        if org_result:
+            person_name = org_result[0]["name1"]
+            if org_result[0].get("cname"):
+                person_name += " " + org_result[0]["cname"]
+            is_org = True
+        else:
+            # Try person
+            person_result = execute_query(
+                "SELECT name1, name2, 'person' as type FROM enigma.people WHERE personID = %s",
+                (person_id,),
+            )
+            if person_result:
+                person_name = person_result[0]["name1"]
+                if person_result[0].get("name2"):
+                    person_name += " " + person_result[0]["name2"]
+                is_org = False
+            else:
+                return "Person/Organization not found", 404
+    except Exception as ex:
+        current_app.logger.error(f"Error getting person/org name: {ex}")
+        return "Error retrieving data", 500
+
+    # Build ORDER BY clause based on sort parameter
+    order_by_map = {
+        "orgup": "name1, apptDate",
+        "orgdn": "name1 DESC, apptDate",
+        "posup": "posShort, name1",
+        "posdn": "posShort DESC, name1",
+        "appup": "apptDate, name1",
+        "appdn": "apptDate DESC, name1",
+        "resup": "resDate, name1",
+        "resdn": "resDate DESC, name1",
+        "totup": "totRet, name1",
+        "totdn": "totRet DESC, name1",
+        "cagretup": "CAGret, name1",
+        "cagretdn": "CAGret DESC, name1",
+        "cagrelup": "CAGrel, name1",
+        "cagreldn": "CAGrel DESC, name1",
+    }
+    order_by = order_by_map.get(sort_param, "name1, apptDate")
+
+    # Build date filter conditions
+    hide_str = ""
+    if from_date == "":
+        if to_date == "":
+            if hide == "Y":
+                hide_str = " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
+        else:
+            hide_str = f" AND (apptDate IS NULL OR apptDate < '{to_date}')"
+            if hide == "Y":
+                hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+    elif to_date == "":
+        if not c:
+            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
+        if hide == "Y":
+            hide_str += " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
+        else:
+            hide_str += f" AND (resDate IS NULL OR resDate > '{from_date}')"
+    else:
+        if not c:
+            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
+        else:
+            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{to_date}')"
+        if hide == "Y":
+            hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+
+    # Get rank categories
+    try:
+        ranks = execute_query("SELECT rankID, RankText FROM enigma.rank ORDER BY rankID")
+    except Exception as ex:
+        current_app.logger.error(f"Error getting ranks: {ex}")
+        ranks = []
+
+    # Build results by rank
+    rank_data = []
+    any_returns = False
+
+    for rank in ranks:
+        rank_id = rank["rankid"]
+        rank_text = rank["ranktext"]
+
+        # Build query for this rank
+        # Note: simplified version without full total return calculations
+        # Full implementation would need totRet, CAGret, CAGrel functions
+        sql = f"""
+            SELECT
+                company,
+                {f"enigma.orgName(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
+                o.name1,
+                apptDate,
+                resDate,
+                p.posShort,
+                p.posLong,
+                CASE WHEN i.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed
+            FROM enigma.directorships d
+            JOIN enigma.organisations o ON company = o.personID
+            JOIN enigma.positions p ON d.positionID = p.positionID
+            LEFT JOIN enigma.listedcoshkever i ON company = i.issuer
+            WHERE rank = %s AND director = %s {hide_str}
+            ORDER BY {order_by}
+        """
+
+        try:
+            positions = execute_query(sql, (rank_id, person_id))
+
+            if positions:
+                # Check if any have returns (is_listed flag set)
+                has_returns = any(pos.get("is_listed") == 1 for pos in positions)
+                if has_returns:
+                    any_returns = True
+
+                rank_data.append({
+                    "rank_text": rank_text,
+                    "positions": positions,
+                    "has_returns": has_returns
+                })
+        except Exception as ex:
+            current_app.logger.error(f"Error getting positions for rank {rank_id}: {ex}")
+            continue
+
+    return render_template(
+        "dbpub/positions.html",
+        person_name=person_name,
+        p=person_id,
+        is_org=is_org,
+        rank_data=rank_data,
+        any_returns=any_returns,
+        hide=hide,
+        sort=sort_param,
+        from_date=from_date,
+        to_date=to_date,
+        c=c,
+        n=n,
+    )
 
 
 @bp.route("/holders.asp")

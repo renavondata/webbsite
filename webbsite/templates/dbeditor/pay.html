@@ -224,7 +224,7 @@ If x>0 Then #}
 		End If
 	End If
 	rs.Close #}
-	<p><a target="_blank" href="https://webb-site.com/dbpub/officers.asp?p={{ firm }}&amp;hide=N">View all-time officers in Webb-site Database</a></p>
+	<p><a target="_blank" href="/dbpub/officers.asp?p={{ firm }}&amp;hide=N">View all-time officers in Renavon Hong Kong Database</a></p>
 	{# 'produce form to add or edit pay
 	If pplID=0 Then
 		'try to find a list of directors or senior managers who don't have a pay record in this period
@@ -344,7 +344,7 @@ End If... #}
 	<hr>
 	<h3>Submit completed records for approval</h3>
 	{% if submit!="Submit for review" and (Not osErr) %}
-		<p>I, <b>{{ Session("username") }}</b>, have <strong>carefully</strong> checked these completed pay records against the original document and now submit them for publication in the Webb-site database. </p>
+		<p>I, <b>{{ Session("username") }}</b>, have <strong>carefully</strong> checked these completed pay records against the original document and now submit them for publication in the Renavon Hong Kong database. </p>
 		<form method="post" action="pay.asp">
 			<input type="hidden" name="docID" value="{{ docID }}">
 			<input type="hidden" name="sort" value="{{ sort }}">
@@ -500,7 +500,7 @@ If docID>0 And submitted A... #}
 	{# TODO: Port ASP logic: End If
 	rs.Close... #}
 	<p><b>{{ hinterr }}</b></p>
-	<p>Please report any other errors via the <b><a href="https://webb-site.com/contact/" target="_blank">Webb-site contact form</a></b>. 
+	<p>Please report any other errors via the <b><a href="/contact/" target="_blank">Renavon Hong Kong contact form</a></b>. 
 	After data are published, if you are not outranked by an editor who approved the submission, then you can unpublish your submission to fix any reported errors. After that, hit the "Clear error" button to resolve the error, then resubmit the 
 	pay-year.</p>
 {# TODO: Port ASP logic: End If

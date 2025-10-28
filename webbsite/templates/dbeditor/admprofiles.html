@@ -45,7 +45,7 @@ Response.Buffer=False #}
 		<td>{{ "{:.\2%}".format(row.othStake) }}</td>
 		<td>{{ "{:.\2%}".format(row.totStake) }}</td>
 		<td class="left">
-			<a target="_blank" href="https://webb-site.com/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.maxHolder }}">{{ row.MHname }}</a>
+			<a target="_blank" href="/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.maxHolder }}">{{ row.MHname }}</a>
 		</td>
 		<td>{# TODO: Port ASP logic: If Not isNull(maxStake) Then Response.Write Format... #}</td>
 		<td>{# TODO: Port ASP logic: If Not isNull(eStake) Then Response.Write FormatPe... #}</td>

@@ -54,9 +54,9 @@
 			<th><a href="searchpeople.asp?tv=h2">Person B</a></th>
 		</tr>
 		<tr>
-			<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ h1 }}">{{ h1Name }}</a></td>
+			<td><a target="_blank" href="/dbpub/natperson.asp?p={{ h1 }}">{{ h1Name }}</a></td>
 			<td>{{ arrSelectZ("r",r,conRole.Execute("SELECT ID,relation FROM relationships ORDER BY relation").GetRows,False,True,"","?") }}</td>
-			<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ h2 }}">{{ h2Name }}</a></td>
+			<td><a target="_blank" href="/dbpub/natperson.asp?p={{ h2 }}">{{ h2Name }}</a></td>
 		</tr>
 	</table>
 	<p><b>{{ hint }}</b></p>

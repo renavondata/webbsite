@@ -11,8 +11,8 @@
 
 <!--#include file="cotop.inc"-->
 <h2>{{ title }}</h2>
-<p>Issuer: <a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">{{ orgName }}</a></p>
-<p>Holder: <a target="_blank" href="https://webb-site.com/dbpub/{{ pURL }}.asp?p={{ h }}">{{ holderName }}</a></p>
+<p>Issuer: <a target="_blank" href="/dbpub/orgdata.asp?p={{ p }}">{{ orgName }}</a></p>
+<p>Holder: <a target="_blank" href="/dbpub/{{ pURL }}.asp?p={{ h }}">{{ holderName }}</a></p>
 
 		<form method="post" action="holding.asp">
 			<input type="hidden" name="targIssue" value="{{ i }}">
