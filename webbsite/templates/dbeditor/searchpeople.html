@@ -120,7 +120,7 @@ If n1<>"" Or n2<>"" Then
 					<tr>
 						<td>{{ x }}</td>
 						{% if tv>"" %}<td><input type="radio" name="{{ tv }}" value="{{ p }}"></td>{% endif %}
-						<td><a target="_blank" href="https://webb-site.com/dbpub/positions.asp?p={{ p }}">{{ row.n1&", "&row.n2 }}</a></td>
+						<td><a target="_blank" href="/dbpub/positions.asp?p={{ p }}">{{ row.n1&", "&row.n2 }}</a></td>
 						<td>{{ row.cName }}</td>
 						<td style="text-align:right">{{ DateStr2(row.DOB,row.MOB,YOB) }}</td>
 						<td style="text-align:right">{{ nowYear-YOB }}</td>
@@ -158,7 +158,7 @@ If n1<>"" Or n2<>"" Then
 				<tr>
 					<td>{{ x }}</td>
 					{% if tv>"" %}<td><input type="radio" name="{{ tv }}" value="{{ p }}"/></td>{% endif %}
-					<td><a target="_blank" href="https://webb-site.com/dbpub/positions.asp?p={{ p }}">{{ row.n1&", "&row.n2 }}</a></td>
+					<td><a target="_blank" href="/dbpub/positions.asp?p={{ p }}">{{ row.n1&", "&row.n2 }}</a></td>
 					<td>{{ row.cn }}</td>
 					<td class="right">{{ DateStr2(row.DOB,row.MOB,YOB) }}</td>
 					<td class="right">{{ nowYear-YOB }}</td>

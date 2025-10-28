@@ -24,7 +24,7 @@ Session.Timeout=60 #}
 		<table class="txtable">
 			<tr>
 				<td>Company:</td>
-				<td><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ p }}">{{ name }}</a></td>
+				<td><a target="_blank" href="/dbpub/orgdata.asp?p={{ p }}">{{ name }}</a></td>
 				<td><a href="coms.asp">Clear</a></td>
 			</tr>
 		</table>
@@ -180,7 +180,7 @@ If p>0 Then
 	End If
 	rs2.Close #}
 	<p><a target="_blank" href="snaplog.asp?j=1&p={{ p }}">Snapshot logs for this issuer</a></p>
-	<p><a target="_blank" href="https://webb-site.com/dbpub/docs.asp?p={{ p }}">View documents for this issuer</a></p>
+	<p><a target="_blank" href="/dbpub/docs.asp?p={{ p }}">View documents for this issuer</a></p>
 {# End If
 Set rs2=Nothing
 Call CloseConRs(conRole,rs) #}

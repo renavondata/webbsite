@@ -136,7 +136,7 @@ Response.CodePage=65001 #}
 			{% for row in results %}
 				<p>
 					<input type="checkbox" name="catID" value="{{ row.catID }}">
-					<a target="_blank" href="https://webb-site.com/dbpub/subject.asp?c={{ row.catID }}">{{ row.name }}</a>
+					<a target="_blank" href="/dbpub/subject.asp?c={{ row.catID }}">{{ row.name }}</a>
 				</p>
 				{# TODO: Port ASP logic: rs.MoveNext
 			Loop... #}
@@ -146,11 +146,11 @@ Response.CodePage=65001 #}
 	rs.Close
 End If
 If storyID>0 Then... #}
-	<p><a target="_blank" href="https://webb-site.com/dbpub/artlinks.asp?s={{ storyID }}">View the story in Webb-site Reports</a></p>
+	<p><a target="_blank" href="/dbpub/artlinks.asp?s={{ storyID }}">View the story in Renavon Hong Kong</a></p>
 	<p><a href="story.asp">Start a new story</a></p>
 {# TODO: Port ASP logic: End If
 If s2<>"" Then... #}
-	<p><a target="_blank" href="https://webb-site.com/dbpub/artlinks.asp?s={{ s2 }}">See the other story in Webb-site Reports</a></p>
+	<p><a target="_blank" href="/dbpub/artlinks.asp?s={{ s2 }}">See the other story in Renavon Hong Kong</a></p>
 {# TODO: Port ASP logic: End If
 Call CloseConRs(con,rs)
 Call CloseCon(conMa... #}

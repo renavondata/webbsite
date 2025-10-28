@@ -21,11 +21,11 @@
 	r1=rs("rel1")
 	r2=rs("rel2") #}
 	<tr>
-		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ r1 }}">{{ row.r1Name }}</a></td>
+		<td><a target="_blank" href="/dbpub/natperson.asp?p={{ r1 }}">{{ row.r1Name }}</a></td>
 		<td>{{ nowYear-row.YOB1 }}</td>
 		<td>{{ row.relation }}</td>
 		<td>{{ nowYear-row.YOB2 }}</td>
-		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ r2 }}">{{ row.r2Name }}</a></td>
+		<td><a target="_blank" href="/dbpub/natperson.asp?p={{ r2 }}">{{ row.r2Name }}</a></td>
 		<td>{{ row.userName }}</td>
 		<td>{{ MSdateTime(row.modified) }}</td>
 		{% if rankingRs(rs,uRank) %}

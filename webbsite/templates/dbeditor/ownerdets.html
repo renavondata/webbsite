@@ -31,7 +31,7 @@
 		sumWkst= sumWkst+wkst #}
 		<tr>
 			<td>{{ cnt }}</td>
-			<td class="left"><a target="_blank" href="https://webb-site.com/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.ultimID }}">{{ row.ownerName }}</a></td>
+			<td class="left"><a target="_blank" href="/dbpub/{{ IIF(row.human,"natperson","orgdata") }}.asp?p={{ row.ultimID }}">{{ row.ownerName }}</a></td>
 			<td class="left">{{ row.ownLong }}</td>
 			<td>{{ "{:,.\2f}".format(shs) }}</td>
 			<td>{{ "{:.\2%}".format(stk) }}</td>

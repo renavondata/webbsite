@@ -49,7 +49,7 @@ If n<>"" Then
 					<td>{# TODO: Port ASP logic: If rs("orgType")=22 Then Response.Write "*" Else R... #}</td>
 					<td><input type="radio" name="{{ tv }}" value="{{ p }}"/></td>
 					<td>{{ row.shortName }}</td>
-					<td><a href='https://webb-site.com/dbpub/orgdata.asp?p={{ p }}' target="_blank">{{ row.Name1 }}</a></td>
+					<td><a href='/dbpub/orgdata.asp?p={{ p }}' target="_blank">{{ row.Name1 }}</a></td>
 					<td>{{ row.incDate }}</td>
 					<td>{{ row.disDate }}</td>
 					<td><a href="org.asp?p={{ p }}">Edit</a></td>
@@ -92,7 +92,7 @@ If n<>"" Then
 				<td>{# TODO: Port ASP logic: If rs("orgType")=22 Then Response.Write "*" Else R... #}</td>
 				<td><input type="radio" name="{{ tv }}" value="{{ row.PersonID }}"></td>
 				<td>{{ row.shortName }}</td>
-				<td><a href='https://webb-site.com/dbpub/orgdata.asp?p={{ p }}' target="_blank">{{ row.OldName }}</a></td>
+				<td><a href='/dbpub/orgdata.asp?p={{ p }}' target="_blank">{{ row.OldName }}</a></td>
 				<td>{{ row.dateChanged }}</td>		
 				<td>{{ row.name1 }}</td>
 				<td><a href="org.asp?p={{ p }}">Edit</a></td>
@@ -131,7 +131,7 @@ If org>"" Then
 			</tr>
 			<tr>
 				<td>{{ org }}</td>
-				<td><a target="_blank" href="https://webb-site.com/dbpub/orgdata.asp?p={{ org }}">{{ orgName }}</a></td>
+				<td><a target="_blank" href="/dbpub/orgdata.asp?p={{ org }}">{{ orgName }}</a></td>
 				<td><input type="submit" name="submitBtn" value="Add to advisers"></td>
 			</tr>
 		</table>

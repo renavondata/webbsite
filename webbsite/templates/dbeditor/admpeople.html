@@ -18,7 +18,7 @@
 	{# Do Until rs.EOF
 		p=rs("personID") #}
 		<tr>
-		<td><a target="_blank" href="https://webb-site.com/dbpub/natperson.asp?p={{ p }}">{{ row.name }}</a></td>
+		<td><a target="_blank" href="/dbpub/natperson.asp?p={{ p }}">{{ row.name }}</a></td>
 		<td>{{ row.sex }}</td>
 		<td>{{ nowYear-row.YOB }}</td>
 		<td>{{ row.userName }}</td>

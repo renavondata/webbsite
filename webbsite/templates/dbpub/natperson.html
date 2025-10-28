@@ -1,5 +1,5 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database: {{ person_name }}{% endblock %}
+{% block title %}Renavon Hong Kong Database: {{ person_name }}{% endblock %}
 
 {% block extra_head %}
 <style type="text/css">
@@ -177,10 +177,10 @@
     {% endfor %}
     {% endif %}
 
-    {# Webb-site Trust Rating (Static) #}
+    {# Renavon Hong Kong Trust Rating (Static) #}
     {% if not person.yob or ((current_year - person.yob) > 18) %}
-    <h3>Webb-site Trust Rating</h3>
-    <p><a href="{{ url_for('dbpub.index') }}"><b>Log in</b></a> to add your anonymous rating. Webb-site users rate this person as follows:</p>
+    <h3>Renavon Hong Kong Trust Rating</h3>
+    <p><a href="{{ url_for('dbpub.index') }}"><b>Log in</b></a> to add your anonymous rating. Renavon Hong Kong users rate this person as follows:</p>
     <table class="rating">
         <tbody>
             <tr>

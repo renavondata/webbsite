@@ -3,7 +3,7 @@
 <script type="text/javascript" src="/static/js/highstock.js"></script>
 <script type="text/javascript" src="/static/js/exporting.js"></script>
 {% endblock %}
-{% block title %}Webb-site Total Return: {{ stock_name if stock_name else 'Unknown' }}{% endblock %}
+{% block title %}Renavon Hong Kong Total Return: {{ stock_name if stock_name else 'Unknown' }}{% endblock %}
 {% block content %}
 {% if i == 0 %}
 <h2>{{ stock_name if stock_name else 'Stock not found.' }} </h2>
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         subtitle: {
-            text: 'Webb-site Total Return',
+            text: 'Renavon Hong Kong Total Return',
             style: {
                 fontWeight: 'bold',
                 fontSize: '1em'
