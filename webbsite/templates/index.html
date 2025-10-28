@@ -63,9 +63,9 @@
 		<div class="artsum">
 			{% if story.sourceid == 1 %}
 				{# Webb-site original content - link to archive.org #}
-				<a style="font-weight:bold" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url }}" target="_blank">{{ story.title }}</a>
+				<a style="font-weight:bold" href="{{ story.url if story.url.startswith('http') else (('https://web.archive.org/web/2/https://webb-site.com/' + story.url[3:]) if story.url.startswith('../') else ('https://web.archive.org/web/2/https://webb-site.com/articles/' + story.url)) }}" target="_blank">{{ story.title }}</a>
 				{% if story.url2text %}
-					|&nbsp;<a href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url2 }}" target="_blank"><b>{{ story.url2text }}</b></a>
+					|&nbsp;<a target="{{ '_blank' if story.url2 and story.url2.startswith('http') else '_blank' }}" href="{{ story.url2 if story.url2.startswith('http') else (('https://web.archive.org/web/2/https://webb-site.com/' + story.url2[3:]) if story.url2.startswith('../') else ('https://web.archive.org/web/2/https://webb-site.com/articles/' + story.url2)) }}"><b>{{ story.url2text }}</b></a>
 				{% endif %}
 				<br>
 				<span style="color:blue">Webb-site.com (archived), {{ story.storydate.strftime('%-d-%b-%Y') }}</span>
@@ -98,9 +98,9 @@
 		<h3>Webb-site Reports (archived)</h3>
 		{% for story in our_stories %}
 			<div class="artsum">
-				<a target="_blank" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url }}"><b>{{ story.title }}</b></a>
+				<a target="_blank" href="{{ story.url if story.url.startswith('http') else (('https://web.archive.org/web/2/https://webb-site.com/' + story.url[3:]) if story.url.startswith('../') else ('https://web.archive.org/web/2/https://webb-site.com/articles/' + story.url)) }}"><b>{{ story.title }}</b></a>
 				{% if story.url2text %}
-					|&nbsp;<a target="_blank" href="https://web.archive.org/web/2/https://webb-site.com/articles/{{ story.url2 }}"><b>{{ story.url2text }}</b></a>
+					|&nbsp;<a target="{{ '_blank' if story.url2 and story.url2.startswith('http') else '_blank' }}" href="{{ story.url2 if story.url2.startswith('http') else (('https://web.archive.org/web/2/https://webb-site.com/' + story.url2[3:]) if story.url2.startswith('../') else ('https://web.archive.org/web/2/https://webb-site.com/articles/' + story.url2)) }}"><b>{{ story.url2text }}</b></a>
 				{% endif %}
 				<br>
 				{% if story.summary %}{{ story.summary }}&nbsp;{% endif %}({{ story.storydate.strftime('%-d-%b-%Y') if story.storydate else '' }})
