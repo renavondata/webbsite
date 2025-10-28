@@ -1,40 +1,41 @@
 """
 Search routes - Direct port from searchorgs.asp and searchpeople.asp
 """
+
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
 from webbsite.asp_helpers import rem_space, get_str, get_bool, apos
 
-bp = Blueprint('search', __name__)
+bp = Blueprint("search", __name__)
 
 
-@bp.route('/searchorgs.asp', methods=['GET', 'POST'])
+@bp.route("/searchorgs.asp", methods=["GET", "POST"])
 def search_orgs():
     """Search organizations - port of searchorgs.asp"""
     # Get parameters from POST (form submit) or GET (URL links)
-    if request.method == 'POST':
-        n = rem_space(request.form.get('n', ''))
-        st = request.form.get('st', '')
-        sort = request.form.get('sort', 'namup')
+    if request.method == "POST":
+        n = rem_space(request.form.get("n", ""))
+        st = request.form.get("st", "")
+        sort = request.form.get("sort", "namup")
     else:
-        n = rem_space(get_str('n', ''))
-        st = get_str('st', '')  # l=left match, a=any match (full-text)
-        sort = get_str('sort', 'namup')
+        n = rem_space(get_str("n", ""))
+        st = get_str("st", "")  # l=left match, a=any match (full-text)
+        sort = get_str("sort", "namup")
 
     # Determine sort order
     sort_options = {
-        'domup': 'A2,name1',
-        'domdn': 'A2 DESC,name1',
-        'incup': 'incDate,name1',
-        'incdn': 'incDate DESC,name1',
-        'disup': 'disDate,name1',
-        'disdn': 'disDate DESC,name1',
-        'namup': 'name1',
-        'namdn': 'name1 DESC',
+        "domup": "A2,name1",
+        "domdn": "A2 DESC,name1",
+        "incup": "incDate,name1",
+        "incdn": "incDate DESC,name1",
+        "disup": "disDate,name1",
+        "disdn": "disDate DESC,name1",
+        "namup": "name1",
+        "namdn": "name1 DESC",
     }
-    ob = sort_options.get(sort, 'name1,A2')
+    ob = sort_options.get(sort, "name1,A2")
     if sort not in sort_options:
-        sort = 'namup'
+        sort = "namup"
 
     limit = 500
     current_results = []
@@ -42,11 +43,13 @@ def search_orgs():
 
     if n:
         # Build WHERE clause based on search type
-        if st == 'a':
+        if st == "a":
             # Full-text search - PostgreSQL syntax
             # Convert space-separated terms to term1 & term2 format for tsquery
-            terms = ' & '.join(n.split())
-            match_clause = f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
+            terms = " & ".join(n.split())
+            match_clause = (
+                f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
+            )
         else:
             # Left match (starts with) - use LOWER() + LIKE for case-insensitive with pattern index
             match_clause = f"LOWER(name1) LIKE LOWER('{apos(n)}%')"
@@ -77,7 +80,7 @@ def search_orgs():
         current_results = execute_query(sql)
 
         # Search old names
-        if st == 'a':
+        if st == "a":
             old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
         else:
             old_match_clause = f"LOWER(oldName) LIKE LOWER('{apos(n)}%')"
@@ -106,35 +109,37 @@ def search_orgs():
         """
         old_results = execute_query(sql)
 
-    return render_template('searchorgs.html',
-                         n=n,
-                         st=st,
-                         sort=sort,
-                         current_results=current_results,
-                         old_results=old_results,
-                         limit=limit)
+    return render_template(
+        "searchorgs.html",
+        n=n,
+        st=st,
+        sort=sort,
+        current_results=current_results,
+        old_results=old_results,
+        limit=limit,
+    )
 
 
-@bp.route('/searchpeople.asp', methods=['GET', 'POST'])
+@bp.route("/searchpeople.asp", methods=["GET", "POST"])
 def search_people():
     """Search people - port of searchpeople.asp"""
     from datetime import datetime
 
     # Get parameters
-    if request.method == 'POST':
-        n1 = request.form.get('n1', '')[:90].strip()
-        n2 = request.form.get('n2', '')[:63].strip()
-        d = request.form.get('d') == '1'
-        e = request.form.get('e') == '1'
+    if request.method == "POST":
+        n1 = request.form.get("n1", "")[:90].strip()
+        n2 = request.form.get("n2", "")[:63].strip()
+        d = request.form.get("d") == "1"
+        e = request.form.get("e") == "1"
     else:
-        n1 = get_str('n1', '')[:90].strip()
-        n2 = get_str('n2', '')[:63].strip()
-        d = get_bool('d')
-        e = get_bool('e')
+        n1 = get_str("n1", "")[:90].strip()
+        n2 = get_str("n2", "")[:63].strip()
+        d = get_bool("d")
+        e = get_bool("e")
 
     # Clean up names (remove hyphens, asterisks, extra spaces)
-    n1 = n1.replace('-', ' ').replace('*', '')
-    n2 = n2.replace('-', ' ').replace('*', '')
+    n1 = n1.replace("-", " ").replace("*", "")
+    n2 = n2.replace("-", " ").replace("*", "")
     n1 = rem_space(n1)
     n2 = rem_space(n2)
 
@@ -151,7 +156,7 @@ def search_people():
             if n1:
                 where_current += f" AND dn1 = '{apos(n1)}'"
                 where_alias += f" AND a.dn1 = '{apos(n1)}'"
-            if n2 == '':
+            if n2 == "":
                 where_current += " AND dn2 IS NULL"
                 where_alias += " AND a.dn2 IS NULL"
             else:
@@ -160,12 +165,12 @@ def search_people():
         else:
             # Full-text search mode
             # Build family name search term
-            fname = ''
+            fname = ""
             if n1:
-                fname = ' & '.join(f'"{word}"' for word in n1.split())
+                fname = " & ".join(f'"{word}"' for word in n1.split())
 
             # Build given names search term (with multi-word logic)
-            forename = ''
+            forename = ""
             if n2:
                 words = n2.split()
                 if len(words) == 1:
@@ -178,8 +183,10 @@ def search_people():
                         forename_parts.append(f'"{word}"')
                     # Last two words: search both separate and combined
                     # e.g., "Xiao Ping" searches for (("Xiao" & "Ping") | "XiaoPing")
-                    forename_parts.append(f'(("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")')
-                    forename = ' & '.join(forename_parts)
+                    forename_parts.append(
+                        f'(("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")'
+                    )
+                    forename = " & ".join(forename_parts)
 
             if d:
                 # Match family and given names separately
@@ -195,7 +202,7 @@ def search_people():
                 # Match across both fields
                 combined = fname
                 if forename:
-                    combined = combined + ' & ' + forename if combined else forename
+                    combined = combined + " & " + forename if combined else forename
                 where_current = f"to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
                 where_alias = f"to_tsvector('simple', COALESCE(a.dn1, '') || ' ' || COALESCE(a.dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
 
@@ -212,18 +219,18 @@ def search_people():
 
         # Format birth dates for display
         for row in current_results:
-            yob = row.get('yob')
-            mob = row.get('mob')
-            dob = row.get('dob')
+            yob = row.get("yob")
+            mob = row.get("mob")
+            dob = row.get("dob")
             if yob:
                 if mob and dob:
-                    row['birth_display'] = f"{yob:04d}-{mob:02d}-{dob:02d}"
+                    row["birth_display"] = f"{yob:04d}-{mob:02d}-{dob:02d}"
                 elif mob:
-                    row['birth_display'] = f"{yob:04d}-{mob:02d}"
+                    row["birth_display"] = f"{yob:04d}-{mob:02d}"
                 else:
-                    row['birth_display'] = str(yob)
+                    row["birth_display"] = str(yob)
             else:
-                row['birth_display'] = ''
+                row["birth_display"] = ""
 
         # Query alias/former names
         sql = f"""
@@ -239,24 +246,26 @@ def search_people():
 
         # Format birth dates for alias results
         for row in alias_results:
-            yob = row.get('yob')
-            mob = row.get('mob')
-            dob = row.get('dob')
+            yob = row.get("yob")
+            mob = row.get("mob")
+            dob = row.get("dob")
             if yob:
                 if mob and dob:
-                    row['birth_display'] = f"{yob:04d}-{mob:02d}-{dob:02d}"
+                    row["birth_display"] = f"{yob:04d}-{mob:02d}-{dob:02d}"
                 elif mob:
-                    row['birth_display'] = f"{yob:04d}-{mob:02d}"
+                    row["birth_display"] = f"{yob:04d}-{mob:02d}"
                 else:
-                    row['birth_display'] = str(yob)
+                    row["birth_display"] = str(yob)
             else:
-                row['birth_display'] = ''
+                row["birth_display"] = ""
 
-    return render_template('searchpeople.html',
-                         n1=n1,
-                         n2=n2,
-                         d=d,
-                         e=e,
-                         now_year=now_year,
-                         current_results=current_results,
-                         alias_results=alias_results)
+    return render_template(
+        "searchpeople.html",
+        n1=n1,
+        n2=n2,
+        d=d,
+        e=e,
+        now_year=now_year,
+        current_results=current_results,
+        alias_results=alias_results,
+    )

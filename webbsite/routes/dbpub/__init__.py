@@ -25,7 +25,7 @@ The routes have been split into logical categories for maintainability:
 from flask import Blueprint
 
 # Create the main dbpub blueprint
-bp = Blueprint('dbpub', __name__)
+bp = Blueprint("dbpub", __name__)
 
 # Import all sub-modules to register their routes
 from . import (
@@ -43,14 +43,15 @@ from . import (
     transport,
     articles,
     events,
-    statistics
+    statistics,
 )
+
 
 # Register all sub-blueprints with the main blueprint
 def register_blueprints(app):
     """Register all dbpub sub-blueprints with the Flask app"""
     # All dbpub routes are under /dbpub prefix
-    url_prefix = '/dbpub'
+    url_prefix = "/dbpub"
 
     app.register_blueprint(index.bp, url_prefix=url_prefix)
     app.register_blueprint(listings.bp, url_prefix=url_prefix)

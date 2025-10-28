@@ -3,6 +3,7 @@ Database connection helpers
 Direct port from Classic ASP ADODB connection patterns
 Using SQLAlchemy for robust connection pooling and management
 """
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import NullPool
 from flask import current_app, g
@@ -16,10 +17,12 @@ _engine = None
 
 def get_db():
     """Get database connection from pool and store in Flask g context"""
-    if 'db' not in g:
+    if "db" not in g:
         try:
             if _engine is None:
-                raise RuntimeError("Database engine not initialized. Call init_app() first.")
+                raise RuntimeError(
+                    "Database engine not initialized. Call init_app() first."
+                )
 
             # Get connection from pool
             # pool_pre_ping=True automatically validates connections before use
@@ -35,7 +38,7 @@ def get_db():
 
             g.db = conn
 
-            if current_app.config.get('DEBUG'):
+            if current_app.config.get("DEBUG"):
                 logger.debug("Database connection acquired from pool")
         except Exception as e:
             logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
@@ -45,11 +48,11 @@ def get_db():
 
 def close_db(e=None):
     """Return database connection to pool"""
-    db = g.pop('db', None)
+    db = g.pop("db", None)
     if db is not None:
         # SQLAlchemy connection.close() returns connection to pool automatically
         db.close()
-        if current_app.config.get('DEBUG'):
+        if current_app.config.get("DEBUG"):
             logger.debug("Database connection returned to pool")
 
 
@@ -64,7 +67,7 @@ def execute_query(sql, params=None):
     db = get_db()
 
     # Log SQL in debug mode
-    if current_app.config.get('SQL_ECHO', False):
+    if current_app.config.get("SQL_ECHO", False):
         logger.debug(f"SQL: {sql}")
         if params:
             logger.debug(f"Params: {params}")
@@ -79,9 +82,9 @@ def execute_query(sql, params=None):
             param_dict = {}
             param_index = 1
             new_sql = sql
-            while '%s' in new_sql:
-                param_name = f'param{param_index}'
-                new_sql = new_sql.replace('%s', f':{param_name}', 1)
+            while "%s" in new_sql:
+                param_name = f"param{param_index}"
+                new_sql = new_sql.replace("%s", f":{param_name}", 1)
                 if param_index <= len(params):
                     param_dict[param_name] = params[param_index - 1]
                 param_index += 1
@@ -94,13 +97,13 @@ def execute_query(sql, params=None):
         if result.returns_rows:
             # Convert rows to list of dicts (like RealDictCursor)
             rows = [dict(row._mapping) for row in result]
-            if current_app.config.get('SQL_ECHO', False):
+            if current_app.config.get("SQL_ECHO", False):
                 logger.debug(f"Returned {len(rows)} rows")
             return rows
         else:
             # INSERT/UPDATE/DELETE - commit the transaction
             db.commit()
-            if current_app.config.get('SQL_ECHO', False):
+            if current_app.config.get("SQL_ECHO", False):
                 logger.debug("Query executed successfully (no results)")
             return []
     except Exception as e:
@@ -118,7 +121,7 @@ def execute_query(sql, params=None):
             pass
 
         # In debug mode, re-raise to show in browser
-        if current_app.config.get('DEBUG'):
+        if current_app.config.get("DEBUG"):
             raise
         # In production, raise a more generic error
         raise Exception(f"Database query failed: {str(e)}")
@@ -135,7 +138,7 @@ def execute_scalar(sql, params=None):
     db = get_db()
 
     # Log SQL in debug mode
-    if current_app.config.get('SQL_ECHO', False):
+    if current_app.config.get("SQL_ECHO", False):
         logger.debug(f"SQL (scalar): {sql}")
         if params:
             logger.debug(f"Params: {params}")
@@ -150,9 +153,9 @@ def execute_scalar(sql, params=None):
             param_dict = {}
             param_index = 1
             new_sql = sql
-            while '%s' in new_sql:
-                param_name = f'param{param_index}'
-                new_sql = new_sql.replace('%s', f':{param_name}', 1)
+            while "%s" in new_sql:
+                param_name = f"param{param_index}"
+                new_sql = new_sql.replace("%s", f":{param_name}", 1)
                 if param_index <= len(params):
                     param_dict[param_name] = params[param_index - 1]
                 param_index += 1
@@ -177,7 +180,7 @@ def execute_scalar(sql, params=None):
             pass
 
         # In debug mode, re-raise to show in browser
-        if current_app.config.get('DEBUG'):
+        if current_app.config.get("DEBUG"):
             raise
         # In production, raise a more generic error
         raise Exception(f"Database query failed: {str(e)}")
@@ -192,7 +195,7 @@ def init_engine(app):
         return
 
     try:
-        db_url = app.config['DATABASE_URL']
+        db_url = app.config["DATABASE_URL"]
 
         # Create SQLAlchemy engine with optimized pooling settings
         _engine = create_engine(
@@ -201,25 +204,28 @@ def init_engine(app):
             # This prevents SSL errors from stale connections
             pool_pre_ping=True,
             # Pool size configuration
-            pool_size=app.config.get('DB_POOL_MIN_CONN', 5),
-            max_overflow=app.config.get('DB_POOL_MAX_CONN', 20) - app.config.get('DB_POOL_MIN_CONN', 5),
+            pool_size=app.config.get("DB_POOL_MIN_CONN", 5),
+            max_overflow=app.config.get("DB_POOL_MAX_CONN", 20)
+            - app.config.get("DB_POOL_MIN_CONN", 5),
             # Connection timeout
             connect_args={
-                'connect_timeout': app.config.get('DB_CONNECT_TIMEOUT', 30),
+                "connect_timeout": app.config.get("DB_CONNECT_TIMEOUT", 30),
                 # TCP keepalives to detect dead connections
-                'keepalives': 1,
-                'keepalives_idle': 30,
-                'keepalives_interval': 10,
-                'keepalives_count': 5,
+                "keepalives": 1,
+                "keepalives_idle": 30,
+                "keepalives_interval": 10,
+                "keepalives_count": 5,
             },
             # Recycle connections after 1 hour to prevent long-lived connection issues
             pool_recycle=3600,
             # Echo SQL if configured
-            echo=app.config.get('SQL_ECHO', False),
+            echo=app.config.get("SQL_ECHO", False),
         )
-        logger.info(f"SQLAlchemy database engine initialized with pool_pre_ping "
-                   f"(pool_size={app.config.get('DB_POOL_MIN_CONN', 5)}, "
-                   f"max_overflow={app.config.get('DB_POOL_MAX_CONN', 20) - app.config.get('DB_POOL_MIN_CONN', 5)})")
+        logger.info(
+            f"SQLAlchemy database engine initialized with pool_pre_ping "
+            f"(pool_size={app.config.get('DB_POOL_MIN_CONN', 5)}, "
+            f"max_overflow={app.config.get('DB_POOL_MAX_CONN', 20) - app.config.get('DB_POOL_MIN_CONN', 5)})"
+        )
     except Exception as e:
         logger.error(f"Failed to initialize database engine: {e}", exc_info=True)
         raise
@@ -244,4 +250,5 @@ def init_app(app):
 
     # Dispose engine on app shutdown
     import atexit
+
     atexit.register(dispose_engine)

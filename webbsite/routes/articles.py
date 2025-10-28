@@ -2,12 +2,13 @@
 Articles routes - Redirect to Webb-site.com archive.org versions
 Editorial content remains copyright David M. Webb
 """
+
 from flask import Blueprint, redirect
 
-bp = Blueprint('articles', __name__)
+bp = Blueprint("articles", __name__)
 
 
-@bp.route('/<path:article_path>.asp')
+@bp.route("/<path:article_path>.asp")
 def article(article_path):
     """
     Redirect article requests to archive.org's Webb-site.com archive
@@ -19,10 +20,12 @@ def article(article_path):
     return redirect(archive_url, code=301)  # Permanent redirect
 
 
-@bp.route('/')
-@bp.route('/index.html')
+@bp.route("/")
+@bp.route("/index.html")
 def articles_index():
     """
     Redirect articles index to archive.org
     """
-    return redirect("https://web.archive.org/web/2/https://webb-site.com/articles/", code=301)
+    return redirect(
+        "https://web.archive.org/web/2/https://webb-site.com/articles/", code=301
+    )

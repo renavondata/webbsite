@@ -2,6 +2,7 @@
 Utility functions ported from Classic ASP functions1.asp
 Direct ports to maintain compatibility with ASP logic
 """
+
 from datetime import datetime, date
 from flask import request
 import re
@@ -10,14 +11,15 @@ import html
 
 # ===== REQUEST PARAMETER HELPERS =====
 
+
 def get_int(name, default=0):
     """Get integer from request args, similar to ASP getInt()
 
     Note: Unlike ASP Integer (16-bit), this returns full Python int to handle
     database IDs that exceed 32767 (e.g., issue.id1 uses MySQL INT/PostgreSQL integer)
     """
-    val = request.args.get(name, '')
-    if not val or not val.lstrip('-').isdigit():
+    val = request.args.get(name, "")
+    if not val or not val.lstrip("-").isdigit():
         return default
     try:
         return int(val)
@@ -25,14 +27,14 @@ def get_int(name, default=0):
         return default
 
 
-def get_str(name, default=''):
+def get_str(name, default=""):
     """Get string from request args"""
     return request.args.get(name, default)
 
 
 def get_dbl(name, default=0.0):
     """Get float from request args"""
-    val = request.args.get(name, '')
+    val = request.args.get(name, "")
     if not val:
         return default
     try:
@@ -43,76 +45,78 @@ def get_dbl(name, default=0.0):
 
 def get_bool(name):
     """Get boolean from request args"""
-    val = request.args.get(name, '')
-    return val in ('1', 'true', 'True')
+    val = request.args.get(name, "")
+    return val in ("1", "true", "True")
 
 
 # ===== STRING HELPERS =====
 
+
 def apos(s):
     """Escape single quotes for SQL (though parameterized queries are preferred)"""
     if s is None:
-        return ''
+        return ""
     return str(s).replace("'", "''")
 
 
 def rem_space(s):
     """Remove extra spaces, similar to ASP remSpace()"""
     if not s:
-        return ''
+        return ""
     s = s.strip()
-    s = s.replace('\r', '')
-    s = s.replace('\n', '')
-    while '  ' in s:
-        s = s.replace('  ', ' ')
+    s = s.replace("\r", "")
+    s = s.replace("\n", "")
+    while "  " in s:
+        s = s.replace("  ", " ")
     return s
 
 
 def html_ent(s):
     """Escape HTML entities to prevent XSS"""
     if s is None:
-        return ''
+        return ""
     return html.escape(str(s))
 
 
 # ===== DATE FORMATTING =====
 
+
 def ms_date(d):
     """Convert date to MySQL format YYYY-MM-DD"""
     if d is None:
-        return ''
+        return ""
     if isinstance(d, str):
         return d
     if isinstance(d, (datetime, date)):
-        return d.strftime('%Y-%m-%d')
-    return ''
+        return d.strftime("%Y-%m-%d")
+    return ""
 
 
 def ms_date_time(d):
     """Convert datetime to MySQL format YYYY-MM-DD HH:MM:SS"""
     if d is None:
-        return ''
+        return ""
     if isinstance(d, str):
         return d
     if isinstance(d, datetime):
-        return d.strftime('%Y-%m-%d %H:%M:%S')
+        return d.strftime("%Y-%m-%d %H:%M:%S")
     if isinstance(d, date):
-        return d.strftime('%Y-%m-%d 00:00:00')
-    return ''
+        return d.strftime("%Y-%m-%d 00:00:00")
+    return ""
 
 
 def force_date(d):
     """Format date as d-MMM-YYYY, e.g. 17-Oct-2025"""
     if not d:
-        return ''
+        return ""
     if isinstance(d, str):
         try:
             d = datetime.fromisoformat(d)
         except:
             return d
     if isinstance(d, (datetime, date)):
-        return d.strftime('%-d-%b-%Y')  # Unix format, Windows uses %#d
-    return ''
+        return d.strftime("%-d-%b-%Y")  # Unix format, Windows uses %#d
+    return ""
 
 
 def date_str(d, accuracy=None):
@@ -121,7 +125,7 @@ def date_str(d, accuracy=None):
     accuracy: 1,4=year only, 2,5=month-year, 3=U, None=full date
     """
     if not d:
-        return ''
+        return ""
     if isinstance(d, str):
         try:
             d = datetime.fromisoformat(d)
@@ -133,31 +137,32 @@ def date_str(d, accuracy=None):
     elif accuracy in (2, 5):
         return f"{d.strftime('%b')}-{d.year}"
     elif accuracy == 3:
-        return 'U'
+        return "U"
     else:
         return force_date(d)
 
 
 # ===== NUMBER FORMATTING =====
 
+
 def int_str(n):
     """Format integer with commas, return nbsp if null"""
     if n is None:
-        return '&nbsp;'
+        return "&nbsp;"
     try:
         return f"{int(n):,}"
     except (ValueError, TypeError):
-        return '&nbsp;'
+        return "&nbsp;"
 
 
 def pc_str(p):
     """Format as percentage, return nbsp if null"""
     if p is None or p == 0:
-        return '&nbsp;'
+        return "&nbsp;"
     try:
         return f"{float(p):.2%}"
     except (ValueError, TypeError):
-        return '&nbsp;'
+        return "&nbsp;"
 
 
 def digits(p, n):
@@ -167,7 +172,7 @@ def digits(p, n):
     n=4: 1,234 or 123.4 or 0.123
     """
     if p is None or p == 0:
-        return '-'
+        return "-"
     try:
         p = float(p)
         int_part = abs(int(p))
@@ -176,7 +181,7 @@ def digits(p, n):
         formatted = f"{p:,.{decimals}f}"
         return formatted
     except (ValueError, TypeError):
-        return '-'
+        return "-"
 
 
 def sig(p):
@@ -191,6 +196,7 @@ def sig2(p):
 
 # ===== HTML GENERATION HELPERS =====
 
+
 def make_select(name, value, options_str, auto_submit=False):
     """
     Generate HTML select dropdown
@@ -200,13 +206,13 @@ def make_select(name, value, options_str, auto_submit=False):
     return make_select_onch(name, value, options_str, onchange)
 
 
-def make_select_onch(name, value, options_str, onchange=''):
+def make_select_onch(name, value, options_str, onchange=""):
     """Generate HTML select with custom onchange"""
     if value is None:
-        value = ''
+        value = ""
     value = str(value)
 
-    parts = options_str.split(',')
+    parts = options_str.split(",")
     html = f"<select id='{name}' name='{name}'"
     if onchange:
         html += f" onchange='{onchange}'"
@@ -214,9 +220,9 @@ def make_select_onch(name, value, options_str, onchange=''):
 
     # Options come in pairs: value, text
     for i in range(0, len(parts), 2):
-        opt_val = parts[i] if i < len(parts) else ''
-        opt_text = parts[i+1] if i+1 < len(parts) else ''
-        selected = ' selected' if opt_val == value else ''
+        opt_val = parts[i] if i < len(parts) else ""
+        opt_text = parts[i + 1] if i + 1 < len(parts) else ""
+        selected = " selected" if opt_val == value else ""
         html += f"<option value='{opt_val}'{selected}>{opt_text}</option>"
 
     html += "</select>"
@@ -225,32 +231,33 @@ def make_select_onch(name, value, options_str, onchange=''):
 
 def checkbox(name, value, auto_submit=False):
     """Generate HTML checkbox"""
-    checked = ' checked' if value else ''
-    onchange = " onchange='this.form.submit()'" if auto_submit else ''
+    checked = " checked" if value else ""
+    onchange = " onchange='this.form.submit()'" if auto_submit else ""
     return f"<input type='checkbox' name='{name}' id='{name}' value='1'{checked}{onchange}>"
 
 
 def checked(condition):
     """Return ' checked' if condition is True"""
-    return ' checked' if condition else ''
+    return " checked" if condition else ""
 
 
 def selected(condition):
     """Return ' selected' if condition is True"""
-    return ' selected' if condition else ''
+    return " selected" if condition else ""
 
 
 def tick(b):
     """Return check mark if True"""
-    return '&#10004;' if b else ''
+    return "&#10004;" if b else ""
 
 
 # ===== SQL HELPERS (for compatibility, prefer parameterized queries) =====
 
+
 def apq(s):
     """Return 'NULL' for empty/null, or quoted string for SQL"""
-    if s == '' or s is None:
-        return 'NULL'
+    if s == "" or s is None:
+        return "NULL"
     return f"'{apos(s)}'"
 
 
@@ -259,10 +266,10 @@ def sqv(v):
     Prepare value for SQL INSERT/UPDATE
     Empty strings become NULL, strings are quoted, numbers are not
     """
-    if v == '' or v is None:
-        return 'NULL'
+    if v == "" or v is None:
+        return "NULL"
     elif isinstance(v, bool):
-        return '1' if v else '0'
+        return "1" if v else "0"
     elif isinstance(v, (int, float)):
         return str(v)
     elif isinstance(v, (datetime, date)):
@@ -272,6 +279,7 @@ def sqv(v):
 
 
 # ===== MISC HELPERS =====
+
 
 def iif(condition, true_val, false_val):
     """Inline if - similar to ASP IIF()"""
@@ -284,6 +292,7 @@ def if_null(value, default):
 
 
 # ===== TOTAL RETURNS HELPERS =====
+
 
 def pcsig(p):
     """
@@ -321,14 +330,14 @@ def format_percent_sig(p):
         Formatted string like "12.34%" or "&nbsp;" if None
     """
     if p is None:
-        return '&nbsp;'
+        return "&nbsp;"
 
     try:
         decimals = pcsig(p)
         formatted = f"{float(p):.{decimals}%}"
         return formatted
     except (ValueError, TypeError):
-        return '&nbsp;'
+        return "&nbsp;"
 
 
 def get_date_or_default(name, default=None):
@@ -343,26 +352,26 @@ def get_date_or_default(name, default=None):
     Returns:
         Date string in YYYY-MM-DD format or default
     """
-    val = request.args.get(name, '')
+    val = request.args.get(name, "")
 
     if not val:
-        return default if default else ''
+        return default if default else ""
 
     # Try to parse as date
     try:
         # Accept various date formats
         if isinstance(val, str):
             # Try ISO format first
-            parsed = datetime.fromisoformat(val.replace('/', '-'))
+            parsed = datetime.fromisoformat(val.replace("/", "-"))
         elif isinstance(val, (datetime, date)):
             parsed = val
         else:
-            return default if default else ''
+            return default if default else ""
 
         # Return as YYYY-MM-DD string
-        return parsed.strftime('%Y-%m-%d')
+        return parsed.strftime("%Y-%m-%d")
     except (ValueError, AttributeError):
-        return default if default else ''
+        return default if default else ""
 
 
 def max_val(*args):
@@ -377,19 +386,20 @@ def min_val(*args):
 
 def sp_date(d):
     """Return nbsp or date string - useful for table cells"""
-    if not d or d == '':
-        return '&nbsp;'
+    if not d or d == "":
+        return "&nbsp;"
     return ms_date(d)
 
 
 def yn(v):
     """Convert boolean to Y/N"""
     if v:
-        return 'Y'
-    return 'N'
+        return "Y"
+    return "N"
 
 
 # ===== DATABASE LOOKUP HELPERS =====
+
 
 def find_stock():
     """
@@ -399,13 +409,13 @@ def find_stock():
     from webbsite.db import execute_query
 
     # Try stock code first
-    stock_code = get_int('sc', 0)
+    stock_code = get_int("sc", 0)
     if stock_code > 0:
         issue_id = sc_issue(stock_code)
     else:
-        issue_id = get_int('i', 0)
+        issue_id = get_int("i", 0)
         if issue_id == 0:
-            issue_id = get_int('issue', 0)  # legacy links
+            issue_id = get_int("issue", 0)  # legacy links
 
     issue_name, person_id = issue_name_func(issue_id)
     return issue_id, issue_name, person_id
@@ -419,7 +429,8 @@ def sc_issue(stock_code):
     from webbsite.db import execute_query
 
     try:
-        result = execute_query("""
+        result = execute_query(
+            """
             SELECT COALESCE((
                 SELECT issueID
                 FROM enigma.stockListings
@@ -428,10 +439,12 @@ def sc_issue(stock_code):
                 ORDER BY firstTradeDate DESC
                 LIMIT 1
             ), 0) as issue_id
-        """, (stock_code,))
+        """,
+            (stock_code,),
+        )
 
         if result and len(result) > 0:
-            return int(result[0]['issue_id'])
+            return int(result[0]["issue_id"])
         return 0
     except Exception:
         return 0
@@ -450,7 +463,8 @@ def issue_name_func(issue_id):
 
     try:
         # Query to get issue details
-        result = execute_query("""
+        result = execute_query(
+            """
             SELECT
                 o.Name1,
                 st.typeShort,
@@ -470,35 +484,38 @@ def issue_name_func(issue_id):
             JOIN enigma.sectypes st ON i.typeID = st.typeID
             LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
             WHERE i.ID1 = %s
-        """, (issue_id,))
+        """,
+            (issue_id,),
+        )
 
         if not result or len(result) == 0:
             return "Stock not found. ", 0
 
         row = result[0]
-        name = row['name1'] + ": "
+        name = row["name1"] + ": "
 
-        if row['floating']:
+        if row["floating"]:
             name += " Floating"
 
-        name += " " + row['typeshort']
+        name += " " + row["typeshort"]
 
-        if row['curr'] and row['curr'] != '':
-            name += " " + row['curr']
+        if row["curr"] and row["curr"] != "":
+            name += " " + row["curr"]
 
-        if row['coupon'] is not None:
+        if row["coupon"] is not None:
             name += f" {row['coupon']}%"
 
-        if row['exp'] and row['exp'] != '':
-            name += " due " + row['exp']
+        if row["exp"] and row["exp"] != "":
+            name += " due " + row["exp"]
 
-        return name, row['personid']
+        return name, row["personid"]
 
     except Exception:
         return "Stock not found. ", 0
 
 
 # ===== NAVIGATION HELPERS =====
+
 
 def mobile(n):
     """
@@ -540,10 +557,10 @@ def sl(text, def_sort, alt_sort, current_sort, base_url):
 
     # Build URL - if it ends with .asp add "?", otherwise add "&"
     url = base_url
-    if url.endswith('.asp'):
-        url += '?'
+    if url.endswith(".asp"):
+        url += "?"
     else:
-        url += '&amp;'
+        url += "&amp;"
 
     return f"<a href='{url}sort={sort_value}'><b>{text}</b></a>"
 
@@ -566,14 +583,14 @@ def write_btns(val, param_values, labels, base_url):
     Generate button list elements without ul wrapper
     Port of ASP writeBtns() function
     """
-    p_list = param_values.split(',')
-    l_list = labels.split(',')
+    p_list = param_values.split(",")
+    l_list = labels.split(",")
 
     # Try to convert val to int if numeric
     if str(val).isdigit():
         val = int(val)
 
-    html = ''
+    html = ""
     for i, p_val in enumerate(p_list):
         if i >= len(l_list):
             break
@@ -593,9 +610,11 @@ def write_btns(val, param_values, labels, base_url):
 
 # ===== ADDITIONAL FORMATTING HELPERS =====
 
+
 def month_end(month, year):
     """Return last day of month"""
     import calendar
+
     return calendar.monthrange(year, month)[1]
 
 
@@ -617,21 +636,22 @@ def last_id(con):
     # In PostgreSQL, use RETURNING id_column in INSERT instead
     # This is here for compatibility but not recommended
     from webbsite.db import execute_query
+
     result = execute_query("SELECT lastval() as last_id")
     if result and len(result) > 0:
-        return result[0]['last_id']
+        return result[0]["last_id"]
     return 0
 
 
 def norm_url(url):
     """Normalize URL - convert https to http, add http:// prefix if missing"""
-    if not url or url == '':
+    if not url or url == "":
         return None
 
-    if url.startswith('https'):
-        return 'http' + url[5:]
-    elif not url.startswith('http'):
-        return 'http://' + url
+    if url.startswith("https"):
+        return "http" + url[5:]
+    elif not url.startswith("http"):
+        return "http://" + url
     else:
         return url
 
@@ -644,7 +664,9 @@ def col_sum(arr, col_index):
             val = row[col_index]
             if isinstance(val, (int, float)):
                 total += val
-            elif isinstance(val, str) and val.replace('.', '').replace('-', '').isdigit():
+            elif (
+                isinstance(val, str) and val.replace(".", "").replace("-", "").isdigit()
+            ):
                 total += float(val)
     return total
 
@@ -666,7 +688,7 @@ def join_row(arr, row_index):
     Returns: comma-separated string of values
     """
     if not arr or len(arr) == 0:
-        return ''
+        return ""
 
     values = []
     for col in arr:
@@ -674,8 +696,8 @@ def join_row(arr, row_index):
             val = col[row_index]
             # Handle None/NULL as 0 for charts
             if val is None:
-                values.append('0')
+                values.append("0")
             else:
                 values.append(str(val))
 
-    return ','.join(values)
+    return ",".join(values)

@@ -1,6 +1,7 @@
 """
 Hong Kong solicitor and law firm data
 """
+
 from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date, timedelta
 import calendar
@@ -9,9 +10,10 @@ import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
-bp = Blueprint('dbpub_solicitors', __name__)
+bp = Blueprint("dbpub_solicitors", __name__)
 
-@bp.route('/HKsols.asp')
+
+@bp.route("/HKsols.asp")
 def hk_sols():
     """
     HK solicitors in law firms - port of HKsols.asp
@@ -25,8 +27,8 @@ def hk_sols():
     """
     from flask import current_app
 
-    p = get_int('p', 0)
-    sort_param = request.args.get('sort', 'admup')
+    p = get_int("p", 0)
+    sort_param = request.args.get("sort", "admup")
 
     # Get role title
     role_sql = ""
@@ -35,23 +37,24 @@ def hk_sols():
 
     # Build sort order
     sort_map = {
-        'humup': "pName,oName",
-        'humdn': "pName DESC,oName",
-        'orgup': "oName,LStxt,pName",
-        'orgdn': "oName,admHK,pName",
-        'admdn': "admHK DESC,pName",
-        'admup': "admHK,pName,oName",
-        'ageup': "age,pName,oName",
-        'agedn': "age DESC,pName,oName",
-        'rolup': "LStxt,pName,oName",
-        'roldn': "LStxt DESC,oName,pName"
+        "humup": "pName,oName",
+        "humdn": "pName DESC,oName",
+        "orgup": "oName,LStxt,pName",
+        "orgdn": "oName,admHK,pName",
+        "admdn": "admHK DESC,pName",
+        "admup": "admHK,pName,oName",
+        "ageup": "age,pName,oName",
+        "agedn": "age DESC,pName,oName",
+        "rolup": "LStxt,pName,oName",
+        "roldn": "LStxt DESC,oName,pName",
     }
     ob = sort_map.get(sort_param, "admHK,pName,oName")
 
     # Query solicitors
     solicitors = []
     try:
-        solicitors = execute_query(f"""
+        solicitors = execute_query(
+            f"""
             SELECT
                 CONCAT(EXTRACT(YEAR FROM p.admHK), '-',
                        LPAD(EXTRACT(MONTH FROM p.admHK), 2, '0')) AS admHK,
@@ -71,17 +74,17 @@ def hk_sols():
             JOIN enigma.lsppl p ON lp.lsid = p.lsid
             WHERE NOT ps.dead {role_sql}
             ORDER BY {ob}
-        """)
+        """
+        )
     except Exception as ex:
         current_app.logger.error(f"Error querying HK sols: {ex}")
 
-    return render_template('dbpub/hk_sols.html',
-                         p=p, solicitors=solicitors, sort=sort_param)
+    return render_template(
+        "dbpub/hk_sols.html", p=p, solicitors=solicitors, sort=sort_param
+    )
 
 
-
-
-@bp.route('/HKsolfirms.asp')
+@bp.route("/HKsolfirms.asp")
 def hk_sol_firms():
     """
     HK law firms - port of HKsolfirms.asp
@@ -95,25 +98,32 @@ def hk_sol_firms():
     """
     from flask import current_app
 
-    d = request.args.get('d', str(date.today()))
-    sort_param = request.args.get('sort', 'totdn')
+    d = request.args.get("d", str(date.today()))
+    sort_param = request.args.get("sort", "totdn")
 
     # Build sort order
     sort_map = {
-        'orgup': "name1", 'orgdn': "name1 DESC",
-        'partup': "partner,tot,name1", 'partdn': "partner DESC,tot DESC,name1",
-        'solup': "sol,tot,name1", 'soldn': "sol DESC,tot DESC,name1",
-        'conup': "con,tot,name1", 'condn': "con DESC,tot DESC,name1",
-        'propup': "prop,tot,name1", 'propdn': "prop DESC,tot DESC,name1",
-        'totup': "tot,name1", 'totdn': "tot DESC,name1"
+        "orgup": "name1",
+        "orgdn": "name1 DESC",
+        "partup": "partner,tot,name1",
+        "partdn": "partner DESC,tot DESC,name1",
+        "solup": "sol,tot,name1",
+        "soldn": "sol DESC,tot DESC,name1",
+        "conup": "con,tot,name1",
+        "condn": "con DESC,tot DESC,name1",
+        "propup": "prop,tot,name1",
+        "propdn": "prop DESC,tot DESC,name1",
+        "totup": "tot,name1",
+        "totdn": "tot DESC,name1",
     }
     ob = sort_map.get(sort_param, "tot DESC,name1")
 
     # Query law firms
     firms = []
-    totals = {'partner': 0, 'con': 0, 'sol': 0, 'prop': 0, 'tot': 0}
+    totals = {"partner": 0, "con": 0, "sol": 0, "prop": 0, "tot": 0}
     try:
-        firms = execute_query(f"""
+        firms = execute_query(
+            f"""
             SELECT lo.personID, o.name1,
                    COUNT(lp.lsppl) AS tot,
                    SUM(CASE WHEN lp.post = 1 THEN 1 ELSE 0 END) AS partner,
@@ -127,10 +137,13 @@ def hk_sol_firms():
               AND (NOT lp.dead OR lp.lastSeen >= %s)
             GROUP BY lo.personID, o.name1
             ORDER BY {ob}
-        """, (d, d))
+        """,
+            (d, d),
+        )
 
         # Calculate totals
-        result = execute_query("""
+        result = execute_query(
+            """
             SELECT COUNT(lsppl) AS tot,
                    SUM(CASE WHEN post = 1 THEN 1 ELSE 0 END) AS partner,
                    SUM(CASE WHEN post = 2 THEN 1 ELSE 0 END) AS con,
@@ -140,20 +153,21 @@ def hk_sol_firms():
             WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
               AND (NOT lp.dead OR lp.lastSeen >= %s)
               AND lp.post <> 4
-        """, (d, d))
+        """,
+            (d, d),
+        )
         if result:
             totals = result[0]
 
     except Exception as ex:
         current_app.logger.error(f"Error querying HK sol firms: {ex}")
 
-    return render_template('dbpub/hk_sol_firms.html',
-                         firms=firms, totals=totals, d=d, sort=sort_param)
+    return render_template(
+        "dbpub/hk_sol_firms.html", firms=firms, totals=totals, d=d, sort=sort_param
+    )
 
 
-
-
-@bp.route('/HKsolsmoves.asp')
+@bp.route("/HKsolsmoves.asp")
 def hk_sols_moves():
     """
     HK solicitors job moves - port of HKsolsmoves.asp
@@ -166,23 +180,24 @@ def hk_sols_moves():
     """
     from flask import current_app
 
-    sort_param = request.args.get('sort', 'orgup')
+    sort_param = request.args.get("sort", "orgup")
 
     # Build sort order
     sort_map = {
-        'orgup': "oName,pName,LSrole DESC",
-        'orgdn': "oName DESC,pName,LSrole DESC",
-        'solup': "pName,oName,LSrole DESC",
-        'soldn': "pName DESC,oName,LSrole DESC",
-        'datdn': "relDate DESC,pName,oName",
-        'datup': "relDate,pName,oName"
+        "orgup": "oName,pName,LSrole DESC",
+        "orgdn": "oName DESC,pName,LSrole DESC",
+        "solup": "pName,oName,LSrole DESC",
+        "soldn": "pName DESC,oName,LSrole DESC",
+        "datdn": "relDate DESC,pName,oName",
+        "datup": "relDate,pName,oName",
     }
     ob = sort_map.get(sort_param, "oName,pName,LSrole DESC")
 
     # Query recent moves
     moves = []
     try:
-        moves = execute_query(f"""
+        moves = execute_query(
+            f"""
             SELECT DISTINCT
                 d.company AS orgID, d.director AS pID,
                 CONCAT(COALESCE(p.name1,''),
@@ -207,17 +222,15 @@ def hk_sols_moves():
             WHERE d.resDate >= CURRENT_DATE - INTERVAL '30 days'
                OR d.apptDate >= CURRENT_DATE - INTERVAL '30 days'
             ORDER BY {ob}
-        """)
+        """
+        )
     except Exception as ex:
         current_app.logger.error(f"Error querying HK sols moves: {ex}")
 
-    return render_template('dbpub/hk_sols_moves.html',
-                         moves=moves, sort=sort_param)
+    return render_template("dbpub/hk_sols_moves.html", moves=moves, sort=sort_param)
 
 
-
-
-@bp.route('/HKsolemps.asp')
+@bp.route("/HKsolemps.asp")
 def hk_sol_emps():
     """
     Non-law firm employers with HK solicitors - port of HKsolemps.asp
@@ -230,14 +243,14 @@ def hk_sol_emps():
     """
     from flask import current_app
 
-    sort_param = request.args.get('sort', 'cntdn')
+    sort_param = request.args.get("sort", "cntdn")
 
     # Build sort order
     sort_map = {
-        'orgup': "name1",
-        'orgdn': "name1 DESC",
-        'cntup': "cnt,name1",
-        'cntdn': "cnt DESC,name1"
+        "orgup": "name1",
+        "orgdn": "name1 DESC",
+        "cntup": "cnt,name1",
+        "cntdn": "cnt DESC,name1",
     }
     ob = sort_map.get(sort_param, "cnt DESC,name1")
 
@@ -245,7 +258,8 @@ def hk_sol_emps():
     employers = []
     total = 0
     try:
-        employers = execute_query(f"""
+        employers = execute_query(
+            f"""
             SELECT o.name1, o.personID, COUNT(*) AS cnt
             FROM enigma.lsjobs j
             JOIN enigma.lsemps e ON j.empID = e.ID
@@ -253,19 +267,19 @@ def hk_sol_emps():
             WHERE NOT j.dead
             GROUP BY e.personID, o.name1, o.personID
             ORDER BY {ob}
-        """)
+        """
+        )
 
         # Calculate total
         for emp in employers:
-            total += emp['cnt']
+            total += emp["cnt"]
 
     except Exception as ex:
         current_app.logger.error(f"Error querying HK sol emps: {ex}")
 
-    return render_template('dbpub/hk_sol_emps.html',
-                         employers=employers, total=total, sort=sort_param)
+    return render_template(
+        "dbpub/hk_sol_emps.html", employers=employers, total=total, sort=sort_param
+    )
 
 
 # Website URLs
-
-

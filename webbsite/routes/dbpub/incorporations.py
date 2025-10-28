@@ -1,6 +1,7 @@
 """
 Company incorporations, dissolutions, and registrations
 """
+
 from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date, timedelta
 import calendar
@@ -9,9 +10,10 @@ import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
-bp = Blueprint('dbpub_incorporations', __name__)
+bp = Blueprint("dbpub_incorporations", __name__)
 
-@bp.route('/domicile.asp')
+
+@bp.route("/domicile.asp")
 def domicile():
     """
     Distribution of listed companies by domicile
@@ -22,35 +24,38 @@ def domicile():
 
     Shows count and percentage of listed companies by jurisdiction
     """
-    e = request.args.get('e', 'a')
-    sort_param = request.args.get('sort', 'cntdn')
+    e = request.args.get("e", "a")
+    sort_param = request.args.get("sort", "cntdn")
 
     # Exchange filter
     exchange_filters = {
-        'g': ('20', 'GEM'),
-        'm': ('1', 'Main Board'),
-        'a': ('1, 20', 'Main Board and GEM')
+        "g": ("20", "GEM"),
+        "m": ("1", "Main Board"),
+        "a": ("1, 20", "Main Board and GEM"),
     }
-    ex_str, title_suffix = exchange_filters.get(e, ('1, 20', 'Main Board and GEM'))
+    ex_str, title_suffix = exchange_filters.get(e, ("1, 20", "Main Board and GEM"))
 
     # Sort order mapping
     sort_mappings = {
-        'cntup': 'cnt',
-        'cntdn': 'cnt DESC',
-        'domup': 'domname',
-        'domdn': 'domname DESC'
+        "cntup": "cnt",
+        "cntdn": "cnt DESC",
+        "domup": "domname",
+        "domdn": "domname DESC",
     }
-    ob = sort_mappings.get(sort_param, 'cnt DESC')
+    ob = sort_mappings.get(sort_param, "cnt DESC")
 
     # Get total count for percentage calculation
-    total = execute_query(f"""
+    total = execute_query(
+        f"""
         SELECT COUNT(*) AS total
         FROM enigma.listedcoshk
         WHERE stockexid IN ({ex_str})
-    """)[0]['total']
+    """
+    )[0]["total"]
 
     # Query domiciles with company counts
-    domiciles_data = execute_query(f"""
+    domiciles_data = execute_query(
+        f"""
         SELECT d.id,
                d.fullname AS domname,
                COUNT(l.issuer) AS cnt
@@ -60,23 +65,24 @@ def domicile():
         WHERE l.stockexid IN ({ex_str})
         GROUP BY d.id, d.fullname
         ORDER BY {ob}
-    """)
+    """
+    )
 
     # Add percentage to each row
     for row in domiciles_data:
-        row['pct'] = (row['cnt'] * 100.0 / total) if total > 0 else 0
+        row["pct"] = (row["cnt"] * 100.0 / total) if total > 0 else 0
 
-    return render_template('dbpub/domicile.html',
-                         domiciles_data=domiciles_data,
-                         e=e,
-                         sort_param=sort_param,
-                         title=f"Domicile of HK {title_suffix} listed companies",
-                         total=total)
+    return render_template(
+        "dbpub/domicile.html",
+        domiciles_data=domiciles_data,
+        e=e,
+        sort_param=sort_param,
+        title=f"Domicile of HK {title_suffix} listed companies",
+        total=total,
+    )
 
 
-
-
-@bp.route('/domicilecos.asp')
+@bp.route("/domicilecos.asp")
 def domicilecos():
     """
     Companies from a specific domicile
@@ -88,41 +94,45 @@ def domicilecos():
 
     Shows list of listed companies from specified jurisdiction
     """
-    dom = get_int('dom', 1)
-    e = request.args.get('e', 'a')
-    sort_param = request.args.get('sort', 'nameup')
+    dom = get_int("dom", 1)
+    e = request.args.get("e", "a")
+    sort_param = request.args.get("sort", "nameup")
 
     # Exchange filter
     exchange_filters = {
-        'g': ('20', 'GEM'),
-        'm': ('1', 'Main Board'),
-        'a': ('1, 20', 'HK')
+        "g": ("20", "GEM"),
+        "m": ("1", "Main Board"),
+        "a": ("1, 20", "HK"),
     }
-    ex_str, title_prefix = exchange_filters.get(e, ('1, 20', 'HK'))
+    ex_str, title_prefix = exchange_filters.get(e, ("1, 20", "HK"))
 
     # Get domicile name
-    domicile_result = execute_query("""
+    domicile_result = execute_query(
+        """
         SELECT friendly FROM enigma.domiciles WHERE id = %s
-    """, (dom,))
+    """,
+        (dom,),
+    )
 
     if not domicile_result:
         return "Domicile not found", 404
 
-    dom_name = domicile_result[0]['friendly']
+    dom_name = domicile_result[0]["friendly"]
 
     # Sort order mapping
     sort_mappings = {
-        'namedn': 'name DESC',
-        'nameup': 'name',
-        'incdup': 'incdate, name',
-        'incddn': 'incdate DESC, name',
-        'scup': 'sc',
-        'scdn': 'sc DESC'
+        "namedn": "name DESC",
+        "nameup": "name",
+        "incdup": "incdate, name",
+        "incddn": "incdate DESC, name",
+        "scup": "sc",
+        "scdn": "sc DESC",
     }
-    ob = sort_mappings.get(sort_param, 'name')
+    ob = sort_mappings.get(sort_param, "name")
 
     # Get all domiciles for dropdown
-    all_domiciles = execute_query("""
+    all_domiciles = execute_query(
+        """
         SELECT DISTINCT o.domicile, d.friendly
         FROM enigma.stocklistings sl
         JOIN enigma.issue i ON sl.issueid = i.id1
@@ -133,10 +143,12 @@ def domicilecos():
           AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= CURRENT_DATE)
           AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
         ORDER BY d.friendly
-    """)
+    """
+    )
 
     # Get companies from this domicile
-    companies_data = execute_query(f"""
+    companies_data = execute_query(
+        f"""
         SELECT o.name1 AS name,
                o.personid,
                o.incdate,
@@ -154,44 +166,47 @@ def domicilecos():
         WHERE l.stockexid IN ({ex_str})
           AND o.domicile = %s
         ORDER BY {ob}
-    """, (dom,))
+    """,
+        (dom,),
+    )
 
-    return render_template('dbpub/domicilecos.html',
-                         companies_data=companies_data,
-                         all_domiciles=all_domiciles,
-                         dom=dom,
-                         dom_name=dom_name,
-                         e=e,
-                         sort_param=sort_param,
-                         title=f"{title_prefix}-listed companies domiciled in {dom_name}")
+    return render_template(
+        "dbpub/domicilecos.html",
+        companies_data=companies_data,
+        all_domiciles=all_domiciles,
+        dom=dom,
+        dom_name=dom_name,
+        e=e,
+        sort_param=sort_param,
+        title=f"{title_prefix}-listed companies domiciled in {dom_name}",
+    )
 
 
-
-
-@bp.route('/domicilechange.asp')
+@bp.route("/domicilechange.asp")
 def domicile_change():
     """
     Companies that have changed domicile
 
     Shows companies redomiciled by continuation or scheme of arrangement
     """
-    sort_param = request.args.get('sort', 'datedn')
+    sort_param = request.args.get("sort", "datedn")
 
     # Sort order mapping
     sort_mappings = {
-        'newup': 'newdom, datechanged DESC',
-        'newdn': 'newdom DESC, datechanged DESC',
-        'oldup': 'olddom, datechanged DESC',
-        'olddn': 'olddom DESC, datechanged DESC',
-        'dateup': 'datechanged, name1',
-        'datedn': 'datechanged DESC, name1',
-        'namup': 'name1, datechanged DESC',
-        'namdn': 'name1 DESC, datechanged DESC'
+        "newup": "newdom, datechanged DESC",
+        "newdn": "newdom DESC, datechanged DESC",
+        "oldup": "olddom, datechanged DESC",
+        "olddn": "olddom DESC, datechanged DESC",
+        "dateup": "datechanged, name1",
+        "datedn": "datechanged DESC, name1",
+        "namup": "name1, datechanged DESC",
+        "namdn": "name1 DESC, datechanged DESC",
     }
-    ob = sort_mappings.get(sort_param, 'datechanged DESC, name1')
+    ob = sort_mappings.get(sort_param, "datechanged DESC, name1")
 
     # Query domicile changes with old and new domiciles
-    changes_data = execute_query(f"""
+    changes_data = execute_query(
+        f"""
         SELECT dc.orgid,
                o.name1,
                dc.datechanged,
@@ -203,17 +218,18 @@ def domicile_change():
         JOIN enigma.domiciles d1 ON dc.olddom = d1.id
         JOIN enigma.domiciles d2 ON o.domicile = d2.id
         ORDER BY {ob}
-    """)
+    """
+    )
 
-    return render_template('dbpub/domicile_change.html',
-                         changes_data=changes_data,
-                         sort_param=sort_param)
+    return render_template(
+        "dbpub/domicile_change.html", changes_data=changes_data, sort_param=sort_param
+    )
 
 
 # Name changes
 
 
-@bp.route('/incHKannual.asp')
+@bp.route("/incHKannual.asp")
 def inc_hk_annual():
     """
     HK companies incorporated and dissolved per year
@@ -223,7 +239,7 @@ def inc_hk_annual():
     from datetime import date
     from webbsite.asp_helpers import get_int
 
-    t = get_int('t', 0)
+    t = get_int("t", 0)
     title = "HK companies"
 
     # Build type filter
@@ -233,7 +249,7 @@ def inc_hk_annual():
         try:
             type_result = execute_query(type_sql, (t,))
             if type_result:
-                type_name = type_result[0]['typename']
+                type_name = type_result[0]["typename"]
                 title += f": {type_name}"
                 ot_filter = f"AND o.orgtype = {t}"
             else:
@@ -282,16 +298,13 @@ def inc_hk_annual():
         current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/inchkannual.html',
-                         years=results,
-                         t=t,
-                         title=title)
+    return render_template("dbpub/inchkannual.html", years=results, t=t, title=title)
 
 
 # Oldest HK companies
 
 
-@bp.route('/oldestHKcos.asp')
+@bp.route("/oldestHKcos.asp")
 def oldest_hk_cos():
     """
     The oldest HK-incorporated companies
@@ -299,9 +312,9 @@ def oldest_hk_cos():
     """
     from webbsite.asp_helpers import get_int, get_bool, get_str
 
-    a = get_bool('a')  # Alive only
-    t = get_int('t', 0)  # Orgtype filter
-    sort_param = get_str('sort', 'incup')
+    a = get_bool("a")  # Alive only
+    t = get_int("t", 0)  # Orgtype filter
+    sort_param = get_str("sort", "incup")
 
     limit = 5000
     title = f"The oldest {limit}"
@@ -317,18 +330,18 @@ def oldest_hk_cos():
 
     # Build sort
     order_by_map = {
-        'namup': 'name',
-        'namdn': 'name DESC',
-        'regup': 'incid',
-        'regdn': 'incid DESC',
-        'incup': 'incdate, name',
-        'incdn': 'incdate DESC, name',
-        'disdn': 'disdate DESC, name',
-        'disup': 'disdate, name',
-        'typup': 'typename, name',
-        'typdn': 'typename DESC, name'
+        "namup": "name",
+        "namdn": "name DESC",
+        "regup": "incid",
+        "regdn": "incid DESC",
+        "incup": "incdate, name",
+        "incdn": "incdate DESC, name",
+        "disdn": "disdate DESC, name",
+        "disup": "disdate, name",
+        "typup": "typename, name",
+        "typdn": "typename DESC, name",
     }
-    order_by = order_by_map.get(sort_param, order_by_map['incup'])
+    order_by = order_by_map.get(sort_param, order_by_map["incup"])
 
     # Build type filter
     if t > 0:
@@ -336,7 +349,7 @@ def oldest_hk_cos():
         try:
             type_result = execute_query(type_sql, (t,))
             if type_result:
-                type_name = type_result[0]['typename']
+                type_name = type_result[0]["typename"]
                 title += f", {type_name}"
                 ot_filter = f"AND o.orgtype = {t}"
             else:
@@ -378,18 +391,20 @@ def oldest_hk_cos():
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/oldest_hk_cos.html',
-                         companies=results,
-                         a=a,
-                         t=t,
-                         sort=sort_param,
-                         title=title)
+    return render_template(
+        "dbpub/oldest_hk_cos.html",
+        companies=results,
+        a=a,
+        t=t,
+        sort=sort_param,
+        title=title,
+    )
 
 
 # Directors per person distribution
 
 
-@bp.route('/incHKcaltype.asp')
+@bp.route("/incHKcaltype.asp")
 def inchkcaltype():
     """HK companies incorporated by calendar date and type"""
     from webbsite.asp_helpers import get_int, get_str
@@ -398,11 +413,11 @@ def inchkcaltype():
     from flask import render_template
 
     # Get parameters
-    y = get_int('y', date.today().year)
-    m = get_int('m', 0)  # 0 = any month
-    d = get_int('d', 0)  # 0 = any day
-    t = get_int('t', 0)  # 0 = any type
-    sort_param = get_str('sort', 'namup')
+    y = get_int("y", date.today().year)
+    m = get_int("m", 0)  # 0 = any month
+    d = get_int("d", 0)  # 0 = any day
+    t = get_int("t", 0)  # 0 = any type
+    sort_param = get_str("sort", "namup")
 
     # Validate year range
     if y < 1865:
@@ -412,18 +427,18 @@ def inchkcaltype():
 
     # Build order by clause
     order_by_map = {
-        'namup': 'o.name1',
-        'namdn': 'o.name1 DESC',
-        'regup': 'o.incid',
-        'regdn': 'o.incid DESC',
-        'incup': 'o.incdate, o.name1',
-        'incdn': 'o.incdate DESC, o.name1',
-        'disup': 'o.disdate, o.name1',
-        'disdn': 'o.disdate DESC, o.name1',
-        'typup': 'ot.typename, o.name1',
-        'typdn': 'ot.typename DESC, o.name1'
+        "namup": "o.name1",
+        "namdn": "o.name1 DESC",
+        "regup": "o.incid",
+        "regdn": "o.incid DESC",
+        "incup": "o.incdate, o.name1",
+        "incdn": "o.incdate DESC, o.name1",
+        "disup": "o.disdate, o.name1",
+        "disdn": "o.disdate DESC, o.name1",
+        "typup": "ot.typename, o.name1",
+        "typdn": "ot.typename DESC, o.name1",
     }
-    order_by = order_by_map.get(sort_param, 'o.name1')
+    order_by = order_by_map.get(sort_param, "o.name1")
 
     # Build date range
     if m > 0:
@@ -439,6 +454,7 @@ def inchkcaltype():
             else:
                 month_end = date(y, m + 1, 1)
                 from datetime import timedelta
+
                 month_end = month_end - timedelta(days=1)
     else:
         # Entire year
@@ -484,7 +500,7 @@ def inchkcaltype():
             type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
             type_result = execute_query(type_sql, (t,))
             if type_result:
-                typename = type_result[0]['typename']
+                typename = type_result[0]["typename"]
 
         # Get org types for dropdown
         types_sql = """
@@ -500,19 +516,24 @@ def inchkcaltype():
         typename = None
         orgtypes_list = []
 
-    return render_template('dbpub/inchkcaltype.html',
-                         companies=results,
-                         y=y, m=m, d=d, t=t,
-                         typename=typename,
-                         enigma_orgtypes=orgtypes_list,
-                         sort=sort_param,
-                         count=len(results))
+    return render_template(
+        "dbpub/inchkcaltype.html",
+        companies=results,
+        y=y,
+        m=m,
+        d=d,
+        t=t,
+        typename=typename,
+        enigma_orgtypes=orgtypes_list,
+        sort=sort_param,
+        count=len(results),
+    )
 
 
 # HK Companies dissolved by year/month/day, type, and method
 
 
-@bp.route('/disHKcaltype.asp')
+@bp.route("/disHKcaltype.asp")
 def dishkcaltype():
     """HK companies dissolved by calendar date, type, and dissolution method"""
     from webbsite.asp_helpers import get_int, get_str
@@ -521,12 +542,12 @@ def dishkcaltype():
     from flask import render_template
 
     # Get parameters
-    y = get_int('y', date.today().year)
-    m = get_int('m', 0)  # 0 = any month
-    d = get_int('d', 0)  # 0 = any day
-    t = get_int('t', 0)  # 0 = any type
-    w = get_int('w', 0)  # 0 = any dissolution method
-    sort_param = get_str('sort', 'namup')
+    y = get_int("y", date.today().year)
+    m = get_int("m", 0)  # 0 = any month
+    d = get_int("d", 0)  # 0 = any day
+    t = get_int("t", 0)  # 0 = any type
+    w = get_int("w", 0)  # 0 = any dissolution method
+    sort_param = get_str("sort", "namup")
 
     # Validate year range
     if y < 1917:
@@ -536,18 +557,18 @@ def dishkcaltype():
 
     # Build order by clause
     order_by_map = {
-        'namup': 'o.name1',
-        'namdn': 'o.name1 DESC',
-        'modup': 'dm.dismodetxt, o.name1',
-        'moddn': 'dm.dismodetxt DESC, o.name1',
-        'typup': 'ot.typename, o.name1',
-        'typdn': 'ot.typename DESC, o.name1',
-        'incup': 'o.incdate, o.name1',
-        'incdn': 'o.incdate DESC, o.name1',
-        'disup': 'o.disdate, o.name1',
-        'disdn': 'o.disdate DESC, o.name1'
+        "namup": "o.name1",
+        "namdn": "o.name1 DESC",
+        "modup": "dm.dismodetxt, o.name1",
+        "moddn": "dm.dismodetxt DESC, o.name1",
+        "typup": "ot.typename, o.name1",
+        "typdn": "ot.typename DESC, o.name1",
+        "incup": "o.incdate, o.name1",
+        "incdn": "o.incdate DESC, o.name1",
+        "disup": "o.disdate, o.name1",
+        "disdn": "o.disdate DESC, o.name1",
     }
-    order_by = order_by_map.get(sort_param, 'o.name1')
+    order_by = order_by_map.get(sort_param, "o.name1")
 
     # Build date range
     if m > 0:
@@ -560,6 +581,7 @@ def dishkcaltype():
             else:
                 month_end = date(y, m + 1, 1)
                 from datetime import timedelta
+
                 month_end = month_end - timedelta(days=1)
     else:
         month_start = date(y, 1, 1)
@@ -640,12 +662,12 @@ def dishkcaltype():
             type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
             type_result = execute_query(type_sql, (t,))
             if type_result:
-                typename = type_result[0]['typename']
+                typename = type_result[0]["typename"]
         if w > 0:
             method_sql = "SELECT dismodetxt FROM enigma.dismodes WHERE id = %s"
             method_result = execute_query(method_sql, (w,))
             if method_result:
-                methodname = method_result[0]['dismodetxt']
+                methodname = method_result[0]["dismodetxt"]
 
         # Get org types for dropdown
         types_sql = """
@@ -672,21 +694,27 @@ def dishkcaltype():
         orgtypes_list = []
         dismodes_list = []
 
-    return render_template('dbpub/dishkcaltype.html',
-                         companies=results,
-                         y=y, m=m, d=d, t=t, w=w,
-                         typename=typename,
-                         methodname=methodname,
-                         enigma_orgtypes=orgtypes_list,
-                         enigma_dismodes=dismodes_list,
-                         sort=sort_param,
-                         count=len(results))
+    return render_template(
+        "dbpub/dishkcaltype.html",
+        companies=results,
+        y=y,
+        m=m,
+        d=d,
+        t=t,
+        w=w,
+        typename=typename,
+        methodname=methodname,
+        enigma_orgtypes=orgtypes_list,
+        enigma_dismodes=dismodes_list,
+        sort=sort_param,
+        count=len(results),
+    )
 
 
 # Auditor changes for listed companies
 
 
-@bp.route('/incHKmonth.asp')
+@bp.route("/incHKmonth.asp")
 def inchkmonth():
     """Monthly HK company incorporations and dissolutions"""
     from webbsite.asp_helpers import get_int
@@ -694,7 +722,7 @@ def inchkmonth():
     from datetime import date
     from flask import render_template
 
-    t = get_int('t', -1)  # -1 = all types
+    t = get_int("t", -1)  # -1 = all types
 
     # Get type name if filtering
     typename = None
@@ -702,14 +730,15 @@ def inchkmonth():
         type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
         type_result = execute_query(type_sql, (t,))
         if type_result:
-            typename = type_result[0]['typename']
+            typename = type_result[0]["typename"]
 
     # Build query for monthly data since 1985
-    start_date = '1985-01-01'
+    start_date = "1985-01-01"
     end_date = date.today().replace(day=1).isoformat()
 
     # This query generates monthly data points
-    sql = """
+    sql = (
+        """
         WITH RECURSIVE dates AS (
             SELECT DATE '1985-01-01' AS d
             UNION ALL
@@ -729,7 +758,9 @@ def inchkmonth():
               AND incid ~ '^[0-9]'
               AND incdate >= '1985-01-01'
               AND incdate <= %s::date
-    """ + ("AND orgtype = %s" if t > 0 else "") + """
+    """
+        + ("AND orgtype = %s" if t > 0 else "")
+        + """
             GROUP BY mstart
         ) inc ON dates.d = inc.mstart
         LEFT JOIN (
@@ -739,11 +770,14 @@ def inchkmonth():
               AND incid ~ '^[0-9]'
               AND disdate >= '1985-01-01'
               AND disdate <= %s::date
-    """ + ("AND orgtype = %s" if t > 0 else "") + """
+    """
+        + ("AND orgtype = %s" if t > 0 else "")
+        + """
             GROUP BY mstart
         ) dis ON dates.d = dis.mstart
         ORDER BY d
     """
+    )
 
     try:
         if t > 0:
@@ -776,8 +810,8 @@ def inchkmonth():
             """
             init_result = execute_query(init_sql)
 
-        inc_total = init_result[0]['inc_total'] if init_result else 0
-        dis_total = init_result[0]['dis_total'] if init_result else 0
+        inc_total = init_result[0]["inc_total"] if init_result else 0
+        dis_total = init_result[0]["dis_total"] if init_result else 0
 
         # Get org types for dropdown
         types_sql = """
@@ -795,19 +829,21 @@ def inchkmonth():
         dis_total = 0
         orgtypes_list = []
 
-    return render_template('dbpub/inchkmonth.html',
-                         enigma_months=results,
-                         t=t,
-                         typename=typename,
-                         enigma_orgtypes=orgtypes_list,
-                         inc_total=inc_total,
-                         dis_total=dis_total)
+    return render_template(
+        "dbpub/inchkmonth.html",
+        enigma_months=results,
+        t=t,
+        typename=typename,
+        enigma_orgtypes=orgtypes_list,
+        inc_total=inc_total,
+        dis_total=dis_total,
+    )
 
 
 # HK company survival rates
 
 
-@bp.route('/incHKsurvive.asp')
+@bp.route("/incHKsurvive.asp")
 def inchksurvive():
     """Survival of HK companies at a given date"""
     from webbsite.asp_helpers import get_int, get_str
@@ -816,8 +852,8 @@ def inchksurvive():
     from flask import render_template
 
     # Get parameters
-    d_str = get_str('d', date.today().isoformat())
-    t = get_int('t', -1)  # -1 = all types
+    d_str = get_str("d", date.today().isoformat())
+    t = get_int("t", -1)  # -1 = all types
 
     try:
         snapshot_date = date.fromisoformat(d_str)
@@ -830,10 +866,11 @@ def inchksurvive():
         type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
         type_result = execute_query(type_sql, (t,))
         if type_result:
-            typename = type_result[0]['typename']
+            typename = type_result[0]["typename"]
 
     # Query survival rates by year of incorporation
-    sql = """
+    sql = (
+        """
         WITH RECURSIVE years AS (
             SELECT 1865 AS y
             UNION ALL
@@ -855,11 +892,14 @@ def inchksurvive():
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
               AND incdate <= %s::date
-    """ + ("AND orgtype = %s" if t > 0 else "") + """
+    """
+        + ("AND orgtype = %s" if t > 0 else "")
+        + """
             GROUP BY incyear
         ) t ON y = t.incyear
         ORDER BY y
     """
+    )
 
     try:
         if t > 0:
@@ -883,18 +923,20 @@ def inchksurvive():
         results = []
         orgtypes_list = []
 
-    return render_template('dbpub/inchksurvive.html',
-                         years=results,
-                         d=snapshot_date.isoformat(),
-                         t=t,
-                         typename=typename,
-                         enigma_orgtypes=orgtypes_list)
+    return render_template(
+        "dbpub/inchksurvive.html",
+        years=results,
+        d=snapshot_date.isoformat(),
+        t=t,
+        typename=typename,
+        enigma_orgtypes=orgtypes_list,
+    )
 
 
 # Annual HK company registrations
 
 
-@bp.route('/regHKannual.asp')
+@bp.route("/regHKannual.asp")
 def reghkannual():
     """Annual HK company registrations since 1865"""
     from webbsite.db import execute_query
@@ -923,20 +965,20 @@ def reghkannual():
         current_app.logger.error(f"Error in regHKannual.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/reghkannual.html', years=results)
+    return render_template("dbpub/reghkannual.html", years=results)
 
 
 # Foreign company annual registrations
 
 
-@bp.route('/incFcal.asp')
+@bp.route("/incFcal.asp")
 def incfcal():
     """Foreign companies registered in HK by year"""
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    y = get_int('y', 2024)
+    y = get_int("y", 2024)
 
     sql = """
         SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, d.domName
@@ -955,20 +997,20 @@ def incfcal():
         current_app.logger.error(f"Error in incFcal.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/incfcal.html', companies=results, y=y)
+    return render_template("dbpub/incfcal.html", companies=results, y=y)
 
 
 # Foreign company dissolutions
 
 
-@bp.route('/disFcal.asp')
+@bp.route("/disFcal.asp")
 def disfcal():
     """Foreign companies dissolved in HK by year"""
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    y = get_int('y', 2024)
+    y = get_int("y", 2024)
 
     sql = """
         SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate, d.domName
@@ -987,13 +1029,13 @@ def disfcal():
         current_app.logger.error(f"Error in disFcal.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/disfcal.html', companies=results, y=y)
+    return render_template("dbpub/disfcal.html", companies=results, y=y)
 
 
 # HK company domicile and registration
 
 
-@bp.route('/domregHK.asp')
+@bp.route("/domregHK.asp")
 def domreghk():
     """HK companies by domicile and registration status"""
     from webbsite.db import execute_query
@@ -1018,13 +1060,13 @@ def domreghk():
         current_app.logger.error(f"Error in domregHK.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/domreghk.html', enigma_domiciles=results)
+    return render_template("dbpub/domreghk.html", enigma_domiciles=results)
 
 
 # UK company incorporations by calendar type
 
 
-@bp.route('/incUKcaltype.asp')
+@bp.route("/incUKcaltype.asp")
 def incukcaltype():
     """UK companies incorporated by year"""
     from webbsite.asp_helpers import get_int, get_str
@@ -1032,16 +1074,16 @@ def incukcaltype():
     from datetime import date
     from flask import render_template
 
-    y = get_int('y', date.today().year)
-    sort_param = get_str('sort', 'namup')
+    y = get_int("y", date.today().year)
+    sort_param = get_str("sort", "namup")
 
     order_by_map = {
-        'namup': 'o.name1',
-        'namdn': 'o.name1 DESC',
-        'incup': 'o.incdate, o.name1',
-        'incdn': 'o.incdate DESC, o.name1'
+        "namup": "o.name1",
+        "namdn": "o.name1 DESC",
+        "incup": "o.incdate, o.name1",
+        "incdn": "o.incdate DESC, o.name1",
     }
-    order_by = order_by_map.get(sort_param, 'o.name1')
+    order_by = order_by_map.get(sort_param, "o.name1")
 
     sql = f"""
         SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate
@@ -1058,9 +1100,9 @@ def incukcaltype():
         current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template('dbpub/incukcaltype.html', companies=results, y=y, sort=sort_param)
+    return render_template(
+        "dbpub/incukcaltype.html", companies=results, y=y, sort=sort_param
+    )
 
 
 # HK solicitors list
-
-
