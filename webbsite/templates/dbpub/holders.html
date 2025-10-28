@@ -1,6 +1,179 @@
 {% extends "base_database.html" %}
-{% block title %}Webb-site Database{% endblock %}
+{% block title %}Holders - Webb-site Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Holders</h2>
+
+{% if not issues_with_holders %}
+<p>No qualifying issues found for this organization.</p>
+{% else %}
+<p>Note: holders may be incomplete and/or outdated. Listed companies are in <strong>bold</strong>. Condensed mode omits 100%-owned intermediate companies.</p>
+
+{% for issue_set in issues_with_holders %}
+<h3>Issue: {{ issue_set.issue_data.typelong }}</h3>
+
+{% if issue_set.issue_data.outstanding %}
+<table class="txtable">
+<tr><td>Outstanding:</td><td class="right">{{ '{:,.0f}'.format(issue_set.issue_data.outstanding) }}</td></tr>
+<tr><td>At date:</td><td class="right">{{ issue_set.issue_data.osdate }}</td></tr>
+</table><br>
+{% endif %}
+
+{# View selector tabs #}
+<ul class="navlist">
+{% if expand == 'n' %}
+<li id="livebutton">Direct</li>
+{% else %}
+<li><a href="holders.asp?p={{ person_id }}&x=n&s1={{ sort_param }}">Direct</a></li>
+{% endif %}
+
+{% if expand == 'c' %}
+<li id="livebutton">Condensed</li>
+{% else %}
+<li><a href="holders.asp?p={{ person_id }}&x=c&s1={{ sort_param }}">Condensed</a></li>
+{% endif %}
+
+{% if expand == 'y' %}
+<li id="livebutton">Expanded</li>
+{% else %}
+<li><a href="holders.asp?p={{ person_id }}&x=y&s1={{ sort_param }}">Expanded</a></li>
+{% endif %}
+</ul>
+<div class="clear"></div>
+
+{% if issue_set.mode == 'direct' %}
+{# Direct mode - simple table #}
+{% if issue_set.holders %}
+<table class="numtable">
+<tr>
+<th class="left">
+{% if sort_param == 'nameup' %}<strong>Holder</strong>
+{% elif sort_param == 'namedn' %}<strong>Holder ↓</strong>
+{% else %}<a href="holders.asp?p={{ person_id }}&x=n&s1=nameup">Holder</a>
+{% endif %}
+</th>
+<th>Shares</th>
+<th>
+{% if sort_param == 'stakdn' %}<strong>Stake ↓</strong>
+{% elif sort_param == 'stakup' %}<strong>Stake</strong>
+{% else %}<a href="holders.asp?p={{ person_id }}&x=n&s1=stakdn">Stake</a>
+{% endif %}
+</th>
+<th>
+{% if sort_param == 'datedn' %}<strong>Date ↓</strong>
+{% elif sort_param == 'dateup' %}<strong>Date</strong>
+{% else %}<a href="holders.asp?p={{ person_id }}&x=n&s1=datedn">Date</a>
+{% endif %}
+</th>
+</tr>
+{% set sumstake = namespace(value=0) %}
+{% for holder in issue_set.holders %}
+<tr>
+<td class="left">
+{% if holder.persontype == 'O' %}
+<a href="orgdata.asp?p={{ holder.personid }}">
+{% if holder.orgtype == 22 %}<strong>{{ holder.name }}</strong>{% else %}{{ holder.name }}{% endif %}
+</a>
+{% else %}
+<a href="natperson.asp?p={{ holder.personid }}">{{ holder.name }}</a>
+{% endif %}
+</td>
+<td class="right">{% if holder.shares %}{{ '{:,.0f}'.format(holder.shares) }}{% endif %}</td>
+<td class="right">{% if holder.stakecomp %}{{ '{:.2%}'.format(holder.stakecomp) }}{% set sumstake.value = sumstake.value + holder.stakecomp %}{% endif %}</td>
+<td class="right">{{ holder.holdingdate if holder.holdingdate else '' }}</td>
+</tr>
+{% endfor %}
+<tr class="total">
+<td class="left"><strong>Total</strong></td>
+<td></td>
+<td class="right"><strong>{{ '{:.2%}'.format(sumstake.value) }}</strong></td>
+<td></td>
+</tr>
+</table>
+{% else %}
+<p>No holdings found.</p>
+{% endif %}
+
+{% else %}
+{# Expanded or Condensed mode - recursive tree #}
+<div style="float:left;width:40px;">&nbsp;</div>
+{% if expand == 'y' %}
+<div style="float:left;width:80px;padding-right:5px">Date</div>
+{% endif %}
+<div style="text-align:right;float:left;width:60px;padding-right:5px">
+{% if sort_param == 'stakdn' %}<strong>Stake ↓</strong>
+{% elif sort_param == 'stakup' %}<strong>Stake</strong>
+{% else %}<a href="holders.asp?p={{ person_id }}&x={{ expand }}&s1=stakdn">Stake</a>
+{% endif %}
+</div>
+<div>
+{% if sort_param == 'nameup' %}<strong>Holder</strong>
+{% elif sort_param == 'namedn' %}<strong>Holder ↓</strong>
+{% else %}<a href="holders.asp?p={{ person_id }}&x={{ expand }}&s1=nameup">Holder</a>
+{% endif %}
+</div>
+<div class="clear"></div>
+
+<p>
+{% set sumstake = namespace(value=0) %}
+{% set row_num = namespace(value=0) %}
+{% for item in issue_set.holders_tree %}
+{% if not item.visible and expand == 'c' %}
+{# Skip invisible items in condensed mode #}
+{% else %}
+{% set row_num.value = row_num.value + 1 %}
+<div style="float:left;width:40px;"><a name="H{{ row_num.value }}"></a>{{ row_num.value }}</div>
+
+{% if expand == 'y' %}
+<div style="float:left;min-width:80px;padding-right:5px;text-align:left">
+{{ item.holder.holdingdate if item.holder.holdingdate else '' }}
+</div>
+{% endif %}
+
+<div style="float:left;text-align:right;width:{{ 60 + item.level * 60 }}px;padding-right:5px">
+{% if item.holder.stakecomp %}{{ '{:.2%}'.format(item.holder.stakecomp) }}
+{% if item.level == 0 %}{% set sumstake.value = sumstake.value + item.holder.stakecomp %}{% endif %}
+{% endif %}
+</div>
+
+{% if item.holder.typeshort and item.holder.typeshort != 'O' and item.level != 0 %}
+<div style="float:left;padding-right:5px;color:green" class="info">
+{{ item.holder.typeshort }}:<span>{{ item.holder.typelong }}</span>
+</div>
+{% endif %}
+
+<div style="float:left">
+{% if item.holder.persontype == 'O' %}
+<a href="orgdata.asp?x=y&p={{ item.holder.personid }}">
+{% if item.holder.orgtype == 22 %}<strong>{{ item.holder.name }}</strong>{% else %}{{ item.holder.name }}{% endif %}
+</a>
+&nbsp;(<span class="info">{{ item.holder.a2 }}<span>{{ item.holder.friendly }}<br/>Incorporated: {{ item.holder.incdate if item.holder.incdate else 'unknown' }}</span></span>)
+{% else %}
+<a href="natperson.asp?p={{ item.holder.personid }}">{{ item.holder.name }}</a>
+{% endif %}
+
+{% if item.is_cross_holding %}
+&nbsp;see <a href="#H{{ item.first_occurrence_idx + 1 }}">line {{ item.first_occurrence_idx + 1 }}</a>
+{% if item.first_occurrence_idx == 0 %} (self){% endif %}
+{% endif %}
+</div>
+<div class="clear"></div>
+{% endif %}
+{% endfor %}
+
+{# Total line #}
+<div style="float:left;width:40px;border-top:thin black solid;margin-top:5px">Total</div>
+{% if expand == 'y' %}
+<div style="float:left;min-width:80px;padding-right:5px;border-top:thin black solid;margin-top:5px">&nbsp;</div>
+{% endif %}
+<div style="text-align:right;float:left;position:relative;width:60px;border-top:thin black solid;margin-top:5px;padding-right:5px">
+{{ '{:.2%}'.format(sumstake.value) }}
+</div>
+<div class="clear"></div>
+</p>
+{% endif %}
+
+<br><br>
+{% endfor %}
+{% endif %}
 {% endblock %}
