@@ -12,15 +12,15 @@
 	<h2>{{ name }}</h2>
 	{% if person_id > 0 %}
 	<ul class="navlist">
-		{{ btn(1, url_for('dbpub.orgdata', p=person_id), 'Key Data', target) }}
-		{{ btn(2, url_for('dbpub.officers', p=person_id), 'Officers', target) }}
-		{{ btn(3, url_for('dbpub.overlap', p=person_id), 'Overlaps', target) }}
-		{{ btn(4, url_for('dbpub.pay', p=person_id), 'Pay', target) }}
-		{{ btn(5, url_for('dbpub.advisers', p=person_id), 'Advisers', target) }}
-		{{ btn(6, url_for('dbpub.adviserships', p=person_id), 'Adviserships', target) }}
-		{{ btn(7, url_for('dbpub.docs', p=person_id), 'Financials', target) }}
-		{{ btn(8, url_for('dbpub.articles', p=person_id), 'Webb-site Reports', target) }}
-		{{ btn(9, url_for('dbpub.complain', p=person_id), 'Complain', target) }}
+		{{ btn(1, url_for('dbpub_statistics.orgdata', p=person_id), 'Key Data', target) }}
+		{{ btn(2, url_for('dbpub_corporate.officers', p=person_id), 'Officers', target) }}
+		{{ btn(3, url_for('dbpub_statistics.overlap', p=person_id), 'Overlaps', target) }}
+		{{ btn(4, url_for('dbpub_statistics.pay', p=person_id), 'Pay', target) }}
+		{{ btn(5, url_for('dbpub_corporate.advisers', p=person_id), 'Advisers', target) }}
+		{{ btn(6, url_for('dbpub_statistics.adviserships', p=person_id), 'Adviserships', target) }}
+		{{ btn(7, url_for('dbpub_events.docs', p=person_id), 'Financials', target) }}
+		{{ btn(8, url_for('dbpub_articles.articles', p=person_id), 'Webb-site Reports', target) }}
+		{{ btn(9, url_for('dbpub_statistics.complain', p=person_id), 'Complain', target) }}
 	</ul>
 	<div class="clear"></div>
 	{% endif %}
@@ -65,15 +65,15 @@
 	{{ hklistings(listings) }}
 	{% if issue_id and issue_id > 0 %}
 	<ul class="navlist">
-		{{ btn(1, url_for('dbpub.buybacks', i=issue_id), 'Buybacks', target) }}
-		{{ btn(2, url_for('dbpub.outstanding', i=issue_id), 'Outstanding', target) }}
-		{{ btn(3, url_for('dbpub.short', i=issue_id), 'Short', target) }}
+		{{ btn(1, url_for('dbpub_buybacks.buybacks', i=issue_id), 'Buybacks', target) }}
+		{{ btn(2, url_for('dbpub_statistics.outstanding', i=issue_id), 'Outstanding', target) }}
+		{{ btn(3, url_for('dbpub_short_selling.short', i=issue_id), 'Short', target) }}
 		{{ btn(4, url_for('ccass.choldings', i=issue_id), 'CCASS', target) }}
-		{{ btn(5, url_for('dbpub.str_route', i=issue_id), 'Total return', target) }}
-		{{ btn(6, url_for('dbpub.ctr', i1=issue_id), 'Compare returns', target) }}
-		{{ btn(7, url_for('dbpub.hpu', i=issue_id), 'Prices', target) }}
-		{{ btn(8, url_for('dbpub.enigma_events', i=issue_id), 'Events', target) }}
-		{{ btn(9, url_for('dbpub.sdiissue', i=issue_id), 'Dealings', target) }}
+		{{ btn(5, url_for('dbpub_statistics.str_route', i=issue_id), 'Total return', target) }}
+		{{ btn(6, url_for('dbpub_statistics.ctr', i1=issue_id), 'Compare returns', target) }}
+		{{ btn(7, url_for('dbpub_statistics.hpu', i=issue_id), 'Prices', target) }}
+		{{ btn(8, url_for('dbpub_events.enigma_events', i=issue_id), 'Events', target) }}
+		{{ btn(9, url_for('dbpub_sdi.sdiissue', i=issue_id), 'Dealings', target) }}
 		{% if stock_code %}
 			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ stock_code|int }}">Quote</a></li>
 		{% endif %}

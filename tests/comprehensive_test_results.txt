@@ -1,0 +1,191 @@
+======================================================================
+COMPREHENSIVE TEST SUITE RUNNER
+======================================================================
+
+[1/124] Testing: dbpub index... ⊘ NO TESTS
+[2/124] Testing: searchorgs - company search... ⚠ PARTIAL
+[3/124] Testing: searchpeople - person search... ⚠ PARTIAL
+[4/124] Testing: events - corporate events... ✗ FAILED
+[5/124] Testing: listed - currently listed stocks... ⚠ PARTIAL
+[6/124] Testing: delisted - delisted stocks... ⚠ PARTIAL
+[7/124] Testing: code - stock code lookup... ✗ FAILED
+[8/124] Testing: advisers - corporate advisors... ✗ FAILED
+[9/124] Testing: officers - directors and officers... ✗ HTTP 500 ERROR
+[10/124] Testing: splits - stock splits and consolidations... ✗ HTTP 500 ERROR
+[11/124] Testing: positions - director positions... ✗ FAILED
+[12/124] Testing: orgdata - company data page... ✗ FAILED
+[13/124] Testing: articles - individual article... ⊘ NO TESTS
+[14/124] Testing: articles - index... ⊘ NO TESTS
+[15/124] Testing: articles - root... ⊘ NO TESTS
+[16/124] Testing: bigchanges - large shareholding changes... ✗ FAILED
+[17/124] Testing: bigchangesissue - changes for specific stock... ✗ FAILED
+[18/124] Testing: bigchangespart - changes for specific participant... ✗ FAILED
+[19/124] Testing: cconc - CCASS concentration... ✗ FAILED
+[20/124] Testing: cparticipants - CCASS participants... ⚠ PARTIAL
+[21/124] Testing: ipstakes - investor participant stakes... ✗ FAILED
+[22/124] Testing: choldings - holdings for stock... ✗ FAILED
+[23/124] Testing: chldchg - CCASS holding changes... ✗ HTTP 500 ERROR
+[24/124] Testing: cholder - CCASS holder history... ✗ FAILED
+[25/124] Testing: brokhist - broker history... ✗ FAILED
+[26/124] Testing: cconchist - concentration history... ✗ HTTP 500 ERROR
+[27/124] Testing: ctothist - turnover history... ✗ HTTP 500 ERROR
+[28/124] Testing: custhist - custody history... ✗ HTTP 500 ERROR
+[29/124] Testing: reghist - registered holder history... ✗ HTTP 500 ERROR
+[30/124] Testing: ncipchg - non-CIP changes... ✗ HTTP 500 ERROR
+[31/124] Testing: portchg - portfolio changes... ✗ HTTP 500 ERROR
+[32/124] Testing: boardcomp - board composition... ⚠ PARTIAL
+[33/124] Testing: dirsHKPerPerson - directors per person... ⚠ PARTIAL
+[34/124] Testing: latestdirsHK - latest directors HK... ⚠ PARTIAL
+[35/124] Testing: leagueDirsHK - league of directors... ✗ FAILED
+[36/124] Testing: FDirsPerListcoHKdstn - female directors distribution... ⚠ PARTIAL
+[37/124] Testing: INEDHKDistnCos - INED distribution by company... ✗ FAILED
+[38/124] Testing: INEDHKDistnPeople - INED distribution by people... ✗ FAILED
+[39/124] Testing: incHKannual - HK incorporations annual... ⊘ SKIPPED
+[40/124] Testing: incHKmonth - HK incorporations by month... ⊘ SKIPPED
+[41/124] Testing: incHKsurvive - HK survival rates... ⊘ SKIPPED
+[42/124] Testing: incHKcaltype - HK inc by calendar type... ⚠ PARTIAL
+[43/124] Testing: disHKcaltype - HK dissolution by calendar type... ⊘ SKIPPED
+[44/124] Testing: oldestHKcos - oldest HK companies... ⚠ PARTIAL
+[45/124] Testing: regHKannual - HK registrations annual... ✗ FAILED
+[46/124] Testing: incFcal - foreign incorporations... ✗ FAILED
+[47/124] Testing: disFcal - foreign dissolutions... ✗ FAILED
+[48/124] Testing: domregHK - domicile registrations HK... ✗ FAILED
+[49/124] Testing: incUKcaltype - UK incorporations by calendar type... ✗ FAILED
+[50/124] Testing: hksols - HK solicitors... ✗ FAILED
+[51/124] Testing: hksolfirms - HK solicitor firms... ✗ FAILED
+[52/124] Testing: hksolemps - HK solicitor employers... ✗ FAILED
+[53/124] Testing: auditorchanges - auditor changes... ⊘ SKIPPED
+[54/124] Testing: listingtrend - listing trends... ⚠ PARTIAL
+[55/124] Testing: yearend - year-end statistics... ✗ FAILED
+[56/124] Testing: reportspeed - reporting speed... ✗ FAILED
+[57/124] Testing: hklistcowebs - HK listcos with websites... ✗ FAILED
+[58/124] Testing: hklistconowebs - HK listcos without websites... ✗ FAILED
+[59/124] Testing: lirteams - listing teams... ✗ FAILED
+[60/124] Testing: str - stock total return chart... ✗ FAILED
+[61/124] Testing: gemgrads - GEM graduates... ⚠ PARTIAL
+[62/124] Testing: HKstocksByBoardLot - stocks by board lot... ✗ FAILED
+[63/124] Testing: rightsoo - rights out-of-the-money... ✗ FAILED
+[64/124] Testing: alltotrets - all stock total returns... ✗ HTTP 500 ERROR
+[65/124] Testing: buybacks - share buyback transactions... ✗ HTTP 500 ERROR
+[66/124] Testing: SFClicensees - SFC licensee directory... ✗ FAILED
+[67/124] Testing: SFChistall - SFC license history all... ✗ FAILED
+[68/124] Testing: SFChistfirm - SFC license history firm... ⊘ SKIPPED
+[69/124] Testing: SFClicount - SFC licensee count... ✗ FAILED
+[70/124] Testing: SFCchanges - SFC license changes... ✗ FAILED
+[71/124] Testing: SFColicrec - SFC online record... ✗ HTTP 500 ERROR
+[72/124] Testing: sdilatest - latest SDI positions... ✗ FAILED
+[73/124] Testing: sdiissue - SDI by stock... ✗ FAILED
+[74/124] Testing: sdidir - SDI by director... ⊘ SKIPPED
+[75/124] Testing: sdidirco - SDI director by company... ✗ FAILED
+[76/124] Testing: sdicap - SDI capital analysis... ✗ FAILED
+[77/124] Testing: sdiNotes - SDI notes... ⊘ NO TESTS
+[78/124] Testing: short - short positions... ✗ FAILED
+[79/124] Testing: shortdate - short positions by date... ⊘ SKIPPED
+[80/124] Testing: shortsum - short position summary... ⊘ SKIPPED
+[81/124] Testing: shortnotes - short selling notes... ⊘ NO TESTS
+[82/124] Testing: veFR - vehicle first registration... ✗ FAILED
+[83/124] Testing: veFRtype - vehicle FR by type... ✗ FAILED
+[84/124] Testing: veFRtypehist - vehicle FR type history... ✗ FAILED
+[85/124] Testing: veJourneys - vehicle journeys... ✗ FAILED
+[86/124] Testing: veJourneyhist - vehicle journey history... ✗ FAILED
+[87/124] Testing: vebrandhist - vehicle brand history... ⊘ SKIPPED
+[88/124] Testing: vedet - vehicle details... ✗ FAILED
+[89/124] Testing: veengine - vehicle engine stats... ✗ HTTP 500 ERROR
+[90/124] Testing: vefuel - vehicle fuel stats... ✗ HTTP 500 ERROR
+[91/124] Testing: vefuelhist - vehicle fuel history... ✗ FAILED
+[92/124] Testing: tuntraff - tunnel traffic... ✗ FAILED
+[93/124] Testing: vax - vaccination stats... ⊘ SKIPPED
+[94/124] Testing: ctr - capital total return... ✗ FAILED
+[95/124] Testing: mcap - market capitalization... ✗ FAILED
+[96/124] Testing: mcaphist - market cap history... ✗ FAILED
+[97/124] Testing: chart - stock price chart... ✗ HTTP 500 ERROR
+[98/124] Testing: natperson - natural person profile... ✗ HTTP 500 ERROR
+[99/124] Testing: roles - corporate roles... ✗ HTTP 500 ERROR
+[100/124] Testing: possum - position summary... ✗ FAILED
+[101/124] Testing: domicile - company domicile... ✗ HTTP 500 ERROR
+[102/124] Testing: domicilechange - domicile changes... ✗ HTTP 500 ERROR
+[103/124] Testing: domicilecos - companies by domicile... ✗ FAILED
+[104/124] Testing: cosperdomHK - HK companies by domicile... ✗ HTTP 500 ERROR
+[105/124] Testing: namechangeHK - HK name changes... ✗ HTTP 500 ERROR
+[106/124] Testing: namechangeHKlisted - HK listed name changes... ✗ HTTP 500 ERROR
+[107/124] Testing: adviserships - advisership listing... ✗ HTTP 500 ERROR
+[108/124] Testing: DirsHKAgeDistn - HK directors age distribution... ⚠ PARTIAL
+[109/124] Testing: DirsHKDistnPeople - HK directors distribution people... ⚠ PARTIAL
+[110/124] Testing: DirsPerListcoHKdstn - directors per listco distribution... ⚠ PARTIAL
+[111/124] Testing: HKdirsTypeSex - HK directors by type and sex... ⚠ PARTIAL
+[112/124] Testing: govac - government advisory committees... ⚠ PARTIAL
+[113/124] Testing: freecodesunder1000 - available stock codes under 1000... ✗ FAILED
+[114/124] Testing: outstanding - outstanding shares... ✗ HTTP 500 ERROR
+[115/124] Testing: overlap - director overlap... ✗ FAILED
+[116/124] Testing: matches - director matches... ⊘ SKIPPED
+[117/124] Testing: websites - company websites... ⊘ SKIPPED
+[118/124] Testing: holders - ownership tree... ✗ FAILED
+[119/124] Testing: holdings - shareholdings... ✗ FAILED
+[120/124] Testing: pay - director remuneration... ✗ FAILED
+[121/124] Testing: payleague - remuneration league... ⚠ PARTIAL
+[122/124] Testing: payleagueorg - remuneration league by org... ⚠ PARTIAL
+[123/124] Testing: bornday - people born on day... ⚠ PARTIAL
+[124/124] Testing: bornyear - people born in year... ⊘ SKIPPED
+
+======================================================================
+SUMMARY BY STATUS
+======================================================================
+
+PARTIAL: 21 routes
+  - searchorgs - company search
+  - searchpeople - person search
+  - listed - currently listed stocks
+  - delisted - delisted stocks
+  - cparticipants - CCASS participants
+  ... and 16 more
+
+SKIPPED: 14 routes
+  - incHKannual - HK incorporations annual
+  - incHKmonth - HK incorporations by month
+  - incHKsurvive - HK survival rates
+  - disHKcaltype - HK dissolution by calendar type
+  - auditorchanges - auditor changes
+  ... and 9 more
+
+NO_TESTS: 6 routes
+  - dbpub index
+  - articles - individual article
+  - articles - index
+  - articles - root
+  - sdiNotes - SDI notes
+  - shortnotes - short selling notes
+
+FAILED: 59 routes
+  - events - corporate events
+  - code - stock code lookup
+  - advisers - corporate advisors
+  - positions - director positions
+  - orgdata - company data page
+  ... and 54 more
+
+HTTP_500: 24 routes
+  - officers - directors and officers
+  - splits - stock splits and consolidations
+  - chldchg - CCASS holding changes
+  - cconchist - concentration history
+  - ctothist - turnover history
+  ... and 19 more
+
+======================================================================
+SUMMARY BY CATEGORY
+======================================================================
+
+CCASS: 0/16 (0.0%)
+Database: 0/108 (0.0%)
+
+======================================================================
+OVERALL STATISTICS
+======================================================================
+
+Total routes tested: 124
+Passed: 0 (0.0%)
+Failed: 59
+HTTP 500 errors: 24
+Skipped (no ground truth): 14
+No tests configured: 6
+

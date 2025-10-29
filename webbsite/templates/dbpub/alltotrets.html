@@ -6,7 +6,7 @@
 
 <ul class="navlist">
 	<li><a href="/dbpub/TRnotes.asp" target="_blank">Notes</a></li>
-	<li><a href="{{ url_for('dbpub.ctr') }}">Compare returns</a></li>
+	<li><a href="{{ url_for('dbpub_statistics.ctr') }}">Compare returns</a></li>
 </ul>
 <div class="clear"></div>
 
@@ -19,7 +19,7 @@ Annual Growth Rate, for stocks traded over a period of at least 180 days. Check
 the box to include new listings after the start date. Please
 <b><a href="/contact">report</a></b> any errors or desired features.</p>
 
-<form method="get" action="{{ url_for('dbpub.alltotrets') }}">
+<form method="get" action="{{ url_for('dbpub_market_data.alltotrets') }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<div class="inputs">
 		Shares listed at: <input type="date" name="d1" id="d1" value="{{ d1 }}">
@@ -46,52 +46,52 @@ the box to include new listings after the start date. Please
 		<th class="colHide2">Row</th>
 		<th class="left colHide3">
 			{% if sort == 'typeup' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='typedn') }}"><b>Type</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='typedn') }}"><b>Type</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='typeup') }}"><b>Type</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='typeup') }}"><b>Type</b></a>
 			{% endif %}
 		</th>
 		<th>
 			{% if sort == 'codeup' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='codedn') }}"><b>Last<br/>code</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='codedn') }}"><b>Last<br/>code</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='codeup') }}"><b>Last<br/>code</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='codeup') }}"><b>Last<br/>code</b></a>
 			{% endif %}
 		</th>
 		<th class="left">
 			{% if sort == 'nameup' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='namedn') }}"><b>Issuer</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='namedn') }}"><b>Issuer</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='nameup') }}"><b>Issuer</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='nameup') }}"><b>Issuer</b></a>
 			{% endif %}
 		</th>
 		<th class="colHide2">
 			{% if sort == 'frstup' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='frstdn') }}"><b>First trade<br/>in period</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='frstdn') }}"><b>First trade<br/>in period</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='frstup') }}"><b>First trade<br/>in period</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='frstup') }}"><b>First trade<br/>in period</b></a>
 			{% endif %}
 		</th>
 		<th class="colHide2">
 			{% if sort == 'lastup' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='lastdn') }}"><b>Last trade<br/>in period</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='lastdn') }}"><b>Last trade<br/>in period</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='lastup') }}"><b>Last trade<br/>in period</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='lastup') }}"><b>Last trade<br/>in period</b></a>
 			{% endif %}
 		</th>
 		<th></th>
 		<th>
 			{% if sort == 'tretdn' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='tretup') }}"><b>Total<br/>return</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='tretup') }}"><b>Total<br/>return</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='tretdn') }}"><b>Total<br/>return</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='tretdn') }}"><b>Total<br/>return</b></a>
 			{% endif %}
 		</th>
 		<th class="colHide3">
 			{% if sort == 'cagrdn' %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='cagrup') }}"><b>CAGR</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='cagrup') }}"><b>CAGR</b></a>
 			{% else %}
-				<a href="{{ url_for('dbpub.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='cagrdn') }}"><b>CAGR</b></a>
+				<a href="{{ url_for('dbpub_market_data.alltotrets', d1=d1, d2=d2, i=inc_ipo|int, sort='cagrdn') }}"><b>CAGR</b></a>
 			{% endif %}
 		</th>
 	</tr>
@@ -101,7 +101,7 @@ the box to include new listings after the start date. Please
 		<td class="left colHide3">{{ row.typeshort }}</td>
 		<td>{{ row.lastcode }}</td>
 		<td class="left">
-			<a href="{{ url_for('dbpub.ctr', i1=row.issueid, d1=d1) }}">{{ row.name1 }}</a>
+			<a href="{{ url_for('dbpub_statistics.ctr', i1=row.issueid, d1=d1) }}">{{ row.name1 }}</a>
 		</td>
 		<td class="colHide2">{{ row.buydate }}</td>
 		<td class="colHide2">{{ row.selldate }}</td>

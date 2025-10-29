@@ -13,7 +13,7 @@
 <h2>Buybacks</h2>
 <p>Please enter a stock code to view buyback data.</p>
 
-<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacks') }}">
     <div class="inputs">
         Stock code: <input type="text" name="sc" size="5" value="">
         <input type="submit" value="Go">
@@ -24,20 +24,20 @@
 
 {# Company navigation bar #}
 <div class="navbuttons">
-    <a href="{{ url_for('dbpub.orgdata', p=issuer_id) }}">{{ stock_name }}</a>
+    <a href="{{ url_for('dbpub_statistics.orgdata', p=issuer_id) }}">{{ stock_name }}</a>
 </div>
 
 {# Frequency selector #}
 <ul class="navlist">
-    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='d', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'd' %} class="active"{% endif %}>Daily</a></li>
-    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='m', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'm' %} class="active"{% endif %}>Monthly</a></li>
-    <li><a href="{{ url_for('dbpub.buybacks', i=issue_id, f='y', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'y' %} class="active"{% endif %}>Yearly</a></li>
-    <li><a href="{{ url_for('dbpub.buybacksum', u=u|int, y=2024, m=(12 if f=='m' else 0), d=(31 if f=='d' else 0)) }}">All stocks</a></li>
+    <li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f='d', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'd' %} class="active"{% endif %}>Daily</a></li>
+    <li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f='m', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'm' %} class="active"{% endif %}>Monthly</a></li>
+    <li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f='y', sort=sort_param, u=u|int, e=e|int) }}"{% if f == 'y' %} class="active"{% endif %}>Yearly</a></li>
+    <li><a href="{{ url_for('dbpub_buybacks.buybacksum', u=u|int, y=2024, m=(12 if f=='m' else 0), d=(31 if f=='d' else 0)) }}">All stocks</a></li>
 </ul>
 <div class="clear"></div>
 
 {# Filter form #}
-<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacks') }}">
     <input type="hidden" name="f" value="{{ f }}">
     <input type="hidden" name="sort" value="{{ sort_param }}">
     <input type="hidden" name="i" value="{{ issue_id }}">
@@ -73,29 +73,29 @@
             <th class="colHide1"></th>
             <th>
                 {% if f == 'd' %}
-                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Date</a>
+                    <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Date</a>
                 {% elif f == 'm' %}
-                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Month</a>
+                    <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Month</a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Year</a>
+                    <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('dateup' if sort_param == 'datedn' else 'datedn')) }}">Year</a>
                 {% endif %}
             </th>
             <th class="colHide3">
-                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('shrsup' if sort_param == 'shrsdn' else 'shrsdn')) }}">Number</a>
+                <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('shrsup' if sort_param == 'shrsdn' else 'shrsdn')) }}">Number</a>
             </th>
             <th>
-                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('valuup' if sort_param == 'valudn' else 'valudn')) }}">Value</a>
+                <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('valuup' if sort_param == 'valudn' else 'valudn')) }}">Value</a>
             </th>
             <th>
-                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('currup' if sort_param == 'currdn' else 'currdn')) }}">Curr.</a>
+                <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('currup' if sort_param == 'currdn' else 'currdn')) }}">Curr.</a>
             </th>
             <th>
-                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('pricup' if sort_param == 'pricdn' else 'pricdn')) }}">Av.<br>price</a>
+                <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('pricup' if sort_param == 'pricdn' else 'pricdn')) }}">Av.<br>price</a>
             </th>
             <th class="colHide2">Out-<br>standing</th>
             <th class="colHide2">at Date</th>
             <th class="colHide3">
-                <a href="{{ url_for('dbpub.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
+                <a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, f=f, u=u|int, e=e|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
             </th>
             {% if e %}
             <th class="colHide3">Method</th>

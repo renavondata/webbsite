@@ -486,6 +486,355 @@ routes:
         e: "1"
         sort: "valudn"
 
+  # ==========================================
+  # SFC Licensees (6 routes) - NEW
+  # ==========================================
+  - name: "SFClicensees - SFC licensee directory"
+    path: "/dbpub/SFClicensees.asp"
+    params:
+      - {}
+      - search: "HSBC"
+      - search: "Goldman"
+
+  - name: "SFChistall - SFC license history all"
+    path: "/dbpub/SFChistall.asp"
+    params:
+      - p: "100"
+      - p: "1"
+
+  - name: "SFChistfirm - SFC license history firm"
+    path: "/dbpub/SFChistfirm.asp"
+    params:
+      - p: "100"
+      - p: "1"
+
+  - name: "SFClicount - SFC licensee count"
+    path: "/dbpub/SFClicount.asp"
+    params:
+      - {}
+
+  - name: "SFCchanges - SFC license changes"
+    path: "/dbpub/SFCchanges.asp"
+    params:
+      - {}
+      - d: "2024-10-01"
+
+  - name: "SFColicrec - SFC online record"
+    path: "/dbpub/SFColicrec.asp"
+    params:
+      - ce: "123456"
+
+  # ==========================================
+  # SDI - Significant Dealer Info (6 routes) - NEW
+  # ==========================================
+  - name: "sdilatest - latest SDI positions"
+    path: "/dbpub/sdilatest.asp"
+    params:
+      - {}
+
+  - name: "sdiissue - SDI by stock"
+    path: "/dbpub/sdiissue.asp"
+    params:
+      - i: "62"  # HSBC
+      - i: "12"  # China Mobile
+
+  - name: "sdidir - SDI by director"
+    path: "/dbpub/sdidir.asp"
+    params:
+      - p: "100"
+
+  - name: "sdidirco - SDI director by company"
+    path: "/dbpub/sdidirco.asp"
+    params:
+      - p: "1"
+
+  - name: "sdicap - SDI capital analysis"
+    path: "/dbpub/sdicap.asp"
+    params:
+      - i: "62"
+
+  - name: "sdiNotes - SDI notes"
+    path: "/dbpub/sdiNotes.asp"
+    params: []
+
+  # ==========================================
+  # Short Selling (4 routes) - NEW
+  # ==========================================
+  - name: "short - short positions"
+    path: "/dbpub/short.asp"
+    params:
+      - i: "62"  # HSBC
+      - i: "941"  # China Mobile
+
+  - name: "shortdate - short positions by date"
+    path: "/dbpub/shortdate.asp"
+    params:
+      - d: "2024-10-01"
+      - d: "2024-10-01"
+        minpct: "1"
+
+  - name: "shortsum - short position summary"
+    path: "/dbpub/shortsum.asp"
+    params:
+      - {}
+
+  - name: "shortnotes - short selling notes"
+    path: "/dbpub/shortnotes.asp"
+    params: []
+
+  # ==========================================
+  # Transport Statistics (12 routes) - NEW
+  # ==========================================
+  - name: "veFR - vehicle first registration"
+    path: "/dbpub/veFR.asp"
+    params:
+      - {}
+
+  - name: "veFRtype - vehicle FR by type"
+    path: "/dbpub/veFRtype.asp"
+    params:
+      - {}
+
+  - name: "veFRtypehist - vehicle FR type history"
+    path: "/dbpub/veFRtypehist.asp"
+    params:
+      - vetype: "1"
+
+  - name: "veJourneys - vehicle journeys"
+    path: "/dbpub/veJourneys.asp"
+    params:
+      - {}
+
+  - name: "veJourneyhist - vehicle journey history"
+    path: "/dbpub/veJourneyhist.asp"
+    params:
+      - {}
+
+  - name: "vebrandhist - vehicle brand history"
+    path: "/dbpub/vebrandhist.asp"
+    params:
+      - brand: "TOYOTA"
+
+  - name: "vedet - vehicle details"
+    path: "/dbpub/vedet.asp"
+    params:
+      - vetype: "1"
+
+  - name: "veengine - vehicle engine stats"
+    path: "/dbpub/veengine.asp"
+    params:
+      - {}
+
+  - name: "vefuel - vehicle fuel stats"
+    path: "/dbpub/vefuel.asp"
+    params:
+      - {}
+
+  - name: "vefuelhist - vehicle fuel history"
+    path: "/dbpub/vefuelhist.asp"
+    params:
+      - fuel: "1"
+
+  - name: "tuntraff - tunnel traffic"
+    path: "/dbpub/tuntraff.asp"
+    params:
+      - {}
+
+  - name: "vax - vaccination stats"
+    path: "/dbpub/vax.asp"
+    params:
+      - {}
+
+  # ==========================================
+  # Additional Statistics Routes - NEW
+  # ==========================================
+  - name: "ctr - capital total return"
+    path: "/dbpub/ctr.asp"
+    params:
+      - i: "62"
+      - i: "941"
+
+  - name: "mcap - market capitalization"
+    path: "/dbpub/mcap.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "mcaphist - market cap history"
+    path: "/dbpub/mcaphist.asp"
+    params:
+      - i: "62"
+
+  - name: "chart - stock price chart"
+    path: "/dbpub/chart.asp"
+    params:
+      - i: "62"
+        d1: "2024-01-01"
+        d2: "2024-10-01"
+
+  - name: "natperson - natural person profile"
+    path: "/dbpub/natperson.asp"
+    params:
+      - p: "100"
+      - p: "200"
+
+  - name: "roles - corporate roles"
+    path: "/dbpub/roles.asp"
+    params:
+      - {}
+
+  - name: "possum - position summary"
+    path: "/dbpub/possum.asp"
+    params:
+      - p: "100"
+
+  - name: "domicile - company domicile"
+    path: "/dbpub/domicile.asp"
+    params:
+      - {}
+
+  - name: "domicilechange - domicile changes"
+    path: "/dbpub/domicilechange.asp"
+    params:
+      - {}
+
+  - name: "domicilecos - companies by domicile"
+    path: "/dbpub/domicilecos.asp"
+    params:
+      - dom: "HK"
+
+  - name: "cosperdomHK - HK companies by domicile"
+    path: "/dbpub/cosperdomHK.asp"
+    params:
+      - {}
+
+  - name: "namechangeHK - HK name changes"
+    path: "/dbpub/namechangeHK.asp"
+    params:
+      - {}
+
+  - name: "namechangeHKlisted - HK listed name changes"
+    path: "/dbpub/namechangeHKlisted.asp"
+    params:
+      - {}
+
+  - name: "adviserships - advisership listing"
+    path: "/dbpub/adviserships.asp"
+    params:
+      - p: "100"
+
+  - name: "DirsHKAgeDistn - HK directors age distribution"
+    path: "/dbpub/DirsHKAgeDistn.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "DirsHKDistnPeople - HK directors distribution people"
+    path: "/dbpub/DirsHKDistnPeople.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "DirsPerListcoHKdstn - directors per listco distribution"
+    path: "/dbpub/DirsPerListcoHKdstn.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "HKdirsTypeSex - HK directors by type and sex"
+    path: "/dbpub/HKdirsTypeSex.asp"
+    params:
+      - d: "2024-10-01"
+
+  - name: "govac - government advisory committees"
+    path: "/dbpub/govac.asp"
+    params:
+      - {}
+      - d: "2024-10-01"
+
+  - name: "freecodesunder1000 - available stock codes under 1000"
+    path: "/dbpub/freecodesunder1000.asp"
+    params:
+      - {}
+
+  - name: "outstanding - outstanding shares"
+    path: "/dbpub/outstanding.asp"
+    params:
+      - i: "62"
+
+  - name: "overlap - director overlap"
+    path: "/dbpub/overlap.asp"
+    params:
+      - p1: "1"
+        p2: "100"
+
+  - name: "matches - director matches"
+    path: "/dbpub/matches.asp"
+    params:
+      - p: "100"
+
+  - name: "websites - company websites"
+    path: "/dbpub/websites.asp"
+    params:
+      - {}
+
+  - name: "holders - ownership tree"
+    path: "/dbpub/holders.asp"
+    params:
+      - p: "1"
+        d: "2024-10-01"
+
+  - name: "holdings - shareholdings"
+    path: "/dbpub/holdings.asp"
+    params:
+      - p: "100"
+        d: "2024-10-01"
+
+  - name: "pay - director remuneration"
+    path: "/dbpub/pay.asp"
+    params:
+      - p: "100"
+
+  - name: "payleague - remuneration league"
+    path: "/dbpub/payleague.asp"
+    params:
+      - {}
+
+  - name: "payleagueorg - remuneration league by org"
+    path: "/dbpub/payleagueorg.asp"
+    params:
+      - {}
+
+  - name: "bornday - people born on day"
+    path: "/dbpub/bornday.asp"
+    params:
+      - m: "1"
+        d: "1"
+
+  - name: "bornyear - people born in year"
+    path: "/dbpub/bornyear.asp"
+    params:
+      - y: "1970"
+
+# Normalization options
+normalize:
+  strip_whitespace: true
+  remove_comments: true
+  lowercase_tags: false  # Preserve tag case
+  collapse_spaces: true
+  # NOTE: CSS path differences are ACCEPTABLE and ignored by normalization
+  # ASP uses relative paths (href="main.css")
+  # Flask uses absolute paths (href="/static/css/main.css")
+  # The normalize_html() function in test_routes.py handles this
+
+# Timeout settings (seconds)
+timeout:
+  request: 60
+  total: 300
+  # Per-route timeout overrides for slow ASP queries
+  route_timeouts:
+    leagueDirsHK: 60
+    incHKannual: 60
+    incHKmonth: 60
+    incHKsurvive: 60
+    disHKcaltype: 60
+
 # Normalization options
 normalize:
   strip_whitespace: true

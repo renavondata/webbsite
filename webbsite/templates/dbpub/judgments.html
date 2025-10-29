@@ -3,7 +3,7 @@
 {% block content %}
 <h2>{{ title }}</h2>
 
-<form method="get" action="{{ url_for('dbpub.judgments') }}">
+<form method="get" action="{{ url_for('dbpub_statistics.judgments') }}">
     <div class="inputs">
         <b>Court &nbsp;</b>
         <select name="c" onchange="this.form.submit()">
@@ -65,37 +65,37 @@
             <th class="colHide3"></th>
             <th>
                 {% if sort_param == 'jdup' %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='jddn') }}"><b>Judgment<br>date</b></a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='jddn') }}"><b>Judgment<br>date</b></a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='jdup') }}">Judgment<br>date</a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='jdup') }}">Judgment<br>date</a>
                 {% endif %}
             </th>
             <th>
                 {% if sort_param == 'cnup' %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='cndn') }}"><b>Case<br>number</b></a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='cndn') }}"><b>Case<br>number</b></a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='cnup') }}">Case<br>number</a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='cnup') }}">Case<br>number</a>
                 {% endif %}
             </th>
             <th class="colHide3">
                 {% if sort_param == 'ncup' %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='ncdn') }}"><b>Neutral<br>citation</b></a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='ncdn') }}"><b>Neutral<br>citation</b></a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='ncup') }}">Neutral<br>citation</a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='ncup') }}">Neutral<br>citation</a>
                 {% endif %}
             </th>
             <th>
                 {% if sort_param == 'psup' %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='psdn') }}"><b>Parties</b></a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='psdn') }}"><b>Parties</b></a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='psup') }}">Parties</a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='psup') }}">Parties</a>
                 {% endif %}
             </th>
             <th class="colHide3">
                 {% if sort_param == 'rpup' %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='rpdn') }}"><b>Reported</b></a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='rpdn') }}"><b>Reported</b></a>
                 {% else %}
-                    <a href="{{ url_for('dbpub.judgments', y=y, m=m, d=d, c=c, t=t, sort='rpup') }}">Reported</a>
+                    <a href="{{ url_for('dbpub_statistics.judgments', y=y, m=m, d=d, c=c, t=t, sort='rpup') }}">Reported</a>
                 {% endif %}
             </th>
         </tr>

@@ -7,23 +7,23 @@
     <tr>
         <th>
             {% if sort_param == 'newup' %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='newdn') }}"><b>Current Name</b></a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='newdn') }}"><b>Current Name</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='newup') }}">Current Name</a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='newup') }}">Current Name</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'oldup' %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='olddn') }}"><b>Old Name</b></a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='olddn') }}"><b>Old Name</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='oldup') }}">Old Name</a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='oldup') }}">Old Name</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'datup' %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='datdn') }}"><b>Until</b></a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='datdn') }}"><b>Until</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.namechange_hk_listed', sort='datup') }}">Until</a>
+                <a href="{{ url_for('dbpub_statistics.namechange_hk_listed', sort='datup') }}">Until</a>
             {% endif %}
         </th>
     </tr>
@@ -41,7 +41,7 @@
         {% set old_name = row.oldname ~ "<br>" ~ row.oldcname %}
     {% endif %}
     <tr>
-        <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.personid) }}'>{{ cur_name|safe }}</a></td>
+        <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.personid) }}'>{{ cur_name|safe }}</a></td>
         <td>{{ old_name|safe }}</td>
         <td>{{ row.datechanged.strftime('%Y-%m-%d') if row.datechanged else '' }}</td>
     </tr>

@@ -131,6 +131,13 @@ def enigma_events():
     )
 
 
+# Alias route for backward compatibility (original ASP used /events.asp)
+@bp.route("/events.asp")
+def events():
+    """Alias for enigma_events - backward compatibility with ASP site"""
+    return enigma_events()
+
+
 @bp.route("/eventdets.asp")
 def eventdets():
     """

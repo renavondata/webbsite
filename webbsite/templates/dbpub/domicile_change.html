@@ -24,36 +24,36 @@ and adviserships from the previously listed company.</p>
     <tr>
         <th>
             {% if sort_param == 'namup' %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='namdn') }}"><b>Current name</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='namdn') }}"><b>Current name</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='namup') }}">Current name</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='namup') }}">Current name</a>
             {% endif %}
         </th>
         <th class="colHide3">
             {% if sort_param == 'newup' %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='newdn') }}"><b>Current domicile</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='newdn') }}"><b>Current domicile</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='newup') }}">Current domicile</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='newup') }}">Current domicile</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'oldup' %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='olddn') }}"><b>Old domicile</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='olddn') }}"><b>Old domicile</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='oldup') }}">Old domicile</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='oldup') }}">Old domicile</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'dateup' %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='datedn') }}"><b>Until</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='datedn') }}"><b>Until</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile_change', sort='dateup') }}">Until</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile_change', sort='dateup') }}">Until</a>
             {% endif %}
         </th>
     </tr>
     {% for row in changes_data %}
     <tr>
-        <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.name1 }}</a></td>
+        <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.name1 }}</a></td>
         <td class="colHide3">{{ row.newdom }}</td>
         <td>{{ row.olddom }}</td>
         <td class="nowrap">

@@ -38,13 +38,33 @@ class ServerError(Exception):
 class RouteComparator:
     """Compares Flask and ASP route outputs"""
 
-    def __init__(self, config_path: str = "tests/test_config.yaml"):
-        """Initialize comparator with config file"""
+    def __init__(
+        self,
+        config_path: str = "tests/test_config.yaml",
+        ground_truth_mode: bool = False,
+        ground_truth_dir: str = "tests/ground_truth",
+    ):
+        """
+        Initialize comparator with config file
+
+        Args:
+            config_path: Path to test configuration YAML
+            ground_truth_mode: If True, compare against cached ground truth instead of live ASP
+            ground_truth_dir: Directory containing ground truth files
+        """
         self.config = self._load_config(config_path)
         self.asp_base = self.config["asp_base"]
         self.flask_base = self.config["flask_base"]
         self.timeout = self.config.get("timeout", {}).get("request", 30)
         self.results = []
+        self.ground_truth_mode = ground_truth_mode
+        self.ground_truth_dir = Path(ground_truth_dir)
+
+        if ground_truth_mode:
+            print(
+                f"{Fore.CYAN}Running in GROUND TRUTH mode - comparing against cached ASP outputs{Style.RESET_ALL}"
+            )
+            print(f"{Fore.CYAN}Ground truth directory: {self.ground_truth_dir.absolute()}{Style.RESET_ALL}\n")
 
     def _load_config(self, config_path: str) -> dict:
         """Load test configuration from YAML"""
@@ -54,6 +74,74 @@ class RouteComparator:
 
         with open(config_file, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
+
+    def _find_ground_truth_file(
+        self, route_name: str, params: dict, case_index: int
+    ) -> Optional[Path]:
+        """
+        Find ground truth file for given route and parameters
+
+        Args:
+            route_name: Name of the route
+            params: Query parameters
+            case_index: Case number (0-indexed)
+
+        Returns:
+            Path to ground truth file or None if not found
+        """
+        # Build possible filenames (matching fetch_ground_truth.py logic)
+        safe_route = route_name.replace(" ", "_").replace("-", "_")
+        case_num = case_index + 1
+
+        # Try to find matching file
+        patterns = [
+            f"{safe_route}_case{case_num}_*.html",
+            f"{safe_route}*.html",
+        ]
+
+        for category in ["dbpub", "ccass", "other"]:
+            category_dir = self.ground_truth_dir / category
+            if not category_dir.exists():
+                continue
+
+            for pattern in patterns:
+                matches = list(category_dir.glob(pattern))
+                if matches:
+                    # Return the first match
+                    return matches[0]
+
+        return None
+
+    def _load_ground_truth(
+        self, route_name: str, params: dict, case_index: int
+    ) -> Optional[str]:
+        """
+        Load ground truth HTML for given route
+
+        Args:
+            route_name: Name of the route
+            params: Query parameters
+            case_index: Case number (0-indexed)
+
+        Returns:
+            HTML content from ground truth file or None if not found
+        """
+        gt_file = self._find_ground_truth_file(route_name, params, case_index)
+
+        if gt_file is None:
+            print(
+                f"  {Fore.YELLOW}⚠ Ground truth file not found for {route_name} case {case_index + 1}{Style.RESET_ALL}"
+            )
+            return None
+
+        try:
+            with open(gt_file, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception as e:
+            print(
+                f"  {Fore.RED}✗ Error reading ground truth file {gt_file}: {e}{Style.RESET_ALL}"
+            )
+            return None
 
     def fetch_page(self, base_url: str, path: str, params: dict) -> Optional[str]:
         """
@@ -261,9 +349,14 @@ class RouteComparator:
 
             test_name = f"{route_name} (case {idx + 1})"
 
-            # Fetch from both servers
+            # Fetch from Flask
             flask_html = self.fetch_page(self.flask_base, path, params)
-            asp_html = self.fetch_page(self.asp_base, path, params)
+
+            # Fetch ASP output (either from live server or ground truth)
+            if self.ground_truth_mode:
+                asp_html = self._load_ground_truth(route_name, params, idx)
+            else:
+                asp_html = self.fetch_page(self.asp_base, path, params)
 
             # Check if both fetches succeeded
             if flask_html is None or asp_html is None:
@@ -469,11 +562,25 @@ def main():
         default="tests/test_config.yaml",
         help="Path to test config file (default: tests/test_config.yaml)",
     )
+    parser.add_argument(
+        "--ground-truth",
+        action="store_true",
+        help="Compare Flask against cached ground truth instead of live ASP server (use after Oct 31 shutdown)",
+    )
+    parser.add_argument(
+        "--ground-truth-dir",
+        default="tests/ground_truth",
+        help="Directory containing ground truth files (default: tests/ground_truth)",
+    )
 
     args = parser.parse_args()
 
     try:
-        comparator = RouteComparator(config_path=args.config)
+        comparator = RouteComparator(
+            config_path=args.config,
+            ground_truth_mode=args.ground_truth,
+            ground_truth_dir=args.ground_truth_dir,
+        )
         success = comparator.run_all_tests(
             route_filter=args.route,
             verbose=args.verbose,

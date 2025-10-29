@@ -27,37 +27,43 @@ The Webb-site codebase is a multi-tier financial data platform that scrapes, pro
 - Weekly database dumps uploaded to Google Drive
 - Automated import to Render PostgreSQL
 
-### Current Migration Status (Oct 26, 2025)
+### Current Migration Status (Oct 28, 2025)
 
 **✅ PRODUCTION DEPLOYED - Mission Accomplished! 🎉**
-- **Site live on Render.com** with continuous deployment (5 days ahead of Oct 31 deadline)
-- **279 routes created** (up from 192 initial estimate)
-- **139+ routes fully working** with SQL implementation (600% above MVP target of 20!)
+- **Site live on Render.com** with continuous deployment (7 days ahead of Oct 31 deadline)
+- **284 routes created** (up from 192 initial estimate)
+- **147 routes fully working** with SQL implementation (635% above MVP target of 20!)
 - PostgreSQL database operational in production (pro-4gb plan, 80GB disk)
 - Templates and CSS extracted from legacy ASP
 - ASP helper functions ported to Python (asp_helpers.py)
 - **CI/CD active:** GitHub master branch auto-deploys to Render.com
+- **Code reorganized (Oct 28):** dbpub routes split into 15 maintainable sub-modules
 
 **⚠️ In Progress:**
-- 70 routes with stub implementations (lower priority pages)
-- holders.asp recursive ownership trees (complex algorithm)
+- ~50 active stub routes (lower priority specialty pages, CSV exports, charts)
+- holders.asp recursive ownership trees (template complete, SQL implementation pending)
 - Performance optimization and caching
 - Automated database imports from Google Drive
 
 **❌ Deferred (Post-Launch):**
-- Authentication system (webbmail, vote, pollman - 36 routes)
+- Authentication system (webbmail, vote, pollman, mailman - 34 routes)
 - Database editing interface (dbeditor - 53 routes)
 - Specialty routes (qt.asp, HKflights.asp, etc.)
 - User personalization features
+- **Note:** 87 total routes intentionally deferred for post-launch implementation
 
-**Working Routes (139+ routes):**
+**Working Routes (147 routes across core functionality):**
 - Core search: searchorgs.asp, searchpeople.asp, natperson.asp
 - Stock data: prices.asp, quotes.asp, events.asp, listed.asp, delisted.asp, code.asp, ctr.asp, str.asp
 - Company data: orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp, govac.asp
 - Articles: All article routes (index, individual articles) + FAQ and static pages
-- CCASS (16 routes): bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cconchist.asp, cparticipants.asp, ipstakes.asp, choldings.asp, ctothist.asp, nciphist.asp, cholder.asp, brokhist.asp, etc.
-- Directors & Statistics: boardcomp.asp, dirsHKPerPerson.asp, incHKannual.asp, auditorchanges.asp, etc.
-- 70+ additional statistical and analysis routes
+- **CCASS (18/19 routes - 95% complete):** bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cconchist.asp, cparticipants.asp, ipstakes.asp, choldings.asp, ctothist.asp, nciphist.asp, cholder.asp, brokhist.asp, holdings.asp, plus session management routes
+- **Incorporation/Dissolution Stats (14 routes):** incHKannual, incHKmonth, incHKcaltype, disHKcaltype, incHKsurvive, regHKannual, disFcal, incFcal, incUKcaltype, oldestHKcos, domregHK, etc.
+- **Buybacks (3 routes):** buybacks.asp, buybackstime.asp, buybacksum.asp
+- Directors & Statistics: boardcomp.asp, dirsHKPerPerson.asp, auditorchanges.asp, etc.
+- SFC & Solicitors: All 10 routes working (SFC licensees, solicitor data, law firms)
+- Transport: 11/12 routes working (vehicle registrations, traffic, parking, etc.)
+- 80+ additional statistical and analysis routes
 
 See `docs/modernization-roadmap.md` for complete migration plan.
 

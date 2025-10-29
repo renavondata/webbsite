@@ -29,9 +29,9 @@ remaining employees (including new hires) or clawed back to Government.</p>
 whether a claim was made and approved in each phase.</p>
 
 <ul class="navlist">
-    <li{% if p == 1 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=1) }}">Phase 1</a></li>
-    <li{% if p == 2 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=2) }}">Phase 2</a></li>
-    <li{% if p == 0 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub.esstop', sort=sort_param, p=0) }}">Both</a></li>
+    <li{% if p == 1 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub_statistics.esstop', sort=sort_param, p=1) }}">Phase 1</a></li>
+    <li{% if p == 2 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub_statistics.esstop', sort=sort_param, p=2) }}">Phase 2</a></li>
+    <li{% if p == 0 %} id="livebutton"{% endif %}><a href="{{ url_for('dbpub_statistics.esstop', sort=sort_param, p=0) }}">Both</a></li>
 </ul>
 <div class="clear"></div>
 
@@ -145,37 +145,37 @@ whether a claim was made and approved in each phase.</p>
 
 <h3>The Top 5,000</h3>
 <p>Click the headings to sort. To search all approved claims,
-<a href="{{ url_for('dbpub.searchess') }}"><strong>click here</strong></a>.</p>
+<a href="{{ url_for('dbpub_statistics.searchess') }}"><strong>click here</strong></a>.</p>
 
 <table class="numtable c2l">
     <tr>
         <th></th>
         <th class="left">
             {% if sort_param == 'namdn' %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='namup') }}"><b>Name</b></a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='namup') }}"><b>Name</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='namdn') }}">Name</a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='namdn') }}">Name</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'amtdn' %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='amtup') }}"><b>Amount<br>HK$</b></a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='amtup') }}"><b>Amount<br>HK$</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='amtdn') }}">Amount<br>HK$</a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='amtdn') }}">Amount<br>HK$</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'hdsdn' %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='hdsup') }}"><b>Heads</b></a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='hdsup') }}"><b>Heads</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='hdsdn') }}">Heads</a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='hdsdn') }}">Heads</a>
             {% endif %}
         </th>
         <th class="colHide2">
             {% if sort_param == 'avgdn' %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='avgup') }}"><b>Average<br>HK$</b></a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='avgup') }}"><b>Average<br>HK$</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.esstop', p=p, sort='avgdn') }}">Average<br>HK$</a>
+                <a href="{{ url_for('dbpub_statistics.esstop', p=p, sort='avgdn') }}">Average<br>HK$</a>
             {% endif %}
         </th>
         {% if p == 0 %}
@@ -192,7 +192,7 @@ whether a claim was made and approved in each phase.</p>
             <td>{{ loop.index }}</td>
             <td>
                 {% if row.orgid %}
-                    <a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.name }}</a>
+                    <a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.name }}</a>
                 {% else %}
                     {{ row.name }}
                 {% endif %}

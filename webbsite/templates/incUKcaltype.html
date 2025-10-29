@@ -97,7 +97,7 @@
             <td class="colHide1">{{ loop.index }}</td>
             <td class="colHide1">{{ row[3] if row[3] else '' }}&nbsp;</td>
             <td class="left">
-                <a href="{{ url_for('dbpub.enigma_orgdata', p=row[0]) }}">
+                <a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row[0]) }}">
                     {{ row[1] }}
                     {% if row[2] %}<br>{{ row[2] }}{% endif %}
                 </a>

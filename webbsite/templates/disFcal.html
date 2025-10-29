@@ -93,7 +93,7 @@ and name-changes, without stating domicile.</p>
             <td class="colHide1">{{ loop.index }}</td>
             <td class="colHide1">{{ row[8] if row[8] else '' }}&nbsp;</td>
             <td class="left">
-                <a href="{{ url_for('dbpub.enigma_orgdata', p=row[0]) }}">
+                <a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row[0]) }}">
                     {{ row[1] }}
                 </a>
             </td>
