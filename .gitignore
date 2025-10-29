@@ -49,3 +49,4 @@ tests/*.md
 scripts/
 *.log
 tests/ground_truth/*
+*.txt
