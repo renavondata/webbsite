@@ -12,12 +12,15 @@
 </head>
 <body>
 {% extends "base_database.html" %}
-{% if i=0 %}
+{% block content %}
+{% if not i %}
 	<h2>Estimated securities not in CCASS</h2>
 	<p><b>{{ title }}</b></p>
-{# TODO: Port ASP logic: Else
+{% else %}
+{# TODO: Port ASP logic:
 	Call orgBar(n,p,0)
 	Call ccassholdbar(i,atDa... #}
+{% endif %}
 <form method="get" action="reghist.asp">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<input type="hidden" name="i" value="{{ i }}">
@@ -29,7 +32,7 @@
 	<div class="inputs">
 		<p>Table rows with no holding change:
 			<input type="radio" name="o" value="1" {{ checked(o) }} onchange="this.form.submit()">include
-			<input type="radio" name="o" value="0" {{ checked(Not o) }} onchange="this.form.submit()">exclude
+			<input type="radio" name="o" value="0" {{ checked(not o) }} onchange="this.form.submit()">exclude
 		</p>
 	</div>
 	<div class="clear"></div>	
@@ -89,9 +92,8 @@
 			{# TODO: Port ASP logic: End If
 		Loop... #}
 		</table>
-	{# TODO: Port ASP logic: End If
-End If
-Call CloseConRs(con,rs)... #}
+{% endif %}
+	{# TODO: Port ASP logic: End If Call CloseConRs(con,rs)... #}
 {% endblock %}
 </body>
 </html>

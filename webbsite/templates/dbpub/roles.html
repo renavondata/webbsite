@@ -4,14 +4,13 @@
 <h2>Webb-site League Tables</h2>
 
 <ul class="navlist">
-    <li><a href="{{ url_for('dbpub.league_notes_a') }}">Notes</a></li>
+    {# TODO: Implement league_notes_a route #}
+    {# <li><a href="{{ url_for('dbpub_statistics.league_notes_a') }}">Notes</a></li> #}
     <li id="livebutton">All league tables</li>
 </ul>
 <div class="clear"></div>
 
-<p>Click the role to see average total returns for each adviser in that role, for companies or REITs with a primary listing on either the
-Main Board or Growth Enterprises Market (GEM) of the Stock Exchange of Hong Kong Ltd.
-For continuing roles, click the number of positions to see a current league
+<p>Click the number of positions for continuing roles to see a current league
 table of advisers.</p>
 
 <table class="numtable fcl yscroll">
@@ -21,10 +20,10 @@ table of advisers.</p>
     </tr>
     {% for row in roles_data %}
     <tr>
-        <td><a href="{{ url_for('dbpub.adv_by_role', r=row.roleid) }}">{{ row.role }}</a></td>
+        <td>{{ row.role }}</td>
         <td>
             {% if not row.onetime %}
-                <a href="{{ url_for('dbpub.advlt_snap', r=row.roleid) }}">{{ row.countofrole }}</a>
+                <a href="{{ url_for('dbpub_statistics.advltsnap', r=row.roleid) }}">{{ row.countofrole }}</a>
             {% else %}
                 {{ row.countofrole }}
             {% endif %}

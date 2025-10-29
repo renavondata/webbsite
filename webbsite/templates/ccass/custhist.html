@@ -12,12 +12,15 @@
 </head>
 <body>
 {% extends "base_database.html" %}
-{% if i=0 %}
+{% block content %}
+{% if not i %}
 	<h2>Holdings of custodian participants</h2>
 	<p><b>{{ n }}</b></p>
-{# TODO: Port ASP logic: Else
+{% else %}
+{# TODO: Port ASP logic:
 	Call orgBar(n,p,0)
 	Call ccassholdbar(i,atDa... #}
+{% endif %}
 <form method="get" action="custhist.asp">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<div class="inputs">
@@ -79,9 +82,8 @@
 			</tr>
 		{% endfor %}
 		</table>
-	{# TODO: Port ASP logic: End If
-End If
-Call CloseConRs(con,rs)... #}
+{% endif %}
+	{# TODO: Port ASP logic: End If Call CloseConRs(con,rs)... #}
 {% endblock %}
 </body>
 </html>

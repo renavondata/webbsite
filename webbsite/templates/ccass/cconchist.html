@@ -12,13 +12,15 @@
 </head>
 <body>
 {% extends "base_database.html" %}
-{% if i=0 %}
+{% block content %}
+{% if not i %}
 	<h2>CCASS concentration analysis</h2>
 	<p><b>{{ n }}</b></p>
-{# TODO: Port ASP logic: Else
+{% else %}
+{# TODO: Port ASP logic:
 	Call orgBar(n,p,0)
-	Call ccassbar(i,d,3)
-End... #}
+	Call ccassbar(i,d,3) #}
+{% endif %}
 <ul class="navlist"><li><a href="cconc.asp">All stocks</a></li></ul>
 <div class="clear"></div>
 <form method="get" action="cconchist.asp">
@@ -56,11 +58,11 @@ End... #}
 		{# TODO: Port ASP logic: rs.MoveNext
 	Loop... #}
 	</table>
-	{% if cnt=0 %}
+	{% if not cnt %}
 		<p>None found.</p>
-	{# TODO: Port ASP logic: End If
-End If
-Call CloseConRs(con,rs)... #}
+	{% endif %}
+{% endif %}
+	{# TODO: Port ASP logic: End If Call CloseConRs(con,rs)... #}
 {% endblock %}
 </body>
 </html>
