@@ -12,9 +12,11 @@
 </head>
 <body>
 {% extends "base_database.html" %}
-{% if m!="" %}
+{% block content %}
+{% if m %}
 	<p><b>{{ m }}</b></p>
-{# Else
+{% else %}
+{# ASP logic:
 	'inputs d1 is start date, d is end date (becomes d2), p is our participant (partID)
 	Call openEnigmaRs(con,rs)
 	z=getBool("z")
@@ -135,8 +137,9 @@
 			{# TODO: Port ASP logic: rs.MoveNext
 		Loop... #}
 	</table>
-	{# TODO: Port ASP logic: Call CloseConRs(con,rs)
-End If... #}
+	{# TODO: Port ASP logic: Call CloseConRs(con,rs) #}
+{% endif %}
+{# End If #}
 {% endblock %}
 </body>
 </html>

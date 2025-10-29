@@ -8,7 +8,7 @@ import calendar
 import io
 import re
 from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
 bp = Blueprint("dbpub_statistics", __name__)
 
@@ -1217,7 +1217,7 @@ def payleague():
     Shows director pay aggregated across all companies
     Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
     """
-    from webbsite.asp_helpers import get_int, get_bool, get_str
+    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
     # Constants
     MAX_YEAR = 2024
@@ -1389,7 +1389,7 @@ def payleague_org():
     Shows total pay per company aggregated across all directors
     Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
     """
-    from webbsite.asp_helpers import get_int, get_bool, get_str
+    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
     # Constants
     MAX_YEAR = 2024
@@ -5407,7 +5407,7 @@ def lirteams():
 @bp.route("/str.asp")
 def str_route():
     """Webb-site Single stock Total Return chart - port of str.asp"""
-    from webbsite.asp_helpers import get_int, get_bool, get_str
+    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
     from webbsite.db import execute_query
     from flask import render_template
 

@@ -1,0 +1,14 @@
+{% extends "base_database.html" %}
+
+{% block title %}Error{% endblock %}
+
+{% block content %}
+<h2>Error</h2>
+<p><b>{{ message or error_message or 'An error occurred' }}</b></p>
+
+{% if error_details %}
+<pre>{{ error_details }}</pre>
+{% endif %}
+
+<p><a href="{{ url_for('dbpub_index.index') }}">Return to home</a></p>
+{% endblock %}
