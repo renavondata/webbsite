@@ -55,7 +55,7 @@ issued shares published by HKEx.</p>
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
 			<td>{{ conc.stockCode }}</td>
-			<td class="left"><a href="{{ url_for('dbpub.enigma_orgdata', p=conc.personID) }}">{{ conc.name1 }}</a></td>
+			<td class="left"><a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=conc.personID) }}">{{ conc.name1 }}</a></td>
 			<td>{{ "%.2f"|format(conc.cp5 * 100) if conc.cp5 else '' }}</td>
 			<td class="colHide3">{{ "%.2f"|format(conc.cp10 * 100) if conc.cp10 else '' }}</td>
 			<td>{{ "%.2f"|format(conc.cp10ip * 100) if conc.cp10ip else '' }}</td>

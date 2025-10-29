@@ -11,37 +11,37 @@
 	{% if stock_name and org_id %}
 	<h2>{{ stock_name }}</h2>
 	<ul class="navlist">
-		<li><a href="{{ url_for('dbpub.orgdata', p=org_id) }}">Key Data</a></li>
+		<li><a href="{{ url_for('dbpub_statistics.orgdata', p=org_id) }}">Key Data</a></li>
 		{% if nav_flags.get('has_directorships') %}
-			<li><a href="{{ url_for('dbpub.officers', p=org_id) }}">Officers</a></li>
-			<li><a href="{{ url_for('dbpub.overlap', p=org_id) }}">Overlaps</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.officers', p=org_id) }}">Officers</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.overlap', p=org_id) }}">Overlaps</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_pay') %}
-			<li><a href="{{ url_for('dbpub.pay', p=org_id) }}">Pay</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.pay', p=org_id) }}">Pay</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_advisers') %}
-			<li><a href="{{ url_for('dbpub.advisers', p=org_id) }}">Advisers</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.advisers', p=org_id) }}">Advisers</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_adviserships') %}
-			<li><a href="{{ url_for('dbpub.adviserships', p=org_id) }}">Adviserships</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.adviserships', p=org_id) }}">Adviserships</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_sfc_licenses') %}
-			<li><a href="{{ url_for('dbpub.sfcolicrec', p=org_id) }}">SFC licenses</a></li>
+			<li><a href="{{ url_for('dbpub_sfc.sfcolicrec', p=org_id) }}">SFC licenses</a></li>
 		{% endif %}
 		{% if nav_flags.get('ccass_part_id') %}
 			<li><a href="{{ url_for('ccass.cholder', part=nav_flags['ccass_part_id']) }}">CCASS holdings</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_documents') %}
-			<li><a href="{{ url_for('dbpub.docs', p=org_id) }}">Financials</a></li>
+			<li><a href="{{ url_for('dbpub_events.docs', p=org_id) }}">Financials</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_ess') %}
-			<li><a href="{{ url_for('dbpub.essraw', p=org_id) }}">ESS</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.essraw', p=org_id) }}">ESS</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_stories') %}
-			<li><a href="{{ url_for('dbpub.articles', p=org_id) }}">Webb-site Reports</a></li>
+			<li><a href="{{ url_for('dbpub_articles.articles', p=org_id) }}">Webb-site Reports</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_lir_team') %}
-			<li><a href="{{ url_for('dbpub.complain', p=org_id) }}">Complain</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.complain', p=org_id) }}">Complain</a></li>
 		{% endif %}
 	</ul>
 	<div class="clear"></div>
@@ -85,22 +85,22 @@
 	<ul class="navlist">
 		<li class="livebutton">Buybacks</li>
 		{% if nav_flags.get('has_outstanding') %}
-			<li><a href="{{ url_for('dbpub.outstanding', i=issue_id) }}">Outstanding</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.outstanding', i=issue_id) }}">Outstanding</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_short') %}
-			<li><a href="{{ url_for('dbpub.short', i=issue_id) }}">Short</a></li>
+			<li><a href="{{ url_for('dbpub_short_selling.short', i=issue_id) }}">Short</a></li>
 		{% endif %}
 		{% if nav_flags.get('ccass_on') %}
 			<li><a href="{{ url_for('ccass.choldings', i=issue_id) }}">CCASS</a></li>
 		{% endif %}
 		{% if listings_data %}
-			<li><a href="{{ url_for('dbpub.str_route', i=issue_id) }}">Total return</a></li>
-			<li><a href="{{ url_for('dbpub.ctr', i1=issue_id) }}">Compare returns</a></li>
-			<li><a href="{{ url_for('dbpub.hpu', i=issue_id) }}">Prices</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.str_route', i=issue_id) }}">Total return</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.ctr', i1=issue_id) }}">Compare returns</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.hpu', i=issue_id) }}">Prices</a></li>
 			<li><a href="{{ url_for('events.events', i=issue_id) }}">Events</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_sdi') %}
-			<li><a href="{{ url_for('dbpub.sdiissue', i=issue_id) }}">Dealings</a></li>
+			<li><a href="{{ url_for('dbpub_sdi.sdiissue', i=issue_id) }}">Dealings</a></li>
 		{% endif %}
 		{% if listings_data and (not delist_date or delist_date > now) %}
 			{# External quote links - different URLs by security type and exchange #}
@@ -119,15 +119,15 @@
 
 	{# Frequency navigation - Daily/Monthly/Yearly #}
 	<ul class="navlist">
-		<li{% if freq == 'd' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='d') }}">Daily</a></li>
-		<li{% if freq == 'm' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='m') }}">Monthly</a></li>
-		<li{% if freq == 'y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='y') }}">Yearly</a></li>
-		<li><a href="{{ url_for('dbpub.buybacksum', u=unadj|int, y=current_year, m=(now.month if freq == 'm' else 0), d=(now.day if freq == 'd' else 0)) }}">All stocks</a></li>
+		<li{% if freq == 'd' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='d') }}">Daily</a></li>
+		<li{% if freq == 'm' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='m') }}">Monthly</a></li>
+		<li{% if freq == 'y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, sort=sort, f='y') }}">Yearly</a></li>
+		<li><a href="{{ url_for('dbpub_buybacks.buybacksum', u=unadj|int, y=current_year, m=(now.month if freq == 'm' else 0), d=(now.day if freq == 'd' else 0)) }}">All stocks</a></li>
 	</ul>
 	<div class="clear"></div>
 {% endif %}
 
-<form method="get" action="{{ url_for('dbpub.buybacks') }}">
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacks') }}">
 	<input type="hidden" name="f" value="{{ freq }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<input type="hidden" name="i" value="{{ issue_id }}">
@@ -152,50 +152,50 @@
 				<th class="colHide1">Row</th>
 				<th>
 					{% if sort == 'datedn' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='dateup') }}">
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='dateup') }}">
 							{{ 'Date' if freq == 'd' else ('Year' if freq == 'y' else 'Month') }}
 						</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='datedn') }}">
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='datedn') }}">
 							{{ 'Date' if freq == 'd' else ('Year' if freq == 'y' else 'Month') }}
 						</a>
 					{% endif %}
 				</th>
 				<th class="colHide3">
 					{% if sort == 'shrsdn' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsup') }}">Number</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsup') }}">Number</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsdn') }}">Number</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='shrsdn') }}">Number</a>
 					{% endif %}
 				</th>
 				<th>
 					{% if sort == 'valudn' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valuup') }}">Value</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valuup') }}">Value</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valudn') }}">Value</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='valudn') }}">Value</a>
 					{% endif %}
 				</th>
 				<th>
 					{% if sort == 'currup' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currdn') }}">Curr.</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currdn') }}">Curr.</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currup') }}">Curr.</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='currup') }}">Curr.</a>
 					{% endif %}
 				</th>
 				<th>
 					{% if sort == 'pricdn' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricup') }}">Av.<br>price</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricup') }}">Av.<br>price</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricdn') }}">Av.<br>price</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='pricdn') }}">Av.<br>price</a>
 					{% endif %}
 				</th>
 				<th class="colHide2">Out-<br>standing</th>
 				<th class="colHide2">at Date</th>
 				<th class="colHide3">
 					{% if sort == 'stkdn' %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkup') }}">Stake %</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkup') }}">Stake %</a>
 					{% else %}
-						<a href="{{ url_for('dbpub.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkdn') }}">Stake %</a>
+						<a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id, u=unadj|int, e=show_method|int, f=freq, sort='stkdn') }}">Stake %</a>
 					{% endif %}
 				</th>
 				{% if show_method %}

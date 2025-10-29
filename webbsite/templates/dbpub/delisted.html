@@ -3,26 +3,26 @@
 {% block content %}
 <h2>Delisted {{ title }}</h2>
 <ul class="navlist">
-	<li><a href="{{ url_for('dbpub.listed', e=e, t=t, sort=sort) }}">Listed</a></li>
+	<li><a href="{{ url_for('dbpub_listings.listed', e=e, t=t, sort=sort) }}">Listed</a></li>
 	<li class="livebutton">Delisted</li>
 </ul>
 
 {# Navigation for exchange selection #}
 <ul class="navlist">
-	<li{% if e=='m' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='m', t=t, sort=sort) }}">Main Board</a></li>
-	<li{% if e=='g' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='g', t=t, sort=sort) }}">GEM</a></li>
-	<li{% if e=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='s', t=t, sort=sort) }}">Secondary</a></li>
-	<li{% if e=='a' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='a', t=t, sort=sort) }}">All HK</a></li>
-	<li{% if e=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='r', t=t, sort=sort) }}">REIT</a></li>
-	<li{% if e=='c' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e='c', t=t, sort=sort) }}">CIS</a></li>
+	<li{% if e=='m' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='m', t=t, sort=sort) }}">Main Board</a></li>
+	<li{% if e=='g' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='g', t=t, sort=sort) }}">GEM</a></li>
+	<li{% if e=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='s', t=t, sort=sort) }}">Secondary</a></li>
+	<li{% if e=='a' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='a', t=t, sort=sort) }}">All HK</a></li>
+	<li{% if e=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='r', t=t, sort=sort) }}">REIT</a></li>
+	<li{% if e=='c' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e='c', t=t, sort=sort) }}">CIS</a></li>
 </ul>
 
 {# Navigation for security type #}
 <ul class="navlist">
-	<li{% if t=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e=e, t='s', sort=sort) }}">Shares/units</a></li>
-	<li{% if t=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e=e, t='r', sort=sort) }}">Rights</a></li>
-	<li{% if t=='w' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e=e, t='w', sort=sort) }}">Warrants</a></li>
-	<li{% if t=='h' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.delisted', e=e, t='h', sort=sort) }}">H-shares</a></li>
+	<li{% if t=='s' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e=e, t='s', sort=sort) }}">Shares/units</a></li>
+	<li{% if t=='r' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e=e, t='r', sort=sort) }}">Rights</a></li>
+	<li{% if t=='w' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e=e, t='w', sort=sort) }}">Warrants</a></li>
+	<li{% if t=='h' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_listings.delisted', e=e, t='h', sort=sort) }}">H-shares</a></li>
 </ul>
 
 <div class="clear"></div>
@@ -33,14 +33,14 @@
 	<table class="numtable yscroll">
 	<tr>
 		<th class="colHide1">Row</th>
-		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='codeup' if sort!='codeup' else 'codedn') }}"><b>Stock Code</b></a></th>
-		<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='typeup' if sort!='typeup' else 'typedn') }}"><b>Sec.<br>type</b></a></th>
-		<th class="left"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='nameup' if sort!='nameup' else 'namedn') }}"><b>Issuer</b></a></th>
-		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='fdateup' if sort!='fdateup' else 'fdatedn') }}"><b>First trade</b></a></th>
-		<th class="colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ldatedn' if sort!='ldatedn' else 'ldateup') }}"><b>Last trade</b></a></th>
-		<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='ddatedn' if sort!='ddatedn' else 'ddateup') }}"><b>Delisted</b></a></th>
-		<th><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='lifeup' if sort!='lifeup' else 'lifedn') }}"><b>Trading<br>life,<br>years</b></a></th>
-		<th class="left colHide3"><a href="{{ url_for('dbpub.delisted', e=e, t=t, sort='rsnup' if sort!='rsnup' else 'rsndn') }}"><b>Reason</b></a></th>
+		<th class="colHide3"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='codeup' if sort!='codeup' else 'codedn') }}"><b>Stock Code</b></a></th>
+		<th class="left colHide3"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='typeup' if sort!='typeup' else 'typedn') }}"><b>Sec.<br>type</b></a></th>
+		<th class="left"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='nameup' if sort!='nameup' else 'namedn') }}"><b>Issuer</b></a></th>
+		<th class="colHide3"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='fdateup' if sort!='fdateup' else 'fdatedn') }}"><b>First trade</b></a></th>
+		<th class="colHide3"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='ldatedn' if sort!='ldatedn' else 'ldateup') }}"><b>Last trade</b></a></th>
+		<th><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='ddatedn' if sort!='ddatedn' else 'ddateup') }}"><b>Delisted</b></a></th>
+		<th><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='lifeup' if sort!='lifeup' else 'lifedn') }}"><b>Trading<br>life,<br>years</b></a></th>
+		<th class="left colHide3"><a href="{{ url_for('dbpub_listings.delisted', e=e, t=t, sort='rsnup' if sort!='rsnup' else 'rsndn') }}"><b>Reason</b></a></th>
 	</tr>
 	{% for stock in stocks %}
 	<tr>

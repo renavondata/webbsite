@@ -30,15 +30,15 @@
 {% else %}
     {# humanBar navigation - matching ASP humanBar function #}
     <ul class="navlist">
-        <li class="livebutton"><a href="{{ url_for('dbpub.natperson', p=person_id) }}">Key data</a></li>
+        <li class="livebutton"><a href="{{ url_for('dbpub_people.natperson', p=person_id) }}">Key data</a></li>
         {% if has_positions %}
-        <li><a href="{{ url_for('dbpub.enigma_positions', p=person_id) }}">Positions</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.enigma_positions', p=person_id) }}">Positions</a></li>
         {% endif %}
         {% if has_pay %}
         <li><a href="{{ url_for('dbpub.offpay', p=person_id) }}">Pay</a></li>
         {% endif %}
         {% if has_sdi %}
-        <li><a href="{{ url_for('dbpub.sdidir', p=person_id) }}">Dealings</a></li>
+        <li><a href="{{ url_for('dbpub_sdi.sdidir', p=person_id) }}">Dealings</a></li>
         {% endif %}
         {% if ccass_part_id %}
         <li><a href="{{ url_for('ccass.cholder', part=ccass_part_id) }}">CCASS holdings</a></li>
@@ -50,7 +50,7 @@
     <div class="clear"></div>
 
     <ul class="navlist">
-        <li><a target="_blank" href="{{ url_for('dbpub.faq_www') }}">FAQ</a></li>
+        <li><a target="_blank" href="{{ url_for('dbpub_statistics.faq_www') }}">FAQ</a></li>
     </ul>
     <div class="clear"></div>
 
@@ -180,7 +180,7 @@
     {# Renavon Hong Kong Trust Rating (Static) #}
     {% if not person.yob or ((current_year - person.yob) > 18) %}
     <h3>Renavon Hong Kong Trust Rating</h3>
-    <p><a href="{{ url_for('dbpub.index') }}"><b>Log in</b></a> to add your anonymous rating. Renavon Hong Kong users rate this person as follows:</p>
+    <p><a href="{{ url_for('dbpub_index.index') }}"><b>Log in</b></a> to add your anonymous rating. Renavon Hong Kong users rate this person as follows:</p>
     <table class="rating">
         <tbody>
             <tr>
@@ -199,7 +199,7 @@
     {# Relatives Section #}
     {% if has_relatives %}
     <h3>Relatives</h3>
-    <form method="get" action="{{ url_for('dbpub.natperson') }}">
+    <form method="get" action="{{ url_for('dbpub_people.natperson') }}">
         <input type="hidden" name="p" value="{{ person_id }}">
         <input type="hidden" name="s2" value="{{ sort2 }}">
         <input type="hidden" name="x" value="{{ expand }}">
@@ -221,7 +221,7 @@
     <table class="txtable">
         {% for rel in nonlineal_relatives %}
         <tr>
-            <td><a href="{{ url_for('dbpub.natperson', p=rel.relid) }}">{{ rel.relative }}</a> ({{ rel.born }} - {{ rel.died }})</td>
+            <td><a href="{{ url_for('dbpub_people.natperson', p=rel.relid) }}">{{ rel.relative }}</a> ({{ rel.born }} - {{ rel.died }})</td>
             <td>{{ rel.rel }}</td>
         </tr>
         {% endfor %}
@@ -256,7 +256,7 @@
     <h3 id="D0">Holdings</h3>
     <p>Note: holdings may be incomplete and/or outdated. Holdings in listed companies are not shown as the filings are
     currently too difficult to automate and the holdings change too rapidly.</p>
-    <p><a href="{{ url_for('dbpub.holdings', p=person_id) }}">View full holdings with recursive tree</a></p>
+    <p><a href="{{ url_for('dbpub_corporate.holdings', p=person_id) }}">View full holdings with recursive tree</a></p>
 
     <table class="txtable">
         <tr>
@@ -275,7 +275,7 @@
                 {% endif %}
             </td>
             <td>
-                <a href="{{ url_for('dbpub.orgdata', p=holding.issuer) }}">
+                <a href="{{ url_for('dbpub_statistics.orgdata', p=holding.issuer) }}">
                     {% if holding.orgtype == 22 %}<b>{{ holding.name }}</b>{% else %}{{ holding.name }}{% endif %}{% if holding.typeshort and holding.typeshort != 'O' %}:{{ holding.typeshort }}{% endif %}
                 </a>
             </td>
@@ -292,7 +292,7 @@
 <tr>
     <td style="width:50px">{% if not person.already_seen %}<a name="D{{ count }}"></a>{{ count }}{% endif %}</td>
     <td style="padding-left:{{ person.level * 20 }}px">
-        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub.natperson', p=person.parent_id) }}">{{ person.name }}</a>
+        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub_people.natperson', p=person.parent_id) }}">{{ person.name }}</a>
         ({{ person.born }}&nbsp;-&nbsp;{{ person.died }})
         {% if person.already_seen %}
             see <a href="#D{{ count }}">line {{ count }}</a>
@@ -311,7 +311,7 @@
 <tr>
     <td style="width:50px">{% if not person.already_seen %}<a name="D{{ count }}"></a>{{ count }}{% endif %}</td>
     <td style="padding-left:{{ person.level * 20 }}px">
-        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub.natperson', p=person.child_id) }}">{{ person.name }}</a>
+        {{ person.level + 1 }}&nbsp;<a href="{{ url_for('dbpub_people.natperson', p=person.child_id) }}">{{ person.name }}</a>
         ({{ person.born }}&nbsp;-&nbsp;{{ person.died }})
         {% if person.already_seen %}
             see <a href="#D{{ count }}">line {{ count }}</a>

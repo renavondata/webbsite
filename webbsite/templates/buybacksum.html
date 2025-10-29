@@ -13,11 +13,11 @@
 
 <ul class="navlist">
     <li class="active">Calendar</li>
-    <li><a href="{{ url_for('dbpub.buybackstime') }}">Lookback</a></li>
+    <li><a href="{{ url_for('dbpub_buybacks.buybackstime') }}">Lookback</a></li>
 </ul>
 <div class="clear"></div>
 
-<form method="get" action="{{ url_for('dbpub.buybacksum') }}">
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacksum') }}">
     <input type="hidden" name="sort" value="{{ sort_param }}">
     <div class="inputs">
         Buyback date
@@ -64,30 +64,30 @@ progress.</p>
     <tr>
         <th class="colHide1">Row</th>
         <th class="colHide2">
-            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('codup' if sort_param == 'coddn' else 'coddn')) }}">Stock<br>code</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacksum', y=y, m=m, d=d, u=u|int, sort=('codup' if sort_param == 'coddn' else 'coddn')) }}">Stock<br>code</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacksum', y=y, m=m, d=d, u=u|int, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacksum', y=y, m=m, d=d, u=u|int, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacksum', y=y, m=m, d=d, u=u|int, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
         </th>
         <th class="colHide2">Number</th>
         <th class="colHide2">Av.<br>price</th>
         <th class="colHide1">Outstanding</th>
         <th class="colHide1">at Date</th>
         <th class="colHide2">
-            <a href="{{ url_for('dbpub.buybacksum', y=y, m=m, d=d, u=u|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacksum', y=y, m=m, d=d, u=u|int, sort=('stkup' if sort_param == 'stkdn' else 'stkdn')) }}">Stake %</a>
         </th>
     </tr>
     {% for row in buybacks %}
     <tr>
         <td class="colHide1">{{ loop.index }}</td>
         <td class="colHide2">{{ "%05d"|format(row['stockcode']|int) if row['stockcode'] else '' }}</td>
-        <td><a href="{{ url_for('dbpub.buybacks', i=row['issueid'], f=f) }}">{{ row['name'] }}</a></td>
+        <td><a href="{{ url_for('dbpub_buybacks.buybacks', i=row['issueid'], f=f) }}">{{ row['name'] }}</a></td>
         <td>{{ row['currency'] }}</td>
         <td>{{ "{:,.0f}".format(row['value']) if row['value'] else '-' }}</td>
         <td class="colHide2">{{ "{:,.0f}".format(row['shares']) if row['shares'] else '-' }}</td>

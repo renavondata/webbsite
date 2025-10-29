@@ -1,16 +1,25 @@
-# Flask vs ASP Route Validation Tests
+# Webb-site Ground Truth Testing System
 
-This directory contains automated testing scripts to validate that the Flask migration produces identical output to the original Classic ASP implementation.
+This directory contains automated testing infrastructure to validate that all Flask routes match webb-site.com behavior by comparing against a permanent archive of ASP outputs captured before the October 31, 2025 server shutdown.
 
 ## Purpose
 
-Before the webb-site.com shutdown on **October 31, 2025**, we need to verify that all 24 working Flask routes produce the same output as the live ASP site. This test suite automates that comparison.
+**Ground truth archive created on October 28, 2025** - 3 days before shutdown!
+
+This system ensures all 124 Flask routes produce the same output as the original ASP site by:
+1. **Capturing ground truth** - Automated archival of 156 ASP outputs before Oct 31 shutdown
+2. **Post-shutdown testing** - Comparing Flask against cached ASP outputs forever
+3. **Regression detection** - Catching any deviations from original behavior
 
 ## Files
 
-- **`test_routes.py`** - Main testing script that fetches and compares outputs
-- **`test_config.yaml`** - Configuration with all 24 routes and test cases (~60 test scenarios)
-- **`requirements-test.txt`** - Python dependencies for testing
+- **`fetch_ground_truth.py`** - Automated script to capture ASP outputs from webb-site.com
+- **`test_routes.py`** - Test suite comparing Flask vs ASP (or ground truth)
+- **`test_config.yaml`** - 124 routes with 173 test cases
+- **`ground_truth/`** - Archive of 164 HTML files from webb-site.com (captured Oct 28)
+- **`CAPTURE_COMPLETE.md`** - Detailed capture results (156/173 success)
+- **`PROGRESS_SUMMARY.md`** - Implementation progress and timeline
+- **`TEST_RESULTS.md`** - Test results for 5 verified routes
 - **`README.md`** - This file
 
 ## Installation
@@ -42,14 +51,41 @@ Before running tests:
    - Local test database at `localhost:5432/enigma_pg`
    - Flask app connects to this database
 
+## Quick Start
+
+### ⚡ Before Oct 31, 2025 (Compare vs Live ASP)
+```bash
+# Test all routes against live webb-site.com
+uv run python tests/test_routes.py
+
+# Test single route
+uv run python tests/test_routes.py --route "searchorgs"
+```
+
+### ⚡ After Oct 31, 2025 (Compare vs Ground Truth) **← USE THIS**
+```bash
+# Test against cached ground truth
+uv run python tests/test_routes.py --ground-truth
+
+# Test single route
+uv run python tests/test_routes.py --ground-truth --route "searchorgs"
+
+# Show verbose diffs
+uv run python tests/test_routes.py --ground-truth --route "code" --verbose
+```
+
 ## Usage
 
 ### Run All Tests
 
-Test all 24 routes with ~60 parameter combinations:
+Test all 124 routes with 173 parameter combinations:
 
 ```bash
-uv run --group test python tests/test_routes.py
+# After Oct 31: Use ground truth mode
+uv run python tests/test_routes.py --ground-truth
+
+# Before Oct 31: Compare vs live ASP
+uv run python tests/test_routes.py
 ```
 
 Expected output:

@@ -34,20 +34,20 @@ are fake.</p>
 	<table class="numtable">
 		<tr>
 			<th class="colHide1">Row</th>
-			<th><a href="{{ url_for('dbpub.webbchips', sort='codeup' if sort!='codeup' else 'codedn') }}"><b>Stock<br>Code</b></a></th>
-			<th class="left"><a href="{{ url_for('dbpub.webbchips', sort='nameup' if sort!='nameup' else 'namedn') }}"><b>Issuer</b></a></th>
-			<th class="colHide2"><a href="{{ url_for('dbpub.webbchips', sort='datedn' if sort!='datedn' else 'dateup') }}"><b>Event<br>date</b></a></th>
+			<th><a href="{{ url_for('dbpub_statistics.webbchips', sort='codeup' if sort!='codeup' else 'codedn') }}"><b>Stock<br>Code</b></a></th>
+			<th class="left"><a href="{{ url_for('dbpub_statistics.webbchips', sort='nameup' if sort!='nameup' else 'namedn') }}"><b>Issuer</b></a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub_statistics.webbchips', sort='datedn' if sort!='datedn' else 'dateup') }}"><b>Event<br>date</b></a></th>
 			<th class="colHide3">Shares<br>filed</th>
-			<th><a href="{{ url_for('dbpub.webbchips', sort='stkdn' if sort!='stkdn' else 'stkup') }}"><b>Stake<br>filed<br>%</b></a></th>
+			<th><a href="{{ url_for('dbpub_statistics.webbchips', sort='stkdn' if sort!='stkdn' else 'stkup') }}"><b>Stake<br>filed<br>%</b></a></th>
 			<th class="colHide3">Price</th>
-			<th class="colHide2"><a href="{{ url_for('dbpub.webbchips', sort='qddn' if sort!='qddn' else 'qdup') }}"><b>Price<br>date</b></a></th>
-			<th><a href="{{ url_for('dbpub.webbchips', sort='mvdn' if sort!='mvdn' else 'mvup') }}"><b>Market<br>value<br>HK$m</b></a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub_statistics.webbchips', sort='qddn' if sort!='qddn' else 'qdup') }}"><b>Price<br>date</b></a></th>
+			<th><a href="{{ url_for('dbpub_statistics.webbchips', sort='mvdn' if sort!='mvdn' else 'mvup') }}"><b>Market<br>value<br>HK$m</b></a></th>
 		</tr>
 	{% for holding in holdings %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
 			<td><a href="str.asp?i={{ holding.issueid }}">{{ holding.sc }}</a></td>
-			<td class="left"><a href='{{ url_for('dbpub.enigma_orgdata', p=holding.issuer) }}'>{{ holding.name }}</a></td>
+			<td class="left"><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=holding.issuer) }}'>{{ holding.name }}</a></td>
 			<td class="colHide2"><a target="_blank" href="https://di.hkex.com.hk/di/NSForm1.aspx?fn={{ holding.filing }}">{{ holding.atdate.strftime('%Y-%m-%d') if holding.atdate else '' }}</a></td>
 			<td class="colHide3">{{ '{:,.0f}'.format(holding.shares) if holding.shares else '' }}</td>
 			<td>{{ '{:.2f}'.format(holding.stake) if holding.stake is not none else '' }}</td>

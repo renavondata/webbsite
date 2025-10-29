@@ -8,19 +8,19 @@
     {% if e == 'm' %}
         <b>Main Board</b>
     {% else %}
-        <a href="{{ url_for('dbpub.domicile', e='m', sort=sort_param) }}">Main Board</a>
+        <a href="{{ url_for('dbpub_incorporations.domicile', e='m', sort=sort_param) }}">Main Board</a>
     {% endif %}
     |
     {% if e == 'g' %}
         <b>GEM</b>
     {% else %}
-        <a href="{{ url_for('dbpub.domicile', e='g', sort=sort_param) }}">GEM</a>
+        <a href="{{ url_for('dbpub_incorporations.domicile', e='g', sort=sort_param) }}">GEM</a>
     {% endif %}
     |
     {% if e == 'a' %}
         <b>All HK</b>
     {% else %}
-        <a href="{{ url_for('dbpub.domicile', e='a', sort=sort_param) }}">All HK</a>
+        <a href="{{ url_for('dbpub_incorporations.domicile', e='a', sort=sort_param) }}">All HK</a>
     {% endif %}
 </p>
 
@@ -28,23 +28,23 @@
     <tr>
         <th>
             {% if sort_param == 'domup' %}
-                <a href="{{ url_for('dbpub.domicile', e=e, sort='domdn') }}"><b>Domicile</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile', e=e, sort='domdn') }}"><b>Domicile</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile', e=e, sort='domup') }}">Domicile</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile', e=e, sort='domup') }}">Domicile</a>
             {% endif %}
         </th>
         <th>
             {% if sort_param == 'cntup' %}
-                <a href="{{ url_for('dbpub.domicile', e=e, sort='cntdn') }}"><b>Count</b></a>
+                <a href="{{ url_for('dbpub_incorporations.domicile', e=e, sort='cntdn') }}"><b>Count</b></a>
             {% else %}
-                <a href="{{ url_for('dbpub.domicile', e=e, sort='cntup') }}">Count</a>
+                <a href="{{ url_for('dbpub_incorporations.domicile', e=e, sort='cntup') }}">Count</a>
             {% endif %}
         </th>
         <th><b>Share %</b></th>
     </tr>
     {% for row in domiciles_data %}
     <tr>
-        <td><a href='{{ url_for('dbpub.domicilecos', e=e, dom=row.id) }}'>{{ row.domname }}</a></td>
+        <td><a href='{{ url_for('dbpub_incorporations.domicilecos', e=e, dom=row.id) }}'>{{ row.domname }}</a></td>
         <td>{{ row.cnt }}</td>
         <td>{{ "%.2f"|format(row.pct) }}</td>
     </tr>

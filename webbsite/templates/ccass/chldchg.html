@@ -143,7 +143,7 @@
 						<td class="colHide3">{{ '{:,.0f}'.format(issued) }}</td>
 						<td class="colHide3">{{ '{:,.0f}'.format(issued_chg) }}</td>
 						<td>100.00</td>
-						<td><a href="{{ url_for('dbpub.outstanding', i=issue_id) }}">{{ '{:.2f}'.format(issued_pc * 100) }}</a></td>
+						<td><a href="{{ url_for('dbpub_statistics.outstanding', i=issue_id) }}">{{ '{:.2f}'.format(issued_pc * 100) }}</a></td>
 						<td class="colHide1">{{ issued_date.strftime('%Y-%m-%d') if issued_date else '' }}</td>
 					</tr>
 				{% endif %}

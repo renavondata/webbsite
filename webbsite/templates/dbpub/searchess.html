@@ -9,9 +9,9 @@ Employment Support Scheme</a> files, grouped by name and phase. Some employers
 made more than one claim, for example, for different restaurants under the same
 name. These are aggregated. P1 and
 p2 indicate an approved claim in the 2 phases. To see
-the top 5,000 claimants by value, <a href="{{ url_for('dbpub.esstop') }}"><strong>click here</strong></a>.</p>
+the top 5,000 claimants by value, <a href="{{ url_for('dbpub_statistics.esstop') }}"><strong>click here</strong></a>.</p>
 
-<form method="get" action="{{ url_for('dbpub.searchess') }}">
+<form method="get" action="{{ url_for('dbpub_statistics.searchess') }}">
     <input type="hidden" name="sort" value="{{ sort_param }}">
     <p><input type="text" class="ws" name="n" value="{{ n }}"></p>
     <div class="inputs">
@@ -33,24 +33,24 @@ the top 5,000 claimants by value, <a href="{{ url_for('dbpub.esstop') }}"><stron
                 <th class="colHide2"></th>
                 <th>
                     {% if sort_param == 'namdn' %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='namup') }}"><b>English name</b></a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='namup') }}"><b>English name</b></a>
                     {% else %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='namdn') }}">English name</a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='namdn') }}">English name</a>
                     {% endif %}
                 </th>
                 <th class="colHide3 left">Chinese name</th>
                 <th>
                     {% if sort_param == 'amtdn' %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='amtup') }}"><b>Amount<br>HK$</b></a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='amtup') }}"><b>Amount<br>HK$</b></a>
                     {% else %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='amtdn') }}">Amount<br>HK$</a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='amtdn') }}">Amount<br>HK$</a>
                     {% endif %}
                 </th>
                 <th>
                     {% if sort_param == 'hdsdn' %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='hdsup') }}"><b>Heads</b></a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='hdsup') }}"><b>Heads</b></a>
                     {% else %}
-                        <a href="{{ url_for('dbpub.searchess', n=n, st=st, sort='hdsdn') }}">Heads</a>
+                        <a href="{{ url_for('dbpub_statistics.searchess', n=n, st=st, sort='hdsdn') }}">Heads</a>
                     {% endif %}
                 </th>
                 <th>Average<br>HK$</th>
@@ -61,8 +61,8 @@ the top 5,000 claimants by value, <a href="{{ url_for('dbpub.esstop') }}"><stron
             <tr>
                 <td class="colHide2">{{ loop.index }}</td>
                 {% if row.orgid %}
-                    <td><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.ename }}</a></td>
-                    <td class="colHide3 left"><a href='{{ url_for('dbpub.enigma_orgdata', p=row.orgid) }}'>{{ row.cname or '' }}</a></td>
+                    <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.ename }}</a></td>
+                    <td class="colHide3 left"><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.cname or '' }}</a></td>
                 {% else %}
                     <td>{{ row.ename }}</td>
                     <td class="colHide3 left">{{ row.cname or '' }}</td>

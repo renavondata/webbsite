@@ -7,12 +7,12 @@
 
 {# Navigation for current/history #}
 <ul class="navlist">
-	<li{% if hide=='Y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.officers', p=person_id, d=d, u=u, sort=sort, hide='Y') }}">Current</a></li>
-	<li{% if hide=='N' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub.officers', p=person_id, d=d, u=u, sort=sort, hide='N') }}">History</a></li>
+	<li{% if hide=='Y' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, u=u, sort=sort, hide='Y') }}">Current</a></li>
+	<li{% if hide=='N' %} class="livebutton"{% endif %}><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, u=u, sort=sort, hide='N') }}">History</a></li>
 </ul>
 <div class="clear"></div>
 
-<form method="get" action="{{ url_for('dbpub.officers') }}">
+<form method="get" action="{{ url_for('dbpub_corporate.officers') }}">
 	<input type="hidden" name="p" value="{{ person_id }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<input type="hidden" name="hide" value="{{ hide }}">
@@ -38,10 +38,10 @@
 	<table class="opltable">
 		<tr>
 			<th class="colHide1">Row</th>
-			<th><a href="{{ url_for('dbpub.officers', p=person_id, d=d, hide=hide, u=u, sort='namup' if sort!='namup' else 'namdn') }}">Director</a></th>
-			<th><a href="{{ url_for('dbpub.officers', p=person_id, d=d, hide=hide, u=u, sort='posup' if sort!='posup' else 'posdn') }}">Position</a></th>
-			<th class="colHide2"><a href="{{ url_for('dbpub.officers', p=person_id, d=d, hide=hide, u=u, sort='appup' if sort!='appup' else 'appdn') }}">From</a></th>
-			<th><a href="{{ url_for('dbpub.officers', p=person_id, d=d, hide=hide, u=u, sort='resup' if sort!='resup' else 'resdn') }}">Until</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='namup' if sort!='namup' else 'namdn') }}">Director</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='posup' if sort!='posup' else 'posdn') }}">Position</a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='appup' if sort!='appup' else 'appdn') }}">From</a></th>
+			<th><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='resup' if sort!='resup' else 'resdn') }}">Until</a></th>
 		</tr>
 		{% for dir in directors %}
 		<tr>

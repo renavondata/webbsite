@@ -99,7 +99,7 @@ incorporations and name-changes.</p>
             <td class="colHide1">{{ loop.index }}</td>
             <td class="colHide2">{{ row['inc_id'] if row['inc_id'] else '' }}&nbsp;</td>
             <td class="left">
-                <a href="{{ url_for('dbpub.enigma_orgdata', p=row['person_id']) }}">
+                <a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row['person_id']) }}">
                     {{ row['name1'] }}
                     {% if row['c_name'] %}<br>{{ row['c_name'] }}{% endif %}
                 </a>

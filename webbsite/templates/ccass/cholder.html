@@ -44,7 +44,7 @@
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
 			<td>{{ holding.stockCode }}</td>
-			<td class="left"><a href="{{ url_for('dbpub.enigma_orgdata', p=holding.personID) }}">{{ holding.name1 }}</a></td>
+			<td class="left"><a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=holding.personID) }}">{{ holding.name1 }}</a></td>
 			<td>{{ "{:,.0f}".format(holding.holding) }}</td>
 			<td class="colHide2">{{ "%.2f"|format(holding.stake * 100) if holding.stake else '' }}</td>
 		</tr>
