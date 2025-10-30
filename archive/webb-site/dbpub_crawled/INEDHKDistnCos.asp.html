@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Distribution of INEDs per HK-listed company at 2025-10-30</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Distribution of INEDs per HK-listed company at 2025-10-30</h2>
+<p>This table summarises the number of Independent Non-executive Directors of companies 
+with a HK primary listing on any snapshot date since 1-Jan-1990.</p>
+<div class="letterbox">Please note that due to the planned <a href="../articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments 
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="../articles/repository.asp"><strong>is 
+	now available</strong></a>.</div>
+
+<form method="get" action="INEDHKDistnCos.asp">
+	<div class="inputs">
+		Snapshot date: <input type="date" name="d" id="d" value="2025-10-30" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+	</div>
+	<div class="clear"></div>
+</form>
+<table class="numtable">
+	<tr>
+		<th>No.<br>of<br>INEDs</th>
+		<th>No.<br>of<br>Cos</th>
+		<th>Share<br>of<br>Cos</th>
+		<th>Total<br>INED<br>seats</th>
+		<th>Cumul-<br>ative<br>Cos</th>
+		<th>Cumul-<br>ative<br>seats</th>
+	</tr>
+	
+		<tr>
+			<td>12</td>
+			<td>2</td>
+			<td>0.1%</td>
+			<td>24</td>
+			<td>2</td>
+			<td>24</td>
+		</tr>
+		
+		<tr>
+			<td>11</td>
+			<td>1</td>
+			<td>0.0%</td>
+			<td>11</td>
+			<td>3</td>
+			<td>35</td>
+		</tr>
+		
+		<tr>
+			<td>10</td>
+			<td>1</td>
+			<td>0.0%</td>
+			<td>10</td>
+			<td>4</td>
+			<td>45</td>
+		</tr>
+		
+		<tr>
+			<td>9</td>
+			<td>3</td>
+			<td>0.1%</td>
+			<td>27</td>
+			<td>7</td>
+			<td>72</td>
+		</tr>
+		
+		<tr>
+			<td>8</td>
+			<td>4</td>
+			<td>0.2%</td>
+			<td>32</td>
+			<td>11</td>
+			<td>104</td>
+		</tr>
+		
+		<tr>
+			<td>7</td>
+			<td>14</td>
+			<td>0.5%</td>
+			<td>98</td>
+			<td>25</td>
+			<td>202</td>
+		</tr>
+		
+		<tr>
+			<td>6</td>
+			<td>41</td>
+			<td>1.5%</td>
+			<td>246</td>
+			<td>66</td>
+			<td>448</td>
+		</tr>
+		
+		<tr>
+			<td>5</td>
+			<td>114</td>
+			<td>4.3%</td>
+			<td>570</td>
+			<td>180</td>
+			<td>1018</td>
+		</tr>
+		
+		<tr>
+			<td>4</td>
+			<td>484</td>
+			<td>18.3%</td>
+			<td>1936</td>
+			<td>664</td>
+			<td>2954</td>
+		</tr>
+		
+		<tr>
+			<td>3</td>
+			<td>1868</td>
+			<td>70.5%</td>
+			<td>5604</td>
+			<td>2532</td>
+			<td>8558</td>
+		</tr>
+		
+		<tr>
+			<td>2</td>
+			<td>44</td>
+			<td>1.7%</td>
+			<td>88</td>
+			<td>2576</td>
+			<td>8646</td>
+		</tr>
+		
+		<tr>
+			<td>1</td>
+			<td>7</td>
+			<td>0.3%</td>
+			<td>7</td>
+			<td>2583</td>
+			<td>8653</td>
+		</tr>
+		
+	<tr>
+		<td>0</td>
+		<td>65</td>
+		<td>2.5%</td>
+		<td>0</td>
+		<td>2648</td>
+		<td>8653</td>
+	</tr>
+</table>
+<p>The average number of INEDs per listed company at the snapshot date is: <b>3.268.</b></p>
+<p><a href="boardcomp.asp?sort=inedn&d=2025-10-30">Click here</a> to see the 
+list of companies and their board composition on the snapshot date.</p>
+<p>From 1-Aug-1993, each newly-listed company was required to have 2 INEDs. 
+Existing companies had to have 1 INED by 1-Jul-1994 and 2 INEDs by 31-Dec-1994, 
+although they were sometimes hard to spot, as the company didn't have to say 
+which directors it considered to be INEDs until 2003. 
+The quota was increased to 3 INEDs on 30-Sep-2004, when the definition of independence 
+was also 
+changed to exclude those who provide professional advisory services to 
+the issuer (but not bankers), and at least 1 of the 3 must have financial or 
+accounting expertise. In addition, since 31-Dec-2012, INEDs 
+<a href="http://www.hkex.com.hk/eng/rulesreg/listrules/mbrulesup/mb_rupdate28_cover.htm" target="_blank">must constitute</a> at least one 
+third of the board. However, most companies have fewer than 10 
+directors, so the latter requirement has no effect for them. Controlling 
+shareholders <a href="../articles/3wisemonkeys.asp">can still vote</a> on all 
+the INED elections.</p>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

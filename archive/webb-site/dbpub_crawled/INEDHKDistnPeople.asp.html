@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Distribution of INED seats per person at 2025-10-30</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Distribution of INED seats per person at 2025-10-30</h2>
+<p>This table summarises the number of HK primary-listed INED positions held per 
+person on any snapshot date since 1-Jan-1990.</p>
+<div class="letterbox">Please note that due to the planned <a href="../articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments 
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="../articles/repository.asp"><strong>is 
+	now available</strong></a>.</div>
+
+<form method="get" action="INEDHKDistnPeople.asp">
+	<div class="inputs">
+		Snapshot date: <input type="date" name="d" id="d" value="2025-10-30" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable">
+	<tr>
+		<th>No. of<br>INED<br>seats</th>
+		<th>No. of<br>people</th>
+		<th>Fem.</th>
+		<th>Cumul-<br>ative<br>people</th>
+		<th>Cumul-<br>ative<br>female</th>
+		<th class="colHide3">Cumul-<br>ative<br>seats</th>
+		<th class="colHide3">Cumul-<br>ative<br>female<br>seats</th>
+	</tr>
+	
+		<tr>
+			<td>14</td>
+			<td>1</td>
+			<td>0</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">14</td>
+			<td class="colHide3">0</td>
+		</tr>
+		
+		<tr>
+			<td>10</td>
+			<td>1</td>
+			<td>0</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">24</td>
+			<td class="colHide3">0</td>
+		</tr>
+		
+		<tr>
+			<td>9</td>
+			<td>1</td>
+			<td>0</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">33</td>
+			<td class="colHide3">0</td>
+		</tr>
+		
+		<tr>
+			<td>7</td>
+			<td>4</td>
+			<td>0</td>
+			<td>7</td>
+			<td>0</td>
+			<td class="colHide3">61</td>
+			<td class="colHide3">0</td>
+		</tr>
+		
+		<tr>
+			<td>6</td>
+			<td>21</td>
+			<td>3</td>
+			<td>28</td>
+			<td>3</td>
+			<td class="colHide3">187</td>
+			<td class="colHide3">18</td>
+		</tr>
+		
+		<tr>
+			<td>5</td>
+			<td>40</td>
+			<td>4</td>
+			<td>68</td>
+			<td>7</td>
+			<td class="colHide3">387</td>
+			<td class="colHide3">38</td>
+		</tr>
+		
+		<tr>
+			<td>4</td>
+			<td>104</td>
+			<td>14</td>
+			<td>172</td>
+			<td>21</td>
+			<td class="colHide3">803</td>
+			<td class="colHide3">94</td>
+		</tr>
+		
+		<tr>
+			<td>3</td>
+			<td>237</td>
+			<td>32</td>
+			<td>409</td>
+			<td>53</td>
+			<td class="colHide3">1514</td>
+			<td class="colHide3">190</td>
+		</tr>
+		
+		<tr>
+			<td>2</td>
+			<td>701</td>
+			<td>127</td>
+			<td>1110</td>
+			<td>180</td>
+			<td class="colHide3">2916</td>
+			<td class="colHide3">444</td>
+		</tr>
+		
+		<tr>
+			<td>1</td>
+			<td>5737</td>
+			<td>1382</td>
+			<td>6847</td>
+			<td>1562</td>
+			<td class="colHide3">8653</td>
+			<td class="colHide3">1826</td>
+		</tr>
+		
+</table>
+<table class="opltable">
+	<tr>
+		<th>Statistic</th>
+		<th class="right">Result</th>
+	</tr>
+	<tr>
+		<td>Average number of seats per person</td>
+		<td class="right">1.264</td>
+	</tr>
+	<tr>
+		<td>Average number of seats per female</td>
+		<td class="right">1.169</td>
+	</tr>
+	<tr>
+		<td>Percentage of INED seats held by females</td>
+		<td class="right">21.10%</td>
+	</tr>
+	<tr>
+		<td>Percentage of INEDs who are female</td>
+		<td class="right">22.81%</td>
+	</tr>
+</table>
+<p><a href="dirsHKPerPerson.asp?d=2025-10-30">Click here</a> to see a complete list of 
+INEDs and the number of seats they hold.</p>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

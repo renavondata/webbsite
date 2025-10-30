@@ -1,0 +1,739 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.stockChart('chart1', {
+        time: {
+        	useUTC:true
+        },
+    	chart: {
+    		backgroundColor: "#FFFFFF",
+	        borderWidth: 1,
+	        borderColor: "black",
+    	},
+    	rangeSelector:{
+    		selected: 9,
+    		buttons: [{
+				type: 'month',
+				count: 1,
+				text: '1m'
+			}, {
+				type: 'month',
+				count: 3,
+				text: '3m'
+			}, {
+				type: 'month',
+				count: 6,
+				text: '6m'
+			}, {
+				type: 'ytd',
+				text: 'YTD'
+			}, {
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 3,
+				text: '3y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputDateFormat:"%e %b %Y"
+    	},
+        title: {
+            text: '<b>HK import prices: gas products quarterly, HK$/Kg</b>',
+            margin: 10,
+            style: {
+            	fontSize:'1.2em'
+	        }	            
+        },
+        subtitle: {
+        	text: 'Webb-site.com',
+        	style: {
+        		fontWeight: 'bold',
+        		fontSize: '1.2em'
+        	}
+        },
+        yAxis: [{
+			title: {
+	            text: 'HK$/Kg'
+	        },
+	        height:'100%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        min:null,
+	    }],
+        series: [
+        
+        {
+        	type: 'line',
+        	name: 'LPG',
+            data: [[1362096000000,8.05000019073486],[1370044800000,7.03999996185303],[1377993600000,7.07999992370605],[1385856000000,7.90999984741211],[1393632000000,8.64999961853027],[1401580800000,7.3899998664856],[1409529600000,7.15999984741211],[1417392000000,5.75],[1425168000000,5.05000019073486],[1433116800000,4.80000019073486],[1441065600000,4.17999982833862],[1448928000000,4.21999979019165],[1456790400000,3.76999998092651],[1464739200000,3.58999991416931],[1472688000000,3.36999988555908],[1480550400000,3.84999990463257],[1488326400000,4.71999979019165],[1496275200000,4.34000015258789],[1504224000000,3.96000003814697],[1512086400000,5.1100001335144],[1519862400000,4.73999977111816],[1527811200000,4.69000005722046],[1535760000000,5.32000017166138],[1543622400000,4.84000015258789],[1551398400000,4.34000015258789],[1559347200000,4.57999992370605],[1567296000000,3.59999990463257],[1575158400000,4.28999996185303],[1583020800000,4.90000009536743],[1590969600000,3.42000007629395],[1598918400000,3.65000009536743],[1606780800000,4.23999977111816],[1614556800000,5.30999994277954],[1622505600000,4.82999992370605],[1630454400000,5.78000020980835],[1638316800000,7.01000022888184],[1646092800000,6.86999988555908],[1654041600000,7.40000009536743],[1661990400000,6.1399998664856],[1669852800000,5.6100001335144],[1677628800000,6.32000017166138],[1685577600000,5.07000017166138],[1693526400000,4.53999996185303],[1701388800000,5.65000009536743],[1709251200000,5.82999992370605],[1717200000000,5.65999984741211],[1725148800000,5.59999990463257],[1733011200000,5.96999979019165],[1740787200000,5.8600001335144],[1748736000000,5.55000019073486],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.2f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		
+        {
+        	type: 'line',
+        	name: 'Natural gas',
+            data: [[1362096000000,2.67000007629395],[1370044800000,4.05999994277954],[1377993600000,4.88000011444092],[1385856000000,4.28000020980835],[1393632000000,3.58999991416931],[1401580800000,4.94000005722046],[1409529600000,5.05999994277954],[1417392000000,4.71999979019165],[1425168000000,4.53000020980835],[1433116800000,5.05000019073486],[1441065600000,4.67000007629395],[1448928000000,3.98000001907349],[1456790400000,3.25],[1464739200000,3.9300000667572],[1472688000000,3.54999995231628],[1480550400000,2.97000002861023],[1488326400000,3.13000011444092],[1496275200000,3.86999988555908],[1504224000000,3.96000003814697],[1512086400000,3.69000005722046],[1519862400000,3.59999990463257],[1527811200000,4.36999988555908],[1535760000000,4.30000019073486],[1543622400000,3.99000000953674],[1551398400000,3.88000011444092],[1559347200000,4.42000007629395],[1567296000000,4.42999982833862],[1575158400000,4.30000019073486],[1583020800000,3.83999991416931],[1590969600000,3.97000002861023],[1598918400000,3.52999997138977],[1606780800000,3.15000009536743],[1614556800000,3.40000009536743],[1622505600000,3.5699999332428],[1630454400000,4.13000011444092],[1638316800000,4.28000020980835],[1646092800000,4.34999990463257],[1654041600000,4.75],[1661990400000,5.34999990463257],[1669852800000,5.09999990463257],[1677628800000,4.92999982833862],[1685577600000,5.05000019073486],[1693526400000,4.53999996185303],[1701388800000,4.51999998092651],[1709251200000,4.3600001335144],[1717200000000,4.59000015258789],[1725148800000,4.63000011444092],[1733011200000,4.38000011444092],[1740787200000,4.15000009536743],[1748736000000,4.21999979019165],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.2f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		],
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 50,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+		tooltip:{
+			backgroundColor: 'yellow',
+			xDateFormat: '%Y-%m',
+			headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>'
+		},
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        },
+	    },
+		credits:{
+			enabled: true,
+			position: {
+				align:'left',
+				x:5,
+				verticalAlign:'bottom',
+				y:-5
+			}
+		}
+	});
+});
+</script>
+<title>HK import prices: gas products quarterly, HK$/Kg</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK import prices: gas products quarterly, HK$/Kg</h2>
+
+	<h4>Sources</h4>
+	
+		<p><a href="orgdata.asp?p=2533680">HKSAR Census and Statistics Department</a></p>
+		
+<form method="get" action="chart.asp">
+	<div class="inputs">
+	Chart <select name='c' onchange="this.form.submit()"><option value='9'>HK consumer price indices 2020 series</option><option value='10'>HK consumer price indices Year-on-Year</option><option value='11'>HK cremations & coffin burials</option><option value='14'>HK electricity & gas consumption</option><option value='2'>HK electricity consumption by user type</option><option value='12'>HK electricity generation</option><option value='1'>HK gas consumption by user type</option><option value='8'>HK import prices: coal products</option><option value='7' selected>HK import prices: gas products</option><option value='6'>HK import prices: oil products</option><option value='5'>HK net imports: coal products</option><option value='4'>HK net imports: gas products</option><option value='3'>HK net imports: oil products</option><option value='13'>LPG International Price</option></select>
+	</div>
+	
+	<div class="inputs">
+	<input type="checkbox" name="d" value="1"  onchange="this.form.submit()"> per day
+	</div>
+	
+	<div class="clear"></div>
+</form>
+<p>Click on the legend to remove items from the chart.</p>
+<div id="chart1" style="width:95%;height:550px;margin-left:0"></div>
+<div class="clear"></div>
+<table class="numtable fcl center">
+	<tr>
+		<th>Quarter</th>
+		
+			<th>LPG</th>
+		
+			<th>Natural gas</th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap">2025-06</td>
+			
+				<td>5.55</td>
+			
+				<td>4.22</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-03</td>
+			
+				<td>5.86</td>
+			
+				<td>4.15</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-12</td>
+			
+				<td>5.97</td>
+			
+				<td>4.38</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-09</td>
+			
+				<td>5.60</td>
+			
+				<td>4.63</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-06</td>
+			
+				<td>5.66</td>
+			
+				<td>4.59</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-03</td>
+			
+				<td>5.83</td>
+			
+				<td>4.36</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-12</td>
+			
+				<td>5.65</td>
+			
+				<td>4.52</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-09</td>
+			
+				<td>4.54</td>
+			
+				<td>4.54</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-06</td>
+			
+				<td>5.07</td>
+			
+				<td>5.05</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-03</td>
+			
+				<td>6.32</td>
+			
+				<td>4.93</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-12</td>
+			
+				<td>5.61</td>
+			
+				<td>5.10</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-09</td>
+			
+				<td>6.14</td>
+			
+				<td>5.35</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-06</td>
+			
+				<td>7.40</td>
+			
+				<td>4.75</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-03</td>
+			
+				<td>6.87</td>
+			
+				<td>4.35</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-12</td>
+			
+				<td>7.01</td>
+			
+				<td>4.28</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-09</td>
+			
+				<td>5.78</td>
+			
+				<td>4.13</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-06</td>
+			
+				<td>4.83</td>
+			
+				<td>3.57</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-03</td>
+			
+				<td>5.31</td>
+			
+				<td>3.40</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-12</td>
+			
+				<td>4.24</td>
+			
+				<td>3.15</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-09</td>
+			
+				<td>3.65</td>
+			
+				<td>3.53</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-06</td>
+			
+				<td>3.42</td>
+			
+				<td>3.97</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-03</td>
+			
+				<td>4.90</td>
+			
+				<td>3.84</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-12</td>
+			
+				<td>4.29</td>
+			
+				<td>4.30</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-09</td>
+			
+				<td>3.60</td>
+			
+				<td>4.43</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-06</td>
+			
+				<td>4.58</td>
+			
+				<td>4.42</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-03</td>
+			
+				<td>4.34</td>
+			
+				<td>3.88</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-12</td>
+			
+				<td>4.84</td>
+			
+				<td>3.99</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-09</td>
+			
+				<td>5.32</td>
+			
+				<td>4.30</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-06</td>
+			
+				<td>4.69</td>
+			
+				<td>4.37</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-03</td>
+			
+				<td>4.74</td>
+			
+				<td>3.60</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-12</td>
+			
+				<td>5.11</td>
+			
+				<td>3.69</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-09</td>
+			
+				<td>3.96</td>
+			
+				<td>3.96</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-06</td>
+			
+				<td>4.34</td>
+			
+				<td>3.87</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-03</td>
+			
+				<td>4.72</td>
+			
+				<td>3.13</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-12</td>
+			
+				<td>3.85</td>
+			
+				<td>2.97</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-09</td>
+			
+				<td>3.37</td>
+			
+				<td>3.55</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-06</td>
+			
+				<td>3.59</td>
+			
+				<td>3.93</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-03</td>
+			
+				<td>3.77</td>
+			
+				<td>3.25</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-12</td>
+			
+				<td>4.22</td>
+			
+				<td>3.98</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-09</td>
+			
+				<td>4.18</td>
+			
+				<td>4.67</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-06</td>
+			
+				<td>4.80</td>
+			
+				<td>5.05</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-03</td>
+			
+				<td>5.05</td>
+			
+				<td>4.53</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-12</td>
+			
+				<td>5.75</td>
+			
+				<td>4.72</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-09</td>
+			
+				<td>7.16</td>
+			
+				<td>5.06</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-06</td>
+			
+				<td>7.39</td>
+			
+				<td>4.94</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-03</td>
+			
+				<td>8.65</td>
+			
+				<td>3.59</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-12</td>
+			
+				<td>7.91</td>
+			
+				<td>4.28</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-09</td>
+			
+				<td>7.08</td>
+			
+				<td>4.88</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-06</td>
+			
+				<td>7.04</td>
+			
+				<td>4.06</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-03</td>
+			
+				<td>8.05</td>
+			
+				<td>2.67</td>
+			
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

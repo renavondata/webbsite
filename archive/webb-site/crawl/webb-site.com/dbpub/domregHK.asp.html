@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Domicile of HK-registered foreign companies</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Domicile of HK-registered foreign companies</h2>
+<p>This page ranks the domicile of overseas companies which are registered as having a place of business in HK and are not dissolved.
+All companies with a primary or secondary listing on the Stock Exchange of Hong Kong Ltd are required to be registered 
+(because a share registration office constitutes a place of business), but most registered
+companies are not listed.</p>
+<p>Note: data on domicile are often unknown after 16-Nov-2020, when we 
+started our last complete scan of the registry. On 22-Nov-2020, the registry 
+implemented a new captcha system, preventing further data collection. The 
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations 
+and name-changes, without stating domicile.</p>
+<table class="numtable">
+	<tr>
+		<th></th>
+		<th class="left"><a href='/dbpub/domregHK.asp?sort=domup'><b>Domicile</b></a></th>
+		<th><a href='/dbpub/domregHK.asp?sort=cntup'><b>Companies</b></a></th>
+		<th><b>Share %</b></th>
+	</tr>
+	
+		<tr>
+			<td>1</td>
+			<td class="left"><a href="incFcal.asp?dom=8">United States of America</a></td>
+			<td>25</td>
+			<td>38.46</td>
+		</tr>
+		
+		<tr>
+			<td>2</td>
+			<td class="left"><a href="incFcal.asp?dom=4">British Virgin Islands</a></td>
+			<td>13</td>
+			<td>20.00</td>
+		</tr>
+		
+		<tr>
+			<td>3</td>
+			<td class="left"><a href="incFcal.asp?dom=116">England & Wales</a></td>
+			<td>9</td>
+			<td>13.85</td>
+		</tr>
+		
+		<tr>
+			<td>4</td>
+			<td class="left"><a href="incFcal.asp?dom=49">Norway</a></td>
+			<td>4</td>
+			<td>6.15</td>
+		</tr>
+		
+		<tr>
+			<td>5</td>
+			<td class="left"><a href="incFcal.asp?dom=7">Bermuda</a></td>
+			<td>3</td>
+			<td>4.62</td>
+		</tr>
+		
+		<tr>
+			<td>6</td>
+			<td class="left"><a href="incFcal.asp?dom=9">Cayman Islands</a></td>
+			<td>2</td>
+			<td>3.08</td>
+		</tr>
+		
+		<tr>
+			<td>7</td>
+			<td class="left"><a href="incFcal.asp?dom=18">Philippines</a></td>
+			<td>2</td>
+			<td>3.08</td>
+		</tr>
+		
+		<tr>
+			<td>8</td>
+			<td class="left"><a href="incFcal.asp?dom=146">Anguilla</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>9</td>
+			<td class="left"><a href="incFcal.asp?dom=23">Canada</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>10</td>
+			<td class="left"><a href="incFcal.asp?dom=140">Finland</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>11</td>
+			<td class="left"><a href="incFcal.asp?dom=11">Germany</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>12</td>
+			<td class="left"><a href="incFcal.asp?dom=3">Japan</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>13</td>
+			<td class="left"><a href="incFcal.asp?dom=41">Mauritius</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+		<tr>
+			<td>14</td>
+			<td class="left"><a href="incFcal.asp?dom=109">Seychelles</a></td>
+			<td>1</td>
+			<td>1.54</td>
+		</tr>
+		
+	<tr>
+		<td></td>
+		<td class="left">Total companies</td>
+		<td>65</td>
+		<td>100.00</td>
+	</tr>
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

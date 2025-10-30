@@ -1,0 +1,1169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.8">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>HK licensed vehicles by fuel at 2025-07-31</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK licensed vehicles by fuel at 2025-07-31</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=1&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=1'>Type history</a></li><li class='livebutton'>Fuels</li><li><a href='vefuelhist.asp?vc=1'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li><a href='veJourneys.asp'>Journeys</a></li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of vehicles licensed in HK by vehicle class and 
+fuel, and the fuel share of each class, from 2013-01 onwards, using data from the Transport Department. 
+Choose simple or detailed view. If a vehicle is registered but not licensed then it is not 
+allowed on public roads and may have already been scrapped. By <a href="https://www.hklii.hk/en/legis/ord/374/s2" target="_blank">law</a>, 
+permitted gross vehicle mass of Goods Vehicles in tonnes are: Light: 5.5, Medium: 24, Heavy: 38. 
+Click on the vehicle class to see the history. Prior to 2023-07, Government 
+Vehicles were excluded. The latest available month is 2025-07.</p>
+<form method="get" action="vefuel.asp">
+	<input type="hidden" name="sort" value="">
+	<div class="inputs">
+		Year <select name='y' onchange='this.form.submit()'><option value='2013'>2013</option><option value='2014'>2014</option><option value='2015'>2015</option><option value='2016'>2016</option><option value='2017'>2017</option><option value='2018'>2018</option><option value='2019'>2019</option><option value='2020'>2020</option><option value='2021'>2021</option><option value='2022'>2022</option><option value='2023'>2023</option><option value='2024'>2024</option><option value='2025' selected>2025</option></select>
+		Month <select name='m' onchange='this.form.submit()'><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7' selected>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option></select>
+	</div>
+	<div class="inputs">
+		Breakdown <select id='simple' name='simple' onchange='this.form.submit()'><option value='True'>Simple</option><option value='False' selected>Detailed</option></select>
+	</div>
+	<div class="inputs">
+		Status <select id='t' name='t' onchange='this.form.submit()'><option value='0' selected>Licensed</option><option value='1'>Registered</option></select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable c2l">
+	<tr>
+		<th class="colHide1"></th>
+		<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=desup'><b>Vehicle class</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f0dn'><b>Petrol</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f1dn'><b>Diesel</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f2dn'><b>Electric</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f3dn'><b>LPG</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f4dn'><b>Others</b></a></th>
+		
+			<th><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=f5dn'><b>Hydrogen</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=totdn'><b>Total</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs0dn'><b>Petrol share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs1dn'><b>Diesel share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs2dn'><b>Electric share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs3dn'><b>LPG share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs4dn'><b>Others share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuel.asp?y=2025&amp;m=7&amp;simple=False&amp;sort=fs5dn'><b>Hydrogen share %</b></a></th>
+		
+	</tr>
+	
+		<tr>
+			<td class="colHide1">1</td>
+			<td><a href="vefuelhist.asp?vc=42&amp;t=0&amp;simple=False">Combo Motor Cycles</a></td>
+			
+				<td>82</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">82</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">2</td>
+			<td><a href="vefuelhist.asp?vc=67&amp;t=0&amp;simple=False">Franchised bus: Citybus: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>1,544</td>
+			
+				<td>1</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>1</td>
+			
+			<td class="colHide1">1,546</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">99.87</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.06</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">3</td>
+			<td><a href="vefuelhist.asp?vc=66&amp;t=0&amp;simple=False">Franchised bus: Citybus: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>15</td>
+			
+				<td>3</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">18</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">83.33</td>
+			
+				<td class="colHide1">16.67</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">4</td>
+			<td><a href="vefuelhist.asp?vc=55&amp;t=0&amp;simple=False">Franchised bus: KMB: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>3,739</td>
+			
+				<td>43</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">3,782</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">98.86</td>
+			
+				<td class="colHide1">1.14</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">5</td>
+			<td><a href="vefuelhist.asp?vc=54&amp;t=0&amp;simple=False">Franchised bus: KMB: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>113</td>
+			
+				<td>26</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">139</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">81.29</td>
+			
+				<td class="colHide1">18.71</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">6</td>
+			<td><a href="vefuelhist.asp?vc=57&amp;t=0&amp;simple=False">Franchised bus: LWB: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>298</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">298</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">7</td>
+			<td><a href="vefuelhist.asp?vc=56&amp;t=0&amp;simple=False">Franchised bus: LWB: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>3</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">3</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">8</td>
+			<td><a href="vefuelhist.asp?vc=59&amp;t=0&amp;simple=False">Franchised bus: NLB: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>67</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">67</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">9</td>
+			<td><a href="vefuelhist.asp?vc=58&amp;t=0&amp;simple=False">Franchised bus: NLB: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>77</td>
+			
+				<td>4</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">81</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">95.06</td>
+			
+				<td class="colHide1">4.94</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">10</td>
+			<td><a href="vefuelhist.asp?vc=39&amp;t=0&amp;simple=False">Government Motor Cycles</a></td>
+			
+				<td>691</td>
+			
+				<td>0</td>
+			
+				<td>5</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">696</td>
+			
+				<td class="colHide1">99.28</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.72</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">11</td>
+			<td><a href="vefuelhist.asp?vc=40&amp;t=0&amp;simple=False">Government Other Vehicles</a></td>
+			
+				<td>2,229</td>
+			
+				<td>3,694</td>
+			
+				<td>276</td>
+			
+				<td>208</td>
+			
+				<td>11</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">6,418</td>
+			
+				<td class="colHide1">34.73</td>
+			
+				<td class="colHide1">57.56</td>
+			
+				<td class="colHide1">4.30</td>
+			
+				<td class="colHide1">3.24</td>
+			
+				<td class="colHide1">0.17</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">12</td>
+			<td><a href="vefuelhist.asp?vc=29&amp;t=0&amp;simple=False">Heavy Goods Vehicles</a></td>
+			
+				<td>0</td>
+			
+				<td>7,467</td>
+			
+				<td>3</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">7,470</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">99.96</td>
+			
+				<td class="colHide1">0.04</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">13</td>
+			<td><a href="vefuelhist.asp?vc=27&amp;t=0&amp;simple=False">Light Goods Vehicles</a></td>
+			
+				<td>261</td>
+			
+				<td>68,174</td>
+			
+				<td>1,009</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">69,444</td>
+			
+				<td class="colHide1">0.38</td>
+			
+				<td class="colHide1">98.17</td>
+			
+				<td class="colHide1">1.45</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">14</td>
+			<td><a href="vefuelhist.asp?vc=28&amp;t=0&amp;simple=False">Medium Goods Vehicles</a></td>
+			
+				<td>0</td>
+			
+				<td>31,703</td>
+			
+				<td>24</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">31,727</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">99.92</td>
+			
+				<td class="colHide1">0.08</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">15</td>
+			<td><a href="vefuelhist.asp?vc=34&amp;t=0&amp;simple=False">Motor Tricycles</a></td>
+			
+				<td>820</td>
+			
+				<td>0</td>
+			
+				<td>13</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">833</td>
+			
+				<td class="colHide1">98.44</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">1.56</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">16</td>
+			<td><a href="vefuelhist.asp?vc=63&amp;t=0&amp;simple=False">Non-franchised public bus: MTR: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>137</td>
+			
+				<td>10</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">147</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">93.20</td>
+			
+				<td class="colHide1">6.80</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">17</td>
+			<td><a href="vefuelhist.asp?vc=62&amp;t=0&amp;simple=False">Non-franchised public bus: MTR: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>11</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">11</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">18</td>
+			<td><a href="vefuelhist.asp?vc=65&amp;t=0&amp;simple=False">Non-franchised public bus: Others: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>164</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">164</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">100.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">19</td>
+			<td><a href="vefuelhist.asp?vc=64&amp;t=0&amp;simple=False">Non-franchised public bus: Others: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>6,321</td>
+			
+				<td>29</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">6,350</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">99.54</td>
+			
+				<td class="colHide1">0.46</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">20</td>
+			<td><a href="vefuelhist.asp?vc=69&amp;t=0&amp;simple=False">Private bus: Double</a></td>
+			
+				<td>0</td>
+			
+				<td>26</td>
+			
+				<td>4</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">86.67</td>
+			
+				<td class="colHide1">13.33</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">21</td>
+			<td><a href="vefuelhist.asp?vc=68&amp;t=0&amp;simple=False">Private bus: Single</a></td>
+			
+				<td>0</td>
+			
+				<td>807</td>
+			
+				<td>3</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">810</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">99.63</td>
+			
+				<td class="colHide1">0.37</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">22</td>
+			<td><a href="vefuelhist.asp?vc=1&amp;t=0&amp;simple=False">Private Cars</a></td>
+			
+				<td>446,860</td>
+			
+				<td>10,514</td>
+			
+				<td>123,355</td>
+			
+				<td>0</td>
+			
+				<td>61</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">580,790</td>
+			
+				<td class="colHide1">76.94</td>
+			
+				<td class="colHide1">1.81</td>
+			
+				<td class="colHide1">21.24</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.01</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">23</td>
+			<td><a href="vefuelhist.asp?vc=10&amp;t=0&amp;simple=False">Private Light Buses</a></td>
+			
+				<td>0</td>
+			
+				<td>2,283</td>
+			
+				<td>5</td>
+			
+				<td>1,031</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">3,319</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.79</td>
+			
+				<td class="colHide1">0.15</td>
+			
+				<td class="colHide1">31.06</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">24</td>
+			<td><a href="vefuelhist.asp?vc=9&amp;t=0&amp;simple=False">Public Light Buses</a></td>
+			
+				<td>0</td>
+			
+				<td>838</td>
+			
+				<td>14</td>
+			
+				<td>3,207</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">4,059</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">20.65</td>
+			
+				<td class="colHide1">0.34</td>
+			
+				<td class="colHide1">79.01</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">25</td>
+			<td><a href="vefuelhist.asp?vc=41&amp;t=0&amp;simple=False">Solo Motor Cycles</a></td>
+			
+				<td>71,710</td>
+			
+				<td>0</td>
+			
+				<td>815</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">72,525</td>
+			
+				<td class="colHide1">98.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">1.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">26</td>
+			<td><a href="vefuelhist.asp?vc=6&amp;t=0&amp;simple=False">Special Purpose Vehicles</a></td>
+			
+				<td>25</td>
+			
+				<td>1,650</td>
+			
+				<td>94</td>
+			
+				<td>97</td>
+			
+				<td>2</td>
+			
+				<td>3</td>
+			
+			<td class="colHide1">1,871</td>
+			
+				<td class="colHide1">1.34</td>
+			
+				<td class="colHide1">88.19</td>
+			
+				<td class="colHide1">5.02</td>
+			
+				<td class="colHide1">5.18</td>
+			
+				<td class="colHide1">0.11</td>
+			
+				<td class="colHide1">0.16</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">27</td>
+			<td><a href="vefuelhist.asp?vc=45&amp;t=0&amp;simple=False">Taxis:Lantau</a></td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>4</td>
+			
+				<td>70</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">74</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">5.41</td>
+			
+				<td class="colHide1">94.59</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">28</td>
+			<td><a href="vefuelhist.asp?vc=44&amp;t=0&amp;simple=False">Taxis:New Territories</a></td>
+			
+				<td>2</td>
+			
+				<td>0</td>
+			
+				<td>56</td>
+			
+				<td>2,714</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">2,772</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">97.91</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="colHide1">29</td>
+			<td><a href="vefuelhist.asp?vc=43&amp;t=0&amp;simple=False">Taxis:Urban</a></td>
+			
+				<td>70</td>
+			
+				<td>0</td>
+			
+				<td>522</td>
+			
+				<td>14,289</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+			<td class="colHide1">14,881</td>
+			
+				<td class="colHide1">0.47</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">3.51</td>
+			
+				<td class="colHide1">96.02</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+	<tr class="total">
+		<td class="colHide1"></td>
+		<td>All classes</td>
+		
+			<td>522,750</td>
+		
+			<td>139,642</td>
+		
+			<td>126,321</td>
+		
+			<td>21,616</td>
+		
+			<td>74</td>
+		
+			<td>4</td>
+		
+		<td class="colHide1">810,407</td>
+		
+			<td class="colHide1">64.50</td>
+		
+			<td class="colHide1">17.23</td>
+		
+			<td class="colHide1">15.59</td>
+		
+			<td class="colHide1">2.67</td>
+		
+			<td class="colHide1">0.01</td>
+		
+			<td class="colHide1">0.00</td>
+		
+	</tr>
+</table>
+
+	<h3>Bus operators</h3>
+	<table class="opltable">
+	
+		<tr>
+			<td>CTB</td>
+			<td><a href="orgdata.asp?p=11582">CITYBUS LIMITED (HK) 城巴有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>KMB</td>
+			<td><a href="orgdata.asp?p=11579">KOWLOON MOTOR BUS COMPANY (1933) LIMITED (THE) 九龍巴士(一九三三)有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>LRB</td>
+			<td><a href="orgdata.asp?p=11569">MTR CORPORATION LIMITED 香港鐵路有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>LWB</td>
+			<td><a href="orgdata.asp?p=11580">LONG WIN BUS COMPANY LIMITED 龍運巴士有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>NLB</td>
+			<td><a href="orgdata.asp?p=11581">NEW LANTAO BUS COMPANY (1973) LIMITED 新大嶼山巴士(1973)有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>NWFB</td>
+			<td><a href="orgdata.asp?p=8896">NEW WORLD FIRST BUS SERVICES LIMITED 新世界第一巴士服務有限公司</a></td>
+		</tr>
+		
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

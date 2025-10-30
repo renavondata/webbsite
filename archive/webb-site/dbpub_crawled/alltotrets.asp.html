@@ -1,0 +1,5711 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Webb-site Total Returns up to 2025-10-28 of stocks listed at 1994-01-03</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Webb-site Total Returns up to 2025-10-28 of stocks listed at 1994-01-03</h2>
+<ul class="navlist">
+	<li><a href="TRnotes.asp" target="_blank">Notes</a></li>
+	<li><a href="ctr.asp">Compare returns</a></li>
+</ul>
+<div class="clear"></div>
+<p>This page shows the total returns in a fixed period of all ordinary shares 
+and REIT units which were primary-listed in HK at the start date and tradable on 
+at least 2 days in the period. &quot;*&quot; means the stock was delisted during the 
+period, for whatever reason. If a stock was suspended in a crisis and later 
+delisted, then its subsequent return may have been -100%! CAGR is the Compound 
+Annual Growth Rate, for stocks traded over a period of at least 180 days. Check 
+the box to include new listings after the start date. Please 
+<b><a href="../contact">report</a></b> any errors or desired features.</p>
+<form method="get" action="alltotrets.asp">
+	<input type="hidden" name="sort" value="tretdn">
+	<div class="inputs">
+		Shares listed at: <input type="date" name="d1" id="d1" value="1994-01-03">
+	</div>
+	<div class="inputs">
+		Period end: <input type="date" name="d2" id="d2" value="2025-10-28">
+	</div>
+	<div class="inputs">
+		<input type='checkbox' name='i' id='i' value='1'> Include new listings in period
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="Clear" onclick="document.getElementById('d1').value='';document.getElementById('d2').value=''">
+	</div>
+	<div class="clear"></div>	
+</form>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide2">Row</th>
+		<th class="left colHide3"><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=typeup'><b>Type</b></a></th>
+		<th><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=codeup'><b>Last<br/>code</b></a></th>
+		<th class="left"><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=nameup'><b>Issuer</b></a></th>
+		<th class="colHide2"><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=frstup'><b>First trade<br/>in period</b></a></th>
+		<th class="colHide2"><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=lastup'><b>Last trade<br/>in period</b></a></th>
+		<th></th>
+		<th><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=tretup'><b>Total<br/>return</b></a></th>
+		<th class="colHide3"><a href='/dbpub/alltotrets.asp?d1=1994-01-03&amp;d2=2025-10-28&amp;i=False&amp;sort=cagrdn'><b>CAGR</b></a></th>
+	</tr>
+
+		<tr>
+			<td class="colHide2">1</td>
+			<td class="left colHide3">O</td>
+			<td>0316</td>
+			<td class="left"><a href='ctr.asp?i1=279&d1=1994-01-03'>ORIENT OVERSEAS (INTERNATIONAL) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>81,254%</td>
+			<td class="colHide3">23.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">2</td>
+			<td class="left colHide3">O</td>
+			<td>0669</td>
+			<td class="left"><a href='ctr.asp?i1=322&d1=1994-01-03'>TECHTRONIC INDUSTRIES COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>31,036%</td>
+			<td class="colHide3">19.77%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">3</td>
+			<td class="left colHide3">O</td>
+			<td>0522</td>
+			<td class="left"><a href='ctr.asp?i1=950&d1=1994-01-03'>ASMPT Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>7,609%</td>
+			<td class="colHide3">14.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">4</td>
+			<td class="left colHide3">O</td>
+			<td>0303</td>
+			<td class="left"><a href='ctr.asp?i1=109&d1=1994-01-03'>VTECH HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>6,198%</td>
+			<td class="colHide3">13.91%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">5</td>
+			<td class="left colHide3">O</td>
+			<td>0148</td>
+			<td class="left"><a href='ctr.asp?i1=923&d1=1994-01-03'>Kingboard Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3,987%</td>
+			<td class="colHide3">12.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">6</td>
+			<td class="left colHide3">O</td>
+			<td>0027</td>
+			<td class="left"><a href='ctr.asp?i1=1112&d1=1994-01-03'>GALAXY ENTERTAINMENT GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3,825%</td>
+			<td class="colHide3">12.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">7</td>
+			<td class="left colHide3">O</td>
+			<td>0135</td>
+			<td class="left"><a href='ctr.asp?i1=229&d1=1994-01-03'>KUNLUN ENERGY COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3,820%</td>
+			<td class="colHide3">12.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">8</td>
+			<td class="left colHide3">O</td>
+			<td>0239</td>
+			<td class="left"><a href='ctr.asp?i1=309&d1=1994-01-03'>PAK FAH YEOW INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3,794%</td>
+			<td class="colHide3">12.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">9</td>
+			<td class="left colHide3">O</td>
+			<td>0291</td>
+			<td class="left"><a href='ctr.asp?i1=349&d1=1994-01-03'>China Resources Beer (Holdings) Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3,397%</td>
+			<td class="colHide3">11.82%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">10</td>
+			<td class="left colHide3">O</td>
+			<td>0517</td>
+			<td class="left"><a href='ctr.asp?i1=414&d1=1994-01-03'>COSCO SHIPPING International (Hong Kong) Co., Ltd.</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>2,763%</td>
+			<td class="colHide3">11.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">11</td>
+			<td class="left colHide3">O</td>
+			<td>0398</td>
+			<td class="left"><a href='ctr.asp?i1=1179&d1=1994-01-03'>ORIENTAL WATCH HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>2,623%</td>
+			<td class="colHide3">10.94%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">12</td>
+			<td class="left colHide3">O</td>
+			<td>0255</td>
+			<td class="left"><a href='ctr.asp?i1=1145&d1=1994-01-03'>Lung Kee Group Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>2,301%</td>
+			<td class="colHide3">10.51%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">13</td>
+			<td class="left colHide3">O</td>
+			<td>0099</td>
+			<td class="left"><a href='ctr.asp?i1=1313&d1=1994-01-03'>Wong's International Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>2,251%</td>
+			<td class="colHide3">10.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">14</td>
+			<td class="left colHide3">O</td>
+			<td>0116</td>
+			<td class="left"><a href='ctr.asp?i1=1002&d1=1994-01-03'>CHOW SANG SANG HOLDINGS INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,943%</td>
+			<td class="colHide3">9.95%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">15</td>
+			<td class="left colHide3">O</td>
+			<td>0133</td>
+			<td class="left"><a href='ctr.asp?i1=291&d1=1994-01-03'>CHINA MERCHANTS CHINA DIRECT INVESTMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,715%</td>
+			<td class="colHide3">9.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">16</td>
+			<td class="left colHide3">O</td>
+			<td>0752</td>
+			<td class="left"><a href='ctr.asp?i1=1193&d1=1994-01-03'>PICO FAR EAST HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,668%</td>
+			<td class="colHide3">9.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">17</td>
+			<td class="left colHide3">O</td>
+			<td>0144</td>
+			<td class="left"><a href='ctr.asp?i1=362&d1=1994-01-03'>China Merchants Port Holdings Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,541%</td>
+			<td class="colHide3">9.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">18</td>
+			<td class="left colHide3">O</td>
+			<td>0688</td>
+			<td class="left"><a href='ctr.asp?i1=293&d1=1994-01-03'>CHINA OVERSEAS LAND & INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,508%</td>
+			<td class="colHide3">9.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">19</td>
+			<td class="left colHide3">O</td>
+			<td>0241</td>
+			<td class="left"><a href='ctr.asp?i1=1237&d1=1994-01-03'>Alibaba Health Information Technology Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,309%</td>
+			<td class="colHide3">8.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">20</td>
+			<td class="left colHide3">O</td>
+			<td>0551</td>
+			<td class="left"><a href='ctr.asp?i1=366&d1=1994-01-03'>YUE YUEN INDUSTRIAL (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,238%</td>
+			<td class="colHide3">8.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">21</td>
+			<td class="left colHide3">O</td>
+			<td>0005</td>
+			<td class="left"><a href='ctr.asp?i1=1088&d1=1994-01-03'>HSBC HOLDINGS PLC</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,235%</td>
+			<td class="colHide3">8.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">22</td>
+			<td class="left colHide3">O</td>
+			<td>0732</td>
+			<td class="left"><a href='ctr.asp?i1=1284&d1=1994-01-03'>TRULY INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,158%</td>
+			<td class="colHide3">8.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">23</td>
+			<td class="left colHide3">O</td>
+			<td>0229</td>
+			<td class="left"><a href='ctr.asp?i1=925&d1=1994-01-03'>RAYMOND INDUSTRIAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,138%</td>
+			<td class="colHide3">8.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">24</td>
+			<td class="left colHide3">O</td>
+			<td>0413</td>
+			<td class="left"><a href='ctr.asp?i1=66&d1=1994-01-03'>South China Holdings Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,110%</td>
+			<td class="colHide3">8.15%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">25</td>
+			<td class="left colHide3">O</td>
+			<td>0375</td>
+			<td class="left"><a href='ctr.asp?i1=1322&d1=1994-01-03'>YGM TRADING LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>1,010%</td>
+			<td class="colHide3">7.86%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">26</td>
+			<td class="left colHide3">O</td>
+			<td>0278</td>
+			<td class="left"><a href='ctr.asp?i1=1299&d1=1994-01-03'>WAH HA REALTY COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-09-14</td>
+			<td>*</td>
+			<td>995.1%</td>
+			<td class="colHide3">8.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">27</td>
+			<td class="left colHide3">O</td>
+			<td>0302</td>
+			<td class="left"><a href='ctr.asp?i1=178&d1=1994-01-03'>OCBC Bank (Hong Kong) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2014-07-29</td>
+			<td>*</td>
+			<td>937.5%</td>
+			<td class="colHide3">12.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">28</td>
+			<td class="left colHide3">O</td>
+			<td>0011</td>
+			<td class="left"><a href='ctr.asp?i1=14&d1=1994-01-03'>HANG SENG BANK, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>903.5%</td>
+			<td class="colHide3">7.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">29</td>
+			<td class="left colHide3">H</td>
+			<td>0168</td>
+			<td class="left"><a href='ctr.asp?i1=1286&d1=1994-01-03'>TSINGTAO BREWERY COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>902.0%</td>
+			<td class="colHide3">7.51%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">30</td>
+			<td class="left colHide3">O</td>
+			<td>0639</td>
+			<td class="left"><a href='ctr.asp?i1=455&d1=1994-01-03'>SHOUGANG FUSHAN RESOURCES GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>859.5%</td>
+			<td class="colHide3">7.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">31</td>
+			<td class="left colHide3">O</td>
+			<td>0373</td>
+			<td class="left"><a href='ctr.asp?i1=243&d1=1994-01-03'>ALLIED GROUP LIMITED (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>836.1%</td>
+			<td class="colHide3">7.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">32</td>
+			<td class="left colHide3">O</td>
+			<td>0529</td>
+			<td class="left"><a href='ctr.asp?i1=107&d1=1994-01-03'>SIS INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>823.7%</td>
+			<td class="colHide3">7.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">33</td>
+			<td class="left colHide3">O</td>
+			<td>0006</td>
+			<td class="left"><a href='ctr.asp?i1=43&d1=1994-01-03'>Power Assets Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>788.7%</td>
+			<td class="colHide3">7.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">34</td>
+			<td class="left colHide3">O</td>
+			<td>0003</td>
+			<td class="left"><a href='ctr.asp?i1=348&d1=1994-01-03'>HONG KONG AND CHINA GAS COMPANY LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>773.1%</td>
+			<td class="colHide3">7.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">35</td>
+			<td class="left colHide3">O</td>
+			<td>0029</td>
+			<td class="left"><a href='ctr.asp?i1=1033&d1=1994-01-03'>DYNAMIC HOLDINGS LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>760.7%</td>
+			<td class="colHide3">7.00%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">36</td>
+			<td class="left colHide3">O</td>
+			<td>0179</td>
+			<td class="left"><a href='ctr.asp?i1=46&d1=1994-01-03'>JOHNSON ELECTRIC HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>736.3%</td>
+			<td class="colHide3">6.90%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">37</td>
+			<td class="left colHide3">O</td>
+			<td>0494</td>
+			<td class="left"><a href='ctr.asp?i1=1137&d1=1994-01-03'>LI & FUNG LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-05-15</td>
+			<td>*</td>
+			<td>619.7%</td>
+			<td class="colHide3">7.77%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">38</td>
+			<td class="left colHide3">O</td>
+			<td>0506</td>
+			<td class="left"><a href='ctr.asp?i1=237&d1=1994-01-03'>China Foods Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>594.9%</td>
+			<td class="colHide3">6.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">39</td>
+			<td class="left colHide3">O</td>
+			<td>0257</td>
+			<td class="left"><a href='ctr.asp?i1=370&d1=1994-01-03'>China Everbright Environment Group Limited (b1961-07-10)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>589.2%</td>
+			<td class="colHide3">6.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">40</td>
+			<td class="left colHide3">O</td>
+			<td>0212</td>
+			<td class="left"><a href='ctr.asp?i1=380&d1=1994-01-03'>NANYANG HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>585.0%</td>
+			<td class="colHide3">6.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">41</td>
+			<td class="left colHide3">O</td>
+			<td>0053</td>
+			<td class="left"><a href='ctr.asp?i1=174&d1=1994-01-03'>GUOCO GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>576.7%</td>
+			<td class="colHide3">6.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">42</td>
+			<td class="left colHide3">O</td>
+			<td>0026</td>
+			<td class="left"><a href='ctr.asp?i1=153&d1=1994-01-03'>CHINA MOTOR BUS COMPANY, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>554.4%</td>
+			<td class="colHide3">6.08%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">43</td>
+			<td class="left colHide3">O</td>
+			<td>0165</td>
+			<td class="left"><a href='ctr.asp?i1=195&d1=1994-01-03'>CHINA EVERBRIGHT LIMITED (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>550.3%</td>
+			<td class="colHide3">6.06%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">44</td>
+			<td class="left colHide3">O</td>
+			<td>0113</td>
+			<td class="left"><a href='ctr.asp?i1=1028&d1=1994-01-03'>DICKSON CONCEPTS (INTERNATIONAL) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>540.2%</td>
+			<td class="colHide3">6.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">45</td>
+			<td class="left colHide3">O</td>
+			<td>0096</td>
+			<td class="left"><a href='ctr.asp?i1=253&d1=1994-01-03'>CMB WING LUNG BANK LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2008-10-27</td>
+			<td>*</td>
+			<td>525.1%</td>
+			<td class="colHide3">13.17%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">46</td>
+			<td class="left colHide3">O</td>
+			<td>0562</td>
+			<td class="left"><a href='ctr.asp?i1=955&d1=1994-01-03'>Toll Global Forwarding Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2008-02-29</td>
+			<td>*</td>
+			<td>515.0%</td>
+			<td class="colHide3">13.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">47</td>
+			<td class="left colHide3">O</td>
+			<td>0013</td>
+			<td class="left"><a href='ctr.asp?i1=42&d1=1994-01-03'>Hutchison Whampoa Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2015-05-26</td>
+			<td>*</td>
+			<td>511.3%</td>
+			<td class="colHide3">8.83%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">48</td>
+			<td class="left colHide3">O</td>
+			<td>0203</td>
+			<td class="left"><a href='ctr.asp?i1=1026&d1=1994-01-03'>DENWAY MOTORS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2010-08-16</td>
+			<td>*</td>
+			<td>506.4%</td>
+			<td class="colHide3">11.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">49</td>
+			<td class="left colHide3">O</td>
+			<td>0025</td>
+			<td class="left"><a href='ctr.asp?i1=987&d1=1994-01-03'>CHEVALIER INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>506.2%</td>
+			<td class="colHide3">5.83%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">50</td>
+			<td class="left colHide3">O</td>
+			<td>0081</td>
+			<td class="left"><a href='ctr.asp?i1=1234&d1=1994-01-03'>CHINA OVERSEAS GRAND OCEANS GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>498.3%</td>
+			<td class="colHide3">5.78%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">51</td>
+			<td class="left colHide3">O</td>
+			<td>0097</td>
+			<td class="left"><a href='ctr.asp?i1=10&d1=1994-01-03'>HENDERSON INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>496.1%</td>
+			<td class="colHide3">5.77%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">52</td>
+			<td class="left colHide3">O</td>
+			<td>0408</td>
+			<td class="left"><a href='ctr.asp?i1=1323&d1=1994-01-03'>YIP'S CHEMICAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>490.8%</td>
+			<td class="colHide3">5.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">53</td>
+			<td class="left colHide3">H</td>
+			<td>0317</td>
+			<td class="left"><a href='ctr.asp?i1=1074&d1=1994-01-03'>CSSC Offshore & Marine Engineering (Group) Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>490.4%</td>
+			<td class="colHide3">5.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">54</td>
+			<td class="left colHide3">O</td>
+			<td>0002</td>
+			<td class="left"><a href='ctr.asp?i1=63&d1=1994-01-03'>CLP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>490.1%</td>
+			<td class="colHide3">5.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">55</td>
+			<td class="left colHide3">O</td>
+			<td>0033</td>
+			<td class="left"><a href='ctr.asp?i1=1035&d1=1994-01-03'>ELEC & ELTEK INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-01-06</td>
+			<td>*</td>
+			<td>488.4%</td>
+			<td class="colHide3">17.47%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">56</td>
+			<td class="left colHide3">O</td>
+			<td>0349</td>
+			<td class="left"><a href='ctr.asp?i1=1289&d1=1994-01-03'>INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ASIA) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2010-12-13</td>
+			<td>*</td>
+			<td>484.0%</td>
+			<td class="colHide3">10.98%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">57</td>
+			<td class="left colHide3">O</td>
+			<td>0152</td>
+			<td class="left"><a href='ctr.asp?i1=1236&d1=1994-01-03'>SHENZHEN INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>480.4%</td>
+			<td class="colHide3">5.68%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">58</td>
+			<td class="left colHide3">O</td>
+			<td>0258</td>
+			<td class="left"><a href='ctr.asp?i1=283&d1=1994-01-03'>TOMSON GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>475.1%</td>
+			<td class="colHide3">5.65%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">59</td>
+			<td class="left colHide3">O</td>
+			<td>0583</td>
+			<td class="left"><a href='ctr.asp?i1=32&d1=1994-01-03'>Great Wall Pan Asia Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>462.2%</td>
+			<td class="colHide3">5.58%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">60</td>
+			<td class="left colHide3">O</td>
+			<td>0001</td>
+			<td class="left"><a href='ctr.asp?i1=44&d1=1994-01-03'>CK Hutchison Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>460.2%</td>
+			<td class="colHide3">5.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">61</td>
+			<td class="left colHide3">B</td>
+			<td>0087</td>
+			<td class="left"><a href='ctr.asp?i1=25&d1=1994-01-03'>SWIRE PACIFIC LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>459.9%</td>
+			<td class="colHide3">5.56%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">62</td>
+			<td class="left colHide3">O</td>
+			<td>0289</td>
+			<td class="left"><a href='ctr.asp?i1=305&d1=1994-01-03'>WING ON COMPANY INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>454.9%</td>
+			<td class="colHide3">5.53%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">63</td>
+			<td class="left colHide3">O</td>
+			<td>0086</td>
+			<td class="left"><a href='ctr.asp?i1=350&d1=1994-01-03'>SUN HUNG KAI & CO. LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>442.3%</td>
+			<td class="colHide3">5.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">64</td>
+			<td class="left colHide3">O</td>
+			<td>0004</td>
+			<td class="left"><a href='ctr.asp?i1=1&d1=1994-01-03'>Wharf (Holdings) Limited (The)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>418.4%</td>
+			<td class="colHide3">5.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">65</td>
+			<td class="left colHide3">O</td>
+			<td>0709</td>
+			<td class="left"><a href='ctr.asp?i1=1054&d1=1994-01-03'>GIORDANO INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>398.0%</td>
+			<td class="colHide3">5.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">66</td>
+			<td class="left colHide3">O</td>
+			<td>0321</td>
+			<td class="left"><a href='ctr.asp?i1=1271&d1=1994-01-03'>TEXWINCA HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>386.9%</td>
+			<td class="colHide3">5.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">67</td>
+			<td class="left colHide3">O</td>
+			<td>0341</td>
+			<td class="left"><a href='ctr.asp?i1=974&d1=1994-01-03'>CAFE DE CORAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>367.5%</td>
+			<td class="colHide3">4.97%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">68</td>
+			<td class="left colHide3">O</td>
+			<td>0200</td>
+			<td class="left"><a href='ctr.asp?i1=1156&d1=1994-01-03'>MELCO INTERNATIONAL DEVELOPMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>360.9%</td>
+			<td class="colHide3">4.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">69</td>
+			<td class="left colHide3">O</td>
+			<td>0173</td>
+			<td class="left"><a href='ctr.asp?i1=1113&d1=1994-01-03'>K. WAH INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>359.7%</td>
+			<td class="colHide3">4.91%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">70</td>
+			<td class="left colHide3">O</td>
+			<td>0020</td>
+			<td class="left"><a href='ctr.asp?i1=7&d1=1994-01-03'>WHEELOCK AND COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-06-18</td>
+			<td>*</td>
+			<td>351.3%</td>
+			<td class="colHide3">5.86%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">71</td>
+			<td class="left colHide3">O</td>
+			<td>0440</td>
+			<td class="left"><a href='ctr.asp?i1=180&d1=1994-01-03'>DAH SING FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>351.3%</td>
+			<td class="colHide3">4.85%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">72</td>
+			<td class="left colHide3">O</td>
+			<td>0281</td>
+			<td class="left"><a href='ctr.asp?i1=284&d1=1994-01-03'>RIVERA (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-07-26</td>
+			<td>*</td>
+			<td>347.7%</td>
+			<td class="colHide3">5.59%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">73</td>
+			<td class="left colHide3">O</td>
+			<td>0687</td>
+			<td class="left"><a href='ctr.asp?i1=1288&d1=1994-01-03'>Tysan Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>326.8%</td>
+			<td class="colHide3">4.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">74</td>
+			<td class="left colHide3">O</td>
+			<td>0662</td>
+			<td class="left"><a href='ctr.asp?i1=1333&d1=1994-01-03'>ASIA FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>316.9%</td>
+			<td class="colHide3">4.59%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">75</td>
+			<td class="left colHide3">O</td>
+			<td>0247</td>
+			<td class="left"><a href='ctr.asp?i1=117&d1=1994-01-03'>TSIM SHA TSUI PROPERTIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>304.5%</td>
+			<td class="colHide3">4.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">76</td>
+			<td class="left colHide3">O</td>
+			<td>0142</td>
+			<td class="left"><a href='ctr.asp?i1=114&d1=1994-01-03'>FIRST PACIFIC COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>296.1%</td>
+			<td class="colHide3">4.42%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">77</td>
+			<td class="left colHide3">O</td>
+			<td>0684</td>
+			<td class="left"><a href='ctr.asp?i1=941&d1=1994-01-03'>ALLAN INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>295.9%</td>
+			<td class="colHide3">4.42%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">78</td>
+			<td class="left colHide3">A</td>
+			<td>0019</td>
+			<td class="left"><a href='ctr.asp?i1=24&d1=1994-01-03'>SWIRE PACIFIC LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>290.0%</td>
+			<td class="colHide3">4.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">79</td>
+			<td class="left colHide3">O</td>
+			<td>0016</td>
+			<td class="left"><a href='ctr.asp?i1=9&d1=1994-01-03'>SUN HUNG KAI PROPERTIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>286.6%</td>
+			<td class="colHide3">4.34%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">80</td>
+			<td class="left colHide3">O</td>
+			<td>0044</td>
+			<td class="left"><a href='ctr.asp?i1=22&d1=1994-01-03'>HONG KONG AIRCRAFT ENGINEERING COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2018-11-19</td>
+			<td>*</td>
+			<td>285.0%</td>
+			<td class="colHide3">5.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">81</td>
+			<td class="left colHide3">O</td>
+			<td>0158</td>
+			<td class="left"><a href='ctr.asp?i1=219&d1=1994-01-03'>MELBOURNE ENTERPRISES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>277.2%</td>
+			<td class="colHide3">4.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">82</td>
+			<td class="left colHide3">O</td>
+			<td>0237</td>
+			<td class="left"><a href='ctr.asp?i1=250&d1=1994-01-03'>SAFETY GODOWN COMPANY, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>272.8%</td>
+			<td class="colHide3">4.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">83</td>
+			<td class="left colHide3">O</td>
+			<td>0049</td>
+			<td class="left"><a href='ctr.asp?i1=286&d1=1994-01-03'>WHEELOCK PROPERTIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2010-07-12</td>
+			<td>*</td>
+			<td>262.5%</td>
+			<td class="colHide3">8.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">84</td>
+			<td class="left colHide3">O</td>
+			<td>0458</td>
+			<td class="left"><a href='ctr.asp?i1=384&d1=1994-01-03'>TRISTATE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>262.3%</td>
+			<td class="colHide3">4.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">85</td>
+			<td class="left colHide3">O</td>
+			<td>0613</td>
+			<td class="left"><a href='ctr.asp?i1=1329&d1=1994-01-03'>Planetree International Development Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>261.5%</td>
+			<td class="colHide3">4.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">86</td>
+			<td class="left colHide3">O</td>
+			<td>0062</td>
+			<td class="left"><a href='ctr.asp?i1=147&d1=1994-01-03'>Transport International Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>253.4%</td>
+			<td class="colHide3">4.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">87</td>
+			<td class="left colHide3">O</td>
+			<td>0270</td>
+			<td class="left"><a href='ctr.asp?i1=113&d1=1994-01-03'>GUANGDONG INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>249.6%</td>
+			<td class="colHide3">4.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">88</td>
+			<td class="left colHide3">O</td>
+			<td>0083</td>
+			<td class="left"><a href='ctr.asp?i1=39&d1=1994-01-03'>SINO LAND COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>249.4%</td>
+			<td class="colHide3">4.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">89</td>
+			<td class="left colHide3">O</td>
+			<td>0450</td>
+			<td class="left"><a href='ctr.asp?i1=427&d1=1994-01-03'>HUNG HING PRINTING GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>246.6%</td>
+			<td class="colHide3">3.98%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">90</td>
+			<td class="left colHide3">O</td>
+			<td>0266</td>
+			<td class="left"><a href='ctr.asp?i1=76&d1=1994-01-03'>TIAN TECK LAND LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>240.0%</td>
+			<td class="colHide3">3.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">91</td>
+			<td class="left colHide3">O</td>
+			<td>0374</td>
+			<td class="left"><a href='ctr.asp?i1=1047&d1=1994-01-03'>FOUR SEAS MERCANTILE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>236.6%</td>
+			<td class="colHide3">3.89%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">92</td>
+			<td class="left colHide3">O</td>
+			<td>0012</td>
+			<td class="left"><a href='ctr.asp?i1=182&d1=1994-01-03'>HENDERSON LAND DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>227.1%</td>
+			<td class="colHide3">3.80%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">93</td>
+			<td class="left colHide3">O</td>
+			<td>0114</td>
+			<td class="left"><a href='ctr.asp?i1=1082&d1=1994-01-03'>HERALD HOLDINGS LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>222.5%</td>
+			<td class="colHide3">3.75%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">94</td>
+			<td class="left colHide3">O</td>
+			<td>0039</td>
+			<td class="left"><a href='ctr.asp?i1=91&d1=1994-01-03'>FURAMA HOTEL ENTERPRISES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-10-03</td>
+			<td>*</td>
+			<td>217.8%</td>
+			<td class="colHide3">36.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">95</td>
+			<td class="left colHide3">O</td>
+			<td>0881</td>
+			<td class="left"><a href='ctr.asp?i1=1105&d1=1994-01-03'>JF JAPAN OTC FUND INC.</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-12-05</td>
+			<td>*</td>
+			<td>212.5%</td>
+			<td class="colHide3">13.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">96</td>
+			<td class="left colHide3">O</td>
+			<td>0183</td>
+			<td class="left"><a href='ctr.asp?i1=184&d1=1994-01-03'>CITIC INTERNATIONAL FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2008-10-15</td>
+			<td>*</td>
+			<td>196.4%</td>
+			<td class="colHide3">7.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">97</td>
+			<td class="left colHide3">O</td>
+			<td>0259</td>
+			<td class="left"><a href='ctr.asp?i1=1321&d1=1994-01-03'>YEEBO (INTERNATIONAL HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>192.5%</td>
+			<td class="colHide3">3.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">98</td>
+			<td class="left colHide3">O</td>
+			<td>0010</td>
+			<td class="left"><a href='ctr.asp?i1=60&d1=1994-01-03'>HANG LUNG GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>180.8%</td>
+			<td class="colHide3">3.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">99</td>
+			<td class="left colHide3">O</td>
+			<td>0054</td>
+			<td class="left"><a href='ctr.asp?i1=56&d1=1994-01-03'>HOPEWELL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2019-04-17</td>
+			<td>*</td>
+			<td>176.2%</td>
+			<td class="colHide3">4.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">100</td>
+			<td class="left colHide3">O</td>
+			<td>0389</td>
+			<td class="left"><a href='ctr.asp?i1=1160&d1=1994-01-03'>Moulin Global Eyecare Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-04-15</td>
+			<td>*</td>
+			<td>174.0%</td>
+			<td class="colHide3">9.35%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">101</td>
+			<td class="left colHide3">O</td>
+			<td>0101</td>
+			<td class="left"><a href='ctr.asp?i1=59&d1=1994-01-03'>HANG LUNG PROPERTIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>167.9%</td>
+			<td class="colHide3">3.15%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">102</td>
+			<td class="left colHide3">O</td>
+			<td>0213</td>
+			<td class="left"><a href='ctr.asp?i1=1167&d1=1994-01-03'>NATIONAL ELECTRONICS HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>166.4%</td>
+			<td class="colHide3">3.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">103</td>
+			<td class="left colHide3">O</td>
+			<td>0287</td>
+			<td class="left"><a href='ctr.asp?i1=1306&d1=1994-01-03'>WINFAIR INVESTMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>165.6%</td>
+			<td class="colHide3">3.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">104</td>
+			<td class="left colHide3">O</td>
+			<td>0222</td>
+			<td class="left"><a href='ctr.asp?i1=1158&d1=1994-01-03'>MIN XIN HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>164.9%</td>
+			<td class="colHide3">3.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">105</td>
+			<td class="left colHide3">O</td>
+			<td>0080</td>
+			<td class="left"><a href='ctr.asp?i1=260&d1=1994-01-03'>Clear Water Bay Land Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2009-03-09</td>
+			<td>*</td>
+			<td>162.5%</td>
+			<td class="colHide3">6.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">106</td>
+			<td class="left colHide3">O</td>
+			<td>0710</td>
+			<td class="left"><a href='ctr.asp?i1=1295&d1=1994-01-03'>BOE Varitronix Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>160.0%</td>
+			<td class="colHide3">3.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">107</td>
+			<td class="left colHide3">O</td>
+			<td>0098</td>
+			<td class="left"><a href='ctr.asp?i1=341&d1=1994-01-03'>WINSOR INDUSTRIAL CORPORATION, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2006-12-14</td>
+			<td>*</td>
+			<td>158.2%</td>
+			<td class="colHide3">7.60%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">108</td>
+			<td class="left colHide3">O</td>
+			<td>0050</td>
+			<td class="left"><a href='ctr.asp?i1=478&d1=1994-01-03'>HONG KONG FERRY (HOLDINGS) COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>155.1%</td>
+			<td class="colHide3">2.99%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">109</td>
+			<td class="left colHide3">O</td>
+			<td>0518</td>
+			<td class="left"><a href='ctr.asp?i1=473&d1=1994-01-03'>TUNGTEX (HOLDINGS) COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>149.8%</td>
+			<td class="colHide3">2.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">110</td>
+			<td class="left colHide3">O</td>
+			<td>0225</td>
+			<td class="left"><a href='ctr.asp?i1=94&d1=1994-01-03'>Pokfulam Development Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>148.9%</td>
+			<td class="colHide3">2.91%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">111</td>
+			<td class="left colHide3">O</td>
+			<td>0197</td>
+			<td class="left"><a href='ctr.asp?i1=2067&d1=1994-01-03'>LPI Capital Berhad</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-10-19</td>
+			<td>*</td>
+			<td>148.5%</td>
+			<td class="colHide3">66.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">112</td>
+			<td class="left colHide3">O</td>
+			<td>0608</td>
+			<td class="left"><a href='ctr.asp?i1=1083&d1=1994-01-03'>HIGH FASHION INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>144.6%</td>
+			<td class="colHide3">2.85%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">113</td>
+			<td class="left colHide3">O</td>
+			<td>0223</td>
+			<td class="left"><a href='ctr.asp?i1=175&d1=1994-01-03'>DBS GROUP (HK) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2001-07-26</td>
+			<td>*</td>
+			<td>144.0%</td>
+			<td class="colHide3">12.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">114</td>
+			<td class="left colHide3">O</td>
+			<td>0105</td>
+			<td class="left"><a href='ctr.asp?i1=75&d1=1994-01-03'>ASSOCIATED INTERNATIONAL HOTELS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>136.1%</td>
+			<td class="colHide3">2.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">115</td>
+			<td class="left colHide3">O</td>
+			<td>0265</td>
+			<td class="left"><a href='ctr.asp?i1=67&d1=1994-01-03'>GANGYU SMART URBAN SERVICES HOLDING LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>134.8%</td>
+			<td class="colHide3">2.72%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">116</td>
+			<td class="left colHide3">O</td>
+			<td>0032</td>
+			<td class="left"><a href='ctr.asp?i1=171&d1=1994-01-03'>CROSS-HARBOUR (HOLDINGS) LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>134.4%</td>
+			<td class="colHide3">2.71%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">117</td>
+			<td class="left colHide3">O</td>
+			<td>0215</td>
+			<td class="left"><a href='ctr.asp?i1=3181&d1=1994-01-03'>China Fund (The)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-01-03</td>
+			<td>*</td>
+			<td>133.0%</td>
+			<td class="colHide3">7.99%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">118</td>
+			<td class="left colHide3">O</td>
+			<td>0636</td>
+			<td class="left"><a href='ctr.asp?i1=181&d1=1994-01-03'>FUBON BANK (HONG KONG) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2011-05-27</td>
+			<td>*</td>
+			<td>131.5%</td>
+			<td class="colHide3">4.94%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">119</td>
+			<td class="left colHide3">O</td>
+			<td>0623</td>
+			<td class="left"><a href='ctr.asp?i1=74&d1=1994-01-03'>LEEFUNG HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2006-09-18</td>
+			<td>*</td>
+			<td>127.6%</td>
+			<td class="colHide3">6.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">120</td>
+			<td class="left colHide3">O</td>
+			<td>0666</td>
+			<td class="left"><a href='ctr.asp?i1=1328&d1=1994-01-03'>SHK Hong Kong Industries Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-03-15</td>
+			<td>*</td>
+			<td>119.3%</td>
+			<td class="colHide3">2.93%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">121</td>
+			<td class="left colHide3">O</td>
+			<td>0293</td>
+			<td class="left"><a href='ctr.asp?i1=23&d1=1994-01-03'>CATHAY PACIFIC AIRWAYS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>114.1%</td>
+			<td class="colHide3">2.42%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">122</td>
+			<td class="left colHide3">O</td>
+			<td>0716</td>
+			<td class="left"><a href='ctr.asp?i1=462&d1=1994-01-03'>SINGAMAS CONTAINER HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>111.5%</td>
+			<td class="colHide3">2.38%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">123</td>
+			<td class="left colHide3">O</td>
+			<td>0014</td>
+			<td class="left"><a href='ctr.asp?i1=26&d1=1994-01-03'>HYSAN DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>111.3%</td>
+			<td class="colHide3">2.38%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">124</td>
+			<td class="left colHide3">O</td>
+			<td>0711</td>
+			<td class="left"><a href='ctr.asp?i1=236&d1=1994-01-03'>ASIA ALLIED INFRASTRUCTURE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>111.1%</td>
+			<td class="colHide3">2.38%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">125</td>
+			<td class="left colHide3">O</td>
+			<td>0093</td>
+			<td class="left"><a href='ctr.asp?i1=886&d1=1994-01-03'>Zero Fintech Group Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>109.5%</td>
+			<td class="colHide3">2.35%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">126</td>
+			<td class="left colHide3">O</td>
+			<td>0089</td>
+			<td class="left"><a href='ctr.asp?i1=170&d1=1994-01-03'>TAI SANG LAND DEVELOPMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>109.2%</td>
+			<td class="colHide3">2.35%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">127</td>
+			<td class="left colHide3">O</td>
+			<td>0041</td>
+			<td class="left"><a href='ctr.asp?i1=37&d1=1994-01-03'>GREAT EAGLE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>106.0%</td>
+			<td class="colHide3">2.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">128</td>
+			<td class="left colHide3">O</td>
+			<td>0175</td>
+			<td class="left"><a href='ctr.asp?i1=70&d1=1994-01-03'>GEELY AUTOMOBILE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>104.7%</td>
+			<td class="colHide3">2.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">129</td>
+			<td class="left colHide3">O</td>
+			<td>0146</td>
+			<td class="left"><a href='ctr.asp?i1=64&d1=1994-01-03'>TAI PING CARPETS INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>102.6%</td>
+			<td class="colHide3">2.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">130</td>
+			<td class="left colHide3">O</td>
+			<td>0267</td>
+			<td class="left"><a href='ctr.asp?i1=51&d1=1994-01-03'>CITIC Limited (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>101.5%</td>
+			<td class="colHide3">2.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">131</td>
+			<td class="left colHide3">O</td>
+			<td>0420</td>
+			<td class="left"><a href='ctr.asp?i1=224&d1=1994-01-03'>FOUNTAIN SET (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>99.74%</td>
+			<td class="colHide3">2.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">132</td>
+			<td class="left colHide3">H</td>
+			<td>0338</td>
+			<td class="left"><a href='ctr.asp?i1=1233&d1=1994-01-03'>SINOPEC SHANGHAI PETROCHEMICAL COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>97.19%</td>
+			<td class="colHide3">2.16%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">133</td>
+			<td class="left colHide3">O</td>
+			<td>0184</td>
+			<td class="left"><a href='ctr.asp?i1=102&d1=1994-01-03'>KECK SENG INVESTMENTS (HONG KONG) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>83.03%</td>
+			<td class="colHide3">1.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">134</td>
+			<td class="left colHide3">O</td>
+			<td>0035</td>
+			<td class="left"><a href='ctr.asp?i1=799&d1=1994-01-03'>FAR EAST CONSORTIUM INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>82.26%</td>
+			<td class="colHide3">1.90%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">135</td>
+			<td class="left colHide3">O</td>
+			<td>0023</td>
+			<td class="left"><a href='ctr.asp?i1=27&d1=1994-01-03'>BANK OF EAST ASIA, LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>80.67%</td>
+			<td class="colHide3">1.88%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">136</td>
+			<td class="left colHide3">O</td>
+			<td>0288</td>
+			<td class="left"><a href='ctr.asp?i1=963&d1=1994-01-03'>Cosway Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2012-03-02</td>
+			<td>*</td>
+			<td>78.11%</td>
+			<td class="colHide3">3.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">137</td>
+			<td class="left colHide3">O</td>
+			<td>0030</td>
+			<td class="left"><a href='ctr.asp?i1=829&d1=1994-01-03'>YNBY International Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>76.32%</td>
+			<td class="colHide3">1.80%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">138</td>
+			<td class="left colHide3">O</td>
+			<td>0056</td>
+			<td class="left"><a href='ctr.asp?i1=244&d1=1994-01-03'>ALLIED PROPERTIES (H.K.) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-08-14</td>
+			<td>*</td>
+			<td>68.22%</td>
+			<td class="colHide3">1.97%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">139</td>
+			<td class="left colHide3">O</td>
+			<td>0557</td>
+			<td class="left"><a href='ctr.asp?i1=256&d1=1994-01-03'>China Tian Yuan Healthcare Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>66.66%</td>
+			<td class="colHide3">1.62%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">140</td>
+			<td class="left colHide3">O</td>
+			<td>0218</td>
+			<td class="left"><a href='ctr.asp?i1=465&d1=1994-01-03'>SHENWAN HONGYUAN (H.K.) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>62.64%</td>
+			<td class="colHide3">1.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">141</td>
+			<td class="left colHide3">O</td>
+			<td>0411</td>
+			<td class="left"><a href='ctr.asp?i1=1128&d1=1994-01-03'>LAM SOON (HONG KONG) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>58.03%</td>
+			<td class="colHide3">1.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">142</td>
+			<td class="left colHide3">O</td>
+			<td>0071</td>
+			<td class="left"><a href='ctr.asp?i1=2&d1=1994-01-03'>MIRAMAR HOTEL AND INVESTMENT COMPANY, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>57.66%</td>
+			<td class="colHide3">1.44%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">143</td>
+			<td class="left colHide3">O</td>
+			<td>0570</td>
+			<td class="left"><a href='ctr.asp?i1=1310&d1=1994-01-03'>CHINA TRADITIONAL CHINESE MEDICINE HOLDINGS CO. LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>57.22%</td>
+			<td class="colHide3">1.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">144</td>
+			<td class="left colHide3">O</td>
+			<td>0641</td>
+			<td class="left"><a href='ctr.asp?i1=1044&d1=1994-01-03'>CHTC Fong's International Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>55.80%</td>
+			<td class="colHide3">1.40%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">145</td>
+			<td class="left colHide3">O</td>
+			<td>0717</td>
+			<td class="left"><a href='ctr.asp?i1=1049&d1=1994-01-03'>BEA PACIFIC HOLDING COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2001-02-01</td>
+			<td>*</td>
+			<td>53.94%</td>
+			<td class="colHide3">6.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">146</td>
+			<td class="left colHide3">O</td>
+			<td>0057</td>
+			<td class="left"><a href='ctr.asp?i1=981&d1=1994-01-03'>CHEN HSONG HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>53.61%</td>
+			<td class="colHide3">1.36%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">147</td>
+			<td class="left colHide3">O</td>
+			<td>0194</td>
+			<td class="left"><a href='ctr.asp?i1=151&d1=1994-01-03'>LIU CHONG HING INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>49.69%</td>
+			<td class="colHide3">1.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">148</td>
+			<td class="left colHide3">O</td>
+			<td>0038</td>
+			<td class="left"><a href='ctr.asp?i1=2073&d1=1994-01-03'>FORMOSA GROWTH FUND LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-12-24</td>
+			<td>*</td>
+			<td>48.51%</td>
+			<td class="colHide3">14.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">149</td>
+			<td class="left colHide3">O</td>
+			<td>0533</td>
+			<td class="left"><a href='ctr.asp?i1=1060&d1=1994-01-03'>GOLDLION HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>46.48%</td>
+			<td class="colHide3">1.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">150</td>
+			<td class="left colHide3">H</td>
+			<td>0187</td>
+			<td class="left"><a href='ctr.asp?i1=960&d1=1994-01-03'>Beijing Jingcheng Machinery Electric Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>46.39%</td>
+			<td class="colHide3">1.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">151</td>
+			<td class="left colHide3">O</td>
+			<td>0369</td>
+			<td class="left"><a href='ctr.asp?i1=133&d1=1994-01-03'>Wing Tai Properties Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>46.18%</td>
+			<td class="colHide3">1.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">152</td>
+			<td class="left colHide3">O</td>
+			<td>0626</td>
+			<td class="left"><a href='ctr.asp?i1=269&d1=1994-01-03'>Public Financial Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>45.55%</td>
+			<td class="colHide3">1.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">153</td>
+			<td class="left colHide3">O</td>
+			<td>0610</td>
+			<td class="left"><a href='ctr.asp?i1=1302&d1=1994-01-03'>WAI KEE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>44.18%</td>
+			<td class="colHide3">1.16%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">154</td>
+			<td class="left colHide3">O</td>
+			<td>0108</td>
+			<td class="left"><a href='ctr.asp?i1=968&d1=1994-01-03'>GR Life Style Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>42.84%</td>
+			<td class="colHide3">1.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">155</td>
+			<td class="left colHide3">O</td>
+			<td>0252</td>
+			<td class="left"><a href='ctr.asp?i1=1251&d1=1994-01-03'>SOUTHEAST ASIA PROPERTIES & FINANCE LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>42.46%</td>
+			<td class="colHide3">1.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">156</td>
+			<td class="left colHide3">H</td>
+			<td>0323</td>
+			<td class="left"><a href='ctr.asp?i1=1147&d1=1994-01-03'>MAANSHAN IRON & STEEL COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>42.10%</td>
+			<td class="colHide3">1.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">157</td>
+			<td class="left colHide3">O</td>
+			<td>0008</td>
+			<td class="left"><a href='ctr.asp?i1=347&d1=1994-01-03'>PCCW-HKT Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-08-08</td>
+			<td>*</td>
+			<td>39.23%</td>
+			<td class="colHide3">5.15%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">158</td>
+			<td class="left colHide3">O</td>
+			<td>0166</td>
+			<td class="left"><a href='ctr.asp?i1=2064&d1=1994-01-03'>TeaM Energy Asia-Pacific Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-01-10</td>
+			<td>*</td>
+			<td>38.97%</td>
+			<td class="colHide3">11.51%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">159</td>
+			<td class="left colHide3">O</td>
+			<td>0677</td>
+			<td class="left"><a href='ctr.asp?i1=1059&d1=1994-01-03'>GOLDEN RESOURCES DEVELOPMENT INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>37.48%</td>
+			<td class="colHide3">1.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">160</td>
+			<td class="left colHide3">O</td>
+			<td>0294</td>
+			<td class="left"><a href='ctr.asp?i1=1316&d1=1994-01-03'>Yangtzekiang Garment Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>36.58%</td>
+			<td class="colHide3">0.98%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">161</td>
+			<td class="left colHide3">O</td>
+			<td>0509</td>
+			<td class="left"><a href='ctr.asp?i1=3572&d1=1994-01-03'>LG China Fund Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2006-06-30</td>
+			<td>*</td>
+			<td>36.45%</td>
+			<td class="colHide3">2.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">162</td>
+			<td class="left colHide3">O</td>
+			<td>0119</td>
+			<td class="left"><a href='ctr.asp?i1=1018&d1=1994-01-03'>Poly Property Group Co., Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>34.06%</td>
+			<td class="colHide3">0.93%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">163</td>
+			<td class="left colHide3">O</td>
+			<td>0290</td>
+			<td class="left"><a href='ctr.asp?i1=306&d1=1994-01-03'>WING ON INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-03-27</td>
+			<td>*</td>
+			<td>32.99%</td>
+			<td class="colHide3">4.68%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">164</td>
+			<td class="left colHide3">O</td>
+			<td>0170</td>
+			<td class="left"><a href='ctr.asp?i1=345&d1=1994-01-03'>CHINA ASSETS (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2017-10-26</td>
+			<td>*</td>
+			<td>32.64%</td>
+			<td class="colHide3">1.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">165</td>
+			<td class="left colHide3">O</td>
+			<td>0504</td>
+			<td class="left"><a href='ctr.asp?i1=1087&d1=1994-01-03'>HSBC CHINA FUND LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2004-09-06</td>
+			<td>*</td>
+			<td>32.11%</td>
+			<td class="colHide3">2.64%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">166</td>
+			<td class="left colHide3">O</td>
+			<td>0264</td>
+			<td class="left"><a href='ctr.asp?i1=2056&d1=1994-01-03'>LAFE INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-11-24</td>
+			<td>*</td>
+			<td>31.69%</td>
+			<td class="colHide3">15.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">167</td>
+			<td class="left colHide3">O</td>
+			<td>0009</td>
+			<td class="left"><a href='ctr.asp?i1=2068&d1=1994-01-03'>TVE (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-06-28</td>
+			<td>*</td>
+			<td>31.14%</td>
+			<td class="colHide3">11.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">168</td>
+			<td class="left colHide3">O</td>
+			<td>0679</td>
+			<td class="left"><a href='ctr.asp?i1=1197&d1=1994-01-03'>ASIA TELE-NET AND TECHNOLOGY CORPORATION LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>29.64%</td>
+			<td class="colHide3">0.82%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">169</td>
+			<td class="left colHide3">O</td>
+			<td>0230</td>
+			<td class="left"><a href='ctr.asp?i1=1174&d1=1994-01-03'>Minmetals Land Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>27.99%</td>
+			<td class="colHide3">0.78%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">170</td>
+			<td class="left colHide3">O</td>
+			<td>0308</td>
+			<td class="left"><a href='ctr.asp?i1=365&d1=1994-01-03'>CHINA TRAVEL INTERNATIONAL INVESTMENT HONG KONG LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>25.02%</td>
+			<td class="colHide3">0.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">171</td>
+			<td class="left colHide3">O</td>
+			<td>0280</td>
+			<td class="left"><a href='ctr.asp?i1=626&d1=1994-01-03'>KING FOOK HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>23.81%</td>
+			<td class="colHide3">0.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">172</td>
+			<td class="left colHide3">O</td>
+			<td>0178</td>
+			<td class="left"><a href='ctr.asp?i1=2050&d1=1994-01-03'>NOVEL ENTERPRISES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-01-16</td>
+			<td>*</td>
+			<td>20.54%</td>
+			<td class="colHide3">19.79%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">173</td>
+			<td class="left colHide3">O</td>
+			<td>0884</td>
+			<td class="left"><a href='ctr.asp?i1=1168&d1=1994-01-03'>NEW TAIPEI FUND LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1999-12-13</td>
+			<td>*</td>
+			<td>20.48%</td>
+			<td class="colHide3">3.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">174</td>
+			<td class="left colHide3">O</td>
+			<td>0765</td>
+			<td class="left"><a href='ctr.asp?i1=1192&d1=1994-01-03'>PERFECTECH INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>19.82%</td>
+			<td class="colHide3">0.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">175</td>
+			<td class="left colHide3">O</td>
+			<td>0478</td>
+			<td class="left"><a href='ctr.asp?i1=274&d1=1994-01-03'>MINGLY CORPORATION</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2001-03-16</td>
+			<td>*</td>
+			<td>19.09%</td>
+			<td class="colHide3">2.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">176</td>
+			<td class="left colHide3">O</td>
+			<td>0483</td>
+			<td class="left"><a href='ctr.asp?i1=2069&d1=1994-01-03'>EU YAN SANG (HONG KONG) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-10-18</td>
+			<td>*</td>
+			<td>17.34%</td>
+			<td class="colHide3">5.90%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">177</td>
+			<td class="left colHide3">H</td>
+			<td>0300</td>
+			<td class="left"><a href='ctr.asp?i1=1123&d1=1994-01-03'>SHENJI GROUP KUNMING MACHINE TOOL COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2017-03-22</td>
+			<td>*</td>
+			<td>17.07%</td>
+			<td class="colHide3">0.68%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">178</td>
+			<td class="left colHide3">O</td>
+			<td>0073</td>
+			<td class="left"><a href='ctr.asp?i1=2049&d1=1994-01-03'>PALIBURG INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-08-10</td>
+			<td>*</td>
+			<td>16.37%</td>
+			<td class="colHide3">9.95%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">179</td>
+			<td class="left colHide3">O</td>
+			<td>0738</td>
+			<td class="left"><a href='ctr.asp?i1=1131&d1=1994-01-03'>LE SAUNDA HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>15.97%</td>
+			<td class="colHide3">0.47%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">180</td>
+			<td class="left colHide3">O</td>
+			<td>0238</td>
+			<td class="left"><a href='ctr.asp?i1=1135&d1=1994-01-03'>LEI SHING HONG LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2007-11-02</td>
+			<td>*</td>
+			<td>13.97%</td>
+			<td class="colHide3">0.95%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">181</td>
+			<td class="left colHide3">O</td>
+			<td>0051</td>
+			<td class="left"><a href='ctr.asp?i1=92&d1=1994-01-03'>HARBOUR CENTRE DEVELOPMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>13.66%</td>
+			<td class="colHide3">0.40%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">182</td>
+			<td class="left colHide3">O</td>
+			<td>0130</td>
+			<td class="left"><a href='ctr.asp?i1=294&d1=1994-01-03'>AXA China Region Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1999-12-01</td>
+			<td>*</td>
+			<td>11.45%</td>
+			<td class="colHide3">1.85%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">183</td>
+			<td class="left colHide3">O</td>
+			<td>0555</td>
+			<td class="left"><a href='ctr.asp?i1=2072&d1=1994-01-03'>JF ASIA SELECT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-01-24</td>
+			<td>*</td>
+			<td>10.71%</td>
+			<td class="colHide3">3.38%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">184</td>
+			<td class="left colHide3">B</td>
+			<td>0196</td>
+			<td class="left"><a href='ctr.asp?i1=62&d1=1994-01-03'>GRAND HOTEL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-12-03</td>
+			<td>*</td>
+			<td>7.95%</td>
+			<td class="colHide3">0.86%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">185</td>
+			<td class="left colHide3">O</td>
+			<td>0220</td>
+			<td class="left"><a href='ctr.asp?i1=1180&d1=1994-01-03'>OXFORD PROPERTIES & FINANCE LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2004-06-10</td>
+			<td>*</td>
+			<td>7.24%</td>
+			<td class="colHide3">0.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">186</td>
+			<td class="left colHide3">O</td>
+			<td>0404</td>
+			<td class="left"><a href='ctr.asp?i1=1090&d1=1994-01-03'>Hsin Chong Group Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2017-03-31</td>
+			<td>*</td>
+			<td>4.25%</td>
+			<td class="colHide3">0.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">187</td>
+			<td class="left colHide3">O</td>
+			<td>0216</td>
+			<td class="left"><a href='ctr.asp?i1=95&d1=1994-01-03'>CHINNEY INVESTMENTS, LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>3.84%</td>
+			<td class="colHide3">0.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">188</td>
+			<td class="left colHide3">A</td>
+			<td>0195</td>
+			<td class="left"><a href='ctr.asp?i1=61&d1=1994-01-03'>GRAND HOTEL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-12-03</td>
+			<td>*</td>
+			<td>1.36%</td>
+			<td class="colHide3">0.15%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">189</td>
+			<td class="left colHide3">O</td>
+			<td>0110</td>
+			<td class="left"><a href='ctr.asp?i1=2075&d1=1994-01-03'>CHINA & EASTERN INVESTMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-01-05</td>
+			<td>*</td>
+			<td>-2.43%</td>
+			<td class="colHide3">-1.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">190</td>
+			<td class="left colHide3">O</td>
+			<td>0040</td>
+			<td class="left"><a href='ctr.asp?i1=796&d1=1994-01-03'>Gold Peak Technology Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-3.28%</td>
+			<td class="colHide3">-0.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">191</td>
+			<td class="left colHide3">O</td>
+			<td>0123</td>
+			<td class="left"><a href='ctr.asp?i1=371&d1=1994-01-03'>Yuexiu Property Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-5.35%</td>
+			<td class="colHide3">-0.17%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">192</td>
+			<td class="left colHide3">O</td>
+			<td>0668</td>
+			<td class="left"><a href='ctr.asp?i1=1319&d1=1994-01-03'>Doyen International Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-01-20</td>
+			<td>*</td>
+			<td>-6.38%</td>
+			<td class="colHide3">-0.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">193</td>
+			<td class="left colHide3">O</td>
+			<td>0064</td>
+			<td class="left"><a href='ctr.asp?i1=986&d1=1994-01-03'>CHEVALIER DEVELOPMENT INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1999-12-03</td>
+			<td>*</td>
+			<td>-8.52%</td>
+			<td class="colHide3">-1.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">194</td>
+			<td class="left colHide3">O</td>
+			<td>0277</td>
+			<td class="left"><a href='ctr.asp?i1=1270&d1=1994-01-03'>TERN PROPERTIES COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-9.15%</td>
+			<td class="colHide3">-0.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">195</td>
+			<td class="left colHide3">O</td>
+			<td>0088</td>
+			<td class="left"><a href='ctr.asp?i1=1262&d1=1994-01-03'>TAI CHEUNG HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-13.48%</td>
+			<td class="colHide3">-0.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">196</td>
+			<td class="left colHide3">O</td>
+			<td>0405</td>
+			<td class="left"><a href='ctr.asp?i1=290&d1=1994-01-03'>MANHATTAN CARD COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-01-21</td>
+			<td>*</td>
+			<td>-13.71%</td>
+			<td class="colHide3">-3.58%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">197</td>
+			<td class="left colHide3">O</td>
+			<td>0127</td>
+			<td class="left"><a href='ctr.asp?i1=146&d1=1994-01-03'>CHINESE ESTATES HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-14.03%</td>
+			<td class="colHide3">-0.47%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">198</td>
+			<td class="left colHide3">O</td>
+			<td>0770</td>
+			<td class="left"><a href='ctr.asp?i1=1232&d1=1994-01-03'>SHANGHAI INTERNATIONAL SHANGHAI GROWTH INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-16.75%</td>
+			<td class="colHide3">-0.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">199</td>
+			<td class="left colHide3">O</td>
+			<td>0253</td>
+			<td class="left"><a href='ctr.asp?i1=1240&d1=1994-01-03'>SHUN HO HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-17.18%</td>
+			<td class="colHide3">-0.59%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">200</td>
+			<td class="left colHide3">O</td>
+			<td>0367</td>
+			<td class="left"><a href='ctr.asp?i1=1005&d1=1994-01-03'>CHUANG'S CONSORTIUM INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-18.48%</td>
+			<td class="colHide3">-0.64%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">201</td>
+			<td class="left colHide3">B</td>
+			<td>0192</td>
+			<td class="left"><a href='ctr.asp?i1=6&d1=1994-01-03'>LANE CRAWFORD INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1999-07-21</td>
+			<td>*</td>
+			<td>-21.76%</td>
+			<td class="colHide3">-4.33%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">202</td>
+			<td class="left colHide3">O</td>
+			<td>0751</td>
+			<td class="left"><a href='ctr.asp?i1=2047&d1=1994-01-03'>BALL ASIA PACIFIC LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-05-30</td>
+			<td>*</td>
+			<td>-25.72%</td>
+			<td class="colHide3">-8.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">203</td>
+			<td class="left colHide3">O</td>
+			<td>0611</td>
+			<td class="left"><a href='ctr.asp?i1=1261&d1=1994-01-03'>China Nuclear Energy Technology Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-25.88%</td>
+			<td class="colHide3">-0.94%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">204</td>
+			<td class="left colHide3">O</td>
+			<td>0464</td>
+			<td class="left"><a href='ctr.asp?i1=964&d1=1994-01-03'>BEST WIDE GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-09-18</td>
+			<td>*</td>
+			<td>-26.32%</td>
+			<td class="colHide3">-10.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">205</td>
+			<td class="left colHide3">O</td>
+			<td>0251</td>
+			<td class="left"><a href='ctr.asp?i1=1226&d1=1994-01-03'>S E A HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-27.17%</td>
+			<td class="colHide3">-0.99%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">206</td>
+			<td class="left colHide3">O</td>
+			<td>0043</td>
+			<td class="left"><a href='ctr.asp?i1=971&d1=1994-01-03'>C.P. POKPHAND CO. LTD.</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-12-17</td>
+			<td>*</td>
+			<td>-28.65%</td>
+			<td class="colHide3">-1.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">207</td>
+			<td class="left colHide3">O</td>
+			<td>0077</td>
+			<td class="left"><a href='ctr.asp?i1=311&d1=1994-01-03'>REALTY DEVELOPMENT CORPORATION LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-03-11</td>
+			<td>*</td>
+			<td>-28.79%</td>
+			<td class="colHide3">-3.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">208</td>
+			<td class="left colHide3">O</td>
+			<td>0655</td>
+			<td class="left"><a href='ctr.asp?i1=161&d1=1994-01-03'>HONGKONG CHINESE LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-29.84%</td>
+			<td class="colHide3">-1.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">209</td>
+			<td class="left colHide3">O</td>
+			<td>0540</td>
+			<td class="left"><a href='ctr.asp?i1=1538&d1=1994-01-03'>THAI-ASIA FUND LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2006-01-19</td>
+			<td>*</td>
+			<td>-30.09%</td>
+			<td class="colHide3">-2.93%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">210</td>
+			<td class="left colHide3">O</td>
+			<td>0236</td>
+			<td class="left"><a href='ctr.asp?i1=1225&d1=1994-01-03'>SAN MIGUEL BREWERY HONG KONG LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-30.20%</td>
+			<td class="colHide3">-1.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">211</td>
+			<td class="left colHide3">O</td>
+			<td>0396</td>
+			<td class="left"><a href='ctr.asp?i1=1057&d1=1994-01-03'>GOLD-FACE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-05-16</td>
+			<td>*</td>
+			<td>-31.16%</td>
+			<td class="colHide3">-3.91%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">212</td>
+			<td class="left colHide3">O</td>
+			<td>0069</td>
+			<td class="left"><a href='ctr.asp?i1=101&d1=1994-01-03'>SHANGRI-LA ASIA LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-32.10%</td>
+			<td class="colHide3">-1.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">213</td>
+			<td class="left colHide3">O</td>
+			<td>0592</td>
+			<td class="left"><a href='ctr.asp?i1=966&d1=1994-01-03'>BOSSINI INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-02-11</td>
+			<td>*</td>
+			<td>-32.66%</td>
+			<td class="colHide3">-1.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">214</td>
+			<td class="left colHide3">O</td>
+			<td>0018</td>
+			<td class="left"><a href='ctr.asp?i1=40&d1=1994-01-03'>Oriental Enterprise Holdings Limited (b1969-01-14)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-32.96%</td>
+			<td class="colHide3">-1.25%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">215</td>
+			<td class="left colHide3">O</td>
+			<td>0045</td>
+			<td class="left"><a href='ctr.asp?i1=28&d1=1994-01-03'>HONGKONG AND SHANGHAI HOTELS, LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-33.09%</td>
+			<td class="colHide3">-1.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">216</td>
+			<td class="left colHide3">O</td>
+			<td>0532</td>
+			<td class="left"><a href='ctr.asp?i1=1314&d1=1994-01-03'>WONG'S KONG KING INTERNATIONAL (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-33.33%</td>
+			<td class="colHide3">-1.27%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">217</td>
+			<td class="left colHide3">O</td>
+			<td>0022</td>
+			<td class="left"><a href='ctr.asp?i1=16&d1=1994-01-03'>MEXAN LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-33.81%</td>
+			<td class="colHide3">-1.29%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">218</td>
+			<td class="left colHide3">A</td>
+			<td>0066</td>
+			<td class="left"><a href='ctr.asp?i1=5&d1=1994-01-03'>LANE CRAWFORD INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1999-07-21</td>
+			<td>*</td>
+			<td>-34.27%</td>
+			<td class="colHide3">-7.29%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">219</td>
+			<td class="left colHide3">O</td>
+			<td>0137</td>
+			<td class="left"><a href='ctr.asp?i1=1110&d1=1994-01-03'>JINHUI HOLDINGS COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-37.70%</td>
+			<td class="colHide3">-1.48%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">220</td>
+			<td class="left colHide3">O</td>
+			<td>0100</td>
+			<td class="left"><a href='ctr.asp?i1=1102&d1=1994-01-03'>JARDINE MOTORS GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-09-18</td>
+			<td>*</td>
+			<td>-40.91%</td>
+			<td class="colHide3">-7.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">221</td>
+			<td class="left colHide3">O</td>
+			<td>0207</td>
+			<td class="left"><a href='ctr.asp?i1=144&d1=1994-01-03'>Joy City Property Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-41.55%</td>
+			<td class="colHide3">-1.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">222</td>
+			<td class="left colHide3">O</td>
+			<td>0141</td>
+			<td class="left"><a href='ctr.asp?i1=1065&d1=1994-01-03'>SKY CHINAFORTUNE HOLDINGS GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-09-01</td>
+			<td>*</td>
+			<td>-41.78%</td>
+			<td class="colHide3">-1.94%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">223</td>
+			<td class="left colHide3">O</td>
+			<td>0339</td>
+			<td class="left"><a href='ctr.asp?i1=1130&d1=1994-01-03'>LAWS INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-06-19</td>
+			<td>*</td>
+			<td>-43.77%</td>
+			<td class="colHide3">-12.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">224</td>
+			<td class="left colHide3">O</td>
+			<td>0219</td>
+			<td class="left"><a href='ctr.asp?i1=635&d1=1994-01-03'>SHUN HO PROPERTY INVESTMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-43.77%</td>
+			<td class="colHide3">-1.79%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">225</td>
+			<td class="left colHide3">O</td>
+			<td>0403</td>
+			<td class="left"><a href='ctr.asp?i1=1252&d1=1994-01-03'>STARLITE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-43.81%</td>
+			<td class="colHide3">-1.80%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">226</td>
+			<td class="left colHide3">O</td>
+			<td>0136</td>
+			<td class="left"><a href='ctr.asp?i1=2066&d1=1994-01-03'>GENERAL ELECTRONICS LIMITED (c1999-02-28)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-12-01</td>
+			<td>*</td>
+			<td>-44.41%</td>
+			<td class="colHide3">-26.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">227</td>
+			<td class="left colHide3">O</td>
+			<td>0048</td>
+			<td class="left"><a href='ctr.asp?i1=241&d1=1994-01-03'>EGANAGOLDPFEIL (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2007-09-11</td>
+			<td>*</td>
+			<td>-44.57%</td>
+			<td class="colHide3">-4.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">228</td>
+			<td class="left colHide3">O</td>
+			<td>0249</td>
+			<td class="left"><a href='ctr.asp?i1=132&d1=1994-01-03'>Sime Darby Hong Kong Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2001-05-10</td>
+			<td>*</td>
+			<td>-45.47%</td>
+			<td class="colHide3">-7.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">229</td>
+			<td class="left colHide3">O</td>
+			<td>0480</td>
+			<td class="left"><a href='ctr.asp?i1=271&d1=1994-01-03'>HKR INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-46.04%</td>
+			<td class="colHide3">-1.92%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">230</td>
+			<td class="left colHide3">O</td>
+			<td>0226</td>
+			<td class="left"><a href='ctr.asp?i1=160&d1=1994-01-03'>LIPPO LIMITED (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-08-22</td>
+			<td>*</td>
+			<td>-47.82%</td>
+			<td class="colHide3">-2.04%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">231</td>
+			<td class="left colHide3">B</td>
+			<td>0228</td>
+			<td class="left"><a href='ctr.asp?i1=312&d1=1994-01-03'>REALTY DEVELOPMENT CORPORATION LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-09-04</td>
+			<td>*</td>
+			<td>-47.99%</td>
+			<td class="colHide3">-9.34%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">232</td>
+			<td class="left colHide3">O</td>
+			<td>0406</td>
+			<td class="left"><a href='ctr.asp?i1=99&d1=1994-01-03'>YAU LEE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-49.02%</td>
+			<td class="colHide3">-2.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">233</td>
+			<td class="left colHide3">O</td>
+			<td>0103</td>
+			<td class="left"><a href='ctr.asp?i1=446&d1=1994-01-03'>Shougang Century Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-49.55%</td>
+			<td class="colHide3">-2.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">234</td>
+			<td class="left colHide3">O</td>
+			<td>0052</td>
+			<td class="left"><a href='ctr.asp?i1=1041&d1=1994-01-03'>FAIRWOOD HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-50.14%</td>
+			<td class="colHide3">-2.16%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">235</td>
+			<td class="left colHide3">B</td>
+			<td>0153</td>
+			<td class="left"><a href='ctr.asp?i1=313&d1=1994-01-03'>WHEELOCK PROPERTIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-09-04</td>
+			<td>*</td>
+			<td>-51.00%</td>
+			<td class="colHide3">-10.14%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">236</td>
+			<td class="left colHide3">O</td>
+			<td>0126</td>
+			<td class="left"><a href='ctr.asp?i1=1266&d1=1994-01-03'>CARRIANNA GROUP HOLDINGS COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-51.33%</td>
+			<td class="colHide3">-2.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">237</td>
+			<td class="left colHide3">O</td>
+			<td>0271</td>
+			<td class="left"><a href='ctr.asp?i1=952&d1=1994-01-03'>Asiasec Properties Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-51.45%</td>
+			<td class="colHide3">-2.25%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">238</td>
+			<td class="left colHide3">O</td>
+			<td>0358</td>
+			<td class="left"><a href='ctr.asp?i1=2070&d1=1994-01-03'>KONG WAH HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-10-04</td>
+			<td>*</td>
+			<td>-53.23%</td>
+			<td class="colHide3">-35.23%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">239</td>
+			<td class="left colHide3">O</td>
+			<td>0134</td>
+			<td class="left"><a href='ctr.asp?i1=2048&d1=1994-01-03'>KIN CHING CHINA LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1995-05-12</td>
+			<td>*</td>
+			<td>-54.62%</td>
+			<td class="colHide3">-44.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">240</td>
+			<td class="left colHide3">O</td>
+			<td>0441</td>
+			<td class="left"><a href='ctr.asp?i1=3630&d1=1994-01-03'>EAST ASIATIC COMPANY (HONG KONG) LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-06-04</td>
+			<td>*</td>
+			<td>-54.63%</td>
+			<td class="colHide3">-20.65%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">241</td>
+			<td class="left colHide3">O</td>
+			<td>0174</td>
+			<td class="left"><a href='ctr.asp?i1=1117&d1=1994-01-03'>Gemini Investments (Holdings) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-54.77%</td>
+			<td class="colHide3">-2.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">242</td>
+			<td class="left colHide3">O</td>
+			<td>0117</td>
+			<td class="left"><a href='ctr.asp?i1=1095&d1=1994-01-03'>IMC HOLDINGS LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-04-30</td>
+			<td>*</td>
+			<td>-55.12%</td>
+			<td class="colHide3">-9.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">243</td>
+			<td class="left colHide3">O</td>
+			<td>0095</td>
+			<td class="left"><a href='ctr.asp?i1=213&d1=1994-01-03'>WAH KWONG SHIPPING HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-07-21</td>
+			<td>*</td>
+			<td>-55.26%</td>
+			<td class="colHide3">-11.56%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">244</td>
+			<td class="left colHide3">O</td>
+			<td>0304</td>
+			<td class="left"><a href='ctr.asp?i1=1188&d1=1994-01-03'>PEACE MARK (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2008-08-15</td>
+			<td>*</td>
+			<td>-55.85%</td>
+			<td class="colHide3">-5.44%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">245</td>
+			<td class="left colHide3">O</td>
+			<td>0232</td>
+			<td class="left"><a href='ctr.asp?i1=437&d1=1994-01-03'>Continental Aerospace Technologies Holding Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-57.23%</td>
+			<td class="colHide3">-2.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">246</td>
+			<td class="left colHide3">O</td>
+			<td>0391</td>
+			<td class="left"><a href='ctr.asp?i1=1155&d1=1994-01-03'>MEI AH ENTERTAINMENT GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-57.50%</td>
+			<td class="colHide3">-2.65%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">247</td>
+			<td class="left colHide3">O</td>
+			<td>0060</td>
+			<td class="left"><a href='ctr.asp?i1=1317&d1=1994-01-03'>HONG KONG FOOD INVESTMENT HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-58.69%</td>
+			<td class="colHide3">-2.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">248</td>
+			<td class="left colHide3">O</td>
+			<td>0156</td>
+			<td class="left"><a href='ctr.asp?i1=159&d1=1994-01-03'>LIPPO CHINA RESOURCES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-58.73%</td>
+			<td class="colHide3">-2.74%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">249</td>
+			<td class="left colHide3">O</td>
+			<td>0272</td>
+			<td class="left"><a href='ctr.asp?i1=1037&d1=1994-01-03'>ENGLONG INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1996-05-14</td>
+			<td>*</td>
+			<td>-59.72%</td>
+			<td class="colHide3">-31.98%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">250</td>
+			<td class="left colHide3">O</td>
+			<td>0510</td>
+			<td class="left"><a href='ctr.asp?i1=888&d1=1994-01-03'>WINTON HOLDINGS (BERMUDA) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-03-18</td>
+			<td>*</td>
+			<td>-61.38%</td>
+			<td class="colHide3">-9.82%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">251</td>
+			<td class="left colHide3">O</td>
+			<td>0167</td>
+			<td class="left"><a href='ctr.asp?i1=1093&d1=1994-01-03'>IDT INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-21</td>
+			<td></td>
+			<td>-62.19%</td>
+			<td class="colHide3">-3.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">252</td>
+			<td class="left colHide3">O</td>
+			<td>0268</td>
+			<td class="left"><a href='ctr.asp?i1=202&d1=1994-01-03'>TOP GLORY INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-08-08</td>
+			<td>*</td>
+			<td>-62.28%</td>
+			<td class="colHide3">-9.66%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">253</td>
+			<td class="left colHide3">O</td>
+			<td>0028</td>
+			<td class="left"><a href='ctr.asp?i1=234&d1=1994-01-03'>TIAN AN CHINA INVESTMENTS COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-62.74%</td>
+			<td class="colHide3">-3.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">254</td>
+			<td class="left colHide3">O</td>
+			<td>0201</td>
+			<td class="left"><a href='ctr.asp?i1=633&d1=1994-01-03'>MAGNIFICENT HOTEL INVESTMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-62.75%</td>
+			<td class="colHide3">-3.06%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">255</td>
+			<td class="left colHide3">O</td>
+			<td>0256</td>
+			<td class="left"><a href='ctr.asp?i1=223&d1=1994-01-03'>CITYCHAMP WATCH & JEWELLERY GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-63.26%</td>
+			<td class="colHide3">-3.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">256</td>
+			<td class="left colHide3">O</td>
+			<td>0701</td>
+			<td class="left"><a href='ctr.asp?i1=1013&d1=1994-01-03'>CNT GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-64.54%</td>
+			<td class="colHide3">-3.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">257</td>
+			<td class="left colHide3">O</td>
+			<td>0366</td>
+			<td class="left"><a href='ctr.asp?i1=1143&d1=1994-01-03'>Luks Group (Vietnam Holdings) Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-64.65%</td>
+			<td class="colHide3">-3.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">258</td>
+			<td class="left colHide3">O</td>
+			<td>0224</td>
+			<td class="left"><a href='ctr.asp?i1=214&d1=1994-01-03'>PIONEER GLOBAL GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-64.97%</td>
+			<td class="colHide3">-3.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">259</td>
+			<td class="left colHide3">O</td>
+			<td>0171</td>
+			<td class="left"><a href='ctr.asp?i1=1243&d1=1994-01-03'>Silver Grant International Holdings Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-65.26%</td>
+			<td class="colHide3">-3.27%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">260</td>
+			<td class="left colHide3">O</td>
+			<td>0383</td>
+			<td class="left"><a href='ctr.asp?i1=377&d1=1994-01-03'>Tian An Medicare Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-65.57%</td>
+			<td class="colHide3">-3.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">261</td>
+			<td class="left colHide3">O</td>
+			<td>0615</td>
+			<td class="left"><a href='ctr.asp?i1=1175&d1=1994-01-03'>ORIENT POWER HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2006-04-27</td>
+			<td>*</td>
+			<td>-65.63%</td>
+			<td class="colHide3">-8.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">262</td>
+			<td class="left colHide3">O</td>
+			<td>0455</td>
+			<td class="left"><a href='ctr.asp?i1=1078&d1=1994-01-03'>Tianda Pharmaceuticals Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-65.73%</td>
+			<td class="colHide3">-3.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">263</td>
+			<td class="left colHide3">O</td>
+			<td>0189</td>
+			<td class="left"><a href='ctr.asp?i1=1125&d1=1994-01-03'>KWONG SANG HONG INTERNATIONAL LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-01-27</td>
+			<td>*</td>
+			<td>-65.84%</td>
+			<td class="colHide3">-9.25%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">264</td>
+			<td class="left colHide3">O</td>
+			<td>0382</td>
+			<td class="left"><a href='ctr.asp?i1=1091&d1=1994-01-03'>Welling Holding Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2018-02-06</td>
+			<td>*</td>
+			<td>-66.76%</td>
+			<td class="colHide3">-4.47%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">265</td>
+			<td class="left colHide3">O</td>
+			<td>0031</td>
+			<td class="left"><a href='ctr.asp?i1=988&d1=1994-01-03'>CHINA AEROSPACE INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-66.96%</td>
+			<td class="colHide3">-3.42%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">266</td>
+			<td class="left colHide3">O</td>
+			<td>0586</td>
+			<td class="left"><a href='ctr.asp?i1=401&d1=1994-01-03'>GOLDWIZ HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-12-30</td>
+			<td>*</td>
+			<td>-67.41%</td>
+			<td class="colHide3">-8.93%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">267</td>
+			<td class="left colHide3">O</td>
+			<td>0511</td>
+			<td class="left"><a href='ctr.asp?i1=105&d1=1994-01-03'>TELEVISION BROADCASTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-68.02%</td>
+			<td class="colHide3">-3.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">268</td>
+			<td class="left colHide3">O</td>
+			<td>0128</td>
+			<td class="left"><a href='ctr.asp?i1=879&d1=1994-01-03'>ENM Holdings Limited (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-68.66%</td>
+			<td class="colHide3">-3.58%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">269</td>
+			<td class="left colHide3">O</td>
+			<td>0508</td>
+			<td class="left"><a href='ctr.asp?i1=984&d1=1994-01-03'>DINGYI GROUP INVESTMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-69.16%</td>
+			<td class="colHide3">-3.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">270</td>
+			<td class="left colHide3">O</td>
+			<td>0647</td>
+			<td class="left"><a href='ctr.asp?i1=129&d1=1994-01-03'>Joyce Boutique Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-03-24</td>
+			<td>*</td>
+			<td>-69.49%</td>
+			<td class="colHide3">-4.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">271</td>
+			<td class="left colHide3">O</td>
+			<td>0745</td>
+			<td class="left"><a href='ctr.asp?i1=1220&d1=1994-01-03'>RYODEN DEVELOPMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-11-11</td>
+			<td>*</td>
+			<td>-70.57%</td>
+			<td class="colHide3">-12.90%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">272</td>
+			<td class="left colHide3">O</td>
+			<td>0660</td>
+			<td class="left"><a href='ctr.asp?i1=65&d1=1994-01-03'>Wai Chun Bio-Technology Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-70.91%</td>
+			<td class="colHide3">-3.81%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">273</td>
+			<td class="left colHide3">O</td>
+			<td>0713</td>
+			<td class="left"><a href='ctr.asp?i1=1315&d1=1994-01-03'>WORLD HOUSEWARE (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-72.27%</td>
+			<td class="colHide3">-3.95%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">274</td>
+			<td class="left colHide3">O</td>
+			<td>0497</td>
+			<td class="left"><a href='ctr.asp?i1=1173&d1=1994-01-03'>CSI Properties Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-72.37%</td>
+			<td class="colHide3">-3.96%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">275</td>
+			<td class="left colHide3">O</td>
+			<td>0481</td>
+			<td class="left"><a href='ctr.asp?i1=276&d1=1994-01-03'>CDW INTERNATIONAL LIMITED (KY)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1997-04-21</td>
+			<td>*</td>
+			<td>-74.20%</td>
+			<td class="colHide3">-33.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">276</td>
+			<td class="left colHide3">O</td>
+			<td>0090</td>
+			<td class="left"><a href='ctr.asp?i1=110&d1=1994-01-03'>PEREGRINE INVESTMENTS HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-01-07</td>
+			<td>*</td>
+			<td>-74.70%</td>
+			<td class="colHide3">-29.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">277</td>
+			<td class="left colHide3">O</td>
+			<td>0320</td>
+			<td class="left"><a href='ctr.asp?i1=977&d1=1994-01-03'>Cathay Investment Fund, Limited (The)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-11-09</td>
+			<td>*</td>
+			<td>-75.18%</td>
+			<td class="colHide3">-24.98%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">278</td>
+			<td class="left colHide3">O</td>
+			<td>0121</td>
+			<td class="left"><a href='ctr.asp?i1=197&d1=1994-01-03'>C.P. Lotus Corporation</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2019-10-08</td>
+			<td>*</td>
+			<td>-75.24%</td>
+			<td class="colHide3">-5.27%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">279</td>
+			<td class="left colHide3">O</td>
+			<td>0217</td>
+			<td class="left"><a href='ctr.asp?i1=338&d1=1994-01-03'>CHINA CHENGTONG DEVELOPMENT GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-75.32%</td>
+			<td class="colHide3">-4.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">280</td>
+			<td class="left colHide3">O</td>
+			<td>0371</td>
+			<td class="left"><a href='ctr.asp?i1=827&d1=1994-01-03'>Beijing Enterprises Water Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-75.72%</td>
+			<td class="colHide3">-4.35%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">281</td>
+			<td class="left colHide3">O</td>
+			<td>0180</td>
+			<td class="left"><a href='ctr.asp?i1=1115&d1=1994-01-03'>KADER HOLDINGS COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-75.76%</td>
+			<td class="colHide3">-4.36%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">282</td>
+			<td class="left colHide3">O</td>
+			<td>0233</td>
+			<td class="left"><a href='ctr.asp?i1=270&d1=1994-01-03'>Mingyuan Medicare Development Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2015-03-31</td>
+			<td>*</td>
+			<td>-75.81%</td>
+			<td class="colHide3">-6.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">283</td>
+			<td class="left colHide3">O</td>
+			<td>0118</td>
+			<td class="left"><a href='ctr.asp?i1=1020&d1=1994-01-03'>COSMOS MACHINERY ENTERPRISES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-75.86%</td>
+			<td class="colHide3">-4.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">284</td>
+			<td class="left colHide3">O</td>
+			<td>0024</td>
+			<td class="left"><a href='ctr.asp?i1=970&d1=1994-01-03'>BURWILL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2019-08-16</td>
+			<td>*</td>
+			<td>-76.49%</td>
+			<td class="colHide3">-5.50%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">285</td>
+			<td class="left colHide3">O</td>
+			<td>0186</td>
+			<td class="left"><a href='ctr.asp?i1=81&d1=1994-01-03'>Nimble Holdings Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-76.54%</td>
+			<td class="colHide3">-4.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">286</td>
+			<td class="left colHide3">O</td>
+			<td>0438</td>
+			<td class="left"><a href='ctr.asp?i1=848&d1=1994-01-03'>PACIFIC CONCORD HOLDING LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-10-14</td>
+			<td>*</td>
+			<td>-77.56%</td>
+			<td class="colHide3">-14.17%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">287</td>
+			<td class="left colHide3">O</td>
+			<td>0075</td>
+			<td class="left"><a href='ctr.asp?i1=187&d1=1994-01-03'>Y. T. REALTY GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-77.92%</td>
+			<td class="colHide3">-4.64%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">288</td>
+			<td class="left colHide3">O</td>
+			<td>0242</td>
+			<td class="left"><a href='ctr.asp?i1=85&d1=1994-01-03'>SHUN TAK HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-78.16%</td>
+			<td class="colHide3">-4.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">289</td>
+			<td class="left colHide3">O</td>
+			<td>0535</td>
+			<td class="left"><a href='ctr.asp?i1=303&d1=1994-01-03'>Gemdale Properties and Investment Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-78.55%</td>
+			<td class="colHide3">-4.72%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">290</td>
+			<td class="left colHide3">O</td>
+			<td>0017</td>
+			<td class="left"><a href='ctr.asp?i1=3&d1=1994-01-03'>NEW WORLD DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-78.80%</td>
+			<td class="colHide3">-4.76%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">291</td>
+			<td class="left colHide3">O</td>
+			<td>0697</td>
+			<td class="left"><a href='ctr.asp?i1=438&d1=1994-01-03'>Shoucheng Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-79.02%</td>
+			<td class="colHide3">-4.79%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">292</td>
+			<td class="left colHide3">O</td>
+			<td>0377</td>
+			<td class="left"><a href='ctr.asp?i1=339&d1=1994-01-03'>China Huajun Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-80.22%</td>
+			<td class="colHide3">-4.97%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">293</td>
+			<td class="left colHide3">O</td>
+			<td>0516</td>
+			<td class="left"><a href='ctr.asp?i1=1052&d1=1994-01-03'>PYXIS GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2010-07-02</td>
+			<td>*</td>
+			<td>-80.85%</td>
+			<td class="colHide3">-9.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">294</td>
+			<td class="left colHide3">O</td>
+			<td>0131</td>
+			<td class="left"><a href='ctr.asp?i1=120&d1=1994-01-03'>CHEUK NANG (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-80.91%</td>
+			<td class="colHide3">-5.07%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">295</td>
+			<td class="left colHide3">O</td>
+			<td>0037</td>
+			<td class="left"><a href='ctr.asp?i1=803&d1=1994-01-03'>FAR EAST HOTELS AND ENTERTAINMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-81.19%</td>
+			<td class="colHide3">-5.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">296</td>
+			<td class="left colHide3">O</td>
+			<td>0567</td>
+			<td class="left"><a href='ctr.asp?i1=1258&d1=1994-01-03'>DAISHO MICROLINE HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-81.31%</td>
+			<td class="colHide3">-5.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">297</td>
+			<td class="left colHide3">O</td>
+			<td>0244</td>
+			<td class="left"><a href='ctr.asp?i1=121&d1=1994-01-03'>SINCERE COMPANY, LIMITED (THE)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-81.48%</td>
+			<td class="colHide3">-5.16%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">298</td>
+			<td class="left colHide3">O</td>
+			<td>0122</td>
+			<td class="left"><a href='ctr.asp?i1=127&d1=1994-01-03'>CROCODILE GARMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-82.20%</td>
+			<td class="colHide3">-5.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">299</td>
+			<td class="left colHide3">O</td>
+			<td>0305</td>
+			<td class="left"><a href='ctr.asp?i1=1148&d1=1994-01-03'>Wuling Motors Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-82.35%</td>
+			<td class="colHide3">-5.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">300</td>
+			<td class="left colHide3">O</td>
+			<td>0068</td>
+			<td class="left"><a href='ctr.asp?i1=71&d1=1994-01-03'>LEE HING DEVELOPMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-03-16</td>
+			<td>*</td>
+			<td>-83.00%</td>
+			<td class="colHide3">-6.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">301</td>
+			<td class="left colHide3">O</td>
+			<td>0163</td>
+			<td class="left"><a href='ctr.asp?i1=211&d1=1994-01-03'>Emperor International Holdings Limited</a></td>
+			<td class="colHide2">1994-01-05</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-83.19%</td>
+			<td class="colHide3">-5.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">302</td>
+			<td class="left colHide3">O</td>
+			<td>0147</td>
+			<td class="left"><a href='ctr.asp?i1=210&d1=1994-01-03'>International Business Settlement Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-83.23%</td>
+			<td class="colHide3">-5.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">303</td>
+			<td class="left colHide3">O</td>
+			<td>0409</td>
+			<td class="left"><a href='ctr.asp?i1=1255&d1=1994-01-03'>STONE GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2009-10-06</td>
+			<td>*</td>
+			<td>-84.10%</td>
+			<td class="colHide3">-11.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">304</td>
+			<td class="left colHide3">O</td>
+			<td>0417</td>
+			<td class="left"><a href='ctr.asp?i1=1285&d1=1994-01-03'>TSE SUI LUEN JEWELLERY (INTERNATIONAL) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-84.17%</td>
+			<td class="colHide3">-5.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">305</td>
+			<td class="left colHide3">O</td>
+			<td>0467</td>
+			<td class="left"><a href='ctr.asp?i1=1283&d1=1994-01-03'>United Energy Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-85.20%</td>
+			<td class="colHide3">-5.83%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">306</td>
+			<td class="left colHide3">O</td>
+			<td>0047</td>
+			<td class="left"><a href='ctr.asp?i1=1086&d1=1994-01-03'>Hop Hing Group Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-12-16</td>
+			<td>*</td>
+			<td>-85.81%</td>
+			<td class="colHide3">-6.75%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">307</td>
+			<td class="left colHide3">O</td>
+			<td>0160</td>
+			<td class="left"><a href='ctr.asp?i1=97&d1=1994-01-03'>Hon Kwok Land Investment Company, Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-86.66%</td>
+			<td class="colHide3">-6.14%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">308</td>
+			<td class="left colHide3">O</td>
+			<td>0538</td>
+			<td class="left"><a href='ctr.asp?i1=1104&d1=1994-01-03'>JF INDONESIA FUND INC.</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-06-27</td>
+			<td>*</td>
+			<td>-86.75%</td>
+			<td class="colHide3">-26.80%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">309</td>
+			<td class="left colHide3">O</td>
+			<td>0227</td>
+			<td class="left"><a href='ctr.asp?i1=257&d1=1994-01-03'>FIRST SHANGHAI INVESTMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-86.82%</td>
+			<td class="colHide3">-6.17%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">310</td>
+			<td class="left colHide3">O</td>
+			<td>0055</td>
+			<td class="left"><a href='ctr.asp?i1=1007&d1=1994-01-03'>Neway Group Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-87.00%</td>
+			<td class="colHide3">-6.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">311</td>
+			<td class="left colHide3">O</td>
+			<td>0154</td>
+			<td class="left"><a href='ctr.asp?i1=957&d1=1994-01-03'>BEIJING ENTERPRISES ENVIRONMENT GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-87.57%</td>
+			<td class="colHide3">-6.34%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">312</td>
+			<td class="left colHide3">O</td>
+			<td>0521</td>
+			<td class="left"><a href='ctr.asp?i1=440&d1=1994-01-03'>CWT International Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-87.81%</td>
+			<td class="colHide3">-6.40%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">313</td>
+			<td class="left colHide3">O</td>
+			<td>0603</td>
+			<td class="left"><a href='ctr.asp?i1=873&d1=1994-01-03'>China Oil And Gas Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-87.85%</td>
+			<td class="colHide3">-6.41%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">314</td>
+			<td class="left colHide3">O</td>
+			<td>0685</td>
+			<td class="left"><a href='ctr.asp?i1=415&d1=1994-01-03'>Media Chinese International Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-88.56%</td>
+			<td class="colHide3">-6.59%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">315</td>
+			<td class="left colHide3">O</td>
+			<td>0120</td>
+			<td class="left"><a href='ctr.asp?i1=255&d1=1994-01-03'>COSMOPOLITAN INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-88.76%</td>
+			<td class="colHide3">-6.64%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">316</td>
+			<td class="left colHide3">O</td>
+			<td>0190</td>
+			<td class="left"><a href='ctr.asp?i1=261&d1=1994-01-03'>HKC (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-05-06</td>
+			<td>*</td>
+			<td>-89.15%</td>
+			<td class="colHide3">-7.80%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">317</td>
+			<td class="left colHide3">O</td>
+			<td>0188</td>
+			<td class="left"><a href='ctr.asp?i1=1176&d1=1994-01-03'>ORIENT TELECOM & TECHNOLOGY HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-05-04</td>
+			<td>*</td>
+			<td>-89.30%</td>
+			<td class="colHide3">-40.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">318</td>
+			<td class="left colHide3">O</td>
+			<td>0021</td>
+			<td class="left"><a href='ctr.asp?i1=372&d1=1994-01-03'>Great China Holdings (Hong Kong) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-89.31%</td>
+			<td class="colHide3">-6.79%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">319</td>
+			<td class="left colHide3">O</td>
+			<td>0542</td>
+			<td class="left"><a href='ctr.asp?i1=1161&d1=1994-01-03'>China Cultural Tourism and Agriculture Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-89.50%</td>
+			<td class="colHide3">-6.84%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">320</td>
+			<td class="left colHide3">O</td>
+			<td>0067</td>
+			<td class="left"><a href='ctr.asp?i1=1075&d1=1994-01-03'>SHANGHAI LAND HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-05-30</td>
+			<td>*</td>
+			<td>-89.51%</td>
+			<td class="colHide3">-21.32%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">321</td>
+			<td class="left colHide3">O</td>
+			<td>0519</td>
+			<td class="left"><a href='ctr.asp?i1=949&d1=1994-01-03'>Novautek Technologies Group Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-89.69%</td>
+			<td class="colHide3">-6.89%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">322</td>
+			<td class="left colHide3">O</td>
+			<td>0513</td>
+			<td class="left"><a href='ctr.asp?i1=1017&d1=1994-01-03'>CONTINENTAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-90.07%</td>
+			<td class="colHide3">-7.00%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">323</td>
+			<td class="left colHide3">O</td>
+			<td>0296</td>
+			<td class="left"><a href='ctr.asp?i1=212&d1=1994-01-03'>Emperor Entertainment Hotel Limited</a></td>
+			<td class="colHide2">1994-01-05</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-90.50%</td>
+			<td class="colHide3">-7.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">324</td>
+			<td class="left colHide3">O</td>
+			<td>0132</td>
+			<td class="left"><a href='ctr.asp?i1=993&d1=1994-01-03'>Hing Yip Holdings Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-91.02%</td>
+			<td class="colHide3">-7.30%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">325</td>
+			<td class="left colHide3">O</td>
+			<td>0600</td>
+			<td class="left"><a href='ctr.asp?i1=1021&d1=1994-01-03'>China Infrastructure Investment Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-07-08</td>
+			<td>*</td>
+			<td>-91.08%</td>
+			<td class="colHide3">-8.13%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">326</td>
+			<td class="left colHide3">O</td>
+			<td>0650</td>
+			<td class="left"><a href='ctr.asp?i1=98&d1=1994-01-03'>Productive Technologies Company Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-91.38%</td>
+			<td class="colHide3">-7.41%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">327</td>
+			<td class="left colHide3">O</td>
+			<td>0645</td>
+			<td class="left"><a href='ctr.asp?i1=1122&d1=1994-01-03'>Ares Asia Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-91.46%</td>
+			<td class="colHide3">-7.44%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">328</td>
+			<td class="left colHide3">O</td>
+			<td>0657</td>
+			<td class="left"><a href='ctr.asp?i1=915&d1=1994-01-03'>G-VISION INTERNATIONAL (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-91.81%</td>
+			<td class="colHide3">-7.56%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">329</td>
+			<td class="left colHide3">O</td>
+			<td>0333</td>
+			<td class="left"><a href='ctr.asp?i1=1282&d1=1994-01-03'>Top Form International Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-92.15%</td>
+			<td class="colHide3">-7.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">330</td>
+			<td class="left colHide3">O</td>
+			<td>0283</td>
+			<td class="left"><a href='ctr.asp?i1=975&d1=1994-01-03'>Goldin Properties Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2017-05-25</td>
+			<td>*</td>
+			<td>-92.23%</td>
+			<td class="colHide3">-10.35%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">331</td>
+			<td class="left colHide3">O</td>
+			<td>0728</td>
+			<td class="left"><a href='ctr.asp?i1=242&d1=1994-01-03'>LAM SOON FOOD INDUSTRIES LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2002-06-12</td>
+			<td>*</td>
+			<td>-92.30%</td>
+			<td class="colHide3">-26.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">332</td>
+			<td class="left colHide3">O</td>
+			<td>0129</td>
+			<td class="left"><a href='ctr.asp?i1=453&d1=1994-01-03'>ASIA STANDARD INTERNATIONAL GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-92.48%</td>
+			<td class="colHide3">-7.81%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">333</td>
+			<td class="left colHide3">O</td>
+			<td>0619</td>
+			<td class="left"><a href='ctr.asp?i1=1250&d1=1994-01-03'>South China Financial Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-92.98%</td>
+			<td class="colHide3">-8.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">334</td>
+			<td class="left colHide3">O</td>
+			<td>0072</td>
+			<td class="left"><a href='ctr.asp?i1=1325&d1=1994-01-03'>KING PACIFIC INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-11-03</td>
+			<td>*</td>
+			<td>-93.03%</td>
+			<td class="colHide3">-32.28%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">335</td>
+			<td class="left colHide3">O</td>
+			<td>0330</td>
+			<td class="left"><a href='ctr.asp?i1=1038&d1=1994-01-03'>ESPRIT HOLDINGS LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.21%</td>
+			<td class="colHide3">-8.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">336</td>
+			<td class="left colHide3">O</td>
+			<td>0618</td>
+			<td class="left"><a href='ctr.asp?i1=100&d1=1994-01-03'>Peking University Resources (Holdings) Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.38%</td>
+			<td class="colHide3">-8.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">337</td>
+			<td class="left colHide3">O</td>
+			<td>0730</td>
+			<td class="left"><a href='ctr.asp?i1=439&d1=1994-01-03'>Capital Industrial Financial Services Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.48%</td>
+			<td class="colHide3">-8.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">338</td>
+			<td class="left colHide3">O</td>
+			<td>0605</td>
+			<td class="left"><a href='ctr.asp?i1=1114&d1=1994-01-03'>China Financial Services Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.48%</td>
+			<td class="colHide3">-8.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">339</td>
+			<td class="left colHide3">O</td>
+			<td>0078</td>
+			<td class="left"><a href='ctr.asp?i1=287&d1=1994-01-03'>REGAL HOTELS INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.55%</td>
+			<td class="colHide3">-8.25%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">340</td>
+			<td class="left colHide3">O</td>
+			<td>0138</td>
+			<td class="left"><a href='ctr.asp?i1=978&d1=1994-01-03'>CCT Fortis Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.96%</td>
+			<td class="colHide3">-8.44%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">341</td>
+			<td class="left colHide3">O</td>
+			<td>0715</td>
+			<td class="left"><a href='ctr.asp?i1=188&d1=1994-01-03'>China Oceanwide Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2023-09-22</td>
+			<td>*</td>
+			<td>-93.98%</td>
+			<td class="colHide3">-9.02%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">342</td>
+			<td class="left colHide3">O</td>
+			<td>0298</td>
+			<td class="left"><a href='ctr.asp?i1=1004&d1=1994-01-03'>Chuang's China Investments Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-93.99%</td>
+			<td class="colHide3">-8.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">343</td>
+			<td class="left colHide3">O</td>
+			<td>0082</td>
+			<td class="left"><a href='ctr.asp?i1=687&d1=1994-01-03'>Crazy Sports Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.16%</td>
+			<td class="colHide3">-8.54%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">344</td>
+			<td class="left colHide3">O</td>
+			<td>0181</td>
+			<td class="left"><a href='ctr.asp?i1=441&d1=1994-01-03'>FUJIAN HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.18%</td>
+			<td class="colHide3">-8.55%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">345</td>
+			<td class="left colHide3">O</td>
+			<td>0385</td>
+			<td class="left"><a href='ctr.asp?i1=108&d1=1994-01-03'>CHINNEY ALLIANCE GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.35%</td>
+			<td class="colHide3">-8.64%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">346</td>
+			<td class="left colHide3">O</td>
+			<td>0214</td>
+			<td class="left"><a href='ctr.asp?i1=452&d1=1994-01-03'>ASIA ORIENT HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.44%</td>
+			<td class="colHide3">-8.68%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">347</td>
+			<td class="left colHide3">O</td>
+			<td>0606</td>
+			<td class="left"><a href='ctr.asp?i1=367&d1=1994-01-03'>LEADING SPIRIT HIGH-TECH (HOLDINGS) COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2001-05-10</td>
+			<td>*</td>
+			<td>-94.46%</td>
+			<td class="colHide3">-32.55%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">348</td>
+			<td class="left colHide3">O</td>
+			<td>0376</td>
+			<td class="left"><a href='ctr.asp?i1=1153&d1=1994-01-03'>Yunfeng Financial Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.76%</td>
+			<td class="colHide3">-8.85%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">349</td>
+			<td class="left colHide3">O</td>
+			<td>0063</td>
+			<td class="left"><a href='ctr.asp?i1=1307&d1=1994-01-03'>China Asia Valley Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.82%</td>
+			<td class="colHide3">-8.88%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">350</td>
+			<td class="left colHide3">O</td>
+			<td>0084</td>
+			<td class="left"><a href='ctr.asp?i1=1253&d1=1994-01-03'>STELUX HOLDINGS INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-94.90%</td>
+			<td class="colHide3">-8.93%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">351</td>
+			<td class="left colHide3">O</td>
+			<td>0328</td>
+			<td class="left"><a href='ctr.asp?i1=940&d1=1994-01-03'>ALCO HOLDINGS LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.20%</td>
+			<td class="colHide3">-9.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">352</td>
+			<td class="left colHide3">O</td>
+			<td>0234</td>
+			<td class="left"><a href='ctr.asp?i1=1162&d1=1994-01-03'>NEW CENTURY GROUP HONG KONG LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.46%</td>
+			<td class="colHide3">-9.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">353</td>
+			<td class="left colHide3">O</td>
+			<td>0472</td>
+			<td class="left"><a href='ctr.asp?i1=1217&d1=1994-01-03'>New Silkroad Culturaltainment Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.55%</td>
+			<td class="colHide3">-9.32%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">354</td>
+			<td class="left colHide3">O</td>
+			<td>0451</td>
+			<td class="left"><a href='ctr.asp?i1=1223&d1=1994-01-03'>GCL New Energy Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.70%</td>
+			<td class="colHide3">-9.42%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">355</td>
+			<td class="left colHide3">O</td>
+			<td>0336</td>
+			<td class="left"><a href='ctr.asp?i1=1242&d1=1994-01-03'>HUABAO INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.82%</td>
+			<td class="colHide3">-9.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">356</td>
+			<td class="left colHide3">O</td>
+			<td>0282</td>
+			<td class="left"><a href='ctr.asp?i1=200&d1=1994-01-03'>NEXT DIGITAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-06-16</td>
+			<td>*</td>
+			<td>-95.90%</td>
+			<td class="colHide3">-10.99%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">357</td>
+			<td class="left colHide3">O</td>
+			<td>0498</td>
+			<td class="left"><a href='ctr.asp?i1=449&d1=1994-01-03'>Blue River Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-95.90%</td>
+			<td class="colHide3">-9.56%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">358</td>
+			<td class="left colHide3">O</td>
+			<td>0250</td>
+			<td class="left"><a href='ctr.asp?i1=245&d1=1994-01-03'>SINO-I TECHNOLOGY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-03-31</td>
+			<td>*</td>
+			<td>-96.35%</td>
+			<td class="colHide3">-11.06%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">359</td>
+			<td class="left colHide3">O</td>
+			<td>0485</td>
+			<td class="left"><a href='ctr.asp?i1=920&d1=1994-01-03'>China Sinostar Group Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-96.57%</td>
+			<td class="colHide3">-10.06%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">360</td>
+			<td class="left colHide3">O</td>
+			<td>0674</td>
+			<td class="left"><a href='ctr.asp?i1=1291&d1=1994-01-03'>China Tangshang Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-96.73%</td>
+			<td class="colHide3">-10.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">361</td>
+			<td class="left colHide3">O</td>
+			<td>0378</td>
+			<td class="left"><a href='ctr.asp?i1=1063&d1=1994-01-03'>FDG Kinetic Limited</a></td>
+			<td class="colHide2">1995-06-28</td>
+			<td class="colHide2">2021-06-30</td>
+			<td>*</td>
+			<td>-97.14%</td>
+			<td class="colHide3">-12.78%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">362</td>
+			<td class="left colHide3">O</td>
+			<td>0430</td>
+			<td class="left"><a href='ctr.asp?i1=1138&d1=1994-01-03'>Oriental Explorer Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.20%</td>
+			<td class="colHide3">-10.62%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">363</td>
+			<td class="left colHide3">O</td>
+			<td>0185</td>
+			<td class="left"><a href='ctr.asp?i1=1081&d1=1994-01-03'>Zensun Enterprises Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.24%</td>
+			<td class="colHide3">-10.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">364</td>
+			<td class="left colHide3">O</td>
+			<td>0240</td>
+			<td class="left"><a href='ctr.asp?i1=238&d1=1994-01-03'>BUILD KING HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.28%</td>
+			<td class="colHide3">-10.71%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">365</td>
+			<td class="left colHide3">O</td>
+			<td>0593</td>
+			<td class="left"><a href='ctr.asp?i1=248&d1=1994-01-03'>DreamEast Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2024-03-11</td>
+			<td></td>
+			<td>-97.42%</td>
+			<td class="colHide3">-11.41%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">366</td>
+			<td class="left colHide3">O</td>
+			<td>0680</td>
+			<td class="left"><a href='ctr.asp?i1=1268&d1=1994-01-03'>Nan Hai Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-03-31</td>
+			<td>*</td>
+			<td>-97.58%</td>
+			<td class="colHide3">-12.34%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">367</td>
+			<td class="left colHide3">O</td>
+			<td>0104</td>
+			<td class="left"><a href='ctr.asp?i1=951&d1=1994-01-03'>ASIA COMMERCIAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.59%</td>
+			<td class="colHide3">-11.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">368</td>
+			<td class="left colHide3">O</td>
+			<td>0622</td>
+			<td class="left"><a href='ctr.asp?i1=207&d1=1994-01-03'>Oshidori International Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.80%</td>
+			<td class="colHide3">-11.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">369</td>
+			<td class="left colHide3">O</td>
+			<td>0182</td>
+			<td class="left"><a href='ctr.asp?i1=1163&d1=1994-01-03'>Concord New Energy Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.82%</td>
+			<td class="colHide3">-11.33%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">370</td>
+			<td class="left colHide3">O</td>
+			<td>0191</td>
+			<td class="left"><a href='ctr.asp?i1=128&d1=1994-01-03'>LAI SUN GARMENT (INTERNATIONAL) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.90%</td>
+			<td class="colHide3">-11.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">371</td>
+			<td class="left colHide3">O</td>
+			<td>0343</td>
+			<td class="left"><a href='ctr.asp?i1=265&d1=1994-01-03'>CULTURECOM HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-97.90%</td>
+			<td class="colHide3">-11.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">372</td>
+			<td class="left colHide3">O</td>
+			<td>0700</td>
+			<td class="left"><a href='ctr.asp?i1=1320&d1=1994-01-03'>YAOHAN INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">1998-08-10</td>
+			<td>*</td>
+			<td>-98.11%</td>
+			<td class="colHide3">-57.82%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">373</td>
+			<td class="left colHide3">O</td>
+			<td>0140</td>
+			<td class="left"><a href='ctr.asp?i1=1119&d1=1994-01-03'>SANYUAN GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2004-05-12</td>
+			<td>*</td>
+			<td>-98.39%</td>
+			<td class="colHide3">-32.89%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">374</td>
+			<td class="left colHide3">O</td>
+			<td>0115</td>
+			<td class="left"><a href='ctr.asp?i1=1000&d1=1994-01-03'>GRAND FIELD GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1999-10-13</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.61%</td>
+			<td class="colHide3">-15.14%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">375</td>
+			<td class="left colHide3">O</td>
+			<td>0202</td>
+			<td class="left"><a href='ctr.asp?i1=969&d1=1994-01-03'>EverChina Int'l Holdings Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.67%</td>
+			<td class="colHide3">-12.71%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">376</td>
+			<td class="left colHide3">O</td>
+			<td>0495</td>
+			<td class="left"><a href='ctr.asp?i1=863&d1=1994-01-03'>PALADIN LIMITED (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2024-11-26</td>
+			<td></td>
+			<td>-98.74%</td>
+			<td class="colHide3">-13.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">377</td>
+			<td class="left colHide3">O</td>
+			<td>0395</td>
+			<td class="left"><a href='ctr.asp?i1=1249&d1=1994-01-03'>SIU-FUNG CERAMICS HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-05-09</td>
+			<td>*</td>
+			<td>-98.77%</td>
+			<td class="colHide3">-50.02%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">378</td>
+			<td class="left colHide3">O</td>
+			<td>0720</td>
+			<td class="left"><a href='ctr.asp?i1=1312&d1=1994-01-03'>AUTO ITALIA HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.83%</td>
+			<td class="colHide3">-13.04%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">379</td>
+			<td class="left colHide3">O</td>
+			<td>0211</td>
+			<td class="left"><a href='ctr.asp?i1=1256&d1=1994-01-03'>STYLAND HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.84%</td>
+			<td class="colHide3">-13.08%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">380</td>
+			<td class="left colHide3">O</td>
+			<td>0563</td>
+			<td class="left"><a href='ctr.asp?i1=1296&d1=1994-01-03'>Shanghai Industrial Urban Development Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.91%</td>
+			<td class="colHide3">-13.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">381</td>
+			<td class="left colHide3">O</td>
+			<td>0106</td>
+			<td class="left"><a href='ctr.asp?i1=1064&d1=1994-01-03'>Landsea Green Management Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-08-29</td>
+			<td></td>
+			<td>-98.91%</td>
+			<td class="colHide3">-13.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">382</td>
+			<td class="left colHide3">O</td>
+			<td>0500</td>
+			<td class="left"><a href='ctr.asp?i1=78&d1=1994-01-03'>Frontier Services Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-98.94%</td>
+			<td class="colHide3">-13.32%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">383</td>
+			<td class="left colHide3">O</td>
+			<td>0419</td>
+			<td class="left"><a href='ctr.asp?i1=1292&d1=1994-01-03'>Hony Media Group</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.01%</td>
+			<td class="colHide3">-13.50%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">384</td>
+			<td class="left colHide3">O</td>
+			<td>0355</td>
+			<td class="left"><a href='ctr.asp?i1=289&d1=1994-01-03'>CENTURY CITY INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.02%</td>
+			<td class="colHide3">-13.53%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">385</td>
+			<td class="left colHide3">O</td>
+			<td>0448</td>
+			<td class="left"><a href='ctr.asp?i1=6664&d1=1994-01-03'>AKAI HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2000-08-22</td>
+			<td>*</td>
+			<td>-99.04%</td>
+			<td class="colHide3">-50.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">386</td>
+			<td class="left colHide3">O</td>
+			<td>0112</td>
+			<td class="left"><a href='ctr.asp?i1=227&d1=1994-01-03'>Lerthai Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-01-20</td>
+			<td>*</td>
+			<td>-99.22%</td>
+			<td class="colHide3">-16.44%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">387</td>
+			<td class="left colHide3">O</td>
+			<td>0235</td>
+			<td class="left"><a href='ctr.asp?i1=379&d1=1994-01-03'>CSC Holdings Limited (HK)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.24%</td>
+			<td class="colHide3">-14.20%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">388</td>
+			<td class="left colHide3">O</td>
+			<td>0036</td>
+			<td class="left"><a href='ctr.asp?i1=800&d1=1994-01-03'>FAR EAST HOLDINGS INTERNATIONAL LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.30%</td>
+			<td class="colHide3">-14.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">389</td>
+			<td class="left colHide3">O</td>
+			<td>0571</td>
+			<td class="left"><a href='ctr.asp?i1=126&d1=1994-01-03'>ESUN HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.33%</td>
+			<td class="colHide3">-14.57%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">390</td>
+			<td class="left colHide3">O</td>
+			<td>0205</td>
+			<td class="left"><a href='ctr.asp?i1=1246&d1=1994-01-03'>SEEC MEDIA GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.37%</td>
+			<td class="colHide3">-14.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">391</td>
+			<td class="left colHide3">O</td>
+			<td>0487</td>
+			<td class="left"><a href='ctr.asp?i1=1346&d1=1994-01-03'>SUCCESS UNIVERSE GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.37%</td>
+			<td class="colHide3">-14.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">392</td>
+			<td class="left colHide3">O</td>
+			<td>0601</td>
+			<td class="left"><a href='ctr.asp?i1=220&d1=1994-01-03'>Rare Earth Magnesium Technology Group Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.37%</td>
+			<td class="colHide3">-14.72%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">393</td>
+			<td class="left colHide3">O</td>
+			<td>0617</td>
+			<td class="left"><a href='ctr.asp?i1=288&d1=1994-01-03'>PALIBURG HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.40%</td>
+			<td class="colHide3">-14.85%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">394</td>
+			<td class="left colHide3">O</td>
+			<td>0079</td>
+			<td class="left"><a href='ctr.asp?i1=1045&d1=1994-01-03'>CENTURY LEGEND (HOLDINGS) LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.44%</td>
+			<td class="colHide3">-15.04%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">395</td>
+			<td class="left colHide3">O</td>
+			<td>0159</td>
+			<td class="left"><a href='ctr.asp?i1=1301&d1=1994-01-03'>Brockman Mining Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.47%</td>
+			<td class="colHide3">-15.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">396</td>
+			<td class="left colHide3">O</td>
+			<td>0145</td>
+			<td class="left"><a href='ctr.asp?i1=249&d1=1994-01-03'>CCIAM Future Energy Limited (b1964-11-28)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.48%</td>
+			<td class="colHide3">-15.26%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">397</td>
+			<td class="left colHide3">O</td>
+			<td>0310</td>
+			<td class="left"><a href='ctr.asp?i1=233&d1=1994-01-03'>Prosperity Investment Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.50%</td>
+			<td class="colHide3">-15.36%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">398</td>
+			<td class="left colHide3">O</td>
+			<td>0332</td>
+			<td class="left"><a href='ctr.asp?i1=1170&d1=1994-01-03'>Yuan Heng Gas Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.52%</td>
+			<td class="colHide3">-15.46%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">399</td>
+			<td class="left colHide3">O</td>
+			<td>0428</td>
+			<td class="left"><a href='ctr.asp?i1=1229&d1=1994-01-03'>Cocoon Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.56%</td>
+			<td class="colHide3">-15.66%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">400</td>
+			<td class="left colHide3">O</td>
+			<td>0493</td>
+			<td class="left"><a href='ctr.asp?i1=976&d1=1994-01-03'>GOME Retail Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.64%</td>
+			<td class="colHide3">-16.22%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">401</td>
+			<td class="left colHide3">O</td>
+			<td>0312</td>
+			<td class="left"><a href='ctr.asp?i1=1129&d1=1994-01-03'>EZCOM HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2005-05-13</td>
+			<td>*</td>
+			<td>-99.64%</td>
+			<td class="colHide3">-39.12%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">402</td>
+			<td class="left colHide3">O</td>
+			<td>0726</td>
+			<td class="left"><a href='ctr.asp?i1=962&d1=1994-01-03'>DIT Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.69%</td>
+			<td class="colHide3">-16.63%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">403</td>
+			<td class="left colHide3">O</td>
+			<td>0620</td>
+			<td class="left"><a href='ctr.asp?i1=406&d1=1994-01-03'>DTXS Silk Road Investment Holdings Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.70%</td>
+			<td class="colHide3">-16.66%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">404</td>
+			<td class="left colHide3">O</td>
+			<td>0243</td>
+			<td class="left"><a href='ctr.asp?i1=426&d1=1994-01-03'>QPL INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.70%</td>
+			<td class="colHide3">-16.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">405</td>
+			<td class="left colHide3">O</td>
+			<td>0755</td>
+			<td class="left"><a href='ctr.asp?i1=1048&d1=1994-01-03'>DevGreat Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.72%</td>
+			<td class="colHide3">-16.87%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">406</td>
+			<td class="left colHide3">O</td>
+			<td>0704</td>
+			<td class="left"><a href='ctr.asp?i1=1050&d1=1994-01-03'>Huscoke Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.74%</td>
+			<td class="colHide3">-17.03%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">407</td>
+			<td class="left colHide3">O</td>
+			<td>0488</td>
+			<td class="left"><a href='ctr.asp?i1=125&d1=1994-01-03'>LAI SUN DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.74%</td>
+			<td class="colHide3">-17.05%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">408</td>
+			<td class="left colHide3">O</td>
+			<td>0070</td>
+			<td class="left"><a href='ctr.asp?i1=1151&d1=1994-01-03'>Rich Goldman Holdings Limited</a></td>
+			<td class="colHide2">2000-11-07</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.75%</td>
+			<td class="colHide3">-21.33%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">409</td>
+			<td class="left colHide3">O</td>
+			<td>0276</td>
+			<td class="left"><a href='ctr.asp?i1=1187&d1=1994-01-03'>Mongolia Energy Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.78%</td>
+			<td class="colHide3">-17.55%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">410</td>
+			<td class="left colHide3">O</td>
+			<td>0648</td>
+			<td class="left"><a href='ctr.asp?i1=983&d1=1994-01-03'>SoftMedx Healthcare Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2017-11-24</td>
+			<td></td>
+			<td>-99.79%</td>
+			<td class="colHide3">-22.72%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">411</td>
+			<td class="left colHide3">O</td>
+			<td>0351</td>
+			<td class="left"><a href='ctr.asp?i1=1097&d1=1994-01-03'>ASIA ENERGY LOGISTICS GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.80%</td>
+			<td class="colHide3">-17.76%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">412</td>
+			<td class="left colHide3">O</td>
+			<td>0433</td>
+			<td class="left"><a href='ctr.asp?i1=1257&d1=1994-01-03'>North Mining Shares Company Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.81%</td>
+			<td class="colHide3">-17.82%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">413</td>
+			<td class="left colHide3">O</td>
+			<td>0544</td>
+			<td class="left"><a href='ctr.asp?i1=1022&d1=1994-01-03'>DAIDO GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.82%</td>
+			<td class="colHide3">-17.96%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">414</td>
+			<td class="left colHide3">O</td>
+			<td>0342</td>
+			<td class="left"><a href='ctr.asp?i1=1120&d1=1994-01-03'>NewOcean Energy Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-03-31</td>
+			<td>*</td>
+			<td>-99.82%</td>
+			<td class="colHide3">-20.04%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">415</td>
+			<td class="left colHide3">O</td>
+			<td>0524</td>
+			<td class="left"><a href='ctr.asp?i1=1061&d1=1994-01-03'>Great Wall Terroir Holdings Limited</a></td>
+			<td class="colHide2">1994-11-29</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.83%</td>
+			<td class="colHide3">-18.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">416</td>
+			<td class="left colHide3">O</td>
+			<td>0439</td>
+			<td class="left"><a href='ctr.asp?i1=314&d1=1994-01-03'>KuangChi Science Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.85%</td>
+			<td class="colHide3">-18.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">417</td>
+			<td class="left colHide3">O</td>
+			<td>0198</td>
+			<td class="left"><a href='ctr.asp?i1=1024&d1=1994-01-03'>SMI Holdings Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2018-08-31</td>
+			<td>*</td>
+			<td>-99.86%</td>
+			<td class="colHide3">-23.37%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">418</td>
+			<td class="left colHide3">O</td>
+			<td>0094</td>
+			<td class="left"><a href='ctr.asp?i1=1280&d1=1994-01-03'>Greenheart Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.87%</td>
+			<td class="colHide3">-18.83%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">419</td>
+			<td class="left colHide3">O</td>
+			<td>0172</td>
+			<td class="left"><a href='ctr.asp?i1=50&d1=1994-01-03'>GOLDBOND GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2019-06-27</td>
+			<td>*</td>
+			<td>-99.88%</td>
+			<td class="colHide3">-23.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">420</td>
+			<td class="left colHide3">O</td>
+			<td>0723</td>
+			<td class="left"><a href='ctr.asp?i1=944&d1=1994-01-03'>Reliance Global Holdings Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.89%</td>
+			<td class="colHide3">-19.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">421</td>
+			<td class="left colHide3">O</td>
+			<td>0231</td>
+			<td class="left"><a href='ctr.asp?i1=17&d1=1994-01-03'>Ping An Securities Group (Holdings) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-03-31</td>
+			<td>*</td>
+			<td>-99.90%</td>
+			<td class="colHide3">-22.29%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">422</td>
+			<td class="left colHide3">O</td>
+			<td>0431</td>
+			<td class="left"><a href='ctr.asp?i1=1186&d1=1994-01-03'>Greater China Financial Holdings Limited</a></td>
+			<td class="colHide2">1994-02-08</td>
+			<td class="colHide2">2024-08-30</td>
+			<td></td>
+			<td>-99.90%</td>
+			<td class="colHide3">-20.19%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">423</td>
+			<td class="left colHide3">O</td>
+			<td>0245</td>
+			<td class="left"><a href='ctr.asp?i1=1245&d1=1994-01-03'>China Vered Financial Holding Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.90%</td>
+			<td class="colHide3">-19.49%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">424</td>
+			<td class="left colHide3">O</td>
+			<td>0292</td>
+			<td class="left"><a href='ctr.asp?i1=1318&d1=1994-01-03'>ASIA STANDARD HOTEL GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2024-09-24</td>
+			<td>*</td>
+			<td>-99.903%</td>
+			<td class="colHide3">-20.21%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">425</td>
+			<td class="left colHide3">O</td>
+			<td>0372</td>
+			<td class="left"><a href='ctr.asp?i1=448&d1=1994-01-03'>PT International Development Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.907%</td>
+			<td class="colHide3">-19.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">426</td>
+			<td class="left colHide3">O</td>
+			<td>0295</td>
+			<td class="left"><a href='ctr.asp?i1=1336&d1=1994-01-03'>KONG SUN HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.907%</td>
+			<td class="colHide3">-19.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">427</td>
+			<td class="left colHide3">O</td>
+			<td>0260</td>
+			<td class="left"><a href='ctr.asp?i1=1157&d1=1994-01-03'>AVIC Joy Holdings (HK) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-11-28</td>
+			<td>*</td>
+			<td>-99.910%</td>
+			<td class="colHide3">-21.53%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">428</td>
+			<td class="left colHide3">O</td>
+			<td>0313</td>
+			<td class="left"><a href='ctr.asp?i1=1029&d1=1994-01-03'>Richly Field China Development Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.916%</td>
+			<td class="colHide3">-19.97%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">429</td>
+			<td class="left colHide3">O</td>
+			<td>0632</td>
+			<td class="left"><a href='ctr.asp?i1=933&d1=1994-01-03'>CHK Oil Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.922%</td>
+			<td class="colHide3">-20.14%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">430</td>
+			<td class="left colHide3">O</td>
+			<td>0661</td>
+			<td class="left"><a href='ctr.asp?i1=460&d1=1994-01-03'>China Daye Non-Ferrous Metals Mining Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.943%</td>
+			<td class="colHide3">-20.91%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">431</td>
+			<td class="left colHide3">O</td>
+			<td>0530</td>
+			<td class="left"><a href='ctr.asp?i1=795&d1=1994-01-03'>Goldin Financial Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2022-03-31</td>
+			<td>*</td>
+			<td>-99.947%</td>
+			<td class="colHide3">-23.43%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">432</td>
+			<td class="left colHide3">O</td>
+			<td>0432</td>
+			<td class="left"><a href='ctr.asp?i1=1015&d1=1994-01-03'>PACIFIC CENTURY PREMIUM DEVELOPMENTS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.948%</td>
+			<td class="colHide3">-21.14%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">433</td>
+			<td class="left colHide3">O</td>
+			<td>0092</td>
+			<td class="left"><a href='ctr.asp?i1=980&d1=1994-01-03'>CHAMPION TECHNOLOGY HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.957%</td>
+			<td class="colHide3">-21.61%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">434</td>
+			<td class="left colHide3">O</td>
+			<td>0401</td>
+			<td class="left"><a href='ctr.asp?i1=954&d1=1994-01-03'>401 HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2003-03-27</td>
+			<td>*</td>
+			<td>-99.963%</td>
+			<td class="colHide3">-57.52%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">435</td>
+			<td class="left colHide3">O</td>
+			<td>0547</td>
+			<td class="left"><a href='ctr.asp?i1=1152&d1=1994-01-03'>Digital Domain Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.966%</td>
+			<td class="colHide3">-22.16%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">436</td>
+			<td class="left colHide3">O</td>
+			<td>0307</td>
+			<td class="left"><a href='ctr.asp?i1=1136&d1=1994-01-03'>Up Energy Development Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2016-06-29</td>
+			<td>*</td>
+			<td>-99.970%</td>
+			<td class="colHide3">-30.27%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">437</td>
+			<td class="left colHide3">O</td>
+			<td>0663</td>
+			<td class="left"><a href='ctr.asp?i1=1259&d1=1994-01-03'>KING STONE ENERGY GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2024-03-28</td>
+			<td></td>
+			<td>-99.972%</td>
+			<td class="colHide3">-23.70%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">438</td>
+			<td class="left colHide3">O</td>
+			<td>0091</td>
+			<td class="left"><a href='ctr.asp?i1=1267&d1=1994-01-03'>Golden Century International Holdings Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2023-03-31</td>
+			<td>*</td>
+			<td>-99.975%</td>
+			<td class="colHide3">-24.65%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">439</td>
+			<td class="left colHide3">O</td>
+			<td>0456</td>
+			<td class="left"><a href='ctr.asp?i1=1216&d1=1994-01-03'>New City Development Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.976%</td>
+			<td class="colHide3">-23.06%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">440</td>
+			<td class="left colHide3">O</td>
+			<td>0155</td>
+			<td class="left"><a href='ctr.asp?i1=1092&d1=1994-01-03'>CHINA SOLAR ENERGY HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2013-08-16</td>
+			<td>*</td>
+			<td>-99.977%</td>
+			<td class="colHide3">-34.75%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">441</td>
+			<td class="left colHide3">O</td>
+			<td>0254</td>
+			<td class="left"><a href='ctr.asp?i1=1139&d1=1994-01-03'>NATIONAL UNITED RESOURCES HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.977%</td>
+			<td class="colHide3">-23.18%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">442</td>
+			<td class="left colHide3">O</td>
+			<td>0193</td>
+			<td class="left"><a href='ctr.asp?i1=1327&d1=1994-01-03'>CAPITAL ESTATE LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.982%</td>
+			<td class="colHide3">-23.78%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">443</td>
+			<td class="left colHide3">O</td>
+			<td>0164</td>
+			<td class="left"><a href='ctr.asp?i1=15&d1=1994-01-03'>China Baoli Technologies Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.986%</td>
+			<td class="colHide3">-24.38%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">444</td>
+			<td class="left colHide3">O</td>
+			<td>0499</td>
+			<td class="left"><a href='ctr.asp?i1=1194&d1=1994-01-03'>Qingdao Holdings International Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.9907%</td>
+			<td class="colHide3">-25.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">445</td>
+			<td class="left colHide3">O</td>
+			<td>0326</td>
+			<td class="left"><a href='ctr.asp?i1=997&d1=1994-01-03'>CHINA STAR ENTERTAINMENT LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.9931%</td>
+			<td class="colHide3">-25.99%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">446</td>
+			<td class="left colHide3">O</td>
+			<td>0491</td>
+			<td class="left"><a href='ctr.asp?i1=1304&d1=1994-01-03'>Emperor Culture Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.9941%</td>
+			<td class="colHide3">-26.36%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">447</td>
+			<td class="left colHide3">O</td>
+			<td>0269</td>
+			<td class="left"><a href='ctr.asp?i1=201&d1=1994-01-03'>China Resources and Transportation Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.9951%</td>
+			<td class="colHide3">-26.79%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">448</td>
+			<td class="left colHide3">O</td>
+			<td>0689</td>
+			<td class="left"><a href='ctr.asp?i1=1066&d1=1994-01-03'>EPI (Holdings) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.9972%</td>
+			<td class="colHide3">-28.10%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">449</td>
+			<td class="left colHide3">O</td>
+			<td>0059</td>
+			<td class="left"><a href='ctr.asp?i1=172&d1=1994-01-03'>Skyfame Realty (Holdings) Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-03-31</td>
+			<td></td>
+			<td>-99.9990%</td>
+			<td class="colHide3">-30.73%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">450</td>
+			<td class="left colHide3">O</td>
+			<td>0263</td>
+			<td class="left"><a href='ctr.asp?i1=1195&d1=1994-01-03'>GT GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2021-03-31</td>
+			<td>*</td>
+			<td>-99.99923%</td>
+			<td class="colHide3">-35.11%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">451</td>
+			<td class="left colHide3">O</td>
+			<td>0261</td>
+			<td class="left"><a href='ctr.asp?i1=456&d1=1994-01-03'>GBA Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.99949%</td>
+			<td class="colHide3">-31.81%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">452</td>
+			<td class="left colHide3">O</td>
+			<td>0729</td>
+			<td class="left"><a href='ctr.asp?i1=1098&d1=1994-01-03'>FDG Electric Vehicles Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-06-30</td>
+			<td>*</td>
+			<td>-99.99960%</td>
+			<td class="colHide3">-37.45%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">453</td>
+			<td class="left colHide3">O</td>
+			<td>0479</td>
+			<td class="left"><a href='ctr.asp?i1=1009&d1=1994-01-03'>CIL HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2020-09-30</td>
+			<td>*</td>
+			<td>-99.99961%</td>
+			<td class="colHide3">-37.24%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">454</td>
+			<td class="left colHide3">O</td>
+			<td>0286</td>
+			<td class="left"><a href='ctr.asp?i1=118&d1=1994-01-03'>Aidigong Maternal & Child Health Limited (BM)</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-02-21</td>
+			<td></td>
+			<td>-99.99975%</td>
+			<td class="colHide3">-33.90%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">455</td>
+			<td class="left colHide3">O</td>
+			<td>0275</td>
+			<td class="left"><a href='ctr.asp?i1=131&d1=1994-01-03'>Master Glory Group Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2019-06-28</td>
+			<td>*</td>
+			<td>-99.99981%</td>
+			<td class="colHide3">-40.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">456</td>
+			<td class="left colHide3">O</td>
+			<td>0412</td>
+			<td class="left"><a href='ctr.asp?i1=1030&d1=1994-01-03'>SHANDONG HI-SPEED HOLDINGS GROUP LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.99982%</td>
+			<td class="colHide3">-33.96%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">457</td>
+			<td class="left colHide3">O</td>
+			<td>0736</td>
+			<td class="left"><a href='ctr.asp?i1=965&d1=1994-01-03'>China Properties Investment Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.99984%</td>
+			<td class="colHide3">-34.31%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">458</td>
+			<td class="left colHide3">O</td>
+			<td>0397</td>
+			<td class="left"><a href='ctr.asp?i1=1214&d1=1994-01-03'>Minerva Group Holding Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.99987%</td>
+			<td class="colHide3">-34.67%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">459</td>
+			<td class="left colHide3">O</td>
+			<td>0076</td>
+			<td class="left"><a href='ctr.asp?i1=1227&d1=1994-01-03'>Elate Holdings Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.99989%</td>
+			<td class="colHide3">-35.01%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">460</td>
+			<td class="left colHide3">O</td>
+			<td>0149</td>
+			<td class="left"><a href='ctr.asp?i1=1084&d1=1994-01-03'>China Agri-Products Exchange Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.999921%</td>
+			<td class="colHide3">-35.69%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">461</td>
+			<td class="left colHide3">O</td>
+			<td>0273</td>
+			<td class="left"><a href='ctr.asp?i1=429&d1=1994-01-03'>MASON GROUP HOLDINGS LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2023-10-04</td>
+			<td>*</td>
+			<td>-99.999987%</td>
+			<td class="colHide3">-41.33%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">462</td>
+			<td class="left colHide3">O</td>
+			<td>0279</td>
+			<td class="left"><a href='ctr.asp?i1=1287&d1=1994-01-03'>Arta TechFin Corporation Limited</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-99.999995%</td>
+			<td class="colHide3">-41.00%</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide2">463</td>
+			<td class="left colHide3">O</td>
+			<td>0616</td>
+			<td class="left"><a href='ctr.asp?i1=918&d1=1994-01-03'>EMINENCE ENTERPRISE LIMITED</a></td>
+			<td class="colHide2">1994-01-03</td>
+			<td class="colHide2">2025-10-28</td>
+			<td></td>
+			<td>-100.000000%</td>
+			<td class="colHide3">-54.39%</td>
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

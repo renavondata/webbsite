@@ -1,0 +1,2858 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.8">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>HK first registration: Private Cars:  by month and fuel </title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK first registration: Private Cars:  by month and fuel </h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li class='livebutton'>Brand history</li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=1'>Type history</a></li><li><a href='vefuel.asp'>Fuels</a></li><li><a href='vefuelhist.asp?vc=1'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li><a href='veJourneys.asp'>Journeys</a></li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of vehicles newly-registered in HK by vehicle class, 
+brand and 
+month since May-2016, using data from the Transport Department. By
+<a href="https://www.hklii.hk/en/legis/ord/374/s2" target="_blank">law</a>, 
+permitted gross vehicle mass in tonnes are: Light: 5.5, Medium: 24, Heavy: 38. 
+Click on the month to see all brands for that month..</p>
+<form method="get" action="vebrandhist.asp">
+	<div class="inputs">
+		Vehicle type
+		<select name='vc' onchange="this.form.submit()"><option value='1' selected>Private Cars</option><option value='2'>Motor Cycles</option><option value='27'>Light Goods Vehicles</option><option value='28'>Medium Goods Vehicles</option><option value='29'>Heavy Goods Vehicles</option></select>
+	</div>
+	<div class="inputs">
+		Brand
+		<select name='brand' onchange="this.form.submit()"><option value='0' selected>All</option><option value='71'>ABARTH</option><option value='73'>ACE</option><option value='45'>ALFA ROMEO</option><option value='97'>ALPINA</option><option value='76'>ALPINE</option><option value='87'>ANDERSEN</option><option value='57'>ARIEL</option><option value='39'>ASTON MARTIN</option><option value='29'>AUDI</option><option value='25'>AUSTIN</option><option value='49'>AUSTIN MORRIS</option><option value='18'>B.M.W.</option><option value='20'>B.M.W.I.</option><option value='65'>BAC</option><option value='14'>BENTLEY</option><option value='68'>BIRKIN</option><option value='96'>BLMC</option><option value='11'>BYD</option><option value='42'>CATERHAM</option><option value='56'>CHEVROLET</option><option value='83'>CHRYSLER</option><option value='48'>CITROEN</option><option value='75'>CORBA</option><option value='7'>DAIHATSU</option><option value='69'>DAIMLER</option><option value='55'>DATSUN</option><option value='88'>DAX</option><option value='99'>DE LOREAN</option><option value='268'>DEEPAL</option><option value='246'>DENZA</option><option value='78'>DFSK</option><option value='84'>DODGE</option><option value='219'>DONGFENG</option><option value='62'>ESSEX</option><option value='46'>EUNOS</option><option value='250'>EVEASY</option><option value='38'>FERRARI</option><option value='41'>FIAT</option><option value='90'>FLAT</option><option value='35'>FORD</option><option value='269'>FORTHING</option><option value='81'>FURORE</option><option value='251'>GAC</option><option value='239'>GAC AION</option><option value='265'>GEELY</option><option value='74'>GENESIS</option><option value='52'>GUMPERT</option><option value='254'>HENREY</option><option value='27'>HONDA</option><option value='98'>HONGQI</option><option value='47'>HUMMER</option><option value='28'>HYUNDAI</option><option value='255'>INEOS</option><option value='26'>INFINITI</option><option value='61'>ISUZU</option><option value='17'>JAGUAR</option><option value='19'>JEEP</option><option value='266'>JMEV</option><option value='259'>JUNEYAO</option><option value='260'>KAIYI</option><option value='236'>KG MOBILITY</option><option value='9'>KIA</option><option value='10'>LAMBORGHINI</option><option value='59'>LANCIA</option><option value='1'>LAND ROVER</option><option value='256'>LEVC</option><option value='40'>LEXUS</option><option value='92'>LEYLAND</option><option value='36'>LOTUS</option><option value='60'>M.G.</option><option value='30'>MASERATI</option><option value='44'>MAXUS</option><option value='70'>MAYBACH</option><option value='21'>MAZDA</option><option value='23'>MCLAREN</option><option value='15'>MERCEDES BENZ</option><option value='16'>MINI</option><option value='2'>MITSUBISHI</option><option value='43'>MITSUOKA</option><option value='72'>MOKE</option><option value='54'>MORGAN</option><option value='8'>MORRIS</option><option value='242'>NETA</option><option value='3'>NISSAN</option><option value='94'>OPEL</option><option value='95'>ORA</option><option value='270'>PAGANI</option><option value='51'>PEUGEOT</option><option value='93'>POLESTAR</option><option value='37'>PORSCHE</option><option value='89'>PRINCE</option><option value='32'>RENAULT</option><option value='66'>RILEY</option><option value='91'>ROADRUNNER</option><option value='31'>ROLLS-ROYCE</option><option value='22'>ROVER</option><option value='79'>SAAB</option><option value='237'>SEAT</option><option value='231'>SGMW</option><option value='82'>SKODA</option><option value='24'>SMART</option><option value='12'>SSANGYONG</option><option value='13'>SUBARU</option><option value='5'>SUZUKI</option><option value='50'>T.V.R.</option><option value='85'>TEAL CARS TYPE 35</option><option value='6'>TESLA</option><option value='80'>TOMITA</option><option value='4'>TOYOTA</option><option value='53'>TRIUMPH</option><option value='63'>ULTIMA</option><option value='86'>VANDEN PLAS</option><option value='67'>VAUXHALL</option><option value='34'>VOLKSWAGEN</option><option value='33'>VOLVO</option><option value='77'>WESTFIELD</option><option value='64'>WOLSELEY</option><option value='235'>WULING</option><option value='248'>XPENG</option><option value='249'>ZEEKR</option><option value='58'>ZENOS</option></select>
+	</div>
+	<div class="inputs">
+		By
+		<select id='b' name='b' onchange='this.form.submit()'><option value='1' selected>Fuel</option><option value='2'>Body type</option></select>
+	</div>
+	<div class="inputs">
+		Frequency
+		<select id='f' name='f' onchange='this.form.submit()'><option value='1' selected>Monthly</option><option value='2'>Yearly</option></select>
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+	
+	
+</form>
+<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable fcl">
+	<tr class="yscroll">
+		<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=datdn'><b>Month</b></a></th>
+		
+			<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=f0dn'><b>Petrol</b></a></th>
+		
+			<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=f1dn'><b>Diesel</b></a></th>
+		
+			<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=f2dn'><b>Electric</b></a></th>
+		
+			<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=f3dn'><b>Others</b></a></th>
+		
+		<th><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=totdn'><b>Total</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=fs0dn'><b>Petrol share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=fs1dn'><b>Diesel share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=fs2dn'><b>Electric share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vebrandhist.asp?vc=1&amp;m=0&amp;b=1&amp;f=1&amp;sort=fs3dn'><b>Others share %</b></a></th>
+		
+		<th></th>
+	</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=7&amp;b=1">2025-07</a></td>
+			
+				<td>1,209</td>
+			
+				<td>0</td>
+			
+				<td>2,684</td>
+			
+				<td>0</td>
+			
+			<td>3,893</td>
+			
+				<td class="colHide1">31.06</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.94</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=6&amp;b=1">2025-06</a></td>
+			
+				<td>1,174</td>
+			
+				<td>0</td>
+			
+				<td>3,219</td>
+			
+				<td>0</td>
+			
+			<td>4,393</td>
+			
+				<td class="colHide1">26.72</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">73.28</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=5&amp;b=1">2025-05</a></td>
+			
+				<td>1,125</td>
+			
+				<td>0</td>
+			
+				<td>3,276</td>
+			
+				<td>0</td>
+			
+			<td>4,401</td>
+			
+				<td class="colHide1">25.56</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">74.44</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=4&amp;b=1">2025-04</a></td>
+			
+				<td>1,030</td>
+			
+				<td>0</td>
+			
+				<td>2,098</td>
+			
+				<td>0</td>
+			
+			<td>3,128</td>
+			
+				<td class="colHide1">32.93</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">67.07</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=3&amp;b=1">2025-03</a></td>
+			
+				<td>1,156</td>
+			
+				<td>0</td>
+			
+				<td>2,465</td>
+			
+				<td>1</td>
+			
+			<td>3,622</td>
+			
+				<td class="colHide1">31.92</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.06</td>
+			
+				<td class="colHide1">0.03</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=2&amp;b=1">2025-02</a></td>
+			
+				<td>900</td>
+			
+				<td>0</td>
+			
+				<td>2,435</td>
+			
+				<td>0</td>
+			
+			<td>3,335</td>
+			
+				<td class="colHide1">26.99</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">73.01</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2025&amp;m=1&amp;b=1">2025-01</a></td>
+			
+				<td>1,065</td>
+			
+				<td>0</td>
+			
+				<td>1,918</td>
+			
+				<td>0</td>
+			
+			<td>2,983</td>
+			
+				<td class="colHide1">35.70</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">64.30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2025&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=12&amp;b=1">2024-12</a></td>
+			
+				<td>1,108</td>
+			
+				<td>0</td>
+			
+				<td>2,476</td>
+			
+				<td>0</td>
+			
+			<td>3,584</td>
+			
+				<td class="colHide1">30.92</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">69.08</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=11&amp;b=1">2024-11</a></td>
+			
+				<td>1,083</td>
+			
+				<td>0</td>
+			
+				<td>2,478</td>
+			
+				<td>0</td>
+			
+			<td>3,561</td>
+			
+				<td class="colHide1">30.41</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">69.59</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=10&amp;b=1">2024-10</a></td>
+			
+				<td>1,211</td>
+			
+				<td>0</td>
+			
+				<td>2,618</td>
+			
+				<td>0</td>
+			
+			<td>3,829</td>
+			
+				<td class="colHide1">31.63</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.37</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=9&amp;b=1">2024-09</a></td>
+			
+				<td>1,122</td>
+			
+				<td>0</td>
+			
+				<td>1,818</td>
+			
+				<td>0</td>
+			
+			<td>2,940</td>
+			
+				<td class="colHide1">38.16</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">61.84</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=8&amp;b=1">2024-08</a></td>
+			
+				<td>1,120</td>
+			
+				<td>0</td>
+			
+				<td>2,069</td>
+			
+				<td>0</td>
+			
+			<td>3,189</td>
+			
+				<td class="colHide1">35.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">64.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=7&amp;b=1">2024-07</a></td>
+			
+				<td>1,279</td>
+			
+				<td>0</td>
+			
+				<td>1,695</td>
+			
+				<td>0</td>
+			
+			<td>2,974</td>
+			
+				<td class="colHide1">43.01</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">56.99</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=6&amp;b=1">2024-06</a></td>
+			
+				<td>1,083</td>
+			
+				<td>0</td>
+			
+				<td>1,513</td>
+			
+				<td>0</td>
+			
+			<td>2,596</td>
+			
+				<td class="colHide1">41.72</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">58.28</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=5&amp;b=1">2024-05</a></td>
+			
+				<td>1,200</td>
+			
+				<td>0</td>
+			
+				<td>1,649</td>
+			
+				<td>0</td>
+			
+			<td>2,849</td>
+			
+				<td class="colHide1">42.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">57.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=4&amp;b=1">2024-04</a></td>
+			
+				<td>1,052</td>
+			
+				<td>0</td>
+			
+				<td>5,383</td>
+			
+				<td>0</td>
+			
+			<td>6,435</td>
+			
+				<td class="colHide1">16.35</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">83.65</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=3&amp;b=1">2024-03</a></td>
+			
+				<td>1,022</td>
+			
+				<td>0</td>
+			
+				<td>4,896</td>
+			
+				<td>0</td>
+			
+			<td>5,918</td>
+			
+				<td class="colHide1">17.27</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">82.73</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=2&amp;b=1">2024-02</a></td>
+			
+				<td>959</td>
+			
+				<td>0</td>
+			
+				<td>3,471</td>
+			
+				<td>0</td>
+			
+			<td>4,430</td>
+			
+				<td class="colHide1">21.65</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">78.35</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2024&amp;m=1&amp;b=1">2024-01</a></td>
+			
+				<td>1,264</td>
+			
+				<td>0</td>
+			
+				<td>3,140</td>
+			
+				<td>0</td>
+			
+			<td>4,404</td>
+			
+				<td class="colHide1">28.70</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">71.30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2024&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=12&amp;b=1">2023-12</a></td>
+			
+				<td>1,333</td>
+			
+				<td>0</td>
+			
+				<td>3,033</td>
+			
+				<td>0</td>
+			
+			<td>4,366</td>
+			
+				<td class="colHide1">30.53</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">69.47</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=11&amp;b=1">2023-11</a></td>
+			
+				<td>1,534</td>
+			
+				<td>0</td>
+			
+				<td>2,538</td>
+			
+				<td>0</td>
+			
+			<td>4,072</td>
+			
+				<td class="colHide1">37.67</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">62.33</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=10&amp;b=1">2023-10</a></td>
+			
+				<td>1,339</td>
+			
+				<td>0</td>
+			
+				<td>2,388</td>
+			
+				<td>0</td>
+			
+			<td>3,727</td>
+			
+				<td class="colHide1">35.93</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">64.07</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=9&amp;b=1">2023-09</a></td>
+			
+				<td>1,242</td>
+			
+				<td>0</td>
+			
+				<td>2,255</td>
+			
+				<td>0</td>
+			
+			<td>3,497</td>
+			
+				<td class="colHide1">35.52</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">64.48</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=8&amp;b=1">2023-08</a></td>
+			
+				<td>1,280</td>
+			
+				<td>0</td>
+			
+				<td>2,747</td>
+			
+				<td>0</td>
+			
+			<td>4,027</td>
+			
+				<td class="colHide1">31.79</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.21</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=7&amp;b=1">2023-07</a></td>
+			
+				<td>1,288</td>
+			
+				<td>0</td>
+			
+				<td>2,276</td>
+			
+				<td>0</td>
+			
+			<td>3,564</td>
+			
+				<td class="colHide1">36.14</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">63.86</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=6&amp;b=1">2023-06</a></td>
+			
+				<td>1,410</td>
+			
+				<td>0</td>
+			
+				<td>2,544</td>
+			
+				<td>0</td>
+			
+			<td>3,954</td>
+			
+				<td class="colHide1">35.66</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">64.34</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=5&amp;b=1">2023-05</a></td>
+			
+				<td>1,325</td>
+			
+				<td>0</td>
+			
+				<td>2,675</td>
+			
+				<td>0</td>
+			
+			<td>4,000</td>
+			
+				<td class="colHide1">33.13</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">66.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=4&amp;b=1">2023-04</a></td>
+			
+				<td>1,163</td>
+			
+				<td>0</td>
+			
+				<td>1,700</td>
+			
+				<td>0</td>
+			
+			<td>2,863</td>
+			
+				<td class="colHide1">40.62</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">59.38</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=3&amp;b=1">2023-03</a></td>
+			
+				<td>1,427</td>
+			
+				<td>0</td>
+			
+				<td>2,251</td>
+			
+				<td>0</td>
+			
+			<td>3,678</td>
+			
+				<td class="colHide1">38.80</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">61.20</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=2&amp;b=1">2023-02</a></td>
+			
+				<td>1,278</td>
+			
+				<td>0</td>
+			
+				<td>2,613</td>
+			
+				<td>0</td>
+			
+			<td>3,891</td>
+			
+				<td class="colHide1">32.85</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">67.15</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2023&amp;m=1&amp;b=1">2023-01</a></td>
+			
+				<td>1,009</td>
+			
+				<td>0</td>
+			
+				<td>1,521</td>
+			
+				<td>0</td>
+			
+			<td>2,530</td>
+			
+				<td class="colHide1">39.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">60.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2023&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=12&amp;b=1">2022-12</a></td>
+			
+				<td>1,208</td>
+			
+				<td>0</td>
+			
+				<td>2,652</td>
+			
+				<td>0</td>
+			
+			<td>3,860</td>
+			
+				<td class="colHide1">31.30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">68.70</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=11&amp;b=1">2022-11</a></td>
+			
+				<td>1,399</td>
+			
+				<td>0</td>
+			
+				<td>2,823</td>
+			
+				<td>0</td>
+			
+			<td>4,222</td>
+			
+				<td class="colHide1">33.14</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">66.86</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=10&amp;b=1">2022-10</a></td>
+			
+				<td>1,448</td>
+			
+				<td>0</td>
+			
+				<td>2,955</td>
+			
+				<td>0</td>
+			
+			<td>4,403</td>
+			
+				<td class="colHide1">32.89</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">67.11</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=9&amp;b=1">2022-09</a></td>
+			
+				<td>1,668</td>
+			
+				<td>0</td>
+			
+				<td>2,779</td>
+			
+				<td>0</td>
+			
+			<td>4,447</td>
+			
+				<td class="colHide1">37.51</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">62.49</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=8&amp;b=1">2022-08</a></td>
+			
+				<td>1,633</td>
+			
+				<td>0</td>
+			
+				<td>2,268</td>
+			
+				<td>0</td>
+			
+			<td>3,901</td>
+			
+				<td class="colHide1">41.86</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">58.14</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=7&amp;b=1">2022-07</a></td>
+			
+				<td>1,562</td>
+			
+				<td>0</td>
+			
+				<td>992</td>
+			
+				<td>0</td>
+			
+			<td>2,554</td>
+			
+				<td class="colHide1">61.16</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">38.84</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=6&amp;b=1">2022-06</a></td>
+			
+				<td>1,682</td>
+			
+				<td>0</td>
+			
+				<td>1,328</td>
+			
+				<td>0</td>
+			
+			<td>3,010</td>
+			
+				<td class="colHide1">55.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">44.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=5&amp;b=1">2022-05</a></td>
+			
+				<td>1,793</td>
+			
+				<td>0</td>
+			
+				<td>357</td>
+			
+				<td>0</td>
+			
+			<td>2,150</td>
+			
+				<td class="colHide1">83.40</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">16.60</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=4&amp;b=1">2022-04</a></td>
+			
+				<td>1,522</td>
+			
+				<td>0</td>
+			
+				<td>407</td>
+			
+				<td>0</td>
+			
+			<td>1,929</td>
+			
+				<td class="colHide1">78.90</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">21.10</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=3&amp;b=1">2022-03</a></td>
+			
+				<td>1,164</td>
+			
+				<td>0</td>
+			
+				<td>1,829</td>
+			
+				<td>0</td>
+			
+			<td>2,993</td>
+			
+				<td class="colHide1">38.89</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">61.11</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=2&amp;b=1">2022-02</a></td>
+			
+				<td>1,047</td>
+			
+				<td>0</td>
+			
+				<td>894</td>
+			
+				<td>0</td>
+			
+			<td>1,941</td>
+			
+				<td class="colHide1">53.94</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">46.06</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2022&amp;m=1&amp;b=1">2022-01</a></td>
+			
+				<td>1,557</td>
+			
+				<td>0</td>
+			
+				<td>511</td>
+			
+				<td>0</td>
+			
+			<td>2,068</td>
+			
+				<td class="colHide1">75.29</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">24.71</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2022&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=12&amp;b=1">2021-12</a></td>
+			
+				<td>2,195</td>
+			
+				<td>0</td>
+			
+				<td>1,129</td>
+			
+				<td>0</td>
+			
+			<td>3,324</td>
+			
+				<td class="colHide1">66.03</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">33.97</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=11&amp;b=1">2021-11</a></td>
+			
+				<td>2,265</td>
+			
+				<td>0</td>
+			
+				<td>1,656</td>
+			
+				<td>0</td>
+			
+			<td>3,921</td>
+			
+				<td class="colHide1">57.77</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">42.23</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=10&amp;b=1">2021-10</a></td>
+			
+				<td>1,897</td>
+			
+				<td>0</td>
+			
+				<td>830</td>
+			
+				<td>0</td>
+			
+			<td>2,727</td>
+			
+				<td class="colHide1">69.56</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">30.44</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=9&amp;b=1">2021-09</a></td>
+			
+				<td>2,558</td>
+			
+				<td>2</td>
+			
+				<td>994</td>
+			
+				<td>0</td>
+			
+			<td>3,554</td>
+			
+				<td class="colHide1">71.98</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">27.97</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=8&amp;b=1">2021-08</a></td>
+			
+				<td>2,379</td>
+			
+				<td>0</td>
+			
+				<td>687</td>
+			
+				<td>0</td>
+			
+			<td>3,066</td>
+			
+				<td class="colHide1">77.59</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">22.41</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=7&amp;b=1">2021-07</a></td>
+			
+				<td>2,672</td>
+			
+				<td>0</td>
+			
+				<td>885</td>
+			
+				<td>0</td>
+			
+			<td>3,557</td>
+			
+				<td class="colHide1">75.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">24.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=6&amp;b=1">2021-06</a></td>
+			
+				<td>3,210</td>
+			
+				<td>0</td>
+			
+				<td>581</td>
+			
+				<td>0</td>
+			
+			<td>3,791</td>
+			
+				<td class="colHide1">84.67</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">15.33</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=5&amp;b=1">2021-05</a></td>
+			
+				<td>2,667</td>
+			
+				<td>0</td>
+			
+				<td>954</td>
+			
+				<td>0</td>
+			
+			<td>3,621</td>
+			
+				<td class="colHide1">73.65</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">26.35</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=4&amp;b=1">2021-04</a></td>
+			
+				<td>2,469</td>
+			
+				<td>0</td>
+			
+				<td>622</td>
+			
+				<td>0</td>
+			
+			<td>3,091</td>
+			
+				<td class="colHide1">79.88</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">20.12</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=3&amp;b=1">2021-03</a></td>
+			
+				<td>2,973</td>
+			
+				<td>0</td>
+			
+				<td>545</td>
+			
+				<td>0</td>
+			
+			<td>3,518</td>
+			
+				<td class="colHide1">84.51</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">15.49</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=2&amp;b=1">2021-02</a></td>
+			
+				<td>2,038</td>
+			
+				<td>0</td>
+			
+				<td>479</td>
+			
+				<td>0</td>
+			
+			<td>2,517</td>
+			
+				<td class="colHide1">80.97</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">19.03</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2021&amp;m=1&amp;b=1">2021-01</a></td>
+			
+				<td>2,401</td>
+			
+				<td>0</td>
+			
+				<td>221</td>
+			
+				<td>0</td>
+			
+			<td>2,622</td>
+			
+				<td class="colHide1">91.57</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">8.43</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2021&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=12&amp;b=1">2020-12</a></td>
+			
+				<td>3,148</td>
+			
+				<td>0</td>
+			
+				<td>817</td>
+			
+				<td>0</td>
+			
+			<td>3,965</td>
+			
+				<td class="colHide1">79.39</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">20.61</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=11&amp;b=1">2020-11</a></td>
+			
+				<td>3,377</td>
+			
+				<td>0</td>
+			
+				<td>776</td>
+			
+				<td>0</td>
+			
+			<td>4,153</td>
+			
+				<td class="colHide1">81.31</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">18.69</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=10&amp;b=1">2020-10</a></td>
+			
+				<td>3,365</td>
+			
+				<td>0</td>
+			
+				<td>93</td>
+			
+				<td>0</td>
+			
+			<td>3,458</td>
+			
+				<td class="colHide1">97.31</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">2.69</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=9&amp;b=1">2020-09</a></td>
+			
+				<td>3,393</td>
+			
+				<td>0</td>
+			
+				<td>446</td>
+			
+				<td>0</td>
+			
+			<td>3,839</td>
+			
+				<td class="colHide1">88.38</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">11.62</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=8&amp;b=1">2020-08</a></td>
+			
+				<td>2,563</td>
+			
+				<td>0</td>
+			
+				<td>987</td>
+			
+				<td>0</td>
+			
+			<td>3,550</td>
+			
+				<td class="colHide1">72.20</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">27.80</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=7&amp;b=1">2020-07</a></td>
+			
+				<td>2,984</td>
+			
+				<td>0</td>
+			
+				<td>102</td>
+			
+				<td>0</td>
+			
+			<td>3,086</td>
+			
+				<td class="colHide1">96.69</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">3.31</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=6&amp;b=1">2020-06</a></td>
+			
+				<td>2,571</td>
+			
+				<td>0</td>
+			
+				<td>144</td>
+			
+				<td>0</td>
+			
+			<td>2,715</td>
+			
+				<td class="colHide1">94.70</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">5.30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=5&amp;b=1">2020-05</a></td>
+			
+				<td>2,684</td>
+			
+				<td>0</td>
+			
+				<td>156</td>
+			
+				<td>0</td>
+			
+			<td>2,840</td>
+			
+				<td class="colHide1">94.51</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">5.49</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=4&amp;b=1">2020-04</a></td>
+			
+				<td>2,115</td>
+			
+				<td>0</td>
+			
+				<td>178</td>
+			
+				<td>0</td>
+			
+			<td>2,293</td>
+			
+				<td class="colHide1">92.24</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">7.76</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=3&amp;b=1">2020-03</a></td>
+			
+				<td>2,295</td>
+			
+				<td>0</td>
+			
+				<td>589</td>
+			
+				<td>0</td>
+			
+			<td>2,884</td>
+			
+				<td class="colHide1">79.58</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">20.42</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=2&amp;b=1">2020-02</a></td>
+			
+				<td>1,738</td>
+			
+				<td>0</td>
+			
+				<td>192</td>
+			
+				<td>0</td>
+			
+			<td>1,930</td>
+			
+				<td class="colHide1">90.05</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">9.95</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2020&amp;m=1&amp;b=1">2020-01</a></td>
+			
+				<td>2,208</td>
+			
+				<td>0</td>
+			
+				<td>115</td>
+			
+				<td>0</td>
+			
+			<td>2,323</td>
+			
+				<td class="colHide1">95.05</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">4.95</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2020&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=12&amp;b=1">2019-12</a></td>
+			
+				<td>2,903</td>
+			
+				<td>0</td>
+			
+				<td>389</td>
+			
+				<td>0</td>
+			
+			<td>3,292</td>
+			
+				<td class="colHide1">88.18</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">11.82</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=11&amp;b=1">2019-11</a></td>
+			
+				<td>2,676</td>
+			
+				<td>0</td>
+			
+				<td>424</td>
+			
+				<td>0</td>
+			
+			<td>3,100</td>
+			
+				<td class="colHide1">86.32</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">13.68</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=10&amp;b=1">2019-10</a></td>
+			
+				<td>2,579</td>
+			
+				<td>0</td>
+			
+				<td>314</td>
+			
+				<td>0</td>
+			
+			<td>2,893</td>
+			
+				<td class="colHide1">89.15</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">10.85</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=9&amp;b=1">2019-09</a></td>
+			
+				<td>2,545</td>
+			
+				<td>0</td>
+			
+				<td>571</td>
+			
+				<td>0</td>
+			
+			<td>3,116</td>
+			
+				<td class="colHide1">81.68</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">18.32</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=8&amp;b=1">2019-08</a></td>
+			
+				<td>3,097</td>
+			
+				<td>5</td>
+			
+				<td>155</td>
+			
+				<td>0</td>
+			
+			<td>3,257</td>
+			
+				<td class="colHide1">95.09</td>
+			
+				<td class="colHide1">0.15</td>
+			
+				<td class="colHide1">4.76</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=7&amp;b=1">2019-07</a></td>
+			
+				<td>3,286</td>
+			
+				<td>11</td>
+			
+				<td>106</td>
+			
+				<td>0</td>
+			
+			<td>3,403</td>
+			
+				<td class="colHide1">96.56</td>
+			
+				<td class="colHide1">0.32</td>
+			
+				<td class="colHide1">3.11</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=6&amp;b=1">2019-06</a></td>
+			
+				<td>3,296</td>
+			
+				<td>2</td>
+			
+				<td>94</td>
+			
+				<td>0</td>
+			
+			<td>3,392</td>
+			
+				<td class="colHide1">97.17</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">2.77</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=5&amp;b=1">2019-05</a></td>
+			
+				<td>3,406</td>
+			
+				<td>4</td>
+			
+				<td>158</td>
+			
+				<td>0</td>
+			
+			<td>3,568</td>
+			
+				<td class="colHide1">95.46</td>
+			
+				<td class="colHide1">0.11</td>
+			
+				<td class="colHide1">4.43</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=4&amp;b=1">2019-04</a></td>
+			
+				<td>2,923</td>
+			
+				<td>0</td>
+			
+				<td>44</td>
+			
+				<td>0</td>
+			
+			<td>2,967</td>
+			
+				<td class="colHide1">98.52</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">1.48</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=3&amp;b=1">2019-03</a></td>
+			
+				<td>3,232</td>
+			
+				<td>2</td>
+			
+				<td>80</td>
+			
+				<td>0</td>
+			
+			<td>3,314</td>
+			
+				<td class="colHide1">97.53</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">2.41</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=2&amp;b=1">2019-02</a></td>
+			
+				<td>2,488</td>
+			
+				<td>4</td>
+			
+				<td>37</td>
+			
+				<td>0</td>
+			
+			<td>2,529</td>
+			
+				<td class="colHide1">98.38</td>
+			
+				<td class="colHide1">0.16</td>
+			
+				<td class="colHide1">1.46</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2019&amp;m=1&amp;b=1">2019-01</a></td>
+			
+				<td>3,427</td>
+			
+				<td>0</td>
+			
+				<td>51</td>
+			
+				<td>0</td>
+			
+			<td>3,478</td>
+			
+				<td class="colHide1">98.53</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">1.47</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2019&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=12&amp;b=1">2018-12</a></td>
+			
+				<td>3,714</td>
+			
+				<td>4</td>
+			
+				<td>76</td>
+			
+				<td>0</td>
+			
+			<td>3,794</td>
+			
+				<td class="colHide1">97.89</td>
+			
+				<td class="colHide1">0.11</td>
+			
+				<td class="colHide1">2.00</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=11&amp;b=1">2018-11</a></td>
+			
+				<td>3,727</td>
+			
+				<td>0</td>
+			
+				<td>78</td>
+			
+				<td>0</td>
+			
+			<td>3,805</td>
+			
+				<td class="colHide1">97.95</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">2.05</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=10&amp;b=1">2018-10</a></td>
+			
+				<td>3,924</td>
+			
+				<td>1</td>
+			
+				<td>43</td>
+			
+				<td>0</td>
+			
+			<td>3,968</td>
+			
+				<td class="colHide1">98.89</td>
+			
+				<td class="colHide1">0.03</td>
+			
+				<td class="colHide1">1.08</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=9&amp;b=1">2018-09</a></td>
+			
+				<td>3,062</td>
+			
+				<td>1</td>
+			
+				<td>73</td>
+			
+				<td>0</td>
+			
+			<td>3,136</td>
+			
+				<td class="colHide1">97.64</td>
+			
+				<td class="colHide1">0.03</td>
+			
+				<td class="colHide1">2.33</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=8&amp;b=1">2018-08</a></td>
+			
+				<td>3,840</td>
+			
+				<td>1</td>
+			
+				<td>45</td>
+			
+				<td>0</td>
+			
+			<td>3,886</td>
+			
+				<td class="colHide1">98.82</td>
+			
+				<td class="colHide1">0.03</td>
+			
+				<td class="colHide1">1.16</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=7&amp;b=1">2018-07</a></td>
+			
+				<td>3,362</td>
+			
+				<td>1</td>
+			
+				<td>22</td>
+			
+				<td>0</td>
+			
+			<td>3,385</td>
+			
+				<td class="colHide1">99.32</td>
+			
+				<td class="colHide1">0.03</td>
+			
+				<td class="colHide1">0.65</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=6&amp;b=1">2018-06</a></td>
+			
+				<td>3,621</td>
+			
+				<td>4</td>
+			
+				<td>42</td>
+			
+				<td>0</td>
+			
+			<td>3,667</td>
+			
+				<td class="colHide1">98.75</td>
+			
+				<td class="colHide1">0.11</td>
+			
+				<td class="colHide1">1.15</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=5&amp;b=1">2018-05</a></td>
+			
+				<td>3,693</td>
+			
+				<td>21</td>
+			
+				<td>18</td>
+			
+				<td>0</td>
+			
+			<td>3,732</td>
+			
+				<td class="colHide1">98.95</td>
+			
+				<td class="colHide1">0.56</td>
+			
+				<td class="colHide1">0.48</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=4&amp;b=1">2018-04</a></td>
+			
+				<td>3,156</td>
+			
+				<td>56</td>
+			
+				<td>37</td>
+			
+				<td>0</td>
+			
+			<td>3,249</td>
+			
+				<td class="colHide1">97.14</td>
+			
+				<td class="colHide1">1.72</td>
+			
+				<td class="colHide1">1.14</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=3&amp;b=1">2018-03</a></td>
+			
+				<td>3,118</td>
+			
+				<td>51</td>
+			
+				<td>20</td>
+			
+				<td>0</td>
+			
+			<td>3,189</td>
+			
+				<td class="colHide1">97.77</td>
+			
+				<td class="colHide1">1.60</td>
+			
+				<td class="colHide1">0.63</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=2&amp;b=1">2018-02</a></td>
+			
+				<td>3,147</td>
+			
+				<td>50</td>
+			
+				<td>6</td>
+			
+				<td>0</td>
+			
+			<td>3,203</td>
+			
+				<td class="colHide1">98.25</td>
+			
+				<td class="colHide1">1.56</td>
+			
+				<td class="colHide1">0.19</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2018&amp;m=1&amp;b=1">2018-01</a></td>
+			
+				<td>3,187</td>
+			
+				<td>75</td>
+			
+				<td>11</td>
+			
+				<td>0</td>
+			
+			<td>3,273</td>
+			
+				<td class="colHide1">97.37</td>
+			
+				<td class="colHide1">2.29</td>
+			
+				<td class="colHide1">0.34</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2018&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=12&amp;b=1">2017-12</a></td>
+			
+				<td>2,935</td>
+			
+				<td>56</td>
+			
+				<td>18</td>
+			
+				<td>0</td>
+			
+			<td>3,009</td>
+			
+				<td class="colHide1">97.54</td>
+			
+				<td class="colHide1">1.86</td>
+			
+				<td class="colHide1">0.60</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=11&amp;b=1">2017-11</a></td>
+			
+				<td>3,262</td>
+			
+				<td>88</td>
+			
+				<td>32</td>
+			
+				<td>0</td>
+			
+			<td>3,382</td>
+			
+				<td class="colHide1">96.45</td>
+			
+				<td class="colHide1">2.60</td>
+			
+				<td class="colHide1">0.95</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=10&amp;b=1">2017-10</a></td>
+			
+				<td>2,994</td>
+			
+				<td>80</td>
+			
+				<td>6</td>
+			
+				<td>0</td>
+			
+			<td>3,080</td>
+			
+				<td class="colHide1">97.21</td>
+			
+				<td class="colHide1">2.60</td>
+			
+				<td class="colHide1">0.19</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=9&amp;b=1">2017-09</a></td>
+			
+				<td>3,403</td>
+			
+				<td>882</td>
+			
+				<td>13</td>
+			
+				<td>0</td>
+			
+			<td>4,298</td>
+			
+				<td class="colHide1">79.18</td>
+			
+				<td class="colHide1">20.52</td>
+			
+				<td class="colHide1">0.30</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=8&amp;b=1">2017-08</a></td>
+			
+				<td>3,035</td>
+			
+				<td>747</td>
+			
+				<td>14</td>
+			
+				<td>0</td>
+			
+			<td>3,796</td>
+			
+				<td class="colHide1">79.95</td>
+			
+				<td class="colHide1">19.68</td>
+			
+				<td class="colHide1">0.37</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=7&amp;b=1">2017-07</a></td>
+			
+				<td>2,901</td>
+			
+				<td>369</td>
+			
+				<td>3</td>
+			
+				<td>0</td>
+			
+			<td>3,273</td>
+			
+				<td class="colHide1">88.63</td>
+			
+				<td class="colHide1">11.27</td>
+			
+				<td class="colHide1">0.09</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=6&amp;b=1">2017-06</a></td>
+			
+				<td>3,143</td>
+			
+				<td>378</td>
+			
+				<td>8</td>
+			
+				<td>0</td>
+			
+			<td>3,529</td>
+			
+				<td class="colHide1">89.06</td>
+			
+				<td class="colHide1">10.71</td>
+			
+				<td class="colHide1">0.23</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=5&amp;b=1">2017-05</a></td>
+			
+				<td>3,090</td>
+			
+				<td>531</td>
+			
+				<td>5</td>
+			
+				<td>2</td>
+			
+			<td>3,628</td>
+			
+				<td class="colHide1">85.17</td>
+			
+				<td class="colHide1">14.64</td>
+			
+				<td class="colHide1">0.14</td>
+			
+				<td class="colHide1">0.06</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=5">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=4&amp;b=1">2017-04</a></td>
+			
+				<td>2,501</td>
+			
+				<td>365</td>
+			
+				<td>0</td>
+			
+				<td>2</td>
+			
+			<td>2,868</td>
+			
+				<td class="colHide1">87.20</td>
+			
+				<td class="colHide1">12.73</td>
+			
+				<td class="colHide1">0.00</td>
+			
+				<td class="colHide1">0.07</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=4">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=3&amp;b=1">2017-03</a></td>
+			
+				<td>3,079</td>
+			
+				<td>347</td>
+			
+				<td>2,964</td>
+			
+				<td>2</td>
+			
+			<td>6,392</td>
+			
+				<td class="colHide1">48.17</td>
+			
+				<td class="colHide1">5.43</td>
+			
+				<td class="colHide1">46.37</td>
+			
+				<td class="colHide1">0.03</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=3">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=2&amp;b=1">2017-02</a></td>
+			
+				<td>2,507</td>
+			
+				<td>158</td>
+			
+				<td>601</td>
+			
+				<td>1</td>
+			
+			<td>3,267</td>
+			
+				<td class="colHide1">76.74</td>
+			
+				<td class="colHide1">4.84</td>
+			
+				<td class="colHide1">18.40</td>
+			
+				<td class="colHide1">0.03</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=2">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2017&amp;m=1&amp;b=1">2017-01</a></td>
+			
+				<td>2,684</td>
+			
+				<td>240</td>
+			
+				<td>196</td>
+			
+				<td>0</td>
+			
+			<td>3,120</td>
+			
+				<td class="colHide1">86.03</td>
+			
+				<td class="colHide1">7.69</td>
+			
+				<td class="colHide1">6.28</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2017&amp;m=1">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=12&amp;b=1">2016-12</a></td>
+			
+				<td>3,201</td>
+			
+				<td>255</td>
+			
+				<td>205</td>
+			
+				<td>0</td>
+			
+			<td>3,661</td>
+			
+				<td class="colHide1">87.44</td>
+			
+				<td class="colHide1">6.97</td>
+			
+				<td class="colHide1">5.60</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=12">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=11&amp;b=1">2016-11</a></td>
+			
+				<td>3,301</td>
+			
+				<td>232</td>
+			
+				<td>166</td>
+			
+				<td>0</td>
+			
+			<td>3,699</td>
+			
+				<td class="colHide1">89.24</td>
+			
+				<td class="colHide1">6.27</td>
+			
+				<td class="colHide1">4.49</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=11">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=10&amp;b=1">2016-10</a></td>
+			
+				<td>3,072</td>
+			
+				<td>306</td>
+			
+				<td>162</td>
+			
+				<td>0</td>
+			
+			<td>3,540</td>
+			
+				<td class="colHide1">86.78</td>
+			
+				<td class="colHide1">8.64</td>
+			
+				<td class="colHide1">4.58</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=10">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=9&amp;b=1">2016-09</a></td>
+			
+				<td>3,223</td>
+			
+				<td>237</td>
+			
+				<td>528</td>
+			
+				<td>2</td>
+			
+			<td>3,990</td>
+			
+				<td class="colHide1">80.78</td>
+			
+				<td class="colHide1">5.94</td>
+			
+				<td class="colHide1">13.23</td>
+			
+				<td class="colHide1">0.05</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=9">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=8&amp;b=1">2016-08</a></td>
+			
+				<td>2,941</td>
+			
+				<td>211</td>
+			
+				<td>289</td>
+			
+				<td>0</td>
+			
+			<td>3,441</td>
+			
+				<td class="colHide1">85.47</td>
+			
+				<td class="colHide1">6.13</td>
+			
+				<td class="colHide1">8.40</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=8">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=7&amp;b=1">2016-07</a></td>
+			
+				<td>2,839</td>
+			
+				<td>155</td>
+			
+				<td>297</td>
+			
+				<td>1</td>
+			
+			<td>3,292</td>
+			
+				<td class="colHide1">86.24</td>
+			
+				<td class="colHide1">4.71</td>
+			
+				<td class="colHide1">9.02</td>
+			
+				<td class="colHide1">0.03</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=7">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=6&amp;b=1">2016-06</a></td>
+			
+				<td>3,016</td>
+			
+				<td>146</td>
+			
+				<td>203</td>
+			
+				<td>0</td>
+			
+			<td>3,365</td>
+			
+				<td class="colHide1">89.63</td>
+			
+				<td class="colHide1">4.34</td>
+			
+				<td class="colHide1">6.03</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=6">details</a></td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFR.asp?vc=1&amp;y=2016&amp;m=5&amp;b=1">2016-05</a></td>
+			
+				<td>3,054</td>
+			
+				<td>71</td>
+			
+				<td>81</td>
+			
+				<td>0</td>
+			
+			<td>3,206</td>
+			
+				<td class="colHide1">95.26</td>
+			
+				<td class="colHide1">2.21</td>
+			
+				<td class="colHide1">2.53</td>
+			
+				<td class="colHide1">0.00</td>
+			
+			<td><a href="vedet.asp?brand=0&amp;y=2016&amp;m=5">details</a></td>
+		</tr>
+	
+	<tr class="total">
+		<td>Total</td>
+		
+			<td>254,228</td>
+		
+			<td>6,149</td>
+		
+			<td>122,500</td>
+		
+			<td>11</td>
+		
+		<td>382,888</td>
+		
+			<td class="colHide1">66.40</td>
+		
+			<td class="colHide1">1.61</td>
+		
+			<td class="colHide1">31.99</td>
+		
+			<td class="colHide1">0.00</td>
+		
+		<td><a href="vedet.asp?y=0&amp;brand=0">details</a></td>
+	</tr>
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

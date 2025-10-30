@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.stockChart('chart1', {
+        time: {
+        	useUTC:true
+        },
+    	chart: {
+    		backgroundColor: "#FFFFFF",
+	        borderWidth: 1,
+	        borderColor: "black",
+    	},
+    	rangeSelector:{
+    		selected: 9,
+    		buttons: [{
+				type: 'month',
+				count: 1,
+				text: '1m'
+			}, {
+				type: 'month',
+				count: 3,
+				text: '3m'
+			}, {
+				type: 'month',
+				count: 6,
+				text: '6m'
+			}, {
+				type: 'ytd',
+				text: 'YTD'
+			}, {
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 3,
+				text: '3y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputDateFormat:"%e %b %Y"
+    	},
+        title: {
+            text: '<b>HK cremations & coffin burials yearly, People</b>',
+            margin: 10,
+            style: {
+            	fontSize:'1.2em'
+	        }	            
+        },
+        subtitle: {
+        	text: 'Webb-site.com',
+        	style: {
+        		fontWeight: 'bold',
+        		fontSize: '1.2em'
+        	}
+        },
+        yAxis: [{
+			title: {
+	            text: 'People'
+	        },
+	        height:'100%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        min:null,
+	    }],
+        series: [
+        
+        {
+        	type: 'column',
+        	name: 'Body cremations',
+            data: [[946684800000,27113],[978307200000,26933],[1009843200000,28434],[1041379200000,30161],[1072915200000,31332],[1104537600000,33288],[1136073600000,32215],[1167609600000,34427],[1199145600000,36410],[1230768000000,36486],[1262304000000,38006],[1293840000000,37916],[1325376000000,39494],[1356998400000,38914],[1388534400000,41244],[1420070400000,42737],[1451606400000,43556],[1483228800000,42809],[1514764800000,43803],[1546300800000,45543],[1577836800000,46465],[1609459200000,48106],[1640995200000,59685],[1672531200000,52795],[1704067200000,49812],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		
+        {
+        	type: 'column',
+        	name: 'Skeletal cremations',
+            data: [[946684800000,5001],[978307200000,4826],[1009843200000,4581],[1041379200000,4074],[1072915200000,4915],[1104537600000,4298],[1136073600000,2630],[1167609600000,3909],[1199145600000,4691],[1230768000000,3955],[1262304000000,3085],[1293840000000,2641],[1325376000000,2860],[1356998400000,3662],[1388534400000,3312],[1420070400000,2867],[1451606400000,2503],[1483228800000,1961],[1514764800000,1855],[1546300800000,1552],[1577836800000,1672],[1609459200000,1690],[1640995200000,2267],[1672531200000,2361],[1704067200000,2396],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		
+        {
+        	type: 'column',
+        	name: 'Coffin burials',
+            data: [[946684800000,1535],[978307200000,1537],[1009843200000,1883],[1041379200000,1679],[1072915200000,1728],[1104537600000,1651],[1136073600000,1366],[1167609600000,1376],[1199145600000,1395],[1230768000000,1302],[1262304000000,1377],[1293840000000,1327],[1325376000000,1164],[1356998400000,1114],[1388534400000,1056],[1420070400000,1009],[1451606400000,916],[1483228800000,919],[1514764800000,919],[1546300800000,819],[1577836800000,948],[1609459200000,843],[1640995200000,996],[1672531200000,822],[1704067200000,779],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		],
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 50,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+		tooltip:{
+			backgroundColor: 'yellow',
+			xDateFormat: '%Y',
+			headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>'
+		},
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        },
+	    },
+		credits:{
+			enabled: true,
+			position: {
+				align:'left',
+				x:5,
+				verticalAlign:'bottom',
+				y:-5
+			}
+		}
+	});
+});
+</script>
+<title>HK cremations & coffin burials yearly, People</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK cremations & coffin burials yearly, People</h2>
+
+	<h4>Sources</h4>
+	
+		<p><a href="orgdata.asp?p=2533752">HKSAR Food and Environmental Hygiene Department</a></p>
+		
+<form method="get" action="chart.asp">
+	<div class="inputs">
+	Chart <select name='c' onchange="this.form.submit()"><option value='9'>HK consumer price indices 2020 series</option><option value='10'>HK consumer price indices Year-on-Year</option><option value='11' selected>HK cremations & coffin burials</option><option value='14'>HK electricity & gas consumption</option><option value='2'>HK electricity consumption by user type</option><option value='12'>HK electricity generation</option><option value='1'>HK gas consumption by user type</option><option value='8'>HK import prices: coal products</option><option value='7'>HK import prices: gas products</option><option value='6'>HK import prices: oil products</option><option value='5'>HK net imports: coal products</option><option value='4'>HK net imports: gas products</option><option value='3'>HK net imports: oil products</option><option value='13'>LPG International Price</option></select>
+	</div>
+	
+	<div class="clear"></div>
+</form>
+<p>Click on the legend to remove items from the chart.</p>
+<div id="chart1" style="width:95%;height:550px;margin-left:0"></div>
+<div class="clear"></div>
+<table class="numtable fcl center">
+	<tr>
+		<th>Year</th>
+		
+			<th>Body cremations</th>
+		
+			<th>Skeletal cremations</th>
+		
+			<th>Coffin burials</th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap">2024</td>
+			
+				<td>49,812</td>
+			
+				<td>2,396</td>
+			
+				<td>779</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023</td>
+			
+				<td>52,795</td>
+			
+				<td>2,361</td>
+			
+				<td>822</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022</td>
+			
+				<td>59,685</td>
+			
+				<td>2,267</td>
+			
+				<td>996</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021</td>
+			
+				<td>48,106</td>
+			
+				<td>1,690</td>
+			
+				<td>843</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020</td>
+			
+				<td>46,465</td>
+			
+				<td>1,672</td>
+			
+				<td>948</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019</td>
+			
+				<td>45,543</td>
+			
+				<td>1,552</td>
+			
+				<td>819</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018</td>
+			
+				<td>43,803</td>
+			
+				<td>1,855</td>
+			
+				<td>919</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017</td>
+			
+				<td>42,809</td>
+			
+				<td>1,961</td>
+			
+				<td>919</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016</td>
+			
+				<td>43,556</td>
+			
+				<td>2,503</td>
+			
+				<td>916</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015</td>
+			
+				<td>42,737</td>
+			
+				<td>2,867</td>
+			
+				<td>1,009</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014</td>
+			
+				<td>41,244</td>
+			
+				<td>3,312</td>
+			
+				<td>1,056</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013</td>
+			
+				<td>38,914</td>
+			
+				<td>3,662</td>
+			
+				<td>1,114</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012</td>
+			
+				<td>39,494</td>
+			
+				<td>2,860</td>
+			
+				<td>1,164</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011</td>
+			
+				<td>37,916</td>
+			
+				<td>2,641</td>
+			
+				<td>1,327</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010</td>
+			
+				<td>38,006</td>
+			
+				<td>3,085</td>
+			
+				<td>1,377</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009</td>
+			
+				<td>36,486</td>
+			
+				<td>3,955</td>
+			
+				<td>1,302</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008</td>
+			
+				<td>36,410</td>
+			
+				<td>4,691</td>
+			
+				<td>1,395</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007</td>
+			
+				<td>34,427</td>
+			
+				<td>3,909</td>
+			
+				<td>1,376</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006</td>
+			
+				<td>32,215</td>
+			
+				<td>2,630</td>
+			
+				<td>1,366</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005</td>
+			
+				<td>33,288</td>
+			
+				<td>4,298</td>
+			
+				<td>1,651</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004</td>
+			
+				<td>31,332</td>
+			
+				<td>4,915</td>
+			
+				<td>1,728</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003</td>
+			
+				<td>30,161</td>
+			
+				<td>4,074</td>
+			
+				<td>1,679</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002</td>
+			
+				<td>28,434</td>
+			
+				<td>4,581</td>
+			
+				<td>1,883</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2001</td>
+			
+				<td>26,933</td>
+			
+				<td>4,826</td>
+			
+				<td>1,537</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2000</td>
+			
+				<td>27,113</td>
+			
+				<td>5,001</td>
+			
+				<td>1,535</td>
+			
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

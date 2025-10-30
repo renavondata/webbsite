@@ -1,0 +1,2477 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="rating.js"></script>
+<style type="text/css">
+	table.rating {
+	border-collapse:collapse;
+	border:thin gray solid;
+}
+	table.rating tr {
+	border:thin gray solid;
+}
+	table.rating th {
+	font-weight:bold;
+	border:inherit;
+	text-align:center;
+}
+	table.rating td {
+	text-align:center;
+}
+</style>
+<title>BANK OF CHINA LIMITED 中國銀行股份有限公司</title>
+</head>
+<body onload="setRating(465)">
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+	<h2>BANK OF CHINA LIMITED 中國銀行股份有限公司</h2>
+	<ul class="navlist">
+		<li class='livebutton'>Key Data</li><li><a href='/dbpub/officers.asp?p=465'>Officers</a></li><li><a href='/dbpub/overlap.asp?p=465'>Overlaps</a></li><li><a href='/dbpub/pay.asp?p=465'>Pay</a></li><li><a href='/dbpub/advisers.asp?p=465'>Advisers</a></li><li><a href='/dbpub/adviserships.asp?p=465'>Adviserships</a></li><li><a href='/dbpub/SFColicrec.asp?p=465'>SFC licenses</a></li><li><a href='/ccass/cholder.asp?part=1001'>CCASS holdings</a></li><li><a href='/dbpub/docs.asp?p=465'>Financials</a></li><li><a href='/dbpub/articles.asp?p=465'>Webb-site Reports</a></li><li><a href='/dbpub/complain.asp?p=465'>Complain</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	<ul class="navlist">
+		<li><a target="_blank" href="FAQWWW.asp">FAQ</a></li>
+	</ul>
+	<div class="clear"></div>
+	<table>
+		
+			<tr><td>Domicile:</td><td>People's Republic of China</td></tr>
+		
+			<tr><td>Type:</td><td>Listed company</td></tr>
+				
+			<tr><td>Formed:</td><td>1912</td></tr>
+		
+			<tr>
+				<td>Last check on companies registry:</td>
+				<td>2017-03-11</td>
+			</tr>
+		
+			<tr>
+				<td>SFC ID:</td>
+				
+				<td><a target="_blank" href="http://www.sfc.hk/publicregWeb/ri/AAK801/licences">AAK801</a></td>
+			</tr>
+				
+				<tr><td>Year-end:</td><td>31-Dec</td></tr>
+			
+	</table>
+	
+		<h3>Web sites</h3>		
+		
+				<a target="blank" href="http://www.boc.cn">www.boc.cn</a><br>
+			
+		<h3>Foreign registrations</h3>
+		<table class="txtable">
+			<tr>
+				<th>Place</th>
+				<th>ID</th>
+				<th>Registered</th>
+				<th>Ceased</th>
+			</tr>
+			
+				<tr>
+					<td>Hong Kong</td>
+					<td>
+						
+									<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do"><span class="info">00209618<span>Until 2023-12-27:F0000110</span></span></a>
+								
+					</td>
+					<td>1947-06-20</td>
+					<td></td>
+				</tr>
+				
+		</table>
+		
+	<h3>Webb-site Governance Rating</h3>
+	
+		<p><a href="../webbmail/login.asp"><b>Log in</b></a> to add your anonymous rating. Webb-site users rate this organisation as follows:</p>
+		<table class="rating">
+			<tr>
+				<th>Users</th>
+				<th>Average (0-5)</th>
+			</tr>
+			<tr>
+				<td style="border-right:thin gray solid" id="usercnt"></td>
+				<td id="score"></td>
+			</tr>
+		</table>
+	
+		<h3>Name history</h3>
+		<table class="txtable">
+			<tr>
+				<th>Old English name</th>
+				<th>Old Chinese name</th>
+				<th class="right">Until</th>
+			</tr>
+			
+				<tr>
+					<td>BANK OF CHINA</td>
+					<td>中國銀行</td>		
+					<td class="right">2004-08-26</td>
+				</tr>
+				
+		</table>
+	
+		<h3>HK-listed equities</h3>
+		
+			<h4>H-share: HKD</h4>
+			
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">HK Main</td>
+				<td style="text-align:left;vertical-align:middle">03988</td>
+				<td style="vertical-align:middle">&nbsp;2006-06-01</td>
+				<td style="vertical-align:middle">&nbsp;</td>
+				<td style="vertical-align:middle">&nbsp;</td>
+				<td>
+				
+					<ul class="navlist"><li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=11465&category=0">Docs</a></li></ul>
+				
+				</td>
+			</tr>
+			
+		</table>
+		<div class="clear"></div>
+	
+	<ul class="navlist">
+		<li><a href='/dbpub/buybacks.asp?i=4744'>Buybacks</a></li><li><a href='/dbpub/outstanding.asp?i=4744'>Outstanding</a></li><li><a href='/dbpub/short.asp?i=4744'>Short</a></li><li><a href='/ccass/choldings.asp?i=4744'>CCASS</a></li><li><a href='/dbpub/str.asp?i=4744'>Total return</a></li><li><a href='/dbpub/ctr.asp?i1=4744'>Compare returns</a></li><li><a href='/dbpub/hpu.asp?i=4744'>Prices</a></li><li><a href='/dbpub/events.asp?i=4744'>Events</a></li>
+				<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym=3988">Quote</a></li>
+			
+	</ul>
+	<div class="clear"></div>
+	
+			<h4>Nil-paid rights: HKD</h4>
+			
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">HK Main</td>
+				<td style="text-align:left;vertical-align:middle">02946</td>
+				<td style="vertical-align:middle">&nbsp;2010-11-18</td>
+				<td style="vertical-align:middle">&nbsp;2010-11-30</td>
+				<td style="vertical-align:middle">&nbsp;2010-12-01</td>
+				<td>
+				
+				</td>
+			</tr>
+			
+		</table>
+		<div class="clear"></div>
+	
+	<ul class="navlist">
+		<li><a href='/dbpub/str.asp?i=6433'>Total return</a></li><li><a href='/dbpub/ctr.asp?i1=6433'>Compare returns</a></li><li><a href='/dbpub/hpu.asp?i=6433'>Prices</a></li><li><a href='/dbpub/events.asp?i=6433'>Events</a></li>
+	</ul>
+	<div class="clear"></div>
+	
+		<h3>Listed debt and preference shares</h3>
+		<p>Hit the stock code for details. * = floating</p>
+		<p class='widthAlert2'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="numtable">
+			<tr>
+				<th class="left">Type</th>
+				<th></th>
+				<th><a href='/dbpub/orgdata.asp?p=465&x=c&s1=&s2=&amp;s3=osdn'><b>Outst. m</b></a></th>
+				<th><a href='/dbpub/orgdata.asp?p=465&x=c&s1=&s2=&amp;s3=cpndn'><b>Rate %</b></a></th>
+				<th><a href='/dbpub/orgdata.asp?p=465&x=c&s1=&s2=&amp;s3=matdn'><b>Maturity</b></a></th>
+				<th>Code</th>
+				<th class="colHide2"><a href='/dbpub/orgdata.asp?p=465&x=c&s1=&s2=&amp;s3=ftddn'><b>Listed</b></a></th>
+				<th class="colHide2">Last trade</th>
+				<th class="colHide2">Delisted</th>
+				<th class="colHide3"></th>
+			</tr>
+			
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">3.62500</td>
+					<td class="left" style="vertical-align:middle">2029-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27954">5982</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222610&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">250.00</td>
+					<td style="vertical-align:middle">4.00000</td>
+					<td class="left" style="vertical-align:middle">2028-03-08</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26123">4441</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-03-09</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=180837&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">400.00</td>
+					<td style="vertical-align:middle">*4.83247</td>
+					<td class="left" style="vertical-align:middle">2027-08-27</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35601">5172</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-08-28</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000231573&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">500.00</td>
+					<td style="vertical-align:middle">*4.74026</td>
+					<td class="left" style="vertical-align:middle">2027-06-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35393">5047</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-27</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226954&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">*4.77026</td>
+					<td class="left" style="vertical-align:middle">2027-06-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35394">5048</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-27</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226955&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">1,000.00</td>
+					<td style="vertical-align:middle">2.82000</td>
+					<td class="left" style="vertical-align:middle">2027-06-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35398">84525</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-27</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226959&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">2,000.00</td>
+					<td style="vertical-align:middle">2.85000</td>
+					<td class="left" style="vertical-align:middle">2027-06-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35368">84523</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-21</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226653&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">800.00</td>
+					<td style="vertical-align:middle">*4.73894</td>
+					<td class="left" style="vertical-align:middle">2027-06-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35343">5014</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-17</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226118&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">3.50000</td>
+					<td class="left" style="vertical-align:middle">2027-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24837">5433</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154606&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">450.00</td>
+					<td style="vertical-align:middle">2.37500</td>
+					<td class="left" style="vertical-align:middle">2027-02-24</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32845">4504</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-25</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000141372&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">*4.89422</td>
+					<td class="left" style="vertical-align:middle">2026-11-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34738">5978</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-11-17</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000208110&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">600.00</td>
+					<td style="vertical-align:middle">1.75000</td>
+					<td class="left" style="vertical-align:middle">2026-11-09</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32499">40910</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-11-10</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000124262&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">4.00000</td>
+					<td class="left" style="vertical-align:middle">2026-10-19</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34607">5896</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-10-20</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000205808&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">500.00</td>
+					<td style="vertical-align:middle">*4.82730</td>
+					<td class="left" style="vertical-align:middle">2026-09-18</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34540">5867</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-09-19</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000203346&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">2,000.00</td>
+					<td style="vertical-align:middle">2.98000</td>
+					<td class="left" style="vertical-align:middle">2026-09-18</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34542">84449</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-09-19</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000203349&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">2,500.00</td>
+					<td style="vertical-align:middle">2.68000</td>
+					<td class="left" style="vertical-align:middle">2026-08-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35553">84554</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-08-21</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000231105&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">*4.71026</td>
+					<td class="left" style="vertical-align:middle">2026-06-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35392">5043</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-27</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226953&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">500.00</td>
+					<td style="vertical-align:middle">4.62500</td>
+					<td class="left" style="vertical-align:middle">2026-06-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34392">5806</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-06-27</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000196262&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">1,000.00</td>
+					<td style="vertical-align:middle">2.83000</td>
+					<td class="left" style="vertical-align:middle">2026-06-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=35367">84522</a></td>
+					<td class="colHide2" style="vertical-align:middle">2024-06-21</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000226652&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">500.00</td>
+					<td style="vertical-align:middle">1.40000</td>
+					<td class="left" style="vertical-align:middle">2026-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31036">40667</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093520&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle">1,000.00</td>
+					<td style="vertical-align:middle">3.08000</td>
+					<td class="left" style="vertical-align:middle">2026-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31041">86002</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093525&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">300.00</td>
+					<td style="vertical-align:middle">4.75000</td>
+					<td class="left" style="vertical-align:middle">2025-12-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33770">5654</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-12-06</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000177548&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle">500.00</td>
+					<td style="vertical-align:middle">*5.23496</td>
+					<td class="left" style="vertical-align:middle">2025-11-25</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33704">5621</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-11-28</td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide2" style="vertical-align:middle"></td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000176813&category=0">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-10-18</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34602">84459</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-10-19</td>
+					<td class="colHide2" style="vertical-align:middle">2025-10-15</td>
+					<td class="colHide2" style="vertical-align:middle">2025-10-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000205636&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-08-03</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33340">84405</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-08-04</td>
+					<td class="colHide2" style="vertical-align:middle">2025-07-30</td>
+					<td class="colHide2" style="vertical-align:middle">2025-08-05</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000162104&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-06-30</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=14751">5538</a></td>
+					<td class="colHide2" style="vertical-align:middle">2015-07-02</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-25</td>
+					<td class="colHide2" style="vertical-align:middle">2025-07-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=126775&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-06-24</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29473">40279</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-06-26</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-19</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-25</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000045088&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-06-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33183">5317</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-06-17</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-11</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000157144&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-05-30</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34259">84430</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-05-31</td>
+					<td class="colHide2" style="vertical-align:middle">2025-05-27</td>
+					<td class="colHide2" style="vertical-align:middle">2025-06-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000194296&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2025-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33027">5209</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2025-04-23</td>
+					<td class="colHide2" style="vertical-align:middle">2025-04-29</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000151404&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.50000</td>
+					<td class="left" style="vertical-align:middle">2025-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=33028">5210</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2025-04-23</td>
+					<td class="colHide2" style="vertical-align:middle">2025-04-29</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000151405&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.93000</td>
+					<td class="left" style="vertical-align:middle">2025-03-27</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=34136">84426</a></td>
+					<td class="colHide2" style="vertical-align:middle">2023-03-28</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-24</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-28</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000189382&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.00000</td>
+					<td class="left" style="vertical-align:middle">2025-03-07</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32884">4595</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-08</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-04</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-10</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000143182&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.00000</td>
+					<td class="left" style="vertical-align:middle">2025-02-24</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32844">4503</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-25</td>
+					<td class="colHide2" style="vertical-align:middle">2025-02-19</td>
+					<td class="colHide2" style="vertical-align:middle">2025-02-25</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000141371&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.87500</td>
+					<td class="left" style="vertical-align:middle">2025-02-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32830">4485</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-17</td>
+					<td class="colHide2" style="vertical-align:middle">2025-02-12</td>
+					<td class="colHide2" style="vertical-align:middle">2025-02-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000139914&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.37500</td>
+					<td class="left" style="vertical-align:middle">2025-01-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28998">40123</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-01-17</td>
+					<td class="colHide2" style="vertical-align:middle">2025-01-13</td>
+					<td class="colHide2" style="vertical-align:middle">2025-01-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000022373&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.50000</td>
+					<td class="left" style="vertical-align:middle">2024-12-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28781">40089</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-12-06</td>
+					<td class="colHide2" style="vertical-align:middle">2024-12-02</td>
+					<td class="colHide2" style="vertical-align:middle">2024-12-06</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000017651&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">5.00000</td>
+					<td class="left" style="vertical-align:middle">2024-11-13</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=12972">5828</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-11-14</td>
+					<td class="colHide2" style="vertical-align:middle">2024-11-08</td>
+					<td class="colHide2" style="vertical-align:middle">2024-11-14</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=114709&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2024-09-29</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32389">40869</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-09-30</td>
+					<td class="colHide2" style="vertical-align:middle">2024-09-25</td>
+					<td class="colHide2" style="vertical-align:middle">2024-10-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000118425&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2024-08-10</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31943">40800</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-08-11</td>
+					<td class="colHide2" style="vertical-align:middle">2024-08-07</td>
+					<td class="colHide2" style="vertical-align:middle">2024-08-13</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000110137&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2024-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31035">40666</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-24</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-30</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093519&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.80000</td>
+					<td class="left" style="vertical-align:middle">2024-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31037">40668</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-24</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-30</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093521&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">AUD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2024-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31038">40669</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-24</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-30</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093522&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.12500</td>
+					<td class="left" style="vertical-align:middle">2024-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27953">5974</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-12</td>
+					<td class="colHide2" style="vertical-align:middle">2024-04-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222609&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">JPY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2024-03-25</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32954">5073</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-25</td>
+					<td class="colHide2" style="vertical-align:middle">2024-03-20</td>
+					<td class="colHide2" style="vertical-align:middle">2024-03-26</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000147786&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.62500</td>
+					<td class="left" style="vertical-align:middle">2024-02-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32829">4483</a></td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-17</td>
+					<td class="colHide2" style="vertical-align:middle">2024-02-09</td>
+					<td class="colHide2" style="vertical-align:middle">2024-02-19</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000139913&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.75000</td>
+					<td class="left" style="vertical-align:middle">2024-02-04</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=30567">40574</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-02-05</td>
+					<td class="colHide2" style="vertical-align:middle">2024-01-31</td>
+					<td class="colHide2" style="vertical-align:middle">2024-02-06</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000079643&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.87500</td>
+					<td class="left" style="vertical-align:middle">2024-01-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=30478">40532</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-01-15</td>
+					<td class="colHide2" style="vertical-align:middle">2024-01-10</td>
+					<td class="colHide2" style="vertical-align:middle">2024-01-16</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000075163&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-11-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27375">5451</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2023-11-15</td>
+					<td class="colHide2" style="vertical-align:middle">2023-11-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=207719&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-09-29</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=32392">86015</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-09-30</td>
+					<td class="colHide2" style="vertical-align:middle">2023-09-26</td>
+					<td class="colHide2" style="vertical-align:middle">2023-10-03</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000118428&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-06-24</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29472">40280</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-06-26</td>
+					<td class="colHide2" style="vertical-align:middle">2023-06-20</td>
+					<td class="colHide2" style="vertical-align:middle">2023-06-27</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000045089&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-06-07</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26570">5115</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-06-08</td>
+					<td class="colHide2" style="vertical-align:middle">2023-06-02</td>
+					<td class="colHide2" style="vertical-align:middle">2023-06-08</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=188833&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-04-28</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=31042">86003</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-29</td>
+					<td class="colHide2" style="vertical-align:middle">2023-04-25</td>
+					<td class="colHide2" style="vertical-align:middle">2023-05-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000093526&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26432">4460</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2023-04-12</td>
+					<td class="colHide2" style="vertical-align:middle">2023-04-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=184585&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2023-03-08</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26122">4440</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-03-09</td>
+					<td class="colHide2" style="vertical-align:middle">2023-03-03</td>
+					<td class="colHide2" style="vertical-align:middle">2023-03-09</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=180836&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.12500</td>
+					<td class="left" style="vertical-align:middle">2023-01-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28999">40125</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-01-17</td>
+					<td class="colHide2" style="vertical-align:middle">2023-01-11</td>
+					<td class="colHide2" style="vertical-align:middle">2023-01-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000022375&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.80000</td>
+					<td class="left" style="vertical-align:middle">2023-01-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=30482">85941</a></td>
+					<td class="colHide2" style="vertical-align:middle">2021-01-15</td>
+					<td class="colHide2" style="vertical-align:middle">2023-01-11</td>
+					<td class="colHide2" style="vertical-align:middle">2023-01-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000075178&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2022-10-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28639">40021</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-10-18</td>
+					<td class="colHide2" style="vertical-align:middle">2022-10-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-10-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000012879&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">AUD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2022-10-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27951">5968</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2022-10-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-10-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222605&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.15000</td>
+					<td class="left" style="vertical-align:middle">2022-09-21</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29769">85927</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-09-22</td>
+					<td class="colHide2" style="vertical-align:middle">2022-09-16</td>
+					<td class="colHide2" style="vertical-align:middle">2022-09-22</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000058105&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2022-07-11</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=25124">5236</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-07-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-07-06</td>
+					<td class="colHide2" style="vertical-align:middle">2022-07-12</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=158432&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">AUD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*1.29500</td>
+					<td class="left" style="vertical-align:middle">2022-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24835">5431</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-13</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154604&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.87500</td>
+					<td class="left" style="vertical-align:middle">2022-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24836">5432</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-13</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154605&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.30000</td>
+					<td class="left" style="vertical-align:middle">2022-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27945">85743</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222607&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2022-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27949">5965</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222604&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.25000</td>
+					<td class="left" style="vertical-align:middle">2022-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27950">5967</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222725&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">MOP</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.90000</td>
+					<td class="left" style="vertical-align:middle">2022-03-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29109">40181</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-03-06</td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-08</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000028517&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">HKD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.95000</td>
+					<td class="left" style="vertical-align:middle">2022-03-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29110">40182</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-03-06</td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2022-03-08</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000028518&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.00000</td>
+					<td class="left" style="vertical-align:middle">2022-02-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=23650">5369</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-02-15</td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-09</td>
+					<td class="colHide2" style="vertical-align:middle">2022-02-15</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=151702&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2022-01-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28997">40124</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-01-17</td>
+					<td class="colHide2" style="vertical-align:middle">2022-01-12</td>
+					<td class="colHide2" style="vertical-align:middle">2022-01-18</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000022374&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-11-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27374">5450</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2021-11-17</td>
+					<td class="colHide2" style="vertical-align:middle">2021-11-23</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=207718&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">4.45000</td>
+					<td class="left" style="vertical-align:middle">2021-11-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27377">85739</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2021-11-17</td>
+					<td class="colHide2" style="vertical-align:middle">2021-11-23</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=207717&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-10-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28634">40020</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-10-17</td>
+					<td class="colHide2" style="vertical-align:middle">2021-10-12</td>
+					<td class="colHide2" style="vertical-align:middle">2021-10-19</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000012878&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.15000</td>
+					<td class="left" style="vertical-align:middle">2021-10-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=28635">85907</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-10-17</td>
+					<td class="colHide2" style="vertical-align:middle">2021-10-12</td>
+					<td class="colHide2" style="vertical-align:middle">2021-10-19</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000012881&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.91200</td>
+					<td class="left" style="vertical-align:middle">2021-08-09</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26834">5137</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-08-10</td>
+					<td class="colHide2" style="vertical-align:middle">2021-08-04</td>
+					<td class="colHide2" style="vertical-align:middle">2021-08-10</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=195380&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-06-07</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26569">5114</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-06-08</td>
+					<td class="colHide2" style="vertical-align:middle">2021-06-02</td>
+					<td class="colHide2" style="vertical-align:middle">2021-06-08</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=188832&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">HKD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.45000</td>
+					<td class="left" style="vertical-align:middle">2021-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27952">5969</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-14</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222608&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26431">4459</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-14</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=184584&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26433">4461</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-14</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=184586&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">AUD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26434">4462</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-14</td>
+					<td class="colHide2" style="vertical-align:middle">2021-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=184587&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*0.00000</td>
+					<td class="left" style="vertical-align:middle">2021-03-08</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26121">4439</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-03-09</td>
+					<td class="colHide2" style="vertical-align:middle">2021-03-03</td>
+					<td class="colHide2" style="vertical-align:middle">2021-03-09</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=180835&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">4.65000</td>
+					<td class="left" style="vertical-align:middle">2021-03-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26111">85731</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-03-06</td>
+					<td class="colHide2" style="vertical-align:middle">2021-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2021-03-08</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=180500&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.37500</td>
+					<td class="left" style="vertical-align:middle">2021-03-01</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=19400">5616</a></td>
+					<td class="colHide2" style="vertical-align:middle">2016-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2021-02-24</td>
+					<td class="colHide2" style="vertical-align:middle">2021-03-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=138396&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">MOP</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.00000</td>
+					<td class="left" style="vertical-align:middle">2020-11-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27373">5294</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2020-11-17</td>
+					<td class="colHide2" style="vertical-align:middle">2020-11-23</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=207592&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">HKD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.30000</td>
+					<td class="left" style="vertical-align:middle">2020-11-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27376">5346</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2020-11-17</td>
+					<td class="colHide2" style="vertical-align:middle">2020-11-23</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=207716&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.87500</td>
+					<td class="left" style="vertical-align:middle">2020-06-30</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=14750">5537</a></td>
+					<td class="colHide2" style="vertical-align:middle">2015-07-02</td>
+					<td class="colHide2" style="vertical-align:middle">2020-06-24</td>
+					<td class="colHide2" style="vertical-align:middle">2020-07-02</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=126774&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">HKD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.85000</td>
+					<td class="left" style="vertical-align:middle">2020-06-07</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26568">5113</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-06-08</td>
+					<td class="colHide2" style="vertical-align:middle">2020-06-03</td>
+					<td class="colHide2" style="vertical-align:middle">2020-06-09</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=188831&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2020-05-11</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24867">5200</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-05-12</td>
+					<td class="colHide2" style="vertical-align:middle">2020-05-06</td>
+					<td class="colHide2" style="vertical-align:middle">2020-05-12</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=155450&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">4.88000</td>
+					<td class="left" style="vertical-align:middle">2020-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24832">85726</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-15</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154603&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">EUR</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2020-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24833">5429</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-15</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154601&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2020-04-20</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=24834">5430</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-04-21</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-15</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-21</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=154602&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.10000</td>
+					<td class="left" style="vertical-align:middle">2020-04-17</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=27944">85742</a></td>
+					<td class="colHide2" style="vertical-align:middle">2019-04-18</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-14</td>
+					<td class="colHide2" style="vertical-align:middle">2020-04-20</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=222606&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.37500</td>
+					<td class="left" style="vertical-align:middle">2020-02-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=23649">5368</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-02-15</td>
+					<td class="colHide2" style="vertical-align:middle">2020-02-11</td>
+					<td class="colHide2" style="vertical-align:middle">2020-02-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=151701&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2020-02-14</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=23651">5370</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-02-15</td>
+					<td class="colHide2" style="vertical-align:middle">2020-02-11</td>
+					<td class="colHide2" style="vertical-align:middle">2020-02-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=151703&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.12500</td>
+					<td class="left" style="vertical-align:middle">2019-11-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=13150">5838</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-11-27</td>
+					<td class="colHide2" style="vertical-align:middle">2019-11-21</td>
+					<td class="colHide2" style="vertical-align:middle">2019-11-27</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=115444&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2019-07-11</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=25123">5235</a></td>
+					<td class="colHide2" style="vertical-align:middle">2017-07-12</td>
+					<td class="colHide2" style="vertical-align:middle">2019-07-08</td>
+					<td class="colHide2" style="vertical-align:middle">2019-07-12</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=158431&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">4.45000</td>
+					<td class="left" style="vertical-align:middle">2019-03-05</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=26110">85730</a></td>
+					<td class="colHide2" style="vertical-align:middle">2018-03-06</td>
+					<td class="colHide2" style="vertical-align:middle">2019-02-28</td>
+					<td class="colHide2" style="vertical-align:middle">2019-03-06</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=180499&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">1.87500</td>
+					<td class="left" style="vertical-align:middle">2019-03-01</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=19399">5615</a></td>
+					<td class="colHide2" style="vertical-align:middle">2016-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2019-02-26</td>
+					<td class="colHide2" style="vertical-align:middle">2019-03-04</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=138395&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">*</td>
+					<td class="left" style="vertical-align:middle">2019-03-01</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=19401">5617</a></td>
+					<td class="colHide2" style="vertical-align:middle">2016-03-02</td>
+					<td class="colHide2" style="vertical-align:middle">2019-02-26</td>
+					<td class="colHide2" style="vertical-align:middle">2019-03-04</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=138397&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.12500</td>
+					<td class="left" style="vertical-align:middle">2019-01-23</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=11904">6010</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-01-24</td>
+					<td class="colHide2" style="vertical-align:middle">2019-01-18</td>
+					<td class="colHide2" style="vertical-align:middle">2019-01-24</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=100871&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.60000</td>
+					<td class="left" style="vertical-align:middle">2018-07-12</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=20967">85724</a></td>
+					<td class="colHide2" style="vertical-align:middle">2016-07-13</td>
+					<td class="colHide2" style="vertical-align:middle">2018-07-09</td>
+					<td class="colHide2" style="vertical-align:middle">2018-07-13</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=143042&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.12500</td>
+					<td class="left" style="vertical-align:middle">2018-06-30</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=14749">5536</a></td>
+					<td class="colHide2" style="vertical-align:middle">2015-07-02</td>
+					<td class="colHide2" style="vertical-align:middle">2018-06-27</td>
+					<td class="colHide2" style="vertical-align:middle">2018-07-04</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=126773&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.37500</td>
+					<td class="left" style="vertical-align:middle">2017-11-26</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=13149">5837</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-11-27</td>
+					<td class="colHide2" style="vertical-align:middle">2017-11-22</td>
+					<td class="colHide2" style="vertical-align:middle">2017-11-28</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=115443&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.12500</td>
+					<td class="left" style="vertical-align:middle">2017-01-23</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=11903">6009</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-01-24</td>
+					<td class="colHide2" style="vertical-align:middle">2017-01-18</td>
+					<td class="colHide2" style="vertical-align:middle">2017-01-24</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=100870&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.45000</td>
+					<td class="left" style="vertical-align:middle">2017-01-16</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=11895">85942</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-01-17</td>
+					<td class="colHide2" style="vertical-align:middle">2017-01-11</td>
+					<td class="colHide2" style="vertical-align:middle">2017-01-17</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=100279&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">2.00000</td>
+					<td class="left" style="vertical-align:middle">2016-12-06</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=11646">6000</a></td>
+					<td class="colHide2" style="vertical-align:middle">2013-12-09</td>
+					<td class="colHide2" style="vertical-align:middle">2016-12-01</td>
+					<td class="colHide2" style="vertical-align:middle">2016-12-07</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=98165&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Note</td>
+					<td class="left" style="vertical-align:middle">CNY</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle">3.10000</td>
+					<td class="left" style="vertical-align:middle">2015-07</td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=9764">86029</a></td>
+					<td class="colHide2" style="vertical-align:middle">2012-07-24</td>
+					<td class="colHide2" style="vertical-align:middle">2015-07-20</td>
+					<td class="colHide2" style="vertical-align:middle">2015-07-24</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=77162&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Pref</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle"></td>
+					<td class="left" style="vertical-align:middle"></td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=29107">4619</a></td>
+					<td class="colHide2" style="vertical-align:middle">2020-03-05</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-04</td>
+					<td class="colHide2" style="vertical-align:middle">2025-03-06</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=1000028679&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+				<tr>
+					<td class="left" style="vertical-align:middle">Pref</td>
+					<td class="left" style="vertical-align:middle">USD</td>
+					<td style="vertical-align:middle"></td>
+					<td style="vertical-align:middle"></td>
+					<td class="left" style="vertical-align:middle"></td>							
+					<td style="vertical-align:middle"><a href="/dbpub/outstanding.asp?i=12943">4601</a></td>
+					<td class="colHide2" style="vertical-align:middle">2014-10-24</td>
+					<td class="colHide2" style="vertical-align:middle">2019-10-24</td>
+					<td class="colHide2" style="vertical-align:middle">2019-10-25</td>
+					<td class="colHide3">
+					
+						<ul class="navlist">
+							<li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=113904&category=1">Docs</a></li>
+						</ul>
+					
+					</td>						
+				</tr>
+				
+		</table>
+	
+		<h3 id="D0">Holdings</h3>
+		<p>Note: holdings may be incomplete and/or outdated. Holdings in listed companies are not shown as the filings are 
+		currently too difficult to automate and the holdings change too rapidly.</p>
+		<ul class="navlist">
+			
+				<li id="livebutton">Simple</li>
+				<li><a href="/dbpub/orgdata.asp?p=465&amp;s1=&amp;s3=matdn&amp;s2=namup&amp;x=y">Expanded</a></li>
+			
+		</ul>
+		<div class="clear"></div>
+		<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+			<table class="txtable">
+			<tr>
+				<th><a href='/dbpub/orgdata.asp?p=465&amp;s1=&amp;s3=matdn&amp;x=n&amp;s2=nameup'><b>Issuer</b></a></th>
+				<th class="colHide3"><a href='/dbpub/orgdata.asp?p=465&amp;s1=&amp;s3=matdn&amp;x=n&amp;s2=domiup'><b>&#x1f310</b></a></th>
+				<th class="colHide3"><a href='/dbpub/orgdata.asp?p=465&amp;s1=&amp;s3=matdn&amp;x=n&amp;s2=incdup'><b>Formed</b></a></th>
+				<th class="colHide3">Issue</th>
+				<th class="colHide3">Shares</th>
+				<th class="right"><a href='/dbpub/orgdata.asp?p=465&amp;s1=&amp;s3=matdn&amp;x=n&amp;s2=stakup'><b>Stake</b></a></th>
+				<th class="colHide3">Holding date</th>
+			</tr>
+			
+				<tr>
+					<td><a href='orgdata.asp?p=20557'>BANK OF CHINA GROUP INSURANCE COMPANY LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">1975-05-23</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">100.00%</td>
+					<td class="colHide3">2010-12-31</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=2008'>BANK OF CHINA GROUP INVESTMENT LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">1984-12-11</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">100.00%</td>
+					<td class="colHide3">2012-12-31</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=918296'>BOC HONG KONG (GROUP) LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">2001-09-12</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">100.00%</td>
+					<td class="colHide3">2012-12-31</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=11472'>BOC INTERNATIONAL HOLDINGS LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">1998-07-10</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">100.00%</td>
+					<td class="colHide3">2018-06-21</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=3294'>HONG KONG NOTE PRINTING LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">1995-12-12</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">10.00%</td>
+					<td class="colHide3">1997-10-14</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=3542'>IFC DEVELOPMENT LIMITED</a></td>
+					<td class="colHide3"><span class="info">VG<span>British Virgin Islands</span></span></td>
+					<td class="colHide3"></td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">5.00%</td>
+					<td class="colHide3">&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=3820'>SUN CHUNG ESTATE COMPANY, LIMITED</a></td>
+					<td class="colHide3"><span class="info">HK<span>Hong Kong</span></span></td>
+					<td class="colHide3">1982-11-19</td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">100.00%</td>
+					<td class="colHide3">&nbsp;</td>
+				</tr>
+				
+				<tr>
+					<td><a href='orgdata.asp?p=2016'>Tai Fung Bank Limited</a></td>
+					<td class="colHide3"><span class="info">MO<span>Macau</span></span></td>
+					<td class="colHide3"></td>
+					<td class="colHide3">Ordinary shares</td>
+					<td class="colHide3 right">&nbsp;</td>
+					<td class="right">50.00%</td>
+					<td class="colHide3">&nbsp;</td>
+				</tr>
+				
+			</table>
+		<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

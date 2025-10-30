@@ -1,0 +1,1298 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
+<style>
+	.news {
+		width:75%;
+		float:left
+	}
+	.singlecol {
+		display:none
+	}
+	.col1of2 {
+		float:left;
+		border-right:1px gray dotted;
+		box-sizing:border-box; /*include border in width*/
+		width:50%;
+	}
+	.col2of2 {
+		float:left;
+		width:50%;
+	}
+	.sidebar {
+		float:left;
+		width:25%;
+		text-align:center
+	}
+	@media only screen and (max-width: 480px) {
+		/*mobile portrait mode, single column*/
+		.col1of2, .col2of2 {
+			display:none
+		}
+		.news,.singlecol,.sidebar {
+			display:block;
+			width:100%
+		}
+	}
+	@media only screen and (min-width:481px) and (max-width: 768px) {
+		/*mobile landscape mode, 2-column*/
+		.col1of2,.col2of2 {
+			display:none
+			}
+		.singlecol {
+			display:block;
+		}
+		.news {
+			width:67%
+		}
+		.sidebar {
+			width:33%
+		}
+	}
+</style>
+<title>Webb-site Reports: non-profit news, analysis and opinions | Webb-site Database</title>
+<link rel="alternate" type="application/rss+xml" href="/rss.asp" title="Webb-site.com latest news">
+</head>
+<body>
+
+<div id="banner" style="background-color:blue">
+	<div class="box1">
+		<a href="/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Reports</b></span><br>
+		<span style="font-size:0.9em"><b>News, analysis and opinions since 1998</b></span></a><br>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" maxlength="5" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:blue;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+		<li><a href="/">Home</a></li>
+		<li><a href="/dbpub/">Database</a></li>
+		<li><a href="/webbmail/login.asp">User</a>
+			<ul>
+				
+					<li><a href="/webbmail/login.asp">Log in</a></li>
+				
+				<li><a href="/webbmail/join.asp">Sign up</a></li>
+				<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+				
+			</ul>
+		</li>
+		<li><a href="/articles/">Archive</a></li>
+		<li><a href="/pages/tools.asp">Tools</a>
+			<ul>
+				<li><a href="/pages/howtovote.asp">How to vote</a></li>
+				<li><a href="/library/">Reference library</a></li>
+				<li><a href="/cg/">CG directory</a></li>
+				<li><a href="https://www.icris.cr.gov.hk/csci/login_i.do?loginType=iguest&OPT_01=1&OPT_02=1&OPT_03=1&OPT_04=1&OPT_05=1&OPT_06=1&OPT_07=1&OPT_08=1&OPT_09=1">Companies Registry</a></li>
+				<li><a href="http://sdinotice.hkex.com.hk/di/NSSrchMethod.aspx?src=MAIN&lang=EN&in=1">Dealing disclosures</a></li>
+				<li><a href="http://www.hsi.com.hk">Hang Seng Index</a></li>
+				<li><a href="http://legalref.judiciary.gov.hk/lrs/common/ju/newjudgments.jsp">Judgments</a></li>
+			</ul>
+		</li>
+		<li><a href="/vote/">Polls</a></li>
+		<li><a href="/pages/hallofshame.asp">Hall of Shame</a></li>
+		<li><a href="/pages/stuff.asp">Other stuff</a>
+			<ul>
+				<li><a href="/HAMS/">HAMS proposal</a></li>
+				<li><a href="/pages/electiondisclosures.asp">Election returns</a></li>
+				<li><a href="/articles/PECSregister.asp">PECS register</a></li>
+				<li><a href="/pages/loopholes.asp">Listing Loopholes</a></li>
+				<li><a href="/books/">Webb-Books</a></li>
+				<li><a href="/news/">Old newsletters</a></li>
+				<li><a href="/dbpub/subject.asp?c=160">Laughing Stock</a></li>
+				<li><a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page">Flight arrivals</a></li>
+				<li><a href="https://www.hongkongairport.com/en/flights/departures/passenger.page">Flight departures</a></li>
+				<li><a href="https://www.liveatc.net/search/?icao=HKG">Air traffic radio</a></li>
+				<li><a href="https://www.hkemobility.gov.hk/en/traffic-information/live/cctv">Road traffic</a></li>
+				<li><a href="https://www.weather.gov.hk/en/">Weather</a></li>
+				<li><a href="/dbpub/idcheck.asp">HKID check digit</a></li>
+				<li><a href="/dbpub/HKBRcheck.asp">HKBR check digit</a></li>
+			</ul>
+		</li>
+		<li><a href="/pages/about.asp">About</a>
+			<ul>
+				<li><a href="/pages/aboutus.asp">About us</a></li>
+				<li><a href="/photos/">Webb-Photos</a></li>
+				<li><a href="/pages/mediaroom.asp">Media room</a></li>
+				<li><a href="/dbpub/webbchips.asp">Webb-chips</a></li>
+				<li><a href="/pages/privacypolicy.asp">Privacy policy</a></li>
+			</ul>
+		</li>
+		<li><a href="/contact/">Contact</a></li>
+		<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		<li><a href="/pages/hkradio.asp">Radio</a>
+			<ul>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio1">RTHK 1</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio2">RTHK 2</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio3">RTHK 3 English</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio4">RTHK 4 Classics</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio5">RTHK 5</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/radio6">RTHK 6 CNR</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/radio/pth">RTHK Putonghua</a></li>
+				<li><a target="_blank" href="https://www.881903.com/live/881">Commercial Radio</a></li>
+				<li><a target="_blank" href="http://www.metroradio.com.hk/Live/1044/">Metro Radio</a></li>		
+				<li><a target="_blank" href="https://www.bbc.co.uk/sounds/player/bbc_world_service">BBC World Service</a></li>
+			</ul>
+		</li>
+		<li><a href="/pages/TV.asp">TV</a>
+			<ul>
+				<li><a target="_blank" href="https://www.abc.net.au/news/newschannel/">ABC News (Australia)</a></li>
+				<li><a target="_blank" href="https://www.aljazeera.com/live">Al Jazeera</a></li>
+				<li><a target="_blank" href="https://www.bloomberg.com/live">Bloomberg</a></li>
+				<li><a target="_blank" href="https://www.dw.com/en/media-center/live-tv/s-100825">DW-TV</a></li>
+				<li><a target="_blank" href="https://www.france24.com/en/live">France 24</a></li>
+				<li><a target="_blank" href="https://www.nasa.gov/nasatv/">NASA</a></li>
+				<li><a target="_blank" href="https://hoy.tv/live">Hoy TV</a></li>
+				<li><a target="_blank" href="https://news.now.com/home/live">Now TV News</a></li>
+				<li><a target="_blank" href="https://www.rthk.hk/tv">RTHK TV</a></li>
+				<li><a target="_blank" href="https://news.tvb.com/tc/live/83">TVB iNews</a></li>
+				<li><a target="_blank" href="https://www.viu.tv/ch">Viu TV</a></li>
+			</ul>
+		</li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<div class="news">
+	<div class="singlecol">
+	<h3>News</h3>
+	
+		<div class="artsum">
+			<a style="font-weight:bold" href="articles/shutdown2.asp">The Webb-site server will shut down on 31-Oct-2025</a>
+			
+			<br>
+			<span style="color:blue">Webb-site.com, 13-Oct-2025</span>
+			<br>So is this the last that you will hear from me? Hopefully not! Read on.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:bold" href="articles/paybase2024.asp">20 years of HK-listed Directors' pay</a>
+			
+			<br>
+			<span style="color:blue">Webb-site.com, 12-Oct-2025</span>
+			<br>We can now present a nearly-complete dataset of remuneration of Directors, Supervisors and CEOs of HK-listed companies since disclosure on a named basis became mandatory in 2005, up to 2024.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15817">Concentration warning in Capital Finance (8239)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 30-Sep-2025</span>
+			<br>At 8-Sep-2025, the top 25 holders held 90.54%.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15816">SFC seeks court order to freeze assets up to HK$394m for investors compensation in suspected manipulation of Grand Talents (8516) shares</a>
+			
+			<br>
+			<span style="color:gray">SFC, 30-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15815">SFC fines Roofer Securities Ltd HK$2.1m for mishandling client money</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250929.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 29-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15814">SFC seeks court order to freeze assets up to HK$219m for investors compensation in suspected manipulation of KNT (1025) shares</a>
+			
+			<br>
+			<span style="color:gray">SFC, 26-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15813">Landmark compensation distribution to eligible Combest shareholders nears completion</a>
+			
+			<br>
+			<span style="color:gray">SFC, 26-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15812">SFAT affirms SFC decision to fine RaffAello Capital Ltd for sponsor failures</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SFAT250922.pdf" style="font-weight:normal">SFAT Decision</a>
+			
+			<br>
+			<span style="color:gray">SFC, 25-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15810">Exeter alumnus David M. Webb MBE makes gift to endow Fellowship in Computer Science</a>
+			
+			<br>
+			<span style="color:gray">Exeter College, Oxford University, 24-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15811">SFC seeks court orders to disqualify ex-directors of Century Energy (8132)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 19-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15808">Concentration warning in Shandong Hi-Speed (0412)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 18-Sep-2025</span>
+			<br>At 1-Sep-2025, the top 22 holders held 92.46%.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15809">SFC bans Richard Charles Heyes, ex-RO of Citigroup Global Markets Asia Ltd, for 5 years</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250916.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 16-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15807">Sanction of Andrew Lo Kai Bong, Executive Chairman of LET (ex-1383) and Summit Ascent (ex-0102)</a>
+			
+			<br>
+			<span style="color:gray">SEHK, 15-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15805">SFC seeks court order to freeze assets up to HK$82.4m against suspected manipulators of Smartac (ex-0395) shares</a>
+			
+			<br>
+			<span style="color:gray">SFC, 12-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15803">AFRC fines Prism Hong Kong Ltd, Kyaw Sai Hong and Yam Wai Man HK$353k for auditing without required registrations</a>
+			
+			<br>
+			<span style="color:gray">Accounting & Financial Reporting Council, 11-Sep-2025</span>
+			<br>Mr Yam was previously fined by the HKICPA in 2022 for work while he was at Zenith CPA Ltd.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15804">Concentration warning in Zhong An Intelligent Living Service (2271)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 10-Sep-2025</span>
+			<br>At 27-Aug-2025, the top 15 shareholders have 96.73%
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:bold" href="articles/bauhaus250910.asp">An open letter to the Board of Bauhaus (0483)</a>
+			
+			<br>
+			<span style="color:blue">Webb-site.com, 10-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15806">SFC fines Instinet Pacific Ltd HK$8m for failure to report cross trades to the Stock Exchange</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250908.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 8-Sep-2025</span>
+			<br>Involving 8,817 cross-trades worth HK$25.9bn. The misconduct occurred from 2012-2018. We don't know when it was discovered or why it took up to 7 years to resolve the SFC's concerns.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15789">SFC suspends Chow Tsz Lam, ex-RO of Agg. Asset Management for 1 year for fund management failures</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250904.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 4-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15788">Concentration warning in Tse Sui Luen Jewellery (0417)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 4-Sep-2025</span>
+			<br>At 21-Aug-2025, the top 20 holders have 91.97%.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15792">Concentration warning in Walnut Capital (0905)</a>
+			
+			<br>
+			<span style="color:gray">SFC, 3-Sep-2025</span>
+			<br>Shares in CCASS not held by the top 20 holders are down to 5.35% at 25-Aug-2025. The last published net asset value of this Chapter 21 investment company was $0.222 at 31-Jul-2025 but the shares closed at $2.28 on 2-Sep-2025.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15781">5 more ex-directors of Superb Summit (ex-1228) disqualified for up to 4 years</a>
+			
+				|&nbsp;<a target="_blank" href="https://legalref.judiciary.hk/lrs/common/ju/ju_frame.jsp?DIS=171465" style="font-weight:normal">Judgment</a>
+			
+			<br>
+			<span style="color:gray">SFC, 2-Sep-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15786">SFC bans Suen Kin-wing, ex-UBS AG, for life</a>
+			
+				|&nbsp;<a target="_blank" href="https://legalref.judiciary.hk/lrs/common/ju/ju_frame.jsp?DIS=161552" style="font-weight:normal">Reasons for sentence</a>
+			
+			<br>
+			<span style="color:gray">SFC, 2-Sep-2025</span>
+			<br>He's currently serving a 10-year jail sentence for fraud and theft of HK$134m of client money. Regarding client Yu Quan Li, in Suen's sentencing, the judge remarked "I accept that the monies from Yu were very likely originated from organised, illegal prostitution for which Yu pleaded guilty to the related offences and was sentenced to 15 years' imprisonment by the Mainland court."
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15787">Sanction of Shanghai Henlius Biotech (2696) and ex-CEO Scott Liu Shi Kau</a>
+			
+			<br>
+			<span style="color:gray">SEHK, 2-Sep-2025</span>
+			<br>For diverting all of the proceeds of the IPO Placing arranged by AMTD Global Markets (now oOo Securities) into an "investment management agreement" under AMTD.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15771">SFC seeks court order to freeze assets up to HK$62.5m for investor compensation in sophisticated ramp-and-dump case</a>
+			
+			<br>
+			<span style="color:gray">SFC, 29-Aug-2025</span>
+			
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:bold" href="dbpub/payleague.asp">A gift to HK on our Founder's 60th birthday</a>
+			
+			<br>
+			<span style="color:blue">Webb-site.com, 29-Aug-2025</span>
+			<br>Here's a first look at our league table of directors' pay in HK-listed companies, for years 2005-2023 which are almost complete. We'll release 2024 later. Thanks to all the volunteer editors who have made this possible. David M Webb MBE, 60 and counting!
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15800">PECS Register monthly update</a>
+			
+			<br>
+			<span style="color:gray">HK Government, 29-Aug-2025</span>
+			<br>The latest activities of retired senior HK Civil Servants.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15772">SFC revokes the licence of Amber Hill Capital Ltd and bans its senior management for life</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250828.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 28-Aug-2025</span>
+			<br>This relates to the collapse of Target Insurance (Holdings) Ltd (ex-6161) and its insurance subsidiary ("Company X" in the SFC's statement). Surely there should be criminal charges against someone for fraud.
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15773">SFC revokes licence of Nerico Brothers Ltd and bans its senior management for life</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250828b.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 28-Aug-2025</span>
+			<br>This relates to the collapse of Target Insurance (Holdings) Ltd (ex-6161) and its insurance subsidiary ("Company X" in the SFC's statement).
+			<br>
+			
+		</div>
+		
+		<div class="artsum">
+			<a style="font-weight:normal" href="/dbpub/artlinks.asp?s=15774">SFC fines Deutsche Bank AG HK$23.8m for regulatory breaches</a>
+			
+				|&nbsp;<a target="_self" href="codocs/SDA250828c.pdf" style="font-weight:normal">Statement of Disciplinary Action</a>
+			
+			<br>
+			<span style="color:gray">SFC, 28-Aug-2025</span>
+			
+			<br>
+			
+		</div>
+		
+	</div>
+	<div class="col1of2" style="border-right:1px gray dotted">
+		<h3>Our stories</h3>
+		
+			<div class="artsum">
+				<a target="_self" href="articles/shutdown2.asp"><b>The Webb-site server will shut down on 31-Oct-2025</b></a>
+				
+				<br>
+				So is this the last that you will hear from me? Hopefully not! Read on.&nbsp;(13-Oct-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/paybase2024.asp"><b>20 years of HK-listed Directors' pay</b></a>
+				
+				<br>
+				We can now present a nearly-complete dataset of remuneration of Directors, Supervisors and CEOs of HK-listed companies since disclosure on a named basis became mandatory in 2005, up to 2024.&nbsp;(12-Oct-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/bauhaus250910.asp"><b>An open letter to the Board of Bauhaus (0483)</b></a>
+				
+				<br>
+				&nbsp;(10-Sep-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="dbpub/payleague.asp"><b>A gift to HK on our Founder's 60th birthday</b></a>
+				
+				<br>
+				Here's a first look at our league table of directors' pay in HK-listed companies, for years 2005-2023 which are almost complete. We'll release 2024 later. Thanks to all the volunteer editors who have made this possible. David M Webb MBE, 60 and counting!&nbsp;(29-Aug-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/MBE.asp"><b>Webb appointed MBE in UK honours list</b></a>
+				
+					|&nbsp;<a target="_blank" href="https://www.thegazette.co.uk/notice/4906873"><b>Gazette Notice</b></a>
+				
+				<br>
+				A statement from our Founder.&nbsp;(14-Jun-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/repository.asp"><b>The Webb-site Repository</b></a>
+				
+				<br>
+				As promised, you can now download the Webb-site datasets and take our work forward.&nbsp;(1-May-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/trumptariff.asp"><b>Trump's tariff own-goal</b></a>
+				
+				<br>
+				He apparently has no idea how much this will hurt US consumers and how little it will affect the trade deficit. Asian manufacturers and their investors can, to a large extent, sleep easy tonight.&nbsp;(3-Apr-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/shutdown.asp"><b>The coming end of Webb-site</b></a>
+				
+				<br>
+				Unfortunately, there are going to be some more changes around here. Our founder explains why. Updated 17-Mar-2025: thanks for all the good wishes and stand by for a data and software dump.&nbsp;(12-Feb-2025)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="ccass/portchg.asp?p=1193&d1=2023-11-17&d=2024-11-18&z=False&sort=valcup"><b>On 18-Nov-2024, JPMorgan completed oustourcing its HK custodian business to HSBC, as shown in Webb-site CCASS Analysis</b></a>
+				
+					|&nbsp;<a target="_self" href="ccass/cholder.asp?part=460&d=2024-11-18&z=False&sort=valndn"><b>HSBC custody at 2024-11-18</b></a>
+				
+				<br>
+				&nbsp;(20-Nov-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/gavel2.asp"><b>Knock it off, Judiciary: HK courts don't use gavels</b></a>
+				
+				<br>
+				The HK Judiciary persists in promoting an object never used in courtrooms as a symbol of law and juridical work. Why not promote something else not found in courts, like a rocket?&nbsp;(19-Oct-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/IKEA.asp"><b>IKEA removes smart-home products from HK, citing National Security Law</b></a>
+				
+				<br>
+				Not entirely consistent with the Government's goal to make Hong Kong a Smart City by investing hundreds of HK$ billions into "Innovation and Technology".&nbsp;(12-Sep-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/policeService.asp"><b>Putting Police in the Policy Address</b></a>
+				
+				<br>
+				A new name would set the right tone.&nbsp;(18-Aug-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/boardgames2024.asp"><b>Meaningless board games at HKEX, and how the UK FCA has just made an awful mistake</b></a>
+				
+				<br>
+				We review the proposals for a 6-seat and 9-year limit on so-called INEDs, along with other changes that do nothing to address HK's corporate governance deficit. Meanwhile, a slow-motion disaster is underway in the UK as it scraps fundamental investor rights.&nbsp;(28-Jul-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/timewatch240605.asp"><b>An open letter to the Board of Time Watch (2033)</b></a>
+				
+				<br>
+				&nbsp;(5-Jun-2024)
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a target="_self" href="articles/allan240604.asp"><b>Another open letter to the Board of Allan (0684)</b></a>
+				
+				<br>
+				&nbsp;(4-Jun-2024)
+				<br>
+				
+			</div>
+			
+	</div>
+	<div class="col2of2">
+		<h3>Other news</h3>
+		
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15817">Concentration warning in Capital Finance (8239)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 30-Sep-2025	
+				</span>
+				<br>At 8-Sep-2025, the top 25 holders held 90.54%.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15816">SFC seeks court order to freeze assets up to HK$394m for investors compensation in suspected manipulation of Grand Talents (8516) shares</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 30-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15815">SFC fines Roofer Securities Ltd HK$2.1m for mishandling client money</a>
+				
+					|&nbsp;<a target="_self" href="codocs/SDA250929.pdf">Statement of Disciplinary Action</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 29-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15814">SFC seeks court order to freeze assets up to HK$219m for investors compensation in suspected manipulation of KNT (1025) shares</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 26-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15813">Landmark compensation distribution to eligible Combest shareholders nears completion</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 26-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15812">SFAT affirms SFC decision to fine RaffAello Capital Ltd for sponsor failures</a>
+				
+					|&nbsp;<a target="_self" href="codocs/SFAT250922.pdf">SFAT Decision</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 25-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15810">Exeter alumnus David M. Webb MBE makes gift to endow Fellowship in Computer Science</a>
+				
+				<br>
+				<span style="color:gray">
+				Exeter College, Oxford University, 24-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15811">SFC seeks court orders to disqualify ex-directors of Century Energy (8132)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 19-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15808">Concentration warning in Shandong Hi-Speed (0412)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 18-Sep-2025	
+				</span>
+				<br>At 1-Sep-2025, the top 22 holders held 92.46%.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15809">SFC bans Richard Charles Heyes, ex-RO of Citigroup Global Markets Asia Ltd, for 5 years</a>
+				
+					|&nbsp;<a target="_self" href="codocs/SDA250916.pdf">Statement of Disciplinary Action</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 16-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15807">Sanction of Andrew Lo Kai Bong, Executive Chairman of LET (ex-1383) and Summit Ascent (ex-0102)</a>
+				
+				<br>
+				<span style="color:gray">
+				SEHK, 15-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15805">SFC seeks court order to freeze assets up to HK$82.4m against suspected manipulators of Smartac (ex-0395) shares</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 12-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15803">AFRC fines Prism Hong Kong Ltd, Kyaw Sai Hong and Yam Wai Man HK$353k for auditing without required registrations</a>
+				
+				<br>
+				<span style="color:gray">
+				Accounting & Financial Reporting Council, 11-Sep-2025	
+				</span>
+				<br>Mr Yam was previously fined by the HKICPA in 2022 for work while he was at Zenith CPA Ltd.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15804">Concentration warning in Zhong An Intelligent Living Service (2271)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 10-Sep-2025	
+				</span>
+				<br>At 27-Aug-2025, the top 15 shareholders have 96.73%
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15806">SFC fines Instinet Pacific Ltd HK$8m for failure to report cross trades to the Stock Exchange</a>
+				
+					|&nbsp;<a target="_self" href="codocs/SDA250908.pdf">Statement of Disciplinary Action</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 8-Sep-2025	
+				</span>
+				<br>Involving 8,817 cross-trades worth HK$25.9bn. The misconduct occurred from 2012-2018. We don't know when it was discovered or why it took up to 7 years to resolve the SFC's concerns.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15789">SFC suspends Chow Tsz Lam, ex-RO of Agg. Asset Management for 1 year for fund management failures</a>
+				
+					|&nbsp;<a target="_self" href="codocs/SDA250904.pdf">Statement of Disciplinary Action</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 4-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15788">Concentration warning in Tse Sui Luen Jewellery (0417)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 4-Sep-2025	
+				</span>
+				<br>At 21-Aug-2025, the top 20 holders have 91.97%.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15792">Concentration warning in Walnut Capital (0905)</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 3-Sep-2025	
+				</span>
+				<br>Shares in CCASS not held by the top 20 holders are down to 5.35% at 25-Aug-2025. The last published net asset value of this Chapter 21 investment company was $0.222 at 31-Jul-2025 but the shares closed at $2.28 on 2-Sep-2025.
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15781">5 more ex-directors of Superb Summit (ex-1228) disqualified for up to 4 years</a>
+				
+					|&nbsp;<a target="_blank" href="https://legalref.judiciary.hk/lrs/common/ju/ju_frame.jsp?DIS=171465">Judgment</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 2-Sep-2025	
+				</span>
+				
+				<br>
+				
+			</div>
+			
+			<div class="artsum">
+				<a href="/dbpub/artlinks.asp?s=15786">SFC bans Suen Kin-wing, ex-UBS AG, for life</a>
+				
+					|&nbsp;<a target="_blank" href="https://legalref.judiciary.hk/lrs/common/ju/ju_frame.jsp?DIS=161552">Reasons for sentence</a>
+				
+				<br>
+				<span style="color:gray">
+				SFC, 2-Sep-2025	
+				</span>
+				<br>He's currently serving a 10-year jail sentence for fraud and theft of HK$134m of client money. Regarding client Yu Quan Li, in Suen's sentencing, the judge remarked "I accept that the monies from Yu were very likely originated from organised, illegal prostitution for which Yu pleaded guilty to the related offences and was sentenced to 15 years' imprisonment by the Mainland court."
+				<br>
+				
+			</div>
+			
+	</div>
+	<div class="clear"></div>
+	<div class="artsum"><strong><a href="/articles/">Previously on Webb-site.com</a></strong><br>
+	Check out our full list of articles in the archive, since our launch in 1998.</div>
+</div>
+
+<div class="sidebar" >
+	<p><a href="/dbpub/webbchips.asp"><b>Webb-chips: current disclosed holdings</b></a></p>
+	<div style="text-align:center;border:1px black solid;,margin-bottom:10px">
+		<p><a target="_blank" href="http://www.aqhi.gov.hk/en.html">Today&#39;s air 
+		pollution</a><br/>
+		<a href="http://hedleyindex.sph.hku.hk" target="_blank">Hedley 
+		Index</a></p>
+		<a target="_blank" href="https://www.weather.gov.hk/en/wxinfo/ts/webcam/CP1_photo.htm">
+		<img alt="Central (Victoria Harbour)" src="https://www.weather.gov.hk/wxinfo/aws/hko_mica/cp1/latest_CP1.jpg" style="border:0;width:100%"></a>
+	</div>
+	<div style="border:thin black solid;margin:10px 0px;position:relative;padding:5px">
+		
+		<span style="text-align:center"><strong>Today's big birthdays, 30&nbsp;October</strong></span><br>
+		<i><a href="/dbpub/bornday.asp">more from Webb-site Who's Who</a></i>
+		<table style="width:100%">
+			<tr>
+				<td></td>
+				<td style="text-align:right">Age</td>
+			</tr>
+			
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=53029'>Adams, John (1735) </a></td>
+					<td style="text-align:right;">290</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=66142'>Yorke, John Manners </a></td>
+					<td style="text-align:right;">185</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=22695640'>Goschen, William Henry Neville </a></td>
+					<td style="text-align:right;">160</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=24260763'>Buxton, Cecil </a></td>
+					<td style="text-align:right;">145</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15595'>Lei, Jose 李銘根</a></td>
+					<td style="text-align:right;">95</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=20370878'>Vanden-Bempde-Johnstone, Robin Evelyn Leo </a></td>
+					<td style="text-align:right;">95</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=29317'>Rich, Nigel Mervyn Sutherland 李舒</a></td>
+					<td style="text-align:right;">80</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=13014'>Tay, Chek Khoon 鄭則群</a></td>
+					<td style="text-align:right;">75</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=20524366'>Hands, Christopher Roy </a></td>
+					<td style="text-align:right;">70</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=26562950'>Michael, Peter (1955-10) </a></td>
+					<td style="text-align:right;">70</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16412635'>Cator, Mark </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=14984880'>Winterbottom, Christine Dianne </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15299501'>Baker, Karen Lyn </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15633649'>Marsh, Richard Clive </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=19772276'>Cartwright, Peter Anthony </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15787185'>Edgson, Malcolm Ian </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=19997755'>Chung, Wai Cheong (1960-10) </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16283751'>Towse, Ian James </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16368406'>Seyed, Mashook </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27978674'>Ronald, Janet </a></td>
+					<td style="text-align:right;">65</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16453574'>Mackinnon, Thomas (1965-10-30) </a></td>
+					<td style="text-align:right;">60</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15493814'>Pearce, Darren (1965-10) </a></td>
+					<td style="text-align:right;">60</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=23753765'>Carson, Melanie (1970-10) </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=2510948'>Watts, Ramona </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16739553'>McLaren, John James (1970-10) </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15150595'>Perry, Miguel Sebastian </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=21810265'>Wood, David (1970-10) </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15435447'>Sale, Sarah </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16930843'>Houghton-Brown, Martin </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16265401'>Shamonina, Ekaterina (1970-10) </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=30744729'>Biliakevicius, Danas </a></td>
+					<td style="text-align:right;">55</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16265788'>McCarthy, Martin Peter (1975-10-30) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=17082842'>Razzaq, Tariq (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=17093124'>Harrington, Luke (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16509956'>Gordon, Lorraine Claire </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=23094122'>Price, Andrew (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=23241858'>Legrand-Jolet, Nicolas </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=23719418'>Brown, Mark (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=13376317'>Ren, Zhihua (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=25335469'>Guest, Susan (1975-10) </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=13455913'>Anand, Gitu </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=14657528'>Hassan, Haroon Mohamed </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16465840'>Rimdeika, Linas </a></td>
+					<td style="text-align:right;">50</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16415390'>Marshall, Mark (1980-10) </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15880132'>Gaffney, Ryan Thomas </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=25191133'>Kusorgbor, Mawuenyegah Yao </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15470783'>Payne, Adam (1980-10) </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15447223'>Lambert, Gary Lee </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27844196'>Amadi, Chiamaka (1980-10) </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27895416'>Rochester, Ishaleen </a></td>
+					<td style="text-align:right;">45</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=13573773'>Brown, Kwasi </a></td>
+					<td style="text-align:right;">40</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27270727'>Cable, Natalie (1985-10-30) </a></td>
+					<td style="text-align:right;">40</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27332325'>Nash, Craig (1985-10) </a></td>
+					<td style="text-align:right;">40</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15433933'>Haris, Fatima </a></td>
+					<td style="text-align:right;">40</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=21861886'>Khan, Selina (1985-10) </a></td>
+					<td style="text-align:right;">40</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=15716433'>Coates, Liam (1990-10) </a></td>
+					<td style="text-align:right;">35</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=25872285'>McCormick, Sam (1990-10) </a></td>
+					<td style="text-align:right;">35</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=27842699'>Rozo Rodriguez, Daniella </a></td>
+					<td style="text-align:right;">35</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=16885320'>Cordani, Giovanni </a></td>
+					<td style="text-align:right;">30</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=25621426'>Pearson, Karl Anthony (1995-10) </a></td>
+					<td style="text-align:right;">30</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=31118604'>Lui, Bubble Hiu Lam 雷曉琳</a></td>
+					<td style="text-align:right;">25</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=33709612'>March, Theodore Allan </a></td>
+					<td style="text-align:right;">25</td>
+				</tr>
+				
+				<tr>
+					<td style="text-align:left;"><a href='/dbpub/natperson.asp?p=52658'>Hamilton, James Alfred Nicholas </a></td>
+					<td style="text-align:right;">20</td>
+				</tr>
+				
+		</table>
+	</div>
+</div>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

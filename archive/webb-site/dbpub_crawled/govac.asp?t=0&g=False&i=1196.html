@@ -1,0 +1,928 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.chart('chart1', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'Revenue',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.2em'
+			}
+	    },
+	    colors: ['Green','Red','MediumBlue',
+	    	'Orange','Olive','Navy',
+	    	'IndianRed','Teal','Turquoise',
+	    	'Tomato','YellowGreen','SteelBlue',
+	    	'Wheat','GreenYellow','SkyBlue',
+	    	'SlateGray','Sienna','Salmon',
+	    	'Gold'],
+	    yAxis: {
+	        title: {
+	            text: 'HK$000',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0,
+	        	
+	        },
+	    },
+	    xAxis: {
+	    	categories: ['1999-03-31','2000-03-31','2001-03-31','2002-03-31','2003-03-31','2004-03-31','2005-03-31','2006-03-31','2007-03-31','2008-03-31','2009-03-31','2010-03-31','2011-03-31','2012-03-31','2013-03-31','2014-03-31','2015-03-31','2016-03-31','2017-03-31','2018-03-31','2019-03-31','2020-03-31','2021-03-31','2022-03-31','2023-03-31','2024-03-31','2025-03-31']
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: false,
+	    	useHTML: true,
+	    	hideDelay:2000,
+	    	style: {pointerEvents:'auto'},
+	        headerFormat: '<b>{point.key}</b><br>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    	
+	    	{
+	        name: 'CIF',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1237">{series.name} {point.y}</a>',
+		    },
+	        data: [5988449,2605981,2715345,2760281,2352590,2405796,8390939,2905004,2269366,2184200,1831550,1177609,1252929,1287449,1403176,1533784,1460445,1409367,1346963,816364,1288057,841867,699582,201429,424439,479278,1432488]
+	        },
+	        
+	    	{
+	        name: 'CWRF',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1091">{series.name} {point.y}</a>',
+		    },
+	        data: [19587920,35463665,29699584,10606421,11796204,5686782,32095126,29599888,37125381,62372916,17071491,39660169,65631086,84856891,69663759,84417390,77987847,60988194,128115109,164935529,116919028,141880164,88749107,143125375,70004927,19727368,13688075]
+	        },
+	        
+	    	{
+	        name: 'CSPRF',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1198">{series.name} {point.y}</a>',
+		    },
+	        data: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	        },
+	        
+	    	{
+	        name: 'DRF',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1117">{series.name} {point.y}</a>',
+		    },
+	        data: [439,230,1518,526,358,534,50,1131,424,1019,1562,9070,603,6732,304,2894,2520,1102,2334,1931,1298,3468,2447,1021,1691,492,7326]
+	        },
+	        
+	    	{
+	        name: 'GRA',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=722">{series.name} {point.y}</a>',
+		    },
+	        data: [148825177,141714209,165899281,156313780,141451717,154850488,180220660,201124251,216264840,262875510,248085107,240767087,272465731,310715746,329676058,328577056,395550444,383842616,419263909,428705541,437197870,396185943,421285089,468043440,452082208,449856482,500289137]
+	        },
+	        
+	    	{
+	        name: 'ITF',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1202">{series.name} {point.y}</a>',
+		    },
+	        data: [0,0,33967,20602,18280,9857,73243,25671,22155,21556,18252,46635,42030,49582,58094,51253,55486,66385,52209,69557,47099,35389,45317,64512,82896,69647,60337]
+	        },
+	        
+	    	{
+	        name: 'Loan Fund',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1215">{series.name} {point.y}</a>',
+		    },
+	        data: [2386722,11291355,3191052,4984818,4319228,17583302,1681050,1933747,1900402,1995104,1964211,2155918,2117465,2257356,2103827,2524404,2074860,2185599,2250899,2579711,2694177,2355587,744753,754670,5185194,747335,1460078]
+	        },
+	        
+	    	{
+	        name: 'LottFund',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1108">{series.name} {point.y}</a>',
+		    },
+	        data: [997818,883467,822348,682395,776849,904700,1061700,1073881,1013255,1094520,1018576,1000797,1038415,1303450,1249782,1238462,1322168,1330652,1367807,1285308,1284615,1225687,277383,951998,1064241,1346657,1428802]
+	        },
+	        
+	        ]
+	});
+});
+</script>
+<title>HKSAR Consolidated Accounts | Revenue</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2><a href='govac.asp?t=0&amp;g=False&amp;i=1251'>HKSAR Consolidated Accounts</a> | Revenue</h2>
+
+	<ul class="navlist">
+		<li class='livebutton'>Accounts</li><li><a href='govacsearch.asp'>Search</a></li><li><a href='govacNotes.asp'>Notes</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<form method="get" action="govac.asp">
+	<input type="hidden" name="t" value="0">
+	<input type='checkbox' name='g' id='g' value='1' onchange='this.form.submit()'> Show as % of Gross Domestic Product
+	<input type="hidden" name="i" value="1196">
+</form>
+<p>Tap a line-item in the table or a link in a chart data-point to 
+drill down to more and more detail, or the headings above to go back up. On the chart, use the top-right hamburger menu to save or print. 
+Tap the legend to toggle items in and out of the chart.</p>
+<p><b><a href="govacCSV.asp?t=0&amp;i=1196">Download CSV</a></b></p>
+
+
+<div id="chart1" style="height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>Tap on the line-items to drill down or chart line-items separately.</p>
+<div class="xscroll">
+	<table class="numtable center">
+		<tr>
+			<th class="left">Year to 31 March HK$000</th>
+			
+				<th>1999</th>
+			
+				<th>2000</th>
+			
+				<th>2001</th>
+			
+				<th>2002</th>
+			
+				<th>2003</th>
+			
+				<th>2004</th>
+			
+				<th>2005</th>
+			
+				<th>2006</th>
+			
+				<th>2007</th>
+			
+				<th>2008</th>
+			
+				<th>2009</th>
+			
+				<th>2010</th>
+			
+				<th>2011</th>
+			
+				<th>2012</th>
+			
+				<th>2013</th>
+			
+				<th>2014</th>
+			
+				<th>2015</th>
+			
+				<th>2016</th>
+			
+				<th>2017</th>
+			
+				<th>2018</th>
+			
+				<th>2019</th>
+			
+				<th>2020</th>
+			
+				<th>2021</th>
+			
+				<th>2022</th>
+			
+				<th>2023</th>
+			
+				<th>2024</th>
+			
+				<th>2025</th>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1237">Capital Investment Fund</a>
+			
+			</td>
+			
+				<td>5,988,449</td>
+			
+				<td>2,605,981</td>
+			
+				<td>2,715,345</td>
+			
+				<td>2,760,281</td>
+			
+				<td>2,352,590</td>
+			
+				<td>2,405,796</td>
+			
+				<td>8,390,939</td>
+			
+				<td>2,905,004</td>
+			
+				<td>2,269,366</td>
+			
+				<td>2,184,200</td>
+			
+				<td>1,831,550</td>
+			
+				<td>1,177,609</td>
+			
+				<td>1,252,929</td>
+			
+				<td>1,287,449</td>
+			
+				<td>1,403,176</td>
+			
+				<td>1,533,784</td>
+			
+				<td>1,460,445</td>
+			
+				<td>1,409,367</td>
+			
+				<td>1,346,963</td>
+			
+				<td>816,364</td>
+			
+				<td>1,288,057</td>
+			
+				<td>841,867</td>
+			
+				<td>699,582</td>
+			
+				<td>201,429</td>
+			
+				<td>424,439</td>
+			
+				<td>479,278</td>
+			
+				<td>1,432,488</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1091">Capital Works Reserve Fund</a>
+			
+			</td>
+			
+				<td>19,587,920</td>
+			
+				<td>35,463,665</td>
+			
+				<td>29,699,584</td>
+			
+				<td>10,606,421</td>
+			
+				<td>11,796,204</td>
+			
+				<td>5,686,782</td>
+			
+				<td>32,095,126</td>
+			
+				<td>29,599,888</td>
+			
+				<td>37,125,381</td>
+			
+				<td>62,372,916</td>
+			
+				<td>17,071,491</td>
+			
+				<td>39,660,169</td>
+			
+				<td>65,631,086</td>
+			
+				<td>84,856,891</td>
+			
+				<td>69,663,759</td>
+			
+				<td>84,417,390</td>
+			
+				<td>77,987,847</td>
+			
+				<td>60,988,194</td>
+			
+				<td>128,115,109</td>
+			
+				<td>164,935,529</td>
+			
+				<td>116,919,028</td>
+			
+				<td>141,880,164</td>
+			
+				<td>88,749,107</td>
+			
+				<td>143,125,375</td>
+			
+				<td>70,004,927</td>
+			
+				<td>19,727,368</td>
+			
+				<td>13,688,075</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1198">Civil Service Pension Reserve Fund</a>
+			
+			</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1117">Disaster Relief Fund</a>
+			
+			</td>
+			
+				<td>439</td>
+			
+				<td>230</td>
+			
+				<td>1,518</td>
+			
+				<td>526</td>
+			
+				<td>358</td>
+			
+				<td>534</td>
+			
+				<td>50</td>
+			
+				<td>1,131</td>
+			
+				<td>424</td>
+			
+				<td>1,019</td>
+			
+				<td>1,562</td>
+			
+				<td>9,070</td>
+			
+				<td>603</td>
+			
+				<td>6,732</td>
+			
+				<td>304</td>
+			
+				<td>2,894</td>
+			
+				<td>2,520</td>
+			
+				<td>1,102</td>
+			
+				<td>2,334</td>
+			
+				<td>1,931</td>
+			
+				<td>1,298</td>
+			
+				<td>3,468</td>
+			
+				<td>2,447</td>
+			
+				<td>1,021</td>
+			
+				<td>1,691</td>
+			
+				<td>492</td>
+			
+				<td>7,326</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=722">General Revenue Account</a>
+			
+			</td>
+			
+				<td>148,825,177</td>
+			
+				<td>141,714,209</td>
+			
+				<td>165,899,281</td>
+			
+				<td>156,313,780</td>
+			
+				<td>141,451,717</td>
+			
+				<td>154,850,488</td>
+			
+				<td>180,220,660</td>
+			
+				<td>201,124,251</td>
+			
+				<td>216,264,840</td>
+			
+				<td>262,875,510</td>
+			
+				<td>248,085,107</td>
+			
+				<td>240,767,087</td>
+			
+				<td>272,465,731</td>
+			
+				<td>310,715,746</td>
+			
+				<td>329,676,058</td>
+			
+				<td>328,577,056</td>
+			
+				<td>395,550,444</td>
+			
+				<td>383,842,616</td>
+			
+				<td>419,263,909</td>
+			
+				<td>428,705,541</td>
+			
+				<td>437,197,870</td>
+			
+				<td>396,185,943</td>
+			
+				<td>421,285,089</td>
+			
+				<td>468,043,440</td>
+			
+				<td>452,082,208</td>
+			
+				<td>449,856,482</td>
+			
+				<td>500,289,137</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1202">Innovation & Technology Fund</a>
+			
+			</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>33,967</td>
+			
+				<td>20,602</td>
+			
+				<td>18,280</td>
+			
+				<td>9,857</td>
+			
+				<td>73,243</td>
+			
+				<td>25,671</td>
+			
+				<td>22,155</td>
+			
+				<td>21,556</td>
+			
+				<td>18,252</td>
+			
+				<td>46,635</td>
+			
+				<td>42,030</td>
+			
+				<td>49,582</td>
+			
+				<td>58,094</td>
+			
+				<td>51,253</td>
+			
+				<td>55,486</td>
+			
+				<td>66,385</td>
+			
+				<td>52,209</td>
+			
+				<td>69,557</td>
+			
+				<td>47,099</td>
+			
+				<td>35,389</td>
+			
+				<td>45,317</td>
+			
+				<td>64,512</td>
+			
+				<td>82,896</td>
+			
+				<td>69,647</td>
+			
+				<td>60,337</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1215">Loan Fund</a>
+			
+			</td>
+			
+				<td>2,386,722</td>
+			
+				<td>11,291,355</td>
+			
+				<td>3,191,052</td>
+			
+				<td>4,984,818</td>
+			
+				<td>4,319,228</td>
+			
+				<td>17,583,302</td>
+			
+				<td>1,681,050</td>
+			
+				<td>1,933,747</td>
+			
+				<td>1,900,402</td>
+			
+				<td>1,995,104</td>
+			
+				<td>1,964,211</td>
+			
+				<td>2,155,918</td>
+			
+				<td>2,117,465</td>
+			
+				<td>2,257,356</td>
+			
+				<td>2,103,827</td>
+			
+				<td>2,524,404</td>
+			
+				<td>2,074,860</td>
+			
+				<td>2,185,599</td>
+			
+				<td>2,250,899</td>
+			
+				<td>2,579,711</td>
+			
+				<td>2,694,177</td>
+			
+				<td>2,355,587</td>
+			
+				<td>744,753</td>
+			
+				<td>754,670</td>
+			
+				<td>5,185,194</td>
+			
+				<td>747,335</td>
+			
+				<td>1,460,078</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1108">Lotteries Fund</a>
+			
+			</td>
+			
+				<td>997,818</td>
+			
+				<td>883,467</td>
+			
+				<td>822,348</td>
+			
+				<td>682,395</td>
+			
+				<td>776,849</td>
+			
+				<td>904,700</td>
+			
+				<td>1,061,700</td>
+			
+				<td>1,073,881</td>
+			
+				<td>1,013,255</td>
+			
+				<td>1,094,520</td>
+			
+				<td>1,018,576</td>
+			
+				<td>1,000,797</td>
+			
+				<td>1,038,415</td>
+			
+				<td>1,303,450</td>
+			
+				<td>1,249,782</td>
+			
+				<td>1,238,462</td>
+			
+				<td>1,322,168</td>
+			
+				<td>1,330,652</td>
+			
+				<td>1,367,807</td>
+			
+				<td>1,285,308</td>
+			
+				<td>1,284,615</td>
+			
+				<td>1,225,687</td>
+			
+				<td>277,383</td>
+			
+				<td>951,998</td>
+			
+				<td>1,064,241</td>
+			
+				<td>1,346,657</td>
+			
+				<td>1,428,802</td>
+			
+		</tr>
+		
+		<tr class="total">
+			<td class="left">Total</td>
+			
+				<td>177,786,525</td>
+			
+				<td>191,958,907</td>
+			
+				<td>202,363,095</td>
+			
+				<td>175,368,823</td>
+			
+				<td>160,715,226</td>
+			
+				<td>181,441,459</td>
+			
+				<td>223,522,768</td>
+			
+				<td>236,663,573</td>
+			
+				<td>258,595,823</td>
+			
+				<td>330,544,825</td>
+			
+				<td>269,990,749</td>
+			
+				<td>284,817,285</td>
+			
+				<td>342,548,259</td>
+			
+				<td>400,477,206</td>
+			
+				<td>404,155,000</td>
+			
+				<td>418,345,243</td>
+			
+				<td>478,453,770</td>
+			
+				<td>449,823,915</td>
+			
+				<td>552,399,230</td>
+			
+				<td>598,393,941</td>
+			
+				<td>559,432,144</td>
+			
+				<td>542,528,105</td>
+			
+				<td>511,803,678</td>
+			
+				<td>613,142,445</td>
+			
+				<td>528,845,596</td>
+			
+				<td>472,227,259</td>
+			
+				<td>518,366,243</td>
+			
+		</tr>
+		
+	</table>
+</div>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

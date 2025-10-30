@@ -1,0 +1,1657 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.stockChart('chart1', {
+        time: {
+        	useUTC:true
+        },
+    	chart: {
+    		backgroundColor: "#FFFFFF",
+	        borderWidth: 1,
+	        borderColor: "black",
+    	},
+    	rangeSelector:{
+    		selected: 9,
+    		buttons: [{
+				type: 'month',
+				count: 1,
+				text: '1m'
+			}, {
+				type: 'month',
+				count: 3,
+				text: '3m'
+			}, {
+				type: 'month',
+				count: 6,
+				text: '6m'
+			}, {
+				type: 'ytd',
+				text: 'YTD'
+			}, {
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 3,
+				text: '3y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputDateFormat:"%e %b %Y"
+    	},
+        title: {
+            text: '<b>HK net imports: gas products monthly, Tonnes</b>',
+            margin: 10,
+            style: {
+            	fontSize:'1.2em'
+	        }	            
+        },
+        subtitle: {
+        	text: 'Webb-site.com',
+        	style: {
+        		fontWeight: 'bold',
+        		fontSize: '1.2em'
+        	}
+        },
+        yAxis: [{
+			title: {
+	            text: 'Tonnes'
+	        },
+	        height:'100%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        min:null,
+	    }],
+        series: [
+        
+        {
+        	type: 'column',
+        	name: 'LPG',
+            data: [[1356998400000,29654],[1359676800000,30184],[1362096000000,40662],[1364774400000,40270],[1367366400000,18482],[1370044800000,28523],[1372636800000,19011],[1375315200000,16686],[1377993600000,40543],[1380585600000,34826],[1383264000000,32777],[1385856000000,43994],[1388534400000,32536],[1391212800000,23109],[1393632000000,36166],[1396310400000,38490],[1398902400000,32631],[1401580800000,26838],[1404172800000,32640],[1406851200000,26577],[1409529600000,35043],[1412121600000,42466],[1414800000000,40065],[1417392000000,31679],[1420070400000,28598],[1422748800000,24568],[1425168000000,39350],[1427846400000,27654],[1430438400000,44030],[1433116800000,36465],[1435708800000,26098],[1438387200000,26937],[1441065600000,28057],[1443657600000,25994],[1446336000000,26781],[1448928000000,43426],[1451606400000,24349],[1454284800000,24368],[1456790400000,34081],[1459468800000,28830],[1462060800000,35889],[1464739200000,24308],[1467331200000,48837],[1470009600000,15539],[1472688000000,32856],[1475280000000,34845],[1477958400000,15976],[1480550400000,42084],[1483228800000,35637],[1485907200000,13295],[1488326400000,33443],[1491004800000,39725],[1493596800000,35432],[1496275200000,23747],[1498867200000,34506],[1501545600000,41340],[1504224000000,29993],[1506816000000,34750],[1509494400000,21958],[1512086400000,33943],[1514764800000,29787],[1517443200000,42998],[1519862400000,29108],[1522540800000,23425],[1525132800000,37351],[1527811200000,29379],[1530403200000,23048],[1533081600000,32814],[1535760000000,33977],[1538352000000,28299],[1541030400000,31437],[1543622400000,31645],[1546300800000,19009],[1548979200000,27516],[1551398400000,44969],[1554076800000,27214],[1556668800000,15261],[1559347200000,45561],[1561939200000,26793],[1564617600000,17548],[1567296000000,39360],[1569888000000,29807],[1572566400000,26964],[1575158400000,27074],[1577836800000,11445],[1580515200000,27087],[1583020800000,42410],[1585699200000,19416],[1588291200000,29515],[1590969600000,17731],[1593561600000,21444],[1596240000000,37359],[1598918400000,23257],[1601510400000,21806],[1604188800000,13417],[1606780800000,37265],[1609459200000,25405],[1612137600000,25197],[1614556800000,22257],[1617235200000,22722],[1619827200000,37800],[1622505600000,18752],[1625097600000,31339],[1627776000000,25073],[1630454400000,24377],[1633046400000,23105],[1635724800000,30708],[1638316800000,20960],[1640995200000,29441],[1643673600000,12915],[1646092800000,28787],[1648771200000,14108],[1651363200000,28053],[1654041600000,28151],[1656633600000,19489],[1659312000000,18226],[1661990400000,20177],[1664582400000,15277],[1667260800000,48880],[1669852800000,22750],[1672531200000,23558],[1675209600000,29112],[1677628800000,16298],[1680307200000,31428],[1682899200000,15739],[1685577600000,30185],[1688169600000,18284],[1690848000000,12211],[1693526400000,50139],[1696118400000,25512],[1698796800000,21551],[1701388800000,13377],[1704067200000,32826],[1706745600000,17102],[1709251200000,25570],[1711929600000,32520],[1714521600000,21325],[1717200000000,24043],[1719792000000,26672],[1722470400000,21523],[1725148800000,23899],[1727740800000,27674],[1730419200000,20563],[1733011200000,27053],[1735689600000,23167],[1738368000000,21278],[1740787200000,22047],[1743465600000,23115],[1746057600000,24199],[1748736000000,24123],[1751328000000,23314],[1754006400000,21392],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		
+        {
+        	type: 'column',
+        	name: 'Natural gas',
+            data: [[1356998400000,133901],[1359676800000,106618],[1362096000000,153224],[1364774400000,149102],[1367366400000,159829],[1370044800000,163333],[1372636800000,205029],[1375315200000,208549],[1377993600000,198434],[1380585600000,159790],[1383264000000,141126],[1385856000000,168773],[1388534400000,122504],[1391212800000,119068],[1393632000000,149275],[1396310400000,156372],[1398902400000,176092],[1401580800000,171889],[1404172800000,195365],[1406851200000,160319],[1409529600000,160728],[1412121600000,151669],[1414800000000,149125],[1417392000000,159782],[1420070400000,137271],[1422748800000,133821],[1425168000000,190058],[1427846400000,184680],[1430438400000,224106],[1433116800000,234594],[1435708800000,238641],[1438387200000,258800],[1441065600000,231991],[1443657600000,193745],[1446336000000,196893],[1448928000000,164134],[1451606400000,95100],[1454284800000,112990],[1456790400000,153659],[1459468800000,189883],[1462060800000,265665],[1464739200000,270376],[1467331200000,247924],[1470009600000,244843],[1472688000000,245985],[1475280000000,232015],[1477958400000,232388],[1480550400000,161380],[1483228800000,137983],[1485907200000,122680],[1488326400000,166995],[1491004800000,186879],[1493596800000,236856],[1496275200000,275612],[1498867200000,243740],[1501545600000,245537],[1504224000000,239134],[1506816000000,227568],[1509494400000,196938],[1512086400000,164108],[1514764800000,162083],[1517443200000,124345],[1519862400000,160383],[1522540800000,207852],[1525132800000,240255],[1527811200000,227772],[1530403200000,240649],[1533081600000,240070],[1535760000000,203288],[1538352000000,200196],[1541030400000,183340],[1543622400000,176316],[1546300800000,197642],[1548979200000,135115],[1551398400000,167040],[1554076800000,195646],[1556668800000,206263],[1559347200000,253788],[1561939200000,261866],[1564617600000,256580],[1567296000000,227086],[1569888000000,177447],[1572566400000,188026],[1575158400000,177549],[1577836800000,271254],[1580515200000,236413],[1583020800000,288369],[1585699200000,250769],[1588291200000,368412],[1590969600000,372487],[1593561600000,407888],[1596240000000,384014],[1598918400000,354236],[1601510400000,352307],[1604188800000,307627],[1606780800000,284071],[1609459200000,262128],[1612137600000,203962],[1614556800000,305494],[1617235200000,332325],[1619827200000,320828],[1622505600000,373416],[1625097600000,401712],[1627776000000,378813],[1630454400000,354785],[1633046400000,310491],[1635724800000,268268],[1638316800000,272460],[1640995200000,272555],[1643673600000,195085],[1646092800000,235921],[1648771200000,304809],[1651363200000,295469],[1654041600000,333737],[1656633600000,374253],[1659312000000,372471],[1661990400000,319440],[1664582400000,318529],[1667260800000,263814],[1669852800000,254704],[1672531200000,189471],[1675209600000,233580],[1677628800000,273989],[1680307200000,283618],[1682899200000,382161],[1685577600000,351232],[1688169600000,447738],[1690848000000,317195],[1693526400000,363906],[1696118400000,362364],[1698796800000,319175],[1701388800000,258054],[1704067200000,313704],[1706745600000,229417],[1709251200000,345170],[1711929600000,350903],[1714521600000,387290],[1717200000000,395524],[1719792000000,482808],[1722470400000,384456],[1725148800000,381390],[1727740800000,359442],[1730419200000,290101],[1733011200000,192298],[1735689600000,255770],[1738368000000,228484],[1740787200000,344057],[1743465600000,282749],[1746057600000,434921],[1748736000000,427406],[1751328000000,432163],[1754006400000,409415],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.0f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		],
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 50,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+		tooltip:{
+			backgroundColor: 'yellow',
+			xDateFormat: '%Y-%m',
+			headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>'
+		},
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        },
+	    },
+		credits:{
+			enabled: true,
+			position: {
+				align:'left',
+				x:5,
+				verticalAlign:'bottom',
+				y:-5
+			}
+		}
+	});
+});
+</script>
+<title>HK net imports: gas products monthly, Tonnes</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK net imports: gas products monthly, Tonnes</h2>
+
+	<h4>Sources</h4>
+	
+		<p><a href="orgdata.asp?p=2533680">HKSAR Census and Statistics Department</a></p>
+		
+<form method="get" action="chart.asp">
+	<div class="inputs">
+	Chart <select name='c' onchange="this.form.submit()"><option value='9'>HK consumer price indices 2020 series</option><option value='10'>HK consumer price indices Year-on-Year</option><option value='11'>HK cremations & coffin burials</option><option value='14'>HK electricity & gas consumption</option><option value='2'>HK electricity consumption by user type</option><option value='12'>HK electricity generation</option><option value='1'>HK gas consumption by user type</option><option value='8'>HK import prices: coal products</option><option value='7'>HK import prices: gas products</option><option value='6'>HK import prices: oil products</option><option value='5'>HK net imports: coal products</option><option value='4' selected>HK net imports: gas products</option><option value='3'>HK net imports: oil products</option><option value='13'>LPG International Price</option></select>
+	</div>
+	
+	<div class="inputs">
+	<input type="checkbox" name="d" value="1"  onchange="this.form.submit()"> per day
+	</div>
+	
+	<div class="clear"></div>
+</form>
+<p>Click on the legend to remove items from the chart.</p>
+<div id="chart1" style="width:95%;height:550px;margin-left:0"></div>
+<div class="clear"></div>
+<table class="numtable fcl center">
+	<tr>
+		<th>Month</th>
+		
+			<th>LPG</th>
+		
+			<th>Natural gas</th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap">2025-08</td>
+			
+				<td>21,392</td>
+			
+				<td>409,415</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-07</td>
+			
+				<td>23,314</td>
+			
+				<td>432,163</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-06</td>
+			
+				<td>24,123</td>
+			
+				<td>427,406</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-05</td>
+			
+				<td>24,199</td>
+			
+				<td>434,921</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-04</td>
+			
+				<td>23,115</td>
+			
+				<td>282,749</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-03</td>
+			
+				<td>22,047</td>
+			
+				<td>344,057</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-02</td>
+			
+				<td>21,278</td>
+			
+				<td>228,484</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-01</td>
+			
+				<td>23,167</td>
+			
+				<td>255,770</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-12</td>
+			
+				<td>27,053</td>
+			
+				<td>192,298</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-11</td>
+			
+				<td>20,563</td>
+			
+				<td>290,101</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-10</td>
+			
+				<td>27,674</td>
+			
+				<td>359,442</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-09</td>
+			
+				<td>23,899</td>
+			
+				<td>381,390</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-08</td>
+			
+				<td>21,523</td>
+			
+				<td>384,456</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-07</td>
+			
+				<td>26,672</td>
+			
+				<td>482,808</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-06</td>
+			
+				<td>24,043</td>
+			
+				<td>395,524</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-05</td>
+			
+				<td>21,325</td>
+			
+				<td>387,290</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-04</td>
+			
+				<td>32,520</td>
+			
+				<td>350,903</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-03</td>
+			
+				<td>25,570</td>
+			
+				<td>345,170</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-02</td>
+			
+				<td>17,102</td>
+			
+				<td>229,417</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-01</td>
+			
+				<td>32,826</td>
+			
+				<td>313,704</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-12</td>
+			
+				<td>13,377</td>
+			
+				<td>258,054</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-11</td>
+			
+				<td>21,551</td>
+			
+				<td>319,175</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-10</td>
+			
+				<td>25,512</td>
+			
+				<td>362,364</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-09</td>
+			
+				<td>50,139</td>
+			
+				<td>363,906</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-08</td>
+			
+				<td>12,211</td>
+			
+				<td>317,195</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-07</td>
+			
+				<td>18,284</td>
+			
+				<td>447,738</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-06</td>
+			
+				<td>30,185</td>
+			
+				<td>351,232</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-05</td>
+			
+				<td>15,739</td>
+			
+				<td>382,161</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-04</td>
+			
+				<td>31,428</td>
+			
+				<td>283,618</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-03</td>
+			
+				<td>16,298</td>
+			
+				<td>273,989</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-02</td>
+			
+				<td>29,112</td>
+			
+				<td>233,580</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-01</td>
+			
+				<td>23,558</td>
+			
+				<td>189,471</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-12</td>
+			
+				<td>22,750</td>
+			
+				<td>254,704</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-11</td>
+			
+				<td>48,880</td>
+			
+				<td>263,814</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-10</td>
+			
+				<td>15,277</td>
+			
+				<td>318,529</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-09</td>
+			
+				<td>20,177</td>
+			
+				<td>319,440</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-08</td>
+			
+				<td>18,226</td>
+			
+				<td>372,471</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-07</td>
+			
+				<td>19,489</td>
+			
+				<td>374,253</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-06</td>
+			
+				<td>28,151</td>
+			
+				<td>333,737</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-05</td>
+			
+				<td>28,053</td>
+			
+				<td>295,469</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-04</td>
+			
+				<td>14,108</td>
+			
+				<td>304,809</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-03</td>
+			
+				<td>28,787</td>
+			
+				<td>235,921</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-02</td>
+			
+				<td>12,915</td>
+			
+				<td>195,085</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-01</td>
+			
+				<td>29,441</td>
+			
+				<td>272,555</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-12</td>
+			
+				<td>20,960</td>
+			
+				<td>272,460</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-11</td>
+			
+				<td>30,708</td>
+			
+				<td>268,268</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-10</td>
+			
+				<td>23,105</td>
+			
+				<td>310,491</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-09</td>
+			
+				<td>24,377</td>
+			
+				<td>354,785</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-08</td>
+			
+				<td>25,073</td>
+			
+				<td>378,813</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-07</td>
+			
+				<td>31,339</td>
+			
+				<td>401,712</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-06</td>
+			
+				<td>18,752</td>
+			
+				<td>373,416</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-05</td>
+			
+				<td>37,800</td>
+			
+				<td>320,828</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-04</td>
+			
+				<td>22,722</td>
+			
+				<td>332,325</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-03</td>
+			
+				<td>22,257</td>
+			
+				<td>305,494</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-02</td>
+			
+				<td>25,197</td>
+			
+				<td>203,962</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-01</td>
+			
+				<td>25,405</td>
+			
+				<td>262,128</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-12</td>
+			
+				<td>37,265</td>
+			
+				<td>284,071</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-11</td>
+			
+				<td>13,417</td>
+			
+				<td>307,627</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-10</td>
+			
+				<td>21,806</td>
+			
+				<td>352,307</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-09</td>
+			
+				<td>23,257</td>
+			
+				<td>354,236</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-08</td>
+			
+				<td>37,359</td>
+			
+				<td>384,014</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-07</td>
+			
+				<td>21,444</td>
+			
+				<td>407,888</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-06</td>
+			
+				<td>17,731</td>
+			
+				<td>372,487</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-05</td>
+			
+				<td>29,515</td>
+			
+				<td>368,412</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-04</td>
+			
+				<td>19,416</td>
+			
+				<td>250,769</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-03</td>
+			
+				<td>42,410</td>
+			
+				<td>288,369</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-02</td>
+			
+				<td>27,087</td>
+			
+				<td>236,413</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-01</td>
+			
+				<td>11,445</td>
+			
+				<td>271,254</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-12</td>
+			
+				<td>27,074</td>
+			
+				<td>177,549</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-11</td>
+			
+				<td>26,964</td>
+			
+				<td>188,026</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-10</td>
+			
+				<td>29,807</td>
+			
+				<td>177,447</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-09</td>
+			
+				<td>39,360</td>
+			
+				<td>227,086</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-08</td>
+			
+				<td>17,548</td>
+			
+				<td>256,580</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-07</td>
+			
+				<td>26,793</td>
+			
+				<td>261,866</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-06</td>
+			
+				<td>45,561</td>
+			
+				<td>253,788</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-05</td>
+			
+				<td>15,261</td>
+			
+				<td>206,263</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-04</td>
+			
+				<td>27,214</td>
+			
+				<td>195,646</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-03</td>
+			
+				<td>44,969</td>
+			
+				<td>167,040</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-02</td>
+			
+				<td>27,516</td>
+			
+				<td>135,115</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-01</td>
+			
+				<td>19,009</td>
+			
+				<td>197,642</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-12</td>
+			
+				<td>31,645</td>
+			
+				<td>176,316</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-11</td>
+			
+				<td>31,437</td>
+			
+				<td>183,340</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-10</td>
+			
+				<td>28,299</td>
+			
+				<td>200,196</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-09</td>
+			
+				<td>33,977</td>
+			
+				<td>203,288</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-08</td>
+			
+				<td>32,814</td>
+			
+				<td>240,070</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-07</td>
+			
+				<td>23,048</td>
+			
+				<td>240,649</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-06</td>
+			
+				<td>29,379</td>
+			
+				<td>227,772</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-05</td>
+			
+				<td>37,351</td>
+			
+				<td>240,255</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-04</td>
+			
+				<td>23,425</td>
+			
+				<td>207,852</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-03</td>
+			
+				<td>29,108</td>
+			
+				<td>160,383</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-02</td>
+			
+				<td>42,998</td>
+			
+				<td>124,345</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-01</td>
+			
+				<td>29,787</td>
+			
+				<td>162,083</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-12</td>
+			
+				<td>33,943</td>
+			
+				<td>164,108</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-11</td>
+			
+				<td>21,958</td>
+			
+				<td>196,938</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-10</td>
+			
+				<td>34,750</td>
+			
+				<td>227,568</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-09</td>
+			
+				<td>29,993</td>
+			
+				<td>239,134</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-08</td>
+			
+				<td>41,340</td>
+			
+				<td>245,537</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-07</td>
+			
+				<td>34,506</td>
+			
+				<td>243,740</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-06</td>
+			
+				<td>23,747</td>
+			
+				<td>275,612</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-05</td>
+			
+				<td>35,432</td>
+			
+				<td>236,856</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-04</td>
+			
+				<td>39,725</td>
+			
+				<td>186,879</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-03</td>
+			
+				<td>33,443</td>
+			
+				<td>166,995</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-02</td>
+			
+				<td>13,295</td>
+			
+				<td>122,680</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-01</td>
+			
+				<td>35,637</td>
+			
+				<td>137,983</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-12</td>
+			
+				<td>42,084</td>
+			
+				<td>161,380</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-11</td>
+			
+				<td>15,976</td>
+			
+				<td>232,388</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-10</td>
+			
+				<td>34,845</td>
+			
+				<td>232,015</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-09</td>
+			
+				<td>32,856</td>
+			
+				<td>245,985</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-08</td>
+			
+				<td>15,539</td>
+			
+				<td>244,843</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-07</td>
+			
+				<td>48,837</td>
+			
+				<td>247,924</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-06</td>
+			
+				<td>24,308</td>
+			
+				<td>270,376</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-05</td>
+			
+				<td>35,889</td>
+			
+				<td>265,665</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-04</td>
+			
+				<td>28,830</td>
+			
+				<td>189,883</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-03</td>
+			
+				<td>34,081</td>
+			
+				<td>153,659</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-02</td>
+			
+				<td>24,368</td>
+			
+				<td>112,990</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-01</td>
+			
+				<td>24,349</td>
+			
+				<td>95,100</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-12</td>
+			
+				<td>43,426</td>
+			
+				<td>164,134</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-11</td>
+			
+				<td>26,781</td>
+			
+				<td>196,893</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-10</td>
+			
+				<td>25,994</td>
+			
+				<td>193,745</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-09</td>
+			
+				<td>28,057</td>
+			
+				<td>231,991</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-08</td>
+			
+				<td>26,937</td>
+			
+				<td>258,800</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-07</td>
+			
+				<td>26,098</td>
+			
+				<td>238,641</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-06</td>
+			
+				<td>36,465</td>
+			
+				<td>234,594</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-05</td>
+			
+				<td>44,030</td>
+			
+				<td>224,106</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-04</td>
+			
+				<td>27,654</td>
+			
+				<td>184,680</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-03</td>
+			
+				<td>39,350</td>
+			
+				<td>190,058</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-02</td>
+			
+				<td>24,568</td>
+			
+				<td>133,821</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-01</td>
+			
+				<td>28,598</td>
+			
+				<td>137,271</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-12</td>
+			
+				<td>31,679</td>
+			
+				<td>159,782</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-11</td>
+			
+				<td>40,065</td>
+			
+				<td>149,125</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-10</td>
+			
+				<td>42,466</td>
+			
+				<td>151,669</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-09</td>
+			
+				<td>35,043</td>
+			
+				<td>160,728</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-08</td>
+			
+				<td>26,577</td>
+			
+				<td>160,319</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-07</td>
+			
+				<td>32,640</td>
+			
+				<td>195,365</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-06</td>
+			
+				<td>26,838</td>
+			
+				<td>171,889</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-05</td>
+			
+				<td>32,631</td>
+			
+				<td>176,092</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-04</td>
+			
+				<td>38,490</td>
+			
+				<td>156,372</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-03</td>
+			
+				<td>36,166</td>
+			
+				<td>149,275</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-02</td>
+			
+				<td>23,109</td>
+			
+				<td>119,068</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-01</td>
+			
+				<td>32,536</td>
+			
+				<td>122,504</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-12</td>
+			
+				<td>43,994</td>
+			
+				<td>168,773</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-11</td>
+			
+				<td>32,777</td>
+			
+				<td>141,126</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-10</td>
+			
+				<td>34,826</td>
+			
+				<td>159,790</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-09</td>
+			
+				<td>40,543</td>
+			
+				<td>198,434</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-08</td>
+			
+				<td>16,686</td>
+			
+				<td>208,549</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-07</td>
+			
+				<td>19,011</td>
+			
+				<td>205,029</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-06</td>
+			
+				<td>28,523</td>
+			
+				<td>163,333</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-05</td>
+			
+				<td>18,482</td>
+			
+				<td>159,829</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-04</td>
+			
+				<td>40,270</td>
+			
+				<td>149,102</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-03</td>
+			
+				<td>40,662</td>
+			
+				<td>153,224</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-02</td>
+			
+				<td>30,184</td>
+			
+				<td>106,618</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-01</td>
+			
+				<td>29,654</td>
+			
+				<td>133,901</td>
+			
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>
