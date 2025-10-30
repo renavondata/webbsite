@@ -1497,10 +1497,12 @@ def cconchist():
 
     return render_template(
         "ccass/cconchist.html",
+        i=issue_id,  # Template expects 'i'
         issue_id=issue_id,
         stock_code=stock_code,
         stock_name=stock_name,
         person_id=person_id,
+        p=person_id,  # Template might expect 'p' for person_id
         history=history,
         sort=sort_param,
     )
@@ -1826,10 +1828,12 @@ def custhist():
 
     return render_template(
         "ccass/custhist.html",
+        i=issue_id,  # Template expects 'i'
         issue_id=issue_id,
         stock_code=stock_code,
         stock_name=stock_name,
         person_id=person_id,
+        p=person_id,  # Template might expect 'p' for person_id
         history=history,
         o=o,
     )
@@ -1996,7 +2000,13 @@ def ncipchg():
         changes = []
 
     return render_template(
-        "ccass/ncipchg.html", d1=d1, d2=d2, z=z, sort=sort_param, changes=changes
+        "ccass/ncipchg.html",
+        title="Non-CIP holding changes",
+        d1=d1,
+        d2=d2,
+        z=z,
+        sort=sort_param,
+        changes=changes,
     )
 
 
@@ -2442,11 +2452,18 @@ def portchg():
             current_app.logger.error(f"Error querying portfolio: {ex}")
             changes = []
 
+    sort_param = request.args.get("sort", "valcdn")
+
     return render_template(
         "ccass/portchg.html",
-        part_id=part_id,
-        participant_name=participant_name,
+        m="",  # Error message (empty if no error)
+        name=participant_name,
+        p=part_id,
         d=d,
+        d1=d,  # Start date
+        d2=d,  # End date
+        sort=sort_param,
+        z=False,  # Show unchanged holdings checkbox
         changes=changes,
     )
 
@@ -2538,10 +2555,12 @@ def reghist():
 
     return render_template(
         "ccass/reghist.html",
+        i=issue_id,  # Template expects 'i'
         issue_id=issue_id,
         stock_code=stock_code,
         stock_name=stock_name,
         person_id=person_id,
+        p=person_id,  # Template might expect 'p' for person_id
         history=history,
     )
 

@@ -1,0 +1,1563 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
+
+<title>HK-listed companies domiciled in Hong Kong</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK-listed companies domiciled in Hong Kong</h2>
+<ul class='navlist'><li><a href='/dbpub/domicilecos.asp?sort=nameup&amp;dom=1&amp;e=m'>Main Board</a></li><li><a href='/dbpub/domicilecos.asp?sort=nameup&amp;dom=1&amp;e=g'>GEM</a></li><li class='livebutton'>All HK</li></ul><div class='clear'></div>
+<ul class="navlist"><li><a href="domicile.asp?e=a">All domiciles</a></li></ul>
+<div class="clear"></div>
+<form method="get" action="/dbpub/domicilecos.asp">
+	<input type="hidden" name="sort" value="nameup">
+	<input type="hidden" name="e" value="a">
+	Select domicile: <select name="dom" onchange="this.form.submit()">
+	
+		<option value="16">Australia</option>
+		
+		<option value="7">Bermuda</option>
+		
+		<option value="4">British Virgin Islands</option>
+		
+		<option value="23">Canada</option>
+		
+		<option value="9">Cayman Islands</option>
+		
+		<option value="12">China (People's Republic)</option>
+		
+		<option value="128">Delaware, USA</option>
+		
+		<option value="116">England & Wales</option>
+		
+		<option value="1" selected>Hong Kong</option>
+		
+		<option value="201">Israel</option>
+		
+		<option value="38">Italy</option>
+		
+		<option value="3">Japan</option>
+		
+		<option value="21">Jersey</option>
+		
+		<option value="43">Luxembourg</option>
+		
+		<option value="119">Russia</option>
+		
+		<option value="6">Singapore</option>
+		
+	</select>
+</form>
+<p>Note: the table includes only companies with a primary listing in HK.</p>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable c3l">
+	<tr>
+		<th class="colHide3">Row</th>
+		<th class="colHide3"><a href='/dbpub/domicilecos.asp?e=a&amp;dom=1&amp;sort=scup'><b>Stock<br>code</b></a></th>
+		<th><a href='/dbpub/domicilecos.asp?e=a&amp;dom=1&amp;sort=namedn'><b>Company name</b></a></th>
+		<th class="nowrap"><a href='/dbpub/domicilecos.asp?e=a&amp;dom=1&amp;sort=incdup'><b>Inc. date</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide3">1</td>
+			<td class="colHide3">0900</td>
+			<td><a href='orgdata.asp?p=3034'>AEON CREDIT SERVICE (ASIA) COMPANY LIMITED</a></td>
+			<td class="nowrap">1990-02-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">2</td>
+			<td class="colHide3">0984</td>
+			<td><a href='orgdata.asp?p=3035'>AEON STORES (HONG KONG) CO., LIMITED</a></td>
+			<td class="nowrap">1985-09-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">3</td>
+			<td class="colHide3">1299</td>
+			<td><a href='orgdata.asp?p=61400'>AIA Group Limited</a></td>
+			<td class="nowrap">2009-08-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">4</td>
+			<td class="colHide3">0373</td>
+			<td><a href='orgdata.asp?p=2117'>ALLIED GROUP LIMITED (HK)</a></td>
+			<td class="nowrap">1972-12-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">5</td>
+			<td class="colHide3">0351</td>
+			<td><a href='orgdata.asp?p=4873'>ASIA ENERGY LOGISTICS GROUP LIMITED</a></td>
+			<td class="nowrap">1991-10-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">6</td>
+			<td class="colHide3">0271</td>
+			<td><a href='orgdata.asp?p=4763'>Asiasec Properties Limited</a></td>
+			<td class="nowrap">1973-02-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">7</td>
+			<td class="colHide3">0105</td>
+			<td><a href='orgdata.asp?p=988'>ASSOCIATED INTERNATIONAL HOTELS LIMITED</a></td>
+			<td class="nowrap">1983-07-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">8</td>
+			<td class="colHide3">0023</td>
+			<td><a href='orgdata.asp?p=377'>BANK OF EAST ASIA, LIMITED (THE)</a></td>
+			<td class="nowrap">1918-11-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">9</td>
+			<td class="colHide3">0154</td>
+			<td><a href='orgdata.asp?p=4768'>BEIJING ENTERPRISES ENVIRONMENT GROUP LIMITED</a></td>
+			<td class="nowrap">1963-05-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">10</td>
+			<td class="colHide3">0392</td>
+			<td><a href='orgdata.asp?p=2768'>BEIJING ENTERPRISES HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1997-02-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">11</td>
+			<td class="colHide3">3613</td>
+			<td><a href='orgdata.asp?p=1037544'>BEIJING TONG REN TANG CHINESE MEDICINE COMPANY LIMITED</a></td>
+			<td class="nowrap">2004-03-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">12</td>
+			<td class="colHide3">1875</td>
+			<td><a href='orgdata.asp?p=1545194'>BioDlink International Company Limited</a></td>
+			<td class="nowrap">2009-12-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">13</td>
+			<td class="colHide3">2388</td>
+			<td><a href='orgdata.asp?p=17251'>BOC HONG KONG (HOLDINGS) LIMITED (HK)</a></td>
+			<td class="nowrap">2001-09-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">14</td>
+			<td class="colHide3">3329</td>
+			<td><a href='orgdata.asp?p=26705'>BOCOM International Holdings Company Limited</a></td>
+			<td class="nowrap">1998-06-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">15</td>
+			<td class="colHide3">0285</td>
+			<td><a href='orgdata.asp?p=41990'>BYD Electronic (International) Company Limited</a></td>
+			<td class="nowrap">2007-06-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">16</td>
+			<td class="colHide3">0193</td>
+			<td><a href='orgdata.asp?p=5024'>CAPITAL ESTATE LIMITED</a></td>
+			<td class="nowrap">1972-08-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">17</td>
+			<td class="colHide3">0293</td>
+			<td><a href='orgdata.asp?p=385'>CATHAY PACIFIC AIRWAYS LIMITED</a></td>
+			<td class="nowrap">1948-10-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">18</td>
+			<td class="colHide3">0145</td>
+			<td><a href='orgdata.asp?p=1677'>CCIAM Future Energy Limited (b1964-11-28)</a></td>
+			<td class="nowrap">1964-11-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">19</td>
+			<td class="colHide3">2285</td>
+			<td><a href='orgdata.asp?p=816751'>CHERVON HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1999-02-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">20</td>
+			<td class="colHide3">0131</td>
+			<td><a href='orgdata.asp?p=1471'>CHEUK NANG (HOLDINGS) LIMITED</a></td>
+			<td class="nowrap">1963-07-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">21</td>
+			<td class="colHide3">0031</td>
+			<td><a href='orgdata.asp?p=4791'>CHINA AEROSPACE INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1975-07-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">22</td>
+			<td class="colHide3">0217</td>
+			<td><a href='orgdata.asp?p=1154'>CHINA CHENGTONG DEVELOPMENT GROUP LIMITED</a></td>
+			<td class="nowrap">1972-08-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">23</td>
+			<td class="colHide3">0257</td>
+			<td><a href='orgdata.asp?p=1538'>China Everbright Environment Group Limited (b1961-07-10)</a></td>
+			<td class="nowrap">1961-07-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">24</td>
+			<td class="colHide3">0165</td>
+			<td><a href='orgdata.asp?p=1822'>CHINA EVERBRIGHT LIMITED (HK)</a></td>
+			<td class="nowrap">1972-08-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">25</td>
+			<td class="colHide3">0708</td>
+			<td><a href='orgdata.asp?p=42546'>China Evergrande New Energy Vehicle Group Limited</a></td>
+			<td class="nowrap">2007-10-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">26</td>
+			<td class="colHide3">0605</td>
+			<td><a href='orgdata.asp?p=4886'>China Financial Services Holdings Limited</a></td>
+			<td class="nowrap">1992-07-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">27</td>
+			<td class="colHide3">0817</td>
+			<td><a href='orgdata.asp?p=40734'>China Jinmao Holdings Group Limited</a></td>
+			<td class="nowrap">2004-06-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">28</td>
+			<td class="colHide3">0133</td>
+			<td><a href='orgdata.asp?p=635'>CHINA MERCHANTS CHINA DIRECT INVESTMENTS LIMITED</a></td>
+			<td class="nowrap">1993-04-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">29</td>
+			<td class="colHide3">0144</td>
+			<td><a href='orgdata.asp?p=2418'>China Merchants Port Holdings Company Limited</a></td>
+			<td class="nowrap">1991-05-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">30</td>
+			<td class="colHide3">0941</td>
+			<td><a href='orgdata.asp?p=4800'>China Mobile Limited (HK)</a></td>
+			<td class="nowrap">1997-09-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">31</td>
+			<td class="colHide3">0026</td>
+			<td><a href='orgdata.asp?p=1624'>CHINA MOTOR BUS COMPANY, LIMITED</a></td>
+			<td class="nowrap">1933-04-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">32</td>
+			<td class="colHide3">8125</td>
+			<td><a href='orgdata.asp?p=2107691'>China New Holdings Limited</a></td>
+			<td class="nowrap">2013-07-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">33</td>
+			<td class="colHide3">1258</td>
+			<td><a href='orgdata.asp?p=1780820'>China Nonferrous Mining Corporation Limited</a></td>
+			<td class="nowrap">2011-07-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">34</td>
+			<td class="colHide3">0081</td>
+			<td><a href='orgdata.asp?p=4963'>CHINA OVERSEAS GRAND OCEANS GROUP LIMITED</a></td>
+			<td class="nowrap">1970-09-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">35</td>
+			<td class="colHide3">0688</td>
+			<td><a href='orgdata.asp?p=599'>CHINA OVERSEAS LAND & INVESTMENT LIMITED</a></td>
+			<td class="nowrap">1979-06-01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">36</td>
+			<td class="colHide3">2380</td>
+			<td><a href='orgdata.asp?p=23285'>CHINA POWER INTERNATIONAL DEVELOPMENT LIMITED</a></td>
+			<td class="nowrap">2004-03-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">37</td>
+			<td class="colHide3">0291</td>
+			<td><a href='orgdata.asp?p=1108'>China Resources Beer (Holdings) Company Limited</a></td>
+			<td class="nowrap">1965-08-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">38</td>
+			<td class="colHide3">3320</td>
+			<td><a href='orgdata.asp?p=1278465'>CHINA RESOURCES PHARMACEUTICAL GROUP LIMITED</a></td>
+			<td class="nowrap">2007-05-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">39</td>
+			<td class="colHide3">0836</td>
+			<td><a href='orgdata.asp?p=18184'>CHINA RESOURCES POWER HOLDINGS COMPANY LIMITED</a></td>
+			<td class="nowrap">2001-08-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">40</td>
+			<td class="colHide3">1668</td>
+			<td><a href='orgdata.asp?p=51514'>CHINA SOUTH CITY HOLDINGS LIMITED</a></td>
+			<td class="nowrap">2002-05-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">41</td>
+			<td class="colHide3">0966</td>
+			<td><a href='orgdata.asp?p=12140'>CHINA TAIPING INSURANCE HOLDINGS COMPANY LIMITED</a></td>
+			<td class="nowrap">2000-02-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">42</td>
+			<td class="colHide3">6055</td>
+			<td><a href='orgdata.asp?p=1032902'>CHINA TOBACCO INTERNATIONAL (HK) COMPANY LIMITED</a></td>
+			<td class="nowrap">2004-02-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">43</td>
+			<td class="colHide3">0570</td>
+			<td><a href='orgdata.asp?p=5015'>CHINA TRADITIONAL CHINESE MEDICINE HOLDINGS CO. LIMITED</a></td>
+			<td class="nowrap">1992-07-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">44</td>
+			<td class="colHide3">0308</td>
+			<td><a href='orgdata.asp?p=2838'>CHINA TRAVEL INTERNATIONAL INVESTMENT HONG KONG LIMITED</a></td>
+			<td class="nowrap">1992-07-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">45</td>
+			<td class="colHide3">0762</td>
+			<td><a href='orgdata.asp?p=11359'>CHINA UNICOM (HONG KONG) LIMITED</a></td>
+			<td class="nowrap">2000-02-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">46</td>
+			<td class="colHide3">0245</td>
+			<td><a href='orgdata.asp?p=4970'>China Vered Financial Holding Corporation Limited</a></td>
+			<td class="nowrap">1972-08-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">47</td>
+			<td class="colHide3">0216</td>
+			<td><a href='orgdata.asp?p=1059'>CHINNEY INVESTMENTS, LIMITED</a></td>
+			<td class="nowrap">1959-06-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">48</td>
+			<td class="colHide3">0560</td>
+			<td><a href='orgdata.asp?p=4805'>Chu Kong Shipping Enterprises (Group) Company Limited</a></td>
+			<td class="nowrap">1996-09-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">49</td>
+			<td class="colHide3">0267</td>
+			<td><a href='orgdata.asp?p=379'>CITIC Limited (HK)</a></td>
+			<td class="nowrap">1985-01-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">50</td>
+			<td class="colHide3">1883</td>
+			<td><a href='orgdata.asp?p=38755'>CITIC Telecom International Holdings Limited</a></td>
+			<td class="nowrap">1997-06-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">51</td>
+			<td class="colHide3">0002</td>
+			<td><a href='orgdata.asp?p=341'>CLP HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1997-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">52</td>
+			<td class="colHide3">0883</td>
+			<td><a href='orgdata.asp?p=9164'>CNOOC LIMITED</a></td>
+			<td class="nowrap">1999-08-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">53</td>
+			<td class="colHide3">0513</td>
+			<td><a href='orgdata.asp?p=4812'>CONTINENTAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1985-04-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">54</td>
+			<td class="colHide3">0118</td>
+			<td><a href='orgdata.asp?p=4814'>COSMOS MACHINERY ENTERPRISES LIMITED</a></td>
+			<td class="nowrap">1988-07-01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">55</td>
+			<td class="colHide3">0122</td>
+			<td><a href='orgdata.asp?p=1492'>CROCODILE GARMENTS LIMITED</a></td>
+			<td class="nowrap">1961-05-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">56</td>
+			<td class="colHide3">0032</td>
+			<td><a href='orgdata.asp?p=347'>CROSS-HARBOUR (HOLDINGS) LIMITED (THE)</a></td>
+			<td class="nowrap">1965-04-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">57</td>
+			<td class="colHide3">0727</td>
+			<td><a href='orgdata.asp?p=5140'>Crown International Corporation Limited</a></td>
+			<td class="nowrap">1993-07-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">58</td>
+			<td class="colHide3">0235</td>
+			<td><a href='orgdata.asp?p=2911'>CSC Holdings Limited (HK)</a></td>
+			<td class="nowrap">1972-09-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">59</td>
+			<td class="colHide3">1093</td>
+			<td><a href='orgdata.asp?p=4797'>CSPC PHARMACEUTICAL GROUP LIMITED</a></td>
+			<td class="nowrap">1992-06-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">60</td>
+			<td class="colHide3">3877</td>
+			<td><a href='orgdata.asp?p=1915559'>CSSC (Hong Kong) Shipping Company Limited</a></td>
+			<td class="nowrap">2012-06-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">61</td>
+			<td class="colHide3">0521</td>
+			<td><a href='orgdata.asp?p=3344'>CWT International Limited</a></td>
+			<td class="nowrap">1983-06-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">62</td>
+			<td class="colHide3">2356</td>
+			<td><a href='orgdata.asp?p=21407'>DAH SING BANKING GROUP LIMITED</a></td>
+			<td class="nowrap">2004-03-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">63</td>
+			<td class="colHide3">0440</td>
+			<td><a href='orgdata.asp?p=1156'>DAH SING FINANCIAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1987-04-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">64</td>
+			<td class="colHide3">1126</td>
+			<td><a href='orgdata.asp?p=15161'>DREAM INTERNATIONAL LIMITED (HK)</a></td>
+			<td class="nowrap">1992-05-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">65</td>
+			<td class="colHide3">0076</td>
+			<td><a href='orgdata.asp?p=2049'>Elate Holdings Limited</a></td>
+			<td class="nowrap">1984-06-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">66</td>
+			<td class="colHide3">0887</td>
+			<td><a href='orgdata.asp?p=45986'>Emperor Watch & Jewellery Limited</a></td>
+			<td class="nowrap">2008-03-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">67</td>
+			<td class="colHide3">0128</td>
+			<td><a href='orgdata.asp?p=4483'>ENM Holdings Limited (HK)</a></td>
+			<td class="nowrap">1966-04-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">68</td>
+			<td class="colHide3">0202</td>
+			<td><a href='orgdata.asp?p=4780'>EverChina Int'l Holdings Company Limited</a></td>
+			<td class="nowrap">2000-02-09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">69</td>
+			<td class="colHide3">0036</td>
+			<td><a href='orgdata.asp?p=3957'>FAR EAST HOLDINGS INTERNATIONAL LIMITED</a></td>
+			<td class="nowrap">1972-11-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">70</td>
+			<td class="colHide3">3360</td>
+			<td><a href='orgdata.asp?p=65020'>Far East Horizon Limited</a></td>
+			<td class="nowrap">2008-05-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">71</td>
+			<td class="colHide3">0037</td>
+			<td><a href='orgdata.asp?p=3969'>FAR EAST HOTELS AND ENTERTAINMENT LIMITED</a></td>
+			<td class="nowrap">1978-10-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">72</td>
+			<td class="colHide3">0227</td>
+			<td><a href='orgdata.asp?p=1193'>FIRST SHANGHAI INVESTMENTS LIMITED</a></td>
+			<td class="nowrap">1964-07-07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">73</td>
+			<td class="colHide3">0656</td>
+			<td><a href='orgdata.asp?p=40342'>FOSUN INTERNATIONAL LIMITED</a></td>
+			<td class="nowrap">2004-12-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">74</td>
+			<td class="colHide3">0420</td>
+			<td><a href='orgdata.asp?p=1959'>FOUNTAIN SET (HOLDINGS) LIMITED</a></td>
+			<td class="nowrap">1985-04-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">75</td>
+			<td class="colHide3">0181</td>
+			<td><a href='orgdata.asp?p=3354'>FUJIAN HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1958-06-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">76</td>
+			<td class="colHide3">0027</td>
+			<td><a href='orgdata.asp?p=1056'>GALAXY ENTERTAINMENT GROUP LIMITED</a></td>
+			<td class="nowrap">1987-05-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">77</td>
+			<td class="colHide3">1203</td>
+			<td><a href='orgdata.asp?p=1362'>GDH GUANGNAN (HOLDINGS) LIMITED</a></td>
+			<td class="nowrap">1982-03-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">78</td>
+			<td class="colHide3">0174</td>
+			<td><a href='orgdata.asp?p=4888'>Gemini Investments (Holdings) Limited</a></td>
+			<td class="nowrap">1987-06-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">79</td>
+			<td class="colHide3">2666</td>
+			<td><a href='orgdata.asp?p=1881837'>Genertec Universal Medical Group Company Limited</a></td>
+			<td class="nowrap">2012-04-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">80</td>
+			<td class="colHide3">0040</td>
+			<td><a href='orgdata.asp?p=1147'>Gold Peak Technology Group Limited</a></td>
+			<td class="nowrap">1977-06-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">81</td>
+			<td class="colHide3">0533</td>
+			<td><a href='orgdata.asp?p=3011'>GOLDLION HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1992-06-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">82</td>
+			<td class="colHide3">3315</td>
+			<td><a href='orgdata.asp?p=1074487'>Goldpac Group Limited</a></td>
+			<td class="nowrap">2004-10-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">83</td>
+			<td class="colHide3">0108</td>
+			<td><a href='orgdata.asp?p=4779'>GR Life Style Company Limited</a></td>
+			<td class="nowrap">1973-01-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">84</td>
+			<td class="colHide3">0021</td>
+			<td><a href='orgdata.asp?p=345'>Great China Holdings (Hong Kong) Limited</a></td>
+			<td class="nowrap">1954-01-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">85</td>
+			<td class="colHide3">0270</td>
+			<td><a href='orgdata.asp?p=1340'>GUANGDONG INVESTMENT LIMITED</a></td>
+			<td class="nowrap">1973-01-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">86</td>
+			<td class="colHide3">1788</td>
+			<td><a href='orgdata.asp?p=58828'>Guotai Junan International Holdings Limited</a></td>
+			<td class="nowrap">2010-03-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">87</td>
+			<td class="colHide3">0010</td>
+			<td><a href='orgdata.asp?p=495'>HANG LUNG GROUP LIMITED</a></td>
+			<td class="nowrap">1960-09-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">88</td>
+			<td class="colHide3">0101</td>
+			<td><a href='orgdata.asp?p=496'>HANG LUNG PROPERTIES LIMITED</a></td>
+			<td class="nowrap">1949-12-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">89</td>
+			<td class="colHide3">0011</td>
+			<td><a href='orgdata.asp?p=395'>HANG SENG BANK, LIMITED</a></td>
+			<td class="nowrap">1952-12-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">90</td>
+			<td class="colHide3">0051</td>
+			<td><a href='orgdata.asp?p=343'>HARBOUR CENTRE DEVELOPMENT LIMITED</a></td>
+			<td class="nowrap">1965-07-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">91</td>
+			<td class="colHide3">0097</td>
+			<td><a href='orgdata.asp?p=413'>HENDERSON INVESTMENT LIMITED</a></td>
+			<td class="nowrap">1972-09-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">92</td>
+			<td class="colHide3">0012</td>
+			<td><a href='orgdata.asp?p=412'>HENDERSON LAND DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1976-01-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">93</td>
+			<td class="colHide3">0160</td>
+			<td><a href='orgdata.asp?p=1060'>Hon Kwok Land Investment Company, Limited</a></td>
+			<td class="nowrap">1965-09-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">94</td>
+			<td class="colHide3">0003</td>
+			<td><a href='orgdata.asp?p=416'>HONG KONG AND CHINA GAS COMPANY LIMITED (THE)</a></td>
+			<td class="nowrap">1982-10-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">95</td>
+			<td class="colHide3">0388</td>
+			<td><a href='orgdata.asp?p=9643'>HONG KONG EXCHANGES AND CLEARING LIMITED</a></td>
+			<td class="nowrap">1999-07-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">96</td>
+			<td class="colHide3">0050</td>
+			<td><a href='orgdata.asp?p=418'>HONG KONG FERRY (HOLDINGS) COMPANY LIMITED</a></td>
+			<td class="nowrap">1923-11-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">97</td>
+			<td class="colHide3">0060</td>
+			<td><a href='orgdata.asp?p=652'>HONG KONG FOOD INVESTMENT HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1991-01-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">98</td>
+			<td class="colHide3">1137</td>
+			<td><a href='orgdata.asp?p=4809'>Hong Kong Technology Venture Company Limited</a></td>
+			<td class="nowrap">1992-05-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">99</td>
+			<td class="colHide3">8191</td>
+			<td><a href='orgdata.asp?p=1901694'>HONG WEI (ASIA) HOLDINGS COMPANY LIMITED</a></td>
+			<td class="nowrap">2012-05-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">100</td>
+			<td class="colHide3">0045</td>
+			<td><a href='orgdata.asp?p=372'>HONGKONG AND SHANGHAI HOTELS, LIMITED (THE)</a></td>
+			<td class="nowrap">1866-03-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">101</td>
+			<td class="colHide3">1347</td>
+			<td><a href='orgdata.asp?p=1095264'>HUA HONG SEMICONDUCTOR LIMITED</a></td>
+			<td class="nowrap">2005-01-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">102</td>
+			<td class="colHide3">0450</td>
+			<td><a href='orgdata.asp?p=430'>HUNG HING PRINTING GROUP LIMITED</a></td>
+			<td class="nowrap">1987-03-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">103</td>
+			<td class="colHide3">0014</td>
+			<td><a href='orgdata.asp?p=365'>HYSAN DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1970-10-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">104</td>
+			<td class="colHide3">1097</td>
+			<td><a href='orgdata.asp?p=9354'>i-CABLE Communications Limited</a></td>
+			<td class="nowrap">1999-05-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">105</td>
+			<td class="colHide3">1029</td>
+			<td><a href='orgdata.asp?p=60999'>IRC LIMITED</a></td>
+			<td class="nowrap">2010-06-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">106</td>
+			<td class="colHide3">3858</td>
+			<td><a href='orgdata.asp?p=2313919'>Jiaxin International Resources Investment Limited</a></td>
+			<td class="nowrap">2014-08-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">107</td>
+			<td class="colHide3">0137</td>
+			<td><a href='orgdata.asp?p=2677'>JINHUI HOLDINGS COMPANY LIMITED</a></td>
+			<td class="nowrap">1991-04-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">108</td>
+			<td class="colHide3">0816</td>
+			<td><a href='orgdata.asp?p=25125143'>Jinmao Property Services Co., Limited</a></td>
+			<td class="nowrap">2020-09-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">109</td>
+			<td class="colHide3">0184</td>
+			<td><a href='orgdata.asp?p=1113'>KECK SENG INVESTMENTS (HONG KONG) LIMITED</a></td>
+			<td class="nowrap">1973-01-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">110</td>
+			<td class="colHide3">0280</td>
+			<td><a href='orgdata.asp?p=431'>KING FOOK HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1987-07-31</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">111</td>
+			<td class="colHide3">0663</td>
+			<td><a href='orgdata.asp?p=4981'>KING STONE ENERGY GROUP LIMITED</a></td>
+			<td class="nowrap">1981-04-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">112</td>
+			<td class="colHide3">0295</td>
+			<td><a href='orgdata.asp?p=1448'>KONG SUN HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1955-06-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">113</td>
+			<td class="colHide3">0034</td>
+			<td><a href='orgdata.asp?p=446'>KOWLOON DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1961-01-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">114</td>
+			<td class="colHide3">0488</td>
+			<td><a href='orgdata.asp?p=1488'>LAI SUN DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1959-06-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">115</td>
+			<td class="colHide3">0191</td>
+			<td><a href='orgdata.asp?p=1491'>LAI SUN GARMENT (INTERNATIONAL) LIMITED</a></td>
+			<td class="nowrap">1987-09-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">116</td>
+			<td class="colHide3">0411</td>
+			<td><a href='orgdata.asp?p=2116'>LAM SOON (HONG KONG) LIMITED</a></td>
+			<td class="nowrap">1961-05-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">117</td>
+			<td class="colHide3">0992</td>
+			<td><a href='orgdata.asp?p=4901'>LENOVO GROUP LIMITED</a></td>
+			<td class="nowrap">1993-10-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">118</td>
+			<td class="colHide3">0156</td>
+			<td><a href='orgdata.asp?p=1672'>LIPPO CHINA RESOURCES LIMITED</a></td>
+			<td class="nowrap">1973-02-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">119</td>
+			<td class="colHide3">0194</td>
+			<td><a href='orgdata.asp?p=765'>LIU CHONG HING INVESTMENT LIMITED</a></td>
+			<td class="nowrap">1970-06-09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">120</td>
+			<td class="colHide3">8162</td>
+			<td><a href='orgdata.asp?p=2194053'>Loco Hong Kong Holdings Limited</a></td>
+			<td class="nowrap">2014-01-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">121</td>
+			<td class="colHide3">0201</td>
+			<td><a href='orgdata.asp?p=3704'>MAGNIFICENT HOTEL INVESTMENTS LIMITED</a></td>
+			<td class="nowrap">1966-07-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">122</td>
+			<td class="colHide3">0158</td>
+			<td><a href='orgdata.asp?p=450'>MELBOURNE ENTERPRISES LIMITED</a></td>
+			<td class="nowrap">1967-09-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">123</td>
+			<td class="colHide3">0200</td>
+			<td><a href='orgdata.asp?p=1019'>MELCO INTERNATIONAL DEVELOPMENT LIMITED</a></td>
+			<td class="nowrap">1910-06-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">124</td>
+			<td class="colHide3">0222</td>
+			<td><a href='orgdata.asp?p=2159'>MIN XIN HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1980-12-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">125</td>
+			<td class="colHide3">0071</td>
+			<td><a href='orgdata.asp?p=419'>MIRAMAR HOTEL AND INVESTMENT COMPANY, LIMITED</a></td>
+			<td class="nowrap">1957-08-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">126</td>
+			<td class="colHide3">1208</td>
+			<td><a href='orgdata.asp?p=1339'>MMG Limited (HK)</a></td>
+			<td class="nowrap">1988-07-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">127</td>
+			<td class="colHide3">2155</td>
+			<td><a href='orgdata.asp?p=23456750'>Morimatsu International Holdings Company Limited</a></td>
+			<td class="nowrap">2019-07-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">128</td>
+			<td class="colHide3">0066</td>
+			<td><a href='orgdata.asp?p=11569'>MTR CORPORATION LIMITED</a></td>
+			<td class="nowrap">2000-04-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">129</td>
+			<td class="colHide3">1058</td>
+			<td><a href='orgdata.asp?p=4852'>NAMYUE HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1995-11-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">130</td>
+			<td class="colHide3">0254</td>
+			<td><a href='orgdata.asp?p=4905'>NATIONAL UNITED RESOURCES HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1972-07-28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">131</td>
+			<td class="colHide3">0017</td>
+			<td><a href='orgdata.asp?p=432'>NEW WORLD DEVELOPMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1970-05-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">132</td>
+			<td class="colHide3">1475</td>
+			<td><a href='orgdata.asp?p=294575'>NISSIN FOODS COMPANY LIMITED</a></td>
+			<td class="nowrap">1984-10-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">133</td>
+			<td class="colHide3">1655</td>
+			<td><a href='orgdata.asp?p=2435743'>OKURA HOLDINGS LIMITED</a></td>
+			<td class="nowrap">2015-06-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">134</td>
+			<td class="colHide3">0018</td>
+			<td><a href='orgdata.asp?p=718'>Oriental Enterprise Holdings Limited (b1969-01-14)</a></td>
+			<td class="nowrap">1969-01-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">135</td>
+			<td class="colHide3">8067</td>
+			<td><a href='orgdata.asp?p=1908457'>ORIENTAL UNIVERSITY CITY HOLDINGS (H.K.) LIMITED</a></td>
+			<td class="nowrap">2012-06-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">136</td>
+			<td class="colHide3">0008</td>
+			<td><a href='orgdata.asp?p=2925'>PCCW LIMITED</a></td>
+			<td class="nowrap">1979-04-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">137</td>
+			<td class="colHide3">0225</td>
+			<td><a href='orgdata.asp?p=1044'>Pokfulam Development Company Limited</a></td>
+			<td class="nowrap">1970-08-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">138</td>
+			<td class="colHide3">0119</td>
+			<td><a href='orgdata.asp?p=1364'>Poly Property Group Co., Limited</a></td>
+			<td class="nowrap">1973-02-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">139</td>
+			<td class="colHide3">0006</td>
+			<td><a href='orgdata.asp?p=388'>Power Assets Holdings Limited</a></td>
+			<td class="nowrap">1976-04-09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">140</td>
+			<td class="colHide3">8385</td>
+			<td><a href='orgdata.asp?p=545794'>PROSPEROUS PRINTING COMPANY LIMITED</a></td>
+			<td class="nowrap">1992-12-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">141</td>
+			<td class="colHide3">0229</td>
+			<td><a href='orgdata.asp?p=4711'>RAYMOND INDUSTRIAL LIMITED</a></td>
+			<td class="nowrap">1964-10-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">142</td>
+			<td class="colHide3">0070</td>
+			<td><a href='orgdata.asp?p=4915'>Rich Goldman Holdings Limited</a></td>
+			<td class="nowrap">1972-11-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">143</td>
+			<td class="colHide3">0237</td>
+			<td><a href='orgdata.asp?p=1162'>SAFETY GODOWN COMPANY, LIMITED</a></td>
+			<td class="nowrap">1960-09-01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">144</td>
+			<td class="colHide3">0236</td>
+			<td><a href='orgdata.asp?p=637'>SAN MIGUEL BREWERY HONG KONG LIMITED</a></td>
+			<td class="nowrap">1963-04-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">145</td>
+			<td class="colHide3">0363</td>
+			<td><a href='orgdata.asp?p=441'>SHANGHAI INDUSTRIAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1996-01-09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">146</td>
+			<td class="colHide3">1939</td>
+			<td><a href='orgdata.asp?p=2098412'>SHANGSHAN GOLD INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">2013-07-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">147</td>
+			<td class="colHide3">0218</td>
+			<td><a href='orgdata.asp?p=3481'>SHENWAN HONGYUAN (H.K.) LIMITED</a></td>
+			<td class="nowrap">1972-08-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">148</td>
+			<td class="colHide3">0604</td>
+			<td><a href='orgdata.asp?p=2891'>SHENZHEN INVESTMENT LIMITED</a></td>
+			<td class="nowrap">1992-12-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">149</td>
+			<td class="colHide3">0697</td>
+			<td><a href='orgdata.asp?p=767'>Shoucheng Holdings Limited</a></td>
+			<td class="nowrap">1985-09-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">150</td>
+			<td class="colHide3">0103</td>
+			<td><a href='orgdata.asp?p=3377'>Shougang Century Holdings Limited</a></td>
+			<td class="nowrap">1991-06-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">151</td>
+			<td class="colHide3">0639</td>
+			<td><a href='orgdata.asp?p=3356'>SHOUGANG FUSHAN RESOURCES GROUP LIMITED</a></td>
+			<td class="nowrap">1985-12-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">152</td>
+			<td class="colHide3">0253</td>
+			<td><a href='orgdata.asp?p=3707'>SHUN HO HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1973-01-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">153</td>
+			<td class="colHide3">0219</td>
+			<td><a href='orgdata.asp?p=3703'>SHUN HO PROPERTY INVESTMENTS LIMITED</a></td>
+			<td class="nowrap">1970-03-31</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">154</td>
+			<td class="colHide3">0242</td>
+			<td><a href='orgdata.asp?p=454'>SHUN TAK HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1972-10-06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">155</td>
+			<td class="colHide3">0171</td>
+			<td><a href='orgdata.asp?p=4969'>Silver Grant International Holdings Group Limited</a></td>
+			<td class="nowrap">1960-01-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">156</td>
+			<td class="colHide3">2096</td>
+			<td><a href='orgdata.asp?p=47255'>Simcere Pharmaceutical Group Limited</a></td>
+			<td class="nowrap">2015-11-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">157</td>
+			<td class="colHide3">0244</td>
+			<td><a href='orgdata.asp?p=976'>SINCERE COMPANY, LIMITED (THE)</a></td>
+			<td class="nowrap">1919-01-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">158</td>
+			<td class="colHide3">0716</td>
+			<td><a href='orgdata.asp?p=3462'>SINGAMAS CONTAINER HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1988-10-07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">159</td>
+			<td class="colHide3">0083</td>
+			<td><a href='orgdata.asp?p=664'>SINO LAND COMPANY LIMITED</a></td>
+			<td class="nowrap">1971-01-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">160</td>
+			<td class="colHide3">3377</td>
+			<td><a href='orgdata.asp?p=41076'>SINO-OCEAN GROUP HOLDING LIMITED</a></td>
+			<td class="nowrap">2007-03-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">161</td>
+			<td class="colHide3">3681</td>
+			<td><a href='orgdata.asp?p=903553'>SINOMAB BIOSCIENCE LIMITED</a></td>
+			<td class="nowrap">2001-04-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">162</td>
+			<td class="colHide3">0623</td>
+			<td><a href='orgdata.asp?p=45874'>SinoMedia Holding Limited</a></td>
+			<td class="nowrap">2001-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">163</td>
+			<td class="colHide3">3808</td>
+			<td><a href='orgdata.asp?p=41647'>SINOTRUK (HONG KONG) LIMITED</a></td>
+			<td class="nowrap">2007-01-31</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">164</td>
+			<td class="colHide3">0880</td>
+			<td><a href='orgdata.asp?p=45905'>SJM Holdings Limited</a></td>
+			<td class="nowrap">2006-02-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">165</td>
+			<td class="colHide3">0648</td>
+			<td><a href='orgdata.asp?p=4789'>SoftMedx Healthcare Limited</a></td>
+			<td class="nowrap">1989-01-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">166</td>
+			<td class="colHide3">0619</td>
+			<td><a href='orgdata.asp?p=938'>South China Financial Holdings Limited</a></td>
+			<td class="nowrap">1988-04-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">167</td>
+			<td class="colHide3">0252</td>
+			<td><a href='orgdata.asp?p=4974'>SOUTHEAST ASIA PROPERTIES & FINANCE LIMITED</a></td>
+			<td class="nowrap">1972-08-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">168</td>
+			<td class="colHide3">6808</td>
+			<td><a href='orgdata.asp?p=67290'>SUN ART RETAIL GROUP LIMITED</a></td>
+			<td class="nowrap">2000-12-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">169</td>
+			<td class="colHide3">0086</td>
+			<td><a href='orgdata.asp?p=425'>SUN HUNG KAI & CO. LIMITED</a></td>
+			<td class="nowrap">1983-04-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">170</td>
+			<td class="colHide3">0016</td>
+			<td><a href='orgdata.asp?p=417'>SUN HUNG KAI PROPERTIES LIMITED</a></td>
+			<td class="nowrap">1972-07-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">171</td>
+			<td class="colHide3">0019</td>
+			<td><a href='orgdata.asp?p=384'>SWIRE PACIFIC LIMITED</a></td>
+			<td class="nowrap">1940-03-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">172</td>
+			<td class="colHide3">1972</td>
+			<td><a href='orgdata.asp?p=24001'>SWIRE PROPERTIES LIMITED</a></td>
+			<td class="nowrap">1972-11-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">173</td>
+			<td class="colHide3">2510</td>
+			<td><a href='orgdata.asp?p=897189'>T.S. Lines Limited</a></td>
+			<td class="nowrap">2001-03-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">174</td>
+			<td class="colHide3">0089</td>
+			<td><a href='orgdata.asp?p=1725'>TAI SANG LAND DEVELOPMENT LIMITED</a></td>
+			<td class="nowrap">1968-09-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">175</td>
+			<td class="colHide3">0669</td>
+			<td><a href='orgdata.asp?p=2600'>TECHTRONIC INDUSTRIES COMPANY LIMITED</a></td>
+			<td class="nowrap">1985-05-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">176</td>
+			<td class="colHide3">0511</td>
+			<td><a href='orgdata.asp?p=688'>TELEVISION BROADCASTS LIMITED</a></td>
+			<td class="nowrap">1965-07-26</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">177</td>
+			<td class="colHide3">0277</td>
+			<td><a href='orgdata.asp?p=4986'>TERN PROPERTIES COMPANY LIMITED</a></td>
+			<td class="nowrap">1968-03-19</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">178</td>
+			<td class="colHide3">0028</td>
+			<td><a href='orgdata.asp?p=1457'>TIAN AN CHINA INVESTMENTS COMPANY LIMITED</a></td>
+			<td class="nowrap">1986-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">179</td>
+			<td class="colHide3">0266</td>
+			<td><a href='orgdata.asp?p=985'>TIAN TECK LAND LIMITED</a></td>
+			<td class="nowrap">1969-09-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">180</td>
+			<td class="colHide3">0882</td>
+			<td><a href='orgdata.asp?p=5144'>TIANJIN DEVELOPMENT HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1997-05-09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">181</td>
+			<td class="colHide3">8028</td>
+			<td><a href='orgdata.asp?p=9381'>Timeless Resources Holdings Limited</a></td>
+			<td class="nowrap">1996-03-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">182</td>
+			<td class="colHide3">2310</td>
+			<td><a href='orgdata.asp?p=18204'>Times Universal Group Holdings Limited</a></td>
+			<td class="nowrap">1987-05-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">183</td>
+			<td class="colHide3">0536</td>
+			<td><a href='orgdata.asp?p=24863'>TRADELINK ELECTRONIC COMMERCE LIMITED</a></td>
+			<td class="nowrap">1988-09-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">184</td>
+			<td class="colHide3">1710</td>
+			<td><a href='orgdata.asp?p=2562170'>Trio Industrial Electronics Group Limited</a></td>
+			<td class="nowrap">2016-04-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">185</td>
+			<td class="colHide3">0247</td>
+			<td><a href='orgdata.asp?p=715'>TSIM SHA TSUI PROPERTIES LIMITED</a></td>
+			<td class="nowrap">1972-06-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">186</td>
+			<td class="colHide3">0518</td>
+			<td><a href='orgdata.asp?p=3529'>TUNGTEX (HOLDINGS) COMPANY LIMITED</a></td>
+			<td class="nowrap">1987-07-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">187</td>
+			<td class="colHide3">1711</td>
+			<td><a href='orgdata.asp?p=1917219'>ULFERTS INTERNATIONAL LIMITED</a></td>
+			<td class="nowrap">2012-06-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">188</td>
+			<td class="colHide3">0821</td>
+			<td><a href='orgdata.asp?p=13553'>VALUE CONVERGENCE HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1999-09-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">189</td>
+			<td class="colHide3">0345</td>
+			<td><a href='orgdata.asp?p=639'>VITASOY INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td class="nowrap">1940-03-06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">190</td>
+			<td class="colHide3">0004</td>
+			<td><a href='orgdata.asp?p=342'>Wharf (Holdings) Limited (The)</a></td>
+			<td class="nowrap">1886-11-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">191</td>
+			<td class="colHide3">0287</td>
+			<td><a href='orgdata.asp?p=5012'>WINFAIR INVESTMENT COMPANY LIMITED</a></td>
+			<td class="nowrap">1971-08-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">192</td>
+			<td class="colHide3">0294</td>
+			<td><a href='orgdata.asp?p=2997'>Yangtzekiang Garment Limited</a></td>
+			<td class="nowrap">1961-03-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">193</td>
+			<td class="colHide3">2209</td>
+			<td><a href='orgdata.asp?p=1102700'>YesAsia Holdings Limited</a></td>
+			<td class="nowrap">2005-03-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">194</td>
+			<td class="colHide3">0375</td>
+			<td><a href='orgdata.asp?p=2998'>YGM TRADING LIMITED</a></td>
+			<td class="nowrap">1987-07-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">195</td>
+			<td class="colHide3">8241</td>
+			<td><a href='orgdata.asp?p=12051600'>YING KEE TEA HOUSE GROUP LIMITED</a></td>
+			<td class="nowrap">2017-09-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">196</td>
+			<td class="colHide3">0123</td>
+			<td><a href='orgdata.asp?p=835'>Yuexiu Property Company Limited</a></td>
+			<td class="nowrap">1992-06-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">197</td>
+			<td class="colHide3">6626</td>
+			<td><a href='orgdata.asp?p=25246563'>YUEXIU SERVICES GROUP LIMITED</a></td>
+			<td class="nowrap">2020-10-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">198</td>
+			<td class="colHide3">0376</td>
+			<td><a href='orgdata.asp?p=4917'>Yunfeng Financial Group Limited</a></td>
+			<td class="nowrap">1982-08-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">199</td>
+			<td class="colHide3">0185</td>
+			<td><a href='orgdata.asp?p=4862'>Zensun Enterprises Limited</a></td>
+			<td class="nowrap">1965-04-03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">200</td>
+			<td class="colHide3">2259</td>
+			<td><a href='orgdata.asp?p=1324435'>Zijin Gold International Company Limited</a></td>
+			<td class="nowrap">2007-10-22</td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Foreign companies registered in HK</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Foreign companies registered in HK</h2>
+<h3><a href="domregHK.asp?">Domicile:</a>&nbsp;United Kingdom</h3>
+<p>Note:</p>
+
+<table class="txtable">
+	<tr>
+		<th>Count</th>
+		<th><a href='/dbpub/cosperdomHK.asp?dom=2&amp;sort=namdn'><b>Name</b></a></th>
+		<th><a href='/dbpub/cosperdomHK.asp?dom=2&amp;sort=regup'><b>Registered</b></a></th>
+	</tr>
+	
+		<tr>
+			<td>1</td>
+			<td><a href='orgdata.asp?p=31769878'>ACCESS BANK UK LIMITED (THE)</a></td>
+			<td>2024-04-30</td>
+		</tr>
+		
+		<tr>
+			<td>2</td>
+			<td><a href='orgdata.asp?p=33430180'>AECOM LIMITED</a></td>
+			<td>2025-05-09</td>
+		</tr>
+		
+		<tr>
+			<td>3</td>
+			<td><a href='orgdata.asp?p=23642293'>AGRIVERT LIMITED (UK)</a></td>
+			<td>2019-09-10</td>
+		</tr>
+		
+		<tr>
+			<td>4</td>
+			<td><a href='orgdata.asp?p=24485755'>ALLSAINTS HUB LIMITED (UK)</a></td>
+			<td>2020-04-27</td>
+		</tr>
+		
+		<tr>
+			<td>5</td>
+			<td><a href='orgdata.asp?p=31739884'>ANJIAYING INTERNATIONAL TRADING CO., LTD</a></td>
+			<td>2024-04-25</td>
+		</tr>
+		
+		<tr>
+			<td>6</td>
+			<td><a href='orgdata.asp?p=12868256'>APTITUDE SOFTWARE LIMITED (UK)</a></td>
+			<td>2018-03-19</td>
+		</tr>
+		
+		<tr>
+			<td>7</td>
+			<td><a href='orgdata.asp?p=33565187'>ARCHITECTURAL PROJECT UNIT (UK) LIMITED</a></td>
+			<td>2025-06-06</td>
+		</tr>
+		
+		<tr>
+			<td>8</td>
+			<td><a href='orgdata.asp?p=27686395'>ASCENDAL GROUP LIMITED</a></td>
+			<td>2021-12-29</td>
+		</tr>
+		
+		<tr>
+			<td>9</td>
+			<td><a href='orgdata.asp?p=12086005'>Aston University</a></td>
+			<td>2017-10-03</td>
+		</tr>
+		
+		<tr>
+			<td>10</td>
+			<td><a href='orgdata.asp?p=22168079'>BEEKS FINANCIAL CLOUD LIMITED (UK)</a></td>
+			<td>2018-09-12</td>
+		</tr>
+		
+		<tr>
+			<td>11</td>
+			<td><a href='orgdata.asp?p=26389962'>BELU WATER LIMITED</a></td>
+			<td>2021-03-05</td>
+		</tr>
+		
+		<tr>
+			<td>12</td>
+			<td><a href='orgdata.asp?p=28817984'>BIOTOP UK LLP (UK)</a></td>
+			<td>2022-12-30</td>
+		</tr>
+		
+		<tr>
+			<td>13</td>
+			<td><a href='orgdata.asp?p=16830849'>BRITANNIA STEAM SHIP INSURANCE ASSOCIATION LIMITED (THE) (UK)</a></td>
+			<td>2018-06-06</td>
+		</tr>
+		
+		<tr>
+			<td>14</td>
+			<td><a href='orgdata.asp?p=24512777'>BRITISH AMERICAN TOBACCO EXPORTS LIMITED (UK)</a></td>
+			<td>2020-05-04</td>
+		</tr>
+		
+		<tr>
+			<td>15</td>
+			<td><a href='orgdata.asp?p=23257808'>CADA DESIGN GROUP LIMITED (UK)</a></td>
+			<td>2019-06-04</td>
+		</tr>
+		
+		<tr>
+			<td>16</td>
+			<td><a href='orgdata.asp?p=25092067'>CAMBRIDGE UNIVERSITY CHINESE SOCIETY (UK)</a></td>
+			<td>2020-09-07</td>
+		</tr>
+		
+		<tr>
+			<td>17</td>
+			<td><a href='orgdata.asp?p=12191259'>CANADA GOOSE SERVICES LIMITED (UK)</a></td>
+			<td>2017-10-27</td>
+		</tr>
+		
+		<tr>
+			<td>18</td>
+			<td><a href='orgdata.asp?p=30303735'>CANDLELIGHT PRODUCTS LIMITED (UK)</a></td>
+			<td>2023-07-20</td>
+		</tr>
+		
+		<tr>
+			<td>19</td>
+			<td><a href='orgdata.asp?p=27091995'>CASDON LIMITED</a></td>
+			<td>2021-08-02</td>
+		</tr>
+		
+		<tr>
+			<td>20</td>
+			<td><a href='orgdata.asp?p=28321120'>CEDERBERG CAPITAL LIMITED (UK)</a></td>
+			<td>2022-05-23</td>
+		</tr>
+		
+		<tr>
+			<td>21</td>
+			<td><a href='orgdata.asp?p=24878129'>CEG UFP LIMITED (UK)</a></td>
+			<td>2020-07-22</td>
+		</tr>
+		
+		<tr>
+			<td>22</td>
+			<td><a href='orgdata.asp?p=25444831'>CGS ADMINISTRATIVE SERVICES LIMITED (UK)</a></td>
+			<td>2020-11-18</td>
+		</tr>
+		
+		<tr>
+			<td>23</td>
+			<td><a href='orgdata.asp?p=30714046'>CHINESE FAMILY OFFICES ASSOCIATION OF HONG KONG (THE)</a></td>
+			<td>2023-10-13</td>
+		</tr>
+		
+		<tr>
+			<td>24</td>
+			<td><a href='orgdata.asp?p=32905546'>CHRONOVATE LAW LIMITED</a></td>
+			<td>2025-01-24</td>
+		</tr>
+		
+		<tr>
+			<td>25</td>
+			<td><a href='orgdata.asp?p=24716282'>CLIKING INVESTMENT LTD (UK)</a></td>
+			<td>2020-06-19</td>
+		</tr>
+		
+		<tr>
+			<td>26</td>
+			<td><a href='orgdata.asp?p=23355490'>CLS UK INTERMEDIATE HOLDINGS LTD. (UK)</a></td>
+			<td>2019-06-27</td>
+		</tr>
+		
+		<tr>
+			<td>27</td>
+			<td><a href='orgdata.asp?p=27591538'>COLOCO LIMITED</a></td>
+			<td>2021-12-03</td>
+		</tr>
+		
+		<tr>
+			<td>28</td>
+			<td><a href='orgdata.asp?p=31769871'>CONTROLLED ELECTRONIC MANAGEMENT SYSTEMS LIMITED</a></td>
+			<td>2024-05-02</td>
+		</tr>
+		
+		<tr>
+			<td>29</td>
+			<td><a href='orgdata.asp?p=25276431'>CURO COMPENSATION LIMITED (UK)</a></td>
+			<td>2020-10-14</td>
+		</tr>
+		
+		<tr>
+			<td>30</td>
+			<td><a href='orgdata.asp?p=30369348'>CUTFIELD FREEMAN & COMPANY LIMITED (UK)</a></td>
+			<td>2023-08-03</td>
+		</tr>
+		
+		<tr>
+			<td>31</td>
+			<td><a href='orgdata.asp?p=30181962'>DAVIES GLOBAL (CDL) LIMITED (UK)</a></td>
+			<td>2023-06-26</td>
+		</tr>
+		
+		<tr>
+			<td>32</td>
+			<td><a href='orgdata.asp?p=20873888'>DERIVITEC LTD (UK)</a></td>
+			<td>2018-07-26</td>
+		</tr>
+		
+		<tr>
+			<td>33</td>
+			<td><a href='orgdata.asp?p=31317163'>DHL AIR (UK) LIMITED (UK)</a></td>
+			<td>2024-02-09</td>
+		</tr>
+		
+		<tr>
+			<td>34</td>
+			<td><a href='orgdata.asp?p=24062840'>DURA INDUSTRIAL CO., LTD (UK)</a></td>
+			<td>2019-12-31</td>
+		</tr>
+		
+		<tr>
+			<td>35</td>
+			<td><a href='orgdata.asp?p=30369351'>EC RESIDENTIAL LTD (UK)</a></td>
+			<td>2023-08-03</td>
+		</tr>
+		
+		<tr>
+			<td>36</td>
+			<td><a href='orgdata.asp?p=23037578'>EGPN BULK CARRIER UK CO., LIMITED (UK)</a></td>
+			<td>2019-04-12</td>
+		</tr>
+		
+		<tr>
+			<td>37</td>
+			<td><a href='orgdata.asp?p=12052050'>EURO AUCTIONS (UK) NO.2 LTD (UK)</a></td>
+			<td>2017-09-14</td>
+		</tr>
+		
+		<tr>
+			<td>38</td>
+			<td><a href='orgdata.asp?p=27255621'>FIFTH DOG NETWORK LIMITED</a></td>
+			<td>2021-09-16</td>
+		</tr>
+		
+		<tr>
+			<td>39</td>
+			<td><a href='orgdata.asp?p=32130597'>FLOREX FIRE LTD.</a></td>
+			<td>2024-07-22</td>
+		</tr>
+		
+		<tr>
+			<td>40</td>
+			<td><a href='orgdata.asp?p=25610590'>FORESIGHT WORKS LTD</a></td>
+			<td>2020-12-10</td>
+		</tr>
+		
+		<tr>
+			<td>41</td>
+			<td><a href='orgdata.asp?p=23239201'>FORTNUM & MASON PUBLIC LIMITED COMPANY (UK)</a></td>
+			<td>2019-05-30</td>
+		</tr>
+		
+		<tr>
+			<td>42</td>
+			<td><a href='orgdata.asp?p=13795736'>FREEPOINT COMMODITIES EUROPE LLP (UK)</a></td>
+			<td>2018-04-13</td>
+		</tr>
+		
+		<tr>
+			<td>43</td>
+			<td><a href='orgdata.asp?p=12655180'>FRUTAROM (UK) LIMITED (UK)</a></td>
+			<td>2017-12-20</td>
+		</tr>
+		
+		<tr>
+			<td>44</td>
+			<td><a href='orgdata.asp?p=33699050'>GARTAN DIRECT UK LTD.</a></td>
+			<td>2025-07-03</td>
+		</tr>
+		
+		<tr>
+			<td>45</td>
+			<td><a href='orgdata.asp?p=30391290'>GATELEY PLC (UK)</a></td>
+			<td>2023-08-08</td>
+		</tr>
+		
+		<tr>
+			<td>46</td>
+			<td><a href='orgdata.asp?p=22395064'>GLENN BLAKEBOROUGH LTD (UK)</a></td>
+			<td>2018-11-06</td>
+		</tr>
+		
+		<tr>
+			<td>47</td>
+			<td><a href='orgdata.asp?p=33009636'>GOEDHUIS WADDESDON LIMITED</a></td>
+			<td>2025-02-10</td>
+		</tr>
+		
+		<tr>
+			<td>48</td>
+			<td><a href='orgdata.asp?p=13795737'>GRAND VISION MEDIA HOLDINGS PLC (UK)</a></td>
+			<td>2018-04-13</td>
+		</tr>
+		
+		<tr>
+			<td>49</td>
+			<td><a href='orgdata.asp?p=12491305'>GUANGZHOU PENALTY COMMODITY (HK) CO., LTD (UK)</a></td>
+			<td>2017-11-09</td>
+		</tr>
+		
+		<tr>
+			<td>50</td>
+			<td><a href='orgdata.asp?p=23078710'>HALVINA LIMITED (UK)</a></td>
+			<td>2019-04-23</td>
+		</tr>
+		
+		<tr>
+			<td>51</td>
+			<td><a href='orgdata.asp?p=33731617'>HENRY DIAPER & CO. LIMITED</a></td>
+			<td>2025-07-11</td>
+		</tr>
+		
+		<tr>
+			<td>52</td>
+			<td><a href='orgdata.asp?p=13494641'>ICAEW CHINA LIMITED (UK)</a></td>
+			<td>2018-04-03</td>
+		</tr>
+		
+		<tr>
+			<td>53</td>
+			<td><a href='orgdata.asp?p=32739823'>IET SERVICES LIMITED</a></td>
+			<td>2024-12-09</td>
+		</tr>
+		
+		<tr>
+			<td>54</td>
+			<td><a href='orgdata.asp?p=32534260'>INTO UNIVERSITY PARTNERSHIPS LIMITED</a></td>
+			<td>2024-10-24</td>
+		</tr>
+		
+		<tr>
+			<td>55</td>
+			<td><a href='orgdata.asp?p=24354391'>J. Barbour & Sons, Limited</a></td>
+			<td>2020-03-16</td>
+		</tr>
+		
+		<tr>
+			<td>56</td>
+			<td><a href='orgdata.asp?p=27514907'>JOHN WILKINSON COMMODITIES LIMITED</a></td>
+			<td>2021-11-11</td>
+		</tr>
+		
+		<tr>
+			<td>57</td>
+			<td><a href='orgdata.asp?p=20808143'>JOHNS & CO REAL ESTATE (SERVICES) LIMITED (UK)</a></td>
+			<td>2018-07-25</td>
+		</tr>
+		
+		<tr>
+			<td>58</td>
+			<td><a href='orgdata.asp?p=33531129'>KAPLAN INTERNATIONAL COLLEGES U.K. LIMITED</a></td>
+			<td>2025-05-26</td>
+		</tr>
+		
+		<tr>
+			<td>59</td>
+			<td><a href='orgdata.asp?p=31052899'>KEYWAVE TECHNOLOGY LIMITED</a></td>
+			<td>2023-12-21</td>
+		</tr>
+		
+		<tr>
+			<td>60</td>
+			<td><a href='orgdata.asp?p=30969531'>KIEYE LTD (UK)</a></td>
+			<td>2023-12-05</td>
+		</tr>
+		
+		<tr>
+			<td>61</td>
+			<td><a href='orgdata.asp?p=34146975'>KZEMOS UK LTD</a></td>
+			<td>2025-09-30</td>
+		</tr>
+		
+		<tr>
+			<td>62</td>
+			<td><a href='orgdata.asp?p=28302102'>LAING O'ROURKE SERVICES LIMITED (UK)</a></td>
+			<td>2022-05-18</td>
+		</tr>
+		
+		<tr>
+			<td>63</td>
+			<td><a href='orgdata.asp?p=27009519'>LATITUDE RCBI CONSULTANCY (UK) LIMITED</a></td>
+			<td>2021-07-15</td>
+		</tr>
+		
+		<tr>
+			<td>64</td>
+			<td><a href='orgdata.asp?p=27443228'>LIFEBIT BIOTECH LIMITED</a></td>
+			<td>2021-10-28</td>
+		</tr>
+		
+		<tr>
+			<td>65</td>
+			<td><a href='orgdata.asp?p=32739825'>LINGNAN & KENT LTD</a></td>
+			<td>2024-12-13</td>
+		</tr>
+		
+		<tr>
+			<td>66</td>
+			<td><a href='orgdata.asp?p=34040793'>LINSON MARINE FAR EAST LIMITED</a></td>
+			<td>2025-09-09</td>
+		</tr>
+		
+		<tr>
+			<td>67</td>
+			<td><a href='orgdata.asp?p=31890084'>LIV GOLF EVENTS LTD.</a></td>
+			<td>2024-05-31</td>
+		</tr>
+		
+		<tr>
+			<td>68</td>
+			<td><a href='orgdata.asp?p=12113760'>LODHA DEVELOPERS UK LIMITED (UK)</a></td>
+			<td>2017-10-23</td>
+		</tr>
+		
+		<tr>
+			<td>69</td>
+			<td><a href='orgdata.asp?p=25171444'>LONDON IPM LTD (UK)</a></td>
+			<td>2020-09-23</td>
+		</tr>
+		
+		<tr>
+			<td>70</td>
+			<td><a href='orgdata.asp?p=17034795'>LONG CONSULTING LTD (UK)</a></td>
+			<td>2018-06-08</td>
+		</tr>
+		
+		<tr>
+			<td>71</td>
+			<td><a href='orgdata.asp?p=31275312'>LOW POWER LTD (UK)</a></td>
+			<td>2024-01-29</td>
+		</tr>
+		
+		<tr>
+			<td>72</td>
+			<td><a href='orgdata.asp?p=12782401'>LOWE RENTAL LTD (UK)</a></td>
+			<td>2018-02-13</td>
+		</tr>
+		
+		<tr>
+			<td>73</td>
+			<td><a href='orgdata.asp?p=12626221'>LUMSDEN DESIGN LIMITED (UK)</a></td>
+			<td>2017-12-07</td>
+		</tr>
+		
+		<tr>
+			<td>74</td>
+			<td><a href='orgdata.asp?p=30884138'>MACRO (ASIA PACIFIC) LIMITED (UK)</a></td>
+			<td>2023-11-16</td>
+		</tr>
+		
+		<tr>
+			<td>75</td>
+			<td><a href='orgdata.asp?p=32784691'>MISTER MEN LIMITED</a></td>
+			<td>2024-12-24</td>
+		</tr>
+		
+		<tr>
+			<td>76</td>
+			<td><a href='orgdata.asp?p=25609432'>MPSUW LIMITED</a></td>
+			<td>2020-12-01</td>
+		</tr>
+		
+		<tr>
+			<td>77</td>
+			<td><a href='orgdata.asp?p=30431613'>NATARA GLOBAL LIMITED (UK)</a></td>
+			<td>2023-08-16</td>
+		</tr>
+		
+		<tr>
+			<td>78</td>
+			<td><a href='orgdata.asp?p=22900306'>NEWAY AQUATIC LIMITED</a></td>
+			<td>2019-03-14</td>
+		</tr>
+		
+		<tr>
+			<td>79</td>
+			<td><a href='orgdata.asp?p=22138355'>NEWTECNIC LIMITED (UK)</a></td>
+			<td>2018-09-05</td>
+		</tr>
+		
+		<tr>
+			<td>80</td>
+			<td><a href='orgdata.asp?p=23078709'>NICOVENTURES TRADING LIMITED (UK)</a></td>
+			<td>2019-04-23</td>
+		</tr>
+		
+		<tr>
+			<td>81</td>
+			<td><a href='orgdata.asp?p=23843004'>No Ordinary Designer Label Limited (UK)</a></td>
+			<td>2019-10-29</td>
+		</tr>
+		
+		<tr>
+			<td>82</td>
+			<td><a href='orgdata.asp?p=28683904'>OBASEKI & CO LTD (UK)</a></td>
+			<td>2022-08-17</td>
+		</tr>
+		
+		<tr>
+			<td>83</td>
+			<td><a href='orgdata.asp?p=24532254'>OFFICES OF PHILIP MARCOVICI LIMITED (THE) (UK)</a></td>
+			<td>2020-05-11</td>
+		</tr>
+		
+		<tr>
+			<td>84</td>
+			<td><a href='orgdata.asp?p=21557692'>OXFORD INTERNATIONAL EDUCATION GROUP SERVICES LIMITED (UK)</a></td>
+			<td>2018-08-07</td>
+		</tr>
+		
+		<tr>
+			<td>85</td>
+			<td><a href='orgdata.asp?p=33228161'>PACIFIC MI LIMITED</a></td>
+			<td>2025-03-25</td>
+		</tr>
+		
+		<tr>
+			<td>86</td>
+			<td><a href='orgdata.asp?p=22099159'>PENGUIN BOOKS LIMITED (UK)</a></td>
+			<td>2018-08-27</td>
+		</tr>
+		
+		<tr>
+			<td>87</td>
+			<td><a href='orgdata.asp?p=15060271'>Pinewood Technologies PLC (UK)</a></td>
+			<td>2018-05-15</td>
+		</tr>
+		
+		<tr>
+			<td>88</td>
+			<td><a href='orgdata.asp?p=30226288'>PRET A MANGER (USA) LIMITED (UK)</a></td>
+			<td>2023-07-05</td>
+		</tr>
+		
+		<tr>
+			<td>89</td>
+			<td><a href='orgdata.asp?p=23096371'>PROFESSIONAL CONSTRUCTION STRATEGIES GROUP LIMITED (UK)</a></td>
+			<td>2019-04-26</td>
+		</tr>
+		
+		<tr>
+			<td>90</td>
+			<td><a href='orgdata.asp?p=139200'>PROPERT INTERNATIONAL LIMITED</a></td>
+			<td>1983-11-04</td>
+		</tr>
+		
+		<tr>
+			<td>91</td>
+			<td><a href='orgdata.asp?p=30905955'>PRUDENTIAL AFRICA HOLDINGS LIMITED (UK)</a></td>
+			<td>2023-11-21</td>
+		</tr>
+		
+		<tr>
+			<td>92</td>
+			<td><a href='orgdata.asp?p=23824567'>PRUDENTIAL CORPORATION HOLDINGS LIMITED</a></td>
+			<td>2019-10-24</td>
+		</tr>
+		
+		<tr>
+			<td>93</td>
+			<td><a href='orgdata.asp?p=33666885'>PYRAMID CONSULTING LIMITED</a></td>
+			<td>2025-06-27</td>
+		</tr>
+		
+		<tr>
+			<td>94</td>
+			<td><a href='orgdata.asp?p=23803967'>RBB ECONOMICS HONG KONG LLP (UK)</a></td>
+			<td>2019-10-18</td>
+		</tr>
+		
+		<tr>
+			<td>95</td>
+			<td><a href='orgdata.asp?p=11794904'>RONIN TRADING EUROPE LLP (UK)</a></td>
+			<td>2017-08-30</td>
+		</tr>
+		
+		<tr>
+			<td>96</td>
+			<td><a href='orgdata.asp?p=144734'>ROYAL BRITISH LEGION (THE)</a></td>
+			<td>1998-06-29</td>
+		</tr>
+		
+		<tr>
+			<td>97</td>
+			<td><a href='orgdata.asp?p=26469483'>S D RAMSDEN & CO LIMITED</a></td>
+			<td>2021-03-15</td>
+		</tr>
+		
+		<tr>
+			<td>98</td>
+			<td><a href='orgdata.asp?p=31353795'>SC VENTURES HOLDINGS LIMITED</a></td>
+			<td>2024-02-15</td>
+		</tr>
+		
+		<tr>
+			<td>99</td>
+			<td><a href='orgdata.asp?p=24884447'>SGX FX SYSTEMS UK LIMITED (UK)</a></td>
+			<td>2020-07-23</td>
+		</tr>
+		
+		<tr>
+			<td>100</td>
+			<td><a href='orgdata.asp?p=24884452'>SMALL WORLD SERVICE LIMITED (UK)</a></td>
+			<td>2020-07-23</td>
+		</tr>
+		
+		<tr>
+			<td>101</td>
+			<td><a href='orgdata.asp?p=23218076'>SOFTCAT PLC (UK)</a></td>
+			<td>2019-05-24</td>
+		</tr>
+		
+		<tr>
+			<td>102</td>
+			<td><a href='orgdata.asp?p=31018650'>STRAND EUROPE LIMITED (UK)</a></td>
+			<td>2023-12-14</td>
+		</tr>
+		
+		<tr>
+			<td>103</td>
+			<td><a href='orgdata.asp?p=24514022'>SUN SEASONS HEALTH LTD (UK)</a></td>
+			<td>2020-05-05</td>
+		</tr>
+		
+		<tr>
+			<td>104</td>
+			<td><a href='orgdata.asp?p=28758117'>SUPPLYPRO ENGINEERING & MATERIALS LIMITED (UK)</a></td>
+			<td>2022-10-24</td>
+		</tr>
+		
+		<tr>
+			<td>105</td>
+			<td><a href='orgdata.asp?p=34214486'>TAG TRADERS LTD</a></td>
+			<td>2025-10-15</td>
+		</tr>
+		
+		<tr>
+			<td>106</td>
+			<td><a href='orgdata.asp?p=16641236'>TASTEMADE INTERNATIONAL LIMITED (UK)</a></td>
+			<td>2018-06-05</td>
+		</tr>
+		
+		<tr>
+			<td>107</td>
+			<td><a href='orgdata.asp?p=31048926'>TEACHAI LTD (UK)</a></td>
+			<td>2023-12-20</td>
+		</tr>
+		
+		<tr>
+			<td>108</td>
+			<td><a href='orgdata.asp?p=11794910'>THOMAS TELFORD LIMITED (UK)</a></td>
+			<td>2017-08-30</td>
+		</tr>
+		
+		<tr>
+			<td>109</td>
+			<td><a href='orgdata.asp?p=30958939'>TIMOTHY TAYLOR LIMITED (UK)</a></td>
+			<td>2023-12-01</td>
+		</tr>
+		
+		<tr>
+			<td>110</td>
+			<td><a href='orgdata.asp?p=17862792'>TOREN LLP (UK)</a></td>
+			<td>2018-06-26</td>
+		</tr>
+		
+		<tr>
+			<td>111</td>
+			<td><a href='orgdata.asp?p=15212174'>TRADINGHUB GROUP LIMITED (UK)</a></td>
+			<td>2018-05-17</td>
+		</tr>
+		
+		<tr>
+			<td>112</td>
+			<td><a href='orgdata.asp?p=26928409'>TRIPLE TWO DEVELOPMENT LIMITED</a></td>
+			<td>2021-06-21</td>
+		</tr>
+		
+		<tr>
+			<td>113</td>
+			<td><a href='orgdata.asp?p=11718779'>TRUST MY TRAVEL LIMITED (UK)</a></td>
+			<td>2017-07-04</td>
+		</tr>
+		
+		<tr>
+			<td>114</td>
+			<td><a href='orgdata.asp?p=21111251'>UK CLOUDY TREASURE INVESTMENT CO., LIMITED (UK)</a></td>
+			<td>2018-07-31</td>
+		</tr>
+		
+		<tr>
+			<td>115</td>
+			<td><a href='orgdata.asp?p=152981'>University of the Arts, London (The)</a></td>
+			<td>2011-06-14</td>
+		</tr>
+		
+		<tr>
+			<td>116</td>
+			<td><a href='orgdata.asp?p=27038698'>VESTFORD LTD</a></td>
+			<td>2021-07-21</td>
+		</tr>
+		
+		<tr>
+			<td>117</td>
+			<td><a href='orgdata.asp?p=31794584'>WHITTARD TRADING LIMITED</a></td>
+			<td>2024-05-10</td>
+		</tr>
+		
+		<tr>
+			<td>118</td>
+			<td><a href='orgdata.asp?p=31317182'>WOLFRAM GROUP LTD</a></td>
+			<td>2024-02-09</td>
+		</tr>
+		
+		<tr>
+			<td>119</td>
+			<td><a href='orgdata.asp?p=13688726'>XIANG HONG ELECTRONICS CO., LTD (UK)</a></td>
+			<td>2018-04-09</td>
+		</tr>
+		
+		<tr>
+			<td>120</td>
+			<td><a href='orgdata.asp?p=24803089'>YC AGRO LIMITED (UK)</a></td>
+			<td>2020-07-07</td>
+		</tr>
+		
+		<tr>
+			<td>121</td>
+			<td><a href='orgdata.asp?p=24613189'>ZKO RESOURCES CO., LTD. (UK)</a></td>
+			<td>2020-05-29</td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

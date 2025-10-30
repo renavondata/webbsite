@@ -1,0 +1,677 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Buybacks since 2025-10-20 inclusive</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Buybacks since 2025-10-20 inclusive</h2>
+<ul class="navlist">
+	<li><a href="buybacksum.asp">Calendar</a></li>
+	<li id="livebutton">Lookback</li>
+</ul>
+<div class="clear"></div>
+<form method="get" action="buybackstime.asp">
+	<input type="hidden" name="sort" value="valdn">
+	Last 
+	<select id='hist' name='hist' onchange='this.form.submit()'><option value='10' selected>10 days</option><option value='30'>30 days</option><option value='60'>60 days</option><option value='90'>90 days</option><option value='180'>180 days</option><option value='365'>1 year</option><option value='730'>2 years</option><option value='1826'>5 years</option><option value='3652'>10 years</option><option value='12391'>Since 1991-11-27</option></select>
+</form>
+<p>Latest buyback found: 2025-10-27</p>
+<p>Note: share repurchases on SEHK have been permitted since 1991-11-27. This table comprises on-market buybacks by HK-listed issuers whether executed on SEHK or on another exchange.</p>
+<table class="numtable c2l">
+	<tr>
+		<th></th>
+		<th><a href='/dbpub/buybackstime.asp?hist=10&amp;sort=namup'><b>Issue</b></a></th>
+		<th><a href='/dbpub/buybackstime.asp?hist=10&amp;sort=valup'><b>Value</b></a></th>
+		<th><a href='/dbpub/buybackstime.asp?hist=10&amp;sort=curup'><b>Curr.</b></a></th>
+	</tr>
+	
+		<tr>
+			<td>1</td>
+			<td><a href='buybacks.asp?i=35637'>Midea Group Co., Ltd.: H</a></td>
+			<td>777,995,655</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>2</td>
+			<td><a href='buybacks.asp?i=1088'>HSBC HOLDINGS PLC: O</a></td>
+			<td>134,057,480</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>3</td>
+			<td><a href='buybacks.asp?i=28608'>China Feihe Limited: O</a></td>
+			<td>47,769,760</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>4</td>
+			<td><a href='buybacks.asp?i=3597'>CHINA MENGNIU DAIRY COMPANY LIMITED: O</a></td>
+			<td>46,153,070</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>5</td>
+			<td><a href='buybacks.asp?i=30842'>Linklogis Inc.: B</a></td>
+			<td>40,845,350</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>6</td>
+			<td><a href='buybacks.asp?i=4935'>CHINA RAILWAY GROUP LIMITED: H</a></td>
+			<td>39,999,328</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>7</td>
+			<td><a href='buybacks.asp?i=3448'>STANDARD CHARTERED PLC: O</a></td>
+			<td>37,549,376</td>
+			<td>GBP</td>
+		</tr>
+		
+		<tr>
+			<td>8</td>
+			<td><a href='buybacks.asp?i=29270'>Yum China Holdings, Inc.: O</a></td>
+			<td>31,325,560</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>9</td>
+			<td><a href='buybacks.asp?i=32594'>GUSHENGTANG HOLDINGS LIMITED: O</a></td>
+			<td>31,258,302</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>10</td>
+			<td><a href='buybacks.asp?i=4794'>China Communications Construction Company Limited: H</a></td>
+			<td>30,244,584</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>11</td>
+			<td><a href='buybacks.asp?i=30517'>KE Holdings Inc.: A</a></td>
+			<td>26,999,913</td>
+			<td>USD</td>
+		</tr>
+		
+		<tr>
+			<td>12</td>
+			<td><a href='buybacks.asp?i=35092'>Lianlian DigiTech Co., Ltd.: H</a></td>
+			<td>20,610,819</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>13</td>
+			<td><a href='buybacks.asp?i=36394'>ZHEJIANG SANHUA INTELLIGENT CONTROLS CO., LTD.: H</a></td>
+			<td>20,011,813</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>14</td>
+			<td><a href='buybacks.asp?i=11621'>Consun Pharmaceutical Group Limited: O</a></td>
+			<td>19,394,092</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>15</td>
+			<td><a href='buybacks.asp?i=29270'>Yum China Holdings, Inc.: O</a></td>
+			<td>15,999,853</td>
+			<td>USD</td>
+		</tr>
+		
+		<tr>
+			<td>16</td>
+			<td><a href='buybacks.asp?i=6007'>PRUDENTIAL PUBLIC LIMITED COMPANY: O</a></td>
+			<td>14,584,677</td>
+			<td>GBP</td>
+		</tr>
+		
+		<tr>
+			<td>17</td>
+			<td><a href='buybacks.asp?i=4613'>AAC TECHNOLOGIES HOLDINGS INC.: O</a></td>
+			<td>11,909,790</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>18</td>
+			<td><a href='buybacks.asp?i=34538'>Tanwan Inc.: O</a></td>
+			<td>10,308,912</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>19</td>
+			<td><a href='buybacks.asp?i=34000'>Beauty Farm Medical and Health Industry Inc.: O</a></td>
+			<td>8,576,140</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>20</td>
+			<td><a href='buybacks.asp?i=29295'>ZTO Express (Cayman) Inc.: A</a></td>
+			<td>8,525,889</td>
+			<td>USD</td>
+		</tr>
+		
+		<tr>
+			<td>21</td>
+			<td><a href='buybacks.asp?i=31322'>CARsgen Therapeutics Holdings Limited: O</a></td>
+			<td>7,667,945</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>22</td>
+			<td><a href='buybacks.asp?i=35310'>Cloud Factory Technology Holdings Limited: O</a></td>
+			<td>7,533,370</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>23</td>
+			<td><a href='buybacks.asp?i=34147'>Beisen Holding Limited: O</a></td>
+			<td>7,495,270</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>24</td>
+			<td><a href='buybacks.asp?i=36311'>Jiangsu Hengrui Pharmaceuticals Co., Ltd.: H</a></td>
+			<td>6,930,825</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>25</td>
+			<td><a href='buybacks.asp?i=31451'>Zylox-Tonbridge Medical Technology Co., Ltd.: H</a></td>
+			<td>6,634,250</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>26</td>
+			<td><a href='buybacks.asp?i=1284'>TRULY INTERNATIONAL HOLDINGS LIMITED: O</a></td>
+			<td>6,627,820</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>27</td>
+			<td><a href='buybacks.asp?i=446'>Shougang Century Holdings Limited: O</a></td>
+			<td>6,407,040</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>28</td>
+			<td><a href='buybacks.asp?i=4683'>SSY Group Limited (KY): O</a></td>
+			<td>6,081,280</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>29</td>
+			<td><a href='buybacks.asp?i=5516'>CHINA XLX FERTILISER LTD.: O</a></td>
+			<td>5,176,917</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>30</td>
+			<td><a href='buybacks.asp?i=4925'>NetDragon Websoft Holdings Limited: O</a></td>
+			<td>5,018,180</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>31</td>
+			<td><a href='buybacks.asp?i=4938'>Anton Oilfield Services Group: O</a></td>
+			<td>4,941,608</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>32</td>
+			<td><a href='buybacks.asp?i=3148'>VSTECS Holdings Limited: O</a></td>
+			<td>4,533,000</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>33</td>
+			<td><a href='buybacks.asp?i=30247'>JACOBIO PHARMACEUTICALS GROUP CO., LTD.: O</a></td>
+			<td>3,967,227</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>34</td>
+			<td><a href='buybacks.asp?i=20590'>Greentown Service Group Co. Ltd.: O</a></td>
+			<td>3,913,169</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>35</td>
+			<td><a href='buybacks.asp?i=33410'>YH Entertainment Group: O</a></td>
+			<td>3,769,110</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>36</td>
+			<td><a href='buybacks.asp?i=36068'>Bloks Group Limited: O</a></td>
+			<td>3,762,855</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>37</td>
+			<td><a href='buybacks.asp?i=30160'>HBM Holdings Limited (KY): O</a></td>
+			<td>3,762,570</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>38</td>
+			<td><a href='buybacks.asp?i=26712'>Ascletis Pharma Inc.: O</a></td>
+			<td>3,699,450</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>39</td>
+			<td><a href='buybacks.asp?i=34765'>Xiamen Yan Palace Bird's Nest Industry Co., Ltd.: H</a></td>
+			<td>3,157,268</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>40</td>
+			<td><a href='buybacks.asp?i=34359'>YSB Inc.: O</a></td>
+			<td>3,146,320</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>41</td>
+			<td><a href='buybacks.asp?i=30436'>Yidu Tech Inc.: O</a></td>
+			<td>2,871,757</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>42</td>
+			<td><a href='buybacks.asp?i=1297'>VITASOY INTERNATIONAL HOLDINGS LIMITED: O</a></td>
+			<td>2,811,470</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>43</td>
+			<td><a href='buybacks.asp?i=32943'>Huaxin Cement Co., Ltd.: H</a></td>
+			<td>2,566,296</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>44</td>
+			<td><a href='buybacks.asp?i=6172'>China Sanjiang Fine Chemicals Company Limited: O</a></td>
+			<td>2,515,680</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>45</td>
+			<td><a href='buybacks.asp?i=3485'>Shandong Weigao Group Medical Polymer Company Limited: H</a></td>
+			<td>2,471,196</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>46</td>
+			<td><a href='buybacks.asp?i=305'>WING ON COMPANY INTERNATIONAL LIMITED: O</a></td>
+			<td>2,354,900</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>47</td>
+			<td><a href='buybacks.asp?i=25822'>C-MER Medical Holdings Limited: O</a></td>
+			<td>2,021,000</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>48</td>
+			<td><a href='buybacks.asp?i=26535'>Country Garden Services Holdings Company Limited: O</a></td>
+			<td>1,869,000</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>49</td>
+			<td><a href='buybacks.asp?i=9420'>China Yongda Automobiles Services Holdings Limited: O</a></td>
+			<td>1,586,250</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>50</td>
+			<td><a href='buybacks.asp?i=34235'>Edianyun Limited: O</a></td>
+			<td>1,187,545</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>51</td>
+			<td><a href='buybacks.asp?i=29720'>Ming Yuan Cloud Group Holdings Limited: O</a></td>
+			<td>987,570</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>52</td>
+			<td><a href='buybacks.asp?i=4602'>SIM TECHNOLOGY GROUP LIMITED: O</a></td>
+			<td>878,720</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>53</td>
+			<td><a href='buybacks.asp?i=4922'>Goldstream Investment Limited: O</a></td>
+			<td>678,960</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>54</td>
+			<td><a href='buybacks.asp?i=13776'>Shanghai Haohai Biological Technology Co., Ltd.: H</a></td>
+			<td>650,466</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>55</td>
+			<td><a href='buybacks.asp?i=11453'>PW Medtech Group Limited: O</a></td>
+			<td>640,920</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>56</td>
+			<td><a href='buybacks.asp?i=9089'>Trigiant Group Limited: O</a></td>
+			<td>612,820</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>57</td>
+			<td><a href='buybacks.asp?i=27408'>Wanka Online Inc.: O</a></td>
+			<td>602,000</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>58</td>
+			<td><a href='buybacks.asp?i=1046'>FOUNDER HOLDINGS LIMITED: O</a></td>
+			<td>538,960</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>59</td>
+			<td><a href='buybacks.asp?i=11195'>International Housewares Retail Company Limited: O</a></td>
+			<td>477,460</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>60</td>
+			<td><a href='buybacks.asp?i=22915'>GME GROUP HOLDINGS LIMITED (KY): O</a></td>
+			<td>420,000</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>61</td>
+			<td><a href='buybacks.asp?i=20567'>Qinqin Foodstuffs Group (Cayman) Company Limited: O</a></td>
+			<td>390,360</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>62</td>
+			<td><a href='buybacks.asp?i=11402'>IGG Inc: O</a></td>
+			<td>378,020</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>63</td>
+			<td><a href='buybacks.asp?i=4541'>Texhong International Group Limited: O</a></td>
+			<td>337,720</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>64</td>
+			<td><a href='buybacks.asp?i=16954'>Wenzhou Kangning Hospital Co., Ltd.: H</a></td>
+			<td>307,235</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>65</td>
+			<td><a href='buybacks.asp?i=17145'>Flat Glass Group Co., Ltd.: H</a></td>
+			<td>249,200</td>
+			<td>CNY</td>
+		</tr>
+		
+		<tr>
+			<td>66</td>
+			<td><a href='buybacks.asp?i=33111'>Yoho Group Holdings Limited: O</a></td>
+			<td>242,740</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>67</td>
+			<td><a href='buybacks.asp?i=3619'>PACIFIC BASIN SHIPPING LIMITED: O</a></td>
+			<td>238,440</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>68</td>
+			<td><a href='buybacks.asp?i=31891'>Shanghai HeartCare Medical Technology Corporation Limited: H</a></td>
+			<td>166,050</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>69</td>
+			<td><a href='buybacks.asp?i=3349'>CHYY DEVELOPMENT GROUP LIMITED: O</a></td>
+			<td>159,752</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>70</td>
+			<td><a href='buybacks.asp?i=6834'>Billion Industrial Holdings Limited: O</a></td>
+			<td>81,100</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>71</td>
+			<td><a href='buybacks.asp?i=236'>ASIA ALLIED INFRASTRUCTURE HOLDINGS LIMITED: O</a></td>
+			<td>80,960</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>72</td>
+			<td><a href='buybacks.asp?i=377'>Tian An Medicare Limited (BM): O</a></td>
+			<td>72,750</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>73</td>
+			<td><a href='buybacks.asp?i=20632'>China Leon Inspection Holding Limited: O</a></td>
+			<td>64,560</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>74</td>
+			<td><a href='buybacks.asp?i=21376'>Altus Holdings Limited (KY): O</a></td>
+			<td>32,700</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>75</td>
+			<td><a href='buybacks.asp?i=7094'>Tenfu (Cayman) Holdings Company Limited: O</a></td>
+			<td>30,280</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>76</td>
+			<td><a href='buybacks.asp?i=14417'>Tsaker New Energy Tech Co., Limited: O</a></td>
+			<td>8,250</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>77</td>
+			<td><a href='buybacks.asp?i=5533'>MOBI Development Co., Ltd.: O</a></td>
+			<td>6,080</td>
+			<td>HKD</td>
+		</tr>
+		
+		<tr>
+			<td>78</td>
+			<td><a href='buybacks.asp?i=1047'>FOUR SEAS MERCANTILE HOLDINGS LIMITED: O</a></td>
+			<td>5,000</td>
+			<td>HKD</td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

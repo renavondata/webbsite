@@ -1,0 +1,4643 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Big CCASS changes on 2025-10-28</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Big CCASS changes on 2025-10-28</h2>
+
+	<ul class="navlist">
+		<li class='livebutton'>Big changes</li><li><a href='cconc.asp?d=2025-10-28'>Concentration</a></li><li><a href='cparticipants.asp'>Named participants</a></li><li><a href='ipstakes.asp?d=2025-10-28'>Investor participants</a></li><li><a href='CCASSnotes.asp'>About CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<form method="get" action="bigchanges.asp">
+	<input type="hidden" name="sort" value="chgdn">
+	<div class="inputs">
+		<input type="date" name="d" id="d" value="2025-10-28" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type='checkbox' name='etf' id='etf' value='1' onchange='this.form.submit()'> include ETFs
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="Clear" onclick="document.getElementById('d').value='';document.getElementById('etf').checked=false;">
+	</div>
+	<div class="clear"></div>
+</form>
+<p>This table shows movements greater than 0.25% of outstanding shares.</p>
+<p class='widthAlert2'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide1">Row</th>
+		<th class="colHide3"><a href='/ccass/bigchanges.asp?d=2025-10-28&amp;sort=scup'><b>Stock<br>code</b></a></th>
+		<th class="left"><a href='/ccass/bigchanges.asp?d=2025-10-28&amp;sort=nameup'><b>Issue</b></a></th>
+		<th class="left"><a href='/ccass/bigchanges.asp?d=2025-10-28&amp;sort=partup'><b>Participant</b></a></th>
+		<th><a href='/ccass/bigchanges.asp?d=2025-10-28&amp;sort=chgup'><b>Change</b></a></th>
+		<th class="colHide2">Previous<br>change</th>
+	</tr>
+	
+		<tr>
+			<td class="colHide1">1</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=1684">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>83.01</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">2</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=1684">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>61.82</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">3</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>30.61</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">4</td>
+			<td class="colHide3">0776</td>
+			<td class="left"><a href="chldchg.asp?i=4654&amp;d=2025-10-28">Imperium Technology Group Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=4654&part=357">FORTUNE (HK) SECURITIES LTD</a></td>
+			<td>20.00</td>
+			<td class="colHide2 nowrap">21-11-04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">5</td>
+			<td class="colHide3">2330</td>
+			<td class="left"><a href="chldchg.asp?i=2919&amp;d=2025-10-28">China Uptown Group Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2919&part=1618">SILVERBRICKS SECURITIES CO LTD</a></td>
+			<td>20.00</td>
+			<td class="colHide2 nowrap">25-04-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">6</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>16.15</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">7</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>15.43</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">8</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>12.49</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">9</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=458">DBS BANK LTD</a></td>
+			<td>10.23</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">10</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>9.01</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">11</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>8.46</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">12</td>
+			<td class="colHide3">2562</td>
+			<td class="left"><a href="chldchg.asp?i=33357&amp;d=2025-10-28">Synagistics Limited (KY):A</a></td>
+			<td class="left"><a href="chistory.asp?i=33357&part=218">LUK FOOK SECURITIES (HK) LTD</a></td>
+			<td>7.64</td>
+			<td class="colHide2 nowrap">25-10-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">13</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1077">BNP PARIBAS</a></td>
+			<td>7.11</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">14</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1551">STAR RIVER SECURITIES LTD</a></td>
+			<td>7.08</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">15</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>6.87</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">16</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=20">CLSA LTD</a></td>
+			<td>6.46</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">17</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>6.37</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">18</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=454">CITIBANK N.A.</a></td>
+			<td>6.21</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">19</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>5.59</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">20</td>
+			<td class="colHide3">6117</td>
+			<td class="left"><a href="chldchg.asp?i=28065&amp;d=2025-10-28">RIZHAO PORT JURONG CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28065&part=17">BOCI SECURITIES LTD</a></td>
+			<td>5.37</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">21</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1421">VISION CAPITAL INTERNATIONAL HOLDINGS</a></td>
+			<td>5.06</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">22</td>
+			<td class="colHide3">1142</td>
+			<td class="left"><a href="chldchg.asp?i=3255&amp;d=2025-10-28">E&P Global Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3255&part=236">KINGSWAY FINANCIAL SERVICES GROUP LTD</a></td>
+			<td>5.04</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">23</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>4.49</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">24</td>
+			<td class="colHide3">3448</td>
+			<td class="left"><a href="chldchg.asp?i=36424&amp;d=2025-10-28">Global X China Core TECH ETF:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36424&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>4.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">25</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>4.28</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">26</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=1077">BNP PARIBAS</a></td>
+			<td>4.22</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">27</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=467">INDUSTRIAL AND COMMERCIAL BANK OF CHINA</a></td>
+			<td>4.08</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">28</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=50">CITIC SECURITIES BROKERAGE (HK) LTD</a></td>
+			<td>4.07</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">29</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=223">GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+			<td>4.04</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">30</td>
+			<td class="colHide3">1265</td>
+			<td class="left"><a href="chldchg.asp?i=3461&amp;d=2025-10-28">Tianjin Jinran Public Utilities Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3461&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>3.90</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">31</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>3.73</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">32</td>
+			<td class="colHide3">0083</td>
+			<td class="left"><a href="chldchg.asp?i=39&amp;d=2025-10-28">SINO LAND COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=39&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>3.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">33</td>
+			<td class="colHide3">0970</td>
+			<td class="left"><a href="chldchg.asp?i=1055&amp;d=2025-10-28">New Sparkle Roll International Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1055&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>3.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">34</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>3.13</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">35</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=1533">YELLOW RIVER SECURITIES LTD</a></td>
+			<td>3.08</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">36</td>
+			<td class="colHide3">8487</td>
+			<td class="left"><a href="chldchg.asp?i=25823&amp;d=2025-10-28">ISP Global Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25823&part=1495">RUIBANG SECURITIES LTD</a></td>
+			<td>3.06</td>
+			<td class="colHide2 nowrap">25-08-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">37</td>
+			<td class="colHide3">1865</td>
+			<td class="left"><a href="chldchg.asp?i=27787&amp;d=2025-10-28">Pengo Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27787&part=1491">SUNHIGH FINANCIAL HOLDINGS LTD</a></td>
+			<td>2.74</td>
+			<td class="colHide2 nowrap">25-10-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">38</td>
+			<td class="colHide3">2536</td>
+			<td class="left"><a href="chldchg.asp?i=35082&amp;d=2025-10-28">Palasino Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35082&part=1091">GUOSEN SECURITIES (HK) BROKERAGE CO LTD</a></td>
+			<td>2.62</td>
+			<td class="colHide2 nowrap">25-03-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">39</td>
+			<td class="colHide3">6968</td>
+			<td class="left"><a href="chldchg.asp?i=29427&amp;d=2025-10-28">Ganglong China Property Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29427&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>2.47</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">40</td>
+			<td class="colHide3">3788</td>
+			<td class="left"><a href="chldchg.asp?i=7104&amp;d=2025-10-28">China Hanking Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7104&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>2.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">41</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=91">WATON SECURITIES INTERNATIONAL LIMITED</a></td>
+			<td>2.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">42</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=454">CITIBANK N.A.</a></td>
+			<td>2.38</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">43</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=1735">TRADEGO MARKETS LIMITED</a></td>
+			<td>2.22</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">44</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=467">INDUSTRIAL AND COMMERCIAL BANK OF CHINA</a></td>
+			<td>2.20</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">45</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>2.15</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">46</td>
+			<td class="colHide3">6128</td>
+			<td class="left"><a href="chldchg.asp?i=12405&amp;d=2025-10-28">Graphex Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=12405&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>2.12</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">47</td>
+			<td class="colHide3">2571</td>
+			<td class="left"><a href="chldchg.asp?i=36076&amp;d=2025-10-28">Beijing Saimo Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36076&part=1256">ZHONGTAI INTERNATIONAL SECURITIES LTD</a></td>
+			<td>2.12</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">48</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>2.10</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">49</td>
+			<td class="colHide3">8178</td>
+			<td class="left"><a href="chldchg.asp?i=3095&amp;d=2025-10-28">China Information Technology Development Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3095&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>2.09</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">50</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=103">PHILLIP SECURITIES (HONG KONG) LTD</a></td>
+			<td>2.02</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">51</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>2.02</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">52</td>
+			<td class="colHide3">2418</td>
+			<td class="left"><a href="chldchg.asp?i=33257&amp;d=2025-10-28">DEEWIN TIANXIA CO., LTD:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33257&part=98">EMPEROR SECURITIES LTD</a></td>
+			<td>2.01</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">53</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>1.99</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">54</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=16">WOCOM SECURITIES LTD</a></td>
+			<td>1.94</td>
+			<td class="colHide2 nowrap">15-01-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">55</td>
+			<td class="colHide3">1751</td>
+			<td class="left"><a href="chldchg.asp?i=22091&amp;d=2025-10-28">Kingland Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=22091&part=287">GRANSING SECURITIES CO., LIMITED</a></td>
+			<td>1.82</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">56</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=103">PHILLIP SECURITIES (HONG KONG) LTD</a></td>
+			<td>1.80</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">57</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=222">ABCI SECURITIES CO LTD</a></td>
+			<td>1.76</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">58</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=20">CLSA LTD</a></td>
+			<td>1.71</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">59</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=239">CHIEF SECURITIES LTD</a></td>
+			<td>1.70</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">60</td>
+			<td class="colHide3">3410</td>
+			<td class="left"><a href="chldchg.asp?i=35443&amp;d=2025-10-28">Hang Seng Japan TOPIX 100 Index ETF:Unit</a></td>
+			<td class="left"><a href="chistory.asp?i=35443&part=1077">BNP PARIBAS</a></td>
+			<td>1.69</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">61</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=447">CMBC SECURITIES CO LTD</a></td>
+			<td>1.69</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">62</td>
+			<td class="colHide3">1703</td>
+			<td class="left"><a href="chldchg.asp?i=27521&amp;d=2025-10-28">Welife Technology Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=27521&part=76">HANG SENG SECURITIES LTD</a></td>
+			<td>1.52</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">63</td>
+			<td class="colHide3">2422</td>
+			<td class="left"><a href="chldchg.asp?i=33516&amp;d=2025-10-28">Rego Interactive Co., Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33516&part=1230">CAITONG INTERNATIONAL SECURITIES CO LTD</a></td>
+			<td>1.51</td>
+			<td class="colHide2 nowrap">25-10-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">64</td>
+			<td class="colHide3">1459</td>
+			<td class="left"><a href="chldchg.asp?i=18471&amp;d=2025-10-28">JUJIANG CONSTRUCTION GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18471&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>1.50</td>
+			<td class="colHide2 nowrap">25-08-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">65</td>
+			<td class="colHide3">1351</td>
+			<td class="left"><a href="chldchg.asp?i=29902&amp;d=2025-10-28">Bright Future Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29902&part=295">FUZE SECURITIES (INTERNATIONAL) LTD</a></td>
+			<td>1.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">66</td>
+			<td class="colHide3">1679</td>
+			<td class="left"><a href="chldchg.asp?i=24951&amp;d=2025-10-28">RISECOMM GROUP HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=24951&part=1491">SUNHIGH FINANCIAL HOLDINGS LTD</a></td>
+			<td>1.39</td>
+			<td class="colHide2 nowrap">23-06-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">67</td>
+			<td class="colHide3">8187</td>
+			<td class="left"><a href="chldchg.asp?i=20189&amp;d=2025-10-28">Jimu Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=20189&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>1.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">68</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=1686">SPDB INTERNATIONAL SECURITIES LTD</a></td>
+			<td>1.32</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">69</td>
+			<td class="colHide3">8153</td>
+			<td class="left"><a href="chldchg.asp?i=2928&amp;d=2025-10-28">Jiading International Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2928&part=414">CHEONG LEE SECURITIES LTD</a></td>
+			<td>1.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">70</td>
+			<td class="colHide3">3919</td>
+			<td class="left"><a href="chldchg.asp?i=14130&amp;d=2025-10-28">Golden Power Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=14130&part=543">WESTOCK SECURITIES INTERNATIONAL (HK)</a></td>
+			<td>1.22</td>
+			<td class="colHide2 nowrap">17-05-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">71</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=1609">LIVERMORE HOLDINGS LTD</a></td>
+			<td>1.22</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">72</td>
+			<td class="colHide3">8612</td>
+			<td class="left"><a href="chldchg.asp?i=28152&amp;d=2025-10-28">World Super Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28152&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>1.22</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">73</td>
+			<td class="colHide3">2450</td>
+			<td class="left"><a href="chldchg.asp?i=33988&amp;d=2025-10-28">Huaibei GreenGold Industry Investment Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33988&part=1114">VALUABLE CAPITAL LTD</a></td>
+			<td>1.19</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">74</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>1.19</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">75</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>1.16</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">76</td>
+			<td class="colHide3">1119</td>
+			<td class="left"><a href="chldchg.asp?i=27331&amp;d=2025-10-28">iDreamSky Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27331&part=1114">VALUABLE CAPITAL LTD</a></td>
+			<td>1.14</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">77</td>
+			<td class="colHide3">0357</td>
+			<td class="left"><a href="chldchg.asp?i=3287&amp;d=2025-10-28">Hainan Meilan International Airport Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3287&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>1.11</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">78</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>1.11</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">79</td>
+			<td class="colHide3">1769</td>
+			<td class="left"><a href="chldchg.asp?i=28126&amp;d=2025-10-28">Scholar Education Group:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28126&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>1.07</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">80</td>
+			<td class="colHide3">6918</td>
+			<td class="left"><a href="chldchg.asp?i=29059&amp;d=2025-10-28">Kidztech Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29059&part=1556">I WIN SECURITIES LTD</a></td>
+			<td>1.06</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">81</td>
+			<td class="colHide3">0815</td>
+			<td class="left"><a href="chldchg.asp?i=10285&amp;d=2025-10-28">China Silver Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=10285&part=454">CITIBANK N.A.</a></td>
+			<td>1.06</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">82</td>
+			<td class="colHide3">1263</td>
+			<td class="left"><a href="chldchg.asp?i=7296&amp;d=2025-10-28">PC Partner Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7296&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>1.06</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">83</td>
+			<td class="colHide3">2012</td>
+			<td class="left"><a href="chldchg.asp?i=8859&amp;d=2025-10-28">SUNSHINE OILSANDS LTD.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=8859&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>1.05</td>
+			<td class="colHide2 nowrap">25-09-18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">84</td>
+			<td class="colHide3">1872</td>
+			<td class="left"><a href="chldchg.asp?i=27655&amp;d=2025-10-28">Guan Chao Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27655&part=91">WATON SECURITIES INTERNATIONAL LIMITED</a></td>
+			<td>1.01</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">85</td>
+			<td class="colHide3">1676</td>
+			<td class="left"><a href="chldchg.asp?i=25096&amp;d=2025-10-28">Gaodi Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=25096&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.98</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">86</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=140">PRUDENTIAL BROKERAGE LTD</a></td>
+			<td>0.97</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">87</td>
+			<td class="colHide3">2505</td>
+			<td class="left"><a href="chldchg.asp?i=35238&amp;d=2025-10-28">EDA Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35238&part=1498">FUNDE SECURITIES LTD</a></td>
+			<td>0.97</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">88</td>
+			<td class="colHide3">2068</td>
+			<td class="left"><a href="chldchg.asp?i=9601&amp;d=2025-10-28">China Aluminum International Engineering Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=9601&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.95</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">89</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=223">GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+			<td>0.95</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">90</td>
+			<td class="colHide3">6693</td>
+			<td class="left"><a href="chldchg.asp?i=36150&amp;d=2025-10-28">Chifeng Jilong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36150&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.92</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">91</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=1512">INDUSTRIAL BANK CO., LTD.</a></td>
+			<td>0.91</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">92</td>
+			<td class="colHide3">2575</td>
+			<td class="left"><a href="chldchg.asp?i=36615&amp;d=2025-10-28">Xuanzhu Biopharmaceutical Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36615&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>0.90</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">93</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=464">CHINA CONSTRUCTION BANK (ASIA)</a></td>
+			<td>0.90</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">94</td>
+			<td class="colHide3">9696</td>
+			<td class="left"><a href="chldchg.asp?i=33255&amp;d=2025-10-28">Tianqi Lithium Corporation:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33255&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.84</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">95</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=50">CITIC SECURITIES BROKERAGE (HK) LTD</a></td>
+			<td>0.84</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">96</td>
+			<td class="colHide3">2503</td>
+			<td class="left"><a href="chldchg.asp?i=34915&amp;d=2025-10-28">Zhongshen Jianye Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34915&part=454">CITIBANK N.A.</a></td>
+			<td>0.82</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">97</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=486">CHINA MERCHANTS BANK CO LTD</a></td>
+			<td>0.81</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">98</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.80</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">99</td>
+			<td class="colHide3">0895</td>
+			<td class="left"><a href="chldchg.asp?i=3397&amp;d=2025-10-28">Dongjiang Environmental Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3397&part=454">CITIBANK N.A.</a></td>
+			<td>0.78</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">100</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=357">FORTUNE (HK) SECURITIES LTD</a></td>
+			<td>0.78</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">101</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.75</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">102</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.74</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">103</td>
+			<td class="colHide3">6886</td>
+			<td class="left"><a href="chldchg.asp?i=11014&amp;d=2025-10-28">Huatai Securities Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=11014&part=454">CITIBANK N.A.</a></td>
+			<td>0.74</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">104</td>
+			<td class="colHide3">2068</td>
+			<td class="left"><a href="chldchg.asp?i=9601&amp;d=2025-10-28">China Aluminum International Engineering Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=9601&part=454">CITIBANK N.A.</a></td>
+			<td>0.74</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">105</td>
+			<td class="colHide3">0230</td>
+			<td class="left"><a href="chldchg.asp?i=1174&amp;d=2025-10-28">Minmetals Land Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1174&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>0.73</td>
+			<td class="colHide2 nowrap">25-10-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">106</td>
+			<td class="colHide3">8385</td>
+			<td class="left"><a href="chldchg.asp?i=25498&amp;d=2025-10-28">PROSPEROUS PRINTING COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25498&part=486">CHINA MERCHANTS BANK CO LTD</a></td>
+			<td>0.73</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">107</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=464">CHINA CONSTRUCTION BANK (ASIA)</a></td>
+			<td>0.71</td>
+			<td class="colHide2 nowrap">25-04-25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">108</td>
+			<td class="colHide3">1128</td>
+			<td class="left"><a href="chldchg.asp?i=5265&amp;d=2025-10-28">Wynn Macau, Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5265&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.70</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">109</td>
+			<td class="colHide3">0187</td>
+			<td class="left"><a href="chldchg.asp?i=960&amp;d=2025-10-28">Beijing Jingcheng Machinery Electric Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=960&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.70</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">110</td>
+			<td class="colHide3">2600</td>
+			<td class="left"><a href="chldchg.asp?i=3097&amp;d=2025-10-28">ALUMINUM CORPORATION OF CHINA LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3097&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.69</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">111</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.69</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">112</td>
+			<td class="colHide3">6613</td>
+			<td class="left"><a href="chldchg.asp?i=36422&amp;d=2025-10-28">Lens Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36422&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.69</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">113</td>
+			<td class="colHide3">6831</td>
+			<td class="left"><a href="chldchg.asp?i=36304&amp;d=2025-10-28">Green Tea Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36304&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.67</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">114</td>
+			<td class="colHide3">1676</td>
+			<td class="left"><a href="chldchg.asp?i=25096&amp;d=2025-10-28">Gaodi Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=25096&part=255">KGI ASIA LTD</a></td>
+			<td>0.67</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">115</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1637">TIGER BROKERS (HK) GLOBAL LTD</a></td>
+			<td>0.65</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">116</td>
+			<td class="colHide3">8178</td>
+			<td class="left"><a href="chldchg.asp?i=3095&amp;d=2025-10-28">China Information Technology Development Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3095&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.65</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">117</td>
+			<td class="colHide3">3638</td>
+			<td class="left"><a href="chldchg.asp?i=11149&amp;d=2025-10-28">Hunlicar Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11149&part=292">GLORY SUN SECURITIES LTD</a></td>
+			<td>0.65</td>
+			<td class="colHide2 nowrap">25-10-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">118</td>
+			<td class="colHide3">6603</td>
+			<td class="left"><a href="chldchg.asp?i=36404&amp;d=2025-10-28">IFBH Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36404&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>0.64</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">119</td>
+			<td class="colHide3">0819</td>
+			<td class="left"><a href="chldchg.asp?i=4869&amp;d=2025-10-28">Tianneng Power International Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4869&part=454">CITIBANK N.A.</a></td>
+			<td>0.63</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">120</td>
+			<td class="colHide3">3800</td>
+			<td class="left"><a href="chldchg.asp?i=4927&amp;d=2025-10-28">GCL Technology Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=4927&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.63</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">121</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.63</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">122</td>
+			<td class="colHide3">9959</td>
+			<td class="left"><a href="chldchg.asp?i=30842&amp;d=2025-10-28">Linklogis Inc.:B</a></td>
+			<td class="left"><a href="chistory.asp?i=30842&part=454">CITIBANK N.A.</a></td>
+			<td>0.62</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">123</td>
+			<td class="colHide3">9636</td>
+			<td class="left"><a href="chldchg.asp?i=34088&amp;d=2025-10-28">JF SmartInvest Holdings Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34088&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">124</td>
+			<td class="colHide3">1093</td>
+			<td class="left"><a href="chldchg.asp?i=994&amp;d=2025-10-28">CSPC PHARMACEUTICAL GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=994&part=454">CITIBANK N.A.</a></td>
+			<td>0.59</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">125</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.59</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">126</td>
+			<td class="colHide3">2533</td>
+			<td class="left"><a href="chldchg.asp?i=35512&amp;d=2025-10-28">Black Sesame International Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35512&part=454">CITIBANK N.A.</a></td>
+			<td>0.59</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">127</td>
+			<td class="colHide3">9997</td>
+			<td class="left"><a href="chldchg.asp?i=29350&amp;d=2025-10-28">Kangji Medical Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29350&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>0.58</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">128</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>0.58</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">129</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=1637">TIGER BROKERS (HK) GLOBAL LTD</a></td>
+			<td>0.57</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">130</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=140">PRUDENTIAL BROKERAGE LTD</a></td>
+			<td>0.57</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">131</td>
+			<td class="colHide3">9956</td>
+			<td class="left"><a href="chldchg.asp?i=32480&amp;d=2025-10-28">ANE (CAYMAN) INC.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=32480&part=454">CITIBANK N.A.</a></td>
+			<td>0.57</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">132</td>
+			<td class="colHide3">9606</td>
+			<td class="left"><a href="chldchg.asp?i=36278&amp;d=2025-10-28">Duality Biotherapeutics, Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36278&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.57</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">133</td>
+			<td class="colHide3">2050</td>
+			<td class="left"><a href="chldchg.asp?i=36394&amp;d=2025-10-28">ZHEJIANG SANHUA INTELLIGENT CONTROLS CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36394&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.57</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">134</td>
+			<td class="colHide3">1622</td>
+			<td class="left"><a href="chldchg.asp?i=11743&amp;d=2025-10-28">Redco Properties Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11743&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>0.56</td>
+			<td class="colHide2 nowrap">25-10-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">135</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1512">INDUSTRIAL BANK CO., LTD.</a></td>
+			<td>0.56</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">136</td>
+			<td class="colHide3">2478</td>
+			<td class="left"><a href="chldchg.asp?i=35882&amp;d=2025-10-28">APAC Resources Limited:Wrnt</a></td>
+			<td class="left"><a href="chistory.asp?i=35882&part=140">PRUDENTIAL BROKERAGE LTD</a></td>
+			<td>0.56</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">137</td>
+			<td class="colHide3">0464</td>
+			<td class="left"><a href="chldchg.asp?i=4592&amp;d=2025-10-28">China In-Tech Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4592&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">138</td>
+			<td class="colHide3">2552</td>
+			<td class="left"><a href="chldchg.asp?i=26813&amp;d=2025-10-28">Hua Medicine:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26813&part=454">CITIBANK N.A.</a></td>
+			<td>0.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">139</td>
+			<td class="colHide3">0856</td>
+			<td class="left"><a href="chldchg.asp?i=3148&amp;d=2025-10-28">VSTECS Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3148&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.53</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">140</td>
+			<td class="colHide3">1385</td>
+			<td class="left"><a href="chldchg.asp?i=2632&amp;d=2025-10-28">Shanghai Fudan Microelectronics Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=2632&part=1077">BNP PARIBAS</a></td>
+			<td>0.53</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">141</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.53</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">142</td>
+			<td class="colHide3">1052</td>
+			<td class="left"><a href="chldchg.asp?i=1076&amp;d=2025-10-28">Yuexiu Transport Infrastructure Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1076&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.53</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">143</td>
+			<td class="colHide3">0763</td>
+			<td class="left"><a href="chldchg.asp?i=4542&amp;d=2025-10-28">ZTE CORPORATION:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4542&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.52</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">144</td>
+			<td class="colHide3">1276</td>
+			<td class="left"><a href="chldchg.asp?i=36311&amp;d=2025-10-28">Jiangsu Hengrui Pharmaceuticals Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36311&part=454">CITIBANK N.A.</a></td>
+			<td>0.52</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">145</td>
+			<td class="colHide3">0909</td>
+			<td class="left"><a href="chldchg.asp?i=29720&amp;d=2025-10-28">Ming Yuan Cloud Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29720&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>0.52</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">146</td>
+			<td class="colHide3">6821</td>
+			<td class="left"><a href="chldchg.asp?i=32584&amp;d=2025-10-28">Asymchem Laboratories (Tianjin) Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32584&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>0.52</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">147</td>
+			<td class="colHide3">9881</td>
+			<td class="left"><a href="chldchg.asp?i=36371&amp;d=2025-10-28">Rongta Technology (Xiamen) Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36371&part=292">GLORY SUN SECURITIES LTD</a></td>
+			<td>0.51</td>
+			<td class="colHide2 nowrap">25-06-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">148</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">149</td>
+			<td class="colHide3">2359</td>
+			<td class="left"><a href="chldchg.asp?i=27349&amp;d=2025-10-28">WuXi AppTec Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=27349&part=454">CITIBANK N.A.</a></td>
+			<td>0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">150</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>0.50</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">151</td>
+			<td class="colHide3">1783</td>
+			<td class="left"><a href="chldchg.asp?i=26747&amp;d=2025-10-28">Envision Greenwise Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26747&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.50</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">152</td>
+			<td class="colHide3">2162</td>
+			<td class="left"><a href="chldchg.asp?i=31489&amp;d=2025-10-28">Keymed Biosciences Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=31489&part=454">CITIBANK N.A.</a></td>
+			<td>0.50</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">153</td>
+			<td class="colHide3">9666</td>
+			<td class="left"><a href="chldchg.asp?i=29992&amp;d=2025-10-28">Jinke Smart Services Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29992&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.49</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">154</td>
+			<td class="colHide3">1635</td>
+			<td class="left"><a href="chldchg.asp?i=14121&amp;d=2025-10-28">Shanghai Dazhong Public Utilities (Group) Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=14121&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.49</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">155</td>
+			<td class="colHide3">1396</td>
+			<td class="left"><a href="chldchg.asp?i=11424&amp;d=2025-10-28">Guangdong - Hong Kong Greater Bay Area Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11424&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>0.48</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">156</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=454">CITIBANK N.A.</a></td>
+			<td>0.48</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">157</td>
+			<td class="colHide3">0884</td>
+			<td class="left"><a href="chldchg.asp?i=10109&amp;d=2025-10-28">CIFI Holdings (Group) Co. Ltd.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=10109&part=1184">CHINA GALAXY INTERNATIONAL SECURITIES</a></td>
+			<td>0.48</td>
+			<td class="colHide2 nowrap">25-08-05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">158</td>
+			<td class="colHide3">9995</td>
+			<td class="left"><a href="chldchg.asp?i=29907&amp;d=2025-10-28">RemeGen Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29907&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.48</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">159</td>
+			<td class="colHide3">1065</td>
+			<td class="left"><a href="chldchg.asp?i=1278&amp;d=2025-10-28">Tianjin Capital Environmental Protection Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1278&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.47</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">160</td>
+			<td class="colHide3">1931</td>
+			<td class="left"><a href="chldchg.asp?i=28208&amp;d=2025-10-28">IVD Medical Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28208&part=1556">I WIN SECURITIES LTD</a></td>
+			<td>0.46</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">161</td>
+			<td class="colHide3">1709</td>
+			<td class="left"><a href="chldchg.asp?i=16095&amp;d=2025-10-28">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=16095&part=50">CITIC SECURITIES BROKERAGE (HK) LTD</a></td>
+			<td>0.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">162</td>
+			<td class="colHide3">2068</td>
+			<td class="left"><a href="chldchg.asp?i=9601&amp;d=2025-10-28">China Aluminum International Engineering Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=9601&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>0.45</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">163</td>
+			<td class="colHide3">2696</td>
+			<td class="left"><a href="chldchg.asp?i=28366&amp;d=2025-10-28">Shanghai Henlius Biotech, Inc.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28366&part=454">CITIBANK N.A.</a></td>
+			<td>0.45</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">164</td>
+			<td class="colHide3">1126</td>
+			<td class="left"><a href="chldchg.asp?i=3100&amp;d=2025-10-28">DREAM INTERNATIONAL LIMITED (HK):O</a></td>
+			<td class="left"><a href="chistory.asp?i=3100&part=454">CITIBANK N.A.</a></td>
+			<td>0.44</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">165</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.44</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">166</td>
+			<td class="colHide3">0328</td>
+			<td class="left"><a href="chldchg.asp?i=940&amp;d=2025-10-28">ALCO HOLDINGS LIMITED (BM):O</a></td>
+			<td class="left"><a href="chistory.asp?i=940&part=315">REALINK FINANCIAL TRADE LTD</a></td>
+			<td>0.44</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">167</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">168</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=1679">ZHESHANG INTERNATIONAL FINANCIAL</a></td>
+			<td>0.43</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">169</td>
+			<td class="colHide3">9986</td>
+			<td class="left"><a href="chldchg.asp?i=29439&amp;d=2025-10-28">Dashan Education Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=29439&part=1470">MONMONKEY GROUP SECURITIES LTD</a></td>
+			<td>0.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">170</td>
+			<td class="colHide3">2668</td>
+			<td class="left"><a href="chldchg.asp?i=2996&amp;d=2025-10-28">PAK TAK INTERNATIONAL LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2996&part=292">GLORY SUN SECURITIES LTD</a></td>
+			<td>0.42</td>
+			<td class="colHide2 nowrap">25-10-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">171</td>
+			<td class="colHide3">0917</td>
+			<td class="left"><a href="chldchg.asp?i=35236&amp;d=2025-10-28">Qunabox Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35236&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">172</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=1248">FUBON SECURITIES (HONG KONG) LTD</a></td>
+			<td>0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">173</td>
+			<td class="colHide3">2631</td>
+			<td class="left"><a href="chldchg.asp?i=36518&amp;d=2025-10-28">SICC Co., Ltd:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36518&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">174</td>
+			<td class="colHide3">6936</td>
+			<td class="left"><a href="chldchg.asp?i=35950&amp;d=2025-10-28">S.F. Holding Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=35950&part=1077">BNP PARIBAS</a></td>
+			<td>0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">175</td>
+			<td class="colHide3">2402</td>
+			<td class="left"><a href="chldchg.asp?i=33972&amp;d=2025-10-28">Beijing SinoHytec Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33972&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">176</td>
+			<td class="colHide3">0834</td>
+			<td class="left"><a href="chldchg.asp?i=5054&amp;d=2025-10-28">China Kangda Food Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5054&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.40</td>
+			<td class="colHide2 nowrap">25-07-31</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">177</td>
+			<td class="colHide3">2688</td>
+			<td class="left"><a href="chldchg.asp?i=2975&amp;d=2025-10-28">ENN Energy Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2975&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">178</td>
+			<td class="colHide3">2147</td>
+			<td class="left"><a href="chldchg.asp?i=33995&amp;d=2025-10-28">Zhengwei Group Holdings Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33995&part=239">CHIEF SECURITIES LTD</a></td>
+			<td>0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">179</td>
+			<td class="colHide3">6936</td>
+			<td class="left"><a href="chldchg.asp?i=35950&amp;d=2025-10-28">S.F. Holding Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=35950&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">180</td>
+			<td class="colHide3">0450</td>
+			<td class="left"><a href="chldchg.asp?i=427&amp;d=2025-10-28">HUNG HING PRINTING GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=427&part=103">PHILLIP SECURITIES (HONG KONG) LTD</a></td>
+			<td>0.39</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">181</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>0.39</td>
+			<td class="colHide2 nowrap">24-10-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">182</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">183</td>
+			<td class="colHide3">1787</td>
+			<td class="left"><a href="chldchg.asp?i=26868&amp;d=2025-10-28">Shandong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=26868&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">184</td>
+			<td class="colHide3">0310</td>
+			<td class="left"><a href="chldchg.asp?i=233&amp;d=2025-10-28">Prosperity Investment Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=233&part=1388">SUNCORP SECURITIES LTD</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">185</td>
+			<td class="colHide3">1167</td>
+			<td class="left"><a href="chldchg.asp?i=30247&amp;d=2025-10-28">JACOBIO PHARMACEUTICALS GROUP CO., LTD.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=30247&part=454">CITIBANK N.A.</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">186</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=76">HANG SENG SECURITIES LTD</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">187</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">188</td>
+			<td class="colHide3">1757</td>
+			<td class="left"><a href="chldchg.asp?i=26488&amp;d=2025-10-28">Affluent Foundation Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26488&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">189</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">190</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.38</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">191</td>
+			<td class="colHide3">8178</td>
+			<td class="left"><a href="chldchg.asp?i=3095&amp;d=2025-10-28">China Information Technology Development Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3095&part=1449">FORTHRIGHT SECURITIES CO LTD</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">192</td>
+			<td class="colHide3">0673</td>
+			<td class="left"><a href="chldchg.asp?i=1085&amp;d=2025-10-28">China Health Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1085&part=887">GREAT BAY SECURITIES LTD</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">193</td>
+			<td class="colHide3">8219</td>
+			<td class="left"><a href="chldchg.asp?i=26669&amp;d=2025-10-28">HANVEY GROUP HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26669&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">194</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">195</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">196</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>0.37</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">197</td>
+			<td class="colHide3">1429</td>
+			<td class="left"><a href="chldchg.asp?i=29721&amp;d=2025-10-28">Skymission Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29721&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.36</td>
+			<td class="colHide2 nowrap">25-10-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">198</td>
+			<td class="colHide3">2571</td>
+			<td class="left"><a href="chldchg.asp?i=36076&amp;d=2025-10-28">Beijing Saimo Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36076&part=17">BOCI SECURITIES LTD</a></td>
+			<td>0.36</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">199</td>
+			<td class="colHide3">9922</td>
+			<td class="left"><a href="chldchg.asp?i=28822&amp;d=2025-10-28">Jiumaojiu International Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28822&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.36</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">200</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=307">FIRST SHANGHAI SECURITIES LTD</a></td>
+			<td>0.36</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">201</td>
+			<td class="colHide3">0241</td>
+			<td class="left"><a href="chldchg.asp?i=1237&amp;d=2025-10-28">Alibaba Health Information Technology Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1237&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">202</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">203</td>
+			<td class="colHide3">8153</td>
+			<td class="left"><a href="chldchg.asp?i=2928&amp;d=2025-10-28">Jiading International Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2928&part=1120">IMPERIUM INTERNATIONAL SECURITIES LTD</a></td>
+			<td>0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">204</td>
+			<td class="colHide3">3677</td>
+			<td class="left"><a href="chldchg.asp?i=36277&amp;d=2025-10-28">Jiangsu Zenergy Battery Technologies Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36277&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">205</td>
+			<td class="colHide3">0763</td>
+			<td class="left"><a href="chldchg.asp?i=4542&amp;d=2025-10-28">ZTE CORPORATION:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4542&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">206</td>
+			<td class="colHide3">1239</td>
+			<td class="left"><a href="chldchg.asp?i=7173&amp;d=2025-10-28">Teamway International Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7173&part=1385">GARY CHENG SECURITIES LTD</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">207</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">208</td>
+			<td class="colHide3">9900</td>
+			<td class="left"><a href="chldchg.asp?i=25925&amp;d=2025-10-28">HONG KONG ZCLOUD TECHNOLOGY CONSTRUCTION LIMITED (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=25925&part=1509">FORTUNE ORIGIN SECURITIES LTD</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">209</td>
+			<td class="colHide3">2696</td>
+			<td class="left"><a href="chldchg.asp?i=28366&amp;d=2025-10-28">Shanghai Henlius Biotech, Inc.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28366&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">210</td>
+			<td class="colHide3">1072</td>
+			<td class="left"><a href="chldchg.asp?i=1031&amp;d=2025-10-28">Dongfang Electric Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1031&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">211</td>
+			<td class="colHide3">1053</td>
+			<td class="left"><a href="chldchg.asp?i=1001&amp;d=2025-10-28">Chongqing Iron & Steel Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1001&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">212</td>
+			<td class="colHide3">1919</td>
+			<td class="left"><a href="chldchg.asp?i=4601&amp;d=2025-10-28">COSCO SHIPPING Holdings Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4601&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">213</td>
+			<td class="colHide3">1385</td>
+			<td class="left"><a href="chldchg.asp?i=2632&amp;d=2025-10-28">Shanghai Fudan Microelectronics Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=2632&part=22">HAITONG INTERNATIONAL SECURITIES CO LTD</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">214</td>
+			<td class="colHide3">2550</td>
+			<td class="left"><a href="chldchg.asp?i=35304&amp;d=2025-10-28">Easou Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35304&part=17">BOCI SECURITIES LTD</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">215</td>
+			<td class="colHide3">3958</td>
+			<td class="left"><a href="chldchg.asp?i=20556&amp;d=2025-10-28">Orient Securities Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=20556&part=454">CITIBANK N.A.</a></td>
+			<td>0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">216</td>
+			<td class="colHide3">0038</td>
+			<td class="left"><a href="chldchg.asp?i=1043&amp;d=2025-10-28">FIRST TRACTOR COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1043&part=454">CITIBANK N.A.</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">217</td>
+			<td class="colHide3">3678</td>
+			<td class="left"><a href="chldchg.asp?i=18109&amp;d=2025-10-28">Soho Holly Futures Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18109&part=454">CITIBANK N.A.</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">218</td>
+			<td class="colHide3">1384</td>
+			<td class="left"><a href="chldchg.asp?i=36645&amp;d=2025-10-28">Deepexi Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36645&part=1396">SEAZEN RESOURCES SECURITIES LTD</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">219</td>
+			<td class="colHide3">0723</td>
+			<td class="left"><a href="chldchg.asp?i=944&amp;d=2025-10-28">Reliance Global Holdings Limited (BM):O</a></td>
+			<td class="left"><a href="chistory.asp?i=944&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">220</td>
+			<td class="colHide3">3759</td>
+			<td class="left"><a href="chldchg.asp?i=28673&amp;d=2025-10-28">Pharmaron Beijing Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28673&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">221</td>
+			<td class="colHide3">2256</td>
+			<td class="left"><a href="chldchg.asp?i=32393&amp;d=2025-10-28">Abbisko Cayman Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=32393&part=454">CITIBANK N.A.</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">222</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=1655">USMART SECURITIES LTD</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">223</td>
+			<td class="colHide3">0358</td>
+			<td class="left"><a href="chldchg.asp?i=1107&amp;d=2025-10-28">Jiangxi Copper Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1107&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">224</td>
+			<td class="colHide3">2883</td>
+			<td class="left"><a href="chldchg.asp?i=3445&amp;d=2025-10-28">China Oilfield Services Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3445&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">225</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">226</td>
+			<td class="colHide3">0976</td>
+			<td class="left"><a href="chldchg.asp?i=6057&amp;d=2025-10-28">Chiho Environmental Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6057&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">227</td>
+			<td class="colHide3">2543</td>
+			<td class="left"><a href="chldchg.asp?i=36548&amp;d=2025-10-28">DAHON TECH (SHENZHEN) CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36548&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">228</td>
+			<td class="colHide3">0256</td>
+			<td class="left"><a href="chldchg.asp?i=223&amp;d=2025-10-28">CITYCHAMP WATCH & JEWELLERY GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=223&part=6">EVERBRIGHT SECURITIES INVESTMENT</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">229</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">230</td>
+			<td class="colHide3">2478</td>
+			<td class="left"><a href="chldchg.asp?i=35882&amp;d=2025-10-28">APAC Resources Limited:Wrnt</a></td>
+			<td class="left"><a href="chistory.asp?i=35882&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">231</td>
+			<td class="colHide3">6869</td>
+			<td class="left"><a href="chldchg.asp?i=13007&amp;d=2025-10-28">Yangtze Optical Fibre and Cable Joint Stock Limited Company:H</a></td>
+			<td class="left"><a href="chistory.asp?i=13007&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">232</td>
+			<td class="colHide3">2722</td>
+			<td class="left"><a href="chldchg.asp?i=4990&amp;d=2025-10-28">Chongqing Machinery & Electric Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4990&part=454">CITIBANK N.A.</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">233</td>
+			<td class="colHide3">0818</td>
+			<td class="left"><a href="chldchg.asp?i=111&amp;d=2025-10-28">Hi Sun Technology (China) Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=111&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">234</td>
+			<td class="colHide3">6682</td>
+			<td class="left"><a href="chldchg.asp?i=34543&amp;d=2025-10-28">Beijing Fourth Paradigm Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=34543&part=1112">CMB INTERNATIONAL SECURITIES LTD</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">235</td>
+			<td class="colHide3">1428</td>
+			<td class="left"><a href="chldchg.asp?i=6132&amp;d=2025-10-28">Bright Smart Securities & Commodities Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6132&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">236</td>
+			<td class="colHide3">9896</td>
+			<td class="left"><a href="chldchg.asp?i=33208&amp;d=2025-10-28">MINISO Group Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33208&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">237</td>
+			<td class="colHide3">3347</td>
+			<td class="left"><a href="chldchg.asp?i=29554&amp;d=2025-10-28">Hangzhou Tigermed Consulting Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29554&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">238</td>
+			<td class="colHide3">1787</td>
+			<td class="left"><a href="chldchg.asp?i=26868&amp;d=2025-10-28">Shandong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=26868&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">239</td>
+			<td class="colHide3">0834</td>
+			<td class="left"><a href="chldchg.asp?i=5054&amp;d=2025-10-28">China Kangda Food Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5054&part=1702">LONG BRIDGE HK LTD</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">240</td>
+			<td class="colHide3">1709</td>
+			<td class="left"><a href="chldchg.asp?i=16095&amp;d=2025-10-28">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=16095&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">241</td>
+			<td class="colHide3">1772</td>
+			<td class="left"><a href="chldchg.asp?i=26889&amp;d=2025-10-28">GANFENG LITHIUM GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=26889&part=454">CITIBANK N.A.</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">242</td>
+			<td class="colHide3">2147</td>
+			<td class="left"><a href="chldchg.asp?i=33995&amp;d=2025-10-28">Zhengwei Group Holdings Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33995&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">243</td>
+			<td class="colHide3">1385</td>
+			<td class="left"><a href="chldchg.asp?i=2632&amp;d=2025-10-28">Shanghai Fudan Microelectronics Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=2632&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">244</td>
+			<td class="colHide3">2105</td>
+			<td class="left"><a href="chldchg.asp?i=34364&amp;d=2025-10-28">Laekna, Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34364&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">245</td>
+			<td class="colHide3">2246</td>
+			<td class="left"><a href="chldchg.asp?i=33160&amp;d=2025-10-28">GOGOX HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33160&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">246</td>
+			<td class="colHide3">1413</td>
+			<td class="left"><a href="chldchg.asp?i=30657&amp;d=2025-10-28">FEG Holdings Corporation Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=30657&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">247</td>
+			<td class="colHide3">2050</td>
+			<td class="left"><a href="chldchg.asp?i=36394&amp;d=2025-10-28">ZHEJIANG SANHUA INTELLIGENT CONTROLS CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36394&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">248</td>
+			<td class="colHide3">8547</td>
+			<td class="left"><a href="chldchg.asp?i=26689&amp;d=2025-10-28">Pacific Legend Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26689&part=1637">TIGER BROKERS (HK) GLOBAL LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">249</td>
+			<td class="colHide3">1033</td>
+			<td class="left"><a href="chldchg.asp?i=1326&amp;d=2025-10-28">Sinopec Oilfield Service Corporation:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1326&part=454">CITIBANK N.A.</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">250</td>
+			<td class="colHide3">1357</td>
+			<td class="left"><a href="chldchg.asp?i=22111&amp;d=2025-10-28">Meitu, Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=22111&part=454">CITIBANK N.A.</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">251</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">252</td>
+			<td class="colHide3">2330</td>
+			<td class="left"><a href="chldchg.asp?i=2919&amp;d=2025-10-28">China Uptown Group Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2919&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">253</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=442">CATHAY SECURITIES (HONG KONG) LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">254</td>
+			<td class="colHide3">8549</td>
+			<td class="left"><a href="chldchg.asp?i=36611&amp;d=2025-10-28">Golden Leaf International Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36611&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">255</td>
+			<td class="colHide3">1413</td>
+			<td class="left"><a href="chldchg.asp?i=30657&amp;d=2025-10-28">FEG Holdings Corporation Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=30657&part=298">FULBRIGHT SECURITIES LTD</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">256</td>
+			<td class="colHide3">2402</td>
+			<td class="left"><a href="chldchg.asp?i=33972&amp;d=2025-10-28">Beijing SinoHytec Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33972&part=454">CITIBANK N.A.</a></td>
+			<td>0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">257</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=1569">ZINVEST GLOBAL LTD</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">258</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">259</td>
+			<td class="colHide3">1119</td>
+			<td class="left"><a href="chldchg.asp?i=27331&amp;d=2025-10-28">iDreamSky Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27331&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">260</td>
+			<td class="colHide3">1372</td>
+			<td class="left"><a href="chldchg.asp?i=11416&amp;d=2025-10-28">China Carbon Neutral Development Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11416&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">261</td>
+			<td class="colHide3">3759</td>
+			<td class="left"><a href="chldchg.asp?i=28673&amp;d=2025-10-28">Pharmaron Beijing Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28673&part=454">CITIBANK N.A.</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">262</td>
+			<td class="colHide3">1141</td>
+			<td class="left"><a href="chldchg.asp?i=1342&amp;d=2025-10-28">CMBC Capital Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1342&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">263</td>
+			<td class="colHide3">6887</td>
+			<td class="left"><a href="chldchg.asp?i=36500&amp;d=2025-10-28">Sunshine Lake Pharma Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36500&part=421">INSTINET PACIFIC LTD</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-08-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">264</td>
+			<td class="colHide3">0041</td>
+			<td class="left"><a href="chldchg.asp?i=37&amp;d=2025-10-28">GREAT EAGLE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=37&part=454">CITIBANK N.A.</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">265</td>
+			<td class="colHide3">9880</td>
+			<td class="left"><a href="chldchg.asp?i=34861&amp;d=2025-10-28">UBTECH ROBOTICS CORP LTD:H</a></td>
+			<td class="left"><a href="chistory.asp?i=34861&part=454">CITIBANK N.A.</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">266</td>
+			<td class="colHide3">1548</td>
+			<td class="left"><a href="chldchg.asp?i=18172&amp;d=2025-10-28">Genscript Biotech Corporation:O</a></td>
+			<td class="left"><a href="chistory.asp?i=18172&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">267</td>
+			<td class="colHide3">2603</td>
+			<td class="left"><a href="chldchg.asp?i=36326&amp;d=2025-10-28">Xiamen Jihong Co., Ltd:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36326&part=37">QUAM SECURITIES LTD</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">268</td>
+			<td class="colHide3">0553</td>
+			<td class="left"><a href="chldchg.asp?i=1166&amp;d=2025-10-28">NANJING PANDA ELECTRONICS COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1166&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.28</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">269</td>
+			<td class="colHide3">6166</td>
+			<td class="left"><a href="chldchg.asp?i=36649&amp;d=2025-10-28">CIG SHANGHAI CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36649&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">270</td>
+			<td class="colHide3">6980</td>
+			<td class="left"><a href="chldchg.asp?i=36650&amp;d=2025-10-28">Bama Tea Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36650&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">271</td>
+			<td class="colHide3">1894</td>
+			<td class="left"><a href="chldchg.asp?i=26962&amp;d=2025-10-28">Hang Yick Holdings Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26962&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">272</td>
+			<td class="colHide3">3369</td>
+			<td class="left"><a href="chldchg.asp?i=11600&amp;d=2025-10-28">QINHUANGDAO PORT CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=11600&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">273</td>
+			<td class="colHide3">6031</td>
+			<td class="left"><a href="chldchg.asp?i=36648&amp;d=2025-10-28">SANY HEAVY INDUSTRY CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36648&part=17">BOCI SECURITIES LTD</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">274</td>
+			<td class="colHide3">6869</td>
+			<td class="left"><a href="chldchg.asp?i=13007&amp;d=2025-10-28">Yangtze Optical Fibre and Cable Joint Stock Limited Company:H</a></td>
+			<td class="left"><a href="chistory.asp?i=13007&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">275</td>
+			<td class="colHide3">1799</td>
+			<td class="left"><a href="chldchg.asp?i=18157&amp;d=2025-10-28">Xinte Energy Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18157&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">276</td>
+			<td class="colHide3">8350</td>
+			<td class="left"><a href="chldchg.asp?i=25819&amp;d=2025-10-28">WELL LINK SECURITIES HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25819&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">277</td>
+			<td class="colHide3">1788</td>
+			<td class="left"><a href="chldchg.asp?i=6052&amp;d=2025-10-28">Guotai Junan International Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6052&part=454">CITIBANK N.A.</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">278</td>
+			<td class="colHide3">2899</td>
+			<td class="left"><a href="chldchg.asp?i=3411&amp;d=2025-10-28">ZIJIN MINING GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3411&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">279</td>
+			<td class="colHide3">1850</td>
+			<td class="left"><a href="chldchg.asp?i=24299&amp;d=2025-10-28">HSC Resources Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=24299&part=6">EVERBRIGHT SECURITIES INVESTMENT</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">280</td>
+			<td class="colHide3">2367</td>
+			<td class="left"><a href="chldchg.asp?i=33568&amp;d=2025-10-28">Giant Biogene Holding Co., Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33568&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">281</td>
+			<td class="colHide3">1880</td>
+			<td class="left"><a href="chldchg.asp?i=33377&amp;d=2025-10-28">China Tourism Group Duty Free Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33377&part=429">MIZUHO SECURITIES ASIA LTD</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap"></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">282</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">283</td>
+			<td class="colHide3">1528</td>
+			<td class="left"><a href="chldchg.asp?i=14244&amp;d=2025-10-28">Red Star Macalline Group Corporation Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=14244&part=223">GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+			<td>0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">284</td>
+			<td class="colHide3">3833</td>
+			<td class="left"><a href="chldchg.asp?i=4920&amp;d=2025-10-28">Xinjiang Xinxin Mining Industry Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4920&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">285</td>
+			<td class="colHide3">8472</td>
+			<td class="left"><a href="chldchg.asp?i=25086&amp;d=2025-10-28">Lapco Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25086&part=292">GLORY SUN SECURITIES LTD</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">286</td>
+			<td class="colHide3">2648</td>
+			<td class="left"><a href="chldchg.asp?i=36413&amp;d=2025-10-28">Anjoy Foods Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36413&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">287</td>
+			<td class="colHide3">0326</td>
+			<td class="left"><a href="chldchg.asp?i=997&amp;d=2025-10-28">CHINA STAR ENTERTAINMENT LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=997&part=218">LUK FOOK SECURITIES (HK) LTD</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">288</td>
+			<td class="colHide3">1099</td>
+			<td class="left"><a href="chldchg.asp?i=5221&amp;d=2025-10-28">SINOPHARM GROUP CO. LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=5221&part=454">CITIBANK N.A.</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">289</td>
+			<td class="colHide3">6883</td>
+			<td class="left"><a href="chldchg.asp?i=36400&amp;d=2025-10-28">Eternal Beauty Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36400&part=120">SBI CHINA CAPITAL FINANCIAL SERVICES LTD</a></td>
+			<td>0.25</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">290</td>
+			<td class="colHide3">6693</td>
+			<td class="left"><a href="chldchg.asp?i=36150&amp;d=2025-10-28">Chifeng Jilong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36150&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">291</td>
+			<td class="colHide3">1548</td>
+			<td class="left"><a href="chldchg.asp?i=18172&amp;d=2025-10-28">Genscript Biotech Corporation:O</a></td>
+			<td class="left"><a href="chistory.asp?i=18172&part=454">CITIBANK N.A.</a></td>
+			<td>-0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">292</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=298">FULBRIGHT SECURITIES LTD</a></td>
+			<td>-0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">293</td>
+			<td class="colHide3">0041</td>
+			<td class="left"><a href="chldchg.asp?i=37&amp;d=2025-10-28">GREAT EAGLE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=37&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.25</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">294</td>
+			<td class="colHide3">0230</td>
+			<td class="left"><a href="chldchg.asp?i=1174&amp;d=2025-10-28">Minmetals Land Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1174&part=463">BANK OF CHINA (HONG KONG) LTD</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">295</td>
+			<td class="colHide3">0011</td>
+			<td class="left"><a href="chldchg.asp?i=14&amp;d=2025-10-28">HANG SENG BANK, LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=14&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">296</td>
+			<td class="colHide3">3896</td>
+			<td class="left"><a href="chldchg.asp?i=29339&amp;d=2025-10-28">Kingsoft Cloud Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29339&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">297</td>
+			<td class="colHide3">1959</td>
+			<td class="left"><a href="chldchg.asp?i=28452&amp;d=2025-10-28">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28452&part=1568">ACER KING SECURITIES INTERNATIONAL LTD</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">298</td>
+			<td class="colHide3">8385</td>
+			<td class="left"><a href="chldchg.asp?i=25498&amp;d=2025-10-28">PROSPEROUS PRINTING COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25498&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">299</td>
+			<td class="colHide3">8472</td>
+			<td class="left"><a href="chldchg.asp?i=25086&amp;d=2025-10-28">Lapco Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25086&part=1669">DL SECURITIES (HK) LTD</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">300</td>
+			<td class="colHide3">2533</td>
+			<td class="left"><a href="chldchg.asp?i=35512&amp;d=2025-10-28">Black Sesame International Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35512&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">301</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=35">FOSUN INTERNATIONAL SECURITIES LTD</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">302</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.26</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">303</td>
+			<td class="colHide3">0588</td>
+			<td class="left"><a href="chldchg.asp?i=958&amp;d=2025-10-28">Beijing North Star Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=958&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">304</td>
+			<td class="colHide3">1833</td>
+			<td class="left"><a href="chldchg.asp?i=26292&amp;d=2025-10-28">PING AN HEALTHCARE AND TECHNOLOGY COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26292&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">305</td>
+			<td class="colHide3">6918</td>
+			<td class="left"><a href="chldchg.asp?i=29059&amp;d=2025-10-28">Kidztech Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29059&part=218">LUK FOOK SECURITIES (HK) LTD</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">306</td>
+			<td class="colHide3">1093</td>
+			<td class="left"><a href="chldchg.asp?i=994&amp;d=2025-10-28">CSPC PHARMACEUTICAL GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=994&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">307</td>
+			<td class="colHide3">1792</td>
+			<td class="left"><a href="chldchg.asp?i=22075&amp;d=2025-10-28">CMON Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=22075&part=105">CGS INTERNATIONAL SECURITIES HK LTD</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">308</td>
+			<td class="colHide3">1037</td>
+			<td class="left"><a href="chldchg.asp?i=1023&amp;d=2025-10-28">Maxnerva Technology Services Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1023&part=7">HSBC BROKING SECURITIES (HONG KONG) LTD</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">309</td>
+			<td class="colHide3">2330</td>
+			<td class="left"><a href="chldchg.asp?i=2919&amp;d=2025-10-28">China Uptown Group Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2919&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.27</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">310</td>
+			<td class="colHide3">2246</td>
+			<td class="left"><a href="chldchg.asp?i=33160&amp;d=2025-10-28">GOGOX HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33160&part=83">GET NICE SECURITIES LTD</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-09-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">311</td>
+			<td class="colHide3">8187</td>
+			<td class="left"><a href="chldchg.asp?i=20189&amp;d=2025-10-28">Jimu Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=20189&part=91">WATON SECURITIES INTERNATIONAL LIMITED</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">312</td>
+			<td class="colHide3">3938</td>
+			<td class="left"><a href="chldchg.asp?i=28407&amp;d=2025-10-28">LFG Investment Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28407&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">313</td>
+			<td class="colHide3">0834</td>
+			<td class="left"><a href="chldchg.asp?i=5054&amp;d=2025-10-28">China Kangda Food Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5054&part=35">FOSUN INTERNATIONAL SECURITIES LTD</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-03-12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">314</td>
+			<td class="colHide3">2488</td>
+			<td class="left"><a href="chldchg.asp?i=3378&amp;d=2025-10-28">LAUNCH TECH COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3378&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">315</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">316</td>
+			<td class="colHide3">1141</td>
+			<td class="left"><a href="chldchg.asp?i=1342&amp;d=2025-10-28">CMBC Capital Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1342&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">317</td>
+			<td class="colHide3">1276</td>
+			<td class="left"><a href="chldchg.asp?i=36311&amp;d=2025-10-28">Jiangsu Hengrui Pharmaceuticals Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36311&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-0.28</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">318</td>
+			<td class="colHide3">8385</td>
+			<td class="left"><a href="chldchg.asp?i=25498&amp;d=2025-10-28">PROSPEROUS PRINTING COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25498&part=17">BOCI SECURITIES LTD</a></td>
+			<td>-0.29</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">319</td>
+			<td class="colHide3">6886</td>
+			<td class="left"><a href="chldchg.asp?i=11014&amp;d=2025-10-28">Huatai Securities Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=11014&part=1077">BNP PARIBAS</a></td>
+			<td>-0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">320</td>
+			<td class="colHide3">8612</td>
+			<td class="left"><a href="chldchg.asp?i=28152&amp;d=2025-10-28">World Super Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28152&part=469">CMB WING LUNG BANK LTD</a></td>
+			<td>-0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">321</td>
+			<td class="colHide3">1709</td>
+			<td class="left"><a href="chldchg.asp?i=16095&amp;d=2025-10-28">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=16095&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">322</td>
+			<td class="colHide3">6978</td>
+			<td class="left"><a href="chldchg.asp?i=29407&amp;d=2025-10-28">Immunotech Biopharm Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29407&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.29</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">323</td>
+			<td class="colHide3">2105</td>
+			<td class="left"><a href="chldchg.asp?i=34364&amp;d=2025-10-28">Laekna, Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34364&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">324</td>
+			<td class="colHide3">1057</td>
+			<td class="left"><a href="chldchg.asp?i=4741&amp;d=2025-10-28">Zhejiang Shibao Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4741&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">325</td>
+			<td class="colHide3">2465</td>
+			<td class="left"><a href="chldchg.asp?i=35863&amp;d=2025-10-28">Jiangsu Lopal Tech. Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=35863&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">326</td>
+			<td class="colHide3">1276</td>
+			<td class="left"><a href="chldchg.asp?i=36311&amp;d=2025-10-28">Jiangsu Hengrui Pharmaceuticals Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36311&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">327</td>
+			<td class="colHide3">1772</td>
+			<td class="left"><a href="chldchg.asp?i=26889&amp;d=2025-10-28">GANFENG LITHIUM GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=26889&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">328</td>
+			<td class="colHide3">1858</td>
+			<td class="left"><a href="chldchg.asp?i=13611&amp;d=2025-10-28">Beijing Chunlizhengda Medical Instruments Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=13611&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>-0.30</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">329</td>
+			<td class="colHide3">1052</td>
+			<td class="left"><a href="chldchg.asp?i=1076&amp;d=2025-10-28">Yuexiu Transport Infrastructure Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1076&part=454">CITIBANK N.A.</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">330</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=1085">HAFOO SECURITIES LTD</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">331</td>
+			<td class="colHide3">1489</td>
+			<td class="left"><a href="chldchg.asp?i=33497&amp;d=2025-10-28">GC Construction Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33497&part=37">QUAM SECURITIES LTD</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">332</td>
+			<td class="colHide3">6682</td>
+			<td class="left"><a href="chldchg.asp?i=34543&amp;d=2025-10-28">Beijing Fourth Paradigm Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=34543&part=1684">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">333</td>
+			<td class="colHide3">0328</td>
+			<td class="left"><a href="chldchg.asp?i=940&amp;d=2025-10-28">ALCO HOLDINGS LIMITED (BM):O</a></td>
+			<td class="left"><a href="chistory.asp?i=940&part=17">BOCI SECURITIES LTD</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">334</td>
+			<td class="colHide3">1865</td>
+			<td class="left"><a href="chldchg.asp?i=27787&amp;d=2025-10-28">Pengo Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27787&part=239">CHIEF SECURITIES LTD</a></td>
+			<td>-0.31</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">335</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=298">FULBRIGHT SECURITIES LTD</a></td>
+			<td>-0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">336</td>
+			<td class="colHide3">0763</td>
+			<td class="left"><a href="chldchg.asp?i=4542&amp;d=2025-10-28">ZTE CORPORATION:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4542&part=454">CITIBANK N.A.</a></td>
+			<td>-0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">337</td>
+			<td class="colHide3">2727</td>
+			<td class="left"><a href="chldchg.asp?i=4571&amp;d=2025-10-28">Shanghai Electric Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4571&part=454">CITIBANK N.A.</a></td>
+			<td>-0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">338</td>
+			<td class="colHide3">0976</td>
+			<td class="left"><a href="chldchg.asp?i=6057&amp;d=2025-10-28">Chiho Environmental Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6057&part=454">CITIBANK N.A.</a></td>
+			<td>-0.32</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">339</td>
+			<td class="colHide3">2562</td>
+			<td class="left"><a href="chldchg.asp?i=33357&amp;d=2025-10-28">Synagistics Limited (KY):A</a></td>
+			<td class="left"><a href="chistory.asp?i=33357&part=83">GET NICE SECURITIES LTD</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-09-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">340</td>
+			<td class="colHide3">0080</td>
+			<td class="left"><a href="chldchg.asp?i=6533&amp;d=2025-10-28">China New Economy Fund Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6533&part=223">GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">341</td>
+			<td class="colHide3">0856</td>
+			<td class="left"><a href="chldchg.asp?i=3148&amp;d=2025-10-28">VSTECS Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3148&part=454">CITIBANK N.A.</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">342</td>
+			<td class="colHide3">8158</td>
+			<td class="left"><a href="chldchg.asp?i=2952&amp;d=2025-10-28">China Regenerative Medicine International Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2952&part=9">SHENWAN HONGYUAN SECURITIES (H.K.) LTD</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-09-01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">343</td>
+			<td class="colHide3">0326</td>
+			<td class="left"><a href="chldchg.asp?i=997&amp;d=2025-10-28">CHINA STAR ENTERTAINMENT LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=997&part=156">BETA INTERNATIONAL SECURITIES LIMITED</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-10-21</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">344</td>
+			<td class="colHide3">1880</td>
+			<td class="left"><a href="chldchg.asp?i=33377&amp;d=2025-10-28">China Tourism Group Duty Free Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33377&part=454">CITIBANK N.A.</a></td>
+			<td>-0.33</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">345</td>
+			<td class="colHide3">2068</td>
+			<td class="left"><a href="chldchg.asp?i=9601&amp;d=2025-10-28">China Aluminum International Engineering Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=9601&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">346</td>
+			<td class="colHide3">6127</td>
+			<td class="left"><a href="chldchg.asp?i=30615&amp;d=2025-10-28">JOINN LABORATORIES (CHINA) CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=30615&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">347</td>
+			<td class="colHide3">1787</td>
+			<td class="left"><a href="chldchg.asp?i=26868&amp;d=2025-10-28">Shandong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=26868&part=454">CITIBANK N.A.</a></td>
+			<td>-0.34</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">348</td>
+			<td class="colHide3">1336</td>
+			<td class="left"><a href="chldchg.asp?i=7240&amp;d=2025-10-28">New China Life Insurance Company Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=7240&part=454">CITIBANK N.A.</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">349</td>
+			<td class="colHide3">3677</td>
+			<td class="left"><a href="chldchg.asp?i=36277&amp;d=2025-10-28">Jiangsu Zenergy Battery Technologies Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36277&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">350</td>
+			<td class="colHide3">1919</td>
+			<td class="left"><a href="chldchg.asp?i=4601&amp;d=2025-10-28">COSCO SHIPPING Holdings Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4601&part=474">CHINA CITIC BANK INTERNATIONAL LTD</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">351</td>
+			<td class="colHide3">9896</td>
+			<td class="left"><a href="chldchg.asp?i=33208&amp;d=2025-10-28">MINISO Group Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33208&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">352</td>
+			<td class="colHide3">0804</td>
+			<td class="left"><a href="chldchg.asp?i=14124&amp;d=2025-10-28">Pinestone Capital Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=14124&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">353</td>
+			<td class="colHide3">0917</td>
+			<td class="left"><a href="chldchg.asp?i=35236&amp;d=2025-10-28">Qunabox Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35236&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">354</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">355</td>
+			<td class="colHide3">0553</td>
+			<td class="left"><a href="chldchg.asp?i=1166&amp;d=2025-10-28">NANJING PANDA ELECTRONICS COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1166&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">356</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=1077">BNP PARIBAS</a></td>
+			<td>-0.35</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">357</td>
+			<td class="colHide3">9995</td>
+			<td class="left"><a href="chldchg.asp?i=29907&amp;d=2025-10-28">RemeGen Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29907&part=454">CITIBANK N.A.</a></td>
+			<td>-0.36</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">358</td>
+			<td class="colHide3">2477</td>
+			<td class="left"><a href="chldchg.asp?i=34908&amp;d=2025-10-28">WellCell Holdings Co., Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34908&part=1210">SOOCHOW SECURITIES INTERNATIONAL</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">359</td>
+			<td class="colHide3">3677</td>
+			<td class="left"><a href="chldchg.asp?i=36277&amp;d=2025-10-28">Jiangsu Zenergy Battery Technologies Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36277&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">360</td>
+			<td class="colHide3">1341</td>
+			<td class="left"><a href="chldchg.asp?i=17657&amp;d=2025-10-28">Hao Tian International Construction Investment Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=17657&part=355">IMAGI BROKERAGE LTD</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">361</td>
+			<td class="colHide3">1709</td>
+			<td class="left"><a href="chldchg.asp?i=16095&amp;d=2025-10-28">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=16095&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">362</td>
+			<td class="colHide3">0310</td>
+			<td class="left"><a href="chldchg.asp?i=233&amp;d=2025-10-28">Prosperity Investment Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=233&part=980">ASTRUM CAPITAL MANAGEMENT LTD</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">363</td>
+			<td class="colHide3">2500</td>
+			<td class="left"><a href="chldchg.asp?i=28692&amp;d=2025-10-28">Venus Medtech (Hangzhou) Inc.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28692&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">364</td>
+			<td class="colHide3">3800</td>
+			<td class="left"><a href="chldchg.asp?i=4927&amp;d=2025-10-28">GCL Technology Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=4927&part=454">CITIBANK N.A.</a></td>
+			<td>-0.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">365</td>
+			<td class="colHide3">9880</td>
+			<td class="left"><a href="chldchg.asp?i=34861&amp;d=2025-10-28">UBTECH ROBOTICS CORP LTD:H</a></td>
+			<td class="left"><a href="chistory.asp?i=34861&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">366</td>
+			<td class="colHide3">6869</td>
+			<td class="left"><a href="chldchg.asp?i=13007&amp;d=2025-10-28">Yangtze Optical Fibre and Cable Joint Stock Limited Company:H</a></td>
+			<td class="left"><a href="chistory.asp?i=13007&part=454">CITIBANK N.A.</a></td>
+			<td>-0.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">367</td>
+			<td class="colHide3">1459</td>
+			<td class="left"><a href="chldchg.asp?i=18471&amp;d=2025-10-28">JUJIANG CONSTRUCTION GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18471&part=255">KGI ASIA LTD</a></td>
+			<td>-0.38</td>
+			<td class="colHide2 nowrap">25-10-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">368</td>
+			<td class="colHide3">1167</td>
+			<td class="left"><a href="chldchg.asp?i=30247&amp;d=2025-10-28">JACOBIO PHARMACEUTICALS GROUP CO., LTD.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=30247&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">369</td>
+			<td class="colHide3">0450</td>
+			<td class="left"><a href="chldchg.asp?i=427&amp;d=2025-10-28">HUNG HING PRINTING GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=427&part=90">LUEN FAT SECURITIES CO LTD</a></td>
+			<td>-0.39</td>
+			<td class="colHide2 nowrap">20-07-08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">370</td>
+			<td class="colHide3">0844</td>
+			<td class="left"><a href="chldchg.asp?i=7175&amp;d=2025-10-28">Greatime International Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7175&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">371</td>
+			<td class="colHide3">1142</td>
+			<td class="left"><a href="chldchg.asp?i=3255&amp;d=2025-10-28">E&P Global Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3255&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">372</td>
+			<td class="colHide3">0723</td>
+			<td class="left"><a href="chldchg.asp?i=944&amp;d=2025-10-28">Reliance Global Holdings Limited (BM):O</a></td>
+			<td class="left"><a href="chistory.asp?i=944&part=1723">WINBULL SECURITIES INTERNATIONAL (HONG</a></td>
+			<td>-0.39</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">373</td>
+			<td class="colHide3">2696</td>
+			<td class="left"><a href="chldchg.asp?i=28366&amp;d=2025-10-28">Shanghai Henlius Biotech, Inc.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28366&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">374</td>
+			<td class="colHide3">9922</td>
+			<td class="left"><a href="chldchg.asp?i=28822&amp;d=2025-10-28">Jiumaojiu International Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28822&part=454">CITIBANK N.A.</a></td>
+			<td>-0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">375</td>
+			<td class="colHide3">8385</td>
+			<td class="left"><a href="chldchg.asp?i=25498&amp;d=2025-10-28">PROSPEROUS PRINTING COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25498&part=71">SANFULL SECURITIES LTD</a></td>
+			<td>-0.40</td>
+			<td class="colHide2 nowrap">25-10-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">376</td>
+			<td class="colHide3">6699</td>
+			<td class="left"><a href="chldchg.asp?i=31282&amp;d=2025-10-28">Angelalign Technology Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=31282&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">377</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.40</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">378</td>
+			<td class="colHide3">0818</td>
+			<td class="left"><a href="chldchg.asp?i=111&amp;d=2025-10-28">Hi Sun Technology (China) Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=111&part=462">NANYANG COMMERCIAL BANK LTD</a></td>
+			<td>-0.41</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">379</td>
+			<td class="colHide3">2688</td>
+			<td class="left"><a href="chldchg.asp?i=2975&amp;d=2025-10-28">ENN Energy Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2975&part=454">CITIBANK N.A.</a></td>
+			<td>-0.41</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">380</td>
+			<td class="colHide3">2147</td>
+			<td class="left"><a href="chldchg.asp?i=33995&amp;d=2025-10-28">Zhengwei Group Holdings Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33995&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.41</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">381</td>
+			<td class="colHide3">1850</td>
+			<td class="left"><a href="chldchg.asp?i=24299&amp;d=2025-10-28">HSC Resources Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=24299&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">382</td>
+			<td class="colHide3">1799</td>
+			<td class="left"><a href="chldchg.asp?i=18157&amp;d=2025-10-28">Xinte Energy Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18157&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">383</td>
+			<td class="colHide3">3800</td>
+			<td class="left"><a href="chldchg.asp?i=4927&amp;d=2025-10-28">GCL Technology Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=4927&part=243">INTERACTIVE BROKERS HONG KONG LTD</a></td>
+			<td>-0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">384</td>
+			<td class="colHide3">9986</td>
+			<td class="left"><a href="chldchg.asp?i=29439&amp;d=2025-10-28">Dashan Education Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=29439&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">385</td>
+			<td class="colHide3">0464</td>
+			<td class="left"><a href="chldchg.asp?i=4592&amp;d=2025-10-28">China In-Tech Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4592&part=1437">DONGHAI INTERNATIONAL SECURITIES</a></td>
+			<td>-0.42</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">386</td>
+			<td class="colHide3">0763</td>
+			<td class="left"><a href="chldchg.asp?i=4542&amp;d=2025-10-28">ZTE CORPORATION:H</a></td>
+			<td class="left"><a href="chistory.asp?i=4542&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">387</td>
+			<td class="colHide3">3369</td>
+			<td class="left"><a href="chldchg.asp?i=11600&amp;d=2025-10-28">QINHUANGDAO PORT CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=11600&part=454">CITIBANK N.A.</a></td>
+			<td>-0.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">388</td>
+			<td class="colHide3">2367</td>
+			<td class="left"><a href="chldchg.asp?i=33568&amp;d=2025-10-28">Giant Biogene Holding Co., Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=33568&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">389</td>
+			<td class="colHide3">1093</td>
+			<td class="left"><a href="chldchg.asp?i=994&amp;d=2025-10-28">CSPC PHARMACEUTICAL GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=994&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.44</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">390</td>
+			<td class="colHide3">2600</td>
+			<td class="left"><a href="chldchg.asp?i=3097&amp;d=2025-10-28">ALUMINUM CORPORATION OF CHINA LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3097&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.44</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">391</td>
+			<td class="colHide3">3759</td>
+			<td class="left"><a href="chldchg.asp?i=28673&amp;d=2025-10-28">Pharmaron Beijing Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28673&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">392</td>
+			<td class="colHide3">1126</td>
+			<td class="left"><a href="chldchg.asp?i=3100&amp;d=2025-10-28">DREAM INTERNATIONAL LIMITED (HK):O</a></td>
+			<td class="left"><a href="chistory.asp?i=3100&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>-0.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">393</td>
+			<td class="colHide3">1128</td>
+			<td class="left"><a href="chldchg.asp?i=5265&amp;d=2025-10-28">Wynn Macau, Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5265&part=454">CITIBANK N.A.</a></td>
+			<td>-0.47</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">394</td>
+			<td class="colHide3">0806</td>
+			<td class="left"><a href="chldchg.asp?i=4930&amp;d=2025-10-28">Value Partners Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4930&part=423">GF SECURITIES (HONG KONG) BROKERAGE LTD</a></td>
+			<td>-0.47</td>
+			<td class="colHide2 nowrap">25-10-13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">395</td>
+			<td class="colHide3">0884</td>
+			<td class="left"><a href="chldchg.asp?i=10109&amp;d=2025-10-28">CIFI Holdings (Group) Co. Ltd.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=10109&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>-0.48</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">396</td>
+			<td class="colHide3">9666</td>
+			<td class="left"><a href="chldchg.asp?i=29992&amp;d=2025-10-28">Jinke Smart Services Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29992&part=454">CITIBANK N.A.</a></td>
+			<td>-0.49</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">397</td>
+			<td class="colHide3">0209</td>
+			<td class="left"><a href="chldchg.asp?i=3117&amp;d=2025-10-28">Winshine Science Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3117&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.49</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">398</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=335">ICBC (ASIA) SECURITIES LTD</a></td>
+			<td>-0.49</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">399</td>
+			<td class="colHide3">6613</td>
+			<td class="left"><a href="chldchg.asp?i=36422&amp;d=2025-10-28">Lens Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36422&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.50</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">400</td>
+			<td class="colHide3">6693</td>
+			<td class="left"><a href="chldchg.asp?i=36150&amp;d=2025-10-28">Chifeng Jilong Gold Mining Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36150&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">401</td>
+			<td class="colHide3">0726</td>
+			<td class="left"><a href="chldchg.asp?i=962&amp;d=2025-10-28">DIT Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=962&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>-0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">402</td>
+			<td class="colHide3">9956</td>
+			<td class="left"><a href="chldchg.asp?i=32480&amp;d=2025-10-28">ANE (CAYMAN) INC.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=32480&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">403</td>
+			<td class="colHide3">3347</td>
+			<td class="left"><a href="chldchg.asp?i=29554&amp;d=2025-10-28">Hangzhou Tigermed Consulting Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29554&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">404</td>
+			<td class="colHide3">9881</td>
+			<td class="left"><a href="chldchg.asp?i=36371&amp;d=2025-10-28">Rongta Technology (Xiamen) Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36371&part=1678">PING AN SECURITIES (HONG KONG) CO LTD</a></td>
+			<td>-0.52</td>
+			<td class="colHide2 nowrap">25-08-07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">405</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=454">CITIBANK N.A.</a></td>
+			<td>-0.53</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">406</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>-0.53</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">407</td>
+			<td class="colHide3">6613</td>
+			<td class="left"><a href="chldchg.asp?i=36422&amp;d=2025-10-28">Lens Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36422&part=454">CITIBANK N.A.</a></td>
+			<td>-0.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">408</td>
+			<td class="colHide3">9606</td>
+			<td class="left"><a href="chldchg.asp?i=36278&amp;d=2025-10-28">Duality Biotherapeutics, Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36278&part=454">CITIBANK N.A.</a></td>
+			<td>-0.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">409</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">410</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.55</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">411</td>
+			<td class="colHide3">9997</td>
+			<td class="left"><a href="chldchg.asp?i=29350&amp;d=2025-10-28">Kangji Medical Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29350&part=454">CITIBANK N.A.</a></td>
+			<td>-0.55</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">412</td>
+			<td class="colHide3">0819</td>
+			<td class="left"><a href="chldchg.asp?i=4869&amp;d=2025-10-28">Tianneng Power International Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4869&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.55</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">413</td>
+			<td class="colHide3">2552</td>
+			<td class="left"><a href="chldchg.asp?i=26813&amp;d=2025-10-28">Hua Medicine:O</a></td>
+			<td class="left"><a href="chistory.asp?i=26813&part=1256">ZHONGTAI INTERNATIONAL SECURITIES LTD</a></td>
+			<td>-0.56</td>
+			<td class="colHide2 nowrap">25-10-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">414</td>
+			<td class="colHide3">1142</td>
+			<td class="left"><a href="chldchg.asp?i=3255&amp;d=2025-10-28">E&P Global Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3255&part=458">DBS BANK LTD</a></td>
+			<td>-0.56</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">415</td>
+			<td class="colHide3">1622</td>
+			<td class="left"><a href="chldchg.asp?i=11743&amp;d=2025-10-28">Redco Properties Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11743&part=22">HAITONG INTERNATIONAL SECURITIES CO LTD</a></td>
+			<td>-0.56</td>
+			<td class="colHide2 nowrap">25-04-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">416</td>
+			<td class="colHide3">1428</td>
+			<td class="left"><a href="chldchg.asp?i=6132&amp;d=2025-10-28">Bright Smart Securities & Commodities Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6132&part=454">CITIBANK N.A.</a></td>
+			<td>-0.57</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">417</td>
+			<td class="colHide3">8030</td>
+			<td class="left"><a href="chldchg.asp?i=9253&amp;d=2025-10-28">Fengyinhe Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=9253&part=293">BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+			<td>-0.58</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">418</td>
+			<td class="colHide3">0357</td>
+			<td class="left"><a href="chldchg.asp?i=3287&amp;d=2025-10-28">Hainan Meilan International Airport Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3287&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.59</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">419</td>
+			<td class="colHide3">0358</td>
+			<td class="left"><a href="chldchg.asp?i=1107&amp;d=2025-10-28">Jiangxi Copper Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1107&part=454">CITIBANK N.A.</a></td>
+			<td>-0.59</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">420</td>
+			<td class="colHide3">1385</td>
+			<td class="left"><a href="chldchg.asp?i=2632&amp;d=2025-10-28">Shanghai Fudan Microelectronics Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=2632&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">421</td>
+			<td class="colHide3">0909</td>
+			<td class="left"><a href="chldchg.asp?i=29720&amp;d=2025-10-28">Ming Yuan Cloud Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29720&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">422</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=1114">VALUABLE CAPITAL LTD</a></td>
+			<td>-0.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">423</td>
+			<td class="colHide3">0412</td>
+			<td class="left"><a href="chldchg.asp?i=1030&amp;d=2025-10-28">SHANDONG HI-SPEED HOLDINGS GROUP LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1030&part=222">ABCI SECURITIES CO LTD</a></td>
+			<td>-0.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">424</td>
+			<td class="colHide3">6886</td>
+			<td class="left"><a href="chldchg.asp?i=11014&amp;d=2025-10-28">Huatai Securities Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=11014&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.61</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">425</td>
+			<td class="colHide3">1065</td>
+			<td class="left"><a href="chldchg.asp?i=1278&amp;d=2025-10-28">Tianjin Capital Environmental Protection Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1278&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.61</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">426</td>
+			<td class="colHide3">0187</td>
+			<td class="left"><a href="chldchg.asp?i=960&amp;d=2025-10-28">Beijing Jingcheng Machinery Electric Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=960&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.62</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">427</td>
+			<td class="colHide3">2402</td>
+			<td class="left"><a href="chldchg.asp?i=33972&amp;d=2025-10-28">Beijing SinoHytec Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33972&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.62</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">428</td>
+			<td class="colHide3">2162</td>
+			<td class="left"><a href="chldchg.asp?i=31489&amp;d=2025-10-28">Keymed Biosciences Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=31489&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.63</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">429</td>
+			<td class="colHide3">0464</td>
+			<td class="left"><a href="chldchg.asp?i=4592&amp;d=2025-10-28">China In-Tech Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=4592&part=171">HUNG SING SECURITIES LTD</a></td>
+			<td>-0.63</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">430</td>
+			<td class="colHide3">9959</td>
+			<td class="left"><a href="chldchg.asp?i=30842&amp;d=2025-10-28">Linklogis Inc.:B</a></td>
+			<td class="left"><a href="chistory.asp?i=30842&part=158">GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+			<td>-0.64</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">431</td>
+			<td class="colHide3">9995</td>
+			<td class="left"><a href="chldchg.asp?i=29907&amp;d=2025-10-28">RemeGen Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=29907&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.65</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">432</td>
+			<td class="colHide3">9636</td>
+			<td class="left"><a href="chldchg.asp?i=34088&amp;d=2025-10-28">JF SmartInvest Holdings Ltd:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34088&part=454">CITIBANK N.A.</a></td>
+			<td>-0.65</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">433</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>-0.66</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">434</td>
+			<td class="colHide3">6831</td>
+			<td class="left"><a href="chldchg.asp?i=36304&amp;d=2025-10-28">Green Tea Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36304&part=454">CITIBANK N.A.</a></td>
+			<td>-0.67</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">435</td>
+			<td class="colHide3">1033</td>
+			<td class="left"><a href="chldchg.asp?i=1326&amp;d=2025-10-28">Sinopec Oilfield Service Corporation:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1326&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.70</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">436</td>
+			<td class="colHide3">3678</td>
+			<td class="left"><a href="chldchg.asp?i=18109&amp;d=2025-10-28">Soho Holly Futures Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18109&part=1456">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.72</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">437</td>
+			<td class="colHide3">2478</td>
+			<td class="left"><a href="chldchg.asp?i=35882&amp;d=2025-10-28">APAC Resources Limited:Wrnt</a></td>
+			<td class="left"><a href="chistory.asp?i=35882&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.73</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">438</td>
+			<td class="colHide3">0834</td>
+			<td class="left"><a href="chldchg.asp?i=5054&amp;d=2025-10-28">China Kangda Food Company Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=5054&part=249">WANHAI SECURITIES (HK) LTD</a></td>
+			<td>-0.77</td>
+			<td class="colHide2 nowrap">25-07-29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">439</td>
+			<td class="colHide3">1053</td>
+			<td class="left"><a href="chldchg.asp?i=1001&amp;d=2025-10-28">Chongqing Iron & Steel Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=1001&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.80</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">440</td>
+			<td class="colHide3">1413</td>
+			<td class="left"><a href="chldchg.asp?i=30657&amp;d=2025-10-28">FEG Holdings Corporation Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=30657&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>-0.84</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">441</td>
+			<td class="colHide3">2503</td>
+			<td class="left"><a href="chldchg.asp?i=34915&amp;d=2025-10-28">Zhongshen Jianye Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=34915&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>-0.84</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">442</td>
+			<td class="colHide3">1115</td>
+			<td class="left"><a href="chldchg.asp?i=6972&amp;d=2025-10-28">Tibet Water Resources Ltd.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=6972&part=287">GRANSING SECURITIES CO., LIMITED</a></td>
+			<td>-0.85</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">443</td>
+			<td class="colHide3">638</td>
+			<td class="left"><a href="chldchg.asp?i=36636&amp;d=2025-10-28">FIBOCOM WIRELESS INC.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36636&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-0.86</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">444</td>
+			<td class="colHide3">9696</td>
+			<td class="left"><a href="chldchg.asp?i=33255&amp;d=2025-10-28">Tianqi Lithium Corporation:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33255&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.88</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">445</td>
+			<td class="colHide3">8187</td>
+			<td class="left"><a href="chldchg.asp?i=20189&amp;d=2025-10-28">Jimu Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=20189&part=1178">KINGKEY SECURITIES GROUP LTD</a></td>
+			<td>-0.89</td>
+			<td class="colHide2 nowrap">25-10-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">446</td>
+			<td class="colHide3">1459</td>
+			<td class="left"><a href="chldchg.asp?i=18471&amp;d=2025-10-28">JUJIANG CONSTRUCTION GROUP CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=18471&part=486">CHINA MERCHANTS BANK CO LTD</a></td>
+			<td>-0.89</td>
+			<td class="colHide2 nowrap">25-10-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">447</td>
+			<td class="colHide3">2359</td>
+			<td class="left"><a href="chldchg.asp?i=27349&amp;d=2025-10-28">WuXi AppTec Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=27349&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.90</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">448</td>
+			<td class="colHide3">2575</td>
+			<td class="left"><a href="chldchg.asp?i=36615&amp;d=2025-10-28">Xuanzhu Biopharmaceutical Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36615&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.90</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">449</td>
+			<td class="colHide3">6918</td>
+			<td class="left"><a href="chldchg.asp?i=29059&amp;d=2025-10-28">Kidztech Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29059&part=255">KGI ASIA LTD</a></td>
+			<td>-0.91</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">450</td>
+			<td class="colHide3">2050</td>
+			<td class="left"><a href="chldchg.asp?i=36394&amp;d=2025-10-28">ZHEJIANG SANHUA INTELLIGENT CONTROLS CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36394&part=460">THE HONGKONG AND SHANGHAI BANKING</a></td>
+			<td>-0.91</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">451</td>
+			<td class="colHide3">1635</td>
+			<td class="left"><a href="chldchg.asp?i=14121&amp;d=2025-10-28">Shanghai Dazhong Public Utilities (Group) Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=14121&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-0.93</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">452</td>
+			<td class="colHide3">2505</td>
+			<td class="left"><a href="chldchg.asp?i=35238&amp;d=2025-10-28">EDA Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35238&part=120">SBI CHINA CAPITAL FINANCIAL SERVICES LTD</a></td>
+			<td>-0.97</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">453</td>
+			<td class="colHide3">0083</td>
+			<td class="left"><a href="chldchg.asp?i=39&amp;d=2025-10-28">SINO LAND COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=39&part=1077">BNP PARIBAS</a></td>
+			<td>-0.99</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">454</td>
+			<td class="colHide3">0895</td>
+			<td class="left"><a href="chldchg.asp?i=3397&amp;d=2025-10-28">Dongjiang Environmental Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3397&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-1.01</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">455</td>
+			<td class="colHide3">1872</td>
+			<td class="left"><a href="chldchg.asp?i=27655&amp;d=2025-10-28">Guan Chao Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27655&part=1091">GUOSEN SECURITIES (HK) BROKERAGE CO LTD</a></td>
+			<td>-1.03</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">456</td>
+			<td class="colHide3">2012</td>
+			<td class="left"><a href="chldchg.asp?i=8859&amp;d=2025-10-28">SUNSHINE OILSANDS LTD.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=8859&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>-1.05</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">457</td>
+			<td class="colHide3">0815</td>
+			<td class="left"><a href="chldchg.asp?i=10285&amp;d=2025-10-28">China Silver Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=10285&part=48">MERRILL LYNCH FAR EAST LTD</a></td>
+			<td>-1.06</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">458</td>
+			<td class="colHide3">1263</td>
+			<td class="left"><a href="chldchg.asp?i=7296&amp;d=2025-10-28">PC Partner Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7296&part=70">MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+			<td>-1.06</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">459</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=426">HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+			<td>-1.07</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">460</td>
+			<td class="colHide3">1865</td>
+			<td class="left"><a href="chldchg.asp?i=27787&amp;d=2025-10-28">Pengo Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27787&part=1618">SILVERBRICKS SECURITIES CO LTD</a></td>
+			<td>-1.08</td>
+			<td class="colHide2 nowrap">25-10-10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">461</td>
+			<td class="colHide3">8612</td>
+			<td class="left"><a href="chldchg.asp?i=28152&amp;d=2025-10-28">World Super Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28152&part=239">CHIEF SECURITIES LTD</a></td>
+			<td>-1.10</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">462</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=1112">CMB INTERNATIONAL SECURITIES LTD</a></td>
+			<td>-1.10</td>
+			<td class="colHide2 nowrap">24-07-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">463</td>
+			<td class="colHide3">1769</td>
+			<td class="left"><a href="chldchg.asp?i=28126&amp;d=2025-10-28">Scholar Education Group:O</a></td>
+			<td class="left"><a href="chistory.asp?i=28126&part=454">CITIBANK N.A.</a></td>
+			<td>-1.18</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">464</td>
+			<td class="colHide3">2450</td>
+			<td class="left"><a href="chldchg.asp?i=33988&amp;d=2025-10-28">Huaibei GreenGold Industry Investment Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33988&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-1.19</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">465</td>
+			<td class="colHide3">1351</td>
+			<td class="left"><a href="chldchg.asp?i=29902&amp;d=2025-10-28">Bright Future Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29902&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-1.19</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">466</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>-1.21</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">467</td>
+			<td class="colHide3">1119</td>
+			<td class="left"><a href="chldchg.asp?i=27331&amp;d=2025-10-28">iDreamSky Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27331&part=454">CITIBANK N.A.</a></td>
+			<td>-1.22</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">468</td>
+			<td class="colHide3">3788</td>
+			<td class="left"><a href="chldchg.asp?i=7104&amp;d=2025-10-28">China Hanking Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=7104&part=458">DBS BANK LTD</a></td>
+			<td>-1.23</td>
+			<td class="colHide2 nowrap">25-10-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">469</td>
+			<td class="colHide3">6936</td>
+			<td class="left"><a href="chldchg.asp?i=35950&amp;d=2025-10-28">S.F. Holding Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=35950&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-1.24</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">470</td>
+			<td class="colHide3">6680</td>
+			<td class="left"><a href="chldchg.asp?i=32721&amp;d=2025-10-28">JL MAG RARE-EARTH CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=32721&part=283">CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+			<td>-1.37</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">471</td>
+			<td class="colHide3">2508</td>
+			<td class="left"><a href="chldchg.asp?i=36402&amp;d=2025-10-28">SAINT BELLA Inc.:O</a></td>
+			<td class="left"><a href="chistory.asp?i=36402&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-1.38</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">472</td>
+			<td class="colHide3">8153</td>
+			<td class="left"><a href="chldchg.asp?i=2928&amp;d=2025-10-28">Jiading International Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=2928&part=348">CEPA ALLIANCE SECURITIES LTD</a></td>
+			<td>-1.45</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">473</td>
+			<td class="colHide3">3919</td>
+			<td class="left"><a href="chldchg.asp?i=14130&amp;d=2025-10-28">Golden Power Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=14130&part=1086">CNI SECURITIES GROUP LTD</a></td>
+			<td>-1.48</td>
+			<td class="colHide2 nowrap">25-05-14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">474</td>
+			<td class="colHide3">1385</td>
+			<td class="left"><a href="chldchg.asp?i=2632&amp;d=2025-10-28">Shanghai Fudan Microelectronics Group Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=2632&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-1.49</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">475</td>
+			<td class="colHide3">1679</td>
+			<td class="left"><a href="chldchg.asp?i=24951&amp;d=2025-10-28">RISECOMM GROUP HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=24951&part=1618">SILVERBRICKS SECURITIES CO LTD</a></td>
+			<td>-1.52</td>
+			<td class="colHide2 nowrap">25-10-22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">476</td>
+			<td class="colHide3">8178</td>
+			<td class="left"><a href="chldchg.asp?i=3095&amp;d=2025-10-28">China Information Technology Development Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3095&part=1689">MONT AVENIR CAPITAL LTD</a></td>
+			<td>-1.52</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">477</td>
+			<td class="colHide3">1703</td>
+			<td class="left"><a href="chldchg.asp?i=27521&amp;d=2025-10-28">Welife Technology Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=27521&part=887">GREAT BAY SECURITIES LTD</a></td>
+			<td>-1.52</td>
+			<td class="colHide2 nowrap">23-11-30</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">478</td>
+			<td class="colHide3">0568</td>
+			<td class="left"><a href="chldchg.asp?i=3550&amp;d=2025-10-28">SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3550&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-1.54</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">479</td>
+			<td class="colHide3">1865</td>
+			<td class="left"><a href="chldchg.asp?i=27787&amp;d=2025-10-28">Pengo Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27787&part=33">RIFA SECURITIES LTD</a></td>
+			<td>-1.66</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">480</td>
+			<td class="colHide3">3410</td>
+			<td class="left"><a href="chldchg.asp?i=35443&amp;d=2025-10-28">Hang Seng Japan TOPIX 100 Index ETF:Unit</a></td>
+			<td class="left"><a href="chistory.asp?i=35443&part=24">CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+			<td>-1.70</td>
+			<td class="colHide2 nowrap">25-10-23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">481</td>
+			<td class="colHide3">1676</td>
+			<td class="left"><a href="chldchg.asp?i=25096&amp;d=2025-10-28">Gaodi Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="chistory.asp?i=25096&part=541">YUANTA SECURITIES (HONG KONG) CO LTD</a></td>
+			<td>-1.78</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">482</td>
+			<td class="colHide3">2068</td>
+			<td class="left"><a href="chldchg.asp?i=9601&amp;d=2025-10-28">China Aluminum International Engineering Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=9601&part=1323">CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+			<td>-1.87</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">483</td>
+			<td class="colHide3">2418</td>
+			<td class="left"><a href="chldchg.asp?i=33257&amp;d=2025-10-28">DEEWIN TIANXIA CO., LTD:H</a></td>
+			<td class="left"><a href="chistory.asp?i=33257&part=1524">INNOVAX SECURITIES LTD</a></td>
+			<td>-2.01</td>
+			<td class="colHide2 nowrap">25-10-15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">484</td>
+			<td class="colHide3">1751</td>
+			<td class="left"><a href="chldchg.asp?i=22091&amp;d=2025-10-28">Kingland Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=22091&part=980">ASTRUM CAPITAL MANAGEMENT LTD</a></td>
+			<td>-2.09</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">485</td>
+			<td class="colHide3">6128</td>
+			<td class="left"><a href="chldchg.asp?i=12405&amp;d=2025-10-28">Graphex Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=12405&part=30">UBS SECURITIES HONG KONG LTD</a></td>
+			<td>-2.12</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">486</td>
+			<td class="colHide3">8460</td>
+			<td class="left"><a href="chldchg.asp?i=25018&amp;d=2025-10-28">Basetrophy Group Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=25018&part=1121">CHINA DEMETER SECURITIES LTD</a></td>
+			<td>-2.22</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">487</td>
+			<td class="colHide3">1596</td>
+			<td class="left"><a href="chldchg.asp?i=22119&amp;d=2025-10-28">Hebei Yichen Industrial Group Corporation Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=22119&part=1256">ZHONGTAI INTERNATIONAL SECURITIES LTD</a></td>
+			<td>-2.35</td>
+			<td class="colHide2 nowrap">25-10-17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">488</td>
+			<td class="colHide3">0083</td>
+			<td class="left"><a href="chldchg.asp?i=39&amp;d=2025-10-28">SINO LAND COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=39&part=454">CITIBANK N.A.</a></td>
+			<td>-2.46</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">489</td>
+			<td class="colHide3">6968</td>
+			<td class="left"><a href="chldchg.asp?i=29427&amp;d=2025-10-28">Ganglong China Property Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=29427&part=482">DEUTSCHE BANK AG</a></td>
+			<td>-2.47</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">490</td>
+			<td class="colHide3">2571</td>
+			<td class="left"><a href="chldchg.asp?i=36076&amp;d=2025-10-28">Beijing Saimo Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=36076&part=1114">VALUABLE CAPITAL LTD</a></td>
+			<td>-2.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">491</td>
+			<td class="colHide3">8178</td>
+			<td class="left"><a href="chldchg.asp?i=3095&amp;d=2025-10-28">China Information Technology Development Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=3095&part=1235">GRAND CHINA SECURITIES LTD</a></td>
+			<td>-2.51</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">492</td>
+			<td class="colHide3">2536</td>
+			<td class="left"><a href="chldchg.asp?i=35082&amp;d=2025-10-28">Palasino Holdings Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=35082&part=91">WATON SECURITIES INTERNATIONAL LIMITED</a></td>
+			<td>-2.60</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">493</td>
+			<td class="colHide3">0673</td>
+			<td class="left"><a href="chldchg.asp?i=1085&amp;d=2025-10-28">China Health Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1085&part=1509">FORTUNE ORIGIN SECURITIES LTD</a></td>
+			<td>-2.87</td>
+			<td class="colHide2 nowrap">25-02-20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">494</td>
+			<td class="colHide3">8191</td>
+			<td class="left"><a href="chldchg.asp?i=11687&amp;d=2025-10-28">HONG WEI (ASIA) HOLDINGS COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="chistory.asp?i=11687&part=255">KGI ASIA LTD</a></td>
+			<td>-2.94</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">495</td>
+			<td class="colHide3">6162</td>
+			<td class="left"><a href="chldchg.asp?i=27470&amp;d=2025-10-28">China Tianrui Automotive Interiors Co., LTD:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27470&part=1243">FUTU SECURITIES INTERNATIONAL</a></td>
+			<td>-3.04</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">496</td>
+			<td class="colHide3">8635</td>
+			<td class="left"><a href="chldchg.asp?i=27900&amp;d=2025-10-28">Elephant Holdings Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=27900&part=1250">PINESTONE SECURITIES LTD</a></td>
+			<td>-3.43</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">497</td>
+			<td class="colHide3">0970</td>
+			<td class="left"><a href="chldchg.asp?i=1055&amp;d=2025-10-28">New Sparkle Roll International Group Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=1055&part=454">CITIBANK N.A.</a></td>
+			<td>-3.48</td>
+			<td class="colHide2 nowrap">25-10-27</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">498</td>
+			<td class="colHide3">1265</td>
+			<td class="left"><a href="chldchg.asp?i=3461&amp;d=2025-10-28">Tianjin Jinran Public Utilities Company Limited:H</a></td>
+			<td class="left"><a href="chistory.asp?i=3461&part=223">GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+			<td>-3.87</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">499</td>
+			<td class="colHide3">6117</td>
+			<td class="left"><a href="chldchg.asp?i=28065&amp;d=2025-10-28">RIZHAO PORT JURONG CO., LTD.:H</a></td>
+			<td class="left"><a href="chistory.asp?i=28065&part=466">STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+			<td>-5.37</td>
+			<td class="colHide2 nowrap">25-08-11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide1">500</td>
+			<td class="colHide3">1406</td>
+			<td class="left"><a href="chldchg.asp?i=32812&amp;d=2025-10-28">Clarity Medical Group Holding Limited:O</a></td>
+			<td class="left"><a href="chistory.asp?i=32812&part=37">QUAM SECURITIES LTD</a></td>
+			<td>-11.82</td>
+			<td class="colHide2 nowrap">25-10-24</td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

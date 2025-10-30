@@ -1,6 +1,51 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Outstanding Shares: {{ company_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Outstanding Shares</h2>
+<p><b>{{ company_name }}</b>{% if stock_code %} ({{ stock_code }}){% endif %}</p>
+
+<form method="get" action="{{ url_for('dbpub_statistics.outstanding') }}">
+	<div class="inputs">
+		Stock code: <input type="text" name="sc" size="5" value="{{ stock_code }}">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if history %}
+<p>Outstanding shares history with market capitalization. The market cap is calculated using the nearest available closing price on or before the record date.</p>
+
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide1">Row</th>
+		<th>Date</th>
+		<th>Outstanding<br>Shares</th>
+		<th>Price<br>Date</th>
+		<th>Closing<br>Price</th>
+		<th>Market Cap<br>(HK$ million)</th>
+		<th class="colHide2">Pending<br>Adjustments</th>
+	</tr>
+	{% for row in history %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td>{{ row.atdate.strftime('%Y-%m-%d') if row.atdate else '' }}</td>
+		<td>{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '-' }}</td>
+		<td>{{ row.maxdate.strftime('%Y-%m-%d') if row.maxdate else '-' }}</td>
+		<td>{{ '{:.3f}'.format(row.closing) if row.closing else '-' }}</td>
+		<td>
+			{% if row.outstanding and row.closing %}
+				{{ '{:,.1f}'.format((row.outstanding * row.closing) / 1000000) }}
+			{% else %}
+				-
+			{% endif %}
+		</td>
+		<td class="colHide2">{{ '{:,.0f}'.format(row.pendsh) if row.pendsh else '0' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p><b>No outstanding shares history found for this stock.</b></p>
+{% endif %}
+
 {% endblock %}
