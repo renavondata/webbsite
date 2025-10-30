@@ -1,0 +1,1397 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Officer pay: Lui, Che Woo 呂志和</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+	<h2>Lui, Che Woo 呂志和</h2>
+	
+	<ul class="navlist">
+		<li><a href='../dbpub/natperson.asp?p=14796'>Key data</a></li><li><a href='../dbpub/positions.asp?p=14796'>Positions</a></li><li class='livebutton'>Pay</li><li><a href='../dbpub/sdidir.asp?p=14796'>Dealings</a></li>
+	</ul>
+	<div class="clear"></div>
+	
+	<form method="get" action="offpay.asp?c=0">
+		<input type="hidden" name="p" value="14796">
+		<input type="hidden" name="sort" value="yrdn">
+		<div class="inputs">
+			<input type="radio" name="o" value="1"  onchange="this.form.submit()">Show original currency
+		</div>
+		<div class="inputs">
+			<input type="radio" name="o" value="2"  checked onchange="this.form.submit()">Convert all records at financial year-end to: <select name='c' onchange="this.form.submit()"><option value='6'>AUD</option><option value='5'>CAD</option><option value='1'>CNY</option><option value='8'>EUR</option><option value='4'>GBP</option><option value='0' selected>HKD</option><option value='9'>JPY</option><option value='18'>MOP</option><option value='7'>MYR</option><option value='3'>SGD</option><option value='10'>THB</option><option value='14'>TWD</option><option value='2'>USD</option></select>
+		</div>
+		<div class="clear"></div>
+	</form>
+	<h3>Pay records</h3>
+	
+		<p>Click on "Organisation" or "Year-end" to sort by firm or year. Click on the date to see all the pay of the 
+		organisation for that year.</p>
+		<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="numtable">
+			<tr>
+				
+					<th class="left"><a href='/dbpub/offpay.asp?p=14796&amp;c=0&amp;o=2&amp;sort=nam'><b>Organisation</b></a></th>
+				
+				<th class="left">Last<br>position</th>
+				<th><a href='/dbpub/offpay.asp?p=14796&amp;c=0&amp;o=2&amp;sort=yrdn'><b>Year-end</b></a></th>
+				<th class="colHide3">Fees</th>
+				<th class="colHide3">Salary &amp;<br>benefits</th>
+				<th class="colHide3">Bonus</th>
+				<th class="colHide3">Retire</th>
+				<th class="colHide3">Share-<br>based</th>
+				<th>Total</th>
+			</tr>
+			
+					<tr>
+						<td class="left" colspan="9"><h4>2024 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">430</td>
+						
+							<td class="colHide3">10,280</td>
+						
+							<td class="colHide3">10,785</td>
+						
+							<td class="colHide3">488</td>
+						
+							<td class="colHide3">33,349</td>
+						
+						<td>55,332</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">13,406</td>
+						
+							<td class="colHide3">4,470</td>
+						
+							<td class="colHide3">1,358</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>19,576</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">772</td>
+						
+							<td class="colHide3">23,686</td>
+						
+							<td class="colHide3">15,255</td>
+						
+							<td class="colHide3">1,846</td>
+						
+							<td class="colHide3">33,349</td>
+						
+						<td>74,908</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2023 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">430</td>
+						
+							<td class="colHide3">37,790</td>
+						
+							<td class="colHide3">17,255</td>
+						
+							<td class="colHide3">586</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>56,061</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">15,360</td>
+						
+							<td class="colHide3">4,330</td>
+						
+							<td class="colHide3">1,594</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>21,626</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">772</td>
+						
+							<td class="colHide3">53,150</td>
+						
+							<td class="colHide3">21,585</td>
+						
+							<td class="colHide3">2,180</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>77,687</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2022 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">430</td>
+						
+							<td class="colHide3">5,861</td>
+						
+							<td class="colHide3">4,884</td>
+						
+							<td class="colHide3">586</td>
+						
+							<td class="colHide3">25,336</td>
+						
+						<td>37,097</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">14,916</td>
+						
+							<td class="colHide3">4,193</td>
+						
+							<td class="colHide3">1,550</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>21,001</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">772</td>
+						
+							<td class="colHide3">20,777</td>
+						
+							<td class="colHide3">9,077</td>
+						
+							<td class="colHide3">2,136</td>
+						
+							<td class="colHide3">25,336</td>
+						
+						<td>58,098</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2021 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">2,155</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">29,731</td>
+						
+						<td>31,886</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">14,412</td>
+						
+							<td class="colHide3">4,050</td>
+						
+							<td class="colHide3">1,499</td>
+						
+							<td class="colHide3">698</td>
+						
+						<td>21,001</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">14,412</td>
+						
+							<td class="colHide3">6,205</td>
+						
+							<td class="colHide3">1,499</td>
+						
+							<td class="colHide3">30,429</td>
+						
+						<td>52,887</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2020 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">10,192</td>
+						
+							<td class="colHide3">21,620</td>
+						
+							<td class="colHide3">586</td>
+						
+							<td class="colHide3">42,603</td>
+						
+						<td>75,001</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">14,100</td>
+						
+							<td class="colHide3">3,948</td>
+						
+							<td class="colHide3">1,468</td>
+						
+							<td class="colHide3">698</td>
+						
+						<td>20,556</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">24,292</td>
+						
+							<td class="colHide3">25,568</td>
+						
+							<td class="colHide3">2,054</td>
+						
+							<td class="colHide3">43,301</td>
+						
+						<td>95,557</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2019 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">12,227</td>
+						
+							<td class="colHide3">24,346</td>
+						
+							<td class="colHide3">611</td>
+						
+							<td class="colHide3">38,795</td>
+						
+						<td>76,329</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">342</td>
+						
+							<td class="colHide3">13,599</td>
+						
+							<td class="colHide3">3,814</td>
+						
+							<td class="colHide3">1,418</td>
+						
+							<td class="colHide3">1,140</td>
+						
+						<td>20,313</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">692</td>
+						
+							<td class="colHide3">25,826</td>
+						
+							<td class="colHide3">28,160</td>
+						
+							<td class="colHide3">2,029</td>
+						
+							<td class="colHide3">39,935</td>
+						
+						<td>96,642</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2018 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">280</td>
+						
+							<td class="colHide3">11,649</td>
+						
+							<td class="colHide3">24,168</td>
+						
+							<td class="colHide3">583</td>
+						
+							<td class="colHide3">22,863</td>
+						
+						<td>59,543</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">330</td>
+						
+							<td class="colHide3">13,076</td>
+						
+							<td class="colHide3">4,167</td>
+						
+							<td class="colHide3">1,366</td>
+						
+							<td class="colHide3">2,460</td>
+						
+						<td>21,399</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">610</td>
+						
+							<td class="colHide3">24,725</td>
+						
+							<td class="colHide3">28,335</td>
+						
+							<td class="colHide3">1,949</td>
+						
+							<td class="colHide3">25,323</td>
+						
+						<td>80,942</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2017 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">250</td>
+						
+							<td class="colHide3">10,785</td>
+						
+							<td class="colHide3">18,149</td>
+						
+							<td class="colHide3">540</td>
+						
+							<td class="colHide3">22,144</td>
+						
+						<td>51,868</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">330</td>
+						
+							<td class="colHide3">12,573</td>
+						
+							<td class="colHide3">4,030</td>
+						
+							<td class="colHide3">1,316</td>
+						
+							<td class="colHide3">1,320</td>
+						
+						<td>19,569</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">580</td>
+						
+							<td class="colHide3">23,358</td>
+						
+							<td class="colHide3">22,179</td>
+						
+							<td class="colHide3">1,856</td>
+						
+							<td class="colHide3">23,464</td>
+						
+						<td>71,437</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2016 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">10,786</td>
+						
+							<td class="colHide3">1,348</td>
+						
+							<td class="colHide3">539</td>
+						
+							<td class="colHide3">21,888</td>
+						
+						<td>34,801</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">12,089</td>
+						
+							<td class="colHide3">1,453</td>
+						
+							<td class="colHide3">1,267</td>
+						
+							<td class="colHide3">1,344</td>
+						
+						<td>16,453</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">540</td>
+						
+							<td class="colHide3">22,875</td>
+						
+							<td class="colHide3">2,801</td>
+						
+							<td class="colHide3">1,806</td>
+						
+							<td class="colHide3">23,232</td>
+						
+						<td>51,254</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2015 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">10,786</td>
+						
+							<td class="colHide3">15,774</td>
+						
+							<td class="colHide3">539</td>
+						
+							<td class="colHide3">21,664</td>
+						
+						<td>49,003</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">11,624</td>
+						
+							<td class="colHide3">1,391</td>
+						
+							<td class="colHide3">1,221</td>
+						
+							<td class="colHide3">2,288</td>
+						
+						<td>16,824</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">540</td>
+						
+							<td class="colHide3">22,410</td>
+						
+							<td class="colHide3">17,165</td>
+						
+							<td class="colHide3">1,760</td>
+						
+							<td class="colHide3">23,952</td>
+						
+						<td>65,827</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2014 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">10,786</td>
+						
+							<td class="colHide3">28,967</td>
+						
+							<td class="colHide3">539</td>
+						
+							<td class="colHide3">19,624</td>
+						
+						<td>60,156</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">290</td>
+						
+							<td class="colHide3">11,124</td>
+						
+							<td class="colHide3">2,624</td>
+						
+							<td class="colHide3">1,171</td>
+						
+							<td class="colHide3">763</td>
+						
+						<td>15,972</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">530</td>
+						
+							<td class="colHide3">21,910</td>
+						
+							<td class="colHide3">31,591</td>
+						
+							<td class="colHide3">1,710</td>
+						
+							<td class="colHide3">20,387</td>
+						
+						<td>76,128</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2013 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">210</td>
+						
+							<td class="colHide3">9,630</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">482</td>
+						
+							<td class="colHide3">18,919</td>
+						
+						<td>29,241</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">269</td>
+						
+							<td class="colHide3">10,494</td>
+						
+							<td class="colHide3">3,975</td>
+						
+							<td class="colHide3">1,095</td>
+						
+							<td class="colHide3">3,577</td>
+						
+						<td>19,410</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">479</td>
+						
+							<td class="colHide3">20,124</td>
+						
+							<td class="colHide3">3,975</td>
+						
+							<td class="colHide3">1,577</td>
+						
+							<td class="colHide3">22,496</td>
+						
+						<td>48,651</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2012 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">190</td>
+						
+							<td class="colHide3">7,704</td>
+						
+							<td class="colHide3">13,997</td>
+						
+							<td class="colHide3">385</td>
+						
+							<td class="colHide3">12,954</td>
+						
+						<td>35,230</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">230</td>
+						
+							<td class="colHide3">9,540</td>
+						
+							<td class="colHide3">1,350</td>
+						
+							<td class="colHide3">962</td>
+						
+							<td class="colHide3">1,627</td>
+						
+						<td>13,709</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">420</td>
+						
+							<td class="colHide3">17,244</td>
+						
+							<td class="colHide3">15,347</td>
+						
+							<td class="colHide3">1,347</td>
+						
+							<td class="colHide3">14,581</td>
+						
+						<td>48,939</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2011 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">170</td>
+						
+							<td class="colHide3">7,200</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">360</td>
+						
+							<td class="colHide3">6,581</td>
+						
+						<td>14,311</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">220</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">908</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>10,128</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">390</td>
+						
+							<td class="colHide3">16,200</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">1,268</td>
+						
+							<td class="colHide3">6,581</td>
+						
+						<td>24,439</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2010 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">150</td>
+						
+							<td class="colHide3">7,200</td>
+						
+							<td class="colHide3">4,000</td>
+						
+							<td class="colHide3">360</td>
+						
+							<td class="colHide3">4,026</td>
+						
+						<td>15,736</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">209</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3">1,844</td>
+						
+							<td class="colHide3">908</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,961</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">359</td>
+						
+							<td class="colHide3">16,200</td>
+						
+							<td class="colHide3">5,844</td>
+						
+							<td class="colHide3">1,268</td>
+						
+							<td class="colHide3">4,026</td>
+						
+						<td>27,697</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2009 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">120</td>
+						
+							<td class="colHide3">4,281</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">214</td>
+						
+							<td class="colHide3">3,359</td>
+						
+						<td>7,974</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, MD, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">120</td>
+						
+							<td class="colHide3">4,725</td>
+						
+							<td class="colHide3">457</td>
+						
+							<td class="colHide3">480</td>
+						
+							<td class="colHide3">904</td>
+						
+						<td>6,686</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">9,006</td>
+						
+							<td class="colHide3">457</td>
+						
+							<td class="colHide3">694</td>
+						
+							<td class="colHide3">4,263</td>
+						
+						<td>14,660</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2008 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2008-12-31">2008-12-31</a></td>
+					
+							<td class="colHide3">120</td>
+						
+							<td class="colHide3">3,308</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3">166</td>
+						
+							<td class="colHide3">2,150</td>
+						
+						<td>8,744</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2008-12-31">2008-12-31</a></td>
+					
+							<td class="colHide3">120</td>
+						
+							<td class="colHide3">4,725</td>
+						
+							<td class="colHide3">879</td>
+						
+							<td class="colHide3">481</td>
+						
+							<td class="colHide3">794</td>
+						
+						<td>6,999</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">8,033</td>
+						
+							<td class="colHide3">3,879</td>
+						
+							<td class="colHide3">647</td>
+						
+							<td class="colHide3">2,944</td>
+						
+						<td>15,743</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2007 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2007-12-31">2007-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">3,150</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3">158</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>6,408</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2007-12-31">2007-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">4,725</td>
+						
+							<td class="colHide3">333</td>
+						
+							<td class="colHide3">480</td>
+						
+							<td class="colHide3">795</td>
+						
+						<td>6,433</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">200</td>
+						
+							<td class="colHide3">7,875</td>
+						
+							<td class="colHide3">3,333</td>
+						
+							<td class="colHide3">638</td>
+						
+							<td class="colHide3">795</td>
+						
+						<td>12,841</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2006 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2006-12-31">2006-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">150</td>
+						
+							<td class="colHide3">277</td>
+						
+						<td>3,527</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2006-12-31">2006-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">4,500</td>
+						
+							<td class="colHide3">308</td>
+						
+							<td class="colHide3">458</td>
+						
+							<td class="colHide3">155</td>
+						
+						<td>5,521</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">200</td>
+						
+							<td class="colHide3">7,500</td>
+						
+							<td class="colHide3">308</td>
+						
+							<td class="colHide3">608</td>
+						
+							<td class="colHide3">432</td>
+						
+						<td>9,048</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2005 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">GALAXY ENTERTAINMENT GROUP LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1056&amp;d=2005-12-31">2005-12-31</a></td>
+					
+							<td class="colHide3">80</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">3,058</td>
+						
+						<td>3,138</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">K. WAH INTERNATIONAL HOLDINGS LIMITED</td>
+					
+					<td class="left">Ch, Fdr</td>
+					<td><a href="pay.asp?p=1893&amp;d=2005-12-31">2005-12-31</a></td>
+					
+							<td class="colHide3">160</td>
+						
+							<td class="colHide3">4,200</td>
+						
+							<td class="colHide3">294</td>
+						
+							<td class="colHide3">428</td>
+						
+							<td class="colHide3">155</td>
+						
+						<td>5,237</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3">4,200</td>
+						
+							<td class="colHide3">294</td>
+						
+							<td class="colHide3">428</td>
+						
+							<td class="colHide3">3,213</td>
+						
+						<td>8,375</td>
+					</tr>
+				
+		</table>
+	
+<h3>Notes</h3>
+<ol>
+	<li>These data are incomplete. They are entered and checked by volunteers, so if you want to expand them then
+	<strong><a href="../webbmail/username.asp">volunteer</a></strong> to be a Webb-site editor and add pay records 
+	from annual reports! Please <strong><a href="../contact">report</a></strong> any errors.</li>
+	<li>If a director sits on the boards of both a listed company and its listed subsidiary, then the parent company 
+	records will normally include the pay at the subsidiary, so you should subtract that when looking at annual totals.</li>
+</ol>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

@@ -1,0 +1,2265 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>Traffic: Cross Harbour Tunnel: All vehicles by month</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Traffic: Cross Harbour Tunnel: All vehicles by month</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=1&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=1'>Type history</a></li><li><a href='vefuel.asp'>Fuels</a></li><li><a href='vefuelhist.asp?vc=1'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li class='livebutton'>Tunnels</li><li><a href='veJourneys.asp'>Journeys</a></li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of vehicles passing through a tunnel or over a bridge. Some routes, 
+without tolls, only count vehicles as one class. Data are from the Transport Department. By <a href="https://www.hklii.hk/en/legis/ord/374/s2" target="_blank">law</a>, 
+permitted gross vehicle mass of Goods Vehicles in tonnes are: Light: 5.5, Medium: 24, Heavy: 38.</p>
+<form method="get" action="tuntraff.asp">
+	<input type="hidden" name="sort" value="datdn">
+	<div class="inputs">
+		Tunnel <select name='t' onchange="this.form.submit()"><option value='26'>3 cross-harbour tunnels</option><option value='5'>Aberdeen Tunnel</option><option value='16'>Airport Tunnel</option><option value='18'>Central-Wan Chai Bypass Tunnel</option><option value='20'>Cheung Shan Tunnel</option><option value='14'>Cheung Tsing Tunnel</option><option value='1' selected>Cross Harbour Tunnel</option><option value='11'>Discovery Bay Tunnel Link</option><option value='12'>Eagle's Nest & Sha Tin Heights Tunnel</option><option value='2'>Eastern Harbour Crossing</option><option value='9'>Kai Tak Tunnel</option><option value='23'>Lantau Link & Bridges</option><option value='4'>Lion Rock Tunnel</option><option value='19'>Lung Shan Tunnel</option><option value='15'>Nam Wan Tunnel</option><option value='17'>Scenic Hill Tunnel</option><option value='6'>Shing Mun Tunnel</option><option value='25'>Stonecutters Bridge</option><option value='10'>Tai Lam Tunnel</option><option value='13'>Tai Wai Tunnel</option><option value='8'>Tate's Cairn Tunnel</option><option value='24'>Ting Kau Bridge</option><option value='7'>Tseung Kwan O Tunnel</option><option value='22'>Tsueng Kwan O-Lam Tin Tunnel</option><option value='21'>Tuen Mun-Chek Lap Kok Tunnel</option><option value='3'>Western Harbour Crossing</option></select>
+	</div>	
+	<div class="inputs">
+	Vehicle class <select name='vc' onchange="this.form.submit()"><option value='0' selected>All</option><option value='71'>Buses: Double</option><option value='70'>Buses: Single</option><option value='29'>Heavy Goods Vehicles</option><option value='27'>Light Goods Vehicles</option><option value='28'>Medium Goods Vehicles</option><option value='2'>Motor Cycles</option><option value='1'>Private Cars</option><option value='15'>Private/Public Light Buses</option><option value='3'>Taxis</option></select>
+	</div>
+	<div class="inputs">
+		Frequency
+		<select id='f' name='f' onchange='this.form.submit()'><option value='1' selected>Monthly</option><option value='2'>Yearly</option></select>
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<table class="numtable fcl">
+	<tr>
+		<th><a href='/dbpub/tuntraff.asp?t=1&amp;vc=0&amp;sort=datup'><b>Month</b></a></th>
+		<th><a href='/dbpub/tuntraff.asp?t=1&amp;vc=0&amp;sort=defdn'><b>North-Bound</b></a></th>
+		
+			<th><a href='/dbpub/tuntraff.asp?t=1&amp;vc=0&amp;sort=altdn'><b>South-Bound</b></a></th>
+			<th>Net</th>
+		
+		<th><a href='/dbpub/tuntraff.asp?t=1&amp;vc=0&amp;sort=defadn'><b>Average daily North-Bound</b></a></th>
+		
+			<th><a href='/dbpub/tuntraff.asp?t=1&amp;vc=0&amp;sort=altadn'><b>Average daily South-Bound</b></a></th>
+			<th>Net</th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap">2025-07</td>
+			<td>1,332,889</td>			
+		
+			<td>1,445,457</td>
+			<td>-112,568</td>
+		
+			<td>42,996.4</td>
+		
+			<td>46,627.6</td>
+			<td>-3,631.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-06</td>
+			<td>1,337,072</td>			
+		
+			<td>1,444,397</td>
+			<td>-107,325</td>
+		
+			<td>44,569.1</td>
+		
+			<td>48,146.6</td>
+			<td>-3,577.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-05</td>
+			<td>1,380,154</td>			
+		
+			<td>1,491,189</td>
+			<td>-111,035</td>
+		
+			<td>44,521.1</td>
+		
+			<td>48,102.9</td>
+			<td>-3,581.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-04</td>
+			<td>1,304,661</td>			
+		
+			<td>1,423,082</td>
+			<td>-118,421</td>
+		
+			<td>43,488.7</td>
+		
+			<td>47,436.1</td>
+			<td>-3,947.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-03</td>
+			<td>1,428,200</td>			
+		
+			<td>1,534,241</td>
+			<td>-106,041</td>
+		
+			<td>46,071.0</td>
+		
+			<td>49,491.6</td>
+			<td>-3,420.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-02</td>
+			<td>1,261,266</td>			
+		
+			<td>1,355,503</td>
+			<td>-94,237</td>
+		
+			<td>45,045.2</td>
+		
+			<td>48,410.8</td>
+			<td>-3,365.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-01</td>
+			<td>1,385,694</td>			
+		
+			<td>1,483,423</td>
+			<td>-97,729</td>
+		
+			<td>44,699.8</td>
+		
+			<td>47,852.4</td>
+			<td>-3,152.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-12</td>
+			<td>1,416,438</td>			
+		
+			<td>1,508,765</td>
+			<td>-92,327</td>
+		
+			<td>45,691.5</td>
+		
+			<td>48,669.8</td>
+			<td>-2,978.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-11</td>
+			<td>1,380,292</td>			
+		
+			<td>1,471,387</td>
+			<td>-91,095</td>
+		
+			<td>46,009.7</td>
+		
+			<td>49,046.2</td>
+			<td>-3,036.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-10</td>
+			<td>1,418,910</td>			
+		
+			<td>1,524,672</td>
+			<td>-105,762</td>
+		
+			<td>45,771.3</td>
+		
+			<td>49,183.0</td>
+			<td>-3,411.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-09</td>
+			<td>1,332,409</td>			
+		
+			<td>1,423,418</td>
+			<td>-91,009</td>
+		
+			<td>44,413.6</td>
+		
+			<td>47,447.3</td>
+			<td>-3,033.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-08</td>
+			<td>1,399,932</td>			
+		
+			<td>1,498,470</td>
+			<td>-98,538</td>
+		
+			<td>45,159.1</td>
+		
+			<td>48,337.7</td>
+			<td>-3,178.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-07</td>
+			<td>1,374,682</td>			
+		
+			<td>1,476,303</td>
+			<td>-101,621</td>
+		
+			<td>44,344.6</td>
+		
+			<td>47,622.7</td>
+			<td>-3,278.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-06</td>
+			<td>1,340,786</td>			
+		
+			<td>1,447,460</td>
+			<td>-106,674</td>
+		
+			<td>44,692.9</td>
+		
+			<td>48,248.7</td>
+			<td>-3,555.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-05</td>
+			<td>1,375,251</td>			
+		
+			<td>1,486,431</td>
+			<td>-111,180</td>
+		
+			<td>44,362.9</td>
+		
+			<td>47,949.4</td>
+			<td>-3,586.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-04</td>
+			<td>1,328,488</td>			
+		
+			<td>1,434,628</td>
+			<td>-106,140</td>
+		
+			<td>44,282.9</td>
+		
+			<td>47,820.9</td>
+			<td>-3,538.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-03</td>
+			<td>1,400,007</td>			
+		
+			<td>1,526,168</td>
+			<td>-126,161</td>
+		
+			<td>45,161.5</td>
+		
+			<td>49,231.2</td>
+			<td>-4,069.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-02</td>
+			<td>1,253,405</td>			
+		
+			<td>1,366,379</td>
+			<td>-112,974</td>
+		
+			<td>43,220.9</td>
+		
+			<td>47,116.5</td>
+			<td>-3,895.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-01</td>
+			<td>1,372,532</td>			
+		
+			<td>1,512,259</td>
+			<td>-139,727</td>
+		
+			<td>44,275.2</td>
+		
+			<td>48,782.5</td>
+			<td>-4,507.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-12</td>
+			<td>1,572,005</td>			
+		
+			<td>1,467,040</td>
+			<td>104,965</td>
+		
+			<td>50,709.8</td>
+		
+			<td>47,323.9</td>
+			<td>3,386.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-11</td>
+			<td>1,623,476</td>			
+		
+			<td>1,526,339</td>
+			<td>97,137</td>
+		
+			<td>54,115.9</td>
+		
+			<td>50,878.0</td>
+			<td>3,237.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-10</td>
+			<td>1,582,263</td>			
+		
+			<td>1,497,789</td>
+			<td>84,474</td>
+		
+			<td>51,040.7</td>
+		
+			<td>48,315.8</td>
+			<td>2,725.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-09</td>
+			<td>1,484,044</td>			
+		
+			<td>1,400,771</td>
+			<td>83,273</td>
+		
+			<td>49,468.1</td>
+		
+			<td>46,692.4</td>
+			<td>2,775.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-08</td>
+			<td>1,640,836</td>			
+		
+			<td>1,558,855</td>
+			<td>81,981</td>
+		
+			<td>52,930.2</td>
+		
+			<td>50,285.6</td>
+			<td>2,644.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-07</td>
+			<td>1,682,520</td>			
+		
+			<td>1,567,347</td>
+			<td>115,173</td>
+		
+			<td>54,274.8</td>
+		
+			<td>50,559.6</td>
+			<td>3,715.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-06</td>
+			<td>1,667,609</td>			
+		
+			<td>1,542,074</td>
+			<td>125,535</td>
+		
+			<td>55,587.0</td>
+		
+			<td>51,402.5</td>
+			<td>4,184.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-05</td>
+			<td>1,716,721</td>			
+		
+			<td>1,604,056</td>
+			<td>112,665</td>
+		
+			<td>55,378.1</td>
+		
+			<td>51,743.7</td>
+			<td>3,634.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-04</td>
+			<td>1,644,326</td>			
+		
+			<td>1,551,250</td>
+			<td>93,076</td>
+		
+			<td>54,810.9</td>
+		
+			<td>51,708.3</td>
+			<td>3,102.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-03</td>
+			<td>1,739,684</td>			
+		
+			<td>1,647,122</td>
+			<td>92,562</td>
+		
+			<td>56,118.8</td>
+		
+			<td>53,133.0</td>
+			<td>2,985.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-02</td>
+			<td>1,570,599</td>			
+		
+			<td>1,496,439</td>
+			<td>74,160</td>
+		
+			<td>56,092.8</td>
+		
+			<td>53,444.3</td>
+			<td>2,648.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-01</td>
+			<td>1,672,497</td>			
+		
+			<td>1,591,516</td>
+			<td>80,981</td>
+		
+			<td>53,951.5</td>
+		
+			<td>51,339.2</td>
+			<td>2,612.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-12</td>
+			<td>1,722,908</td>			
+		
+			<td>1,638,859</td>
+			<td>84,049</td>
+		
+			<td>55,577.7</td>
+		
+			<td>52,866.4</td>
+			<td>2,711.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-11</td>
+			<td>1,653,005</td>			
+		
+			<td>1,568,946</td>
+			<td>84,059</td>
+		
+			<td>55,100.2</td>
+		
+			<td>52,298.2</td>
+			<td>2,802.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-10</td>
+			<td>1,687,822</td>			
+		
+			<td>1,633,024</td>
+			<td>54,798</td>
+		
+			<td>54,445.9</td>
+		
+			<td>52,678.2</td>
+			<td>1,767.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-09</td>
+			<td>1,646,321</td>			
+		
+			<td>1,595,469</td>
+			<td>50,852</td>
+		
+			<td>54,877.4</td>
+		
+			<td>53,182.3</td>
+			<td>1,695.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-08</td>
+			<td>1,655,619</td>			
+		
+			<td>1,616,705</td>
+			<td>38,914</td>
+		
+			<td>53,407.1</td>
+		
+			<td>52,151.8</td>
+			<td>1,255.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-07</td>
+			<td>1,655,976</td>			
+		
+			<td>1,626,097</td>
+			<td>29,879</td>
+		
+			<td>53,418.6</td>
+		
+			<td>52,454.7</td>
+			<td>963.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-06</td>
+			<td>1,631,107</td>			
+		
+			<td>1,602,178</td>
+			<td>28,929</td>
+		
+			<td>54,370.2</td>
+		
+			<td>53,405.9</td>
+			<td>964.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-05</td>
+			<td>1,660,440</td>			
+		
+			<td>1,630,995</td>
+			<td>29,445</td>
+		
+			<td>53,562.6</td>
+		
+			<td>52,612.7</td>
+			<td>949.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-04</td>
+			<td>1,529,949</td>			
+		
+			<td>1,524,384</td>
+			<td>5,565</td>
+		
+			<td>50,998.3</td>
+		
+			<td>50,812.8</td>
+			<td>185.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-03</td>
+			<td>1,437,474</td>			
+		
+			<td>1,423,820</td>
+			<td>13,654</td>
+		
+			<td>46,370.1</td>
+		
+			<td>45,929.7</td>
+			<td>440.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-02</td>
+			<td>1,290,913</td>			
+		
+			<td>1,280,185</td>
+			<td>10,728</td>
+		
+			<td>46,104.0</td>
+		
+			<td>45,720.9</td>
+			<td>383.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-01</td>
+			<td>1,596,944</td>			
+		
+			<td>1,589,707</td>
+			<td>7,237</td>
+		
+			<td>51,514.3</td>
+		
+			<td>51,280.9</td>
+			<td>233.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-12</td>
+			<td>1,712,089</td>			
+		
+			<td>1,701,370</td>
+			<td>10,719</td>
+		
+			<td>55,228.7</td>
+		
+			<td>54,882.9</td>
+			<td>345.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-11</td>
+			<td>1,651,790</td>			
+		
+			<td>1,655,881</td>
+			<td>-4,091</td>
+		
+			<td>55,059.7</td>
+		
+			<td>55,196.0</td>
+			<td>-136.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-10</td>
+			<td>1,614,008</td>			
+		
+			<td>1,621,728</td>
+			<td>-7,720</td>
+		
+			<td>52,064.8</td>
+		
+			<td>52,313.8</td>
+			<td>-249.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-09</td>
+			<td>1,625,552</td>			
+		
+			<td>1,638,001</td>
+			<td>-12,449</td>
+		
+			<td>54,185.1</td>
+		
+			<td>54,600.0</td>
+			<td>-415.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-08</td>
+			<td>1,656,864</td>			
+		
+			<td>1,675,478</td>
+			<td>-18,614</td>
+		
+			<td>53,447.2</td>
+		
+			<td>54,047.7</td>
+			<td>-600.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-07</td>
+			<td>1,659,806</td>			
+		
+			<td>1,683,863</td>
+			<td>-24,057</td>
+		
+			<td>53,542.1</td>
+		
+			<td>54,318.2</td>
+			<td>-776.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-06</td>
+			<td>1,597,427</td>			
+		
+			<td>1,610,822</td>
+			<td>-13,395</td>
+		
+			<td>53,247.6</td>
+		
+			<td>53,694.1</td>
+			<td>-446.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-05</td>
+			<td>1,674,491</td>			
+		
+			<td>1,684,789</td>
+			<td>-10,298</td>
+		
+			<td>54,015.8</td>
+		
+			<td>54,348.0</td>
+			<td>-332.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-04</td>
+			<td>1,615,520</td>			
+		
+			<td>1,633,372</td>
+			<td>-17,852</td>
+		
+			<td>53,850.7</td>
+		
+			<td>54,445.7</td>
+			<td>-595.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-03</td>
+			<td>1,686,111</td>			
+		
+			<td>1,698,142</td>
+			<td>-12,031</td>
+		
+			<td>54,390.7</td>
+		
+			<td>54,778.8</td>
+			<td>-388.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-02</td>
+			<td>1,469,505</td>			
+		
+			<td>1,479,324</td>
+			<td>-9,819</td>
+		
+			<td>52,482.3</td>
+		
+			<td>52,833.0</td>
+			<td>-350.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-01</td>
+			<td>1,577,713</td>			
+		
+			<td>1,595,489</td>
+			<td>-17,776</td>
+		
+			<td>50,894.0</td>
+		
+			<td>51,467.4</td>
+			<td>-573.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-12</td>
+			<td>1,603,579</td>			
+		
+			<td>1,613,835</td>
+			<td>-10,256</td>
+		
+			<td>51,728.4</td>
+		
+			<td>52,059.2</td>
+			<td>-330.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-11</td>
+			<td>1,640,675</td>			
+		
+			<td>1,656,338</td>
+			<td>-15,663</td>
+		
+			<td>54,689.2</td>
+		
+			<td>55,211.3</td>
+			<td>-522.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-10</td>
+			<td>1,658,864</td>			
+		
+			<td>1,671,320</td>
+			<td>-12,456</td>
+		
+			<td>53,511.7</td>
+		
+			<td>53,913.5</td>
+			<td>-401.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-09</td>
+			<td>1,569,534</td>			
+		
+			<td>1,594,730</td>
+			<td>-25,196</td>
+		
+			<td>52,317.8</td>
+		
+			<td>53,157.7</td>
+			<td>-839.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-08</td>
+			<td>1,513,272</td>			
+		
+			<td>1,532,761</td>
+			<td>-19,489</td>
+		
+			<td>48,815.2</td>
+		
+			<td>49,443.9</td>
+			<td>-628.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-07</td>
+			<td>1,575,582</td>			
+		
+			<td>1,592,687</td>
+			<td>-17,105</td>
+		
+			<td>50,825.2</td>
+		
+			<td>51,377.0</td>
+			<td>-551.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-06</td>
+			<td>1,645,638</td>			
+		
+			<td>1,663,044</td>
+			<td>-17,406</td>
+		
+			<td>54,854.6</td>
+		
+			<td>55,434.8</td>
+			<td>-580.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-05</td>
+			<td>1,635,319</td>			
+		
+			<td>1,656,627</td>
+			<td>-21,308</td>
+		
+			<td>52,752.2</td>
+		
+			<td>53,439.6</td>
+			<td>-687.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-04</td>
+			<td>1,487,788</td>			
+		
+			<td>1,503,771</td>
+			<td>-15,983</td>
+		
+			<td>49,592.9</td>
+		
+			<td>50,125.7</td>
+			<td>-532.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-03</td>
+			<td>1,599,770</td>			
+		
+			<td>1,614,106</td>
+			<td>-14,336</td>
+		
+			<td>51,605.5</td>
+		
+			<td>52,067.9</td>
+			<td>-462.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-02</td>
+			<td>1,480,066</td>			
+		
+			<td>1,496,175</td>
+			<td>-16,109</td>
+		
+			<td>51,036.8</td>
+		
+			<td>51,592.2</td>
+			<td>-555.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-01</td>
+			<td>1,668,380</td>			
+		
+			<td>1,680,591</td>
+			<td>-12,211</td>
+		
+			<td>53,818.7</td>
+		
+			<td>54,212.6</td>
+			<td>-393.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-12</td>
+			<td>1,675,079</td>			
+		
+			<td>1,658,519</td>
+			<td>16,560</td>
+		
+			<td>54,034.8</td>
+		
+			<td>53,500.6</td>
+			<td>534.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-11</td>
+			<td>898,616</td>			
+		
+			<td>895,557</td>
+			<td>3,059</td>
+		
+			<td>29,953.9</td>
+		
+			<td>29,851.9</td>
+			<td>102.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-10</td>
+			<td>1,685,661</td>			
+		
+			<td>1,705,933</td>
+			<td>-20,272</td>
+		
+			<td>54,376.2</td>
+		
+			<td>55,030.1</td>
+			<td>-653.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-09</td>
+			<td>1,648,611</td>			
+		
+			<td>1,679,199</td>
+			<td>-30,588</td>
+		
+			<td>54,953.7</td>
+		
+			<td>55,973.3</td>
+			<td>-1,019.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-08</td>
+			<td>1,655,190</td>			
+		
+			<td>1,668,317</td>
+			<td>-13,127</td>
+		
+			<td>53,393.2</td>
+		
+			<td>53,816.7</td>
+			<td>-423.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-07</td>
+			<td>1,682,988</td>			
+		
+			<td>1,706,563</td>
+			<td>-23,575</td>
+		
+			<td>54,289.9</td>
+		
+			<td>55,050.4</td>
+			<td>-760.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-06</td>
+			<td>1,638,195</td>			
+		
+			<td>1,667,321</td>
+			<td>-29,126</td>
+		
+			<td>54,606.5</td>
+		
+			<td>55,577.4</td>
+			<td>-970.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-05</td>
+			<td>1,727,490</td>			
+		
+			<td>1,756,067</td>
+			<td>-28,577</td>
+		
+			<td>55,725.5</td>
+		
+			<td>56,647.3</td>
+			<td>-921.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-04</td>
+			<td>1,669,152</td>			
+		
+			<td>1,701,653</td>
+			<td>-32,501</td>
+		
+			<td>55,638.4</td>
+		
+			<td>56,721.8</td>
+			<td>-1,083.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-03</td>
+			<td>1,758,202</td>			
+		
+			<td>1,787,959</td>
+			<td>-29,757</td>
+		
+			<td>56,716.2</td>
+		
+			<td>57,676.1</td>
+			<td>-959.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-02</td>
+			<td>1,549,353</td>			
+		
+			<td>1,589,889</td>
+			<td>-40,536</td>
+		
+			<td>55,334.0</td>
+		
+			<td>56,781.8</td>
+			<td>-1,447.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-01</td>
+			<td>1,746,830</td>			
+		
+			<td>1,785,522</td>
+			<td>-38,692</td>
+		
+			<td>56,349.4</td>
+		
+			<td>57,597.5</td>
+			<td>-1,248.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-12</td>
+			<td>1,734,720</td>			
+		
+			<td>1,768,308</td>
+			<td>-33,588</td>
+		
+			<td>55,958.7</td>
+		
+			<td>57,042.2</td>
+			<td>-1,083.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-11</td>
+			<td>1,689,976</td>			
+		
+			<td>1,722,957</td>
+			<td>-32,981</td>
+		
+			<td>56,332.5</td>
+		
+			<td>57,431.9</td>
+			<td>-1,099.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-10</td>
+			<td>1,724,019</td>			
+		
+			<td>1,758,861</td>
+			<td>-34,842</td>
+		
+			<td>55,613.5</td>
+		
+			<td>56,737.5</td>
+			<td>-1,123.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-09</td>
+			<td>1,608,183</td>			
+		
+			<td>1,611,328</td>
+			<td>-3,145</td>
+		
+			<td>53,606.1</td>
+		
+			<td>53,710.9</td>
+			<td>-104.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-08</td>
+			<td>1,723,182</td>			
+		
+			<td>1,746,886</td>
+			<td>-23,704</td>
+		
+			<td>55,586.5</td>
+		
+			<td>56,351.2</td>
+			<td>-764.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-07</td>
+			<td>1,716,901</td>			
+		
+			<td>1,753,074</td>
+			<td>-36,173</td>
+		
+			<td>55,383.9</td>
+		
+			<td>56,550.8</td>
+			<td>-1,166.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-06</td>
+			<td>1,672,349</td>			
+		
+			<td>1,689,793</td>
+			<td>-17,444</td>
+		
+			<td>55,745.0</td>
+		
+			<td>56,326.4</td>
+			<td>-581.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-05</td>
+			<td>1,738,177</td>			
+		
+			<td>1,760,223</td>
+			<td>-22,046</td>
+		
+			<td>56,070.2</td>
+		
+			<td>56,781.4</td>
+			<td>-711.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-04</td>
+			<td>1,688,119</td>			
+		
+			<td>1,719,157</td>
+			<td>-31,038</td>
+		
+			<td>56,270.6</td>
+		
+			<td>57,305.2</td>
+			<td>-1,034.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-03</td>
+			<td>1,773,279</td>			
+		
+			<td>1,809,622</td>
+			<td>-36,343</td>
+		
+			<td>57,202.5</td>
+		
+			<td>58,374.9</td>
+			<td>-1,172.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-02</td>
+			<td>1,558,218</td>			
+		
+			<td>1,588,655</td>
+			<td>-30,437</td>
+		
+			<td>55,650.6</td>
+		
+			<td>56,737.7</td>
+			<td>-1,087.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-01</td>
+			<td>1,723,895</td>			
+		
+			<td>1,760,842</td>
+			<td>-36,947</td>
+		
+			<td>55,609.5</td>
+		
+			<td>56,801.4</td>
+			<td>-1,191.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-12</td>
+			<td>1,769,487</td>			
+		
+			<td>1,794,342</td>
+			<td>-24,855</td>
+		
+			<td>57,080.2</td>
+		
+			<td>57,882.0</td>
+			<td>-801.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-11</td>
+			<td>1,714,408</td>			
+		
+			<td>1,724,882</td>
+			<td>-10,474</td>
+		
+			<td>57,146.9</td>
+		
+			<td>57,496.1</td>
+			<td>-349.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-10</td>
+			<td>1,731,002</td>			
+		
+			<td>1,749,734</td>
+			<td>-18,732</td>
+		
+			<td>55,838.8</td>
+		
+			<td>56,443.0</td>
+			<td>-604.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-09</td>
+			<td>1,688,602</td>			
+		
+			<td>1,716,690</td>
+			<td>-28,088</td>
+		
+			<td>56,286.7</td>
+		
+			<td>57,223.0</td>
+			<td>-936.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-08</td>
+			<td>1,696,287</td>			
+		
+			<td>1,730,896</td>
+			<td>-34,609</td>
+		
+			<td>54,718.9</td>
+		
+			<td>55,835.4</td>
+			<td>-1,116.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-07</td>
+			<td>1,720,932</td>			
+		
+			<td>1,753,091</td>
+			<td>-32,159</td>
+		
+			<td>55,513.9</td>
+		
+			<td>56,551.3</td>
+			<td>-1,037.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-06</td>
+			<td>1,675,190</td>			
+		
+			<td>1,690,454</td>
+			<td>-15,264</td>
+		
+			<td>55,839.7</td>
+		
+			<td>56,348.5</td>
+			<td>-508.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-05</td>
+			<td>1,744,562</td>			
+		
+			<td>1,773,104</td>
+			<td>-28,542</td>
+		
+			<td>56,276.2</td>
+		
+			<td>57,196.9</td>
+			<td>-920.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-04</td>
+			<td>1,706,474</td>			
+		
+			<td>1,735,340</td>
+			<td>-28,866</td>
+		
+			<td>56,882.5</td>
+		
+			<td>57,844.7</td>
+			<td>-962.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-03</td>
+			<td>1,802,769</td>			
+		
+			<td>1,830,872</td>
+			<td>-28,103</td>
+		
+			<td>58,153.8</td>
+		
+			<td>59,060.4</td>
+			<td>-906.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-02</td>
+			<td>1,609,220</td>			
+		
+			<td>1,622,988</td>
+			<td>-13,768</td>
+		
+			<td>57,472.1</td>
+		
+			<td>57,963.9</td>
+			<td>-491.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-01</td>
+			<td>1,758,765</td>			
+		
+			<td>1,787,705</td>
+			<td>-28,940</td>
+		
+			<td>56,734.4</td>
+		
+			<td>57,667.9</td>
+			<td>-933.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-12</td>
+			<td>1,791,661</td>			
+		
+			<td>1,815,149</td>
+			<td>-23,488</td>
+		
+			<td>57,795.5</td>
+		
+			<td>58,553.2</td>
+			<td>-757.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-11</td>
+			<td>1,729,047</td>			
+		
+			<td>1,735,268</td>
+			<td>-6,221</td>
+		
+			<td>57,634.9</td>
+		
+			<td>57,842.3</td>
+			<td>-207.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-10</td>
+			<td>1,721,793</td>			
+		
+			<td>1,738,037</td>
+			<td>-16,244</td>
+		
+			<td>55,541.7</td>
+		
+			<td>56,065.7</td>
+			<td>-524.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-09</td>
+			<td>1,702,691</td>			
+		
+			<td>1,726,650</td>
+			<td>-23,959</td>
+		
+			<td>56,756.4</td>
+		
+			<td>57,555.0</td>
+			<td>-798.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-08</td>
+			<td>1,725,579</td>			
+		
+			<td>1,750,834</td>
+			<td>-25,255</td>
+		
+			<td>55,663.8</td>
+		
+			<td>56,478.5</td>
+			<td>-814.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-07</td>
+			<td>1,754,907</td>			
+		
+			<td>1,799,032</td>
+			<td>-44,125</td>
+		
+			<td>56,609.9</td>
+		
+			<td>58,033.3</td>
+			<td>-1,423.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-06</td>
+			<td>1,711,224</td>			
+		
+			<td>1,733,847</td>
+			<td>-22,623</td>
+		
+			<td>57,040.8</td>
+		
+			<td>57,794.9</td>
+			<td>-754.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-05</td>
+			<td>1,776,946</td>			
+		
+			<td>1,807,473</td>
+			<td>-30,527</td>
+		
+			<td>57,320.8</td>
+		
+			<td>58,305.6</td>
+			<td>-984.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-04</td>
+			<td>1,730,268</td>			
+		
+			<td>1,750,389</td>
+			<td>-20,121</td>
+		
+			<td>57,675.6</td>
+		
+			<td>58,346.3</td>
+			<td>-670.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-03</td>
+			<td>1,784,220</td>			
+		
+			<td>1,823,717</td>
+			<td>-39,497</td>
+		
+			<td>57,555.5</td>
+		
+			<td>58,829.6</td>
+			<td>-1,274.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-02</td>
+			<td>1,643,251</td>			
+		
+			<td>1,677,931</td>
+			<td>-34,680</td>
+		
+			<td>56,663.8</td>
+		
+			<td>57,859.7</td>
+			<td>-1,195.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-01</td>
+			<td>1,749,361</td>			
+		
+			<td>1,793,394</td>
+			<td>-44,033</td>
+		
+			<td>56,431.0</td>
+		
+			<td>57,851.4</td>
+			<td>-1,420.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-12</td>
+			<td>1,794,612</td>			
+		
+			<td>1,825,485</td>
+			<td>-30,873</td>
+		
+			<td>57,890.7</td>
+		
+			<td>58,886.6</td>
+			<td>-995.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-11</td>
+			<td>1,737,678</td>			
+		
+			<td>1,764,266</td>
+			<td>-26,588</td>
+		
+			<td>57,922.6</td>
+		
+			<td>58,808.9</td>
+			<td>-886.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-10</td>
+			<td>1,783,941</td>			
+		
+			<td>1,806,138</td>
+			<td>-22,197</td>
+		
+			<td>57,546.5</td>
+		
+			<td>58,262.5</td>
+			<td>-716.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-09</td>
+			<td>1,718,970</td>			
+		
+			<td>1,751,389</td>
+			<td>-32,419</td>
+		
+			<td>57,299.0</td>
+		
+			<td>58,379.6</td>
+			<td>-1,080.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-08</td>
+			<td>1,763,442</td>			
+		
+			<td>1,803,293</td>
+			<td>-39,851</td>
+		
+			<td>56,885.2</td>
+		
+			<td>58,170.7</td>
+			<td>-1,285.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-07</td>
+			<td>1,740,134</td>			
+		
+			<td>1,773,660</td>
+			<td>-33,526</td>
+		
+			<td>56,133.4</td>
+		
+			<td>57,214.8</td>
+			<td>-1,081.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-06</td>
+			<td>1,700,684</td>			
+		
+			<td>1,729,227</td>
+			<td>-28,543</td>
+		
+			<td>56,689.5</td>
+		
+			<td>57,640.9</td>
+			<td>-951.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-05</td>
+			<td>1,748,451</td>			
+		
+			<td>1,776,458</td>
+			<td>-28,007</td>
+		
+			<td>56,401.6</td>
+		
+			<td>57,305.1</td>
+			<td>-903.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-04</td>
+			<td>1,726,273</td>			
+		
+			<td>1,763,565</td>
+			<td>-37,292</td>
+		
+			<td>57,542.4</td>
+		
+			<td>58,785.5</td>
+			<td>-1,243.1</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-03</td>
+			<td>1,809,881</td>			
+		
+			<td>1,848,755</td>
+			<td>-38,874</td>
+		
+			<td>58,383.3</td>
+		
+			<td>59,637.3</td>
+			<td>-1,254.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-02</td>
+			<td>1,611,699</td>			
+		
+			<td>1,644,408</td>
+			<td>-32,709</td>
+		
+			<td>57,560.7</td>
+		
+			<td>58,728.9</td>
+			<td>-1,168.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-01</td>
+			<td>1,787,741</td>			
+		
+			<td>1,828,348</td>
+			<td>-40,607</td>
+		
+			<td>57,669.1</td>
+		
+			<td>58,979.0</td>
+			<td>-1,309.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-12</td>
+			<td>1,799,454</td>			
+		
+			<td>1,799,980</td>
+			<td>-526</td>
+		
+			<td>58,046.9</td>
+		
+			<td>58,063.9</td>
+			<td>-17.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-11</td>
+			<td>1,735,234</td>			
+		
+			<td>1,736,007</td>
+			<td>-773</td>
+		
+			<td>57,841.1</td>
+		
+			<td>57,866.9</td>
+			<td>-25.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-10</td>
+			<td>1,721,496</td>			
+		
+			<td>1,753,456</td>
+			<td>-31,960</td>
+		
+			<td>55,532.1</td>
+		
+			<td>56,563.1</td>
+			<td>-1,031.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-09</td>
+			<td>1,685,400</td>			
+		
+			<td>1,706,773</td>
+			<td>-21,373</td>
+		
+			<td>56,180.0</td>
+		
+			<td>56,892.4</td>
+			<td>-712.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-08</td>
+			<td>1,758,150</td>			
+		
+			<td>1,793,734</td>
+			<td>-35,584</td>
+		
+			<td>56,714.5</td>
+		
+			<td>57,862.4</td>
+			<td>-1,147.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-07</td>
+			<td>1,748,359</td>			
+		
+			<td>1,778,784</td>
+			<td>-30,425</td>
+		
+			<td>56,398.7</td>
+		
+			<td>57,380.1</td>
+			<td>-981.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-06</td>
+			<td>1,712,091</td>			
+		
+			<td>1,731,648</td>
+			<td>-19,557</td>
+		
+			<td>57,069.7</td>
+		
+			<td>57,721.6</td>
+			<td>-651.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-05</td>
+			<td>1,768,401</td>			
+		
+			<td>1,783,237</td>
+			<td>-14,836</td>
+		
+			<td>57,045.2</td>
+		
+			<td>57,523.8</td>
+			<td>-478.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-04</td>
+			<td>1,731,145</td>			
+		
+			<td>1,768,066</td>
+			<td>-36,921</td>
+		
+			<td>57,704.8</td>
+		
+			<td>58,935.5</td>
+			<td>-1,230.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-03</td>
+			<td>1,813,428</td>			
+		
+			<td>1,840,187</td>
+			<td>-26,759</td>
+		
+			<td>58,497.7</td>
+		
+			<td>59,360.9</td>
+			<td>-863.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-02</td>
+			<td>1,600,450</td>			
+		
+			<td>1,634,606</td>
+			<td>-34,156</td>
+		
+			<td>57,158.9</td>
+		
+			<td>58,378.8</td>
+			<td>-1,219.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-01</td>
+			<td>1,811,932</td>			
+		
+			<td>1,832,243</td>
+			<td>-20,311</td>
+		
+			<td>58,449.4</td>
+		
+			<td>59,104.6</td>
+			<td>-655.2</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-12</td>
+			<td>1,804,505</td>			
+		
+			<td>1,815,098</td>
+			<td>-10,593</td>
+		
+			<td>58,209.8</td>
+		
+			<td>58,551.5</td>
+			<td>-341.7</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-11</td>
+			<td>1,768,077</td>			
+		
+			<td>1,774,360</td>
+			<td>-6,283</td>
+		
+			<td>58,935.9</td>
+		
+			<td>59,145.3</td>
+			<td>-209.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-10</td>
+			<td>1,817,823</td>			
+		
+			<td>1,829,584</td>
+			<td>-11,761</td>
+		
+			<td>58,639.5</td>
+		
+			<td>59,018.8</td>
+			<td>-379.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-09</td>
+			<td>1,716,558</td>			
+		
+			<td>1,723,034</td>
+			<td>-6,476</td>
+		
+			<td>57,218.6</td>
+		
+			<td>57,434.5</td>
+			<td>-215.9</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-08</td>
+			<td>1,770,817</td>			
+		
+			<td>1,784,350</td>
+			<td>-13,533</td>
+		
+			<td>57,123.1</td>
+		
+			<td>57,559.7</td>
+			<td>-436.5</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-07</td>
+			<td>1,764,261</td>			
+		
+			<td>1,774,697</td>
+			<td>-10,436</td>
+		
+			<td>56,911.6</td>
+		
+			<td>57,248.3</td>
+			<td>-336.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-06</td>
+			<td>1,726,227</td>			
+		
+			<td>1,744,515</td>
+			<td>-18,288</td>
+		
+			<td>57,540.9</td>
+		
+			<td>58,150.5</td>
+			<td>-609.6</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-05</td>
+			<td>1,801,955</td>			
+		
+			<td>1,811,938</td>
+			<td>-9,983</td>
+		
+			<td>58,127.6</td>
+		
+			<td>58,449.6</td>
+			<td>-322.0</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-04</td>
+			<td>1,739,444</td>			
+		
+			<td>1,757,965</td>
+			<td>-18,521</td>
+		
+			<td>57,981.5</td>
+		
+			<td>58,598.8</td>
+			<td>-617.4</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-03</td>
+			<td>1,839,736</td>			
+		
+			<td>1,858,391</td>
+			<td>-18,655</td>
+		
+			<td>59,346.3</td>
+		
+			<td>59,948.1</td>
+			<td>-601.8</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-02</td>
+			<td>1,645,782</td>			
+		
+			<td>1,659,649</td>
+			<td>-13,867</td>
+		
+			<td>58,777.9</td>
+		
+			<td>59,273.2</td>
+			<td>-495.3</td>
+		
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-01</td>
+			<td>1,836,392</td>			
+		
+			<td>1,849,921</td>
+			<td>-13,529</td>
+		
+			<td>59,238.5</td>
+		
+			<td>59,674.9</td>
+			<td>-436.4</td>
+		
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

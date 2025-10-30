@@ -1,15 +1,27 @@
-# Webb-site.com Archive - October 29, 2025
+# Webb-site.com Archive - October 29-30, 2025
 
-**Emergency preservation archive created 2 days before server shutdown (Oct 31, 2025)**
+**Emergency preservation archive created 1-2 days before server shutdown (Oct 31, 2025)**
 
 ## Archive Statistics
 
-- **Archive Date:** October 29, 2025 22:49-23:10 GMT
+- **Archive Date:** October 29-30, 2025 (22:49 GMT - 09:00 GMT)
 - **Source:** https://webb-site.com (original dedicated server, pre-shutdown)
-- **Unique Routes:** 53 distinct .asp files
-- **Total Pages:** 95 HTML snapshots (including parameter variations)
-- **Total Size:** 25 MB
-- **Coverage:** ~20% of estimated 284 total routes
+- **Unique Routes:** 98+ distinct .asp files
+- **Total Pages:** 1,979 HTML snapshots (including parameter variations)
+- **Total Size:** 204 MB
+- **Coverage:** ~34% of estimated 284 total routes
+
+### Archive Components
+
+**Manual Targeted Archives:**
+- **dbpub/**: 708 files (73MB) - Targeted samples of key routes with specific parameters
+- **ccass/**: 14 files (8.1MB) - CCASS holdings data for sample stocks
+
+**Intelligent Discovery (wget --mirror --level=2):**
+- **crawl/**: 628 files (67MB) - Organically discovered routes by following site navigation
+- **Discovered:** 98 unique route patterns from dbpub/ home page links
+
+The intelligent crawl approach nearly doubled unique route coverage (53→98) by letting the site's own navigation reveal valid parameter combinations instead of guessing parameters.
 
 ## Purpose
 
@@ -27,12 +39,16 @@ This archive preserves working ASP page output from the original Webb-site.com s
 ```
 archive/webb-site/
 ├── README.md              # This file
-├── INVENTORY.txt          # Complete list of all 95 archived files
-├── UNIQUE_ROUTES.txt      # List of 53 unique route types (without parameters)
-├── dbpub/                 # Database query pages (71 files)
-├── ccass/                 # CCASS holdings pages (14 files)
+├── INVENTORY.txt          # Complete list of archived files (legacy - manual archive only)
+├── UNIQUE_ROUTES.txt      # Unique route types from manual archive (legacy)
+├── CRAWLED_ROUTES.txt     # 98 unique routes discovered by intelligent crawl
+├── dbpub/                 # Manual archive: database query pages (708 files, 73MB)
+├── ccass/                 # Manual archive: CCASS holdings pages (14 files, 8.1MB)
+├── dbpub_crawled/         # Consolidated crawl results (628 files, 57MB)
+├── ccass_crawled/         # Placeholder for CCASS crawl (empty)
+├── crawl/                 # Raw wget output (628 files, 67MB)
 ├── ground_truth/          # Reserved for curated test fixtures
-└── raw/                   # Reserved for wget mirror (not used)
+└── test/                  # Initial test archive
 ```
 
 ### Coverage by Category

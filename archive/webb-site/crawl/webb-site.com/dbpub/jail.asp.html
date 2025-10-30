@@ -1,0 +1,1248 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.chart('jail', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in all institutions',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'People',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0
+	        },
+	    },
+	    xAxis: {
+	    	categories: ['31-12-2000','31-12-2001','31-12-2002','31-12-2003','31-12-2004','31-12-2005','31-12-2006','31-12-2007','31-12-2008','31-12-2009','31-12-2010','31-12-2011','31-12-2012','31-12-2013','31-12-2014','31-12-2015','31-12-2016','31-12-2017','31-12-2018','31-12-2019','30-09-2020','31-12-2020','31-03-2021','30-06-2021','30-09-2021','31-12-2021','31-03-2022','30-06-2022','30-09-2022','31-12-2022','31-03-2023','30-06-2023','30-09-2023','31-12-2023','31-03-2024','30-06-2024','30-09-2024','31-12-2024','31-03-2025','30-06-2025']
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Convicted',
+	        color:"blue",
+	        type: 'column',
+	        data: [10584,10651,11390,11405,10955,10125,10112,9426,8978,8425,8622,7761,7738,7507,6885,6856,6898,6728,6135,5424,4901,4919,5167,5319,5465,5307,4550,4731,4885,4851,5187,5213,5301,5403,5438,5554,5703,5773,5759,5735]
+	        },
+	    	{
+	        name: 'Detainees',
+	        color:"red",
+	        type: 'column',
+	        data: [181,234,180,155,146,0,0,1,3,2,1,0,0,0,0,0,0,0,2,0,1,22,0,67,72,98,103,124,132,114,103,159,274,301,323,325,304,358,355,313]
+	        },
+	    	{
+	        name: 'On remand',
+	        color:"green",
+	        type: 'column',
+	        data: [1252,1169,1174,1452,1604,1186,1252,1519,1510,1455,1365,1306,1559,1532,1412,1582,1713,1695,2044,1599,2056,2166,2279,2302,2303,2462,2552,2701,2751,2786,2907,3133,3304,3375,3490,3700,3794,3889,4070,4184]
+	        },
+	        ]
+	});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.chart('jail2', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in all institutions by share',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    xAxis: {
+	    	categories: ['31-12-2000','31-12-2001','31-12-2002','31-12-2003','31-12-2004','31-12-2005','31-12-2006','31-12-2007','31-12-2008','31-12-2009','31-12-2010','31-12-2011','31-12-2012','31-12-2013','31-12-2014','31-12-2015','31-12-2016','31-12-2017','31-12-2018','31-12-2019','30-09-2020','31-12-2020','31-03-2021','30-06-2021','30-09-2021','31-12-2021','31-03-2022','30-06-2022','30-09-2022','31-12-2022','31-03-2023','30-06-2023','30-09-2023','31-12-2023','31-03-2024','30-06-2024','30-09-2024','31-12-2024','31-03-2025','30-06-2025']
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'Share of people in custody',
+	            x:0,
+	        },
+	        labels:{
+	        	x:0,
+				format: '{value}%',
+	        },
+	        max:100,
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white',
+	        valueDecimals: 2,
+	        valueSuffix:'%',
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Convicted',
+	        color:"blue",
+	        type: 'column',
+	        data: [88.07522676,88.36071014,89.37539234,87.64986167,86.22589532,89.51463177,88.98275255,86.11364882,85.57811457,85.25602105,86.32358831,85.59611779,83.23114983,83.05122248,82.98180065,81.25148139,80.10684009,79.87652855,74.99083242,77.23195216,70.43690716,69.21345153,69.39296266,69.18574402,69.70663265,67.45900597,63.15058987,62.61249338,62.88619979,62.58547284,63.27924851,61.29335685,59.70266922,59.51095936,58.78283429,57.9810001,58.18794001,57.61477046,56.5494894,56.04964816]
+	        },
+	    	{
+	        name: 'Detainees',
+	        color:"red",
+	        type: 'column',
+	        data: [1.50619955,1.94126431,1.41242938,1.19120812,1.14915388,0,0,0.00913576,0.02859594,0.02023882,0.01001201,0,0,0,0,0,0,0,0.02444689,0,0.01437195,0.30955396,0,0.87148803,0.91836735,1.24570993,1.4295628,1.64107994,1.69927909,1.47077796,1.25655728,1.86948854,3.0859331,3.3153431,3.49151443,3.3928385,3.10172431,3.57285429,3.48586017,3.05903049]
+	        },
+	    	{
+	        name: 'On remand',
+	        color:"green",
+	        type: 'column',
+	        data: [10.41857369,9.69802555,9.21217828,11.15893022,12.62495081,10.48536823,11.01724745,13.87721542,14.39328949,14.72374013,13.66639968,14.40388221,16.76885017,16.94877752,17.01819935,18.74851861,19.89315991,20.12347145,24.98472069,22.76804784,29.5487209,30.47699451,30.60703734,29.94276795,29.375,31.2952841,35.41984733,35.74642668,35.41452111,35.94374919,35.46419422,36.83715461,37.21139768,37.17369754,37.72565128,38.62616139,38.71033568,38.81237525,39.96465043,40.89132134]
+	        },
+	        ]
+	});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.chart('jail3', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in all institutions by origin',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'People',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0
+	        },
+	    },
+	    xAxis: {
+	    	categories: ['31-12-2016','31-12-2017','31-12-2018','31-12-2019','30-09-2020','31-12-2020','31-03-2021','30-06-2021','30-09-2021','31-12-2021','31-03-2022','30-06-2022','30-09-2022','31-12-2022','31-03-2023','30-06-2023','30-09-2023','31-12-2023','31-03-2024','30-06-2024','30-09-2024','31-12-2024','31-03-2025','30-06-2025']
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    
+	    	{
+	        name: 'Others',
+	        color:"blue",
+	        type: 'column',
+	        data: [1726,1734,1653,1377,1273,1283,1306,1325,1350,1376,1253,1316,1340,1337,1337,1448,1569,1665,1648,1683,1646,1790,1800,1779]
+	        },
+	    	{
+	        name: 'Mainland/Taiwan/Macao',
+	        color:"red",
+	        type: 'column',
+	        data: [927,1026,1044,910,664,740,803,811,780,748,590,562,531,523,597,698,827,917,964,1015,1103,1278,1324,1357]
+	        },
+	    	{
+	        name: 'HK resident',
+	        color:"green",
+	        type: 'column',
+	        data: [5958,5663,5484,4736,5021,5084,5337,5552,5710,5743,5362,5678,5897,5891,6263,6359,6483,6497,6639,6881,7052,6952,7060,7096]
+	        },	    
+	    
+	        ]
+	});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.chart('jail4', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in all institutions by origin by share',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    xAxis: {
+	    	categories: ['31-12-2016','31-12-2017','31-12-2018','31-12-2019','30-09-2020','31-12-2020','31-03-2021','30-06-2021','30-09-2021','31-12-2021','31-03-2022','30-06-2022','30-09-2022','31-12-2022','31-03-2023','30-06-2023','30-09-2023','31-12-2023','31-03-2024','30-06-2024','30-09-2024','31-12-2024','31-03-2025','30-06-2025']
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'Share of people in custody',
+	            x:0,
+	        },
+	        labels:{
+	        	x:0,
+				format: '{value}%',
+	        },
+	        max:100,
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white',
+	        valueDecimals: 2,
+	        valueSuffix:'%',
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    
+	    	{
+	        name: 'Others',
+	        color:"blue",
+	        type: 'column',
+	        data: [20.0441296,20.58648937,20.20535387,19.60700555,18.29548721,18.05262417,17.53961859,17.2346514,17.21938776,17.49078429,17.3907009,17.41662255,17.25025747,17.24938718,16.31084543,17.02527925,17.67090889,18.33902412,17.81429035,17.56968368,16.79420467,17.86427146,17.67478397,17.38663018]
+	        },
+	    	{
+	        name: 'Mainland/Taiwan/Macao',
+	        color:"red",
+	        type: 'column',
+	        data: [10.7653002,12.18093316,12.76127613,12.9574256,9.54297212,10.41226959,10.78431373,10.54890739,9.94897959,9.50807169,8.18875781,7.43779778,6.83573635,6.74751645,7.28315237,8.2069371,9.31411195,10.1002313,10.42049508,10.59609563,11.25395368,12.75449102,13.00078555,13.26231431]
+	        },
+	    	{
+	        name: 'HK resident',
+	        color:"green",
+	        type: 'column',
+	        data: [69.1905702,67.23257747,67.03337,67.43556885,72.16154067,71.53510623,71.67606769,72.21644121,72.83163265,73.00114402,74.42054129,75.14557967,75.91400618,76.00309637,76.4060022,74.76778366,73.01497916,71.56074458,71.76521457,71.83422069,71.95184165,69.38123752,69.32443048,69.35105551]
+	        },	    
+	    
+	        ]
+	});
+});
+</script>
+<title>People in all institutions</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>People in all institutions</h2>
+<h3>Custody category: all institutions</h3>
+<p>This page shows the number of people in custody in facilities managed by the 
+<a href="https://www.csd.gov.hk" target="_blank">Hong Kong 
+Correctional Services Department</a>, including prisons. People on remand are innocent until proven 
+guilty and are awaiting trial. Detainees are held under the <a href="https://www.hklii.hk/eng/hk/legis/ord/115/" target="_blank">Immigration 
+Ordinance</a>. Figures are annual from 31-Dec-2000 and quarterly from 30-Sep-2020 and will be updated when published online by CSD - 
+we check daily. The breakdown of prisoners by place of origin is only available 
+from 2016 onwards, as a sum across all institutions.</p>
+<form method="get" action="jail.asp">
+	<div class="inputs">Institution:
+		<select name='j' onchange="this.form.submit()"><option value='0' selected>All institutions</option><option value='18'>Cape Collinson Correctional Institution</option><option value='22'>Chi Lan Rehabilitation Centre</option><option value='26'>Chi Ma Wan Correctional Institution</option><option value='33'>Chi Ma Wan Drug Addiction Treatment Centre</option><option value='27'>Chi Sun Correctional Institution</option><option value='34'>Green Island Reception Centre</option><option value='15'>Hei Ling Chau Addiction Treatment Centre</option><option value='1'>Hei Ling Chau Correctional Institution</option><option value='28'>Lai Chi Kok Correctional Institution</option><option value='2'>Lai Chi Kok Reception Centre</option><option value='20'>Lai Chi Rehabilitation Centre</option><option value='21'>Lai Hang Rehabilitation Centre</option><option value='3'>Lai King Correctional Institution</option><option value='31'>Lai King Training Centre</option><option value='16'>Lai Sun Correctional Institution</option><option value='4'>Lo Wu Correctional Institution</option><option value='25'>Ma Hang Prison</option><option value='29'>Ma Po Ping Prison</option><option value='17'>Nei Kwu Correctional Institution</option><option value='5'>Pak Sha Wan Correctional Institution</option><option value='6'>Pik Uk Correctional Institution</option><option value='7'>Pik Uk Prison</option><option value='19'>Sha Tsui Correctional Institution</option><option value='8'>Shek Pik Prison</option><option value='24'>Siu Lam Psychiatric Centre</option><option value='9'>Stanley Prison</option><option value='10'>Tai Lam Centre for Women</option><option value='11'>Tai Lam Correctional Institution</option><option value='12'>Tai Tam Gap Correctional Institution</option><option value='30'>Tong Fuk Centre</option><option value='13'>Tong Fuk Correctional Institution</option><option value='14'>Tung Tau Correctional Institution</option><option value='32'>Victoria Prison</option><option value='23'>Wai Lan Rehabilitation Centre</option></select>
+	</div>
+	<div class="inputs"><input type="submit" value="Go"></div>
+	<div class="clear"></div>
+</form>
+<p>CSV downloads: <a href="CSV.asp?t=jails">Institutions</a>,&nbsp;
+<a href="CSV.asp?t=jailtypes">Institution-types</a>,&nbsp;
+<a href="CSV.asp?t=prisoners">People in custody</a></p>
+<p>To zoom in or out, use the range-selector buttons or the slider, or pinch the charts on a touch screen. 
+Use the top-right hamburger menu to save or print.</p>
+<div id="jail" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>This chart shows the relative share of people convicted, on remand and detainees in all institutions:</p>
+<div id="jail2" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>This chart shows people in all institutions</p>
+<div id="jail3" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>This chart shows the relative share of people in all institutions</p>
+<div id="jail4" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<h4>People in all institutions</h4>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable center">
+	<tr>
+		<th class="left">Date</th>
+		<th>Convict</th>
+		<th>Remand</th>
+		<th>Detain</th>
+		<th>Total</th>
+		<th class="colHide3">Convict<br>%</th>
+		<th class="colHide3">Remand<br>%</th>
+		<th class="colHide3">Detain<br>%</th>
+	</tr>
+	
+		<tr>
+			<td>2025-06-30</td>
+			<td>5,735</td>
+			<td>4,184</td>
+			<td>313</td>
+			<td>10,232</td>
+			<td class="colHide3">56.05</td>
+			<td class="colHide3">40.89</td>
+			<td class="colHide3">3.06</td>
+		</tr>
+	
+		<tr>
+			<td>2025-03-31</td>
+			<td>5,759</td>
+			<td>4,070</td>
+			<td>355</td>
+			<td>10,184</td>
+			<td class="colHide3">56.55</td>
+			<td class="colHide3">39.96</td>
+			<td class="colHide3">3.49</td>
+		</tr>
+	
+		<tr>
+			<td>2024-12-31</td>
+			<td>5,773</td>
+			<td>3,889</td>
+			<td>358</td>
+			<td>10,020</td>
+			<td class="colHide3">57.61</td>
+			<td class="colHide3">38.81</td>
+			<td class="colHide3">3.57</td>
+		</tr>
+	
+		<tr>
+			<td>2024-09-30</td>
+			<td>5,703</td>
+			<td>3,794</td>
+			<td>304</td>
+			<td>9,801</td>
+			<td class="colHide3">58.19</td>
+			<td class="colHide3">38.71</td>
+			<td class="colHide3">3.10</td>
+		</tr>
+	
+		<tr>
+			<td>2024-06-30</td>
+			<td>5,554</td>
+			<td>3,700</td>
+			<td>325</td>
+			<td>9,579</td>
+			<td class="colHide3">57.98</td>
+			<td class="colHide3">38.63</td>
+			<td class="colHide3">3.39</td>
+		</tr>
+	
+		<tr>
+			<td>2024-03-31</td>
+			<td>5,438</td>
+			<td>3,490</td>
+			<td>323</td>
+			<td>9,251</td>
+			<td class="colHide3">58.78</td>
+			<td class="colHide3">37.73</td>
+			<td class="colHide3">3.49</td>
+		</tr>
+	
+		<tr>
+			<td>2023-12-31</td>
+			<td>5,403</td>
+			<td>3,375</td>
+			<td>301</td>
+			<td>9,079</td>
+			<td class="colHide3">59.51</td>
+			<td class="colHide3">37.17</td>
+			<td class="colHide3">3.32</td>
+		</tr>
+	
+		<tr>
+			<td>2023-09-30</td>
+			<td>5,301</td>
+			<td>3,304</td>
+			<td>274</td>
+			<td>8,879</td>
+			<td class="colHide3">59.70</td>
+			<td class="colHide3">37.21</td>
+			<td class="colHide3">3.09</td>
+		</tr>
+	
+		<tr>
+			<td>2023-06-30</td>
+			<td>5,213</td>
+			<td>3,133</td>
+			<td>159</td>
+			<td>8,505</td>
+			<td class="colHide3">61.29</td>
+			<td class="colHide3">36.84</td>
+			<td class="colHide3">1.87</td>
+		</tr>
+	
+		<tr>
+			<td>2023-03-31</td>
+			<td>5,187</td>
+			<td>2,907</td>
+			<td>103</td>
+			<td>8,197</td>
+			<td class="colHide3">63.28</td>
+			<td class="colHide3">35.46</td>
+			<td class="colHide3">1.26</td>
+		</tr>
+	
+		<tr>
+			<td>2022-12-31</td>
+			<td>4,851</td>
+			<td>2,786</td>
+			<td>114</td>
+			<td>7,751</td>
+			<td class="colHide3">62.59</td>
+			<td class="colHide3">35.94</td>
+			<td class="colHide3">1.47</td>
+		</tr>
+	
+		<tr>
+			<td>2022-09-30</td>
+			<td>4,885</td>
+			<td>2,751</td>
+			<td>132</td>
+			<td>7,768</td>
+			<td class="colHide3">62.89</td>
+			<td class="colHide3">35.41</td>
+			<td class="colHide3">1.70</td>
+		</tr>
+	
+		<tr>
+			<td>2022-06-30</td>
+			<td>4,731</td>
+			<td>2,701</td>
+			<td>124</td>
+			<td>7,556</td>
+			<td class="colHide3">62.61</td>
+			<td class="colHide3">35.75</td>
+			<td class="colHide3">1.64</td>
+		</tr>
+	
+		<tr>
+			<td>2022-03-31</td>
+			<td>4,550</td>
+			<td>2,552</td>
+			<td>103</td>
+			<td>7,205</td>
+			<td class="colHide3">63.15</td>
+			<td class="colHide3">35.42</td>
+			<td class="colHide3">1.43</td>
+		</tr>
+	
+		<tr>
+			<td>2021-12-31</td>
+			<td>5,307</td>
+			<td>2,462</td>
+			<td>98</td>
+			<td>7,867</td>
+			<td class="colHide3">67.46</td>
+			<td class="colHide3">31.30</td>
+			<td class="colHide3">1.25</td>
+		</tr>
+	
+		<tr>
+			<td>2021-09-30</td>
+			<td>5,465</td>
+			<td>2,303</td>
+			<td>72</td>
+			<td>7,840</td>
+			<td class="colHide3">69.71</td>
+			<td class="colHide3">29.38</td>
+			<td class="colHide3">0.92</td>
+		</tr>
+	
+		<tr>
+			<td>2021-06-30</td>
+			<td>5,319</td>
+			<td>2,302</td>
+			<td>67</td>
+			<td>7,688</td>
+			<td class="colHide3">69.19</td>
+			<td class="colHide3">29.94</td>
+			<td class="colHide3">0.87</td>
+		</tr>
+	
+		<tr>
+			<td>2021-03-31</td>
+			<td>5,167</td>
+			<td>2,279</td>
+			<td>0</td>
+			<td>7,446</td>
+			<td class="colHide3">69.39</td>
+			<td class="colHide3">30.61</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2020-12-31</td>
+			<td>4,919</td>
+			<td>2,166</td>
+			<td>22</td>
+			<td>7,107</td>
+			<td class="colHide3">69.21</td>
+			<td class="colHide3">30.48</td>
+			<td class="colHide3">0.31</td>
+		</tr>
+	
+		<tr>
+			<td>2020-09-30</td>
+			<td>4,901</td>
+			<td>2,056</td>
+			<td>1</td>
+			<td>6,958</td>
+			<td class="colHide3">70.44</td>
+			<td class="colHide3">29.55</td>
+			<td class="colHide3">0.01</td>
+		</tr>
+	
+		<tr>
+			<td>2019-12-31</td>
+			<td>5,424</td>
+			<td>1,599</td>
+			<td>0</td>
+			<td>7,023</td>
+			<td class="colHide3">77.23</td>
+			<td class="colHide3">22.77</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2018-12-31</td>
+			<td>6,135</td>
+			<td>2,044</td>
+			<td>2</td>
+			<td>8,181</td>
+			<td class="colHide3">74.99</td>
+			<td class="colHide3">24.98</td>
+			<td class="colHide3">0.02</td>
+		</tr>
+	
+		<tr>
+			<td>2017-12-31</td>
+			<td>6,728</td>
+			<td>1,695</td>
+			<td>0</td>
+			<td>8,423</td>
+			<td class="colHide3">79.88</td>
+			<td class="colHide3">20.12</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2016-12-31</td>
+			<td>6,898</td>
+			<td>1,713</td>
+			<td>0</td>
+			<td>8,611</td>
+			<td class="colHide3">80.11</td>
+			<td class="colHide3">19.89</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2015-12-31</td>
+			<td>6,856</td>
+			<td>1,582</td>
+			<td>0</td>
+			<td>8,438</td>
+			<td class="colHide3">81.25</td>
+			<td class="colHide3">18.75</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2014-12-31</td>
+			<td>6,885</td>
+			<td>1,412</td>
+			<td>0</td>
+			<td>8,297</td>
+			<td class="colHide3">82.98</td>
+			<td class="colHide3">17.02</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2013-12-31</td>
+			<td>7,507</td>
+			<td>1,532</td>
+			<td>0</td>
+			<td>9,039</td>
+			<td class="colHide3">83.05</td>
+			<td class="colHide3">16.95</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2012-12-31</td>
+			<td>7,738</td>
+			<td>1,559</td>
+			<td>0</td>
+			<td>9,297</td>
+			<td class="colHide3">83.23</td>
+			<td class="colHide3">16.77</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2011-12-31</td>
+			<td>7,761</td>
+			<td>1,306</td>
+			<td>0</td>
+			<td>9,067</td>
+			<td class="colHide3">85.60</td>
+			<td class="colHide3">14.40</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2010-12-31</td>
+			<td>8,622</td>
+			<td>1,365</td>
+			<td>1</td>
+			<td>9,988</td>
+			<td class="colHide3">86.32</td>
+			<td class="colHide3">13.67</td>
+			<td class="colHide3">0.01</td>
+		</tr>
+	
+		<tr>
+			<td>2009-12-31</td>
+			<td>8,425</td>
+			<td>1,455</td>
+			<td>2</td>
+			<td>9,882</td>
+			<td class="colHide3">85.26</td>
+			<td class="colHide3">14.72</td>
+			<td class="colHide3">0.02</td>
+		</tr>
+	
+		<tr>
+			<td>2008-12-31</td>
+			<td>8,978</td>
+			<td>1,510</td>
+			<td>3</td>
+			<td>10,491</td>
+			<td class="colHide3">85.58</td>
+			<td class="colHide3">14.39</td>
+			<td class="colHide3">0.03</td>
+		</tr>
+	
+		<tr>
+			<td>2007-12-31</td>
+			<td>9,426</td>
+			<td>1,519</td>
+			<td>1</td>
+			<td>10,946</td>
+			<td class="colHide3">86.11</td>
+			<td class="colHide3">13.88</td>
+			<td class="colHide3">0.01</td>
+		</tr>
+	
+		<tr>
+			<td>2006-12-31</td>
+			<td>10,112</td>
+			<td>1,252</td>
+			<td>0</td>
+			<td>11,364</td>
+			<td class="colHide3">88.98</td>
+			<td class="colHide3">11.02</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2005-12-31</td>
+			<td>10,125</td>
+			<td>1,186</td>
+			<td>0</td>
+			<td>11,311</td>
+			<td class="colHide3">89.51</td>
+			<td class="colHide3">10.49</td>
+			<td class="colHide3">0.00</td>
+		</tr>
+	
+		<tr>
+			<td>2004-12-31</td>
+			<td>10,955</td>
+			<td>1,604</td>
+			<td>146</td>
+			<td>12,705</td>
+			<td class="colHide3">86.23</td>
+			<td class="colHide3">12.62</td>
+			<td class="colHide3">1.15</td>
+		</tr>
+	
+		<tr>
+			<td>2003-12-31</td>
+			<td>11,405</td>
+			<td>1,452</td>
+			<td>155</td>
+			<td>13,012</td>
+			<td class="colHide3">87.65</td>
+			<td class="colHide3">11.16</td>
+			<td class="colHide3">1.19</td>
+		</tr>
+	
+		<tr>
+			<td>2002-12-31</td>
+			<td>11,390</td>
+			<td>1,174</td>
+			<td>180</td>
+			<td>12,744</td>
+			<td class="colHide3">89.38</td>
+			<td class="colHide3">9.21</td>
+			<td class="colHide3">1.41</td>
+		</tr>
+	
+		<tr>
+			<td>2001-12-31</td>
+			<td>10,651</td>
+			<td>1,169</td>
+			<td>234</td>
+			<td>12,054</td>
+			<td class="colHide3">88.36</td>
+			<td class="colHide3">9.70</td>
+			<td class="colHide3">1.94</td>
+		</tr>
+	
+		<tr>
+			<td>2000-12-31</td>
+			<td>10,584</td>
+			<td>1,252</td>
+			<td>181</td>
+			<td>12,017</td>
+			<td class="colHide3">88.08</td>
+			<td class="colHide3">10.42</td>
+			<td class="colHide3">1.51</td>
+		</tr>
+	
+</table>
+<h4>People in all institutions</h4>
+<table class="numtable center">
+	<tr>
+		<th class="left">Date</th>
+		
+			<th>HK<br>res.</th>
+			<th>CN/TW<br>/MO</th>
+			<th>Other</th>
+			<th>Total</th>
+			<th class="colHide3">HK<br>res. %</th>
+			<th class="colHide3">CN/TW<br>/MO%</th>
+			<th class="colHide3">Other<br>%</th>
+		
+	</tr>
+	
+		<tr>
+			<td>2025-06-30</td>
+			<td>7,096</td>
+			<td>1,357</td>
+			<td>1,779</td>
+			<td>10,232</td>
+			<td class="colHide3">69.35</td>
+			<td class="colHide3">13.26</td>
+			<td class="colHide3">17.39</td>
+		</tr>
+	
+		<tr>
+			<td>2025-03-31</td>
+			<td>7,060</td>
+			<td>1,324</td>
+			<td>1,800</td>
+			<td>10,184</td>
+			<td class="colHide3">69.32</td>
+			<td class="colHide3">13.00</td>
+			<td class="colHide3">17.67</td>
+		</tr>
+	
+		<tr>
+			<td>2024-12-31</td>
+			<td>6,952</td>
+			<td>1,278</td>
+			<td>1,790</td>
+			<td>10,020</td>
+			<td class="colHide3">69.38</td>
+			<td class="colHide3">12.75</td>
+			<td class="colHide3">17.86</td>
+		</tr>
+	
+		<tr>
+			<td>2024-09-30</td>
+			<td>7,052</td>
+			<td>1,103</td>
+			<td>1,646</td>
+			<td>9,801</td>
+			<td class="colHide3">71.95</td>
+			<td class="colHide3">11.25</td>
+			<td class="colHide3">16.79</td>
+		</tr>
+	
+		<tr>
+			<td>2024-06-30</td>
+			<td>6,881</td>
+			<td>1,015</td>
+			<td>1,683</td>
+			<td>9,579</td>
+			<td class="colHide3">71.83</td>
+			<td class="colHide3">10.60</td>
+			<td class="colHide3">17.57</td>
+		</tr>
+	
+		<tr>
+			<td>2024-03-31</td>
+			<td>6,639</td>
+			<td>964</td>
+			<td>1,648</td>
+			<td>9,251</td>
+			<td class="colHide3">71.77</td>
+			<td class="colHide3">10.42</td>
+			<td class="colHide3">17.81</td>
+		</tr>
+	
+		<tr>
+			<td>2023-12-31</td>
+			<td>6,497</td>
+			<td>917</td>
+			<td>1,665</td>
+			<td>9,079</td>
+			<td class="colHide3">71.56</td>
+			<td class="colHide3">10.10</td>
+			<td class="colHide3">18.34</td>
+		</tr>
+	
+		<tr>
+			<td>2023-09-30</td>
+			<td>6,483</td>
+			<td>827</td>
+			<td>1,569</td>
+			<td>8,879</td>
+			<td class="colHide3">73.01</td>
+			<td class="colHide3">9.31</td>
+			<td class="colHide3">17.67</td>
+		</tr>
+	
+		<tr>
+			<td>2023-06-30</td>
+			<td>6,359</td>
+			<td>698</td>
+			<td>1,448</td>
+			<td>8,505</td>
+			<td class="colHide3">74.77</td>
+			<td class="colHide3">8.21</td>
+			<td class="colHide3">17.03</td>
+		</tr>
+	
+		<tr>
+			<td>2023-03-31</td>
+			<td>6,263</td>
+			<td>597</td>
+			<td>1,337</td>
+			<td>8,197</td>
+			<td class="colHide3">76.41</td>
+			<td class="colHide3">7.28</td>
+			<td class="colHide3">16.31</td>
+		</tr>
+	
+		<tr>
+			<td>2022-12-31</td>
+			<td>5,891</td>
+			<td>523</td>
+			<td>1,337</td>
+			<td>7,751</td>
+			<td class="colHide3">76.00</td>
+			<td class="colHide3">6.75</td>
+			<td class="colHide3">17.25</td>
+		</tr>
+	
+		<tr>
+			<td>2022-09-30</td>
+			<td>5,897</td>
+			<td>531</td>
+			<td>1,340</td>
+			<td>7,768</td>
+			<td class="colHide3">75.91</td>
+			<td class="colHide3">6.84</td>
+			<td class="colHide3">17.25</td>
+		</tr>
+	
+		<tr>
+			<td>2022-06-30</td>
+			<td>5,678</td>
+			<td>562</td>
+			<td>1,316</td>
+			<td>7,556</td>
+			<td class="colHide3">75.15</td>
+			<td class="colHide3">7.44</td>
+			<td class="colHide3">17.42</td>
+		</tr>
+	
+		<tr>
+			<td>2022-03-31</td>
+			<td>5,362</td>
+			<td>590</td>
+			<td>1,253</td>
+			<td>7,205</td>
+			<td class="colHide3">74.42</td>
+			<td class="colHide3">8.19</td>
+			<td class="colHide3">17.39</td>
+		</tr>
+	
+		<tr>
+			<td>2021-12-31</td>
+			<td>5,743</td>
+			<td>748</td>
+			<td>1,376</td>
+			<td>7,867</td>
+			<td class="colHide3">73.00</td>
+			<td class="colHide3">9.51</td>
+			<td class="colHide3">17.49</td>
+		</tr>
+	
+		<tr>
+			<td>2021-09-30</td>
+			<td>5,710</td>
+			<td>780</td>
+			<td>1,350</td>
+			<td>7,840</td>
+			<td class="colHide3">72.83</td>
+			<td class="colHide3">9.95</td>
+			<td class="colHide3">17.22</td>
+		</tr>
+	
+		<tr>
+			<td>2021-06-30</td>
+			<td>5,552</td>
+			<td>811</td>
+			<td>1,325</td>
+			<td>7,688</td>
+			<td class="colHide3">72.22</td>
+			<td class="colHide3">10.55</td>
+			<td class="colHide3">17.23</td>
+		</tr>
+	
+		<tr>
+			<td>2021-03-31</td>
+			<td>5,337</td>
+			<td>803</td>
+			<td>1,306</td>
+			<td>7,446</td>
+			<td class="colHide3">71.68</td>
+			<td class="colHide3">10.78</td>
+			<td class="colHide3">17.54</td>
+		</tr>
+	
+		<tr>
+			<td>2020-12-31</td>
+			<td>5,084</td>
+			<td>740</td>
+			<td>1,283</td>
+			<td>7,107</td>
+			<td class="colHide3">71.54</td>
+			<td class="colHide3">10.41</td>
+			<td class="colHide3">18.05</td>
+		</tr>
+	
+		<tr>
+			<td>2020-09-30</td>
+			<td>5,021</td>
+			<td>664</td>
+			<td>1,273</td>
+			<td>6,958</td>
+			<td class="colHide3">72.16</td>
+			<td class="colHide3">9.54</td>
+			<td class="colHide3">18.30</td>
+		</tr>
+	
+		<tr>
+			<td>2019-12-31</td>
+			<td>4,736</td>
+			<td>910</td>
+			<td>1,377</td>
+			<td>7,023</td>
+			<td class="colHide3">67.44</td>
+			<td class="colHide3">12.96</td>
+			<td class="colHide3">19.61</td>
+		</tr>
+	
+		<tr>
+			<td>2018-12-31</td>
+			<td>5,484</td>
+			<td>1,044</td>
+			<td>1,653</td>
+			<td>8,181</td>
+			<td class="colHide3">67.03</td>
+			<td class="colHide3">12.76</td>
+			<td class="colHide3">20.21</td>
+		</tr>
+	
+		<tr>
+			<td>2017-12-31</td>
+			<td>5,663</td>
+			<td>1,026</td>
+			<td>1,734</td>
+			<td>8,423</td>
+			<td class="colHide3">67.23</td>
+			<td class="colHide3">12.18</td>
+			<td class="colHide3">20.59</td>
+		</tr>
+	
+		<tr>
+			<td>2016-12-31</td>
+			<td>5,958</td>
+			<td>927</td>
+			<td>1,726</td>
+			<td>8,611</td>
+			<td class="colHide3">69.19</td>
+			<td class="colHide3">10.77</td>
+			<td class="colHide3">20.04</td>
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

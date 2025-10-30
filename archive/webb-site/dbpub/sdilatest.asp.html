@@ -1,0 +1,3796 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Webb-site Database: Latest director & CEO dealings</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Latest director & CEO dealings</h2>
+<ul class="navlist">
+	<li><a target="_blank" href="sdiNotes.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+
+	<p>The latest 200 filings are shown. Click the date to see more details. Click on a stock to see all 
+	filings in that stock. Click on a name to see 
+	all filings by that person in that stock. L=Long, S=Short. Click the on-exchange price to 
+	see the CCASS movements on the settlement date corresponding to the 
+	relevant event.</p>
+	<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+	<table class="numtable yscroll" style="font-size:9pt">
+		<tr>
+			<th class="colHide3"><a href='/dbpub/sdilatest.asp?i=&amp;sort=reldup'><b>Rele-<br/>vant<br/>date</b></a></th>
+			<th class="colHide2"><a href='/dbpub/sdilatest.asp?i=&amp;sort=codeup'><b>Stock<br/>code</b></a></th>
+			<th class="left"><a href='/dbpub/sdilatest.asp?i=&amp;sort=stokup'><b>Stock</b></a></th>
+			<th class="left"><a href='/dbpub/sdilatest.asp?i=&amp;sort=nameup'><b>Name</b></a></th>
+			<th class="colHide3 left"><a href='/dbpub/sdilatest.asp?i=&amp;sort=rsnup'><b>Stated<br/>reason</b></a></th>
+			<th>L<br/>S</th>
+			<th>Shares<br/>involved</th>
+			<th class="colHide1">Curr</th>
+			<th>OnEx<br/>Price</th>
+			<th class="colHide2">OffEx<br/>Price</th>
+			<th class="colHide1"><a href='/dbpub/sdilatest.asp?i=&amp;sort=lvaldn'><b>Value</b></a></th>
+			<th class="colHide1" colspan="2" style="text-align:center">Stake,<br/>Change<br/>%</th>
+		</tr>
+	
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338636">10-28</a></td>
+			<td class="colHide2">1582</td>
+			<td class="left"><a href="sdiissue.asp?i=28432">CR Construction Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23712400&i=28432">Li, Kar Yin 李嘉賢</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-200,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>0.360</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-72,000</td>
+			
+			<td class="colHide1">0.16</td>
+			<td class="colHide1">-0.04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338656">10-28</a></td>
+			<td class="colHide2">9908</td>
+			<td class="left"><a href="sdiissue.asp?i=29430">JiaXing Gas Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24816825&i=29430">Sun, Lianqing 孫連清</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>50,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>7.700</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">385,000</td>
+			
+			<td class="colHide1">7.40</td>
+			<td class="colHide1">0.13</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338632">10-27</a></td>
+			<td class="colHide2">1866</td>
+			<td class="left"><a href="sdiissue.asp?i=5516">CHINA XLX FERTILISER LTD.:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=55304&i=5516">Liu, Xingxu 劉興旭</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>704,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>7.350</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">5,174,400</td>
+			
+			<td class="colHide1">34.26</td>
+			<td class="colHide1">0.05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338635">10-27</a></td>
+			<td class="colHide2">1582</td>
+			<td class="left"><a href="sdiissue.asp?i=28432">CR Construction Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2374678&i=28432">Chan, Tak Yiu 陳德耀</a></td>
+			<td class="colHide3 left"><span class="info">Unpledged<span>Release of pledge to unqualified lender</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.02</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338637">10-27</a></td>
+			<td class="colHide2">1582</td>
+			<td class="left"><a href="sdiissue.asp?i=28432">CR Construction Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23712400&i=28432">Li, Kar Yin 李嘉賢</a></td>
+			<td class="colHide3 left"><span class="info">Unpledged<span>Release of pledge to unqualified lender</span></span></td>
+			<td>L</td>
+			<td>1,000,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.20</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338638">10-27</a></td>
+			<td class="colHide2">1582</td>
+			<td class="left"><a href="sdiissue.asp?i=28432">CR Construction Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23712520&i=28432">Yang, Haojiang (1983) 楊昊江</a></td>
+			<td class="colHide3 left"><span class="info">Unpledged<span>Release of pledge to unqualified lender</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.10</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338644">10-27</a></td>
+			<td class="colHide2">2367</td>
+			<td class="left"><a href="sdiissue.asp?i=33568">Giant Biogene Holding Co., Ltd:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28752483&i=33568">Yan, Jianya 嚴建亞</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>560,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>38.999</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">21,839,440</td>
+			
+			<td class="colHide1">55.43</td>
+			<td class="colHide1">0.05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338645">10-27</a></td>
+			<td class="colHide2">0393</td>
+			<td class="left"><a href="sdiissue.asp?i=1056">Glorious Sun Enterprises Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=16812&i=1056">Yeung, Charles Chun Kam 楊掁鑫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>28,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>1.340</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">37,520</td>
+			
+			<td class="colHide1">63.65</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338646">10-27</a></td>
+			<td class="colHide2">1328</td>
+			<td class="left"><a href="sdiissue.asp?i=4922">Goldstream Investment Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26740&i=4922">Zhao, John Huan 趙令歡</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">63.04</td>
+			<td class="colHide1">-0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338657">10-27</a></td>
+			<td class="colHide2">9908</td>
+			<td class="left"><a href="sdiissue.asp?i=29430">JiaXing Gas Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24816825&i=29430">Sun, Lianqing 孫連清</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>9,500</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>7.697</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">73,125</td>
+			
+			<td class="colHide1">7.27</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338665">10-27</a></td>
+			<td class="colHide2">1263</td>
+			<td class="left"><a href="sdiissue.asp?i=7296">PC Partner Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=135563&i=7296">Wong, Tony Shik Ho 王錫豪</a></td>
+			<td class="colHide3 left"><span class="info">Returned<span>Received shares from borrower</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1">SGD</td>
+				
+					<td>0.000</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">0</td>
+			
+			<td class="colHide1">14.28</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338681">10-27</a></td>
+			<td class="colHide2">9890</td>
+			<td class="left"><a href="sdiissue.asp?i=34538">Tanwan Inc.:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30571104&i=34538">Wu, Xubo 吳旭波</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>345,200</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td>14.680</td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">5,067,536</td>
+			
+			<td class="colHide1">51.71</td>
+			<td class="colHide1">0.06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338566">10-24</a></td>
+			<td class="colHide2">0948</td>
+			<td class="left"><a href="sdiissue.asp?i=5842">Alpha Professional Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32063946&i=5842">Chen, Jianguo (1969) 陳建國</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-1,428,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.250</td>
+				<td class="colHide1">-357,000</td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">-0.40</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338567">10-24</a></td>
+			<td class="colHide2">1104</td>
+			<td class="left"><a href="sdiissue.asp?i=1917">APAC Resources Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1322&i=1917">Lee, Seng Hui 李成輝</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">52.06</td>
+			<td class="colHide1">-0.11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338569">10-24</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611658&i=20805">Choy, Chi Fai 蔡志輝</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>640,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-28">0.375</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">239,744</td>
+			
+			<td class="colHide1">58.38</td>
+			<td class="colHide1">0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338570">10-24</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611728&i=20805">Ho, Ka Man (1975) 何家敏</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>640,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-28">0.375</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">239,744</td>
+			
+			<td class="colHide1">58.38</td>
+			<td class="colHide1">0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338517">10-24</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23735196&i=28452">Yan, Fei (1960) 嚴斐</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28452&d=2025-10-28">1.569</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-784,500</td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">-0.09</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338518">10-24</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23735196&i=28452">Yan, Fei (1960) 嚴斐</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.810</td>
+				<td class="colHide1">405,000</td>
+			
+			<td class="colHide1">0.09</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338575">10-24</a></td>
+			<td class="colHide2">0681</td>
+			<td class="left"><a href="sdiissue.asp?i=1116">Chinese People Holdings Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=21043&i=1116">Mo, Shikang 莫世康</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>2,000,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1116&d=2025-10-28">0.031</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">62,000</td>
+			
+			<td class="colHide1">42.69</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338576">10-24</a></td>
+			<td class="colHide2">0681</td>
+			<td class="left"><a href="sdiissue.asp?i=1116">Chinese People Holdings Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2370303&i=1116">Mo, Yunbi 莫雲碧</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>2,000,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1116&d=2025-10-28">0.031</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">62,000</td>
+			
+			<td class="colHide1">42.69</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338633">10-24</a></td>
+			<td class="colHide2">2371</td>
+			<td class="left"><a href="sdiissue.asp?i=4535">Chuanglian Holdings Limited (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=27915920&i=4535">Gao, Yongzhi 高永志</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>5,263,157</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">9.61</td>
+			<td class="colHide1">0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338634">10-24</a></td>
+			<td class="colHide2">0256</td>
+			<td class="left"><a href="sdiissue.asp?i=223">CITYCHAMP WATCH & JEWELLERY GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=21692&i=223">Hon, Kwok Lung 韓國龍</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>14,100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=223&d=2025-10-28">0.201</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">2,835,510</td>
+			
+			<td class="colHide1">54.13</td>
+			<td class="colHide1">0.33</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338577">10-24</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=14999&i=3431">Hung, Yung Lai 熊融禮</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>108,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-28">1.199</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">129,481</td>
+			
+			<td class="colHide1">40.21</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338580">10-24</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=15002&i=3431">Li, Kei Ling 李其玲</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>108,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-28">1.199</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">129,481</td>
+			
+			<td class="colHide1">47.25</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338584">10-24</a></td>
+			<td class="colHide2">0887</td>
+			<td class="left"><a href="sdiissue.asp?i=5000">Emperor Watch & Jewellery Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1852&i=5000">Yeung, Cindy (1964) 楊諾思</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>60,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=5000&d=2025-10-28">0.285</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">17,100</td>
+			
+			<td class="colHide1">59.33</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338586">10-24</a></td>
+			<td class="colHide2">6616</td>
+			<td class="left"><a href="sdiissue.asp?i=31604">Global New Material International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26948980&i=31604">Su, Ertian 蘇爾田</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-30,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">35.50</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338587">10-24</a></td>
+			<td class="colHide2">0393</td>
+			<td class="left"><a href="sdiissue.asp?i=1056">Glorious Sun Enterprises Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=16812&i=1056">Yeung, Charles Chun Kam 楊掁鑫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>80,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1056&d=2025-10-28">1.345</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">107,600</td>
+			
+			<td class="colHide1">63.65</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338647">10-24</a></td>
+			<td class="colHide2">0021</td>
+			<td class="left"><a href="sdiissue.asp?i=372">Great China Holdings (Hong Kong) Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=40333&i=372">Huang, Wenxi 黃文稀</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>-130,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=372&d=2025-10-28">0.094</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-12,220</td>
+			
+			<td class="colHide1">15.78</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338649">10-24</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938608&i=36116">Qi, Xia (1986) 戚俠</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>878,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.30</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338651">10-24</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938609&i=36116">Ruan, Xiudi 阮修迪</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>878,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.30</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338653">10-24</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938607&i=36116">Wang, Yunan (1986) 王雲安</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>878,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.30</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338592">10-24</a></td>
+			<td class="colHide2">9908</td>
+			<td class="left"><a href="sdiissue.asp?i=29430">JiaXing Gas Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24816825&i=29430">Sun, Lianqing 孫連清</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>5,500</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=29430&d=2025-10-28">7.696</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">42,325</td>
+			
+			<td class="colHide1">7.24</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338594">10-24</a></td>
+			<td class="colHide2">1951</td>
+			<td class="left"><a href="sdiissue.asp?i=28133">Jinxin Fertility Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23294426&i=28133">Dong, Yang (1985) 董陽</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28133&d=2025-10-28">2.560</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">1,280,000</td>
+			
+			<td class="colHide1">0.50</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338596">10-24</a></td>
+			<td class="colHide2">0391</td>
+			<td class="left"><a href="sdiissue.asp?i=1155">MEI AH ENTERTAINMENT GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=12277&i=1155">Li, Kuo Hsing 李國興</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1155&d=2025-10-28">0.102</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">10,200</td>
+			
+			<td class="colHide1">56.78</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338658">10-24</a></td>
+			<td class="colHide2">0909</td>
+			<td class="left"><a href="sdiissue.asp?i=29720">Ming Yuan Cloud Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=25134666&i=29720">Chen, Xiaohui (1971) 陳曉暉</a></td>
+			<td class="colHide3 left"><span class="info">Short dec<span>Other decrease in short position - see filing</span></span></td>
+			<td>S</td>
+			<td>10,000,000</td>
+			
+				<td class="colHide1" style="background-color:gray"></td>
+				<td style="background-color:gray"></td>
+				<td class="colHide2" style="background-color:gray"></td>
+				<td class="colHide1" style="background-color:gray"></td>
+			
+			<td class="colHide1">-0.52</td>
+			<td class="colHide1">0.51</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338658">10-24</a></td>
+			<td class="colHide2">0909</td>
+			<td class="left"><a href="sdiissue.asp?i=29720">Ming Yuan Cloud Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=25134666&i=29720">Chen, Xiaohui (1971) 陳曉暉</a></td>
+			<td class="colHide3 left"><span class="info">Loaned<span>Delivered shares to borrower</span></span></td>
+			<td>L</td>
+			<td>10,000,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">13.81</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338599">10-24</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2351549&i=1298">Han, Xiaosheng 韓曉生</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-28">0.148</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,480</td>
+			
+			<td class="colHide1">67.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338601">10-24</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1184&i=1298">Lam, Kenneth Kin Hing (SFC:ABV605) 林建興</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-28">0.148</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,480</td>
+			
+			<td class="colHide1">69.71</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338603">10-24</a></td>
+			<td class="colHide2">2297</td>
+			<td class="left"><a href="sdiissue.asp?i=33228">Rainmed Medical Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32241802&i=33228">Huo, Yunlong 霍雲龍</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>101,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33228&d=2025-10-28">0.280</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">28,280</td>
+			
+			<td class="colHide1">11.46</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338605">10-24</a></td>
+			<td class="colHide2">1769</td>
+			<td class="left"><a href="sdiissue.asp?i=28126">Scholar Education Group:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23289301&i=28126">Chen, Qiyuan (1982) 陳啟遠</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">32.55</td>
+			<td class="colHide1">-6.34</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338606">10-24</a></td>
+			<td class="colHide2">1769</td>
+			<td class="left"><a href="sdiissue.asp?i=28126">Scholar Education Group:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23289308&i=28126">Qi, Mingzhi (1984) 齊明智</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">1.90</td>
+			<td class="colHide1">-0.37</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338666">10-24</a></td>
+			<td class="colHide2">1525</td>
+			<td class="left"><a href="sdiissue.asp?i=28871">Shanghai Gench Education Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24084934&i=28871">Zhao, Donghui (1966) 趙東輝</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td>-498,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28871&d=2025-10-28">2.570</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,279,860</td>
+			
+			<td class="colHide1">34.97</td>
+			<td class="colHide1">-0.12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338667">10-24</a></td>
+			<td class="colHide2">0737</td>
+			<td class="left"><a href="sdiissue.asp?i=3428">Shenzhen Investment Holdings Bay Area Development Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28843709&i=3428">Chen, Siyan 陳思燕</a></td>
+			<td class="colHide3 left"><span class="info">Ceased<span>Position on ceasing as director/CE</span></span></td>
+			<td>L</td>
+			<td>92,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338671">10-24</a></td>
+			<td class="colHide2">6969</td>
+			<td class="left"><a href="sdiissue.asp?i=29408">Smoore International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28782513&i=29408">Wang, Xin (Smoore) 王鑫</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-4,765</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.05</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338672">10-24</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802866&i=33854">Jin, Lei (1966) 金磊</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-275,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-28">1.434</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-395,034</td>
+			
+			<td class="colHide1">69.29</td>
+			<td class="colHide1">-0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338675">10-24</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802865&i=33854">Tian, Ming (1969) 田明</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-275,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-28">1.434</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-395,034</td>
+			
+			<td class="colHide1">69.29</td>
+			<td class="colHide1">-0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338678">10-24</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802867&i=33854">Xu, Xiangdong (1964) 徐向東</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-275,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-28">1.434</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-395,034</td>
+			
+			<td class="colHide1">69.29</td>
+			<td class="colHide1">-0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338609">10-24</a></td>
+			<td class="colHide2">9890</td>
+			<td class="left"><a href="sdiissue.asp?i=34538">Tanwan Inc.:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30571104&i=34538">Wu, Xubo 吳旭波</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=34538&d=2025-10-28">14.800</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">1,480,000</td>
+			
+			<td class="colHide1">51.65</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338610">10-24</a></td>
+			<td class="colHide2">6868</td>
+			<td class="left"><a href="sdiissue.asp?i=7094">Tenfu (Cayman) Holdings Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=68395&i=7094">Lee, Chia Ling 李家麟</a></td>
+			<td class="colHide3 left"><span class="info">Outdated<span>Noticed filed to remove outdated information - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">42.03</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338611">10-24</a></td>
+			<td class="colHide2">6868</td>
+			<td class="left"><a href="sdiissue.asp?i=7094">Tenfu (Cayman) Holdings Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=68396&i=7094">Lee, Kuo Lin 李國麟</a></td>
+			<td class="colHide3 left"><span class="info">Outdated<span>Noticed filed to remove outdated information - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">34.93</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338612">10-24</a></td>
+			<td class="colHide2">0732</td>
+			<td class="left"><a href="sdiissue.asp?i=1284">TRULY INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=17202&i=1284">Lam, Steven Wai Wah 林偉華</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">55.89</td>
+			<td class="colHide1">0.35</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338613">10-24</a></td>
+			<td class="colHide2">0732</td>
+			<td class="left"><a href="sdiissue.asp?i=1284">TRULY INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22408424&i=1284">Song, Bei Bei 宋貝貝</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.09</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338614">10-24</a></td>
+			<td class="colHide2">1662</td>
+			<td class="left"><a href="sdiissue.asp?i=17856">Yee Hop Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2510442&i=17856">Yan, Chi Tat 甄志達</a></td>
+			<td class="colHide3 left"><span class="info">Call<span>Right to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>2,000,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.39</td>
+			<td class="colHide1">0.39</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338615">10-24</a></td>
+			<td class="colHide2">2325</td>
+			<td class="left"><a href="sdiissue.asp?i=33037">Yunkang Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28238777&i=33037">Zhang, Yong (Yunkang) 張勇</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-1,070,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33037&d=2025-10-28">1.090</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,166,300</td>
+			
+			<td class="colHide1">37.98</td>
+			<td class="colHide1">-0.18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338683">10-24</a></td>
+			<td class="colHide2">2190</td>
+			<td class="left"><a href="sdiissue.asp?i=31451">Zylox-Tonbridge Medical Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26897807&i=31451">Li, Zheng (1977) 李崢</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>1,800,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">28.04</td>
+			<td class="colHide1">1.68</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338684">10-24</a></td>
+			<td class="colHide2">2190</td>
+			<td class="left"><a href="sdiissue.asp?i=31451">Zylox-Tonbridge Medical Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26897825&i=31451">Wang, Hongbo (1987) 王宏波</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>30,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.04</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338685">10-24</a></td>
+			<td class="colHide2">2190</td>
+			<td class="left"><a href="sdiissue.asp?i=31451">Zylox-Tonbridge Medical Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26897805&i=31451">Xie, Yang (1969) 謝陽</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>1,800,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">4.48</td>
+			<td class="colHide1">0.55</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338686">10-24</a></td>
+			<td class="colHide2">2190</td>
+			<td class="left"><a href="sdiissue.asp?i=31451">Zylox-Tonbridge Medical Technology Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26897798&i=31451">Zhao, Jonathon Zhong 趙中</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>3,600,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">28.04</td>
+			<td class="colHide1">1.68</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338616">10-23</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=17091&i=35894">Chan, Philip Ching Ho 陳正豪</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>17,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=35894&d=2025-10-27">3.020</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">51,340</td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338620">10-23</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32569586&i=35894">Xiao, David Guowei 肖國偉</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Joined a concert party or the group acquired shares</span></span></td>
+			<td>L</td>
+			<td>17,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338624">10-23</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2498019&i=35894">Yuan, Peter Lie Ming 袁立明</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Joined a concert party or the group acquired shares</span></span></td>
+			<td>L</td>
+			<td>17,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338628">10-23</a></td>
+			<td class="colHide2">2519</td>
+			<td class="left"><a href="sdiissue.asp?i=35895">AuGroup (SHENZHEN) Cross-Border Business Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32569718&i=35895">Lu, Haizhuan 陸海傳</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">28.47</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338629">10-23</a></td>
+			<td class="colHide2">2519</td>
+			<td class="left"><a href="sdiissue.asp?i=35895">AuGroup (SHENZHEN) Cross-Border Business Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32569760&i=35895">Ze, Kuaiyue 迮會越</a></td>
+			<td class="colHide3 left"><span class="info">Pledged<span>Pledged to unqualified lender</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">28.47</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338511">10-23</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611658&i=20805">Choy, Chi Fai 蔡志輝</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>190,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-27">0.350</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">66,500</td>
+			
+			<td class="colHide1">58.30</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338512">10-23</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611728&i=20805">Ho, Ka Man (1975) 何家敏</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>190,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-27">0.350</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">66,500</td>
+			
+			<td class="colHide1">58.30</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338572">10-23</a></td>
+			<td class="colHide2">3998</td>
+			<td class="left"><a href="sdiissue.asp?i=4919">Bosideng International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2056070&i=4919">Rui, Jinsong 芮勁松</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-800,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=4919&d=2025-10-27">4.900</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-3,920,000</td>
+			
+			<td class="colHide1">0.31</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338514">10-23</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30060944&i=28452">Chen, Huaquan 陳華泉</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>1,500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.810</td>
+				<td class="colHide1">1,215,000</td>
+			
+			<td class="colHide1">0.35</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338513">10-23</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30060944&i=28452">Chen, Huaquan 陳華泉</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-1,500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28452&d=2025-10-27">0.950</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,425,000</td>
+			
+			<td class="colHide1">0.06</td>
+			<td class="colHide1">-0.29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338516">10-23</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23735195&i=28452">Li, Huifang (1979) 李惠芳</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>1,300,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.810</td>
+				<td class="colHide1">1,053,000</td>
+			
+			<td class="colHide1">0.25</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338515">10-23</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23735195&i=28452">Li, Huifang (1979) 李惠芳</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-1,300,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28452&d=2025-10-27">0.950</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,235,000</td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">-0.25</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338631">10-23</a></td>
+			<td class="colHide2">1378</td>
+			<td class="left"><a href="sdiissue.asp?i=6611">China Hongqiao Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=18684&i=6611">Zhang, Bo (China Hongqiao) 張波</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">64.14</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338578">10-23</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=14999&i=3431">Hung, Yung Lai 熊融禮</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>60,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-27">1.170</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">70,200</td>
+			
+			<td class="colHide1">40.20</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338581">10-23</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=15002&i=3431">Li, Kei Ling 李其玲</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>60,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-27">1.170</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">70,200</td>
+			
+			<td class="colHide1">47.24</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338457">10-23</a></td>
+			<td class="colHide2">1709</td>
+			<td class="left"><a href="sdiissue.asp?i=16095">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1948599&i=16095">Chen, Ningdi 陳寧廸</a></td>
+			<td class="colHide3 left"><span class="info">Placed<span>Sold to placees in a top-up placing</span></span></td>
+			<td>L</td>
+			<td>-255,213,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">3.050</td>
+				<td class="colHide1">-778,399,638</td>
+			
+			<td class="colHide1">43.27</td>
+			<td class="colHide1">-14.58</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338641">10-23</a></td>
+			<td class="colHide2">0035</td>
+			<td class="left"><a href="sdiissue.asp?i=799">FAR EAST CONSORTIUM INTERNATIONAL LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=3947&i=799">Chiu, David Tat Cheong 邱達昌</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>127,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=799&d=2025-10-27">0.751</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">95,415</td>
+			
+			<td class="colHide1">56.24</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338532">10-23</a></td>
+			<td class="colHide2">0393</td>
+			<td class="left"><a href="sdiissue.asp?i=1056">Glorious Sun Enterprises Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=16812&i=1056">Yeung, Charles Chun Kam 楊掁鑫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>80,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1056&d=2025-10-27">1.325</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">106,000</td>
+			
+			<td class="colHide1">63.65</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338588">10-23</a></td>
+			<td class="colHide2">0021</td>
+			<td class="left"><a href="sdiissue.asp?i=372">Great China Holdings (Hong Kong) Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=40333&i=372">Huang, Wenxi 黃文稀</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-80,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=372&d=2025-10-27">0.094</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-7,520</td>
+			
+			<td class="colHide1">15.78</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338648">10-23</a></td>
+			<td class="colHide2">1396</td>
+			<td class="left"><a href="sdiissue.asp?i=11424">Guangdong - Hong Kong Greater Bay Area Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30293228&i=11424">Luo, Jieping 羅介平</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">36.89</td>
+			<td class="colHide1">-14.05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338650">10-23</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938608&i=36116">Qi, Xia (1986) 戚俠</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.27</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338652">10-23</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938609&i=36116">Ruan, Xiudi 阮修迪</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.27</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338654">10-23</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938607&i=36116">Wang, Yunan (1986) 王雲安</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.27</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338593">10-23</a></td>
+			<td class="colHide2">9908</td>
+			<td class="left"><a href="sdiissue.asp?i=29430">JiaXing Gas Group Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24816825&i=29430">Sun, Lianqing 孫連清</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>5,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=29430&d=2025-10-27">7.850</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">39,250</td>
+			
+			<td class="colHide1">7.23</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338539">10-23</a></td>
+			<td class="colHide2">9939</td>
+			<td class="left"><a href="sdiissue.asp?i=29241">Kintor Pharmaceutical Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24534742&i=29241">Tong, Youzhi 童友之</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=29241&d=2025-10-27">1.930</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">193,000</td>
+			
+			<td class="colHide1">10.98</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338540">10-23</a></td>
+			<td class="colHide2">0391</td>
+			<td class="left"><a href="sdiissue.asp?i=1155">MEI AH ENTERTAINMENT GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=12277&i=1155">Li, Kuo Hsing 李國興</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>480,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1155&d=2025-10-27">0.099</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">47,472</td>
+			
+			<td class="colHide1">56.78</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338597">10-23</a></td>
+			<td class="colHide2">1653</td>
+			<td class="left"><a href="sdiissue.asp?i=26963">MOS House Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22237005&i=26963">Tso, Simon 曹思豪</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>2,400,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.300</td>
+				<td class="colHide1">720,000</td>
+			
+			<td class="colHide1">61.95</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338598">10-23</a></td>
+			<td class="colHide2">1653</td>
+			<td class="left"><a href="sdiissue.asp?i=26963">MOS House Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22237008&i=26963">Tsui, To Fei 徐道飛</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>2,400,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.300</td>
+				<td class="colHide1">720,000</td>
+			
+			<td class="colHide1">61.95</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338659">10-23</a></td>
+			<td class="colHide2">2221</td>
+			<td class="left"><a href="sdiissue.asp?i=12766">New Concepts Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22884&i=12766">Choy, Raymond Wai Shek 蔡偉石</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.09</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338660">10-23</a></td>
+			<td class="colHide2">2221</td>
+			<td class="left"><a href="sdiissue.asp?i=12766">New Concepts Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2316022&i=12766">Lo, Adrian Chun Chiu 羅俊超</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.03</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338661">10-23</a></td>
+			<td class="colHide2">2221</td>
+			<td class="left"><a href="sdiissue.asp?i=12766">New Concepts Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26474654&i=12766">Pan, Yimin 潘軼旻</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.18</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338662">10-23</a></td>
+			<td class="colHide2">2221</td>
+			<td class="left"><a href="sdiissue.asp?i=12766">New Concepts Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2316023&i=12766">Tong, Ka Lok 唐嘉樂</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.05</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338663">10-23</a></td>
+			<td class="colHide2">2221</td>
+			<td class="left"><a href="sdiissue.asp?i=12766">New Concepts Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=40520&i=12766">Zhu, Yongjun (1967) 朱勇軍</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">9.60</td>
+			<td class="colHide1">-0.12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338600">10-23</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2351549&i=1298">Han, Xiaosheng 韓曉生</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-27">0.150</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,500</td>
+			
+			<td class="colHide1">67.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338602">10-23</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1184&i=1298">Lam, Kenneth Kin Hing (SFC:ABV605) 林建興</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-27">0.150</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,500</td>
+			
+			<td class="colHide1">69.71</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338668">10-23</a></td>
+			<td class="colHide2">0932</td>
+			<td class="left"><a href="sdiissue.asp?i=11281">Shunten International (Holdings) Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=87498&i=11281">Cheung, Siu Fai 張少輝</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>38,000,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.024</td>
+				<td class="colHide1">912,000</td>
+			
+			<td class="colHide1">50.02</td>
+			<td class="colHide1">1.22</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338669">10-23</a></td>
+			<td class="colHide2">8156</td>
+			<td class="left"><a href="sdiissue.asp?i=3329">Sinopharm Tech Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=48549&i=3329">Heung, Edmond Pik Lun 向碧倫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>150,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3329&d=2025-10-27">0.246</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">36,900</td>
+			
+			<td class="colHide1">0.03</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338673">10-23</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802866&i=33854">Jin, Lei (1966) 金磊</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-71,600</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-27">1.528</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-109,419</td>
+			
+			<td class="colHide1">69.36</td>
+			<td class="colHide1">-0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338676">10-23</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802865&i=33854">Tian, Ming (1969) 田明</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-71,600</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-27">1.528</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-109,419</td>
+			
+			<td class="colHide1">69.36</td>
+			<td class="colHide1">-0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338679">10-23</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802867&i=33854">Xu, Xiangdong (1964) 徐向東</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-71,600</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-27">1.528</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-109,419</td>
+			
+			<td class="colHide1">69.36</td>
+			<td class="colHide1">-0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338608">10-23</a></td>
+			<td class="colHide2">0435</td>
+			<td class="left"><a href="sdiissue.asp?i=4801">Sunlight Real Estate Investment Trust:Unit</a></td>
+			<td class="left"><a href="sdidirco.asp?p=37261&i=4801">HENDERSON SUNLIGHT ASSET MANAGEMENT LIMITED 恒基陽光資產管理有限公司</a></td>
+			<td class="colHide3 left"><span class="info">Given<span>Received shares without payment</span></span></td>
+			<td>L</td>
+			<td>9,695,890</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">2.256</td>
+				<td class="colHide1">21,873,928</td>
+			
+			<td class="colHide1">15.23</td>
+			<td class="colHide1">0.48</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338543">10-23</a></td>
+			<td class="colHide2">9890</td>
+			<td class="left"><a href="sdiissue.asp?i=34538">Tanwan Inc.:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30571104&i=34538">Wu, Xubo 吳旭波</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>41,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=34538&d=2025-10-27">14.640</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">600,240</td>
+			
+			<td class="colHide1">51.63</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338682">10-23</a></td>
+			<td class="colHide2">2051</td>
+			<td class="left"><a href="sdiissue.asp?i=26697">Vala Inc. (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=11790163&i=26697">Sun, Haitao (1980) 孫海濤</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>360,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=26697&d=2025-10-27">0.547</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">196,992</td>
+			
+			<td class="colHide1">16.99</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338551">10-23</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Unpledge<span>Ceased security interest</span></span></td>
+			<td>L</td>
+			<td>-314,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.11</td>
+			<td class="colHide1">-0.04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338550">10-23</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Left a concert party or the group disposed of shares</span></span></td>
+			<td>L</td>
+			<td>-314,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.11</td>
+			<td class="colHide1">-0.04</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338554">10-23</a></td>
+			<td class="colHide2">1662</td>
+			<td class="left"><a href="sdiissue.asp?i=17856">Yee Hop Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2510440&i=17856">Jim, Jackin Yin Kwan 詹燕群</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=17856&d=2025-10-27">3.370</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">337,000</td>
+			
+			<td class="colHide1">39.14</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338555">10-23</a></td>
+			<td class="colHide2">1662</td>
+			<td class="left"><a href="sdiissue.asp?i=17856">Yee Hop Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30072661&i=17856">Lee, Mabel Sze Wing 李思穎</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=17856&d=2025-10-27">3.370</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">337,000</td>
+			
+			<td class="colHide1">39.14</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338565">10-23</a></td>
+			<td class="colHide2">2772</td>
+			<td class="left"><a href="sdiissue.asp?i=28156">Zhongliang Holdings Group Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23353523&i=28156">Yang, Jian (1971) 楊劍</a></td>
+			<td class="colHide3 left"><span class="info">Voluntary<span>Voluntary - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">65.77</td>
+			<td class="colHide1">-0.06</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338617">10-22</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=17091&i=35894">Chan, Philip Ching Ho 陳正豪</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>3,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=35894&d=2025-10-24">3.020</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">9,060</td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338621">10-22</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32569586&i=35894">Xiao, David Guowei 肖國偉</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Joined a concert party or the group acquired shares</span></span></td>
+			<td>L</td>
+			<td>53,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338625">10-22</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2498019&i=35894">Yuan, Peter Lie Ming 袁立明</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>50,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=35894&d=2025-10-24">3.020</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">151,000</td>
+			
+			<td class="colHide1">25.44</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338568">10-22</a></td>
+			<td class="colHide2">0711</td>
+			<td class="left"><a href="sdiissue.asp?i=236">ASIA ALLIED INFRASTRUCTURE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=51214&i=236">Pang, Dominic Yat Ting 彭一庭</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>30,000,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.500</td>
+				<td class="colHide1">15,000,000</td>
+			
+			<td class="colHide1">73.15</td>
+			<td class="colHide1">1.61</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338446">10-22</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611658&i=20805">Choy, Chi Fai 蔡志輝</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>20,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-24">0.335</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">6,700</td>
+			
+			<td class="colHide1">58.27</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338447">10-22</a></td>
+			<td class="colHide2">2031</td>
+			<td class="left"><a href="sdiissue.asp?i=20805">AUSUPREME INTERNATIONAL HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2611728&i=20805">Ho, Ka Man (1975) 何家敏</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>20,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=20805&d=2025-10-24">0.335</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">6,700</td>
+			
+			<td class="colHide1">58.27</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338573">10-22</a></td>
+			<td class="colHide2">3998</td>
+			<td class="left"><a href="sdiissue.asp?i=4919">Bosideng International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2056070&i=4919">Rui, Jinsong 芮勁松</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-1,200,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=4919&d=2025-10-24">4.870</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-5,844,000</td>
+			
+			<td class="colHide1">0.31</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338451">10-22</a></td>
+			<td class="colHide2">1959</td>
+			<td class="left"><a href="sdiissue.asp?i=28452">Centenary United Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23735189&i=28452">Law, Hau Kit 羅厚杰</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">72.86</td>
+			<td class="colHide1">-1.90</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338579">10-22</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=14999&i=3431">Hung, Yung Lai 熊融禮</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>120,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-24">1.175</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">141,000</td>
+			
+			<td class="colHide1">40.20</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338582">10-22</a></td>
+			<td class="colHide2">2348</td>
+			<td class="left"><a href="sdiissue.asp?i=3431">DAWNRAYS PHARMACEUTICAL (HOLDINGS) LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=15002&i=3431">Li, Kei Ling 李其玲</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>120,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3431&d=2025-10-24">1.175</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">141,000</td>
+			
+			<td class="colHide1">47.24</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338526">10-22</a></td>
+			<td class="colHide2">0887</td>
+			<td class="left"><a href="sdiissue.asp?i=5000">Emperor Watch & Jewellery Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1852&i=5000">Yeung, Cindy (1964) 楊諾思</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>1,500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=5000&d=2025-10-24">0.272</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">407,550</td>
+			
+			<td class="colHide1">59.33</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338585">10-22</a></td>
+			<td class="colHide2">0035</td>
+			<td class="left"><a href="sdiissue.asp?i=799">FAR EAST CONSORTIUM INTERNATIONAL LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=3947&i=799">Chiu, David Tat Cheong 邱達昌</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>1,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=799&d=2025-10-24">0.760</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">760</td>
+			
+			<td class="colHide1">56.23</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338465">10-22</a></td>
+			<td class="colHide2">2367</td>
+			<td class="left"><a href="sdiissue.asp?i=33568">Giant Biogene Holding Co., Ltd:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28752483&i=33568">Yan, Jianya 嚴建亞</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33568&d=2025-10-24">38.500</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">19,250,000</td>
+			
+			<td class="colHide1">55.38</td>
+			<td class="colHide1">0.05</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338466">10-22</a></td>
+			<td class="colHide2">0393</td>
+			<td class="left"><a href="sdiissue.asp?i=1056">Glorious Sun Enterprises Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=16812&i=1056">Yeung, Charles Chun Kam 楊掁鑫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>80,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1056&d=2025-10-24">1.310</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">104,800</td>
+			
+			<td class="colHide1">63.64</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338468">10-22</a></td>
+			<td class="colHide2">1328</td>
+			<td class="left"><a href="sdiissue.asp?i=4922">Goldstream Investment Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26740&i=4922">Zhao, John Huan 趙令歡</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>66,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">63.12</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338589">10-22</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938608&i=36116">Qi, Xia (1986) 戚俠</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.10</td>
+			<td class="colHide1">0.16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338590">10-22</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938609&i=36116">Ruan, Xiudi 阮修迪</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.10</td>
+			<td class="colHide1">0.16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338591">10-22</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938607&i=36116">Wang, Yunan (1986) 王雲安</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">73.10</td>
+			<td class="colHide1">0.16</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338471">10-22</a></td>
+			<td class="colHide2">1044</td>
+			<td class="left"><a href="sdiissue.asp?i=1893">HENGAN INTERNATIONAL GROUP COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2596563&i=1893">Hui, Ching Lau (1979) 許清流</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>200,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1893&d=2025-10-24">27.645</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">5,528,940</td>
+			
+			<td class="colHide1">24.27</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338538">10-22</a></td>
+			<td class="colHide2">2189</td>
+			<td class="left"><a href="sdiissue.asp?i=28031">Kato (Hong Kong) Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23236531&i=28031">Ngai, Godfrey Shi Shing 魏仕成</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>24,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=28031&d=2025-10-24">0.438</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">10,512</td>
+			
+			<td class="colHide1">64.78</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338479">10-22</a></td>
+			<td class="colHide2">9939</td>
+			<td class="left"><a href="sdiissue.asp?i=29241">Kintor Pharmaceutical Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24534742&i=29241">Tong, Youzhi 童友之</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>150,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=29241&d=2025-10-24">2.046</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">306,900</td>
+			
+			<td class="colHide1">10.96</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338595">10-22</a></td>
+			<td class="colHide2">1896</td>
+			<td class="left"><a href="sdiissue.asp?i=27514">Maoyan Entertainment:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22674984&i=27514">Wang, Changtian 王長田</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>754,200</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=27514&d=2025-10-24">6.778</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">5,112,043</td>
+			
+			<td class="colHide1">41.81</td>
+			<td class="colHide1">0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338480">10-22</a></td>
+			<td class="colHide2">0391</td>
+			<td class="left"><a href="sdiissue.asp?i=1155">MEI AH ENTERTAINMENT GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=12277&i=1155">Li, Kuo Hsing 李國興</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>140,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1155&d=2025-10-24">0.104</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">14,518</td>
+			
+			<td class="colHide1">56.77</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338481">10-22</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2351549&i=1298">Han, Xiaosheng 韓曉生</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-24">0.150</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,500</td>
+			
+			<td class="colHide1">67.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338483">10-22</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1184&i=1298">Lam, Kenneth Kin Hing (SFC:ABV605) 林建興</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-24">0.150</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,500</td>
+			
+			<td class="colHide1">69.71</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338670">10-22</a></td>
+			<td class="colHide2">8156</td>
+			<td class="left"><a href="sdiissue.asp?i=3329">Sinopharm Tech Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=48549&i=3329">Heung, Edmond Pik Lun 向碧倫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>30,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=3329&d=2025-10-24">0.247</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">7,410</td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338674">10-22</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802866&i=33854">Jin, Lei (1966) 金磊</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-56,300</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-24">1.562</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-87,946</td>
+			
+			<td class="colHide1">69.38</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338677">10-22</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802865&i=33854">Tian, Ming (1969) 田明</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-56,300</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-24">1.562</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-87,946</td>
+			
+			<td class="colHide1">69.38</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338680">10-22</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802867&i=33854">Xu, Xiangdong (1964) 徐向東</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-56,300</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-24">1.562</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-87,946</td>
+			
+			<td class="colHide1">69.38</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338492">10-22</a></td>
+			<td class="colHide2">9890</td>
+			<td class="left"><a href="sdiissue.asp?i=34538">Tanwan Inc.:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30571104&i=34538">Wu, Xubo 吳旭波</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>2,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=34538&d=2025-10-24">14.300</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">28,600</td>
+			
+			<td class="colHide1">51.62</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338549">10-22</a></td>
+			<td class="colHide2">3390</td>
+			<td class="left"><a href="sdiissue.asp?i=29153">Tycoon Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=24428183&i=29153">Wong, Michael Ka Chun 王嘉俊</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>92,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=29153&d=2025-10-24">0.290</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">26,680</td>
+			
+			<td class="colHide1">33.90</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338496">10-22</a></td>
+			<td class="colHide2">2051</td>
+			<td class="left"><a href="sdiissue.asp?i=26697">Vala Inc. (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=11790163&i=26697">Sun, Haitao (1980) 孫海濤</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=26697&d=2025-10-24">0.671</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">335,700</td>
+			
+			<td class="colHide1">16.96</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338500">10-22</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Unpledge<span>Ceased security interest</span></span></td>
+			<td>L</td>
+			<td>-50,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.15</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338499">10-22</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Left a concert party or the group disposed of shares</span></span></td>
+			<td>L</td>
+			<td>-50,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.15</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338553">10-22</a></td>
+			<td class="colHide2">2392</td>
+			<td class="left"><a href="sdiissue.asp?i=33222">Xuan Wu Cloud Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28473098&i=33222">Chen, Yonghui (1975) 陳永輝</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-420,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33222&d=2025-10-24">1.290</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-541,926</td>
+			
+			<td class="colHide1">31.58</td>
+			<td class="colHide1">-0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338505">10-22</a></td>
+			<td class="colHide2">1662</td>
+			<td class="left"><a href="sdiissue.asp?i=17856">Yee Hop Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2510440&i=17856">Jim, Jackin Yin Kwan 詹燕群</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=17856&d=2025-10-24">3.290</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">329,000</td>
+			
+			<td class="colHide1">39.12</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338506">10-22</a></td>
+			<td class="colHide2">1662</td>
+			<td class="left"><a href="sdiissue.asp?i=17856">Yee Hop Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=30072661&i=17856">Lee, Mabel Sze Wing 李思穎</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>100,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=17856&d=2025-10-24">3.290</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">329,000</td>
+			
+			<td class="colHide1">39.12</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338618">10-21</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=17091&i=35894">Chan, Philip Ching Ho 陳正豪</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>23,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=35894&d=2025-10-23">3.020</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">69,460</td>
+			
+			<td class="colHide1">25.42</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338622">10-21</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32569586&i=35894">Xiao, David Guowei 肖國偉</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Joined a concert party or the group acquired shares</span></span></td>
+			<td>L</td>
+			<td>23,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">25.42</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338626">10-21</a></td>
+			<td class="colHide2">2551</td>
+			<td class="left"><a href="sdiissue.asp?i=35894">APT Electronics Co., Ltd.:H</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2498019&i=35894">Yuan, Peter Lie Ming 袁立明</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Joined a concert party or the group acquired shares</span></span></td>
+			<td>L</td>
+			<td>23,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">25.42</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338448">10-21</a></td>
+			<td class="colHide2">3998</td>
+			<td class="left"><a href="sdiissue.asp?i=4919">Bosideng International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2056070&i=4919">Rui, Jinsong 芮勁松</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-9,296,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=4919&d=2025-10-23">4.830</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-44,899,679</td>
+			
+			<td class="colHide1">0.32</td>
+			<td class="colHide1">-0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338454">10-21</a></td>
+			<td class="colHide2">1301</td>
+			<td class="left"><a href="sdiissue.asp?i=14011">D&G Technology Holding Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=23257&i=14011">Choi, Derek Hon Ting 蔡翰霆</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>345,696,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">55.82</td>
+			<td class="colHide1">55.14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338455">10-21</a></td>
+			<td class="colHide2">1301</td>
+			<td class="left"><a href="sdiissue.asp?i=14011">D&G Technology Holding Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2420296&i=14011">Choi, Glendy Kwan Li 蔡群力</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>345,696,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">55.80</td>
+			<td class="colHide1">55.14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338458">10-21</a></td>
+			<td class="colHide2">1709</td>
+			<td class="left"><a href="sdiissue.asp?i=16095">DL Holdings Group Limited (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1948599&i=16095">Chen, Ningdi 陳寧廸</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>255,213,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">3.050</td>
+				<td class="colHide1">778,399,638</td>
+			
+			<td class="colHide1">57.85</td>
+			<td class="colHide1">14.58</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338527">10-21</a></td>
+			<td class="colHide2">0887</td>
+			<td class="left"><a href="sdiissue.asp?i=5000">Emperor Watch & Jewellery Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1852&i=5000">Yeung, Cindy (1964) 楊諾思</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>600,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=5000&d=2025-10-23">0.275</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">165,000</td>
+			
+			<td class="colHide1">59.31</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338530">10-21</a></td>
+			<td class="colHide2">0035</td>
+			<td class="left"><a href="sdiissue.asp?i=799">FAR EAST CONSORTIUM INTERNATIONAL LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=3947&i=799">Chiu, David Tat Cheong 邱達昌</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>385,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=799&d=2025-10-23">0.760</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">292,600</td>
+			
+			<td class="colHide1">56.23</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338467">10-21</a></td>
+			<td class="colHide2">0393</td>
+			<td class="left"><a href="sdiissue.asp?i=1056">Glorious Sun Enterprises Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=16812&i=1056">Yeung, Charles Chun Kam 楊掁鑫</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>28,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1056&d=2025-10-23">1.310</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">36,680</td>
+			
+			<td class="colHide1">63.64</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338410">10-21</a></td>
+			<td class="colHide2">1328</td>
+			<td class="left"><a href="sdiissue.asp?i=4922">Goldstream Investment Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=26740&i=4922">Zhao, John Huan 趙令歡</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>21,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">63.10</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338533">10-21</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938608&i=36116">Qi, Xia (1986) 戚俠</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">72.94</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338534">10-21</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938609&i=36116">Ruan, Xiudi 阮修迪</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">72.94</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338535">10-21</a></td>
+			<td class="colHide2">1364</td>
+			<td class="left"><a href="sdiissue.asp?i=36116">Guming Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=32938607&i=36116">Wang, Yunan (1986) 王雲安</a></td>
+			<td class="colHide3 left"><span class="info">Oblig<span>Obligation to take underlying shares</span></span></td>
+			<td>L</td>
+			<td>3,904,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">72.94</td>
+			<td class="colHide1">0.17</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338413">10-21</a></td>
+			<td class="colHide2">1044</td>
+			<td class="left"><a href="sdiissue.asp?i=1893">HENGAN INTERNATIONAL GROUP COMPANY LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2596563&i=1893">Hui, Ching Lau (1979) 許清流</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>200,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1893&d=2025-10-23">27.830</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">5,566,060</td>
+			
+			<td class="colHide1">24.25</td>
+			<td class="colHide1">0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338472">10-21</a></td>
+			<td class="colHide2">2340</td>
+			<td class="left"><a href="sdiissue.asp?i=3421">ISP Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=27414754&i=3421">Leung, Yuet Ngor 梁月娥</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">0.04</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338416">10-21</a></td>
+			<td class="colHide2">0148</td>
+			<td class="left"><a href="sdiissue.asp?i=923">Kingboard Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=4690&i=923">Cheung, Paul Kwok Wing 張國榮</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-754,500</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=923&d=2025-10-23">27.390</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-20,665,755</td>
+			
+			<td class="colHide1">1.42</td>
+			<td class="colHide1">-0.07</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338473">10-21</a></td>
+			<td class="colHide2">1751</td>
+			<td class="left"><a href="sdiissue.asp?i=22091">Kingland Group Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2669236&i=22091">Cheung, Shek On 張錫安</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-39,270,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.235</td>
+				<td class="colHide1">-9,228,450</td>
+			
+			<td class="colHide1">0.00</td>
+			<td class="colHide1">-16.23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338419">10-21</a></td>
+			<td class="colHide2">1896</td>
+			<td class="left"><a href="sdiissue.asp?i=27514">Maoyan Entertainment:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22674984&i=27514">Wang, Changtian 王長田</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>3,270,400</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=27514&d=2025-10-23">6.726</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">21,995,729</td>
+			
+			<td class="colHide1">41.74</td>
+			<td class="colHide1">0.28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338420">10-21</a></td>
+			<td class="colHide2">0391</td>
+			<td class="left"><a href="sdiissue.asp?i=1155">MEI AH ENTERTAINMENT GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=12277&i=1155">Li, Kuo Hsing 李國興</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>120,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1155&d=2025-10-23">0.107</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">12,840</td>
+			
+			<td class="colHide1">56.76</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338482">10-21</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2351549&i=1298">Han, Xiaosheng 韓曉生</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-23">0.151</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,510</td>
+			
+			<td class="colHide1">67.44</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338484">10-21</a></td>
+			<td class="colHide2">0952</td>
+			<td class="left"><a href="sdiissue.asp?i=1298">Quam Plus International Financial Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1184&i=1298">Lam, Kenneth Kin Hing (SFC:ABV605) 林建興</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-10,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=1298&d=2025-10-23">0.151</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-1,510</td>
+			
+			<td class="colHide1">69.71</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338485">10-21</a></td>
+			<td class="colHide2">1780</td>
+			<td class="left"><a href="sdiissue.asp?i=27899">Rongzun International Holdings Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1975949&i=27899">Kaneko, Hiroshi (1964) 金子博</a></td>
+			<td class="colHide3 left"><span class="info">Other chg<span>Other change in nature of interest - see filing</span></span></td>
+			<td>L</td>
+			<td>372,000,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">0.446</td>
+				<td class="colHide1">165,912,004</td>
+			
+			<td class="colHide1">75.00</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338604">10-21</a></td>
+			<td class="colHide2">2459</td>
+			<td class="left"><a href="sdiissue.asp?i=33993">Sanergy Group Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28823948&i=33993">Hou, Haolong (1978) 侯皓瀧</a></td>
+			<td class="colHide3 left"><span class="info">Voluntary<span>Voluntary - see filing</span></span></td>
+			<td>L</td>
+			<td></td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">9.84</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338486">10-21</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802866&i=33854">Jin, Lei (1966) 金磊</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-47,700</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-23">1.537</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-73,296</td>
+			
+			<td class="colHide1">69.39</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338488">10-21</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802865&i=33854">Tian, Ming (1969) 田明</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-47,700</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-23">1.537</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-73,296</td>
+			
+			<td class="colHide1">69.39</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338490">10-21</a></td>
+			<td class="colHide2">6698</td>
+			<td class="left"><a href="sdiissue.asp?i=33854">STAR CM Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28802867&i=33854">Xu, Xiangdong (1964) 徐向東</a></td>
+			<td class="colHide3 left"><span class="info">Other dec<span>Other decrease - see filing</span></span></td>
+			<td>L</td>
+			<td>-47,700</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33854&d=2025-10-23">1.537</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-73,296</td>
+			
+			<td class="colHide1">69.39</td>
+			<td class="colHide1">-0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338426">10-21</a></td>
+			<td class="colHide2">1440</td>
+			<td class="left"><a href="sdiissue.asp?i=30409">STAR SHINE HOLDINGS GROUP LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=75849&i=30409">Leung, Peter Ping Tak 梁秉德</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>12,500</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=30409&d=2025-10-23">9.370</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">117,125</td>
+			
+			<td class="colHide1">0.01</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338544">10-21</a></td>
+			<td class="colHide2">1083</td>
+			<td class="left"><a href="sdiissue.asp?i=2984">Towngas Smart Energy Company Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=38467&i=2984">Wong, Peter Wai Yee 黃維義</a></td>
+			<td class="colHide3 left"><span class="info">Exercised<span>Exercised derivative rights to acquire</span></span></td>
+			<td>L</td>
+			<td>1,542,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">3.400</td>
+				<td class="colHide1">5,242,800</td>
+			
+			<td class="colHide1">0.36</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338545">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=27073&i=147">Lau, Julia Man Kwan 劉文君</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td>346,617</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">3,653,343</td>
+			
+			<td class="colHide1">5.03</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338546">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=2044305&i=147">Lee, Roger Chak Cheong 李澤昌</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>4,729</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">49,844</td>
+			
+			<td class="colHide1">0.36</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338427">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=7757&i=147">Leung, Norman Nai Pang 梁乃鵬</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>19,413</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">204,613</td>
+			
+			<td class="colHide1">0.30</td>
+			<td class="colHide1">0.00</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338547">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1596&i=147">Louey, William Lai Kuen 雷禮權</a></td>
+			<td class="colHide3 left"><span class="info">Other<span>Other - see filing</span></span></td>
+			<td>L</td>
+			<td>346,617</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">3,653,343</td>
+			
+			<td class="colHide1">5.03</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338428">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1597&i=147">Lui, Charles Chung Yuen 雷中元</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>99,191</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">1,045,473</td>
+			
+			<td class="colHide1">0.83</td>
+			<td class="colHide1">0.01</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338495">10-21</a></td>
+			<td class="colHide2">0062</td>
+			<td class="left"><a href="sdiissue.asp?i=147">Transport International Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=1595&i=147">Ng, Winnie J Wing Mui 伍穎梅</a></td>
+			<td class="colHide3 left"><span class="info">Other inc<span>Other increase - see filing</span></span></td>
+			<td>L</td>
+			<td>383,614</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td></td>		
+				
+				<td class="colHide2">10.540</td>
+				<td class="colHide1">4,043,292</td>
+			
+			<td class="colHide1">5.76</td>
+			<td class="colHide1">0.08</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338497">10-21</a></td>
+			<td class="colHide2">2051</td>
+			<td class="left"><a href="sdiissue.asp?i=26697">Vala Inc. (KY):O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=11790163&i=26697">Sun, Haitao (1980) 孫海濤</a></td>
+			<td class="colHide3 left"><span class="info">Bought<span>Purchased shares</span></span></td>
+			<td>L</td>
+			<td>550,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=26697&d=2025-10-23">0.678</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">373,120</td>
+			
+			<td class="colHide1">16.93</td>
+			<td class="colHide1">0.03</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338429">10-21</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Concert<span>Left a concert party or the group disposed of shares</span></span></td>
+			<td>L</td>
+			<td>-1,928,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.16</td>
+			<td class="colHide1">-0.24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338430">10-21</a></td>
+			<td class="colHide2">0610</td>
+			<td class="left"><a href="sdiissue.asp?i=1302">WAI KEE HOLDINGS LIMITED:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=22590&i=1302">Zen, Derek Wei Peu 單偉彪</a></td>
+			<td class="colHide3 left"><span class="info">Unpledge<span>Ceased security interest</span></span></td>
+			<td>L</td>
+			<td>-1,928,000</td>
+			
+				<td class="colHide1"></td>
+				
+					<td></td>		
+				
+				<td class="colHide2"></td>
+				<td class="colHide1"></td>
+			
+			<td class="colHide1">62.16</td>
+			<td class="colHide1">-0.24</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338501">10-21</a></td>
+			<td class="colHide2">2392</td>
+			<td class="left"><a href="sdiissue.asp?i=33222">Xuan Wu Cloud Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28473098&i=33222">Chen, Yonghui (1975) 陳永輝</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-105,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33222&d=2025-10-23">1.205</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-126,504</td>
+			
+			<td class="colHide1">31.65</td>
+			<td class="colHide1">-0.02</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3"><a href="sdicap.asp?r=338503">10-21</a></td>
+			<td class="colHide2">2392</td>
+			<td class="left"><a href="sdiissue.asp?i=33222">Xuan Wu Cloud Technology Holdings Limited:O</a></td>
+			<td class="left"><a href="sdidirco.asp?p=28473267&i=33222">Huang, Fangjie 黃仿傑</a></td>
+			<td class="colHide3 left"><span class="info">Sold<span>Completed sale</span></span></td>
+			<td>L</td>
+			<td>-500,000</td>
+			
+				<td class="colHide1">HKD</td>
+				
+					<td><a href="../ccass/chldchg.asp?i=33222&d=2025-10-23">1.214</a></td>
+				
+				<td class="colHide2"></td>
+				<td class="colHide1">-607,000</td>
+			
+			<td class="colHide1">11.75</td>
+			<td class="colHide1">-0.08</td>
+		</tr>
+		
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

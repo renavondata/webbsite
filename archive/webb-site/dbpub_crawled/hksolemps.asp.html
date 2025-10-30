@@ -1,0 +1,4033 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Non-law firms with HK solicitors</title></head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Non-law firms with HK solicitors</h2>
+
+	<ul class="navlist">
+		<li><a href='hksols.asp?p='>By name</a></li><li><a href='hksolfirms.asp?p='>By firm</a></li><li><a href='hksolsadmhk.asp?p='>By year</a></li><li><a href='hksolsmoves.asp?p='>Moves</a></li><li><a href='hksolsadmos.asp?p='>Overseas</a></li><li class='livebutton'>Non-law firms</li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This table lists known employers of HK solicitors which are not law firms, by number of solicitors admitted in HK, based on information seen in the 
+Law Society's Law List,
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">
+with</a> or
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withoutcert.asp" target="_blank">
+without</a> a practising certificate.&nbsp;Some people are associated with more than one 
+employer. Click a column heading to sort. The list is not exhaustive, because some solicitors 
+don't disclose an employer or 
+give only a vague name of their employer which is not sufficient for us to 
+associate the name with a particular legal entity.</p>
+<table class="numtable c2l">
+	<tr>
+		<th class="colHide3 right"></th>
+		<th><a href='/dbpub/hksolemps.asp?p=&amp;sort=orgup'><b>Employer</b></a></th>
+		<th><a href='/dbpub/hksolemps.asp?p=&amp;sort=cntup'><b>Sols.</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide3 right">1</td>
+			<td><a href='officers.asp?p=503'>SECURITIES AND FUTURES COMMISSION</a></td>
+			<td>61</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">2</td>
+			<td><a href='officers.asp?p=9556317'>HSBC Global Services (Hong Kong) Limited</a></td>
+			<td>35</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">3</td>
+			<td><a href='officers.asp?p=9643'>HONG KONG EXCHANGES AND CLEARING LIMITED</a></td>
+			<td>33</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">4</td>
+			<td><a href='officers.asp?p=14207'>JPMORGAN CHASE BANK, NATIONAL ASSOCIATION</a></td>
+			<td>29</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">5</td>
+			<td><a href='officers.asp?p=6979'>UBS AG</a></td>
+			<td>28</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">6</td>
+			<td><a href='officers.asp?p=1609'>STANDARD CHARTERED BANK (HONG KONG) LIMITED</a></td>
+			<td>23</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">7</td>
+			<td><a href='officers.asp?p=5578'>BNP PARIBAS</a></td>
+			<td>20</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">8</td>
+			<td><a href='officers.asp?p=5596'>GOLDMAN SACHS (ASIA) L.L.C.</a></td>
+			<td>18</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">9</td>
+			<td><a href='officers.asp?p=11569'>MTR CORPORATION LIMITED</a></td>
+			<td>15</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">10</td>
+			<td><a href='officers.asp?p=395'>HANG SENG BANK, LIMITED</a></td>
+			<td>14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">11</td>
+			<td><a href='officers.asp?p=3295'>Hong Kong Monetary Authority</a></td>
+			<td>14</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">12</td>
+			<td><a href='officers.asp?p=374'>HONGKONG AND SHANGHAI BANKING CORPORATION LIMITED (THE)</a></td>
+			<td>12</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">13</td>
+			<td><a href='officers.asp?p=1852090'>Alibaba Group Holding Limited (KY)</a></td>
+			<td>11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">14</td>
+			<td><a href='officers.asp?p=5635'>BARCLAYS CAPITAL ASIA LIMITED</a></td>
+			<td>11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">15</td>
+			<td><a href='officers.asp?p=13499'>HONG KONG MORTGAGE CORPORATION LIMITED (THE)</a></td>
+			<td>11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">16</td>
+			<td><a href='officers.asp?p=12227'>Merrill Lynch (Asia Pacific) Limited</a></td>
+			<td>11</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">17</td>
+			<td><a href='officers.asp?p=488'>CK Hutchison Holdings Limited</a></td>
+			<td>10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">18</td>
+			<td><a href='officers.asp?p=2533691'>HKSAR Department of Justice</a></td>
+			<td>10</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">19</td>
+			<td><a href='officers.asp?p=15356'>BANK OF CHINA (HONG KONG) LIMITED</a></td>
+			<td>9</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">20</td>
+			<td><a href='officers.asp?p=1948088'>Chanel Limited (HK)</a></td>
+			<td>8</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">21</td>
+			<td><a href='officers.asp?p=5439'>CITIBANK, N.A.</a></td>
+			<td>8</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">22</td>
+			<td><a href='officers.asp?p=1464'>Morgan Stanley Asia Limited</a></td>
+			<td>8</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">23</td>
+			<td><a href='officers.asp?p=806'>SHANGRI-LA ASIA LIMITED</a></td>
+			<td>8</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">24</td>
+			<td><a href='officers.asp?p=11118'>UNIVERSITY OF HONG KONG (THE)</a></td>
+			<td>8</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">25</td>
+			<td><a href='officers.asp?p=5672'>AUSTRALIA AND NEW ZEALAND BANKING GROUP LIMITED</a></td>
+			<td>7</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">26</td>
+			<td><a href='officers.asp?p=385'>CATHAY PACIFIC AIRWAYS LIMITED</a></td>
+			<td>7</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">27</td>
+			<td><a href='officers.asp?p=11585'>HONG KONG HOUSING AUTHORITY (THE)</a></td>
+			<td>7</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">28</td>
+			<td><a href='officers.asp?p=10811'>LAW SOCIETY OF HONG KONG (THE)</a></td>
+			<td>7</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">29</td>
+			<td><a href='officers.asp?p=1440'>NOMURA INTERNATIONAL (HONG KONG) LIMITED</a></td>
+			<td>7</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">30</td>
+			<td><a href='officers.asp?p=5641'>China International Capital Corporation (International) Limited</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">31</td>
+			<td><a href='officers.asp?p=11229'>CITY UNIVERSITY OF HONG KONG</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">32</td>
+			<td><a href='officers.asp?p=5545'>CREDIT AGRICOLE CORPORATE AND INVESTMENT BANK</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">33</td>
+			<td><a href='officers.asp?p=765621'>GARD (HK) LIMITED</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">34</td>
+			<td><a href='officers.asp?p=1219'>HONGKONG LAND LIMITED</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">35</td>
+			<td><a href='officers.asp?p=805'>KERRY TRADING CO. LIMITED</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">36</td>
+			<td><a href='officers.asp?p=24824'>Link Asset Management Limited (HK)</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">37</td>
+			<td><a href='officers.asp?p=137990'>SOCIETE GENERALE</a></td>
+			<td>6</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">38</td>
+			<td><a href='officers.asp?p=37187'>Accounting and Financial Reporting Council</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">39</td>
+			<td><a href='officers.asp?p=37317'>AXA CHINA REGION INSURANCE COMPANY LIMITED</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">40</td>
+			<td><a href='officers.asp?p=27008632'>CPPIB Asia International Limited</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">41</td>
+			<td><a href='officers.asp?p=138350'>DEUTSCHE BANK AKTIENGESELLSCHAFT</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">42</td>
+			<td><a href='officers.asp?p=2242652'>HKSAR Privacy Commissioner for Personal Data</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">43</td>
+			<td><a href='officers.asp?p=10806'>Mandatory Provident Fund Schemes Authority</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">44</td>
+			<td><a href='officers.asp?p=45310'>MANULIFE (INTERNATIONAL) LIMITED</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">45</td>
+			<td><a href='officers.asp?p=66385'>Manulife Investment Management (Hong Kong) Limited</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">46</td>
+			<td><a href='officers.asp?p=2925'>PCCW LIMITED</a></td>
+			<td>5</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">47</td>
+			<td><a href='officers.asp?p=21397'>AIA Company Limited</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">48</td>
+			<td><a href='officers.asp?p=61400'>AIA Group Limited</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">49</td>
+			<td><a href='officers.asp?p=1674'>China CITIC Bank International Limited</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">50</td>
+			<td><a href='officers.asp?p=18311'>Citigroup Global Markets Asia Limited</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">51</td>
+			<td><a href='officers.asp?p=2377099'>CK Asset Holdings Limited (KY)</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">52</td>
+			<td><a href='officers.asp?p=477'>CLSA LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">53</td>
+			<td><a href='officers.asp?p=2062513'>COMPETITION COMMISSION</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">54</td>
+			<td><a href='officers.asp?p=2201'>DBS BANK (HONG KONG) LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">55</td>
+			<td><a href='officers.asp?p=5346'>Ernst & Young (HK)</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">56</td>
+			<td><a href='officers.asp?p=2533667'>HKSAR Intellectual Property Department</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">57</td>
+			<td><a href='officers.asp?p=840998'>HONG KONG DISNEYLAND MANAGEMENT LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">58</td>
+			<td><a href='officers.asp?p=1415'>HONG KONG JOCKEY CLUB (THE)</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">59</td>
+			<td><a href='officers.asp?p=49319'>HUATAI FINANCIAL HOLDINGS (HONG KONG) LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">60</td>
+			<td><a href='officers.asp?p=2518918'>Insurance Authority</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">61</td>
+			<td><a href='officers.asp?p=1862099'>King & Wood Mallesons (HK)</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">62</td>
+			<td><a href='officers.asp?p=8897'>Marriott International, Inc.</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">63</td>
+			<td><a href='officers.asp?p=39330'>NAN FUNG DEVELOPMENT LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">64</td>
+			<td><a href='officers.asp?p=432'>NEW WORLD DEVELOPMENT COMPANY LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">65</td>
+			<td><a href='officers.asp?p=443'>OCBC Bank (Hong Kong) Limited</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">66</td>
+			<td><a href='officers.asp?p=394801'>SKULD (FAR EAST) LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">67</td>
+			<td><a href='officers.asp?p=21290'>TENCENT HOLDINGS LIMITED</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">68</td>
+			<td><a href='officers.asp?p=16864'>URBAN RENEWAL AUTHORITY</a></td>
+			<td>4</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">69</td>
+			<td><a href='officers.asp?p=48820'>AIA International Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">70</td>
+			<td><a href='officers.asp?p=5546'>ALLEN OVERY SHEARMAN STERLING</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">71</td>
+			<td><a href='officers.asp?p=99896'>APG Investments Asia Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">72</td>
+			<td><a href='officers.asp?p=59750'>BlackRock Asset Management North Asia Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">73</td>
+			<td><a href='officers.asp?p=24261'>BOC GROUP LIFE ASSURANCE COMPANY LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">74</td>
+			<td><a href='officers.asp?p=11472'>BOC INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">75</td>
+			<td><a href='officers.asp?p=662'>China Construction Bank (Asia) Corporation Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">76</td>
+			<td><a href='officers.asp?p=14058'>CHINA MOBILE HONG KONG COMPANY LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">77</td>
+			<td><a href='officers.asp?p=14268'>Chinachem Group</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">78</td>
+			<td><a href='officers.asp?p=451'>Chow Tai Fook Enterprises Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">79</td>
+			<td><a href='officers.asp?p=341'>CLP HOLDINGS LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">80</td>
+			<td><a href='officers.asp?p=5417'>Cooperatieve Rabobank U.A.</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">81</td>
+			<td><a href='officers.asp?p=24241'>DWS Investments Hong Kong Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">82</td>
+			<td><a href='officers.asp?p=26390288'>eMPF Platform Company Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">83</td>
+			<td><a href='officers.asp?p=315660'>ESSAR INSURANCE SERVICES LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">84</td>
+			<td><a href='officers.asp?p=836'>FUBON BANK (HONG KONG) LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">85</td>
+			<td><a href='officers.asp?p=38654'>HONG KONG AIRLINES LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">86</td>
+			<td><a href='officers.asp?p=372'>HONGKONG AND SHANGHAI HOTELS, LIMITED (THE)</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">87</td>
+			<td><a href='officers.asp?p=45376'>HUTCHISON PORT HOLDINGS LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">88</td>
+			<td><a href='officers.asp?p=2379726'>HUTCHISON PROPERTY GROUP LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">89</td>
+			<td><a href='officers.asp?p=1218'>JARDINE MATHESON LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">90</td>
+			<td><a href='officers.asp?p=11579'>KOWLOON MOTOR BUS COMPANY (1933) LIMITED (THE)</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">91</td>
+			<td><a href='officers.asp?p=18765'>LATHAM & WATKINS LLP</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">92</td>
+			<td><a href='officers.asp?p=41101'>NATIXIS</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">93</td>
+			<td><a href='officers.asp?p=1867151'>PAG Consulting Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">94</td>
+			<td><a href='officers.asp?p=60592'>PHILIP MORRIS ASIA LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">95</td>
+			<td><a href='officers.asp?p=773148'>PRADA ASIA PACIFIC LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">96</td>
+			<td><a href='officers.asp?p=1323532'>PricewaterhouseCoopers China Holding Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">97</td>
+			<td><a href='officers.asp?p=759656'>PRINCIPAL TRUST COMPANY (ASIA) LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">98</td>
+			<td><a href='officers.asp?p=1384795'>PRUDENTIAL HONG KONG LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">99</td>
+			<td><a href='officers.asp?p=33398'>PRUDENTIAL PUBLIC LIMITED COMPANY</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">100</td>
+			<td><a href='officers.asp?p=17856434'>Reap Technologies Limited (HK)</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">101</td>
+			<td><a href='officers.asp?p=169863'>RICHEMONT ASIA PACIFIC LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">102</td>
+			<td><a href='officers.asp?p=22866'>SHUI ON LAND LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">103</td>
+			<td><a href='officers.asp?p=417'>SUN HUNG KAI PROPERTIES LIMITED</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">104</td>
+			<td><a href='officers.asp?p=12070847'>ZhongAn Technologies International Group Limited</a></td>
+			<td>3</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">105</td>
+			<td><a href='officers.asp?p=153400'>AEGON Asia B.V.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">106</td>
+			<td><a href='officers.asp?p=5608'>AGRICULTURAL BANK OF CHINA LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">107</td>
+			<td><a href='officers.asp?p=18285'>AGTech Holdings Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">108</td>
+			<td><a href='officers.asp?p=15967657'>AIA Investment Management HK Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">109</td>
+			<td><a href='officers.asp?p=2538591'>Airwallex (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">110</td>
+			<td><a href='officers.asp?p=2209624'>Alipay (Hong Kong) Holding Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">111</td>
+			<td><a href='officers.asp?p=68662'>AllianceBernstein Hong Kong Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">112</td>
+			<td><a href='officers.asp?p=2331238'>Allianz Global Investors GmbH</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">113</td>
+			<td><a href='officers.asp?p=1883831'>Anchor Equity Partners (Asia) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">114</td>
+			<td><a href='officers.asp?p=2217090'>Animoca Brands Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">115</td>
+			<td><a href='officers.asp?p=1814'>AS Watson & Company Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">116</td>
+			<td><a href='officers.asp?p=49539'>AXA Investment Managers Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">117</td>
+			<td><a href='officers.asp?p=5418'>Baker & McKenzie (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">118</td>
+			<td><a href='officers.asp?p=140982'>Banco Santander, S.A.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">119</td>
+			<td><a href='officers.asp?p=14808'>BANK CONSORTIUM TRUST COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">120</td>
+			<td><a href='officers.asp?p=5892'>Bank of America, National Association</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">121</td>
+			<td><a href='officers.asp?p=137334'>BANK OF MONTREAL</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">122</td>
+			<td><a href='officers.asp?p=1780'>BANK OF NEW YORK MELLON (THE)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">123</td>
+			<td><a href='officers.asp?p=6075'>BARCLAYS BANK PLC</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">124</td>
+			<td><a href='officers.asp?p=69147'>BLACKSTONE GROUP (HK) LIMITED (THE)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">125</td>
+			<td><a href='officers.asp?p=2242669'>Bloomberg L.P.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">126</td>
+			<td><a href='officers.asp?p=48813'>BRITISH-AMERICAN TOBACCO COMPANY (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">127</td>
+			<td><a href='officers.asp?p=8379'>C C Land Holdings Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">128</td>
+			<td><a href='officers.asp?p=59767'>CARLYLE ASIA INVESTMENT ADVISORS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">129</td>
+			<td><a href='officers.asp?p=1822'>CHINA EVERBRIGHT LIMITED (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">130</td>
+			<td><a href='officers.asp?p=1109'>CHINA RESOURCES (HOLDINGS) COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">131</td>
+			<td><a href='officers.asp?p=2454654'>CHINA RESOURCES ENTERPRISE, LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">132</td>
+			<td><a href='officers.asp?p=56493'>Chow Tai Fook Life Insurance Company Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">133</td>
+			<td><a href='officers.asp?p=323866'>CHRISTIE'S HONG KONG LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">134</td>
+			<td><a href='officers.asp?p=707047'>Chubb Insurance Hong Kong Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">135</td>
+			<td><a href='officers.asp?p=2279979'>CITIC Pacific Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">136</td>
+			<td><a href='officers.asp?p=20799'>CLP POWER HONG KONG LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">137</td>
+			<td><a href='officers.asp?p=2423560'>CMB International Capital Corporation Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">138</td>
+			<td><a href='officers.asp?p=12920'>CONSUMER COUNCIL</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">139</td>
+			<td><a href='officers.asp?p=5935'>Credit Suisse AG</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">140</td>
+			<td><a href='officers.asp?p=4930'>CSI Properties Limited (BM)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">141</td>
+			<td><a href='officers.asp?p=360'>DHL EXPRESS (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">142</td>
+			<td><a href='officers.asp?p=61019'>Dorsett Hospitality International Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">143</td>
+			<td><a href='officers.asp?p=290594'>DRAGAGES HONG KONG LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">144</td>
+			<td><a href='officers.asp?p=1992428'>East IP Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">145</td>
+			<td><a href='officers.asp?p=804853'>EB Services Limited (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">146</td>
+			<td><a href='officers.asp?p=27254439'>EDDID FINANCIAL HOLDINGS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">147</td>
+			<td><a href='officers.asp?p=22668'>ESR ASSET MANAGEMENT (FORTUNE) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">148</td>
+			<td><a href='officers.asp?p=131604'>Fidelity Management & Research (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">149</td>
+			<td><a href='officers.asp?p=151653'>FIL ASIA HOLDINGS PTE. LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">150</td>
+			<td><a href='officers.asp?p=2537148'>Flexport Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">151</td>
+			<td><a href='officers.asp?p=49544'>FRANKLIN TEMPLETON INVESTMENTS (ASIA) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">152</td>
+			<td><a href='officers.asp?p=885568'>Fung (1937) Management Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">153</td>
+			<td><a href='officers.asp?p=1056'>GALAXY ENTERTAINMENT GROUP LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">154</td>
+			<td><a href='officers.asp?p=25272011'>GLAS Agency (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">155</td>
+			<td><a href='officers.asp?p=452385'>GUOCO MANAGEMENT COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">156</td>
+			<td><a href='officers.asp?p=496'>HANG LUNG PROPERTIES LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">157</td>
+			<td><a href='officers.asp?p=10807'>HKSAR Equal Opportunities Commission</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">158</td>
+			<td><a href='officers.asp?p=12674581'>HKSAR Judiciary</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">159</td>
+			<td><a href='officers.asp?p=2533678'>HKSAR Land Registry</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">160</td>
+			<td><a href='officers.asp?p=2433270'>HKSH Medical Group Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">161</td>
+			<td><a href='officers.asp?p=133763'>HKT Limited (KY)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">162</td>
+			<td><a href='officers.asp?p=24907'>HSBC TRUSTEE (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">163</td>
+			<td><a href='officers.asp?p=786835'>HUAWEI INTERNATIONAL CO. LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">164</td>
+			<td><a href='officers.asp?p=671426'>HUTCHISON TELECOMMUNICATIONS (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">165</td>
+			<td><a href='officers.asp?p=320804'>HYATT OF CHINA LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">166</td>
+			<td><a href='officers.asp?p=60975'>ICBC International Holdings Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">167</td>
+			<td><a href='officers.asp?p=2025'>INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ASIA) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">168</td>
+			<td><a href='officers.asp?p=33275'>INVESCO HONG KONG LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">169</td>
+			<td><a href='officers.asp?p=1393274'>K11 CONCEPTS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">170</td>
+			<td><a href='officers.asp?p=8317940'>Kai Tak Sports Park Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">171</td>
+			<td><a href='officers.asp?p=1548635'>Kering Asia Pacific Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">172</td>
+			<td><a href='officers.asp?p=809'>KERRY PROPERTIES LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">173</td>
+			<td><a href='officers.asp?p=32739847'>KGI Bank Co., Ltd.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">174</td>
+			<td><a href='officers.asp?p=62131'>KKR Asia Limited (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">175</td>
+			<td><a href='officers.asp?p=42607'>KLN Logistics (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">176</td>
+			<td><a href='officers.asp?p=293205'>LANGHAM HOTELS INTERNATIONAL LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">177</td>
+			<td><a href='officers.asp?p=181882'>LEIGHTON CONTRACTORS (ASIA) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">178</td>
+			<td><a href='officers.asp?p=188372'>LIBERTY INTERNATIONAL INSURANCE LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">179</td>
+			<td><a href='officers.asp?p=66327'>LOMBARD ODIER (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">180</td>
+			<td><a href='officers.asp?p=49575'>Macquarie Corporate (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">181</td>
+			<td><a href='officers.asp?p=69760'>MAN INVESTMENTS (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">182</td>
+			<td><a href='officers.asp?p=1702048'>Manulife Financial Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">183</td>
+			<td><a href='officers.asp?p=11669357'>McKinsey & Company (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">184</td>
+			<td><a href='officers.asp?p=51017'>Melco Resorts & Entertainment Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">185</td>
+			<td><a href='officers.asp?p=1243255'>MELCO RESORTS SERVICES LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">186</td>
+			<td><a href='officers.asp?p=9387'>MICROSOFT HONG KONG LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">187</td>
+			<td><a href='officers.asp?p=49941'>MIZUHO SECURITIES ASIA LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">188</td>
+			<td><a href='officers.asp?p=46569'>MUFG Securities Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">189</td>
+			<td><a href='officers.asp?p=23033736'>NAN FUNG TRINITY (HK) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">190</td>
+			<td><a href='officers.asp?p=2418874'>Nuveen Hong Kong Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">191</td>
+			<td><a href='officers.asp?p=59444'>OCTOPUS HOLDINGS LIMITED (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">192</td>
+			<td><a href='officers.asp?p=2401952'>OKBL Technology Company Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">193</td>
+			<td><a href='officers.asp?p=22523566'>PAO Bank Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">194</td>
+			<td><a href='officers.asp?p=1677990'>PEAK REINSURANCE COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">195</td>
+			<td><a href='officers.asp?p=70061'>PIMCO Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">196</td>
+			<td><a href='officers.asp?p=7900'>PineBridge Investments Asia Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">197</td>
+			<td><a href='officers.asp?p=23764436'>Ping An Bank Co., Ltd.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">198</td>
+			<td><a href='officers.asp?p=46418'>PRICEWATERHOUSECOOPERS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">199</td>
+			<td><a href='officers.asp?p=66488'>PRINCIPAL INTERNATIONAL (ASIA) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">200</td>
+			<td><a href='officers.asp?p=1442469'>Ralph Lauren Asia Pacific Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">201</td>
+			<td><a href='officers.asp?p=303999'>RIGHT LINE COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">202</td>
+			<td><a href='officers.asp?p=148228'>Royal Bank of Canada</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">203</td>
+			<td><a href='officers.asp?p=1465'>SCHRODER INVESTMENT MANAGEMENT (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">204</td>
+			<td><a href='officers.asp?p=131663'>SILVERHORN INVESTMENT ADVISORS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">205</td>
+			<td><a href='officers.asp?p=664'>SINO LAND COMPANY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">206</td>
+			<td><a href='officers.asp?p=649024'>SINOPEC CENTURY BRIGHT CAPITAL INVESTMENT LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">207</td>
+			<td><a href='officers.asp?p=352'>SIR ELLY KADOORIE & SONS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">208</td>
+			<td><a href='officers.asp?p=45905'>SJM Holdings Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">209</td>
+			<td><a href='officers.asp?p=50971'>SMBC Nikko Securities (Hong Kong) Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">210</td>
+			<td><a href='officers.asp?p=24562'>STARBUCKS COFFEE ASIA PACIFIC LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">211</td>
+			<td><a href='officers.asp?p=140602'>STEAMSHIP MUTUAL MANAGEMENT (HONG KONG) LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">212</td>
+			<td><a href='officers.asp?p=425'>SUN HUNG KAI & CO. LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">213</td>
+			<td><a href='officers.asp?p=182015'>SUN HUNG KAI REAL ESTATE AGENCY LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">214</td>
+			<td><a href='officers.asp?p=65719'>Sun Life Hong Kong Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">215</td>
+			<td><a href='officers.asp?p=22395063'>SWISS RE ASIA PTE. LTD.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">216</td>
+			<td><a href='officers.asp?p=79788'>T. Rowe Price Hong Kong Limited</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">217</td>
+			<td><a href='officers.asp?p=12404586'>WATSON FARLEY & WILLIAMS LLP (HK)</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">218</td>
+			<td><a href='officers.asp?p=15288345'>WELAB HOLDINGS LIMITED</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">219</td>
+			<td><a href='officers.asp?p=138886'>WELLS FARGO BANK, NATIONAL ASSOCIATION</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">220</td>
+			<td><a href='officers.asp?p=148990'>West of England Insurance Services (Luxembourg) S.A.</a></td>
+			<td>2</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">221</td>
+			<td><a href='officers.asp?p=28231'>AAC TECHNOLOGIES HOLDINGS INC.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">222</td>
+			<td><a href='officers.asp?p=2536663'>AAI GROUP SERVICES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">223</td>
+			<td><a href='officers.asp?p=60204'>ABAX GLOBAL CAPITAL (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">224</td>
+			<td><a href='officers.asp?p=159811'>ABBOTT LABORATORIES LIMITED (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">225</td>
+			<td><a href='officers.asp?p=1536385'>ABC INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">226</td>
+			<td><a href='officers.asp?p=50815'>ABN AMRO Clearing Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">227</td>
+			<td><a href='officers.asp?p=23555922'>Acacia Arbitration Chambers Pte. Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">228</td>
+			<td><a href='officers.asp?p=339887'>Acclime Corporate Advisory (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">229</td>
+			<td><a href='officers.asp?p=1979172'>ADV PARTNERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">230</td>
+			<td><a href='officers.asp?p=3035'>AEON STORES (HONG KONG) CO., LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">231</td>
+			<td><a href='officers.asp?p=862251'>Ageas Asia Services Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">232</td>
+			<td><a href='officers.asp?p=22539'>AIF CAPITAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">233</td>
+			<td><a href='officers.asp?p=44063'>AIG Insurance Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">234</td>
+			<td><a href='officers.asp?p=26687162'>AINT GAMES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">235</td>
+			<td><a href='officers.asp?p=2123'>AIRPORT AUTHORITY</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">236</td>
+			<td><a href='officers.asp?p=21959297'>AL PLUS OFFICES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">237</td>
+			<td><a href='officers.asp?p=65926'>ALBOURNE PARTNERS (ASIA) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">238</td>
+			<td><a href='officers.asp?p=1225882'>ALIBABA.COM CHINA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">239</td>
+			<td><a href='officers.asp?p=27561434'>ALLSPRING GLOBAL INVESTMENTS (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">240</td>
+			<td><a href='officers.asp?p=33730'>ALVAREZ & MARSAL ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">241</td>
+			<td><a href='officers.asp?p=151563'>Amazon.com Services LLC</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">242</td>
+			<td><a href='officers.asp?p=1841394'>Amber Foundation Limited (The)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">243</td>
+			<td><a href='officers.asp?p=69153'>Amundi Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">244</td>
+			<td><a href='officers.asp?p=192583'>ANGLO-EASTERN SHIP MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">245</td>
+			<td><a href='officers.asp?p=37312'>AON HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">246</td>
+			<td><a href='officers.asp?p=16489'>Apollo Future Mobility Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">247</td>
+			<td><a href='officers.asp?p=460031'>Arcadis Consultancy Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">248</td>
+			<td><a href='officers.asp?p=131567'>Ares Management Asia (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">249</td>
+			<td><a href='officers.asp?p=525320'>ARROW ASIA PAC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">250</td>
+			<td><a href='officers.asp?p=24040988'>Arup Business Services HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">251</td>
+			<td><a href='officers.asp?p=391505'>ASIA CONSULTING GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">252</td>
+			<td><a href='officers.asp?p=68546'>ASIA DEBT MANAGEMENT HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">253</td>
+			<td><a href='officers.asp?p=2163'>ASIA INSURANCE COMPANY, LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">254</td>
+			<td><a href='officers.asp?p=546303'>ASIA MINERALS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">255</td>
+			<td><a href='officers.asp?p=3402'>ASIA STANDARD INTERNATIONAL GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">256</td>
+			<td><a href='officers.asp?p=228835'>AT&T ASIA/PACIFIC GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">257</td>
+			<td><a href='officers.asp?p=672931'>ATOS INFORMATION TECHNOLOGY HK LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">258</td>
+			<td><a href='officers.asp?p=1570407'>Aveline Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">259</td>
+			<td><a href='officers.asp?p=51081'>Averest Capital Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">260</td>
+			<td><a href='officers.asp?p=12739439'>AVO INSURANCE COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">261</td>
+			<td><a href='officers.asp?p=2294695'>AWA Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">262</td>
+			<td><a href='officers.asp?p=1517290'>Axiom Global HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">263</td>
+			<td><a href='officers.asp?p=152579'>Bank Julius Bär & Co. AG</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">264</td>
+			<td><a href='officers.asp?p=20557'>BANK OF CHINA GROUP INSURANCE COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">265</td>
+			<td><a href='officers.asp?p=5606'>Bank of Communications Co., Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">266</td>
+			<td><a href='officers.asp?p=377'>BANK OF EAST ASIA, LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">267</td>
+			<td><a href='officers.asp?p=51222'>BANK OF SINGAPORE LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">268</td>
+			<td><a href='officers.asp?p=33310'>BARING ASSET MANAGEMENT (ASIA) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">269</td>
+			<td><a href='officers.asp?p=319521'>BASELL ASIA PACIFIC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">270</td>
+			<td><a href='officers.asp?p=672819'>BASF EAST ASIA REGIONAL HEADQUARTERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">271</td>
+			<td><a href='officers.asp?p=25483'>BAUHAUS INTERNATIONAL (HOLDINGS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">272</td>
+			<td><a href='officers.asp?p=1241273'>BentallGreenOak Investment Advisers Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">273</td>
+			<td><a href='officers.asp?p=149441'>Berkley Insurance Company</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">274</td>
+			<td><a href='officers.asp?p=2307428'>BERKSHIRE HATHAWAY SPECIALTY INSURANCE COMPANY</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">275</td>
+			<td><a href='officers.asp?p=66648'>BGC CAPITAL MARKETS (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">276</td>
+			<td><a href='officers.asp?p=602449'>BIO - GENE TECHNOLOGY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">277</td>
+			<td><a href='officers.asp?p=2192524'>Bitmain Technologies Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">278</td>
+			<td><a href='officers.asp?p=131666'>BLUE POOL CAPITAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">279</td>
+			<td><a href='officers.asp?p=25561'>BOCI-PRUDENTIAL TRUSTEE LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">280</td>
+			<td><a href='officers.asp?p=26705'>BOCOM International Holdings Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">281</td>
+			<td><a href='officers.asp?p=1129679'>Bolttech Insurance (Hong Kong) Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">282</td>
+			<td><a href='officers.asp?p=11429675'>BOND CONNECT COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">283</td>
+			<td><a href='officers.asp?p=28950011'>Bot4Pro Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">284</td>
+			<td><a href='officers.asp?p=22588'>Bravo Transport Services Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">285</td>
+			<td><a href='officers.asp?p=991181'>BRILLIANT (CHINA) TRADING LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">286</td>
+			<td><a href='officers.asp?p=87695'>BROWN BROTHERS HARRIMAN (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">287</td>
+			<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">288</td>
+			<td><a href='officers.asp?p=352992'>BT HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">289</td>
+			<td><a href='officers.asp?p=23147750'>Budweiser Brewing Company APAC Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">290</td>
+			<td><a href='officers.asp?p=26717041'>Bullish HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">291</td>
+			<td><a href='officers.asp?p=199549'>Bupa International Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">292</td>
+			<td><a href='officers.asp?p=30489596'>BW Group Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">293</td>
+			<td><a href='officers.asp?p=2189'>CANADIAN IMPERIAL BANK OF COMMERCE</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">294</td>
+			<td><a href='officers.asp?p=228832'>CANON HONGKONG COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">295</td>
+			<td><a href='officers.asp?p=1853900'>Capula Investment Management Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">296</td>
+			<td><a href='officers.asp?p=20741'>CARITAS - HONG KONG</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">297</td>
+			<td><a href='officers.asp?p=1331820'>CENTRAL PRACTICE LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">298</td>
+			<td><a href='officers.asp?p=31315511'>CHALICE COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">299</td>
+			<td><a href='officers.asp?p=16060'>CHARLES SCHWAB, HONG KONG, LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">300</td>
+			<td><a href='officers.asp?p=51528'>CHEETAH INVESTMENT MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">301</td>
+			<td><a href='officers.asp?p=1335936'>CHILDREN'S PLACE ASIA HOLDINGS LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">302</td>
+			<td><a href='officers.asp?p=155623'>CHINA ENGINEERS, LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">303</td>
+			<td><a href='officers.asp?p=1587'>China Everbright Securities International Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">304</td>
+			<td><a href='officers.asp?p=548380'>China Great Wall AMC (International) Holdings Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">305</td>
+			<td><a href='officers.asp?p=59392'>CHINA LIFE INSURANCE (OVERSEAS) COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">306</td>
+			<td><a href='officers.asp?p=9318'>China Minsheng Banking Corp., Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">307</td>
+			<td><a href='officers.asp?p=599'>CHINA OVERSEAS LAND & INVESTMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">308</td>
+			<td><a href='officers.asp?p=720770'>CHINA PING AN INSURANCE OVERSEAS (HOLDINGS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">309</td>
+			<td><a href='officers.asp?p=33948'>CHINA RENAISSANCE CAPITAL INVESTMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">310</td>
+			<td><a href='officers.asp?p=1912087'>China Renaissance Securities (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">311</td>
+			<td><a href='officers.asp?p=18203'>China Resources Building Materials Technology Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">312</td>
+			<td><a href='officers.asp?p=24668908'>CHINA RESOURCES LAND (OVERSEAS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">313</td>
+			<td><a href='officers.asp?p=4918'>China Ruyi Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">314</td>
+			<td><a href='officers.asp?p=156479'>China Taiping Insurance (HK) Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">315</td>
+			<td><a href='officers.asp?p=866364'>CHINA UNICOM (HONG KONG) OPERATIONS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">316</td>
+			<td><a href='officers.asp?p=4970'>China Vered Financial Holding Corporation Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">317</td>
+			<td><a href='officers.asp?p=2591572'>China-UAE Investment Cooperation Advisory Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">318</td>
+			<td><a href='officers.asp?p=2452'>CHUANG'S CONSORTIUM INTERNATIONAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">319</td>
+			<td><a href='officers.asp?p=54405'>Chubb Life Insurance Company Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">320</td>
+			<td><a href='officers.asp?p=1131588'>Chubb Life Insurance Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">321</td>
+			<td><a href='officers.asp?p=152850'>CIGNA International Corporation</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">322</td>
+			<td><a href='officers.asp?p=27254286'>Citadel Enterprise Asia Services Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">323</td>
+			<td><a href='officers.asp?p=18052'>CITIC CLSA Capital Partners HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">324</td>
+			<td><a href='officers.asp?p=50239'>CITIC Securities International Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">325</td>
+			<td><a href='officers.asp?p=11582'>CITYBUS LIMITED (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">326</td>
+			<td><a href='officers.asp?p=23183794'>Civil Wedding Planning Service Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">327</td>
+			<td><a href='officers.asp?p=784'>CK Infrastructure Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">328</td>
+			<td><a href='officers.asp?p=835244'>CK LIFE SCIENCES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">329</td>
+			<td><a href='officers.asp?p=870501'>CLHL SECRETARIES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">330</td>
+			<td><a href='officers.asp?p=5631'>Clifford Chance (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">331</td>
+			<td><a href='officers.asp?p=448'>CMB WING LUNG BANK LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">332</td>
+			<td><a href='officers.asp?p=1808799'>Coller Capital Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">333</td>
+			<td><a href='officers.asp?p=5147'>COMPUTERSHARE HONG KONG INVESTOR SERVICES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">334</td>
+			<td><a href='officers.asp?p=1000338'>CONCORDIA ENGINEERING LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">335</td>
+			<td><a href='officers.asp?p=1953982'>Conflict Change Consulting Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">336</td>
+			<td><a href='officers.asp?p=38211'>CONSTRUCTION INDUSTRY COUNCIL</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">337</td>
+			<td><a href='officers.asp?p=818'>COSCO SHIPPING Ports Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">338</td>
+			<td><a href='officers.asp?p=785184'>Covestro (Hong Kong) Limited (b1998-02-11)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">339</td>
+			<td><a href='officers.asp?p=806136'>CREATIVE CHILDREN CHOIR LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">340</td>
+			<td><a href='officers.asp?p=824813'>CRYSTAL MOUNTAIN INTERNATIONAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">341</td>
+			<td><a href='officers.asp?p=73558'>CSOP Asset Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">342</td>
+			<td><a href='officers.asp?p=4937'>CTF Services Limited (BM)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">343</td>
+			<td><a href='officers.asp?p=21807'>DAH CHONG HONG HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">344</td>
+			<td><a href='officers.asp?p=1157'>DAH SING BANK, LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">345</td>
+			<td><a href='officers.asp?p=12639247'>DaVita HK Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">346</td>
+			<td><a href='officers.asp?p=5614'>DBS BANK LTD.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">347</td>
+			<td><a href='officers.asp?p=855500'>Deloitte Advisory (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">348</td>
+			<td><a href='officers.asp?p=5416'>Deloitte Touche Tohmatsu (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">349</td>
+			<td><a href='officers.asp?p=25606402'>DEMINOR RECOVERY SERVICES (HK) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">350</td>
+			<td><a href='officers.asp?p=51202'>DFS Group Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">351</td>
+			<td><a href='officers.asp?p=1044604'>DKSH Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">352</td>
+			<td><a href='officers.asp?p=18198'>EAGLE NICE (INTERNATIONAL) HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">353</td>
+			<td><a href='officers.asp?p=855766'>EBAY INTERNATIONAL HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">354</td>
+			<td><a href='officers.asp?p=2325241'>Echo (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">355</td>
+			<td><a href='officers.asp?p=29672837'>Eden Retirement Lifestyle Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">356</td>
+			<td><a href='officers.asp?p=27544'>EDUCATION UNIVERSITY OF HONG KONG (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">357</td>
+			<td><a href='officers.asp?p=42194'>EFG Bank AG</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">358</td>
+			<td><a href='officers.asp?p=39027'>Emperor Capital Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">359</td>
+			<td><a href='officers.asp?p=1863'>Emperor International Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">360</td>
+			<td><a href='officers.asp?p=1631703'>EMPIRE GROUP HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">361</td>
+			<td><a href='officers.asp?p=31792242'>Esperanza Fintech (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">362</td>
+			<td><a href='officers.asp?p=816803'>ESSEX BIO-PHARMACY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">363</td>
+			<td><a href='officers.asp?p=609312'>Everbright Securities International (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">364</td>
+			<td><a href='officers.asp?p=579409'>EVERONA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">365</td>
+			<td><a href='officers.asp?p=20960'>EXXONMOBIL HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">366</td>
+			<td><a href='officers.asp?p=12674579'>FACEBOOK SINGAPORE PTE. LTD.	</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">367</td>
+			<td><a href='officers.asp?p=1217179'>FactSet Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">368</td>
+			<td><a href='officers.asp?p=918992'>Familife (Hong Kong) Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">369</td>
+			<td><a href='officers.asp?p=15986'>FEDERATION OF HONG KONG INDUSTRIES</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">370</td>
+			<td><a href='officers.asp?p=11668257'>Ficus Technology Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">371</td>
+			<td><a href='officers.asp?p=2329401'>First Advisory Trust (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">372</td>
+			<td><a href='officers.asp?p=2346738'>FIRST APP TECHNOLOGY COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">373</td>
+			<td><a href='officers.asp?p=792'>FIRST PACIFIC COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">374</td>
+			<td><a href='officers.asp?p=51889'>First Sentier Investors (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">375</td>
+			<td><a href='officers.asp?p=6432600'>FOOT ANSTEY LLP</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">376</td>
+			<td><a href='officers.asp?p=2599310'>FORIS LIMITED (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">377</td>
+			<td><a href='officers.asp?p=936796'>FORMIA LIMITED (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">378</td>
+			<td><a href='officers.asp?p=150697'>Forward Choice Investment Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">379</td>
+			<td><a href='officers.asp?p=22346742'>FOUR SEASONS HOTELS AND RESORTS ASIA PACIFIC PTE LTD</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">380</td>
+			<td><a href='officers.asp?p=801516'>FRESENIUS MEDICAL CARE ASIA-PACIFIC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">381</td>
+			<td><a href='officers.asp?p=2368985'>FSE Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">382</td>
+			<td><a href='officers.asp?p=12795963'>FSE Services Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">383</td>
+			<td><a href='officers.asp?p=2468837'>FundPark Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">384</td>
+			<td><a href='officers.asp?p=2094981'>FWD Group Management Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">385</td>
+			<td><a href='officers.asp?p=1110778'>GALAXY ENTERTAINMENT MANAGEMENT SERVICES 2005 LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">386</td>
+			<td><a href='officers.asp?p=357'>GAMMON CONSTRUCTION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">387</td>
+			<td><a href='officers.asp?p=41551'>GCL Technology Holdings Limited (KY)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">388</td>
+			<td><a href='officers.asp?p=2674029'>Gebruder Weiss Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">389</td>
+			<td><a href='officers.asp?p=60537'>Gen2 Partners Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">390</td>
+			<td><a href='officers.asp?p=1112164'>GERSON LEHRMAN GROUP (ASIA) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">391</td>
+			<td><a href='officers.asp?p=1915291'>GHK Hospital Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">392</td>
+			<td><a href='officers.asp?p=864477'>GIORGIO ARMANI HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">393</td>
+			<td><a href='officers.asp?p=34251'>Goldman Sachs (Singapore) Pte.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">394</td>
+			<td><a href='officers.asp?p=2709941'>GOLDMAN SACHS INTERNATIONAL</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">395</td>
+			<td><a href='officers.asp?p=2406402'>Goldman Sachs Services (Asia) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">396</td>
+			<td><a href='officers.asp?p=1102573'>Goodman Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">397</td>
+			<td><a href='officers.asp?p=30796420'>Grace Group Global Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">398</td>
+			<td><a href='officers.asp?p=1014346'>GRANDWOOD INSURANCE BROKERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">399</td>
+			<td><a href='officers.asp?p=2617892'>Green Court Capital Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">400</td>
+			<td><a href='officers.asp?p=638701'>Grifols (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">401</td>
+			<td><a href='officers.asp?p=1340'>GUANGDONG INVESTMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">402</td>
+			<td><a href='officers.asp?p=150858'>GUOTAI JUNAN (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">403</td>
+			<td><a href='officers.asp?p=58828'>Guotai Junan International Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">404</td>
+			<td><a href='officers.asp?p=744668'>GUOTAI JUNAN INVESTMENTS (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">405</td>
+			<td><a href='officers.asp?p=2506373'>H Properties Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">406</td>
+			<td><a href='officers.asp?p=37292'>Haitian International Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">407</td>
+			<td><a href='officers.asp?p=469'>Haitong International Securities Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">408</td>
+			<td><a href='officers.asp?p=9134798'>Haitong UT Leasing HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">409</td>
+			<td><a href='officers.asp?p=2634254'>Hammer Capital Asset Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">410</td>
+			<td><a href='officers.asp?p=185308'>HANG LUNG (ADMINISTRATION) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">411</td>
+			<td><a href='officers.asp?p=163498'>HANG YUE ENTERPRISES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">412</td>
+			<td><a href='officers.asp?p=535949'>HASBRO ASIA-PACIFIC MARKETING LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">413</td>
+			<td><a href='officers.asp?p=2148048'>HEINBRO INVESTMENTS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">414</td>
+			<td><a href='officers.asp?p=412'>HENDERSON LAND DEVELOPMENT COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">415</td>
+			<td><a href='officers.asp?p=18535'>HGC GLOBAL COMMUNICATIONS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">416</td>
+			<td><a href='officers.asp?p=131851'>Hillhouse Investment Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">417</td>
+			<td><a href='officers.asp?p=435'>HIP HING CONSTRUCTION COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">418</td>
+			<td><a href='officers.asp?p=32976'>HKSAR Employees Compensation Assistance Fund Board</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">419</td>
+			<td><a href='officers.asp?p=2533655'>HKSAR Legal Aid Department</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">420</td>
+			<td><a href='officers.asp?p=6610'>HKSAR Legislative Council</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">421</td>
+			<td><a href='officers.asp?p=2533686'>HKSAR Official Receiver's Office</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">422</td>
+			<td><a href='officers.asp?p=1027087'>HOME MEDICARE LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">423</td>
+			<td><a href='officers.asp?p=427'>HONG KONG AIRCRAFT ENGINEERING COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">424</td>
+			<td><a href='officers.asp?p=17878'>HONG KONG APPLIED SCIENCE AND TECHNOLOGY RESEARCH INSTITUTE COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">425</td>
+			<td><a href='officers.asp?p=49514'>Hong Kong Chartered Governance Institute (The)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">426</td>
+			<td><a href='officers.asp?p=522114'>HONG KONG CHINA DEVELOPMENT HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">427</td>
+			<td><a href='officers.asp?p=1138318'>HONG KONG COMMONS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">428</td>
+			<td><a href='officers.asp?p=1397549'>HONG KONG INSTITUTE OF ESTATE AGENTS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">429</td>
+			<td><a href='officers.asp?p=305968'>HONG KONG INTERNATIONAL ARBITRATION CENTRE (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">430</td>
+			<td><a href='officers.asp?p=1518731'>Hong Kong Mediation and Arbitration Centre Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">431</td>
+			<td><a href='officers.asp?p=11103'>HONG KONG POLYTECHNIC UNIVERSITY (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">432</td>
+			<td><a href='officers.asp?p=17972'>HONG KONG SCIENCE AND TECHNOLOGY PARKS CORPORATION</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">433</td>
+			<td><a href='officers.asp?p=825118'>HONG KONG TRADEMARK & DESIGN PROTECTION AGENCY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">434</td>
+			<td><a href='officers.asp?p=12103893'>Hong Kong-Shenzhen Innovation and Technology Park Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">435</td>
+			<td><a href='officers.asp?p=51542'>HONGKONG ELECTRIC COMPANY, LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">436</td>
+			<td><a href='officers.asp?p=135907'>HONGKONG LAND COMPANY, LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">437</td>
+			<td><a href='officers.asp?p=853'>HOPEWELL HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">438</td>
+			<td><a href='officers.asp?p=2134238'>HOPU (Hong Kong) Investment Consultancy Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">439</td>
+			<td><a href='officers.asp?p=11586'>HOSPITAL AUTHORITY</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">440</td>
+			<td><a href='officers.asp?p=3798'>Huanxi Media Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">441</td>
+			<td><a href='officers.asp?p=1656943'>Husky Energy (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">442</td>
+			<td><a href='officers.asp?p=10698'>HUTCHISON WHAMPOA (CHINA) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">443</td>
+			<td><a href='officers.asp?p=1246451'>Hypebeast Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">444</td>
+			<td><a href='officers.asp?p=763478'>IBM CHINA/HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">445</td>
+			<td><a href='officers.asp?p=1735466'>ICE Holdings (H.K.) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">446</td>
+			<td><a href='officers.asp?p=6708799'>Immigro & Associates Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">447</td>
+			<td><a href='officers.asp?p=24074246'>InCloud Consulting Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">448</td>
+			<td><a href='officers.asp?p=1861155'>inCompass IP Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">449</td>
+			<td><a href='officers.asp?p=5669'>ING BANK N.V.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">450</td>
+			<td><a href='officers.asp?p=2026913'>International Finance Corporation</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">451</td>
+			<td><a href='officers.asp?p=59761'>International Swaps and Derivatives Association, Inc.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">452</td>
+			<td><a href='officers.asp?p=1325264'>ISDA (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">453</td>
+			<td><a href='officers.asp?p=44088'>ISS Facility Services Limited (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">454</td>
+			<td><a href='officers.asp?p=600'>JEBSEN AND COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">455</td>
+			<td><a href='officers.asp?p=72015'>Jefferies Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">456</td>
+			<td><a href='officers.asp?p=632'>JOHNSON ELECTRIC HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">457</td>
+			<td><a href='officers.asp?p=1893'>K. WAH INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">458</td>
+			<td><a href='officers.asp?p=12674582'>K.W. TANG & CO. LAWYERS</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">459</td>
+			<td><a href='officers.asp?p=347022'>KEENWAY INDUSTRIES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">460</td>
+			<td><a href='officers.asp?p=689'>KERRY HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">461</td>
+			<td><a href='officers.asp?p=15472'>KGI ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">462</td>
+			<td><a href='officers.asp?p=23541044'>KING YIP MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">463</td>
+			<td><a href='officers.asp?p=808224'>KITCHEN INFINITY CORP. LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">464</td>
+			<td><a href='officers.asp?p=1463'>KPMG (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">465</td>
+			<td><a href='officers.asp?p=5605'>Kroll (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">466</td>
+			<td><a href='officers.asp?p=525684'>KWAI FUNG CULTURE & COMMUNICATIONS COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">467</td>
+			<td><a href='officers.asp?p=1234452'>Laboratory JaneClare Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">468</td>
+			<td><a href='officers.asp?p=1739858'>Lagardere Active Enterprises Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">469</td>
+			<td><a href='officers.asp?p=1491'>LAI SUN GARMENT (INTERNATIONAL) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">470</td>
+			<td><a href='officers.asp?p=15602'>LEE HENG DIAMOND COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">471</td>
+			<td><a href='officers.asp?p=24084898'>LEGALMAPP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">472</td>
+			<td><a href='officers.asp?p=4902'>LEI SHING HONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">473</td>
+			<td><a href='officers.asp?p=2294389'>Leo Capital Corp (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">474</td>
+			<td><a href='officers.asp?p=98984'>Leonteq Securities (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">475</td>
+			<td><a href='officers.asp?p=5335'>LGT Bank AG</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">476</td>
+			<td><a href='officers.asp?p=55995'>LI & FUNG (TRADING) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">477</td>
+			<td><a href='officers.asp?p=11040'>LI KA SHING FOUNDATION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">478</td>
+			<td><a href='officers.asp?p=2602718'>LIBERTY SPECIALTY MARKETS HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">479</td>
+			<td><a href='officers.asp?p=12680736'>LIQUID STATE LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">480</td>
+			<td><a href='officers.asp?p=609573'>LOCKTON COMPANIES (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">481</td>
+			<td><a href='officers.asp?p=205510'>LOUIS VUITTON PACIFIC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">482</td>
+			<td><a href='officers.asp?p=727771'>Luxury Hotels International of Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">483</td>
+			<td><a href='officers.asp?p=683252'>LVMH Asia Pacific Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">484</td>
+			<td><a href='officers.asp?p=646140'>MACQUARIE SERVICES (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">485</td>
+			<td><a href='officers.asp?p=191831'>MANDARIN ORIENTAL HOTEL GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">486</td>
+			<td><a href='officers.asp?p=939605'>MANIVEST ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">487</td>
+			<td><a href='officers.asp?p=12458923'>Manulife General Account Investments (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">488</td>
+			<td><a href='officers.asp?p=37734'>MANULIFE PROVIDENT FUNDS TRUST COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">489</td>
+			<td><a href='officers.asp?p=389385'>MARKETING STORE WORLDWIDE (ASIA) LIMITED (THE)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">490</td>
+			<td><a href='officers.asp?p=17824'>MAXIM'S CATERERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">491</td>
+			<td><a href='officers.asp?p=1100334'>MAXTOP CORPORATION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">492</td>
+			<td><a href='officers.asp?p=12108693'>MEC Global Partners Asia (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">493</td>
+			<td><a href='officers.asp?p=2637078'>Meitu, Inc.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">494</td>
+			<td><a href='officers.asp?p=1019'>MELCO INTERNATIONAL DEVELOPMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">495</td>
+			<td><a href='officers.asp?p=1875376'>MERRYTIME CAPITAL (HONG KONG) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">496</td>
+			<td><a href='officers.asp?p=3170'>Midland Holdings Limited (BM)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">497</td>
+			<td><a href='officers.asp?p=138337'>Mizuho Bank, Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">498</td>
+			<td><a href='officers.asp?p=350'>MODERN TERMINALS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">499</td>
+			<td><a href='officers.asp?p=2558589'>Modoc Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">500</td>
+			<td><a href='officers.asp?p=2735'>Mongolia Energy Corporation Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">501</td>
+			<td><a href='officers.asp?p=2270241'>Morgan Stanley Bank Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">502</td>
+			<td><a href='officers.asp?p=462067'>Morgan Stanley Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">503</td>
+			<td><a href='officers.asp?p=38217'>Mott MacDonald Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">504</td>
+			<td><a href='officers.asp?p=21746403'>Mox Bank Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">505</td>
+			<td><a href='officers.asp?p=842822'>MTI ADMINISTRATION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">506</td>
+			<td><a href='officers.asp?p=139145'>MUFG Bank, Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">507</td>
+			<td><a href='officers.asp?p=1177632'>MUTUAL CAPITAL LIMITED (HK)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">508</td>
+			<td><a href='officers.asp?p=791994'>MYER JEWELRY MFR LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">509</td>
+			<td><a href='officers.asp?p=6125'>Nan Fung Group</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">510</td>
+			<td><a href='officers.asp?p=2092955'>Nautilus Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">511</td>
+			<td><a href='officers.asp?p=506710'>NESTLE HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">512</td>
+			<td><a href='officers.asp?p=19097'>NetEase, Inc.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">513</td>
+			<td><a href='officers.asp?p=70270'>Neuberger Berman Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">514</td>
+			<td><a href='officers.asp?p=166097'>NEW BRIGHT INDUSTRIAL COMPANY, LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">515</td>
+			<td><a href='officers.asp?p=291472'>NEW HERITAGE INVESTMENTS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">516</td>
+			<td><a href='officers.asp?p=23823537'>NOBAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">517</td>
+			<td><a href='officers.asp?p=1208797'>OFFICE DEPOT ASIA HOLDING LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">518</td>
+			<td><a href='officers.asp?p=2455294'>OKG Technology Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">519</td>
+			<td><a href='officers.asp?p=28035267'>Olea Global (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">520</td>
+			<td><a href='officers.asp?p=2200260'>Ontario Teachers' Pension Plan (Asia) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">521</td>
+			<td><a href='officers.asp?p=786203'>OrbusNeich Medical Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">522</td>
+			<td><a href='officers.asp?p=62324'>ORIENT ACCESS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">523</td>
+			<td><a href='officers.asp?p=443099'>ORIENTAL TECHNOLOGY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">524</td>
+			<td><a href='officers.asp?p=252189'>ORIX FINANCE SERVICES HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">525</td>
+			<td><a href='officers.asp?p=456710'>OTIS FAR EAST HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">526</td>
+			<td><a href='officers.asp?p=695729'>OUTBLAZE LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">527</td>
+			<td><a href='officers.asp?p=25612959'>Pacific Aegis Capital Management (IM) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">528</td>
+			<td><a href='officers.asp?p=3387'>PACIFIC CENTURY PREMIUM DEVELOPMENTS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">529</td>
+			<td><a href='officers.asp?p=33561'>PACIFIC EAGLE ASSET MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">530</td>
+			<td><a href='officers.asp?p=2441641'>Pacific Telecom & Navigation Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">531</td>
+			<td><a href='officers.asp?p=28166668'>PAG</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">532</td>
+			<td><a href='officers.asp?p=758838'>PAI Investment Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">533</td>
+			<td><a href='officers.asp?p=2332988'>Payoneer Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">534</td>
+			<td><a href='officers.asp?p=1327938'>PEONY FOUNDATION</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">535</td>
+			<td><a href='officers.asp?p=697276'>PERMASTEELISA GARTNER HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">536</td>
+			<td><a href='officers.asp?p=158066'>Pfizer Corporation Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">537</td>
+			<td><a href='officers.asp?p=2008826'>PGA Global Services LLC</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">538</td>
+			<td><a href='officers.asp?p=68721'>Pictet Asset Management (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">539</td>
+			<td><a href='officers.asp?p=33164815'>PILLSBURY WINTHROP SHAW PITTMAN LLP</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">540</td>
+			<td><a href='officers.asp?p=2670344'>PILnet Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">541</td>
+			<td><a href='officers.asp?p=1791'>PLAYMATES HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">542</td>
+			<td><a href='officers.asp?p=6709594'>POLYGROUP HOLDINGS LIMITED (b2017-03-28)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">543</td>
+			<td><a href='officers.asp?p=18185'>Portico International Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">544</td>
+			<td><a href='officers.asp?p=388'>Power Assets Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">545</td>
+			<td><a href='officers.asp?p=2436047'>Practising Governance Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">546</td>
+			<td><a href='officers.asp?p=66598'>PRADA S.P.A.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">547</td>
+			<td><a href='officers.asp?p=24301120'>Prelude Capital (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">548</td>
+			<td><a href='officers.asp?p=65820'>PricewaterhouseCoopers Zhong Tian LLP</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">549</td>
+			<td><a href='officers.asp?p=12053969'>Pulsar Software Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">550</td>
+			<td><a href='officers.asp?p=30030483'>PURUS MARINE SERVICES HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">551</td>
+			<td><a href='officers.asp?p=1523374'>PVH Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">552</td>
+			<td><a href='officers.asp?p=497402'>RANKBASE INVESTMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">553</td>
+			<td><a href='officers.asp?p=1911223'>RED CLIFF ASSET MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">554</td>
+			<td><a href='officers.asp?p=616'>Rothschild & Co Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">555</td>
+			<td><a href='officers.asp?p=633094'>ROUSE & CO. INTERNATIONAL (OVERSEAS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">556</td>
+			<td><a href='officers.asp?p=2499812'>Royal Canin Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">557</td>
+			<td><a href='officers.asp?p=87792'>SAFE INVESTMENT COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">558</td>
+			<td><a href='officers.asp?p=2048303'>Salvation Army (The)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">559</td>
+			<td><a href='officers.asp?p=689024'>SAMSONITE ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">560</td>
+			<td><a href='officers.asp?p=650316'>SATS HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">561</td>
+			<td><a href='officers.asp?p=614033'>Savills Management Services Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">562</td>
+			<td><a href='officers.asp?p=322446'>SAVILLS PROPERTY MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">563</td>
+			<td><a href='officers.asp?p=99852'>SC Lowy Asset Management (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">564</td>
+			<td><a href='officers.asp?p=32658676'>Scarab Technology Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">565</td>
+			<td><a href='officers.asp?p=50803'>SDIC Securities International Financial Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">566</td>
+			<td><a href='officers.asp?p=173237'>SF Supply Chain (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">567</td>
+			<td><a href='officers.asp?p=357900'>SHANGHAI ELECTRIC HONGKONG CO. LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">568</td>
+			<td><a href='officers.asp?p=5004'>Shanghai Industrial Urban Development Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">569</td>
+			<td><a href='officers.asp?p=1736869'>SHANGHAI REAL ESTATE (COMMERCIAL) HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">570</td>
+			<td><a href='officers.asp?p=39307'>SHERATON VALUERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">571</td>
+			<td><a href='officers.asp?p=3082'>SHUN HING ELECTRONIC TRADING CO. LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">572</td>
+			<td><a href='officers.asp?p=454'>SHUN TAK HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">573</td>
+			<td><a href='officers.asp?p=805516'>SHURE ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">574</td>
+			<td><a href='officers.asp?p=333980'>SIEMENS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">575</td>
+			<td><a href='officers.asp?p=91546'>Sigma Capital Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">576</td>
+			<td><a href='officers.asp?p=6437497'>SIGNATURE LITIGATION LLP</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">577</td>
+			<td><a href='officers.asp?p=270935'>SIL-METROPOLE ORGANISATION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">578</td>
+			<td><a href='officers.asp?p=1018610'>SING WAH DEVELOPMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">579</td>
+			<td><a href='officers.asp?p=254334'>SINO ADMINISTRATION SERVICES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">580</td>
+			<td><a href='officers.asp?p=1749875'>Sino Jet Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">581</td>
+			<td><a href='officers.asp?p=41076'>SINO-OCEAN GROUP HOLDING LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">582</td>
+			<td><a href='officers.asp?p=19564'>SINOPAC SECURITIES (ASIA) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">583</td>
+			<td><a href='officers.asp?p=1398379'>Sonepar Asia Pacific Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">584</td>
+			<td><a href='officers.asp?p=142711'>Sony Music Entertainment Asia Inc.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">585</td>
+			<td><a href='officers.asp?p=141558'>SPRINGFIELD FINANCIAL ADVISORY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">586</td>
+			<td><a href='officers.asp?p=26734'>STANDARD CHARTERED BANK</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">587</td>
+			<td><a href='officers.asp?p=2086912'>STARLING LABS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">588</td>
+			<td><a href='officers.asp?p=248890'>STATE STREET ASIA LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">589</td>
+			<td><a href='officers.asp?p=5351'>STATE STREET BANK AND TRUST COMPANY</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">590</td>
+			<td><a href='officers.asp?p=20932526'>Stonepeak (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">591</td>
+			<td><a href='officers.asp?p=1523132'>Success Finance Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">592</td>
+			<td><a href='officers.asp?p=2924'>SUCCESS UNIVERSE GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">593</td>
+			<td><a href='officers.asp?p=473'>SUEZ (Asia Pacific) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">594</td>
+			<td><a href='officers.asp?p=2695509'>Sun Life Financial Holdings (HK) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">595</td>
+			<td><a href='officers.asp?p=1298943'>SUNLINK HOLDINGS (H.K.) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">596</td>
+			<td><a href='officers.asp?p=11839'>Sunwah Kingsway Capital Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">597</td>
+			<td><a href='officers.asp?p=51075'>SUSQUEHANNA HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">598</td>
+			<td><a href='officers.asp?p=395761'>SWEETYET DEVELOPMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">599</td>
+			<td><a href='officers.asp?p=384'>SWIRE PACIFIC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">600</td>
+			<td><a href='officers.asp?p=24001'>SWIRE PROPERTIES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">601</td>
+			<td><a href='officers.asp?p=1842722'>Syneos Health Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">602</td>
+			<td><a href='officers.asp?p=33112'>TAIPING REINSURANCE COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">603</td>
+			<td><a href='officers.asp?p=2699396'>Talon Esports Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">604</td>
+			<td><a href='officers.asp?p=2600'>TECHTRONIC INDUSTRIES COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">605</td>
+			<td><a href='officers.asp?p=688'>TELEVISION BROADCASTS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">606</td>
+			<td><a href='officers.asp?p=882239'>TELSTRA INTERNATIONAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">607</td>
+			<td><a href='officers.asp?p=2588226'>TF INTERNATIONAL SECURITIES GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">608</td>
+			<td><a href='officers.asp?p=149636'>THE ALTERNATIVE INVESTMENT MANAGEMENT ASSOCIATION LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">609</td>
+			<td><a href='officers.asp?p=68443'>THREADNEEDLE PORTFOLIO SERVICES HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">610</td>
+			<td><a href='officers.asp?p=422901'>Tindall Riley (Britannia) Hong Kong Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">611</td>
+			<td><a href='officers.asp?p=842344'>TOD'S HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">612</td>
+			<td><a href='officers.asp?p=10265'>TOM GROUP LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">613</td>
+			<td><a href='officers.asp?p=1947220'>Tor Investment Management (Hong Kong) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">614</td>
+			<td><a href='officers.asp?p=617467'>TOYO MALL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">615</td>
+			<td><a href='officers.asp?p=149385'>Transamerica Life (Bermuda) Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">616</td>
+			<td><a href='officers.asp?p=699776'>TRM (HK) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">617</td>
+			<td><a href='officers.asp?p=4998'>Tysan Holdings Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">618</td>
+			<td><a href='officers.asp?p=1905192'>Uber (Asia) Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">619</td>
+			<td><a href='officers.asp?p=1750962'>UBSP GLOBAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">620</td>
+			<td><a href='officers.asp?p=27278218'>Ucollex International Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">621</td>
+			<td><a href='officers.asp?p=1433595'>Under Armour Asia Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">622</td>
+			<td><a href='officers.asp?p=47339'>UNIPEC ASIA COMPANY LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">623</td>
+			<td><a href='officers.asp?p=4733'>UNITED OVERSEAS BANK LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">624</td>
+			<td><a href='officers.asp?p=172996'>UNIVERSAL MUSIC LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">625</td>
+			<td><a href='officers.asp?p=1469'>VALUE PARTNERS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">626</td>
+			<td><a href='officers.asp?p=51118'>Vantage Capital Markets HK Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">627</td>
+			<td><a href='officers.asp?p=1031966'>VERVAIN RESOURCES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">628</td>
+			<td><a href='officers.asp?p=1401576'>VISA HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">629</td>
+			<td><a href='officers.asp?p=639'>VITASOY INTERNATIONAL HOLDINGS LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">630</td>
+			<td><a href='officers.asp?p=14809'>VOCATIONAL TRAINING COUNCIL</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">631</td>
+			<td><a href='officers.asp?p=785788'>VTECH CORPORATE SERVICES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">632</td>
+			<td><a href='officers.asp?p=12660060'>W.K. Leung & Co.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">633</td>
+			<td><a href='officers.asp?p=1321131'>Wah Kwong Maritime Agency Company Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">634</td>
+			<td><a href='officers.asp?p=23380'>WAH YIP (HOLDINGS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">635</td>
+			<td><a href='officers.asp?p=746149'>WANG FU PROJECT MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">636</td>
+			<td><a href='officers.asp?p=2099245'>WH Group Limited (KY)</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">637</td>
+			<td><a href='officers.asp?p=6723676'>WT Asset Management Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">638</td>
+			<td><a href='officers.asp?p=23358514'>XCap Partners Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">639</td>
+			<td><a href='officers.asp?p=1201474'>YAHOO! HONG KONG LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">640</td>
+			<td><a href='officers.asp?p=1793334'>YAMAKAWA INTERNATIONAL INDUSTRIAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">641</td>
+			<td><a href='officers.asp?p=1686'>YF Life Insurance International Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">642</td>
+			<td><a href='officers.asp?p=203413'>YICK MAN ESTATES LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">643</td>
+			<td><a href='officers.asp?p=2894'>YUE XIU ENTERPRISES (HOLDINGS) LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">644</td>
+			<td><a href='officers.asp?p=2992543'>YUM! RESTAURANTS INTERNATIONAL LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">645</td>
+			<td><a href='officers.asp?p=4917'>Yunfeng Financial Group Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">646</td>
+			<td><a href='officers.asp?p=27686410'>Zhejiang Leapmotor Technology Co., Ltd.</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">647</td>
+			<td><a href='officers.asp?p=12053069'>ZHONG LUN LAW FIRM LLP</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">648</td>
+			<td><a href='officers.asp?p=2449827'>ZHONGTAI INTERNATIONAL MANAGEMENT LIMITED</a></td>
+			<td>1</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3 right">649</td>
+			<td><a href='officers.asp?p=839146'>ZONE Resources Limited</a></td>
+			<td>1</td>
+		</tr>
+		
+	<tr class="total">
+		<td class="colHide3"></td>
+		<td>Total</td>
+		<td>1400</td>
+	</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

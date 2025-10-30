@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.chart('chart1', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'Interest & expenses on bonds',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.2em'
+			}
+	    },
+	    colors: ['Green','Red','MediumBlue',
+	    	'Orange','Olive','Navy',
+	    	'IndianRed','Teal','Turquoise',
+	    	'Tomato','YellowGreen','SteelBlue',
+	    	'Wheat','GreenYellow','SkyBlue',
+	    	'SlateGray','Sienna','Salmon',
+	    	'Gold'],
+	    yAxis: {
+	        title: {
+	            text: 'HK$000',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0,
+	        	
+	        },
+	    },
+	    xAxis: {
+	    	categories: ['2005-03-31','2006-03-31','2007-03-31','2008-03-31','2009-03-31','2010-03-31','2011-03-31','2012-03-31','2013-03-31','2014-03-31','2015-03-31','2016-03-31','2017-03-31','2018-03-31','2019-03-31','2020-03-31','2021-03-31','2022-03-31','2023-03-31','2024-03-31','2025-03-31']
+	    },
+	    rangeSelector: {
+    		selected: 5,
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: false,
+	    	useHTML: true,
+	    	hideDelay:2000,
+	    	style: {pointerEvents:'auto'},
+	        headerFormat: '<b>{point.key}</b><br>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        }
+	    },
+	    series: [
+	    	
+	    	{
+	        name: 'Bonds issued via Bond Fund',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=2046">{series.name} {point.y}</a>',
+		    },
+	        data: [0,0,0,0,0,15968,268716,785276,1241388,1868805,2352179,2207354,2108027,2096494,2314505,2234366,1862022,3266616,4782087,7221892,7068372]
+	        },
+	        
+	    	{
+	        name: 'CWRF bonds',
+	        type: 'column',
+	        tooltip: {
+	        
+		    pointFormat:'<a href="https://webb-site.com/dbpub/govac.asp?t=0&g=False&i=1186">{series.name} {point.y}</a>',
+		    },
+	        data: [440378,850524,825916,799913,752638,639709,574844,575348,573455,574068,325126,77301,76669,76880,76880,143008,194034,455267,1091548,3804006,6271518]
+	        },
+	        
+	        ]
+	});
+});
+</script>
+<title>HKSAR Consolidated Accounts | Interest & expenses on bonds</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2><a href='govac.asp?t=0&amp;g=False&amp;i=1251'>HKSAR Consolidated Accounts</a> | Interest & expenses on bonds</h2>
+
+	<ul class="navlist">
+		<li class='livebutton'>Accounts</li><li><a href='govacsearch.asp'>Search</a></li><li><a href='govacNotes.asp'>Notes</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<form method="get" action="govac.asp">
+	<input type="hidden" name="t" value="0">
+	<input type='checkbox' name='g' id='g' value='1' onchange='this.form.submit()'> Show as % of Gross Domestic Product
+	<input type="hidden" name="i" value="1252">
+</form>
+<p>Tap a line-item in the table or a link in a chart data-point to 
+drill down to more and more detail, or the headings above to go back up. On the chart, use the top-right hamburger menu to save or print. 
+Tap the legend to toggle items in and out of the chart.</p>
+<p><b><a href="govacCSV.asp?t=0&amp;i=1252">Download CSV</a></b></p>
+
+
+<div id="chart1" style="height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>Tap on the line-items to drill down or chart line-items separately.</p>
+<div class="xscroll">
+	<table class="numtable center">
+		<tr>
+			<th class="left">Year to 31 March HK$000</th>
+			
+				<th>2005</th>
+			
+				<th>2006</th>
+			
+				<th>2007</th>
+			
+				<th>2008</th>
+			
+				<th>2009</th>
+			
+				<th>2010</th>
+			
+				<th>2011</th>
+			
+				<th>2012</th>
+			
+				<th>2013</th>
+			
+				<th>2014</th>
+			
+				<th>2015</th>
+			
+				<th>2016</th>
+			
+				<th>2017</th>
+			
+				<th>2018</th>
+			
+				<th>2019</th>
+			
+				<th>2020</th>
+			
+				<th>2021</th>
+			
+				<th>2022</th>
+			
+				<th>2023</th>
+			
+				<th>2024</th>
+			
+				<th>2025</th>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=2046">Bonds issued via Bond Fund</a>
+			
+			</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>0</td>
+			
+				<td>15,968</td>
+			
+				<td>268,716</td>
+			
+				<td>785,276</td>
+			
+				<td>1,241,388</td>
+			
+				<td>1,868,805</td>
+			
+				<td>2,352,179</td>
+			
+				<td>2,207,354</td>
+			
+				<td>2,108,027</td>
+			
+				<td>2,096,494</td>
+			
+				<td>2,314,505</td>
+			
+				<td>2,234,366</td>
+			
+				<td>1,862,022</td>
+			
+				<td>3,266,616</td>
+			
+				<td>4,782,087</td>
+			
+				<td>7,221,892</td>
+			
+				<td>7,068,372</td>
+			
+		</tr>
+		
+		<tr>
+			<td class="left">
+			
+				<a href="govac.asp?t=0&amp;g=False&amp;i=1186">Bonds issued via Capital Works Reserve Fund</a>
+			
+			</td>
+			
+				<td>440,378</td>
+			
+				<td>850,524</td>
+			
+				<td>825,916</td>
+			
+				<td>799,913</td>
+			
+				<td>752,638</td>
+			
+				<td>639,709</td>
+			
+				<td>574,844</td>
+			
+				<td>575,348</td>
+			
+				<td>573,455</td>
+			
+				<td>574,068</td>
+			
+				<td>325,126</td>
+			
+				<td>77,301</td>
+			
+				<td>76,669</td>
+			
+				<td>76,880</td>
+			
+				<td>76,880</td>
+			
+				<td>143,008</td>
+			
+				<td>194,034</td>
+			
+				<td>455,267</td>
+			
+				<td>1,091,548</td>
+			
+				<td>3,804,006</td>
+			
+				<td>6,271,518</td>
+			
+		</tr>
+		
+		<tr class="total">
+			<td class="left">Total</td>
+			
+				<td>440,378</td>
+			
+				<td>850,524</td>
+			
+				<td>825,916</td>
+			
+				<td>799,913</td>
+			
+				<td>752,638</td>
+			
+				<td>655,677</td>
+			
+				<td>843,560</td>
+			
+				<td>1,360,624</td>
+			
+				<td>1,814,843</td>
+			
+				<td>2,442,873</td>
+			
+				<td>2,677,305</td>
+			
+				<td>2,284,655</td>
+			
+				<td>2,184,696</td>
+			
+				<td>2,173,374</td>
+			
+				<td>2,391,385</td>
+			
+				<td>2,377,374</td>
+			
+				<td>2,056,056</td>
+			
+				<td>3,721,883</td>
+			
+				<td>5,873,635</td>
+			
+				<td>11,025,898</td>
+			
+				<td>13,339,890</td>
+			
+		</tr>
+		
+	</table>
+</div>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

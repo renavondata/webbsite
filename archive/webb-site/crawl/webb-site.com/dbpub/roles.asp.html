@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>League Tables of Advisers</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Webb-site League Tables</h2>
+<ul class="navlist">
+	<li><a href="leagueNotesA.asp">Notes</a></li>
+	<li id="livebutton">All league tables</li>
+</ul>
+<div class="clear"></div>
+<div class="letterbox">Please note that due to the planned <a href="../articles/shutdown.asp">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments 
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="../articles/repository.asp"><strong>is 
+	now available</strong></a>.</div>
+
+<p>Click the role to see average total returns for each adviser in that role, for companies or REITs with a primary listing on either the 
+Main Board or Growth Enterprises Market (GEM) of the Stock Exchange of Hong Kong Ltd. 
+For continuing roles, click the number of positions to see a current league 
+table of advisers.</p>
+<table class="numtable fcl yscroll">
+	<tr>
+		<th>Role</th>
+		<th>Positions</th>
+	</tr>
+
+	<tr>
+		<td><a href="advbyrole.asp?r=13">Actuary</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=13">88</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=4">Actuary (1-time)</a></td>
+		<td>
+			18
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=20">Administrator</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=20">1</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=0">Auditor</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=0">2585</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=2">Banker</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=2">8335</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=6">Co-sponsor</a></td>
+		<td>
+			158
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=35">Company Secretary</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=35">4</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=16">Compliance adviser</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=16">191</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=32">Consultant accountant</a></td>
+		<td>
+			1
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=8">Custodian</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=8">17</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=25">Financial Adviser (1-time)</a></td>
+		<td>
+			6105
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=14">Financial Adviser (continuing)</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=14">9</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=33">Financial Adviser to Subscriber</a></td>
+		<td>
+			19
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=24">Financial Adviser to Takeover Offeror</a></td>
+		<td>
+			1079
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=40">Forensic reviewer</a></td>
+		<td>
+			93
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=23">Independent Financial Adviser (Listing Rules)</a></td>
+		<td>
+			10362
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=26">Independent Financial Adviser (Takeover Code)</a></td>
+		<td>
+			1660
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=39">Internal control annual reviewer</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=39">10</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=38">Internal control review</a></td>
+		<td>
+			132
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=9">Investment Manager</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=9">21</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=1">Lawyer</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=1">2882</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=18">Liquidator</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=18">3</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=7">Overseas Registrar</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=7">1975</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=29">Placing agent</a></td>
+		<td>
+			4127
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=17">Provisional Liquidator</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=17">7</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=10">Public Relations</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=10">76</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=11">Receiving Bank</a></td>
+		<td>
+			2950
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=21">Registrar</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=21">2595</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=28">Reporting Accountant</a></td>
+		<td>
+			6122
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=3">Sponsor</a></td>
+		<td>
+			3476
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=37">Sponsor (IPO aborted)</a></td>
+		<td>
+			81
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=19">Tax Advisor</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=19">4</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=15">Trustee</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=15">12</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=12">Underwriters' Lawyer (IPO)</a></td>
+		<td>
+			3968
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=5">Valuer</a></td>
+		<td>
+			
+				<a href="advltsnap.asp?r=5">897</a>
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td><a href="advbyrole.asp?r=27">Valuer (1-time)</a></td>
+		<td>
+			8335
+		</td>
+	</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

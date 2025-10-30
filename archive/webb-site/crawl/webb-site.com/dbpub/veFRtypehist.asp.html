@@ -1,0 +1,1209 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>HK registration and licensing: Private Cars by month</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK registration and licensing: Private Cars by month</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=1&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li class='livebutton'>Type history</li><li><a href='vefuel.asp'>Fuels</a></li><li><a href='vefuelhist.asp?vc=1'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li><a href='veJourneys.asp'>Journeys</a></li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of vehicles newly-registered and totals licensed and registered in HK by class, from Jan-2013 onwards, using data from the Transport Department. 
+Choose simple or detailed classes. The total licensed and registered are at the end 
+of the period. If a vehicle is registered but not licensed then it is not 
+allowed on public roads and may have already been scrapped. By <a href="https://www.hklii.hk/en/legis/ord/374/s2" target="_blank">law</a>, 
+permitted gross vehicle mass of Goods Vehicles in tonnes are: Light: 5.5, Medium: 24, Heavy: 38. 
+Click on the month to see all types for the month.</p>
+<form method="get" action="veFRtypehist.asp">
+	<input type="hidden" name="sort" value="">
+	<div class="inputs">
+		Breakdown <select id='simple' name='simple' onchange='this.form.submit()'><option value='True'>Simple</option><option value='False' selected>Detailed</option></select>
+	</div>
+	<div class="inputs">
+	Vehicle class
+	<select name='vc' onchange="this.form.submit()"><option value='42'>Combo Motor Cycles</option><option value='49'>Franchised bus: CTB: HK & XHT: Double</option><option value='48'>Franchised bus: CTB: HK & XHT: Single</option><option value='51'>Franchised bus: CTB: Lantau: Double</option><option value='50'>Franchised bus: CTB: Lantau: Single</option><option value='53'>Franchised bus: CTB: Urban & NT: Double</option><option value='52'>Franchised bus: CTB: Urban & NT: Single</option><option value='55'>Franchised bus: KMB: Double</option><option value='54'>Franchised bus: KMB: Single</option><option value='57'>Franchised bus: LWB: Double</option><option value='56'>Franchised bus: LWB: Single</option><option value='59'>Franchised bus: NLB: Double</option><option value='58'>Franchised bus: NLB: Single</option><option value='61'>Franchised bus: NWFB: Double</option><option value='60'>Franchised bus: NWFB: Single</option><option value='39'>Government Motor Cycles</option><option value='40'>Government Other Vehicles</option><option value='46'>Green Minibus</option><option value='29'>Heavy Goods Vehicles</option><option value='27'>Light Goods Vehicles</option><option value='28'>Medium Goods Vehicles</option><option value='34'>Motor Tricycles</option><option value='63'>Non-franchised public bus: MTR: Double</option><option value='62'>Non-franchised public bus: MTR: Single</option><option value='65'>Non-franchised public bus: Others: Double</option><option value='64'>Non-franchised public bus: Others: Single</option><option value='69'>Private bus: Double</option><option value='68'>Private bus: Single</option><option value='1' selected>Private Cars</option><option value='10'>Private Light Buses</option><option value='47'>Red Minibus</option><option value='41'>Solo Motor Cycles</option><option value='6'>Special Purpose Vehicles</option><option value='45'>Taxis:Lantau</option><option value='44'>Taxis:New Territories</option><option value='43'>Taxis:Urban</option></select>
+	</div>
+	<div class="inputs">
+		Frequency
+		<select id='f' name='f' onchange='this.form.submit()'><option value='1' selected>Monthly</option><option value='2'>Yearly</option></select>
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable fcl">
+	<tr>
+		<th><a href='/dbpub/veFRtypehist.asp?vc=1&amp;simple=False&amp;sort=datdn'><b>Month</b></a></th>
+		<th><a href='/dbpub/veFRtypehist.asp?vc=1&amp;simple=False&amp;sort=FRdn'><b>First reg.</b></a></th>
+		<th><a href='/dbpub/veFRtypehist.asp?vc=1&amp;simple=False&amp;sort=licdn'><b>Total licensed</b></a></th>
+		<th><a href='/dbpub/veFRtypehist.asp?vc=1&amp;simple=False&amp;sort=regdn'><b>Total reg.</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=7&amp;simple=False">2025-07</a></td>
+			<td>3,893</td>			
+			<td>580,790</td>
+			<td>629,399</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=6&amp;simple=False">2025-06</a></td>
+			<td>4,393</td>			
+			<td>580,797</td>
+			<td>629,104</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=5&amp;simple=False">2025-05</a></td>
+			<td>4,401</td>			
+			<td>579,813</td>
+			<td>627,952</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=4&amp;simple=False">2025-04</a></td>
+			<td>3,128</td>			
+			<td>579,129</td>
+			<td>632,300</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=3&amp;simple=False">2025-03</a></td>
+			<td>3,622</td>			
+			<td>579,843</td>
+			<td>632,607</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=2&amp;simple=False">2025-02</a></td>
+			<td>3,335</td>			
+			<td>579,913</td>
+			<td>632,016</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2025&amp;m=1&amp;simple=False">2025-01</a></td>
+			<td>2,983</td>			
+			<td>578,550</td>
+			<td>631,116</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=12&amp;simple=False">2024-12</a></td>
+			<td>3,584</td>			
+			<td>578,001</td>
+			<td>630,711</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=11&amp;simple=False">2024-11</a></td>
+			<td>3,561</td>			
+			<td>576,802</td>
+			<td>636,201</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=10&amp;simple=False">2024-10</a></td>
+			<td>3,829</td>			
+			<td>576,326</td>
+			<td>635,366</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=9&amp;simple=False">2024-09</a></td>
+			<td>2,940</td>			
+			<td>575,141</td>
+			<td>634,643</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=8&amp;simple=False">2024-08</a></td>
+			<td>3,189</td>			
+			<td>576,347</td>
+			<td>634,324</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=7&amp;simple=False">2024-07</a></td>
+			<td>2,974</td>			
+			<td>576,674</td>
+			<td>640,634</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=6&amp;simple=False">2024-06</a></td>
+			<td>2,596</td>			
+			<td>576,548</td>
+			<td>640,445</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=5&amp;simple=False">2024-05</a></td>
+			<td>2,849</td>			
+			<td>577,948</td>
+			<td>639,761</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=4&amp;simple=False">2024-04</a></td>
+			<td>6,435</td>			
+			<td>577,890</td>
+			<td>638,842</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=3&amp;simple=False">2024-03</a></td>
+			<td>5,918</td>			
+			<td>574,173</td>
+			<td>634,029</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=2&amp;simple=False">2024-02</a></td>
+			<td>4,430</td>			
+			<td>575,837</td>
+			<td>634,096</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2024&amp;m=1&amp;simple=False">2024-01</a></td>
+			<td>4,404</td>			
+			<td>577,242</td>
+			<td>644,138</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=12&amp;simple=False">2023-12</a></td>
+			<td>4,366</td>			
+			<td>577,908</td>
+			<td>645,351</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=11&amp;simple=False">2023-11</a></td>
+			<td>4,072</td>			
+			<td>577,566</td>
+			<td>643,633</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=10&amp;simple=False">2023-10</a></td>
+			<td>3,727</td>			
+			<td>577,357</td>
+			<td>643,672</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=9&amp;simple=False">2023-09</a></td>
+			<td>3,497</td>			
+			<td>578,382</td>
+			<td>642,972</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=8&amp;simple=False">2023-08</a></td>
+			<td>4,027</td>			
+			<td>580,202</td>
+			<td>642,677</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=7&amp;simple=False">2023-07</a></td>
+			<td>3,564</td>			
+			<td>579,537</td>
+			<td>652,198</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=6&amp;simple=False">2023-06</a></td>
+			<td>3,954</td>			
+			<td>580,376</td>
+			<td>651,883</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=5&amp;simple=False">2023-05</a></td>
+			<td>4,000</td>			
+			<td>579,585</td>
+			<td>651,132</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=4&amp;simple=False">2023-04</a></td>
+			<td>2,863</td>			
+			<td>579,281</td>
+			<td>651,056</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=3&amp;simple=False">2023-03</a></td>
+			<td>3,678</td>			
+			<td>580,407</td>
+			<td>650,816</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=2&amp;simple=False">2023-02</a></td>
+			<td>3,891</td>			
+			<td>577,703</td>
+			<td>650,126</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2023&amp;m=1&amp;simple=False">2023-01</a></td>
+			<td>2,530</td>			
+			<td>571,797</td>
+			<td>649,370</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=12&amp;simple=False">2022-12</a></td>
+			<td>3,860</td>			
+			<td>571,412</td>
+			<td>649,540</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=11&amp;simple=False">2022-11</a></td>
+			<td>4,222</td>			
+			<td>570,613</td>
+			<td>647,794</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=10&amp;simple=False">2022-10</a></td>
+			<td>4,403</td>			
+			<td>570,995</td>
+			<td>647,279</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=9&amp;simple=False">2022-09</a></td>
+			<td>4,447</td>			
+			<td>571,050</td>
+			<td>646,542</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=8&amp;simple=False">2022-08</a></td>
+			<td>3,901</td>			
+			<td>571,233</td>
+			<td>645,591</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=7&amp;simple=False">2022-07</a></td>
+			<td>2,554</td>			
+			<td>571,257</td>
+			<td>652,426</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=6&amp;simple=False">2022-06</a></td>
+			<td>3,010</td>			
+			<td>572,418</td>
+			<td>652,817</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=5&amp;simple=False">2022-05</a></td>
+			<td>2,150</td>			
+			<td>571,971</td>
+			<td>651,884</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=4&amp;simple=False">2022-04</a></td>
+			<td>1,929</td>			
+			<td>572,387</td>
+			<td>659,601</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=3&amp;simple=False">2022-03</a></td>
+			<td>2,993</td>			
+			<td>570,736</td>
+			<td>659,059</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=2&amp;simple=False">2022-02</a></td>
+			<td>1,941</td>			
+			<td>575,253</td>
+			<td>657,547</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2022&amp;m=1&amp;simple=False">2022-01</a></td>
+			<td>2,068</td>			
+			<td>580,419</td>
+			<td>656,438</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=12&amp;simple=False">2021-12</a></td>
+			<td>3,324</td>			
+			<td>581,012</td>
+			<td>656,973</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=11&amp;simple=False">2021-11</a></td>
+			<td>3,921</td>			
+			<td>579,202</td>
+			<td>654,899</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=10&amp;simple=False">2021-10</a></td>
+			<td>2,727</td>			
+			<td>578,683</td>
+			<td>653,668</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=9&amp;simple=False">2021-09</a></td>
+			<td>3,554</td>			
+			<td>580,614</td>
+			<td>652,933</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=8&amp;simple=False">2021-08</a></td>
+			<td>3,066</td>			
+			<td>580,892</td>
+			<td>664,552</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=7&amp;simple=False">2021-07</a></td>
+			<td>3,557</td>			
+			<td>581,060</td>
+			<td>663,416</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=6&amp;simple=False">2021-06</a></td>
+			<td>3,791</td>			
+			<td>581,863</td>
+			<td>661,594</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=5&amp;simple=False">2021-05</a></td>
+			<td>3,621</td>			
+			<td>578,844</td>
+			<td>659,418</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=4&amp;simple=False">2021-04</a></td>
+			<td>3,091</td>			
+			<td>578,843</td>
+			<td>657,609</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=3&amp;simple=False">2021-03</a></td>
+			<td>3,518</td>			
+			<td>578,262</td>
+			<td>656,453</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=2&amp;simple=False">2021-02</a></td>
+			<td>2,517</td>			
+			<td>576,201</td>
+			<td>654,317</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2021&amp;m=1&amp;simple=False">2021-01</a></td>
+			<td>2,622</td>			
+			<td>572,568</td>
+			<td>653,207</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=12&amp;simple=False">2020-12</a></td>
+			<td>3,965</td>			
+			<td>573,003</td>
+			<td>651,358</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=11&amp;simple=False">2020-11</a></td>
+			<td>4,153</td>			
+			<td>575,309</td>
+			<td>648,195</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=10&amp;simple=False">2020-10</a></td>
+			<td>3,458</td>			
+			<td>574,547</td>
+			<td>645,812</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=9&amp;simple=False">2020-09</a></td>
+			<td>3,839</td>			
+			<td>574,045</td>
+			<td>643,422</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=8&amp;simple=False">2020-08</a></td>
+			<td>3,550</td>			
+			<td>570,579</td>
+			<td>640,758</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=7&amp;simple=False">2020-07</a></td>
+			<td>3,086</td>			
+			<td>572,615</td>
+			<td>638,452</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=6&amp;simple=False">2020-06</a></td>
+			<td>2,715</td>			
+			<td>572,211</td>
+			<td>636,832</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=5&amp;simple=False">2020-05</a></td>
+			<td>2,840</td>			
+			<td>569,987</td>
+			<td>635,237</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=4&amp;simple=False">2020-04</a></td>
+			<td>2,293</td>			
+			<td>565,764</td>
+			<td>633,312</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=3&amp;simple=False">2020-03</a></td>
+			<td>2,884</td>			
+			<td>564,391</td>
+			<td>631,808</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=2&amp;simple=False">2020-02</a></td>
+			<td>1,930</td>			
+			<td>565,103</td>
+			<td>629,909</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2020&amp;m=1&amp;simple=False">2020-01</a></td>
+			<td>2,323</td>			
+			<td>573,571</td>
+			<td>628,633</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=12&amp;simple=False">2019-12</a></td>
+			<td>3,292</td>			
+			<td>573,932</td>
+			<td>628,230</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=11&amp;simple=False">2019-11</a></td>
+			<td>3,100</td>			
+			<td>572,187</td>
+			<td>627,183</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=10&amp;simple=False">2019-10</a></td>
+			<td>2,893</td>			
+			<td>572,019</td>
+			<td>626,405</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=9&amp;simple=False">2019-09</a></td>
+			<td>3,116</td>			
+			<td>571,065</td>
+			<td>626,037</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=8&amp;simple=False">2019-08</a></td>
+			<td>3,257</td>			
+			<td>570,919</td>
+			<td>625,658</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=7&amp;simple=False">2019-07</a></td>
+			<td>3,403</td>			
+			<td>571,006</td>
+			<td>624,869</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=6&amp;simple=False">2019-06</a></td>
+			<td>3,392</td>			
+			<td>570,239</td>
+			<td>623,908</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=5&amp;simple=False">2019-05</a></td>
+			<td>3,568</td>			
+			<td>570,142</td>
+			<td>622,840</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=4&amp;simple=False">2019-04</a></td>
+			<td>2,967</td>			
+			<td>568,689</td>
+			<td>621,648</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=3&amp;simple=False">2019-03</a></td>
+			<td>3,314</td>			
+			<td>567,625</td>
+			<td>620,752</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=2&amp;simple=False">2019-02</a></td>
+			<td>2,529</td>			
+			<td>567,486</td>
+			<td>619,654</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2019&amp;m=1&amp;simple=False">2019-01</a></td>
+			<td>3,478</td>			
+			<td>567,573</td>
+			<td>618,888</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=12&amp;simple=False">2018-12</a></td>
+			<td>3,794</td>			
+			<td>565,213</td>
+			<td>617,683</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=11&amp;simple=False">2018-11</a></td>
+			<td>3,805</td>			
+			<td>564,134</td>
+			<td>616,109</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=10&amp;simple=False">2018-10</a></td>
+			<td>3,968</td>			
+			<td>562,124</td>
+			<td>614,561</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=9&amp;simple=False">2018-09</a></td>
+			<td>3,136</td>			
+			<td>559,808</td>
+			<td>613,065</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=8&amp;simple=False">2018-08</a></td>
+			<td>3,886</td>			
+			<td>561,203</td>
+			<td>612,167</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=7&amp;simple=False">2018-07</a></td>
+			<td>3,385</td>			
+			<td>560,234</td>
+			<td>610,600</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=6&amp;simple=False">2018-06</a></td>
+			<td>3,667</td>			
+			<td>560,158</td>
+			<td>609,405</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=5&amp;simple=False">2018-05</a></td>
+			<td>3,732</td>			
+			<td>559,814</td>
+			<td>607,948</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=4&amp;simple=False">2018-04</a></td>
+			<td>3,249</td>			
+			<td>558,624</td>
+			<td>606,150</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=3&amp;simple=False">2018-03</a></td>
+			<td>3,189</td>			
+			<td>556,876</td>
+			<td>604,732</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=2&amp;simple=False">2018-02</a></td>
+			<td>3,203</td>			
+			<td>556,407</td>
+			<td>603,407</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2018&amp;m=1&amp;simple=False">2018-01</a></td>
+			<td>3,273</td>			
+			<td>554,927</td>
+			<td>601,800</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=12&amp;simple=False">2017-12</a></td>
+			<td>3,009</td>			
+			<td>552,710</td>
+			<td>600,443</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=11&amp;simple=False">2017-11</a></td>
+			<td>3,382</td>			
+			<td>551,798</td>
+			<td>599,321</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=10&amp;simple=False">2017-10</a></td>
+			<td>3,080</td>			
+			<td>549,922</td>
+			<td>597,952</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=9&amp;simple=False">2017-09</a></td>
+			<td>4,298</td>			
+			<td>549,019</td>
+			<td>596,989</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=8&amp;simple=False">2017-08</a></td>
+			<td>3,796</td>			
+			<td>547,253</td>
+			<td>594,992</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=7&amp;simple=False">2017-07</a></td>
+			<td>3,273</td>			
+			<td>545,794</td>
+			<td>593,611</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=6&amp;simple=False">2017-06</a></td>
+			<td>3,529</td>			
+			<td>545,753</td>
+			<td>592,664</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=5&amp;simple=False">2017-05</a></td>
+			<td>3,628</td>			
+			<td>543,865</td>
+			<td>591,482</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=4&amp;simple=False">2017-04</a></td>
+			<td>2,868</td>			
+			<td>542,539</td>
+			<td>590,129</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=3&amp;simple=False">2017-03</a></td>
+			<td>6,392</td>			
+			<td>543,123</td>
+			<td>589,362</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=2&amp;simple=False">2017-02</a></td>
+			<td>3,267</td>			
+			<td>539,446</td>
+			<td>585,270</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2017&amp;m=1&amp;simple=False">2017-01</a></td>
+			<td>3,120</td>			
+			<td>538,245</td>
+			<td>583,997</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=12&amp;simple=False">2016-12</a></td>
+			<td>3,661</td>			
+			<td>536,025</td>
+			<td>583,037</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=11&amp;simple=False">2016-11</a></td>
+			<td>3,699</td>			
+			<td>534,836</td>
+			<td>581,755</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=10&amp;simple=False">2016-10</a></td>
+			<td>3,540</td>			
+			<td>532,816</td>
+			<td>580,366</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=9&amp;simple=False">2016-09</a></td>
+			<td>3,990</td>			
+			<td>532,137</td>
+			<td>579,104</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=8&amp;simple=False">2016-08</a></td>
+			<td>3,441</td>			
+			<td>530,434</td>
+			<td>577,280</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=7&amp;simple=False">2016-07</a></td>
+			<td>3,292</td>			
+			<td>529,023</td>
+			<td>576,205</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=6&amp;simple=False">2016-06</a></td>
+			<td>3,365</td>			
+			<td>528,849</td>
+			<td>575,110</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=5&amp;simple=False">2016-05</a></td>
+			<td>3,206</td>			
+			<td>527,631</td>
+			<td>573,925</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=4&amp;simple=False">2016-04</a></td>
+			<td>3,392</td>			
+			<td>526,684</td>
+			<td>572,941</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=3&amp;simple=False">2016-03</a></td>
+			<td>3,397</td>			
+			<td>525,193</td>
+			<td>571,723</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=2&amp;simple=False">2016-02</a></td>
+			<td>2,907</td>			
+			<td>523,960</td>
+			<td>570,347</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2016&amp;m=1&amp;simple=False">2016-01</a></td>
+			<td>3,292</td>			
+			<td>522,799</td>
+			<td>569,264</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=12&amp;simple=False">2015-12</a></td>
+			<td>5,283</td>			
+			<td>521,852</td>
+			<td>567,886</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=11&amp;simple=False">2015-11</a></td>
+			<td>4,499</td>			
+			<td>519,226</td>
+			<td>564,738</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=10&amp;simple=False">2015-10</a></td>
+			<td>4,727</td>			
+			<td>516,812</td>
+			<td>562,274</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=9&amp;simple=False">2015-09</a></td>
+			<td>4,295</td>			
+			<td>514,328</td>
+			<td>559,699</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=8&amp;simple=False">2015-08</a></td>
+			<td>3,624</td>			
+			<td>512,432</td>
+			<td>557,364</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=7&amp;simple=False">2015-07</a></td>
+			<td>3,653</td>			
+			<td>510,843</td>
+			<td>555,702</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=6&amp;simple=False">2015-06</a></td>
+			<td>5,046</td>			
+			<td>509,207</td>
+			<td>554,196</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=5&amp;simple=False">2015-05</a></td>
+			<td>3,468</td>			
+			<td>504,798</td>
+			<td>551,329</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=4&amp;simple=False">2015-04</a></td>
+			<td>3,282</td>			
+			<td>503,714</td>
+			<td>549,772</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=3&amp;simple=False">2015-03</a></td>
+			<td>3,687</td>			
+			<td>501,618</td>
+			<td>548,530</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=2&amp;simple=False">2015-02</a></td>
+			<td>4,955</td>			
+			<td>500,449</td>
+			<td>546,878</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2015&amp;m=1&amp;simple=False">2015-01</a></td>
+			<td>3,803</td>			
+			<td>495,969</td>
+			<td>543,577</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=12&amp;simple=False">2014-12</a></td>
+			<td>4,285</td>			
+			<td>495,038</td>
+			<td>541,751</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=11&amp;simple=False">2014-11</a></td>
+			<td>3,362</td>			
+			<td>492,765</td>
+			<td>539,419</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=10&amp;simple=False">2014-10</a></td>
+			<td>4,310</td>			
+			<td>492,534</td>
+			<td>537,828</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=9&amp;simple=False">2014-09</a></td>
+			<td>4,499</td>			
+			<td>490,702</td>
+			<td>535,537</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=8&amp;simple=False">2014-08</a></td>
+			<td>3,964</td>			
+			<td>488,664</td>
+			<td>532,950</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=7&amp;simple=False">2014-07</a></td>
+			<td>3,721</td>			
+			<td>487,538</td>
+			<td>530,973</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=6&amp;simple=False">2014-06</a></td>
+			<td>3,959</td>			
+			<td>486,168</td>
+			<td>529,203</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=5&amp;simple=False">2014-05</a></td>
+			<td>3,532</td>			
+			<td>483,984</td>
+			<td>527,245</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=4&amp;simple=False">2014-04</a></td>
+			<td>3,451</td>			
+			<td>482,829</td>
+			<td>525,717</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=3&amp;simple=False">2014-03</a></td>
+			<td>4,005</td>			
+			<td>481,310</td>
+			<td>524,155</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=2&amp;simple=False">2014-02</a></td>
+			<td>4,200</td>			
+			<td>480,319</td>
+			<td>522,022</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2014&amp;m=1&amp;simple=False">2014-01</a></td>
+			<td>3,348</td>			
+			<td>478,193</td>
+			<td>519,434</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=12&amp;simple=False">2013-12</a></td>
+			<td>4,337</td>			
+			<td>475,752</td>
+			<td>517,997</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=11&amp;simple=False">2013-11</a></td>
+			<td>3,962</td>			
+			<td>473,354</td>
+			<td>515,549</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=10&amp;simple=False">2013-10</a></td>
+			<td>4,342</td>			
+			<td>471,841</td>
+			<td>513,425</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=9&amp;simple=False">2013-09</a></td>
+			<td>3,938</td>			
+			<td>469,146</td>
+			<td>511,079</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=8&amp;simple=False">2013-08</a></td>
+			<td>3,691</td>			
+			<td>467,718</td>
+			<td>509,056</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=7&amp;simple=False">2013-07</a></td>
+			<td>3,702</td>			
+			<td>466,443</td>
+			<td>507,263</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=6&amp;simple=False">2013-06</a></td>
+			<td>3,546</td>			
+			<td>464,595</td>
+			<td>505,590</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=5&amp;simple=False">2013-05</a></td>
+			<td>3,546</td>			
+			<td>463,627</td>
+			<td>503,912</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=4&amp;simple=False">2013-04</a></td>
+			<td>3,043</td>			
+			<td>462,241</td>
+			<td>502,188</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=3&amp;simple=False">2013-03</a></td>
+			<td>4,284</td>			
+			<td>460,504</td>
+			<td>501,021</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=2&amp;simple=False">2013-02</a></td>
+			<td>3,128</td>			
+			<td>459,222</td>
+			<td>498,529</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veFRtype.asp?y=2013&amp;m=1&amp;simple=False">2013-01</a></td>
+			<td>3,863</td>			
+			<td>457,570</td>
+			<td>496,835</td>
+		</tr>
+	
+	<tr class="total">
+		<td><a href="veFRtype.asp">Total</a></td>
+		<td>538,216</td>
+	</tr>
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

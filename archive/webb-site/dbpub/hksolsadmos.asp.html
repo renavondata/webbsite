@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>HK solicitors admitted overseas</title></head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK solicitors admitted overseas</h2>
+
+	<ul class="navlist">
+		<li><a href='hksols.asp?p='>By name</a></li><li><a href='hksolfirms.asp?p='>By firm</a></li><li><a href='hksolsadmhk.asp?p='>By year</a></li><li><a href='hksolsmoves.asp?p='>Moves</a></li><li class='livebutton'>Overseas</li><li><a href='hksolemps.asp?p='>Non-law firms</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This table analyses all solicitors admitted in HK and currently seen in the 
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">Law Society's Law List</a>, whether practising or not. 
+To which other jurisdictions they have been admitted, before or after being 
+admitted to HK? Click a column heading to sort. Click a jurisdiction to see 
+lawyers who have been admitted both there and in HK.</p>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>	
+<table class="c2l numtable">
+	<tr>
+		<th class="colHide3"></th>
+		<th><a href='/dbpub/hksolsadmos.asp?p=&amp;sort=jurup'><b>Jurisdiction</b></a></th>
+		<th><a href='/dbpub/hksolsadmos.asp?p=&amp;sort=cntup'><b>Lawyers</b></a></th>
+		<th><a href='/dbpub/hksolsadmos.asp?p=&amp;sort=befdn'><b>Before<br>HK</b></a></th>
+		<th><a href='/dbpub/hksolsadmos.asp?p=&amp;sort=aftdn'><b>On or<br>after<br>HK</b></a></th>
+		<th class="colHide3"><a href='/dbpub/hksolsadmos.asp?p=&amp;sort=shrdn'><b>Share<br>before</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide3">1</td>
+			<td><a href='HKsolsdom.asp?dom=116'>England & Wales</a></td>
+			<td>3329</td>
+			<td>1263</td>
+			<td>2066</td>
+			<td class="colHide3">37.9%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">2</td>
+			<td><a href='HKsolsdom.asp?dom=269'>New York, USA</a></td>
+			<td>474</td>
+			<td>375</td>
+			<td>99</td>
+			<td class="colHide3">79.1%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">3</td>
+			<td><a href='HKsolsdom.asp?dom=318'>New South Wales, Australia</a></td>
+			<td>467</td>
+			<td>383</td>
+			<td>84</td>
+			<td class="colHide3">82.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">4</td>
+			<td><a href='HKsolsdom.asp?dom=6'>Singapore</a></td>
+			<td>288</td>
+			<td>118</td>
+			<td>170</td>
+			<td class="colHide3">41.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">5</td>
+			<td><a href='HKsolsdom.asp?dom=321'>Victoria, Australia</a></td>
+			<td>213</td>
+			<td>126</td>
+			<td>87</td>
+			<td class="colHide3">59.2%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">6</td>
+			<td><a href='HKsolsdom.asp?dom=316'>ACT, Australia</a></td>
+			<td>162</td>
+			<td>32</td>
+			<td>130</td>
+			<td class="colHide3">19.8%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">7</td>
+			<td><a href='HKsolsdom.asp?dom=25'>New Zealand</a></td>
+			<td>96</td>
+			<td>76</td>
+			<td>20</td>
+			<td class="colHide3">79.2%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">8</td>
+			<td><a href='HKsolsdom.asp?dom=267'>California, USA</a></td>
+			<td>75</td>
+			<td>63</td>
+			<td>12</td>
+			<td class="colHide3">84.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">9</td>
+			<td><a href='HKsolsdom.asp?dom=12'>China (People's Republic)</a></td>
+			<td>71</td>
+			<td>58</td>
+			<td>13</td>
+			<td class="colHide3">81.7%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">10</td>
+			<td><a href='HKsolsdom.asp?dom=319'>Queensland, Australia</a></td>
+			<td>70</td>
+			<td>54</td>
+			<td>16</td>
+			<td class="colHide3">77.1%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">11</td>
+			<td><a href='HKsolsdom.asp?dom=265'>Ontario, Canada</a></td>
+			<td>64</td>
+			<td>49</td>
+			<td>15</td>
+			<td class="colHide3">76.6%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">12</td>
+			<td><a href='HKsolsdom.asp?dom=312'>British Columbia, Canada</a></td>
+			<td>51</td>
+			<td>42</td>
+			<td>9</td>
+			<td class="colHide3">82.4%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">13</td>
+			<td><a href='HKsolsdom.asp?dom=13'>Malaysia</a></td>
+			<td>45</td>
+			<td>45</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">14</td>
+			<td><a href='HKsolsdom.asp?dom=322'>West Australia, Australia</a></td>
+			<td>34</td>
+			<td>32</td>
+			<td>2</td>
+			<td class="colHide3">94.1%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">15</td>
+			<td><a href='HKsolsdom.asp?dom=55'>Ireland</a></td>
+			<td>26</td>
+			<td>13</td>
+			<td>13</td>
+			<td class="colHide3">50.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">16</td>
+			<td><a href='HKsolsdom.asp?dom=112'>Scotland</a></td>
+			<td>25</td>
+			<td>24</td>
+			<td>1</td>
+			<td class="colHide3">96.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">17</td>
+			<td><a href='HKsolsdom.asp?dom=317'>District of Columbia, USA</a></td>
+			<td>22</td>
+			<td>22</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">18</td>
+			<td><a href='HKsolsdom.asp?dom=320'>South Australia, Australia</a></td>
+			<td>18</td>
+			<td>16</td>
+			<td>2</td>
+			<td class="colHide3">88.9%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">19</td>
+			<td><a href='HKsolsdom.asp?dom=4'>British Virgin Islands</a></td>
+			<td>16</td>
+			<td>3</td>
+			<td>13</td>
+			<td class="colHide3">18.8%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">20</td>
+			<td><a href='HKsolsdom.asp?dom=27'>India</a></td>
+			<td>15</td>
+			<td>14</td>
+			<td>1</td>
+			<td class="colHide3">93.3%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">21</td>
+			<td><a href='HKsolsdom.asp?dom=325'>Tasmania, Australia</a></td>
+			<td>15</td>
+			<td>2</td>
+			<td>13</td>
+			<td class="colHide3">13.3%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">22</td>
+			<td><a href='HKsolsdom.asp?dom=268'>New Jersey, USA</a></td>
+			<td>13</td>
+			<td>13</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">23</td>
+			<td><a href='HKsolsdom.asp?dom=313'>Alberta, Canada</a></td>
+			<td>9</td>
+			<td>7</td>
+			<td>2</td>
+			<td class="colHide3">77.8%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">24</td>
+			<td><a href='HKsolsdom.asp?dom=282'>Illinois, USA</a></td>
+			<td>9</td>
+			<td>9</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">25</td>
+			<td><a href='HKsolsdom.asp?dom=288'>Massachusetts, USA</a></td>
+			<td>9</td>
+			<td>9</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">26</td>
+			<td><a href='HKsolsdom.asp?dom=10'>Taiwan</a></td>
+			<td>9</td>
+			<td>9</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">27</td>
+			<td><a href='HKsolsdom.asp?dom=273'>Washington, USA</a></td>
+			<td>9</td>
+			<td>8</td>
+			<td>1</td>
+			<td class="colHide3">88.9%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">28</td>
+			<td><a href='HKsolsdom.asp?dom=311'>Northern Ireland</a></td>
+			<td>8</td>
+			<td>3</td>
+			<td>5</td>
+			<td class="colHide3">37.5%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">29</td>
+			<td><a href='HKsolsdom.asp?dom=7'>Bermuda</a></td>
+			<td>7</td>
+			<td>4</td>
+			<td>3</td>
+			<td class="colHide3">57.1%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">30</td>
+			<td><a href='HKsolsdom.asp?dom=11'>Germany</a></td>
+			<td>7</td>
+			<td>7</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">31</td>
+			<td><a href='HKsolsdom.asp?dom=20'>France</a></td>
+			<td>6</td>
+			<td>6</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">32</td>
+			<td><a href='HKsolsdom.asp?dom=323'>Northern Territory, Australia</a></td>
+			<td>5</td>
+			<td>1</td>
+			<td>4</td>
+			<td class="colHide3">20.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">33</td>
+			<td><a href='HKsolsdom.asp?dom=38'>Italy</a></td>
+			<td>4</td>
+			<td>4</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">34</td>
+			<td><a href='HKsolsdom.asp?dom=135'>South Africa</a></td>
+			<td>4</td>
+			<td>4</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">35</td>
+			<td><a href='HKsolsdom.asp?dom=305'>Texas, USA</a></td>
+			<td>4</td>
+			<td>4</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">36</td>
+			<td><a href='HKsolsdom.asp?dom=279'>Connecticut, USA</a></td>
+			<td>3</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">37</td>
+			<td><a href='HKsolsdom.asp?dom=126'>Florida, USA</a></td>
+			<td>3</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">38</td>
+			<td><a href='HKsolsdom.asp?dom=201'>Israel</a></td>
+			<td>3</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">39</td>
+			<td><a href='HKsolsdom.asp?dom=300'>Pennsylvania, USA</a></td>
+			<td>3</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">40</td>
+			<td><a href='HKsolsdom.asp?dom=18'>Philippines</a></td>
+			<td>3</td>
+			<td>3</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">41</td>
+			<td><a href='HKsolsdom.asp?dom=53'>Belgium</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">42</td>
+			<td><a href='HKsolsdom.asp?dom=30'>Brunei</a></td>
+			<td>2</td>
+			<td>1</td>
+			<td>1</td>
+			<td class="colHide3">50.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">43</td>
+			<td><a href='HKsolsdom.asp?dom=272'>Hawaii, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">44</td>
+			<td><a href='HKsolsdom.asp?dom=3'>Japan</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">45</td>
+			<td><a href='HKsolsdom.asp?dom=330'>Manitoba, Canada</a></td>
+			<td>2</td>
+			<td>0</td>
+			<td>2</td>
+			<td class="colHide3">0.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">46</td>
+			<td><a href='HKsolsdom.asp?dom=136'>Maryland, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">47</td>
+			<td><a href='HKsolsdom.asp?dom=270'>Minnesota, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">48</td>
+			<td><a href='HKsolsdom.asp?dom=271'>Missouri, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">49</td>
+			<td><a href='HKsolsdom.asp?dom=127'>Nevada,USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">50</td>
+			<td><a href='HKsolsdom.asp?dom=297'>Ohio, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">51</td>
+			<td><a href='HKsolsdom.asp?dom=315'>Quebec, Canada</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">52</td>
+			<td><a href='HKsolsdom.asp?dom=308'>Virginia, USA</a></td>
+			<td>2</td>
+			<td>2</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">53</td>
+			<td><a href='HKsolsdom.asp?dom=274'>Alabama, USA</a></td>
+			<td>1</td>
+			<td>0</td>
+			<td>1</td>
+			<td class="colHide3">0.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">54</td>
+			<td><a href='HKsolsdom.asp?dom=146'>Anguilla</a></td>
+			<td>1</td>
+			<td>0</td>
+			<td>1</td>
+			<td class="colHide3">0.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">55</td>
+			<td><a href='HKsolsdom.asp?dom=278'>Colorado, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">56</td>
+			<td><a href='HKsolsdom.asp?dom=280'>Georgia, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">57</td>
+			<td><a href='HKsolsdom.asp?dom=283'>Indiana, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">58</td>
+			<td><a href='HKsolsdom.asp?dom=286'>Kentucky, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">59</td>
+			<td><a href='HKsolsdom.asp?dom=287'>Maine, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">60</td>
+			<td><a href='HKsolsdom.asp?dom=141'>Marshall Islands</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">61</td>
+			<td><a href='HKsolsdom.asp?dom=289'>Michigan, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">62</td>
+			<td><a href='HKsolsdom.asp?dom=51'>Nauru</a></td>
+			<td>1</td>
+			<td>0</td>
+			<td>1</td>
+			<td class="colHide3">0.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">63</td>
+			<td><a href='HKsolsdom.asp?dom=292'>Nebraska, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">64</td>
+			<td><a href='HKsolsdom.asp?dom=264'>Nepal</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">65</td>
+			<td><a href='HKsolsdom.asp?dom=5'>Netherlands</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">66</td>
+			<td><a href='HKsolsdom.asp?dom=295'>North Carolina, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">67</td>
+			<td><a href='HKsolsdom.asp?dom=299'>Oregon, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">68</td>
+			<td><a href='HKsolsdom.asp?dom=56'>Pakistan</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">69</td>
+			<td><a href='HKsolsdom.asp?dom=36'>Papua New Guinea</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">70</td>
+			<td><a href='HKsolsdom.asp?dom=119'>Russia</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">71</td>
+			<td><a href='HKsolsdom.asp?dom=324'>Saskatchewan, Canada</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">72</td>
+			<td><a href='HKsolsdom.asp?dom=302'>South Carolina, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">73</td>
+			<td><a href='HKsolsdom.asp?dom=54'>Sweden</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">74</td>
+			<td><a href='HKsolsdom.asp?dom=47'>Switzerland</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">75</td>
+			<td><a href='HKsolsdom.asp?dom=310'>Wisconsin, USA</a></td>
+			<td>1</td>
+			<td>1</td>
+			<td>0</td>
+			<td class="colHide3">100.0%</td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

@@ -1,0 +1,1868 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.StockChart('chart1', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginRight:80,
+	    },
+	    title: {
+	        text: 'HKMA Exchange Fund Balance Sheet: Fiscal reserves+equity',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'HK$m',
+	            margin: 60
+	        },
+	        labels:{
+	        	x: 50
+	        	}
+	    },
+	    rangeSelector: {
+    		selected: 4,
+    		buttons: [{
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 2,
+				text: '2y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'year',
+				count: 20,
+				text: '20y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+	    	labelStyle: {color:"black",fontSize: '1.2em'},
+	    	buttonTheme: {
+	    		style: {
+	    			fontweight: 'bold',
+	    			fontSize: '1.2em',
+	    			color: 'black',
+	    		}
+	    	}
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'left',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 80,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            }
+	        }
+	    },
+	    series: [{
+	        name: 'Fiscal reserves+equity',
+	        color:"blue",
+	        type: 'column',
+	        dataGrouping: {
+        		enabled: false
+        		},
+	        data: [[851990400000,318760],[867628800000,364055],[883526400000,427855],[915062400000,666807],[917740800000,673680],[920160000000,671194],[922838400000,682941],[925430400000,691837],[928108800000,676093],[930700800000,682405],[933379200000,672492],[936057600000,671887],[938649600000,660384],[941328000000,654108],[943920000000,679625],[946598400000,683064],[949276800000,692071],[951782400000,702195],[954460800000,739816],[957052800000,722012],[959731200000,715166],[962323200000,719428],[965001600000,719326],[967680000000,715965],[970272000000,699157],[972950400000,697800],[975542400000,711386],[978220800000,724261],[980899200000,758702],[983318400000,747711],[985996800000,735126],[988588800000,731853],[991267200000,724739],[993859200000,710884],[996537600000,704301],[999216000000,693858],[1001808000000,677594],[1004486400000,678895],[1007078400000,693919],[1009756800000,683191],[1012435200000,697902],[1014854400000,690500],[1017532800000,676408],[1020124800000,680239],[1022803200000,676620],[1025395200000,667191],[1028073600000,652513],[1030752000000,640847],[1033344000000,620797],[1036022400000,620652],[1038614400000,631287],[1041292800000,628843],[1043971200000,646787],[1046390400000,642729],[1049068800000,648448],[1051660800000,655512],[1054339200000,665903],[1056931200000,652314],[1059609600000,630809],[1062288000000,618236],[1064880000000,611777],[1067558400000,609272],[1070150400000,621824],[1072828800000,637175],[1075507200000,668161],[1078012800000,668511],[1080691200000,679152],[1083283200000,663022],[1085961600000,661407],[1088553600000,657753],[1091232000000,664283],[1093910400000,663774],[1096502400000,661322],[1099180800000,656740],[1101772800000,696605],[1104451200000,703682],[1107129600000,725535],[1109548800000,722838],[1112227200000,724892],[1114819200000,728244],[1117497600000,724275],[1120089600000,718712],[1122768000000,712919],[1125446400000,708820],[1128038400000,702432],[1130716800000,698614],[1133308800000,732996],[1135987200000,740232],[1138665600000,776461],[1141084800000,771548],[1143763200000,773541],[1146355200000,788861],[1149033600000,781458],[1151625600000,777053],[1154304000000,780327],[1156982400000,780663],[1159574400000,776696],[1162252800000,784762],[1164844800000,824000],[1167523200000,832238],[1170201600000,874217],[1172620800000,877031],[1175299200000,899834],[1177891200000,921193],[1180569600000,921541],[1183161600000,924834],[1185840000000,939909],[1188518400000,945854],[1191110400000,971946],[1193788800000,1017674],[1196380800000,1055433],[1199059200000,1081565],[1201737600000,1087681],[1204243200000,1096884],[1206921600000,1086729],[1209513600000,1103785],[1212192000000,1082713],[1214784000000,1039674],[1217462400000,1033845],[1220140800000,1009658],[1222732800000,944575],[1225411200000,872534],[1228003200000,935455],[1230681600000,1011855],[1233360000000,981748],[1235779200000,952408],[1238457600000,943231],[1241049600000,959383],[1243728000000,985435],[1246320000000,973769],[1248998400000,993757],[1251676800000,989778],[1254268800000,997140],[1256947200000,994033],[1259539200000,1042631],[1262217600000,1057580],[1264896000000,1093799],[1267315200000,1091090],[1269993600000,1087257],[1272585600000,1090429],[1275264000000,1055359],[1277856000000,1056475],[1280534400000,1081295],[1283212800000,1080940],[1285804800000,1112771],[1288483200000,1122355],[1291075200000,1133391],[1293753600000,1183785],[1296432000000,1228514],[1298851200000,1224872],[1301529600000,1213757],[1304121600000,1239686],[1306800000000,1232418],[1309392000000,1213260],[1312070400000,1225735],[1314748800000,1209498],[1317340800000,1161968],[1320019200000,1206159],[1322611200000,1198027],[1325289600000,1231421],[1327968000000,1304388],[1330473600000,1306270],[1333152000000,1280959],[1335744000000,1286219],[1338422400000,1237988],[1341014400000,1253241],[1343692800000,1246731],[1346371200000,1239311],[1348963200000,1229864],[1351641600000,1242907],[1354233600000,1287218],[1356912000000,1341420],[1359590400000,1404353],[1362009600000,1385844],[1364688000000,1374114],[1367280000000,1410621],[1369958400000,1379140],[1372550400000,1326442],[1375228800000,1332566],[1377907200000,1298018],[1380499200000,1309979],[1383177600000,1337519],[1385769600000,1366536],[1388448000000,1411370],[1391126400000,1436233],[1393545600000,1424305],[1396224000000,1404653],[1398816000000,1414949],[1401494400000,1417043],[1404086400000,1415829],[1406764800000,1401874],[1409443200000,1398061],[1412035200000,1355318],[1414713600000,1382113],[1417305600000,1432110],[1419984000000,1424133],[1422662400000,1472658],[1425081600000,1481758],[1427760000000,1465308],[1430352000000,1500204],[1433030400000,1477994],[1435622400000,1442457],[1438300800000,1422609],[1440979200000,1349928],[1443571200000,1310570],[1446249600000,1362565],[1448841600000,1389893],[1451520000000,1378403],[1454198400000,1402597],[1456704000000,1388831],[1459382400000,1409563],[1461974400000,1415228],[1464652800000,1395179],[1467244800000,1376849],[1469923200000,1395767],[1472601600000,1392923],[1475193600000,1385343],[1477872000000,1387946],[1480464000000,1414412],[1483142400000,1461111],[1485820800000,1532900],[1488240000000,1547879],[1490918400000,1556267],[1493510400000,1578017],[1496188800000,1595935],[1498780800000,1642170],[1501459200000,1665505],[1504137600000,1672614],[1506729600000,1655665],[1509408000000,1676990],[1512000000000,1725022],[1514678400000,1786934],[1517356800000,1885080],[1519776000000,1855817],[1522454400000,1832049],[1525046400000,1825542],[1527724800000,1810278],[1530316800000,1773852],[1532995200000,1754704],[1535673600000,1724524],[1538265600000,1701101],[1540944000000,1660723],[1543536000000,1707312],[1546214400000,1783808],[1548892800000,1898666],[1551312000000,1914094],[1553990400000,1903889],[1556582400000,1920844],[1559260800000,1883554],[1561852800000,1908567],[1564531200000,1898407],[1567209600000,1876931],[1569801600000,1824718],[1572480000000,1819840],[1575072000000,1789988],[1577750400000,1886916],[1580428800000,1948240],[1582934400000,1933530],[1585612800000,1814191],[1588204800000,1845801],[1590883200000,1813917],[1593475200000,1796302],[1596153600000,1742203],[1598832000000,1723523],[1601424000000,1650185],[1604102400000,1608816],[1606694400000,1666485],[1609372800000,1725130],[1612051200000,1785039],[1614470400000,1800010],[1617148800000,1759817],[1619740800000,1771478],[1622419200000,1778058],[1625011200000,1732961],[1627689600000,1692181],[1630368000000,1675414],[1632960000000,1596461],[1635638400000,1594621],[1638230400000,1629653],[1640908800000,1780086],[1643587200000,1760282],[1646006400000,1733764],[1648684800000,1664326],[1651276800000,1536461],[1653955200000,1519569],[1656547200000,1456934],[1659225600000,1445570],[1661904000000,1342856],[1664496000000,1191906],[1667174400000,1146291],[1669766400000,1227168],[1672444800000,1322430],[1675123200000,1503342],[1677542400000,1479451],[1680220800000,1469883],[1682812800000,1449797],[1685491200000,1369711],[1688083200000,1390146],[1690761600000,1367150],[1693440000000,1313704],[1696032000000,1232268],[1698710400000,1205138],[1701302400000,1268774],[1703980800000,1342408],[1706659200000,1377570],[1709164800000,1373966],[1711843200000,1405353],[1714435200000,1361010],[1717113600000,1342308],[1719705600000,1309724],[1722384000000,1328257],[1725062400000,1308029],[1727654400000,1306782],[1730332800000,1317664],[1732924800000,1356533],[1735603200000,1404675],[1738281600000,1447996],[1740700800000,1436846],[1743379200000,1440171],[1745971200000,1420422],[1748649600000,1419252],[1751241600000,1446783],[1753920000000,1431719],[1756598400000,1493199],]
+		}]
+	});
+});
+</script>
+
+
+<title>HKMA Exchange Fund Balance Sheet: Fiscal reserves+equity</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HKMA Exchange Fund Balance Sheet: Fiscal reserves+equity</h2>
+<p>This page shows items from the balance sheet of the Exchange Fund (<strong>EF</strong>) 
+of the <a href="https://www.hkma.gov.hk/" target="_blank">Hong Kong Monetary Authority</a> (<strong>HKMA</strong>), updated monthly. As 
+the HKSAR Government places most of its fiscal reserves with the EF, we can see 
+the drawdown during the Coronavirus pandemic and other times since 1996, as well 
+as the changes in the banking system's aggregate balance.</p>
+<p>The default view shows "Fiscal reserves+equity", which is the sum of the 
+Government's fiscal 
+(tax) reserves and the equity, or accumulated gains, of the EF, which are mostly 
+available to the Government, as the EF only needs a small buffer to ensure that 
+the currency board or "USD-HKD peg" will have sufficient assets to cover its 
+liabilities.</p>
+<p>A further amount, "HKSARG funds &amp; statutory bodies" includes the 
+Bond Fund (amounts set aside for repayment of Government bonds) as well as money 
+held for bodies such as the Research Endowment Fund, Housing Authority and 
+Hospital Authority. Various amounts have been expensed in the HKSARG budget and 
+placed into these dedicated silos over the years.</p>
+<p>"Certificates of indebtedness" are amounts due to the 3 note-issuing banks 
+which in turn issue bank notes (excluding the HK$10 note issued by the HKMA). 
+For a breakdown of physical currency in circulation, <a href="HKDtender.asp">
+click here</a>.</p>
+<p><a href="https://data.gov.hk/en-data/dataset/hk-hkma-t08-t080102ef-bal-sheet-abridged" target="_blank">Data source</a></p>
+
+	<form method="get" action="/dbpub/EFBS.asp">
+		<div class="inputs"><b>Item:</b> <select name='t' onchange="this.form.submit()"><option value='0' selected>Fiscal reserves+equity</option><option value='3'>Foreign currency assets</option><option value='4'>HKD assets</option><option value='5'>Total assets</option><option value='6'>Certificates of indebtedness</option><option value='7'>Government notes & coins in circulation</option><option value='8'>Balance of the banking system</option><option value='9'>Exchange Fund Bills & Notes</option><option value='10'>Fiscal reserves</option><option value='11'>Due to other institutions</option><option value='12'>Placed by banks & other fin inst</option><option value='13'>HKSARG funds & statutory bodies</option><option value='14'>Due to subsidiaries</option><option value='15'>Other liabilities</option><option value='16'>Total liabilities</option><option value='17'>Equity</option></select></div>
+		<div class="inputs"><input type="submit" value="Go"></div>
+		<div class="clear"></div>
+	</form>
+	<p>To zoom in or out, use the range-selector buttons or the slider, or pinch the charts on a touch screen. 
+	Use the top-right hamburger menu to save or print.</p>
+	<div id="chart1" style="width:95%;height:500px;margin-left:0"></div>
+	<div class="clear"></div>
+	<p></p>
+	<table class="numtable center">
+		<tr>
+			<th class="left">Date</th>
+			<th>Amount HK$m</th>
+		</tr>
+		
+			<tr>
+				<td>2025-08-31</td>
+				<td>1,493,199</td>
+			</tr>
+		
+			<tr>
+				<td>2025-07-31</td>
+				<td>1,431,719</td>
+			</tr>
+		
+			<tr>
+				<td>2025-06-30</td>
+				<td>1,446,783</td>
+			</tr>
+		
+			<tr>
+				<td>2025-05-31</td>
+				<td>1,419,252</td>
+			</tr>
+		
+			<tr>
+				<td>2025-04-30</td>
+				<td>1,420,422</td>
+			</tr>
+		
+			<tr>
+				<td>2025-03-31</td>
+				<td>1,440,171</td>
+			</tr>
+		
+			<tr>
+				<td>2025-02-28</td>
+				<td>1,436,846</td>
+			</tr>
+		
+			<tr>
+				<td>2025-01-31</td>
+				<td>1,447,996</td>
+			</tr>
+		
+			<tr>
+				<td>2024-12-31</td>
+				<td>1,404,675</td>
+			</tr>
+		
+			<tr>
+				<td>2024-11-30</td>
+				<td>1,356,533</td>
+			</tr>
+		
+			<tr>
+				<td>2024-10-31</td>
+				<td>1,317,664</td>
+			</tr>
+		
+			<tr>
+				<td>2024-09-30</td>
+				<td>1,306,782</td>
+			</tr>
+		
+			<tr>
+				<td>2024-08-31</td>
+				<td>1,308,029</td>
+			</tr>
+		
+			<tr>
+				<td>2024-07-31</td>
+				<td>1,328,257</td>
+			</tr>
+		
+			<tr>
+				<td>2024-06-30</td>
+				<td>1,309,724</td>
+			</tr>
+		
+			<tr>
+				<td>2024-05-31</td>
+				<td>1,342,308</td>
+			</tr>
+		
+			<tr>
+				<td>2024-04-30</td>
+				<td>1,361,010</td>
+			</tr>
+		
+			<tr>
+				<td>2024-03-31</td>
+				<td>1,405,353</td>
+			</tr>
+		
+			<tr>
+				<td>2024-02-29</td>
+				<td>1,373,966</td>
+			</tr>
+		
+			<tr>
+				<td>2024-01-31</td>
+				<td>1,377,570</td>
+			</tr>
+		
+			<tr>
+				<td>2023-12-31</td>
+				<td>1,342,408</td>
+			</tr>
+		
+			<tr>
+				<td>2023-11-30</td>
+				<td>1,268,774</td>
+			</tr>
+		
+			<tr>
+				<td>2023-10-31</td>
+				<td>1,205,138</td>
+			</tr>
+		
+			<tr>
+				<td>2023-09-30</td>
+				<td>1,232,268</td>
+			</tr>
+		
+			<tr>
+				<td>2023-08-31</td>
+				<td>1,313,704</td>
+			</tr>
+		
+			<tr>
+				<td>2023-07-31</td>
+				<td>1,367,150</td>
+			</tr>
+		
+			<tr>
+				<td>2023-06-30</td>
+				<td>1,390,146</td>
+			</tr>
+		
+			<tr>
+				<td>2023-05-31</td>
+				<td>1,369,711</td>
+			</tr>
+		
+			<tr>
+				<td>2023-04-30</td>
+				<td>1,449,797</td>
+			</tr>
+		
+			<tr>
+				<td>2023-03-31</td>
+				<td>1,469,883</td>
+			</tr>
+		
+			<tr>
+				<td>2023-02-28</td>
+				<td>1,479,451</td>
+			</tr>
+		
+			<tr>
+				<td>2023-01-31</td>
+				<td>1,503,342</td>
+			</tr>
+		
+			<tr>
+				<td>2022-12-31</td>
+				<td>1,322,430</td>
+			</tr>
+		
+			<tr>
+				<td>2022-11-30</td>
+				<td>1,227,168</td>
+			</tr>
+		
+			<tr>
+				<td>2022-10-31</td>
+				<td>1,146,291</td>
+			</tr>
+		
+			<tr>
+				<td>2022-09-30</td>
+				<td>1,191,906</td>
+			</tr>
+		
+			<tr>
+				<td>2022-08-31</td>
+				<td>1,342,856</td>
+			</tr>
+		
+			<tr>
+				<td>2022-07-31</td>
+				<td>1,445,570</td>
+			</tr>
+		
+			<tr>
+				<td>2022-06-30</td>
+				<td>1,456,934</td>
+			</tr>
+		
+			<tr>
+				<td>2022-05-31</td>
+				<td>1,519,569</td>
+			</tr>
+		
+			<tr>
+				<td>2022-04-30</td>
+				<td>1,536,461</td>
+			</tr>
+		
+			<tr>
+				<td>2022-03-31</td>
+				<td>1,664,326</td>
+			</tr>
+		
+			<tr>
+				<td>2022-02-28</td>
+				<td>1,733,764</td>
+			</tr>
+		
+			<tr>
+				<td>2022-01-31</td>
+				<td>1,760,282</td>
+			</tr>
+		
+			<tr>
+				<td>2021-12-31</td>
+				<td>1,780,086</td>
+			</tr>
+		
+			<tr>
+				<td>2021-11-30</td>
+				<td>1,629,653</td>
+			</tr>
+		
+			<tr>
+				<td>2021-10-31</td>
+				<td>1,594,621</td>
+			</tr>
+		
+			<tr>
+				<td>2021-09-30</td>
+				<td>1,596,461</td>
+			</tr>
+		
+			<tr>
+				<td>2021-08-31</td>
+				<td>1,675,414</td>
+			</tr>
+		
+			<tr>
+				<td>2021-07-31</td>
+				<td>1,692,181</td>
+			</tr>
+		
+			<tr>
+				<td>2021-06-30</td>
+				<td>1,732,961</td>
+			</tr>
+		
+			<tr>
+				<td>2021-05-31</td>
+				<td>1,778,058</td>
+			</tr>
+		
+			<tr>
+				<td>2021-04-30</td>
+				<td>1,771,478</td>
+			</tr>
+		
+			<tr>
+				<td>2021-03-31</td>
+				<td>1,759,817</td>
+			</tr>
+		
+			<tr>
+				<td>2021-02-28</td>
+				<td>1,800,010</td>
+			</tr>
+		
+			<tr>
+				<td>2021-01-31</td>
+				<td>1,785,039</td>
+			</tr>
+		
+			<tr>
+				<td>2020-12-31</td>
+				<td>1,725,130</td>
+			</tr>
+		
+			<tr>
+				<td>2020-11-30</td>
+				<td>1,666,485</td>
+			</tr>
+		
+			<tr>
+				<td>2020-10-31</td>
+				<td>1,608,816</td>
+			</tr>
+		
+			<tr>
+				<td>2020-09-30</td>
+				<td>1,650,185</td>
+			</tr>
+		
+			<tr>
+				<td>2020-08-31</td>
+				<td>1,723,523</td>
+			</tr>
+		
+			<tr>
+				<td>2020-07-31</td>
+				<td>1,742,203</td>
+			</tr>
+		
+			<tr>
+				<td>2020-06-30</td>
+				<td>1,796,302</td>
+			</tr>
+		
+			<tr>
+				<td>2020-05-31</td>
+				<td>1,813,917</td>
+			</tr>
+		
+			<tr>
+				<td>2020-04-30</td>
+				<td>1,845,801</td>
+			</tr>
+		
+			<tr>
+				<td>2020-03-31</td>
+				<td>1,814,191</td>
+			</tr>
+		
+			<tr>
+				<td>2020-02-29</td>
+				<td>1,933,530</td>
+			</tr>
+		
+			<tr>
+				<td>2020-01-31</td>
+				<td>1,948,240</td>
+			</tr>
+		
+			<tr>
+				<td>2019-12-31</td>
+				<td>1,886,916</td>
+			</tr>
+		
+			<tr>
+				<td>2019-11-30</td>
+				<td>1,789,988</td>
+			</tr>
+		
+			<tr>
+				<td>2019-10-31</td>
+				<td>1,819,840</td>
+			</tr>
+		
+			<tr>
+				<td>2019-09-30</td>
+				<td>1,824,718</td>
+			</tr>
+		
+			<tr>
+				<td>2019-08-31</td>
+				<td>1,876,931</td>
+			</tr>
+		
+			<tr>
+				<td>2019-07-31</td>
+				<td>1,898,407</td>
+			</tr>
+		
+			<tr>
+				<td>2019-06-30</td>
+				<td>1,908,567</td>
+			</tr>
+		
+			<tr>
+				<td>2019-05-31</td>
+				<td>1,883,554</td>
+			</tr>
+		
+			<tr>
+				<td>2019-04-30</td>
+				<td>1,920,844</td>
+			</tr>
+		
+			<tr>
+				<td>2019-03-31</td>
+				<td>1,903,889</td>
+			</tr>
+		
+			<tr>
+				<td>2019-02-28</td>
+				<td>1,914,094</td>
+			</tr>
+		
+			<tr>
+				<td>2019-01-31</td>
+				<td>1,898,666</td>
+			</tr>
+		
+			<tr>
+				<td>2018-12-31</td>
+				<td>1,783,808</td>
+			</tr>
+		
+			<tr>
+				<td>2018-11-30</td>
+				<td>1,707,312</td>
+			</tr>
+		
+			<tr>
+				<td>2018-10-31</td>
+				<td>1,660,723</td>
+			</tr>
+		
+			<tr>
+				<td>2018-09-30</td>
+				<td>1,701,101</td>
+			</tr>
+		
+			<tr>
+				<td>2018-08-31</td>
+				<td>1,724,524</td>
+			</tr>
+		
+			<tr>
+				<td>2018-07-31</td>
+				<td>1,754,704</td>
+			</tr>
+		
+			<tr>
+				<td>2018-06-30</td>
+				<td>1,773,852</td>
+			</tr>
+		
+			<tr>
+				<td>2018-05-31</td>
+				<td>1,810,278</td>
+			</tr>
+		
+			<tr>
+				<td>2018-04-30</td>
+				<td>1,825,542</td>
+			</tr>
+		
+			<tr>
+				<td>2018-03-31</td>
+				<td>1,832,049</td>
+			</tr>
+		
+			<tr>
+				<td>2018-02-28</td>
+				<td>1,855,817</td>
+			</tr>
+		
+			<tr>
+				<td>2018-01-31</td>
+				<td>1,885,080</td>
+			</tr>
+		
+			<tr>
+				<td>2017-12-31</td>
+				<td>1,786,934</td>
+			</tr>
+		
+			<tr>
+				<td>2017-11-30</td>
+				<td>1,725,022</td>
+			</tr>
+		
+			<tr>
+				<td>2017-10-31</td>
+				<td>1,676,990</td>
+			</tr>
+		
+			<tr>
+				<td>2017-09-30</td>
+				<td>1,655,665</td>
+			</tr>
+		
+			<tr>
+				<td>2017-08-31</td>
+				<td>1,672,614</td>
+			</tr>
+		
+			<tr>
+				<td>2017-07-31</td>
+				<td>1,665,505</td>
+			</tr>
+		
+			<tr>
+				<td>2017-06-30</td>
+				<td>1,642,170</td>
+			</tr>
+		
+			<tr>
+				<td>2017-05-31</td>
+				<td>1,595,935</td>
+			</tr>
+		
+			<tr>
+				<td>2017-04-30</td>
+				<td>1,578,017</td>
+			</tr>
+		
+			<tr>
+				<td>2017-03-31</td>
+				<td>1,556,267</td>
+			</tr>
+		
+			<tr>
+				<td>2017-02-28</td>
+				<td>1,547,879</td>
+			</tr>
+		
+			<tr>
+				<td>2017-01-31</td>
+				<td>1,532,900</td>
+			</tr>
+		
+			<tr>
+				<td>2016-12-31</td>
+				<td>1,461,111</td>
+			</tr>
+		
+			<tr>
+				<td>2016-11-30</td>
+				<td>1,414,412</td>
+			</tr>
+		
+			<tr>
+				<td>2016-10-31</td>
+				<td>1,387,946</td>
+			</tr>
+		
+			<tr>
+				<td>2016-09-30</td>
+				<td>1,385,343</td>
+			</tr>
+		
+			<tr>
+				<td>2016-08-31</td>
+				<td>1,392,923</td>
+			</tr>
+		
+			<tr>
+				<td>2016-07-31</td>
+				<td>1,395,767</td>
+			</tr>
+		
+			<tr>
+				<td>2016-06-30</td>
+				<td>1,376,849</td>
+			</tr>
+		
+			<tr>
+				<td>2016-05-31</td>
+				<td>1,395,179</td>
+			</tr>
+		
+			<tr>
+				<td>2016-04-30</td>
+				<td>1,415,228</td>
+			</tr>
+		
+			<tr>
+				<td>2016-03-31</td>
+				<td>1,409,563</td>
+			</tr>
+		
+			<tr>
+				<td>2016-02-29</td>
+				<td>1,388,831</td>
+			</tr>
+		
+			<tr>
+				<td>2016-01-31</td>
+				<td>1,402,597</td>
+			</tr>
+		
+			<tr>
+				<td>2015-12-31</td>
+				<td>1,378,403</td>
+			</tr>
+		
+			<tr>
+				<td>2015-11-30</td>
+				<td>1,389,893</td>
+			</tr>
+		
+			<tr>
+				<td>2015-10-31</td>
+				<td>1,362,565</td>
+			</tr>
+		
+			<tr>
+				<td>2015-09-30</td>
+				<td>1,310,570</td>
+			</tr>
+		
+			<tr>
+				<td>2015-08-31</td>
+				<td>1,349,928</td>
+			</tr>
+		
+			<tr>
+				<td>2015-07-31</td>
+				<td>1,422,609</td>
+			</tr>
+		
+			<tr>
+				<td>2015-06-30</td>
+				<td>1,442,457</td>
+			</tr>
+		
+			<tr>
+				<td>2015-05-31</td>
+				<td>1,477,994</td>
+			</tr>
+		
+			<tr>
+				<td>2015-04-30</td>
+				<td>1,500,204</td>
+			</tr>
+		
+			<tr>
+				<td>2015-03-31</td>
+				<td>1,465,308</td>
+			</tr>
+		
+			<tr>
+				<td>2015-02-28</td>
+				<td>1,481,758</td>
+			</tr>
+		
+			<tr>
+				<td>2015-01-31</td>
+				<td>1,472,658</td>
+			</tr>
+		
+			<tr>
+				<td>2014-12-31</td>
+				<td>1,424,133</td>
+			</tr>
+		
+			<tr>
+				<td>2014-11-30</td>
+				<td>1,432,110</td>
+			</tr>
+		
+			<tr>
+				<td>2014-10-31</td>
+				<td>1,382,113</td>
+			</tr>
+		
+			<tr>
+				<td>2014-09-30</td>
+				<td>1,355,318</td>
+			</tr>
+		
+			<tr>
+				<td>2014-08-31</td>
+				<td>1,398,061</td>
+			</tr>
+		
+			<tr>
+				<td>2014-07-31</td>
+				<td>1,401,874</td>
+			</tr>
+		
+			<tr>
+				<td>2014-06-30</td>
+				<td>1,415,829</td>
+			</tr>
+		
+			<tr>
+				<td>2014-05-31</td>
+				<td>1,417,043</td>
+			</tr>
+		
+			<tr>
+				<td>2014-04-30</td>
+				<td>1,414,949</td>
+			</tr>
+		
+			<tr>
+				<td>2014-03-31</td>
+				<td>1,404,653</td>
+			</tr>
+		
+			<tr>
+				<td>2014-02-28</td>
+				<td>1,424,305</td>
+			</tr>
+		
+			<tr>
+				<td>2014-01-31</td>
+				<td>1,436,233</td>
+			</tr>
+		
+			<tr>
+				<td>2013-12-31</td>
+				<td>1,411,370</td>
+			</tr>
+		
+			<tr>
+				<td>2013-11-30</td>
+				<td>1,366,536</td>
+			</tr>
+		
+			<tr>
+				<td>2013-10-31</td>
+				<td>1,337,519</td>
+			</tr>
+		
+			<tr>
+				<td>2013-09-30</td>
+				<td>1,309,979</td>
+			</tr>
+		
+			<tr>
+				<td>2013-08-31</td>
+				<td>1,298,018</td>
+			</tr>
+		
+			<tr>
+				<td>2013-07-31</td>
+				<td>1,332,566</td>
+			</tr>
+		
+			<tr>
+				<td>2013-06-30</td>
+				<td>1,326,442</td>
+			</tr>
+		
+			<tr>
+				<td>2013-05-31</td>
+				<td>1,379,140</td>
+			</tr>
+		
+			<tr>
+				<td>2013-04-30</td>
+				<td>1,410,621</td>
+			</tr>
+		
+			<tr>
+				<td>2013-03-31</td>
+				<td>1,374,114</td>
+			</tr>
+		
+			<tr>
+				<td>2013-02-28</td>
+				<td>1,385,844</td>
+			</tr>
+		
+			<tr>
+				<td>2013-01-31</td>
+				<td>1,404,353</td>
+			</tr>
+		
+			<tr>
+				<td>2012-12-31</td>
+				<td>1,341,420</td>
+			</tr>
+		
+			<tr>
+				<td>2012-11-30</td>
+				<td>1,287,218</td>
+			</tr>
+		
+			<tr>
+				<td>2012-10-31</td>
+				<td>1,242,907</td>
+			</tr>
+		
+			<tr>
+				<td>2012-09-30</td>
+				<td>1,229,864</td>
+			</tr>
+		
+			<tr>
+				<td>2012-08-31</td>
+				<td>1,239,311</td>
+			</tr>
+		
+			<tr>
+				<td>2012-07-31</td>
+				<td>1,246,731</td>
+			</tr>
+		
+			<tr>
+				<td>2012-06-30</td>
+				<td>1,253,241</td>
+			</tr>
+		
+			<tr>
+				<td>2012-05-31</td>
+				<td>1,237,988</td>
+			</tr>
+		
+			<tr>
+				<td>2012-04-30</td>
+				<td>1,286,219</td>
+			</tr>
+		
+			<tr>
+				<td>2012-03-31</td>
+				<td>1,280,959</td>
+			</tr>
+		
+			<tr>
+				<td>2012-02-29</td>
+				<td>1,306,270</td>
+			</tr>
+		
+			<tr>
+				<td>2012-01-31</td>
+				<td>1,304,388</td>
+			</tr>
+		
+			<tr>
+				<td>2011-12-31</td>
+				<td>1,231,421</td>
+			</tr>
+		
+			<tr>
+				<td>2011-11-30</td>
+				<td>1,198,027</td>
+			</tr>
+		
+			<tr>
+				<td>2011-10-31</td>
+				<td>1,206,159</td>
+			</tr>
+		
+			<tr>
+				<td>2011-09-30</td>
+				<td>1,161,968</td>
+			</tr>
+		
+			<tr>
+				<td>2011-08-31</td>
+				<td>1,209,498</td>
+			</tr>
+		
+			<tr>
+				<td>2011-07-31</td>
+				<td>1,225,735</td>
+			</tr>
+		
+			<tr>
+				<td>2011-06-30</td>
+				<td>1,213,260</td>
+			</tr>
+		
+			<tr>
+				<td>2011-05-31</td>
+				<td>1,232,418</td>
+			</tr>
+		
+			<tr>
+				<td>2011-04-30</td>
+				<td>1,239,686</td>
+			</tr>
+		
+			<tr>
+				<td>2011-03-31</td>
+				<td>1,213,757</td>
+			</tr>
+		
+			<tr>
+				<td>2011-02-28</td>
+				<td>1,224,872</td>
+			</tr>
+		
+			<tr>
+				<td>2011-01-31</td>
+				<td>1,228,514</td>
+			</tr>
+		
+			<tr>
+				<td>2010-12-31</td>
+				<td>1,183,785</td>
+			</tr>
+		
+			<tr>
+				<td>2010-11-30</td>
+				<td>1,133,391</td>
+			</tr>
+		
+			<tr>
+				<td>2010-10-31</td>
+				<td>1,122,355</td>
+			</tr>
+		
+			<tr>
+				<td>2010-09-30</td>
+				<td>1,112,771</td>
+			</tr>
+		
+			<tr>
+				<td>2010-08-31</td>
+				<td>1,080,940</td>
+			</tr>
+		
+			<tr>
+				<td>2010-07-31</td>
+				<td>1,081,295</td>
+			</tr>
+		
+			<tr>
+				<td>2010-06-30</td>
+				<td>1,056,475</td>
+			</tr>
+		
+			<tr>
+				<td>2010-05-31</td>
+				<td>1,055,359</td>
+			</tr>
+		
+			<tr>
+				<td>2010-04-30</td>
+				<td>1,090,429</td>
+			</tr>
+		
+			<tr>
+				<td>2010-03-31</td>
+				<td>1,087,257</td>
+			</tr>
+		
+			<tr>
+				<td>2010-02-28</td>
+				<td>1,091,090</td>
+			</tr>
+		
+			<tr>
+				<td>2010-01-31</td>
+				<td>1,093,799</td>
+			</tr>
+		
+			<tr>
+				<td>2009-12-31</td>
+				<td>1,057,580</td>
+			</tr>
+		
+			<tr>
+				<td>2009-11-30</td>
+				<td>1,042,631</td>
+			</tr>
+		
+			<tr>
+				<td>2009-10-31</td>
+				<td>994,033</td>
+			</tr>
+		
+			<tr>
+				<td>2009-09-30</td>
+				<td>997,140</td>
+			</tr>
+		
+			<tr>
+				<td>2009-08-31</td>
+				<td>989,778</td>
+			</tr>
+		
+			<tr>
+				<td>2009-07-31</td>
+				<td>993,757</td>
+			</tr>
+		
+			<tr>
+				<td>2009-06-30</td>
+				<td>973,769</td>
+			</tr>
+		
+			<tr>
+				<td>2009-05-31</td>
+				<td>985,435</td>
+			</tr>
+		
+			<tr>
+				<td>2009-04-30</td>
+				<td>959,383</td>
+			</tr>
+		
+			<tr>
+				<td>2009-03-31</td>
+				<td>943,231</td>
+			</tr>
+		
+			<tr>
+				<td>2009-02-28</td>
+				<td>952,408</td>
+			</tr>
+		
+			<tr>
+				<td>2009-01-31</td>
+				<td>981,748</td>
+			</tr>
+		
+			<tr>
+				<td>2008-12-31</td>
+				<td>1,011,855</td>
+			</tr>
+		
+			<tr>
+				<td>2008-11-30</td>
+				<td>935,455</td>
+			</tr>
+		
+			<tr>
+				<td>2008-10-31</td>
+				<td>872,534</td>
+			</tr>
+		
+			<tr>
+				<td>2008-09-30</td>
+				<td>944,575</td>
+			</tr>
+		
+			<tr>
+				<td>2008-08-31</td>
+				<td>1,009,658</td>
+			</tr>
+		
+			<tr>
+				<td>2008-07-31</td>
+				<td>1,033,845</td>
+			</tr>
+		
+			<tr>
+				<td>2008-06-30</td>
+				<td>1,039,674</td>
+			</tr>
+		
+			<tr>
+				<td>2008-05-31</td>
+				<td>1,082,713</td>
+			</tr>
+		
+			<tr>
+				<td>2008-04-30</td>
+				<td>1,103,785</td>
+			</tr>
+		
+			<tr>
+				<td>2008-03-31</td>
+				<td>1,086,729</td>
+			</tr>
+		
+			<tr>
+				<td>2008-02-29</td>
+				<td>1,096,884</td>
+			</tr>
+		
+			<tr>
+				<td>2008-01-31</td>
+				<td>1,087,681</td>
+			</tr>
+		
+			<tr>
+				<td>2007-12-31</td>
+				<td>1,081,565</td>
+			</tr>
+		
+			<tr>
+				<td>2007-11-30</td>
+				<td>1,055,433</td>
+			</tr>
+		
+			<tr>
+				<td>2007-10-31</td>
+				<td>1,017,674</td>
+			</tr>
+		
+			<tr>
+				<td>2007-09-30</td>
+				<td>971,946</td>
+			</tr>
+		
+			<tr>
+				<td>2007-08-31</td>
+				<td>945,854</td>
+			</tr>
+		
+			<tr>
+				<td>2007-07-31</td>
+				<td>939,909</td>
+			</tr>
+		
+			<tr>
+				<td>2007-06-30</td>
+				<td>924,834</td>
+			</tr>
+		
+			<tr>
+				<td>2007-05-31</td>
+				<td>921,541</td>
+			</tr>
+		
+			<tr>
+				<td>2007-04-30</td>
+				<td>921,193</td>
+			</tr>
+		
+			<tr>
+				<td>2007-03-31</td>
+				<td>899,834</td>
+			</tr>
+		
+			<tr>
+				<td>2007-02-28</td>
+				<td>877,031</td>
+			</tr>
+		
+			<tr>
+				<td>2007-01-31</td>
+				<td>874,217</td>
+			</tr>
+		
+			<tr>
+				<td>2006-12-31</td>
+				<td>832,238</td>
+			</tr>
+		
+			<tr>
+				<td>2006-11-30</td>
+				<td>824,000</td>
+			</tr>
+		
+			<tr>
+				<td>2006-10-31</td>
+				<td>784,762</td>
+			</tr>
+		
+			<tr>
+				<td>2006-09-30</td>
+				<td>776,696</td>
+			</tr>
+		
+			<tr>
+				<td>2006-08-31</td>
+				<td>780,663</td>
+			</tr>
+		
+			<tr>
+				<td>2006-07-31</td>
+				<td>780,327</td>
+			</tr>
+		
+			<tr>
+				<td>2006-06-30</td>
+				<td>777,053</td>
+			</tr>
+		
+			<tr>
+				<td>2006-05-31</td>
+				<td>781,458</td>
+			</tr>
+		
+			<tr>
+				<td>2006-04-30</td>
+				<td>788,861</td>
+			</tr>
+		
+			<tr>
+				<td>2006-03-31</td>
+				<td>773,541</td>
+			</tr>
+		
+			<tr>
+				<td>2006-02-28</td>
+				<td>771,548</td>
+			</tr>
+		
+			<tr>
+				<td>2006-01-31</td>
+				<td>776,461</td>
+			</tr>
+		
+			<tr>
+				<td>2005-12-31</td>
+				<td>740,232</td>
+			</tr>
+		
+			<tr>
+				<td>2005-11-30</td>
+				<td>732,996</td>
+			</tr>
+		
+			<tr>
+				<td>2005-10-31</td>
+				<td>698,614</td>
+			</tr>
+		
+			<tr>
+				<td>2005-09-30</td>
+				<td>702,432</td>
+			</tr>
+		
+			<tr>
+				<td>2005-08-31</td>
+				<td>708,820</td>
+			</tr>
+		
+			<tr>
+				<td>2005-07-31</td>
+				<td>712,919</td>
+			</tr>
+		
+			<tr>
+				<td>2005-06-30</td>
+				<td>718,712</td>
+			</tr>
+		
+			<tr>
+				<td>2005-05-31</td>
+				<td>724,275</td>
+			</tr>
+		
+			<tr>
+				<td>2005-04-30</td>
+				<td>728,244</td>
+			</tr>
+		
+			<tr>
+				<td>2005-03-31</td>
+				<td>724,892</td>
+			</tr>
+		
+			<tr>
+				<td>2005-02-28</td>
+				<td>722,838</td>
+			</tr>
+		
+			<tr>
+				<td>2005-01-31</td>
+				<td>725,535</td>
+			</tr>
+		
+			<tr>
+				<td>2004-12-31</td>
+				<td>703,682</td>
+			</tr>
+		
+			<tr>
+				<td>2004-11-30</td>
+				<td>696,605</td>
+			</tr>
+		
+			<tr>
+				<td>2004-10-31</td>
+				<td>656,740</td>
+			</tr>
+		
+			<tr>
+				<td>2004-09-30</td>
+				<td>661,322</td>
+			</tr>
+		
+			<tr>
+				<td>2004-08-31</td>
+				<td>663,774</td>
+			</tr>
+		
+			<tr>
+				<td>2004-07-31</td>
+				<td>664,283</td>
+			</tr>
+		
+			<tr>
+				<td>2004-06-30</td>
+				<td>657,753</td>
+			</tr>
+		
+			<tr>
+				<td>2004-05-31</td>
+				<td>661,407</td>
+			</tr>
+		
+			<tr>
+				<td>2004-04-30</td>
+				<td>663,022</td>
+			</tr>
+		
+			<tr>
+				<td>2004-03-31</td>
+				<td>679,152</td>
+			</tr>
+		
+			<tr>
+				<td>2004-02-29</td>
+				<td>668,511</td>
+			</tr>
+		
+			<tr>
+				<td>2004-01-31</td>
+				<td>668,161</td>
+			</tr>
+		
+			<tr>
+				<td>2003-12-31</td>
+				<td>637,175</td>
+			</tr>
+		
+			<tr>
+				<td>2003-11-30</td>
+				<td>621,824</td>
+			</tr>
+		
+			<tr>
+				<td>2003-10-31</td>
+				<td>609,272</td>
+			</tr>
+		
+			<tr>
+				<td>2003-09-30</td>
+				<td>611,777</td>
+			</tr>
+		
+			<tr>
+				<td>2003-08-31</td>
+				<td>618,236</td>
+			</tr>
+		
+			<tr>
+				<td>2003-07-31</td>
+				<td>630,809</td>
+			</tr>
+		
+			<tr>
+				<td>2003-06-30</td>
+				<td>652,314</td>
+			</tr>
+		
+			<tr>
+				<td>2003-05-31</td>
+				<td>665,903</td>
+			</tr>
+		
+			<tr>
+				<td>2003-04-30</td>
+				<td>655,512</td>
+			</tr>
+		
+			<tr>
+				<td>2003-03-31</td>
+				<td>648,448</td>
+			</tr>
+		
+			<tr>
+				<td>2003-02-28</td>
+				<td>642,729</td>
+			</tr>
+		
+			<tr>
+				<td>2003-01-31</td>
+				<td>646,787</td>
+			</tr>
+		
+			<tr>
+				<td>2002-12-31</td>
+				<td>628,843</td>
+			</tr>
+		
+			<tr>
+				<td>2002-11-30</td>
+				<td>631,287</td>
+			</tr>
+		
+			<tr>
+				<td>2002-10-31</td>
+				<td>620,652</td>
+			</tr>
+		
+			<tr>
+				<td>2002-09-30</td>
+				<td>620,797</td>
+			</tr>
+		
+			<tr>
+				<td>2002-08-31</td>
+				<td>640,847</td>
+			</tr>
+		
+			<tr>
+				<td>2002-07-31</td>
+				<td>652,513</td>
+			</tr>
+		
+			<tr>
+				<td>2002-06-30</td>
+				<td>667,191</td>
+			</tr>
+		
+			<tr>
+				<td>2002-05-31</td>
+				<td>676,620</td>
+			</tr>
+		
+			<tr>
+				<td>2002-04-30</td>
+				<td>680,239</td>
+			</tr>
+		
+			<tr>
+				<td>2002-03-31</td>
+				<td>676,408</td>
+			</tr>
+		
+			<tr>
+				<td>2002-02-28</td>
+				<td>690,500</td>
+			</tr>
+		
+			<tr>
+				<td>2002-01-31</td>
+				<td>697,902</td>
+			</tr>
+		
+			<tr>
+				<td>2001-12-31</td>
+				<td>683,191</td>
+			</tr>
+		
+			<tr>
+				<td>2001-11-30</td>
+				<td>693,919</td>
+			</tr>
+		
+			<tr>
+				<td>2001-10-31</td>
+				<td>678,895</td>
+			</tr>
+		
+			<tr>
+				<td>2001-09-30</td>
+				<td>677,594</td>
+			</tr>
+		
+			<tr>
+				<td>2001-08-31</td>
+				<td>693,858</td>
+			</tr>
+		
+			<tr>
+				<td>2001-07-31</td>
+				<td>704,301</td>
+			</tr>
+		
+			<tr>
+				<td>2001-06-30</td>
+				<td>710,884</td>
+			</tr>
+		
+			<tr>
+				<td>2001-05-31</td>
+				<td>724,739</td>
+			</tr>
+		
+			<tr>
+				<td>2001-04-30</td>
+				<td>731,853</td>
+			</tr>
+		
+			<tr>
+				<td>2001-03-31</td>
+				<td>735,126</td>
+			</tr>
+		
+			<tr>
+				<td>2001-02-28</td>
+				<td>747,711</td>
+			</tr>
+		
+			<tr>
+				<td>2001-01-31</td>
+				<td>758,702</td>
+			</tr>
+		
+			<tr>
+				<td>2000-12-31</td>
+				<td>724,261</td>
+			</tr>
+		
+			<tr>
+				<td>2000-11-30</td>
+				<td>711,386</td>
+			</tr>
+		
+			<tr>
+				<td>2000-10-31</td>
+				<td>697,800</td>
+			</tr>
+		
+			<tr>
+				<td>2000-09-30</td>
+				<td>699,157</td>
+			</tr>
+		
+			<tr>
+				<td>2000-08-31</td>
+				<td>715,965</td>
+			</tr>
+		
+			<tr>
+				<td>2000-07-31</td>
+				<td>719,326</td>
+			</tr>
+		
+			<tr>
+				<td>2000-06-30</td>
+				<td>719,428</td>
+			</tr>
+		
+			<tr>
+				<td>2000-05-31</td>
+				<td>715,166</td>
+			</tr>
+		
+			<tr>
+				<td>2000-04-30</td>
+				<td>722,012</td>
+			</tr>
+		
+			<tr>
+				<td>2000-03-31</td>
+				<td>739,816</td>
+			</tr>
+		
+			<tr>
+				<td>2000-02-29</td>
+				<td>702,195</td>
+			</tr>
+		
+			<tr>
+				<td>2000-01-31</td>
+				<td>692,071</td>
+			</tr>
+		
+			<tr>
+				<td>1999-12-31</td>
+				<td>683,064</td>
+			</tr>
+		
+			<tr>
+				<td>1999-11-30</td>
+				<td>679,625</td>
+			</tr>
+		
+			<tr>
+				<td>1999-10-31</td>
+				<td>654,108</td>
+			</tr>
+		
+			<tr>
+				<td>1999-09-30</td>
+				<td>660,384</td>
+			</tr>
+		
+			<tr>
+				<td>1999-08-31</td>
+				<td>671,887</td>
+			</tr>
+		
+			<tr>
+				<td>1999-07-31</td>
+				<td>672,492</td>
+			</tr>
+		
+			<tr>
+				<td>1999-06-30</td>
+				<td>682,405</td>
+			</tr>
+		
+			<tr>
+				<td>1999-05-31</td>
+				<td>676,093</td>
+			</tr>
+		
+			<tr>
+				<td>1999-04-30</td>
+				<td>691,837</td>
+			</tr>
+		
+			<tr>
+				<td>1999-03-31</td>
+				<td>682,941</td>
+			</tr>
+		
+			<tr>
+				<td>1999-02-28</td>
+				<td>671,194</td>
+			</tr>
+		
+			<tr>
+				<td>1999-01-31</td>
+				<td>673,680</td>
+			</tr>
+		
+			<tr>
+				<td>1998-12-31</td>
+				<td>666,807</td>
+			</tr>
+		
+			<tr>
+				<td>1997-12-31</td>
+				<td>427,855</td>
+			</tr>
+		
+			<tr>
+				<td>1997-06-30</td>
+				<td>364,055</td>
+			</tr>
+		
+			<tr>
+				<td>1996-12-31</td>
+				<td>318,760</td>
+			</tr>
+		
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

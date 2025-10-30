@@ -1,0 +1,869 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Domicile Changes</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Domicile changes</h2>
+<p>This table is a list of companies which have changed their domicile by 
+continuation in a new jurisdiction. There 
+are two ways to change domicile; some companies simply change their domicile from one 
+place to another, &quot;continuing&quot; the existence of the same legal entity, like a 
+human changing nationality. Some jurisdictions, such as Hong Kong, do not allow 
+this, while others, such as the Cayman Islands, do.</p>
+<p>More often, a listed company 
+becomes a wholly-owned subsidiary of an empty shell company newly-incorporated 
+in the chosen jurisdiction, using a &quot;scheme of arrangement&quot; in which each share in the 
+listed company is exchanged for one share in the shell, then the shell becomes 
+listed instead. In that case, we treat the new vehicle as the continuation of 
+the listed company in a new domicile, and we also carry over the directorships 
+and adviserships from the previously listed company.</p>
+<p>The following is a list of companies redomiciled by continuation.</p>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="txtable yscroll">
+	<tr>
+		<th><a href='/dbpub/domicilechange.asp?sort=namup'><b>Current name</b></a></th>
+		<th class="colHide3"><a href='/dbpub/domicilechange.asp?sort=newup'><b>Current domicile</b></a></th>
+		<th><a href='/dbpub/domicilechange.asp?sort=oldup'><b>Old domicile</b></a></th>
+		<th><a href='/dbpub/domicilechange.asp?sort=dateup'><b>Until</b></a></th>
+	</tr>
+
+	<tr>
+		<td><a href='orgdata.asp?p=31950574'>China Resources Beverage (Holdings) Company Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2024-04-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16489'>Apollo Future Mobility Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2023-12-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=1061'>Productive Technologies Company Limited (BM)</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Bermuda</td>	
+		<td class="nowrap">2023-11-17</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=30276305'>Qiniu Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2023-06-14</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2400434'>Life Concepts Holdings Limited (KY)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2022-09-06</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=61708'>InvesTech Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2021-07-07</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=26900705'>Transcenta Holding Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2021-03-26</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=51259'>Oasis Management (Hong Kong)</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Mauritius</td>	
+		<td class="nowrap">2020-12-23</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=27063311'>Arrail Group Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2020-11-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=133117'>VinaCapital Investment Management Limited</a></td>
+		<td class="colHide3">Guernsey</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2020-11-02</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=55733'>UNITED COMPANY RUSAL, IPJSC</a></td>
+		<td class="colHide3">Russia</td>
+		<td>Jersey</td>	
+		<td class="nowrap">2020-09-25</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=12684'>AOM International Group Company Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2020-08-26</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=27106608'>Yellowbird Special Opportunities Fund, L.P.</a></td>
+		<td class="colHide3">Marshall Islands</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2020-07-31</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=25635407'>Zhaoke Ophthalmology Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2020-04-29</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=18177'>Chinese Food and Beverage Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2019-06-25</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2128939'>Moody Technology Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2019-05-23</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=967'>Cocoon Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2019-04-01</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=62369'>ShiFang Holding Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2019-03-18</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=22225371'>STUDIO CITY INTERNATIONAL HOLDINGS LIMITED</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2018-10-15</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=140460'>GENTING SINGAPORE PLC</a></td>
+		<td class="colHide3">Singapore</td>
+		<td>Isle of Man</td>	
+		<td class="nowrap">2018-06-01</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=17998441'>Natural Food International Holding Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2018-05-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=13743982'>VCREDIT HOLDINGS LIMITED</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2018-02-26</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=23269'>Bay Area Gold Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2017-12-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=25519881'>Maven Securities Limited</a></td>
+		<td class="colHide3">Jersey</td>
+		<td>Malta</td>	
+		<td class="nowrap">2017-12-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=12681863'>Cinese International Group Holdings Limited (KY)</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Ontario, Canada</td>	
+		<td class="nowrap">2017-10-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=32795'>Peace Map Holding Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2017-07-24</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=23995948'>XTX Holdings Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Malta</td>	
+		<td class="nowrap">2017-05-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=13561'>China Zenith Chemical Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2017-04-24</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=28791353'>Crystal Group Limited (KY)</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Bermuda</td>	
+		<td class="nowrap">2016-12-29</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=6714320'>Crystal International Group Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Bermuda</td>	
+		<td class="nowrap">2016-12-29</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=149560'>Asian Growth Properties Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2016-12-05</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=7109380'>Everbright Grand China Assets Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2016-09-15</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=64675'>China Kingstone Mining Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2016-08-10</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2602623'>COFCO Joycome Foods Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2016-05-04</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=133118'>VinaCapital Vietnam Opportunity Fund Limited</a></td>
+		<td class="colHide3">Guernsey</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2016-03-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=15139'>China United Venture Investment Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2016-02-18</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2604875'>Century Global Commodities Corporation</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>Canada</td>	
+		<td class="nowrap">2016-02</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2650838'>Levy Pacific Limited</a></td>
+		<td class="colHide3">Cook Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2016</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=6363'>Walnut Capital Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-12-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=12131'>Hang Tai Yue Group Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-12-01</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=4971'>SEEC MEDIA GROUP LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-10-26</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=11205'>Sino Vision Worldwide Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-08-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=12652'>Allied Weli Development Limited</a></td>
+		<td class="colHide3">Marshall Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2015-08-06</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=66822'>Bradaverse Education (Int'l) Investments Group Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-05-07</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=134244'>First Credit Finance Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-02-05</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=21462'>SMI Culture & Travel Group Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2015-01-23</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=14951'>WLS HOLDINGS LIMITED (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-09-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16414'>Easy One Financial Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-07-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=13526'>China Demeter Financial Investments Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-05-08</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=18174'>China CBM Group Company Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-04-23</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=14901'>SuperRobotics Holdings Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-04-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2257909'>Jinmao (China) Hotel Investments and Management Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2014-03-21</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=22146839'>JD.com, Inc.</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2014-01-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=14791'>Famous Tech International Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2014-01-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=28817506'>GO GREEK YOGURT CANADA INC.</a></td>
+		<td class="colHide3">Canada</td>
+		<td>Ontario, Canada</td>	
+		<td class="nowrap">2013-12-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=21238'>China Biotech Services Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2013-08-28</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2134492'>Boyaa Interactive International Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2013-06-07</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2127135'>Aowei Holding Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2013-05-23</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=11345'>Starcoin Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2013-03-01</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=18156'>CHINA DIGITAL CULTURE (GROUP) LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2012-12-19</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2200279'>Playtech plc</a></td>
+		<td class="colHide3">Isle of Man</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2012-06-21</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16166'>Shin Hwa World Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2012-05-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=22792'>Finet Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2011-06-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=11970'>CAPITAL REALM FINANCIAL HOLDINGS GROUP LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2011-03-02</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=17029'>National Arts Group Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2010-10-14</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=14233'>Qing Hua Holding Group Company Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2010-10-08</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=38031'>Meadville Holdings (BVI) Limited</a></td>
+		<td class="colHide3">British Virgin Islands</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2010-04-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=57825'>NVC International Holdings Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2010-03-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2703954'>Fullwit Profits Limited</a></td>
+		<td class="colHide3">Cook Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2010-01-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=13593'>Media Asia Group Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2009-12-03</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16954'>Capital Finance Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2009-11-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=11691'>Town Health International Medical Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2009-05-05</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16407'>Dadi International Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2009-04-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16185'>Lajin Entertainment Network Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2009-03-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2520341'>Aceland Holdings Limited</a></td>
+		<td class="colHide3">Cook Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2009</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=15098'>Wisdomcome Group Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2008-04-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=14237'>Seamless Green China (Holdings) Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2008-01-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=15208'>China Eco-Farming Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2007-10-29</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16732'>Global Token Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2007-08-31</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=49592'>Hing Lee (HK) Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2007-03-30</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=15383'>China Castson 81 Finance Company Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2007-02-06</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=13365'>CHINA FINANCIAL INTERNATIONAL INVESTMENTS LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2006-05-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2204697'>NEW ORIENTAL EDUCATION & TECHNOLOGY GROUP INC.</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2006-03-16</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=66027'>Par Pacific Holdings, Inc.</a></td>
+		<td class="colHide3">Delaware, USA</td>
+		<td>Colorado, USA</td>	
+		<td class="nowrap">2006-01-31</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=11157'>China Sci-Tech Industrial Investment Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2006-01-04</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=3420'>CCT Fortis Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2005-12-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=41236'>Kingsoft Corporation Limited</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2005-11-15</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=4995'>United Energy Group Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2005-07-22</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2482026'>Twenty-First Century Fox, Inc.</a></td>
+		<td class="colHide3">Delaware, USA</td>
+		<td>Australia</td>	
+		<td class="nowrap">2004-11-12</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=21290'>TENCENT HOLDINGS LIMITED</a></td>
+		<td class="colHide3">Cayman Islands</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2004-03-04</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=4821'>Richly Field China Development Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2004-02-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=9446'>CHINA WATER AFFAIRS GROUP LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2003-07-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=10902'>Allegro Culture Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2003-01-29</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=5016'>China Electronics Huada Technology Company Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2002-12-04</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=2059192'>STAMINA RESOURCES LIMITED</a></td>
+		<td class="colHide3">Saint Lucia</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2002-11-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=135987'>DRANSFIELD HOLDINGS LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2002-06-12</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=848'>CHAMPION TECHNOLOGY HOLDINGS LIMITED</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">2002-04-11</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=12483'>Genting Hong Kong Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Isle of Man</td>	
+		<td class="nowrap">2000-10-09</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=146201'>KLN Logistics Group Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">2000-04-20</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=23463'>AsiaInfo Holdings, LLC</a></td>
+		<td class="colHide3">Delaware, USA</td>
+		<td>Texas, USA</td>	
+		<td class="nowrap">1998-06-08</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=1009'>Nimble Holdings Company Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Cayman Islands</td>	
+		<td class="nowrap">1997-07-15</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=3714'>Sunwah International Limited (BM)</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>British Columbia, Canada</td>	
+		<td class="nowrap">1996-02-28</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=16529'>HMH China Investments Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>Canada</td>	
+		<td class="nowrap">1995-12</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=8538'>Han Tang International Holdings Limited</a></td>
+		<td class="colHide3">Bermuda</td>
+		<td>British Virgin Islands</td>	
+		<td class="nowrap">1994-10-21</td>
+	</tr>
+	
+	<tr>
+		<td><a href='orgdata.asp?p=416'>HONG KONG AND CHINA GAS COMPANY LIMITED (THE)</a></td>
+		<td class="colHide3">Hong Kong</td>
+		<td>United Kingdom</td>	
+		<td class="nowrap">1982-10-14</td>
+	</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

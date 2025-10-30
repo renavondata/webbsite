@@ -1,0 +1,3644 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.8">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>HK licensed Private Cars by fuel and month</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK licensed Private Cars by fuel and month</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=1&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=1'>Type history</a></li><li><a href='vefuel.asp'>Fuels</a></li><li class='livebutton'>Fuel history</li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li><a href='veJourneys.asp'>Journeys</a></li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of vehicles licensed in HK by vehicle class and 
+fuel, and the fuel share, using data from the Transport Department. 
+Choose simple or detailed view. If a vehicle is registered but not licensed then it is not 
+allowed on public roads and may have already been scrapped. By <a href="https://www.hklii.hk/en/legis/ord/374/s2" target="_blank">law</a>, 
+permitted gross vehicle mass of Goods Vehicles in tonnes are: Light: 5.5, Medium: 24, Heavy: 38. 
+Click on the month to see all classes for that month. Prior to 2023-07, Government Vehicles were excluded. 
+There is no fuel breakdown between Red and Green Public Light Buses, nor between 
+the 2 Citybus franchises.</p>
+<form method="get" action="vefuelhist.asp">
+	<input type="hidden" name="sort" value="">
+	<div class="inputs">
+		Breakdown <select id='simple' name='simple' onchange='this.form.submit()'><option value='True'>Simple</option><option value='False' selected>Detailed</option></select>
+	</div>
+	<div class="inputs">
+	Vehicle class
+	<select name='vc' onchange="this.form.submit()"><option value='42'>Combo Motor Cycles</option><option value='67'>Franchised bus: Citybus: Double</option><option value='66'>Franchised bus: Citybus: Single</option><option value='55'>Franchised bus: KMB: Double</option><option value='54'>Franchised bus: KMB: Single</option><option value='57'>Franchised bus: LWB: Double</option><option value='56'>Franchised bus: LWB: Single</option><option value='59'>Franchised bus: NLB: Double</option><option value='58'>Franchised bus: NLB: Single</option><option value='61'>Franchised bus: NWFB: Double</option><option value='60'>Franchised bus: NWFB: Single</option><option value='39'>Government Motor Cycles</option><option value='40'>Government Other Vehicles</option><option value='29'>Heavy Goods Vehicles</option><option value='27'>Light Goods Vehicles</option><option value='28'>Medium Goods Vehicles</option><option value='34'>Motor Tricycles</option><option value='63'>Non-franchised public bus: MTR: Double</option><option value='62'>Non-franchised public bus: MTR: Single</option><option value='65'>Non-franchised public bus: Others: Double</option><option value='64'>Non-franchised public bus: Others: Single</option><option value='69'>Private bus: Double</option><option value='68'>Private bus: Single</option><option value='1' selected>Private Cars</option><option value='10'>Private Light Buses</option><option value='9'>Public Light Buses</option><option value='41'>Solo Motor Cycles</option><option value='6'>Special Purpose Vehicles</option><option value='45'>Taxis:Lantau</option><option value='44'>Taxis:New Territories</option><option value='43'>Taxis:Urban</option></select>
+	</div>
+	<div class="inputs">
+		Status <select id='t' name='t' onchange='this.form.submit()'><option value='0' selected>Licensed</option><option value='1'>Registered</option></select>
+	</div>
+	<div class="inputs">
+		Frequency
+		<select id='f' name='f' onchange='this.form.submit()'><option value='1' selected>Monthly</option><option value='2'>Yearly</option></select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable fcl">
+	<tr class="yscroll">
+		<th><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=datdn'><b>Month</b></a></th>
+		
+			<th><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=f0dn'><b>Petrol</b></a></th>
+		
+			<th><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=f1dn'><b>Diesel</b></a></th>
+		
+			<th><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=f2dn'><b>Electric</b></a></th>
+		
+			<th><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=f3dn'><b>Others</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=totdn'><b>Total</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=fs0dn'><b>Petrol share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=fs1dn'><b>Diesel share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=fs2dn'><b>Electric share %</b></a></th>
+		
+			<th class="colHide1"><a href='/dbpub/vefuelhist.asp?vc=1&amp;f=1&amp;simple=False&amp;sort=fs3dn'><b>Others share %</b></a></th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=7&amp;simple=False">2025-07</a></td>
+			
+				<td>446,860</td>
+			
+				<td>10,514</td>
+			
+				<td>123,355</td>
+			
+				<td>61</td>
+			
+			<td class="colHide1">580,790</td>
+			
+				<td class="colHide1">76.94</td>
+			
+				<td class="colHide1">1.81</td>
+			
+				<td class="colHide1">21.24</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=6&amp;simple=False">2025-06</a></td>
+			
+				<td>449,502</td>
+			
+				<td>10,543</td>
+			
+				<td>120,694</td>
+			
+				<td>58</td>
+			
+			<td class="colHide1">580,797</td>
+			
+				<td class="colHide1">77.39</td>
+			
+				<td class="colHide1">1.82</td>
+			
+				<td class="colHide1">20.78</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=5&amp;simple=False">2025-05</a></td>
+			
+				<td>451,466</td>
+			
+				<td>10,551</td>
+			
+				<td>117,738</td>
+			
+				<td>58</td>
+			
+			<td class="colHide1">579,813</td>
+			
+				<td class="colHide1">77.86</td>
+			
+				<td class="colHide1">1.82</td>
+			
+				<td class="colHide1">20.31</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=4&amp;simple=False">2025-04</a></td>
+			
+				<td>453,994</td>
+			
+				<td>10,566</td>
+			
+				<td>114,512</td>
+			
+				<td>57</td>
+			
+			<td class="colHide1">579,129</td>
+			
+				<td class="colHide1">78.39</td>
+			
+				<td class="colHide1">1.82</td>
+			
+				<td class="colHide1">19.77</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=3&amp;simple=False">2025-03</a></td>
+			
+				<td>456,785</td>
+			
+				<td>10,605</td>
+			
+				<td>112,394</td>
+			
+				<td>59</td>
+			
+			<td class="colHide1">579,843</td>
+			
+				<td class="colHide1">78.78</td>
+			
+				<td class="colHide1">1.83</td>
+			
+				<td class="colHide1">19.38</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=2&amp;simple=False">2025-02</a></td>
+			
+				<td>459,205</td>
+			
+				<td>10,636</td>
+			
+				<td>110,014</td>
+			
+				<td>58</td>
+			
+			<td class="colHide1">579,913</td>
+			
+				<td class="colHide1">79.19</td>
+			
+				<td class="colHide1">1.83</td>
+			
+				<td class="colHide1">18.97</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2025&amp;m=1&amp;simple=False">2025-01</a></td>
+			
+				<td>460,317</td>
+			
+				<td>10,639</td>
+			
+				<td>107,534</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">578,550</td>
+			
+				<td class="colHide1">79.56</td>
+			
+				<td class="colHide1">1.84</td>
+			
+				<td class="colHide1">18.59</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=12&amp;simple=False">2024-12</a></td>
+			
+				<td>461,709</td>
+			
+				<td>10,627</td>
+			
+				<td>105,609</td>
+			
+				<td>56</td>
+			
+			<td class="colHide1">578,001</td>
+			
+				<td class="colHide1">79.88</td>
+			
+				<td class="colHide1">1.84</td>
+			
+				<td class="colHide1">18.27</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=11&amp;simple=False">2024-11</a></td>
+			
+				<td>462,997</td>
+			
+				<td>10,637</td>
+			
+				<td>103,112</td>
+			
+				<td>56</td>
+			
+			<td class="colHide1">576,802</td>
+			
+				<td class="colHide1">80.27</td>
+			
+				<td class="colHide1">1.84</td>
+			
+				<td class="colHide1">17.88</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=10&amp;simple=False">2024-10</a></td>
+			
+				<td>465,024</td>
+			
+				<td>10,640</td>
+			
+				<td>100,603</td>
+			
+				<td>59</td>
+			
+			<td class="colHide1">576,326</td>
+			
+				<td class="colHide1">80.69</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">17.46</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=9&amp;simple=False">2024-09</a></td>
+			
+				<td>466,674</td>
+			
+				<td>10,621</td>
+			
+				<td>97,789</td>
+			
+				<td>57</td>
+			
+			<td class="colHide1">575,141</td>
+			
+				<td class="colHide1">81.14</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">17.00</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=8&amp;simple=False">2024-08</a></td>
+			
+				<td>469,613</td>
+			
+				<td>10,657</td>
+			
+				<td>96,021</td>
+			
+				<td>56</td>
+			
+			<td class="colHide1">576,347</td>
+			
+				<td class="colHide1">81.48</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">16.66</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=7&amp;simple=False">2024-07</a></td>
+			
+				<td>471,997</td>
+			
+				<td>10,686</td>
+			
+				<td>93,929</td>
+			
+				<td>62</td>
+			
+			<td class="colHide1">576,674</td>
+			
+				<td class="colHide1">81.85</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">16.29</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=6&amp;simple=False">2024-06</a></td>
+			
+				<td>473,783</td>
+			
+				<td>10,696</td>
+			
+				<td>92,009</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">576,548</td>
+			
+				<td class="colHide1">82.18</td>
+			
+				<td class="colHide1">1.86</td>
+			
+				<td class="colHide1">15.96</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=5&amp;simple=False">2024-05</a></td>
+			
+				<td>476,522</td>
+			
+				<td>10,720</td>
+			
+				<td>90,643</td>
+			
+				<td>63</td>
+			
+			<td class="colHide1">577,948</td>
+			
+				<td class="colHide1">82.45</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">15.68</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=4&amp;simple=False">2024-04</a></td>
+			
+				<td>478,185</td>
+			
+				<td>10,769</td>
+			
+				<td>88,869</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">577,890</td>
+			
+				<td class="colHide1">82.75</td>
+			
+				<td class="colHide1">1.86</td>
+			
+				<td class="colHide1">15.38</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=3&amp;simple=False">2024-03</a></td>
+			
+				<td>479,078</td>
+			
+				<td>10,764</td>
+			
+				<td>84,268</td>
+			
+				<td>63</td>
+			
+			<td class="colHide1">574,173</td>
+			
+				<td class="colHide1">83.44</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">14.68</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=2&amp;simple=False">2024-02</a></td>
+			
+				<td>485,098</td>
+			
+				<td>10,784</td>
+			
+				<td>79,891</td>
+			
+				<td>64</td>
+			
+			<td class="colHide1">575,837</td>
+			
+				<td class="colHide1">84.24</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">13.87</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2024&amp;m=1&amp;simple=False">2024-01</a></td>
+			
+				<td>489,744</td>
+			
+				<td>10,804</td>
+			
+				<td>76,627</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">577,242</td>
+			
+				<td class="colHide1">84.84</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">13.27</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=12&amp;simple=False">2023-12</a></td>
+			
+				<td>493,537</td>
+			
+				<td>10,813</td>
+			
+				<td>73,494</td>
+			
+				<td>64</td>
+			
+			<td class="colHide1">577,908</td>
+			
+				<td class="colHide1">85.40</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">12.72</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=11&amp;simple=False">2023-11</a></td>
+			
+				<td>496,250</td>
+			
+				<td>10,847</td>
+			
+				<td>70,409</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">577,566</td>
+			
+				<td class="colHide1">85.92</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">12.19</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=10&amp;simple=False">2023-10</a></td>
+			
+				<td>498,561</td>
+			
+				<td>10,846</td>
+			
+				<td>67,890</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">577,357</td>
+			
+				<td class="colHide1">86.35</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">11.76</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=9&amp;simple=False">2023-09</a></td>
+			
+				<td>501,737</td>
+			
+				<td>10,873</td>
+			
+				<td>65,711</td>
+			
+				<td>61</td>
+			
+			<td class="colHide1">578,382</td>
+			
+				<td class="colHide1">86.75</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">11.36</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=8&amp;simple=False">2023-08</a></td>
+			
+				<td>505,484</td>
+			
+				<td>10,919</td>
+			
+				<td>63,736</td>
+			
+				<td>63</td>
+			
+			<td class="colHide1">580,202</td>
+			
+				<td class="colHide1">87.12</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">10.99</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=7&amp;simple=False">2023-07</a></td>
+			
+				<td>507,581</td>
+			
+				<td>10,905</td>
+			
+				<td>60,986</td>
+			
+				<td>65</td>
+			
+			<td class="colHide1">579,537</td>
+			
+				<td class="colHide1">87.58</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">10.52</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=6&amp;simple=False">2023-06</a></td>
+			
+				<td>510,605</td>
+			
+				<td>10,906</td>
+			
+				<td>58,798</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">580,376</td>
+			
+				<td class="colHide1">87.98</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">10.13</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=5&amp;simple=False">2023-05</a></td>
+			
+				<td>512,276</td>
+			
+				<td>10,913</td>
+			
+				<td>56,328</td>
+			
+				<td>68</td>
+			
+			<td class="colHide1">579,585</td>
+			
+				<td class="colHide1">88.39</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">9.72</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=4&amp;simple=False">2023-04</a></td>
+			
+				<td>514,596</td>
+			
+				<td>10,932</td>
+			
+				<td>53,686</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">579,281</td>
+			
+				<td class="colHide1">88.83</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">9.27</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=3&amp;simple=False">2023-03</a></td>
+			
+				<td>517,362</td>
+			
+				<td>10,978</td>
+			
+				<td>51,998</td>
+			
+				<td>69</td>
+			
+			<td class="colHide1">580,407</td>
+			
+				<td class="colHide1">89.14</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">8.96</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=2&amp;simple=False">2023-02</a></td>
+			
+				<td>516,744</td>
+			
+				<td>10,978</td>
+			
+				<td>49,912</td>
+			
+				<td>69</td>
+			
+			<td class="colHide1">577,703</td>
+			
+				<td class="colHide1">89.45</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">8.64</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2023&amp;m=1&amp;simple=False">2023-01</a></td>
+			
+				<td>513,631</td>
+			
+				<td>10,944</td>
+			
+				<td>47,154</td>
+			
+				<td>68</td>
+			
+			<td class="colHide1">571,797</td>
+			
+				<td class="colHide1">89.83</td>
+			
+				<td class="colHide1">1.91</td>
+			
+				<td class="colHide1">8.25</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=12&amp;simple=False">2022-12</a></td>
+			
+				<td>514,700</td>
+			
+				<td>10,919</td>
+			
+				<td>45,726</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">571,412</td>
+			
+				<td class="colHide1">90.08</td>
+			
+				<td class="colHide1">1.91</td>
+			
+				<td class="colHide1">8.00</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=11&amp;simple=False">2022-11</a></td>
+			
+				<td>516,510</td>
+			
+				<td>10,915</td>
+			
+				<td>43,118</td>
+			
+				<td>70</td>
+			
+			<td class="colHide1">570,613</td>
+			
+				<td class="colHide1">90.52</td>
+			
+				<td class="colHide1">1.91</td>
+			
+				<td class="colHide1">7.56</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=10&amp;simple=False">2022-10</a></td>
+			
+				<td>519,595</td>
+			
+				<td>10,913</td>
+			
+				<td>40,422</td>
+			
+				<td>65</td>
+			
+			<td class="colHide1">570,995</td>
+			
+				<td class="colHide1">91.00</td>
+			
+				<td class="colHide1">1.91</td>
+			
+				<td class="colHide1">7.08</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=9&amp;simple=False">2022-09</a></td>
+			
+				<td>522,496</td>
+			
+				<td>10,905</td>
+			
+				<td>37,583</td>
+			
+				<td>66</td>
+			
+			<td class="colHide1">571,050</td>
+			
+				<td class="colHide1">91.50</td>
+			
+				<td class="colHide1">1.91</td>
+			
+				<td class="colHide1">6.58</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=8&amp;simple=False">2022-08</a></td>
+			
+				<td>525,223</td>
+			
+				<td>10,954</td>
+			
+				<td>34,987</td>
+			
+				<td>69</td>
+			
+			<td class="colHide1">571,233</td>
+			
+				<td class="colHide1">91.95</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">6.12</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=7&amp;simple=False">2022-07</a></td>
+			
+				<td>527,377</td>
+			
+				<td>10,964</td>
+			
+				<td>32,848</td>
+			
+				<td>68</td>
+			
+			<td class="colHide1">571,257</td>
+			
+				<td class="colHide1">92.32</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">5.75</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=6&amp;simple=False">2022-06</a></td>
+			
+				<td>529,513</td>
+			
+				<td>10,980</td>
+			
+				<td>31,854</td>
+			
+				<td>71</td>
+			
+			<td class="colHide1">572,418</td>
+			
+				<td class="colHide1">92.50</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">5.56</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=5&amp;simple=False">2022-05</a></td>
+			
+				<td>530,386</td>
+			
+				<td>10,999</td>
+			
+				<td>30,519</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">571,971</td>
+			
+				<td class="colHide1">92.73</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">5.34</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=4&amp;simple=False">2022-04</a></td>
+			
+				<td>531,243</td>
+			
+				<td>10,986</td>
+			
+				<td>30,089</td>
+			
+				<td>69</td>
+			
+			<td class="colHide1">572,387</td>
+			
+				<td class="colHide1">92.81</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">5.26</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=3&amp;simple=False">2022-03</a></td>
+			
+				<td>530,363</td>
+			
+				<td>10,951</td>
+			
+				<td>29,347</td>
+			
+				<td>75</td>
+			
+			<td class="colHide1">570,736</td>
+			
+				<td class="colHide1">92.93</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">5.14</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=2&amp;simple=False">2022-02</a></td>
+			
+				<td>536,260</td>
+			
+				<td>11,038</td>
+			
+				<td>27,877</td>
+			
+				<td>78</td>
+			
+			<td class="colHide1">575,253</td>
+			
+				<td class="colHide1">93.22</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">4.85</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2022&amp;m=1&amp;simple=False">2022-01</a></td>
+			
+				<td>541,853</td>
+			
+				<td>11,145</td>
+			
+				<td>27,342</td>
+			
+				<td>79</td>
+			
+			<td class="colHide1">580,419</td>
+			
+				<td class="colHide1">93.36</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">4.71</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=12&amp;simple=False">2021-12</a></td>
+			
+				<td>542,951</td>
+			
+				<td>11,150</td>
+			
+				<td>26,833</td>
+			
+				<td>78</td>
+			
+			<td class="colHide1">581,012</td>
+			
+				<td class="colHide1">93.45</td>
+			
+				<td class="colHide1">1.92</td>
+			
+				<td class="colHide1">4.62</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=11&amp;simple=False">2021-11</a></td>
+			
+				<td>542,239</td>
+			
+				<td>11,155</td>
+			
+				<td>25,732</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">579,202</td>
+			
+				<td class="colHide1">93.62</td>
+			
+				<td class="colHide1">1.93</td>
+			
+				<td class="colHide1">4.44</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=10&amp;simple=False">2021-10</a></td>
+			
+				<td>543,319</td>
+			
+				<td>11,155</td>
+			
+				<td>24,132</td>
+			
+				<td>77</td>
+			
+			<td class="colHide1">578,683</td>
+			
+				<td class="colHide1">93.89</td>
+			
+				<td class="colHide1">1.93</td>
+			
+				<td class="colHide1">4.17</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=9&amp;simple=False">2021-09</a></td>
+			
+				<td>546,008</td>
+			
+				<td>11,186</td>
+			
+				<td>23,344</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">580,614</td>
+			
+				<td class="colHide1">94.04</td>
+			
+				<td class="colHide1">1.93</td>
+			
+				<td class="colHide1">4.02</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=8&amp;simple=False">2021-08</a></td>
+			
+				<td>547,230</td>
+			
+				<td>11,227</td>
+			
+				<td>22,359</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">580,892</td>
+			
+				<td class="colHide1">94.21</td>
+			
+				<td class="colHide1">1.93</td>
+			
+				<td class="colHide1">3.85</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=7&amp;simple=False">2021-07</a></td>
+			
+				<td>547,999</td>
+			
+				<td>11,251</td>
+			
+				<td>21,734</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">581,060</td>
+			
+				<td class="colHide1">94.31</td>
+			
+				<td class="colHide1">1.94</td>
+			
+				<td class="colHide1">3.74</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=6&amp;simple=False">2021-06</a></td>
+			
+				<td>549,631</td>
+			
+				<td>11,270</td>
+			
+				<td>20,888</td>
+			
+				<td>74</td>
+			
+			<td class="colHide1">581,863</td>
+			
+				<td class="colHide1">94.46</td>
+			
+				<td class="colHide1">1.94</td>
+			
+				<td class="colHide1">3.59</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=5&amp;simple=False">2021-05</a></td>
+			
+				<td>547,260</td>
+			
+				<td>11,232</td>
+			
+				<td>20,276</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">578,844</td>
+			
+				<td class="colHide1">94.54</td>
+			
+				<td class="colHide1">1.94</td>
+			
+				<td class="colHide1">3.50</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=4&amp;simple=False">2021-04</a></td>
+			
+				<td>548,198</td>
+			
+				<td>11,261</td>
+			
+				<td>19,305</td>
+			
+				<td>79</td>
+			
+			<td class="colHide1">578,843</td>
+			
+				<td class="colHide1">94.71</td>
+			
+				<td class="colHide1">1.95</td>
+			
+				<td class="colHide1">3.34</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=3&amp;simple=False">2021-03</a></td>
+			
+				<td>548,211</td>
+			
+				<td>11,281</td>
+			
+				<td>18,693</td>
+			
+				<td>77</td>
+			
+			<td class="colHide1">578,262</td>
+			
+				<td class="colHide1">94.80</td>
+			
+				<td class="colHide1">1.95</td>
+			
+				<td class="colHide1">3.23</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=2&amp;simple=False">2021-02</a></td>
+			
+				<td>546,648</td>
+			
+				<td>11,238</td>
+			
+				<td>18,237</td>
+			
+				<td>78</td>
+			
+			<td class="colHide1">576,201</td>
+			
+				<td class="colHide1">94.87</td>
+			
+				<td class="colHide1">1.95</td>
+			
+				<td class="colHide1">3.17</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2021&amp;m=1&amp;simple=False">2021-01</a></td>
+			
+				<td>543,539</td>
+			
+				<td>11,196</td>
+			
+				<td>17,757</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">572,568</td>
+			
+				<td class="colHide1">94.93</td>
+			
+				<td class="colHide1">1.96</td>
+			
+				<td class="colHide1">3.10</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=12&amp;simple=False">2020-12</a></td>
+			
+				<td>544,375</td>
+			
+				<td>11,197</td>
+			
+				<td>17,352</td>
+			
+				<td>79</td>
+			
+			<td class="colHide1">573,003</td>
+			
+				<td class="colHide1">95.00</td>
+			
+				<td class="colHide1">1.95</td>
+			
+				<td class="colHide1">3.03</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=11&amp;simple=False">2020-11</a></td>
+			
+				<td>547,189</td>
+			
+				<td>11,264</td>
+			
+				<td>16,780</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">575,309</td>
+			
+				<td class="colHide1">95.11</td>
+			
+				<td class="colHide1">1.96</td>
+			
+				<td class="colHide1">2.92</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=10&amp;simple=False">2020-10</a></td>
+			
+				<td>547,179</td>
+			
+				<td>11,243</td>
+			
+				<td>16,049</td>
+			
+				<td>76</td>
+			
+			<td class="colHide1">574,547</td>
+			
+				<td class="colHide1">95.24</td>
+			
+				<td class="colHide1">1.96</td>
+			
+				<td class="colHide1">2.79</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=9&amp;simple=False">2020-09</a></td>
+			
+				<td>546,778</td>
+			
+				<td>11,265</td>
+			
+				<td>15,927</td>
+			
+				<td>75</td>
+			
+			<td class="colHide1">574,045</td>
+			
+				<td class="colHide1">95.25</td>
+			
+				<td class="colHide1">1.96</td>
+			
+				<td class="colHide1">2.77</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=8&amp;simple=False">2020-08</a></td>
+			
+				<td>543,820</td>
+			
+				<td>11,178</td>
+			
+				<td>15,506</td>
+			
+				<td>75</td>
+			
+			<td class="colHide1">570,579</td>
+			
+				<td class="colHide1">95.31</td>
+			
+				<td class="colHide1">1.96</td>
+			
+				<td class="colHide1">2.72</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=7&amp;simple=False">2020-07</a></td>
+			
+				<td>546,698</td>
+			
+				<td>11,277</td>
+			
+				<td>14,568</td>
+			
+				<td>72</td>
+			
+			<td class="colHide1">572,615</td>
+			
+				<td class="colHide1">95.47</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.54</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=6&amp;simple=False">2020-06</a></td>
+			
+				<td>546,444</td>
+			
+				<td>11,261</td>
+			
+				<td>14,432</td>
+			
+				<td>74</td>
+			
+			<td class="colHide1">572,211</td>
+			
+				<td class="colHide1">95.50</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.52</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=5&amp;simple=False">2020-05</a></td>
+			
+				<td>544,462</td>
+			
+				<td>11,234</td>
+			
+				<td>14,221</td>
+			
+				<td>70</td>
+			
+			<td class="colHide1">569,987</td>
+			
+				<td class="colHide1">95.52</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.49</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=4&amp;simple=False">2020-04</a></td>
+			
+				<td>540,658</td>
+			
+				<td>11,182</td>
+			
+				<td>13,854</td>
+			
+				<td>70</td>
+			
+			<td class="colHide1">565,764</td>
+			
+				<td class="colHide1">95.56</td>
+			
+				<td class="colHide1">1.98</td>
+			
+				<td class="colHide1">2.45</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=3&amp;simple=False">2020-03</a></td>
+			
+				<td>539,708</td>
+			
+				<td>11,161</td>
+			
+				<td>13,458</td>
+			
+				<td>64</td>
+			
+			<td class="colHide1">564,391</td>
+			
+				<td class="colHide1">95.63</td>
+			
+				<td class="colHide1">1.98</td>
+			
+				<td class="colHide1">2.38</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=2&amp;simple=False">2020-02</a></td>
+			
+				<td>540,654</td>
+			
+				<td>11,144</td>
+			
+				<td>13,242</td>
+			
+				<td>63</td>
+			
+			<td class="colHide1">565,103</td>
+			
+				<td class="colHide1">95.67</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.34</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2020&amp;m=1&amp;simple=False">2020-01</a></td>
+			
+				<td>549,028</td>
+			
+				<td>11,279</td>
+			
+				<td>13,197</td>
+			
+				<td>67</td>
+			
+			<td class="colHide1">573,571</td>
+			
+				<td class="colHide1">95.72</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.30</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=12&amp;simple=False">2019-12</a></td>
+			
+				<td>549,435</td>
+			
+				<td>11,312</td>
+			
+				<td>13,120</td>
+			
+				<td>65</td>
+			
+			<td class="colHide1">573,932</td>
+			
+				<td class="colHide1">95.73</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">2.29</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=11&amp;simple=False">2019-11</a></td>
+			
+				<td>548,115</td>
+			
+				<td>11,309</td>
+			
+				<td>12,695</td>
+			
+				<td>68</td>
+			
+			<td class="colHide1">572,187</td>
+			
+				<td class="colHide1">95.79</td>
+			
+				<td class="colHide1">1.98</td>
+			
+				<td class="colHide1">2.22</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=10&amp;simple=False">2019-10</a></td>
+			
+				<td>548,402</td>
+			
+				<td>11,309</td>
+			
+				<td>12,244</td>
+			
+				<td>64</td>
+			
+			<td class="colHide1">572,019</td>
+			
+				<td class="colHide1">95.87</td>
+			
+				<td class="colHide1">1.98</td>
+			
+				<td class="colHide1">2.14</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=9&amp;simple=False">2019-09</a></td>
+			
+				<td>547,820</td>
+			
+				<td>11,287</td>
+			
+				<td>11,896</td>
+			
+				<td>62</td>
+			
+			<td class="colHide1">571,065</td>
+			
+				<td class="colHide1">95.93</td>
+			
+				<td class="colHide1">1.98</td>
+			
+				<td class="colHide1">2.08</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=8&amp;simple=False">2019-08</a></td>
+			
+				<td>548,155</td>
+			
+				<td>11,343</td>
+			
+				<td>11,360</td>
+			
+				<td>61</td>
+			
+			<td class="colHide1">570,919</td>
+			
+				<td class="colHide1">96.01</td>
+			
+				<td class="colHide1">1.99</td>
+			
+				<td class="colHide1">1.99</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=7&amp;simple=False">2019-07</a></td>
+			
+				<td>548,352</td>
+			
+				<td>11,372</td>
+			
+				<td>11,222</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">571,006</td>
+			
+				<td class="colHide1">96.03</td>
+			
+				<td class="colHide1">1.99</td>
+			
+				<td class="colHide1">1.97</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=6&amp;simple=False">2019-06</a></td>
+			
+				<td>547,748</td>
+			
+				<td>11,363</td>
+			
+				<td>11,071</td>
+			
+				<td>57</td>
+			
+			<td class="colHide1">570,239</td>
+			
+				<td class="colHide1">96.06</td>
+			
+				<td class="colHide1">1.99</td>
+			
+				<td class="colHide1">1.94</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=5&amp;simple=False">2019-05</a></td>
+			
+				<td>547,714</td>
+			
+				<td>11,369</td>
+			
+				<td>11,005</td>
+			
+				<td>54</td>
+			
+			<td class="colHide1">570,142</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">1.99</td>
+			
+				<td class="colHide1">1.93</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=4&amp;simple=False">2019-04</a></td>
+			
+				<td>546,526</td>
+			
+				<td>11,372</td>
+			
+				<td>10,738</td>
+			
+				<td>53</td>
+			
+			<td class="colHide1">568,689</td>
+			
+				<td class="colHide1">96.10</td>
+			
+				<td class="colHide1">2.00</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=3&amp;simple=False">2019-03</a></td>
+			
+				<td>545,607</td>
+			
+				<td>11,393</td>
+			
+				<td>10,565</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">567,625</td>
+			
+				<td class="colHide1">96.12</td>
+			
+				<td class="colHide1">2.01</td>
+			
+				<td class="colHide1">1.86</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=2&amp;simple=False">2019-02</a></td>
+			
+				<td>545,307</td>
+			
+				<td>11,406</td>
+			
+				<td>10,715</td>
+			
+				<td>58</td>
+			
+			<td class="colHide1">567,486</td>
+			
+				<td class="colHide1">96.09</td>
+			
+				<td class="colHide1">2.01</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2019&amp;m=1&amp;simple=False">2019-01</a></td>
+			
+				<td>545,391</td>
+			
+				<td>11,402</td>
+			
+				<td>10,719</td>
+			
+				<td>61</td>
+			
+			<td class="colHide1">567,573</td>
+			
+				<td class="colHide1">96.09</td>
+			
+				<td class="colHide1">2.01</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=12&amp;simple=False">2018-12</a></td>
+			
+				<td>543,084</td>
+			
+				<td>11,399</td>
+			
+				<td>10,670</td>
+			
+				<td>60</td>
+			
+			<td class="colHide1">565,213</td>
+			
+				<td class="colHide1">96.08</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=11&amp;simple=False">2018-11</a></td>
+			
+				<td>541,976</td>
+			
+				<td>11,418</td>
+			
+				<td>10,681</td>
+			
+				<td>59</td>
+			
+			<td class="colHide1">564,134</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=10&amp;simple=False">2018-10</a></td>
+			
+				<td>540,012</td>
+			
+				<td>11,393</td>
+			
+				<td>10,665</td>
+			
+				<td>54</td>
+			
+			<td class="colHide1">562,124</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.03</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=9&amp;simple=False">2018-09</a></td>
+			
+				<td>537,773</td>
+			
+				<td>11,325</td>
+			
+				<td>10,660</td>
+			
+				<td>50</td>
+			
+			<td class="colHide1">559,808</td>
+			
+				<td class="colHide1">96.06</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=8&amp;simple=False">2018-08</a></td>
+			
+				<td>539,082</td>
+			
+				<td>11,430</td>
+			
+				<td>10,643</td>
+			
+				<td>48</td>
+			
+			<td class="colHide1">561,203</td>
+			
+				<td class="colHide1">96.06</td>
+			
+				<td class="colHide1">2.04</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=7&amp;simple=False">2018-07</a></td>
+			
+				<td>538,120</td>
+			
+				<td>11,434</td>
+			
+				<td>10,631</td>
+			
+				<td>49</td>
+			
+			<td class="colHide1">560,234</td>
+			
+				<td class="colHide1">96.05</td>
+			
+				<td class="colHide1">2.04</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=6&amp;simple=False">2018-06</a></td>
+			
+				<td>538,059</td>
+			
+				<td>11,466</td>
+			
+				<td>10,583</td>
+			
+				<td>50</td>
+			
+			<td class="colHide1">560,158</td>
+			
+				<td class="colHide1">96.05</td>
+			
+				<td class="colHide1">2.05</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=5&amp;simple=False">2018-05</a></td>
+			
+				<td>537,762</td>
+			
+				<td>11,475</td>
+			
+				<td>10,532</td>
+			
+				<td>45</td>
+			
+			<td class="colHide1">559,814</td>
+			
+				<td class="colHide1">96.06</td>
+			
+				<td class="colHide1">2.05</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=4&amp;simple=False">2018-04</a></td>
+			
+				<td>536,657</td>
+			
+				<td>11,454</td>
+			
+				<td>10,469</td>
+			
+				<td>44</td>
+			
+			<td class="colHide1">558,624</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.05</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=3&amp;simple=False">2018-03</a></td>
+			
+				<td>535,210</td>
+			
+				<td>11,414</td>
+			
+				<td>10,206</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">556,876</td>
+			
+				<td class="colHide1">96.11</td>
+			
+				<td class="colHide1">2.05</td>
+			
+				<td class="colHide1">1.83</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=2&amp;simple=False">2018-02</a></td>
+			
+				<td>534,567</td>
+			
+				<td>11,370</td>
+			
+				<td>10,424</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">556,407</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.04</td>
+			
+				<td class="colHide1">1.87</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2018&amp;m=1&amp;simple=False">2018-01</a></td>
+			
+				<td>533,095</td>
+			
+				<td>11,333</td>
+			
+				<td>10,453</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">554,927</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.04</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=12&amp;simple=False">2017-12</a></td>
+			
+				<td>531,014</td>
+			
+				<td>11,238</td>
+			
+				<td>10,417</td>
+			
+				<td>41</td>
+			
+			<td class="colHide1">552,710</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.03</td>
+			
+				<td class="colHide1">1.88</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=11&amp;simple=False">2017-11</a></td>
+			
+				<td>530,092</td>
+			
+				<td>11,222</td>
+			
+				<td>10,447</td>
+			
+				<td>37</td>
+			
+			<td class="colHide1">551,798</td>
+			
+				<td class="colHide1">96.07</td>
+			
+				<td class="colHide1">2.03</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=10&amp;simple=False">2017-10</a></td>
+			
+				<td>528,371</td>
+			
+				<td>11,129</td>
+			
+				<td>10,385</td>
+			
+				<td>37</td>
+			
+			<td class="colHide1">549,922</td>
+			
+				<td class="colHide1">96.08</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=9&amp;simple=False">2017-09</a></td>
+			
+				<td>527,556</td>
+			
+				<td>11,072</td>
+			
+				<td>10,358</td>
+			
+				<td>33</td>
+			
+			<td class="colHide1">549,019</td>
+			
+				<td class="colHide1">96.09</td>
+			
+				<td class="colHide1">2.02</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=8&amp;simple=False">2017-08</a></td>
+			
+				<td>526,638</td>
+			
+				<td>10,205</td>
+			
+				<td>10,376</td>
+			
+				<td>34</td>
+			
+			<td class="colHide1">547,253</td>
+			
+				<td class="colHide1">96.23</td>
+			
+				<td class="colHide1">1.86</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=7&amp;simple=False">2017-07</a></td>
+			
+				<td>525,934</td>
+			
+				<td>9,463</td>
+			
+				<td>10,361</td>
+			
+				<td>36</td>
+			
+			<td class="colHide1">545,794</td>
+			
+				<td class="colHide1">96.36</td>
+			
+				<td class="colHide1">1.73</td>
+			
+				<td class="colHide1">1.90</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=6&amp;simple=False">2017-06</a></td>
+			
+				<td>526,261</td>
+			
+				<td>9,116</td>
+			
+				<td>10,341</td>
+			
+				<td>35</td>
+			
+			<td class="colHide1">545,753</td>
+			
+				<td class="colHide1">96.43</td>
+			
+				<td class="colHide1">1.67</td>
+			
+				<td class="colHide1">1.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=5&amp;simple=False">2017-05</a></td>
+			
+				<td>525,017</td>
+			
+				<td>8,741</td>
+			
+				<td>10,072</td>
+			
+				<td>35</td>
+			
+			<td class="colHide1">543,865</td>
+			
+				<td class="colHide1">96.53</td>
+			
+				<td class="colHide1">1.61</td>
+			
+				<td class="colHide1">1.85</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=4&amp;simple=False">2017-04</a></td>
+			
+				<td>524,334</td>
+			
+				<td>8,217</td>
+			
+				<td>9,958</td>
+			
+				<td>30</td>
+			
+			<td class="colHide1">542,539</td>
+			
+				<td class="colHide1">96.64</td>
+			
+				<td class="colHide1">1.51</td>
+			
+				<td class="colHide1">1.84</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=3&amp;simple=False">2017-03</a></td>
+			
+				<td>525,295</td>
+			
+				<td>7,882</td>
+			
+				<td>9,920</td>
+			
+				<td>26</td>
+			
+			<td class="colHide1">543,123</td>
+			
+				<td class="colHide1">96.72</td>
+			
+				<td class="colHide1">1.45</td>
+			
+				<td class="colHide1">1.83</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=2&amp;simple=False">2017-02</a></td>
+			
+				<td>524,370</td>
+			
+				<td>7,528</td>
+			
+				<td>7,516</td>
+			
+				<td>32</td>
+			
+			<td class="colHide1">539,446</td>
+			
+				<td class="colHide1">97.21</td>
+			
+				<td class="colHide1">1.40</td>
+			
+				<td class="colHide1">1.39</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2017&amp;m=1&amp;simple=False">2017-01</a></td>
+			
+				<td>523,939</td>
+			
+				<td>7,383</td>
+			
+				<td>6,892</td>
+			
+				<td>31</td>
+			
+			<td class="colHide1">538,245</td>
+			
+				<td class="colHide1">97.34</td>
+			
+				<td class="colHide1">1.37</td>
+			
+				<td class="colHide1">1.28</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=12&amp;simple=False">2016-12</a></td>
+			
+				<td>522,153</td>
+			
+				<td>7,146</td>
+			
+				<td>6,694</td>
+			
+				<td>32</td>
+			
+			<td class="colHide1">536,025</td>
+			
+				<td class="colHide1">97.41</td>
+			
+				<td class="colHide1">1.33</td>
+			
+				<td class="colHide1">1.25</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=11&amp;simple=False">2016-11</a></td>
+			
+				<td>521,381</td>
+			
+				<td>6,908</td>
+			
+				<td>6,518</td>
+			
+				<td>29</td>
+			
+			<td class="colHide1">534,836</td>
+			
+				<td class="colHide1">97.48</td>
+			
+				<td class="colHide1">1.29</td>
+			
+				<td class="colHide1">1.22</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=10&amp;simple=False">2016-10</a></td>
+			
+				<td>519,769</td>
+			
+				<td>6,667</td>
+			
+				<td>6,352</td>
+			
+				<td>28</td>
+			
+			<td class="colHide1">532,816</td>
+			
+				<td class="colHide1">97.55</td>
+			
+				<td class="colHide1">1.25</td>
+			
+				<td class="colHide1">1.19</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=9&amp;simple=False">2016-09</a></td>
+			
+				<td>519,550</td>
+			
+				<td>6,365</td>
+			
+				<td>6,193</td>
+			
+				<td>29</td>
+			
+			<td class="colHide1">532,137</td>
+			
+				<td class="colHide1">97.63</td>
+			
+				<td class="colHide1">1.20</td>
+			
+				<td class="colHide1">1.16</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=8&amp;simple=False">2016-08</a></td>
+			
+				<td>518,610</td>
+			
+				<td>6,123</td>
+			
+				<td>5,676</td>
+			
+				<td>25</td>
+			
+			<td class="colHide1">530,434</td>
+			
+				<td class="colHide1">97.77</td>
+			
+				<td class="colHide1">1.15</td>
+			
+				<td class="colHide1">1.07</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=7&amp;simple=False">2016-07</a></td>
+			
+				<td>517,698</td>
+			
+				<td>5,893</td>
+			
+				<td>5,409</td>
+			
+				<td>23</td>
+			
+			<td class="colHide1">529,023</td>
+			
+				<td class="colHide1">97.86</td>
+			
+				<td class="colHide1">1.11</td>
+			
+				<td class="colHide1">1.02</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=6&amp;simple=False">2016-06</a></td>
+			
+				<td>517,932</td>
+			
+				<td>5,782</td>
+			
+				<td>5,112</td>
+			
+				<td>23</td>
+			
+			<td class="colHide1">528,849</td>
+			
+				<td class="colHide1">97.94</td>
+			
+				<td class="colHide1">1.09</td>
+			
+				<td class="colHide1">0.97</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=5&amp;simple=False">2016-05</a></td>
+			
+				<td>517,029</td>
+			
+				<td>5,658</td>
+			
+				<td>4,906</td>
+			
+				<td>38</td>
+			
+			<td class="colHide1">527,631</td>
+			
+				<td class="colHide1">97.99</td>
+			
+				<td class="colHide1">1.07</td>
+			
+				<td class="colHide1">0.93</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=4&amp;simple=False">2016-04</a></td>
+			
+				<td>516,226</td>
+			
+				<td>5,578</td>
+			
+				<td>4,830</td>
+			
+				<td>50</td>
+			
+			<td class="colHide1">526,684</td>
+			
+				<td class="colHide1">98.01</td>
+			
+				<td class="colHide1">1.06</td>
+			
+				<td class="colHide1">0.92</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=3&amp;simple=False">2016-03</a></td>
+			
+				<td>514,982</td>
+			
+				<td>5,492</td>
+			
+				<td>4,671</td>
+			
+				<td>48</td>
+			
+			<td class="colHide1">525,193</td>
+			
+				<td class="colHide1">98.06</td>
+			
+				<td class="colHide1">1.05</td>
+			
+				<td class="colHide1">0.89</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=2&amp;simple=False">2016-02</a></td>
+			
+				<td>514,365</td>
+			
+				<td>5,384</td>
+			
+				<td>4,165</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">523,960</td>
+			
+				<td class="colHide1">98.17</td>
+			
+				<td class="colHide1">1.03</td>
+			
+				<td class="colHide1">0.79</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2016&amp;m=1&amp;simple=False">2016-01</a></td>
+			
+				<td>513,423</td>
+			
+				<td>5,330</td>
+			
+				<td>4,000</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">522,799</td>
+			
+				<td class="colHide1">98.21</td>
+			
+				<td class="colHide1">1.02</td>
+			
+				<td class="colHide1">0.77</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=12&amp;simple=False">2015-12</a></td>
+			
+				<td>512,808</td>
+			
+				<td>5,280</td>
+			
+				<td>3,717</td>
+			
+				<td>47</td>
+			
+			<td class="colHide1">521,852</td>
+			
+				<td class="colHide1">98.27</td>
+			
+				<td class="colHide1">1.01</td>
+			
+				<td class="colHide1">0.71</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=11&amp;simple=False">2015-11</a></td>
+			
+				<td>510,730</td>
+			
+				<td>5,206</td>
+			
+				<td>3,244</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">519,226</td>
+			
+				<td class="colHide1">98.36</td>
+			
+				<td class="colHide1">1.00</td>
+			
+				<td class="colHide1">0.62</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=10&amp;simple=False">2015-10</a></td>
+			
+				<td>508,855</td>
+			
+				<td>5,113</td>
+			
+				<td>2,798</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">516,812</td>
+			
+				<td class="colHide1">98.46</td>
+			
+				<td class="colHide1">0.99</td>
+			
+				<td class="colHide1">0.54</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=9&amp;simple=False">2015-09</a></td>
+			
+				<td>506,815</td>
+			
+				<td>5,018</td>
+			
+				<td>2,448</td>
+			
+				<td>47</td>
+			
+			<td class="colHide1">514,328</td>
+			
+				<td class="colHide1">98.54</td>
+			
+				<td class="colHide1">0.98</td>
+			
+				<td class="colHide1">0.48</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=8&amp;simple=False">2015-08</a></td>
+			
+				<td>505,203</td>
+			
+				<td>4,968</td>
+			
+				<td>2,217</td>
+			
+				<td>44</td>
+			
+			<td class="colHide1">512,432</td>
+			
+				<td class="colHide1">98.59</td>
+			
+				<td class="colHide1">0.97</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=7&amp;simple=False">2015-07</a></td>
+			
+				<td>503,825</td>
+			
+				<td>4,914</td>
+			
+				<td>2,063</td>
+			
+				<td>41</td>
+			
+			<td class="colHide1">510,843</td>
+			
+				<td class="colHide1">98.63</td>
+			
+				<td class="colHide1">0.96</td>
+			
+				<td class="colHide1">0.40</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=6&amp;simple=False">2015-06</a></td>
+			
+				<td>502,319</td>
+			
+				<td>4,856</td>
+			
+				<td>1,991</td>
+			
+				<td>41</td>
+			
+			<td class="colHide1">509,207</td>
+			
+				<td class="colHide1">98.65</td>
+			
+				<td class="colHide1">0.95</td>
+			
+				<td class="colHide1">0.39</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=5&amp;simple=False">2015-05</a></td>
+			
+				<td>498,226</td>
+			
+				<td>4,687</td>
+			
+				<td>1,845</td>
+			
+				<td>40</td>
+			
+			<td class="colHide1">504,798</td>
+			
+				<td class="colHide1">98.70</td>
+			
+				<td class="colHide1">0.93</td>
+			
+				<td class="colHide1">0.37</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=4&amp;simple=False">2015-04</a></td>
+			
+				<td>497,406</td>
+			
+				<td>4,560</td>
+			
+				<td>1,714</td>
+			
+				<td>34</td>
+			
+			<td class="colHide1">503,714</td>
+			
+				<td class="colHide1">98.75</td>
+			
+				<td class="colHide1">0.91</td>
+			
+				<td class="colHide1">0.34</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=3&amp;simple=False">2015-03</a></td>
+			
+				<td>495,570</td>
+			
+				<td>4,435</td>
+			
+				<td>1,579</td>
+			
+				<td>34</td>
+			
+			<td class="colHide1">501,618</td>
+			
+				<td class="colHide1">98.79</td>
+			
+				<td class="colHide1">0.88</td>
+			
+				<td class="colHide1">0.31</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=2&amp;simple=False">2015-02</a></td>
+			
+				<td>494,630</td>
+			
+				<td>4,363</td>
+			
+				<td>1,404</td>
+			
+				<td>52</td>
+			
+			<td class="colHide1">500,449</td>
+			
+				<td class="colHide1">98.84</td>
+			
+				<td class="colHide1">0.87</td>
+			
+				<td class="colHide1">0.28</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2015&amp;m=1&amp;simple=False">2015-01</a></td>
+			
+				<td>490,584</td>
+			
+				<td>4,008</td>
+			
+				<td>1,322</td>
+			
+				<td>55</td>
+			
+			<td class="colHide1">495,969</td>
+			
+				<td class="colHide1">98.91</td>
+			
+				<td class="colHide1">0.81</td>
+			
+				<td class="colHide1">0.27</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=12&amp;simple=False">2014-12</a></td>
+			
+				<td>490,037</td>
+			
+				<td>3,796</td>
+			
+				<td>1,152</td>
+			
+				<td>53</td>
+			
+			<td class="colHide1">495,038</td>
+			
+				<td class="colHide1">98.99</td>
+			
+				<td class="colHide1">0.77</td>
+			
+				<td class="colHide1">0.23</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=11&amp;simple=False">2014-11</a></td>
+			
+				<td>488,348</td>
+			
+				<td>3,546</td>
+			
+				<td>822</td>
+			
+				<td>49</td>
+			
+			<td class="colHide1">492,765</td>
+			
+				<td class="colHide1">99.10</td>
+			
+				<td class="colHide1">0.72</td>
+			
+				<td class="colHide1">0.17</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=10&amp;simple=False">2014-10</a></td>
+			
+				<td>488,231</td>
+			
+				<td>3,484</td>
+			
+				<td>773</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">492,534</td>
+			
+				<td class="colHide1">99.13</td>
+			
+				<td class="colHide1">0.71</td>
+			
+				<td class="colHide1">0.16</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=9&amp;simple=False">2014-09</a></td>
+			
+				<td>486,753</td>
+			
+				<td>3,298</td>
+			
+				<td>607</td>
+			
+				<td>44</td>
+			
+			<td class="colHide1">490,702</td>
+			
+				<td class="colHide1">99.20</td>
+			
+				<td class="colHide1">0.67</td>
+			
+				<td class="colHide1">0.12</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=8&amp;simple=False">2014-08</a></td>
+			
+				<td>485,011</td>
+			
+				<td>3,107</td>
+			
+				<td>507</td>
+			
+				<td>39</td>
+			
+			<td class="colHide1">488,664</td>
+			
+				<td class="colHide1">99.25</td>
+			
+				<td class="colHide1">0.64</td>
+			
+				<td class="colHide1">0.10</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=7&amp;simple=False">2014-07</a></td>
+			
+				<td>484,255</td>
+			
+				<td>2,897</td>
+			
+				<td>349</td>
+			
+				<td>37</td>
+			
+			<td class="colHide1">487,538</td>
+			
+				<td class="colHide1">99.33</td>
+			
+				<td class="colHide1">0.59</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=6&amp;simple=False">2014-06</a></td>
+			
+				<td>483,058</td>
+			
+				<td>2,740</td>
+			
+				<td>335</td>
+			
+				<td>35</td>
+			
+			<td class="colHide1">486,168</td>
+			
+				<td class="colHide1">99.36</td>
+			
+				<td class="colHide1">0.56</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=5&amp;simple=False">2014-05</a></td>
+			
+				<td>480,999</td>
+			
+				<td>2,624</td>
+			
+				<td>328</td>
+			
+				<td>33</td>
+			
+			<td class="colHide1">483,984</td>
+			
+				<td class="colHide1">99.38</td>
+			
+				<td class="colHide1">0.54</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=4&amp;simple=False">2014-04</a></td>
+			
+				<td>479,935</td>
+			
+				<td>2,542</td>
+			
+				<td>322</td>
+			
+				<td>30</td>
+			
+			<td class="colHide1">482,829</td>
+			
+				<td class="colHide1">99.40</td>
+			
+				<td class="colHide1">0.53</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=3&amp;simple=False">2014-03</a></td>
+			
+				<td>478,532</td>
+			
+				<td>2,429</td>
+			
+				<td>319</td>
+			
+				<td>30</td>
+			
+			<td class="colHide1">481,310</td>
+			
+				<td class="colHide1">99.42</td>
+			
+				<td class="colHide1">0.50</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=2&amp;simple=False">2014-02</a></td>
+			
+				<td>477,622</td>
+			
+				<td>2,351</td>
+			
+				<td>317</td>
+			
+				<td>29</td>
+			
+			<td class="colHide1">480,319</td>
+			
+				<td class="colHide1">99.44</td>
+			
+				<td class="colHide1">0.49</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2014&amp;m=1&amp;simple=False">2014-01</a></td>
+			
+				<td>475,528</td>
+			
+				<td>2,313</td>
+			
+				<td>316</td>
+			
+				<td>36</td>
+			
+			<td class="colHide1">478,193</td>
+			
+				<td class="colHide1">99.44</td>
+			
+				<td class="colHide1">0.48</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=12&amp;simple=False">2013-12</a></td>
+			
+				<td>473,148</td>
+			
+				<td>2,260</td>
+			
+				<td>314</td>
+			
+				<td>30</td>
+			
+			<td class="colHide1">475,752</td>
+			
+				<td class="colHide1">99.45</td>
+			
+				<td class="colHide1">0.48</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=11&amp;simple=False">2013-11</a></td>
+			
+				<td>470,966</td>
+			
+				<td>2,051</td>
+			
+				<td>309</td>
+			
+				<td>28</td>
+			
+			<td class="colHide1">473,354</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=10&amp;simple=False">2013-10</a></td>
+			
+				<td>469,472</td>
+			
+				<td>2,037</td>
+			
+				<td>307</td>
+			
+				<td>25</td>
+			
+			<td class="colHide1">471,841</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=9&amp;simple=False">2013-09</a></td>
+			
+				<td>466,798</td>
+			
+				<td>2,019</td>
+			
+				<td>306</td>
+			
+				<td>23</td>
+			
+			<td class="colHide1">469,146</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.00</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=8&amp;simple=False">2013-08</a></td>
+			
+				<td>465,384</td>
+			
+				<td>1,974</td>
+			
+				<td>307</td>
+			
+				<td>53</td>
+			
+			<td class="colHide1">467,718</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.42</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=7&amp;simple=False">2013-07</a></td>
+			
+				<td>464,111</td>
+			
+				<td>1,980</td>
+			
+				<td>306</td>
+			
+				<td>46</td>
+			
+			<td class="colHide1">466,443</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.42</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=6&amp;simple=False">2013-06</a></td>
+			
+				<td>462,264</td>
+			
+				<td>1,986</td>
+			
+				<td>303</td>
+			
+				<td>42</td>
+			
+			<td class="colHide1">464,595</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.07</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=5&amp;simple=False">2013-05</a></td>
+			
+				<td>461,284</td>
+			
+				<td>2,004</td>
+			
+				<td>300</td>
+			
+				<td>39</td>
+			
+			<td class="colHide1">463,627</td>
+			
+				<td class="colHide1">99.49</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=4&amp;simple=False">2013-04</a></td>
+			
+				<td>459,895</td>
+			
+				<td>2,013</td>
+			
+				<td>299</td>
+			
+				<td>34</td>
+			
+			<td class="colHide1">462,241</td>
+			
+				<td class="colHide1">99.49</td>
+			
+				<td class="colHide1">0.44</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=3&amp;simple=False">2013-03</a></td>
+			
+				<td>458,183</td>
+			
+				<td>1,998</td>
+			
+				<td>293</td>
+			
+				<td>30</td>
+			
+			<td class="colHide1">460,504</td>
+			
+				<td class="colHide1">99.50</td>
+			
+				<td class="colHide1">0.43</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=2&amp;simple=False">2013-02</a></td>
+			
+				<td>456,899</td>
+			
+				<td>2,003</td>
+			
+				<td>292</td>
+			
+				<td>28</td>
+			
+			<td class="colHide1">459,222</td>
+			
+				<td class="colHide1">99.49</td>
+			
+				<td class="colHide1">0.44</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="vefuel.asp?y=2013&amp;m=1&amp;simple=False">2013-01</a></td>
+			
+				<td>455,242</td>
+			
+				<td>2,014</td>
+			
+				<td>287</td>
+			
+				<td>27</td>
+			
+			<td class="colHide1">457,570</td>
+			
+				<td class="colHide1">99.49</td>
+			
+				<td class="colHide1">0.44</td>
+			
+				<td class="colHide1">0.06</td>
+			
+				<td class="colHide1">0.01</td>
+			
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

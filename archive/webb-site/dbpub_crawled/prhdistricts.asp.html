@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>Housing Authority public rental housing by District</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Housing Authority public rental housing by District</h2>
+<p>This page shows the HK Housing Authority's stock of Public Rental units, by District. Data are
+<a href="https://data.gov.hk/en-datasets/provider/hk-housing" target="_blank">sourced here</a>. Click on a District to drill down to Estates, Blocks, Floors 
+and Units.</p>
+<p class='widthAlert2'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable c2l c3l">
+	<tr>
+		<th class="colHide2"></th>
+		<th><a href='/dbpub/prhdistricts.asp?sort=en'><b>District</b></a></th>
+		<th><a href='/dbpub/prhdistricts.asp?sort=cn'><b>Chinese</b></a></th>	
+		<th><a href='/dbpub/prhdistricts.asp?sort=cd'><b>Units</b></a></th>
+		<th class="colHide2">Units<br>with<br>elevator</th>
+		<th><a href='/dbpub/prhdistricts.asp?sort=totad'><b>Total<br>internal<br>floor<br>area sq.m.</b></a></th>
+		<th><a href='/dbpub/prhdistricts.asp?sort=ad'><b>Average<br>internal<br>floor<br>area sq.m.</b></a></th>
+		<th><a href='/dbpub/prhdistricts.asp?sort=rd'><b>Region</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide2">1</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=1">Central & Western</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=1">中西區</a></td>
+			<td>636</td>
+			<td class="colHide2">416</td>
+			<td>25,163</td>
+			<td>39.56</td>
+			<td>Hong Kong Island 香港島</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">2</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=3">Eastern</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=3">東區</a></td>
+			<td>39,006</td>
+			<td class="colHide2">35,202</td>
+			<td>1,301,560</td>
+			<td>33.37</td>
+			<td>Hong Kong Island 香港島</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">3</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=4">Southern</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=4">南區</a></td>
+			<td>33,958</td>
+			<td class="colHide2">32,392</td>
+			<td>1,097,245</td>
+			<td>32.31</td>
+			<td>Hong Kong Island 香港島</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">4</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=7">Kowloon City</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=7">九龍城</a></td>
+			<td>29,635</td>
+			<td class="colHide2">27,946</td>
+			<td>855,725</td>
+			<td>28.88</td>
+			<td>Kowloon 九龍</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">5</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=9">Kwun Tong</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=9">觀塘</a></td>
+			<td>160,339</td>
+			<td class="colHide2">159,214</td>
+			<td>4,851,348</td>
+			<td>30.26</td>
+			<td>Kowloon 九龍</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">6</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=6">Sham Shui Po</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=6">深水埗</a></td>
+			<td>77,286</td>
+			<td class="colHide2">75,006</td>
+			<td>2,297,276</td>
+			<td>29.72</td>
+			<td>Kowloon 九龍</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">7</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=8">Wong Tai Sin</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=8">黃大仙</a></td>
+			<td>96,361</td>
+			<td class="colHide2">93,304</td>
+			<td>3,194,675</td>
+			<td>33.15</td>
+			<td>Kowloon 九龍</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">8</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=5">Yau Tsim Mong</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=5">油尖旺</a></td>
+			<td>2,820</td>
+			<td class="colHide2">2,820</td>
+			<td>90,870</td>
+			<td>32.22</td>
+			<td>Kowloon 九龍</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">9</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=18">Islands</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=18">離島</a></td>
+			<td>33,110</td>
+			<td class="colHide2">32,422</td>
+			<td>1,075,902</td>
+			<td>32.49</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">10</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=17">Kwai Tsing</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=17">葵青</a></td>
+			<td>118,016</td>
+			<td class="colHide2">115,379</td>
+			<td>3,778,926</td>
+			<td>32.02</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">11</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=13">North</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=13">北區</a></td>
+			<td>50,270</td>
+			<td class="colHide2">49,917</td>
+			<td>1,535,750</td>
+			<td>30.55</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">12</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=15">Sai Kung</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=15">西貢</a></td>
+			<td>40,577</td>
+			<td class="colHide2">40,575</td>
+			<td>1,321,185</td>
+			<td>32.56</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">13</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=16">Sha Tin</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=16">沙田</a></td>
+			<td>102,166</td>
+			<td class="colHide2">100,128</td>
+			<td>3,154,185</td>
+			<td>30.87</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">14</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=14">Tai Po</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=14">大埔</a></td>
+			<td>39,906</td>
+			<td class="colHide2">39,413</td>
+			<td>1,241,468</td>
+			<td>31.11</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">15</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=10">Tsuen Wan</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=10">荃灣</a></td>
+			<td>21,731</td>
+			<td class="colHide2">20,152</td>
+			<td>681,581</td>
+			<td>31.36</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">16</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=11">Tuen Mun</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=11">屯門</a></td>
+			<td>89,877</td>
+			<td class="colHide2">88,532</td>
+			<td>2,553,600</td>
+			<td>28.41</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+		<tr>
+			<td class="colHide2">17</td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=12">Yuen Long</a></td>
+			<td><a href="prhestates.asp?sort=en&amp;dis=12">元朗</a></td>
+			<td>73,950</td>
+			<td class="colHide2">73,730</td>
+			<td>2,514,736</td>
+			<td>34.01</td>
+			<td>New Territories 新界</td>
+		</tr>
+		
+	<tr class="total">
+		<td class="colHide2"></td>
+		<td>Total</td>
+		<td></td>
+		<td>1,009,644</td>
+		<td class="colHide2">986,548</td>
+		<td>31,571,196</td>
+		<td>31.27</td>
+	</tr>	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

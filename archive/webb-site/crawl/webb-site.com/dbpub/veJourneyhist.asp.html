@@ -1,0 +1,2873 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.stockChart('chart1', {
+    	chart: {
+    		backgroundColor: "#FFFFFF",
+	        borderWidth: 1,
+	        borderColor: "black"        
+    	},
+    	rangeSelector:{
+    		selected: 9,
+    		buttons: [{
+				type: 'month',
+				count: 1,
+				text: '1m'
+			}, {
+				type: 'month',
+				count: 3,
+				text: '3m'
+			}, {
+				type: 'month',
+				count: 6,
+				text: '6m'
+			}, {
+				type: 'ytd',
+				text: 'YTD'
+			}, {
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 3,
+				text: '3y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputDateFormat:"%e %b %Y"
+    	},
+        title: {
+            text: '<b>HK passenger journeys: MTR Airport Express by month</b>',
+            margin: 10,
+            style: {
+            	fontSize:'1em'
+	        }	            
+        },
+        subtitle: {
+        	text: 'Webb-site.com',
+        	style: {
+        		fontWeight: 'bold',
+        		fontSize: '1em'
+        	}
+        },
+        yAxis: [{
+			title: {
+	            text: 'Journeys per day'
+	        },
+	        height:'64%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        min:null
+	    }, {
+			title: {
+	            text: 'Journeys per car per day'
+	        },
+	        height:'64%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        opposite:false,
+	        min:null
+	    }, {
+	        title: {
+	            text: 'Km per car per day'
+	        },
+	        top:'65%',
+	        height: '35%',
+	        offset: 0,
+	        lineWidth: 1,
+	    }],
+        series: [{
+        	type: 'line',
+        	name: 'Journeys per day',
+        	id: 'adjClose',
+            data: [[1753920000000,36125],[1751241600000,32575],[1748649600000,34987],[1745971200000,38273],[1743379200000,36015],[1740700800000,34340],[1738281600000,35997],[1735603200000,40063],[1732924800000,38291],[1730332800000,36096],[1727654400000,35289],[1725062400000,38427],[1722384000000,35932],[1719705600000,35238],[1717113600000,32166],[1714435200000,33545],[1711843200000,34444],[1709164800000,33567],[1706659200000,37355],[1703980800000,37261],[1701302400000,33499],[1698710400000,34593],[1696032000000,33506],[1693440000000,33548],[1690761600000,32270],[1688083200000,28344],[1685491200000,28248],[1682812800000,29106],[1680220800000,24612],[1677542400000,21040],[1675123200000,19814],[1672444800000,17476],[1669766400000,15024],[1667174400000,11655],[1664496000000,9795],[1661904000000,8961],[1659225600000,6876],[1656547200000,6486],[1653955200000,5884],[1651276800000,5180],[1648684800000,4376],[1646006400000,4281],[1643587200000,5654],[1640908800000,7362],[1638230400000,5928],[1635638400000,5997],[1632960000000,6563],[1630368000000,6750],[1627689600000,5917],[1625011200000,5719],[1622419200000,5285],[1619740800000,5185],[1617148800000,5751],[1614470400000,5135],[1612051200000,5027],[1609372800000,5140],[1606694400000,5694],[1604102400000,5619],[1601424000000,5980],[1598832000000,4772],[1596153600000,5378],[1593475200000,5901],[1590883200000,5029],[1588204800000,4463],[1585612800000,8348],[1582934400000,12911],[1580428800000,31354],[1577750400000,34666],[1575072000000,33062],[1572480000000,29553],[1569801600000,34502],[1567209600000,41733],[1564531200000,47035],[1561852800000,48140],[1559260800000,46546],[1556582400000,54042],[1553990400000,53079],[1551312000000,47474],[1548892800000,48740],[1546214400000,52723],[1543536000000,53333],[1540944000000,52305],[1538265600000,49741],[1535673600000,46411],[1532995200000,45968],[1530316800000,48397],[1527724800000,43712],[1525046400000,51811],[1522454400000,48975],[1519776000000,43434],[1517356800000,45241],[1514678400000,48822],[1512000000000,46767],[1509408000000,50427],[1506729600000,46969],[1504137600000,45447],[1501459200000,42499],[1498780800000,44110],[1496188800000,42641],[1493510400000,48464],[1490918400000,44138],[1488240000000,42653],[1485820800000,43376],[1483142400000,47136],[1480464000000,44037],[1477872000000,46380],[1475193600000,46212],[1472601600000,43113],[1469923200000,45045],[1467244800000,43774],[1464652800000,40655],[1461974400000,45852],[1459382400000,43706],[1456704000000,39938],[1454198400000,42962],[1451520000000,47076],[1448841600000,43601],[1446249600000,45082],[1443571200000,44140],[1440979200000,43083],[1438300800000,42225],[1435622400000,42711],[1433030400000,39304],[1430352000000,44957],[1427760000000,44220],[1425081600000,39379],[1422662400000,40958],[1419984000000,44580],[1417305600000,42348],[1414713600000,44401],[1412035200000,43307],[1409443200000,39883],[1406764800000,37964],[1404086400000,40709],[1401494400000,36978],[1398816000000,42175],[1396224000000,41559],[1393545600000,37292],[1391126400000,37871],[1388448000000,40860],[1385769600000,40036],[1383177600000,40246],[1380499200000,39462],[1377907200000,38507],[1375228800000,37478],[1372550400000,35984],[1369958400000,34953],[1367280000000,37762],[1364688000000,36965],[1362009600000,33300],[1359590400000,33417],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y}</b><br>",
+		    	shared:true
+		    }, 
+		},{
+		    type: 'column',
+		    name: 'Km per car per day',
+		    data: [[1753920000000,101.4222873900293255],[1751241600000,103.1796536796536797],[1748649600000,103.2065354000837872],[1745971200000,103.1502164502164502],[1743379200000,103.1897779639715124],[1740700800000,103.2342300556586271],[1738281600000,103.2769166317553414],[1735603200000,103.6057813154587348],[1732924800000,102.9818181818181818],[1730332800000,103.1596145789694177],[1727654400000,102.825974025974026],[1725062400000,103.365731043150398],[1722384000000,103.3087557603686636],[1719705600000,103.3116883116883117],[1717113600000,103.1629660661918726],[1714435200000,103.1441558441558442],[1711843200000,103.0310012568077084],[1709164800000,103.2091356918943126],[1706659200000,103.6292417260159196],[1703980800000,103.2484289903644742],[1701302400000,103.3012987012987013],[1698710400000,102.1202346041055718],[1696032000000,101.2748917748917749],[1693440000000,103.3229995810640972],[1690761600000,99.5596983661499791],[1688083200000,75.9121212121212121],[1685491200000,73.4038542103058232],[1682812800000,71.6753246753246753],[1680220800000,71.6539589442815249],[1677542400000,71.4675324675324675],[1675123200000,71.9748638458315878],[1672444800000,70.9245915374947633],[1669766400000,71.0376623376623377],[1667174400000,70.2827817343946376],[1664496000000,70.0034632034632035],[1661904000000,70.3100125680770842],[1659225600000,43.1013824884792627],[1656547200000,43.4883116883116883],[1653955200000,43.1059907834101382],[1651276800000,42.7497835497835498],[1648684800000,43.3250942605781315],[1646006400000,42.8056586270871985],[1643587200000,45.9069962295768747],[1640908800000,60.022622538751571],[1638230400000,43.7294372294372294],[1635638400000,45.498533724340176],[1632960000000,44.1212121212121212],[1630368000000,45.8923334729786343],[1627689600000,43.3250942605781315],[1625011200000,43.4428571428571429],[1622419200000,43.0913280268118978],[1619740800000,43.0212121212121212],[1617148800000,43.7917888563049853],[1614470400000,43.0746753246753247],[1612051200000,43.0913280268118978],[1609372800000,43.5584415584415584],[1606694400000,43.4883116883116883],[1604102400000,42.5517385839966485],[1601424000000,43.7294372294372294],[1598832000000,42.9803100125680771],[1596153600000,43.5240888144113951],[1593475200000,43.4883116883116883],[1590883200000,43.0913280268118978],[1588204800000,51.0857142857142857],[1585612800000,70.9828236279849183],[1582934400000,101.9982086878638603],[1580428800000,103.4118139924591537],[1577750400000,103.5379136992040218],[1575072000000,102.0398268398268398],[1572480000000,100.4993715961457897],[1569801600000,101.1995670995670996],[1567209600000,95.6011730205278592],[1564531200000,103.5169669040636783],[1561852800000,103.1480519480519481],[1559260800000,103.2211981566820276],[1556582400000,103.8125541125541126],[1553990400000,102.7859237536656891],[1551312000000,103.576530612244898],[1548892800000,103.2501047339757017],[1546214400000,103.5282781734394638],[1543536000000,103.6021645021645022],[1540944000000,103.6003351487222455],[1538265600000,100.3311688311688312],[1535673600000,103.1466275659824047],[1532995200000,103.2358609132802681],[1530316800000,103.3458874458874459],[1527724800000,103.2211981566820276],[1525046400000,103.2255411255411255],[1522454400000,103.5898617511520737],[1519776000000,103.62430426716141],[1517356800000,103.2211981566820276],[1514678400000,103.5722664432341852],[1512000000000,103.1766233766233766],[1509408000000,103.2936740678676163],[1506729600000,103.3463203463203463],[1504137600000,101.5550900712191035],[1501459200000,103.1043150397989108],[1498780800000,103.2086580086580087],[1496188800000,103.2794302471721827],[1493510400000,103.6489177489177489],[1490918400000,103.3087557603686636],[1488240000000,103.2676252319109462],[1485820800000,103.5860913280268119],[1483142400000,103.5718475073313783],[1480464000000,103.1502164502164502],[1477872000000,102.4754922496857981],[1475193600000,103.3458874458874459],[1472601600000,102.8395475492249686],[1469923200000,103.2647674905739422],[1467244800000,103.2558441558441558],[1464652800000,103.1629660661918726],[1461974400000,103.361038961038961],[1459382400000,103.5848345203183913],[1456704000000,103.6059113300492611],[1454198400000,103.2936740678676163],[1451520000000,103.5580226225387516],[1448841600000,103.1800865800865801],[1446249600000,103.0330959363217428],[1443571200000,103.445021645021645],[1440979200000,103.1382488479262673],[1438300800000,103.1667364893171345],[1435622400000,103.3298701298701299],[1433030400000,103.2660242982823628],[1430352000000,103.6337662337662338],[1427760000000,103.6866359447004608],[1425081600000,103.4939703153988868],[1422662400000,103.537075827398408],[1419984000000,103.7327188940092166],[1417305600000,103.316017316017316],[1414713600000,103.2358609132802681],[1412035200000,103.4502164502164502],[1409443200000,103.1483033095936322],[1406764800000,103.1038961038961039],[1404086400000,103.3008658008658009],[1401494400000,103.1621281943862589],[1398816000000,103.3822510822510823],[1396224000000,103.3523250942605781],[1393545600000,103.2996289424860853],[1391126400000,103.4608294930875576],[1388448000000,103.4851277754503561],[1385769600000,103.2554112554112554],[1383177600000,103.1918726434855467],[1380499200000,102.9939393939393939],[1377907200000,103.2936740678676163],[1375228800000,103.1478843736908253],[1372550400000,103.1463203463203463],[1369958400000,103.2505236698785086],[1367280000000,103.2406926406926407],[1364688000000,103.3866778382907415],[1362009600000,103.5598330241187384],[1359590400000,103.1189777963971512],],
+	        color: "grey",
+            dataGrouping: {
+            	enabled:false
+            },
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.1f}</b><br>",
+		    	shared:true
+		    },
+		    yAxis: 2
+		},{
+		    type: 'line',
+		    name: 'Journeys per car per day',
+		    data: [[1753920000000,469.1533305404273146],[1751241600000,423.054978354978355],[1748649600000,454.372015081692501],[1745971200000,497.0532467532467532],[1743379200000,467.7214076246334311],[1740700800000,445.9675324675324675],[1738281600000,467.4989526602429828],[1735603200000,520.3020527859237537],[1732924800000,497.2826839826839827],[1730332800000,468.7842480100544617],[1727654400000,458.2978354978354978],[1725062400000,499.0506912442396313],[1722384000000,466.6430666108085463],[1719705600000,457.6380952380952381],[1717113600000,417.741097612065354],[1714435200000,435.6536796536796537],[1711843200000,447.3209049015500628],[1709164800000,435.9364084191670399],[1706659200000,485.1302890657729367],[1703980800000,483.9044826141600335],[1701302400000,435.0458874458874459],[1698710400000,449.255550900712191],[1696032000000,435.1406926406926407],[1693440000000,435.6837033933808127],[1690761600000,419.0963552576455802],[1688083200000,368.0978354978354978],[1685491200000,366.860913280268119],[1682812800000,378.0012987012987013],[1680220800000,319.6313364055299539],[1677542400000,273.2421150278293135],[1675123200000,257.3297025555090071],[1672444800000,226.9635525764558023],[1669766400000,195.1173160173160173],[1667174400000,151.3611227482195224],[1664496000000,127.212987012987013],[1661904000000,116.372015081692501],[1659225600000,89.2936740678676163],[1656547200000,84.229004329004329],[1653955200000,76.4105571847507331],[1651276800000,67.2696969696969697],[1648684800000,56.8311688311688312],[1646006400000,55.5960111317254174],[1643587200000,73.4268956849602011],[1640908800000,95.6108085462924173],[1638230400000,76.9922077922077922],[1635638400000,77.8873062421449518],[1632960000000,85.2376623376623377],[1630368000000,87.6623376623376623],[1627689600000,76.8408043569333892],[1625011200000,74.2705627705627706],[1622419200000,68.6426476749057394],[1619740800000,67.3316017316017316],[1617148800000,74.6841223292836196],[1614470400000,66.6943413729128015],[1612051200000,65.2798491830749895],[1609372800000,66.7519899455383326],[1606694400000,73.945021645021645],[1604102400000,72.9752827817343946],[1601424000000,77.658008658008658],[1598832000000,61.977377461248429],[1596153600000,69.8496020108923335],[1593475200000,76.6346320346320346],[1590883200000,65.3095936321742773],[1588204800000,57.9627705627705628],[1585612800000,108.4168412232928362],[1582934400000,167.6739811912225705],[1580428800000,407.1968998743192292],[1577750400000,450.2098868873062421],[1575072000000,429.3718614718614719],[1572480000000,383.8110599078341014],[1569801600000,448.0774891774891775],[1567209600000,541.9815668202764977],[1564531200000,610.8462505236698785],[1561852800000,625.1896103896103896],[1559260800000,604.4976958525345622],[1556582400000,701.8393939393939394],[1553990400000,689.3389191453707583],[1551312000000,616.5449907235621521],[1548892800000,632.9828236279849183],[1546214400000,684.7105152911604525],[1543536000000,692.6376623376623377],[1540944000000,679.2844574780058651],[1538265600000,645.9831168831168831],[1535673600000,602.7381650607457059],[1532995200000,596.9840804356933389],[1530316800000,628.5367965367965368],[1527724800000,567.6904063678257227],[1525046400000,672.8666666666666667],[1522454400000,636.0351906158357771],[1519776000000,564.0723562152133581],[1517356800000,587.5446166736489317],[1514678400000,634.0523669878508588],[1512000000000,607.3584415584415584],[1509408000000,654.8981985756179305],[1506729600000,609.9909090909090909],[1504137600000,590.2216170925848345],[1501459200000,551.9396732299958106],[1498780800000,572.8606060606060606],[1496188800000,553.7779639715123586],[1493510400000,629.4051948051948052],[1490918400000,573.2191034771679933],[1488240000000,553.9359925788497217],[1485820800000,563.3284457478005865],[1483142400000,612.1612903225806452],[1480464000000,571.9064935064935065],[1477872000000,602.3355676581483033],[1475193600000,600.1558441558441558],[1472601600000,559.9116045245077503],[1469923200000,585.0046082949308756],[1467244800000,568.4991341991341991],[1464652800000,527.9811478843736908],[1461974400000,595.4852813852813853],[1459382400000,567.6053623795559279],[1456704000000,518.6753246753246753],[1454198400000,557.9430247172182656],[1451520000000,611.3707582739840804],[1448841600000,566.2424242424242424],[1446249600000,585.4851277754503561],[1443571200000,573.2476190476190476],[1440979200000,559.5194805194805195],[1438300800000,548.3724340175953079],[1435622400000,554.6904761904761905],[1433030400000,510.4440720569752828],[1430352000000,583.8545454545454545],[1427760000000,574.2852953498114788],[1425081600000,511.411873840445269],[1422662400000,531.9275240888144114],[1419984000000,578.9568496020108923],[1417305600000,549.9714285714285714],[1414713600000,576.6317553414327608],[1412035200000,562.4311688311688312],[1409443200000,517.961038961038961],[1406764800000,493.0402178466694596],[1404086400000,528.6818181818181818],[1401494400000,480.2312526183493925],[1398816000000,547.7212121212121212],[1396224000000,539.7255969836614998],[1393545600000,484.3079777365491651],[1391126400000,491.8265605362379556],[1388448000000,530.6468370339338081],[1385769600000,519.9432900432900433],[1383177600000,522.6702974444909929],[1380499200000,512.4995670995670996],[1377907200000,500.0950984499371596],[1375228800000,486.7272727272727273],[1372550400000,467.3307359307359307],[1369958400000,453.9375785504817763],[1367280000000,490.4108225108225108],[1364688000000,480.0640971931294512],[1362009600000,432.463821892393321],[1359590400000,433.9928780896522832],],
+	        color: "grey",
+            dataGrouping: {
+            	enabled:false
+            },
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.1f}</b><br>",
+		    	shared:true
+		    },
+		    yAxis: 1
+		}],
+		tooltip:{
+			backgroundColor: 'yellow',
+			xDateFormat: "%Y-%m",
+			headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>'
+		},
+		credits:{
+			enabled: true,
+			position: {
+				align:'left',
+				x:5,
+				verticalAlign:'bottom',
+				y:-5
+			}
+		}
+	});
+});
+</script>
+<title>HK passenger journeys: MTR Airport Express by month</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK passenger journeys: MTR Airport Express by month</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=80'>Brands</a></li><li><a href='vedet.asp?vc=80&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=80&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=80'>Type history</a></li><li><a href='vefuel.asp'>Fuels</a></li><li><a href='vefuelhist.asp?vc=80'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li><a href='veJourneys.asp'>Journeys</a></li><li class='livebutton'>Journey history</li>
+	</ul>
+	<div class="clear"></div>
+
+	<h4>Operator: <a href="orgdata.asp?p=11569">MTR CORPORATION LIMITED 香港鐵路有限公司</a></h4>
+
+<p>This page shows the number of passenger journeys and distance covered for a vehicle class, from Jan-2013 onwards, 
+using data from the Transport Department. Choose from simple or detailed classes. For trains, cars are passenger 
+carriages but car kilometres are train kilometres. So you need to multiply km/car/day by the number of cars per train. MTR fleet data exclude cross-border trains.&nbsp;
+Yearly data show monthly average capacity and vehicles. The latest available month is 2025-07.
+ Click on the month to see all types for the month.</p>
+<form method="get" action="veJourneyhist.asp">
+	<div class="inputs">
+		Breakdown <select id='simple' name='simple' onchange='this.form.submit()'><option value='True'>Simple</option><option value='False' selected>Detailed</option></select>
+	</div>
+	<div class="inputs">
+	Vehicle class
+	<select name='vc' onchange="this.form.submit()"><option value='82'>Ferries: other licensed</option><option value='84'>Ferries: Star Ferry</option><option value='83'>Ferries: Sun Ferry</option><option value='72'>Franchised bus: CTB: HK & XHT</option><option value='73'>Franchised bus: CTB: Lantau</option><option value='74'>Franchised bus: CTB: Urban & NT</option><option value='75'>Franchised bus: KMB</option><option value='76'>Franchised bus: LWB</option><option value='77'>Franchised bus: NLB</option><option value='78'>Franchised bus: NWFB</option><option value='46'>Green Minibus</option><option value='80' selected>MTR Airport Express</option><option value='38'>MTR Light Rail Vehicles</option><option value='79'>MTR local</option><option value='86'>Non-franchised public bus: MTR</option><option value='81'>Non-franchised residents' bus</option><option value='47'>Red Minibus</option><option value='3'>Taxis</option><option value='85'>Tramways</option></select>
+	</div>
+	<div class="inputs">
+		Frequency
+		<select id='f' name='f' onchange='this.form.submit()'><option value='1' selected>Monthly</option><option value='2'>Yearly</option></select>
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<div id="chart1" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable fcl center">
+	<tr>
+		<th>Month</th>
+		<th>Journeys</th>
+		<th>Per day</th>
+		<th>Licensed vehicles</th>
+		<th>Vehicle capacity</th>
+		<th>Car Km</th>
+		<th class="colHide2">Km/<br>car/<br>day</th>
+		<th class="colHide2">Journeys/<br>car/<br>day</th>
+	</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=7&amp;simple=False">2025-07</a></td>
+			
+				<td>1,119,869</td>
+			
+				<td>36,125</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>242,095</td>
+			
+			<td class="colHide2">101.4</td>
+			<td class="colHide2">469.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=6&amp;simple=False">2025-06</a></td>
+			
+				<td>977,257</td>
+			
+				<td>32,575</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,345</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">423.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=5&amp;simple=False">2025-05</a></td>
+			
+				<td>1,084,586</td>
+			
+				<td>34,987</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,354</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">454.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=4&amp;simple=False">2025-04</a></td>
+			
+				<td>1,148,193</td>
+			
+				<td>38,273</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,277</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">497.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=3&amp;simple=False">2025-03</a></td>
+			
+				<td>1,116,451</td>
+			
+				<td>36,015</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,314</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">467.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=2&amp;simple=False">2025-02</a></td>
+			
+				<td>961,506</td>
+			
+				<td>34,340</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>222,573</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">446.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2025&amp;m=1&amp;simple=False">2025-01</a></td>
+			
+				<td>1,115,920</td>
+			
+				<td>35,997</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,522</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">467.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=12&amp;simple=False">2024-12</a></td>
+			
+				<td>1,241,961</td>
+			
+				<td>40,063</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,307</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">520.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=11&amp;simple=False">2024-11</a></td>
+			
+				<td>1,148,723</td>
+			
+				<td>38,291</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>237,888</td>
+			
+			<td class="colHide2">103.0</td>
+			<td class="colHide2">497.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=10&amp;simple=False">2024-10</a></td>
+			
+				<td>1,118,988</td>
+			
+				<td>36,096</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,242</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">468.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=9&amp;simple=False">2024-09</a></td>
+			
+				<td>1,058,668</td>
+			
+				<td>35,289</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>237,528</td>
+			
+			<td class="colHide2">102.8</td>
+			<td class="colHide2">458.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=8&amp;simple=False">2024-08</a></td>
+			
+				<td>1,191,234</td>
+			
+				<td>38,427</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,734</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">499.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=7&amp;simple=False">2024-07</a></td>
+			
+				<td>1,113,877</td>
+			
+				<td>35,932</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,598</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">466.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=6&amp;simple=False">2024-06</a></td>
+			
+				<td>1,057,144</td>
+			
+				<td>35,238</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,650</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">457.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=5&amp;simple=False">2024-05</a></td>
+			
+				<td>997,148</td>
+			
+				<td>32,166</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,250</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">417.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=4&amp;simple=False">2024-04</a></td>
+			
+				<td>1,006,360</td>
+			
+				<td>33,545</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,263</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">435.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=3&amp;simple=False">2024-03</a></td>
+			
+				<td>1,067,755</td>
+			
+				<td>34,444</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>245,935</td>
+			
+			<td class="colHide2">103.0</td>
+			<td class="colHide2">447.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=2&amp;simple=False">2024-02</a></td>
+			
+				<td>973,446</td>
+			
+				<td>33,567</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>230,466</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">435.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2024&amp;m=1&amp;simple=False">2024-01</a></td>
+			
+				<td>1,158,006</td>
+			
+				<td>37,355</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,363</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">485.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=12&amp;simple=False">2023-12</a></td>
+			
+				<td>1,155,080</td>
+			
+				<td>37,261</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,454</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">483.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=11&amp;simple=False">2023-11</a></td>
+			
+				<td>1,004,956</td>
+			
+				<td>33,499</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,626</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">435.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=10&amp;simple=False">2023-10</a></td>
+			
+				<td>1,072,373</td>
+			
+				<td>34,593</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>243,761</td>
+			
+			<td class="colHide2">102.1</td>
+			<td class="colHide2">449.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=9&amp;simple=False">2023-09</a></td>
+			
+				<td>1,005,175</td>
+			
+				<td>33,506</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>233,945</td>
+			
+			<td class="colHide2">101.3</td>
+			<td class="colHide2">435.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=8&amp;simple=False">2023-08</a></td>
+			
+				<td>1,039,977</td>
+			
+				<td>33,548</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,632</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">435.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=7&amp;simple=False">2023-07</a></td>
+			
+				<td>1,000,383</td>
+			
+				<td>32,270</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>237,649</td>
+			
+			<td class="colHide2">99.6</td>
+			<td class="colHide2">419.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=6&amp;simple=False">2023-06</a></td>
+			
+				<td>850,306</td>
+			
+				<td>28,344</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>175,357</td>
+			
+			<td class="colHide2">75.9</td>
+			<td class="colHide2">368.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=5&amp;simple=False">2023-05</a></td>
+			
+				<td>875,697</td>
+			
+				<td>28,248</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>175,215</td>
+			
+			<td class="colHide2">73.4</td>
+			<td class="colHide2">366.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=4&amp;simple=False">2023-04</a></td>
+			
+				<td>873,183</td>
+			
+				<td>29,106</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>165,570</td>
+			
+			<td class="colHide2">71.7</td>
+			<td class="colHide2">378.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=3&amp;simple=False">2023-03</a></td>
+			
+				<td>762,960</td>
+			
+				<td>24,612</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>171,038</td>
+			
+			<td class="colHide2">71.7</td>
+			<td class="colHide2">319.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=2&amp;simple=False">2023-02</a></td>
+			
+				<td>589,110</td>
+			
+				<td>21,040</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>154,084</td>
+			
+			<td class="colHide2">71.5</td>
+			<td class="colHide2">273.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2023&amp;m=1&amp;simple=False">2023-01</a></td>
+			
+				<td>614,246</td>
+			
+				<td>19,814</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>171,804</td>
+			
+			<td class="colHide2">72.0</td>
+			<td class="colHide2">257.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=12&amp;simple=False">2022-12</a></td>
+			
+				<td>541,762</td>
+			
+				<td>17,476</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>169,297</td>
+			
+			<td class="colHide2">70.9</td>
+			<td class="colHide2">227.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=11&amp;simple=False">2022-11</a></td>
+			
+				<td>450,721</td>
+			
+				<td>15,024</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>164,097</td>
+			
+			<td class="colHide2">71.0</td>
+			<td class="colHide2">195.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=10&amp;simple=False">2022-10</a></td>
+			
+				<td>361,299</td>
+			
+				<td>11,655</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>167,765</td>
+			
+			<td class="colHide2">70.3</td>
+			<td class="colHide2">151.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=9&amp;simple=False">2022-09</a></td>
+			
+				<td>293,862</td>
+			
+				<td>9,795</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>161,708</td>
+			
+			<td class="colHide2">70.0</td>
+			<td class="colHide2">127.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=8&amp;simple=False">2022-08</a></td>
+			
+				<td>277,780</td>
+			
+				<td>8,961</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>167,830</td>
+			
+			<td class="colHide2">70.3</td>
+			<td class="colHide2">116.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=7&amp;simple=False">2022-07</a></td>
+			
+				<td>213,144</td>
+			
+				<td>6,876</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,883</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">89.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=6&amp;simple=False">2022-06</a></td>
+			
+				<td>194,569</td>
+			
+				<td>6,486</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>100,458</td>
+			
+			<td class="colHide2">43.5</td>
+			<td class="colHide2">84.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=5&amp;simple=False">2022-05</a></td>
+			
+				<td>182,392</td>
+			
+				<td>5,884</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,894</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">76.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=4&amp;simple=False">2022-04</a></td>
+			
+				<td>155,393</td>
+			
+				<td>5,180</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>98,752</td>
+			
+			<td class="colHide2">42.7</td>
+			<td class="colHide2">67.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=3&amp;simple=False">2022-03</a></td>
+			
+				<td>135,656</td>
+			
+				<td>4,376</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>103,417</td>
+			
+			<td class="colHide2">43.3</td>
+			<td class="colHide2">56.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=2&amp;simple=False">2022-02</a></td>
+			
+				<td>119,865</td>
+			
+				<td>4,281</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>92,289</td>
+			
+			<td class="colHide2">42.8</td>
+			<td class="colHide2">55.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2022&amp;m=1&amp;simple=False">2022-01</a></td>
+			
+				<td>175,270</td>
+			
+				<td>5,654</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>109,580</td>
+			
+			<td class="colHide2">45.9</td>
+			<td class="colHide2">73.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=12&amp;simple=False">2021-12</a></td>
+			
+				<td>228,223</td>
+			
+				<td>7,362</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>143,274</td>
+			
+			<td class="colHide2">60.0</td>
+			<td class="colHide2">95.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=11&amp;simple=False">2021-11</a></td>
+			
+				<td>177,852</td>
+			
+				<td>5,928</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>101,015</td>
+			
+			<td class="colHide2">43.7</td>
+			<td class="colHide2">77.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=10&amp;simple=False">2021-10</a></td>
+			
+				<td>185,917</td>
+			
+				<td>5,997</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>108,605</td>
+			
+			<td class="colHide2">45.5</td>
+			<td class="colHide2">77.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=9&amp;simple=False">2021-09</a></td>
+			
+				<td>196,899</td>
+			
+				<td>6,563</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>101,920</td>
+			
+			<td class="colHide2">44.1</td>
+			<td class="colHide2">85.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=8&amp;simple=False">2021-08</a></td>
+			
+				<td>209,250</td>
+			
+				<td>6,750</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>109,545</td>
+			
+			<td class="colHide2">45.9</td>
+			<td class="colHide2">87.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=7&amp;simple=False">2021-07</a></td>
+			
+				<td>183,419</td>
+			
+				<td>5,917</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>103,417</td>
+			
+			<td class="colHide2">43.3</td>
+			<td class="colHide2">76.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=6&amp;simple=False">2021-06</a></td>
+			
+				<td>171,565</td>
+			
+				<td>5,719</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>100,353</td>
+			
+			<td class="colHide2">43.4</td>
+			<td class="colHide2">74.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=5&amp;simple=False">2021-05</a></td>
+			
+				<td>163,850</td>
+			
+				<td>5,285</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,859</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">68.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=4&amp;simple=False">2021-04</a></td>
+			
+				<td>155,536</td>
+			
+				<td>5,185</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>99,379</td>
+			
+			<td class="colHide2">43.0</td>
+			<td class="colHide2">67.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=3&amp;simple=False">2021-03</a></td>
+			
+				<td>178,271</td>
+			
+				<td>5,751</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>104,531</td>
+			
+			<td class="colHide2">43.8</td>
+			<td class="colHide2">74.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=2&amp;simple=False">2021-02</a></td>
+			
+				<td>143,793</td>
+			
+				<td>5,135</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>92,869</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">66.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2021&amp;m=1&amp;simple=False">2021-01</a></td>
+			
+				<td>155,823</td>
+			
+				<td>5,027</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,859</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">65.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=12&amp;simple=False">2020-12</a></td>
+			
+				<td>159,337</td>
+			
+				<td>5,140</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>103,974</td>
+			
+			<td class="colHide2">43.6</td>
+			<td class="colHide2">66.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=11&amp;simple=False">2020-11</a></td>
+			
+				<td>170,813</td>
+			
+				<td>5,694</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>100,458</td>
+			
+			<td class="colHide2">43.5</td>
+			<td class="colHide2">73.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=10&amp;simple=False">2020-10</a></td>
+			
+				<td>174,192</td>
+			
+				<td>5,619</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>101,571</td>
+			
+			<td class="colHide2">42.6</td>
+			<td class="colHide2">73.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=9&amp;simple=False">2020-09</a></td>
+			
+				<td>179,390</td>
+			
+				<td>5,980</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>101,015</td>
+			
+			<td class="colHide2">43.7</td>
+			<td class="colHide2">77.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=8&amp;simple=False">2020-08</a></td>
+			
+				<td>147,940</td>
+			
+				<td>4,772</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,594</td>
+			
+			<td class="colHide2">43.0</td>
+			<td class="colHide2">62.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=7&amp;simple=False">2020-07</a></td>
+			
+				<td>166,731</td>
+			
+				<td>5,378</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>103,892</td>
+			
+			<td class="colHide2">43.5</td>
+			<td class="colHide2">69.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=6&amp;simple=False">2020-06</a></td>
+			
+				<td>177,026</td>
+			
+				<td>5,901</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>100,458</td>
+			
+			<td class="colHide2">43.5</td>
+			<td class="colHide2">76.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=5&amp;simple=False">2020-05</a></td>
+			
+				<td>155,894</td>
+			
+				<td>5,029</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>102,859</td>
+			
+			<td class="colHide2">43.1</td>
+			<td class="colHide2">65.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=4&amp;simple=False">2020-04</a></td>
+			
+				<td>133,894</td>
+			
+				<td>4,463</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>118,008</td>
+			
+			<td class="colHide2">51.1</td>
+			<td class="colHide2">58.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=3&amp;simple=False">2020-03</a></td>
+			
+				<td>258,791</td>
+			
+				<td>8,348</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>169,436</td>
+			
+			<td class="colHide2">71.0</td>
+			<td class="colHide2">108.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=2&amp;simple=False">2020-02</a></td>
+			
+				<td>374,416</td>
+			
+				<td>12,911</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>227,762</td>
+			
+			<td class="colHide2">102.0</td>
+			<td class="colHide2">167.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2020&amp;m=1&amp;simple=False">2020-01</a></td>
+			
+				<td>971,979</td>
+			
+				<td>31,354</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,844</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">407.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=12&amp;simple=False">2019-12</a></td>
+			
+				<td>1,074,651</td>
+			
+				<td>34,666</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,145</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">450.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=11&amp;simple=False">2019-11</a></td>
+			
+				<td>991,849</td>
+			
+				<td>33,062</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>235,712</td>
+			
+			<td class="colHide2">102.0</td>
+			<td class="colHide2">429.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=10&amp;simple=False">2019-10</a></td>
+			
+				<td>916,157</td>
+			
+				<td>29,553</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>239,892</td>
+			
+			<td class="colHide2">100.5</td>
+			<td class="colHide2">383.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=9&amp;simple=False">2019-09</a></td>
+			
+				<td>1,035,059</td>
+			
+				<td>34,502</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>233,771</td>
+			
+			<td class="colHide2">101.2</td>
+			<td class="colHide2">448.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=8&amp;simple=False">2019-08</a></td>
+			
+				<td>1,293,710</td>
+			
+				<td>41,733</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>228,200</td>
+			
+			<td class="colHide2">95.6</td>
+			<td class="colHide2">542.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=7&amp;simple=False">2019-07</a></td>
+			
+				<td>1,458,090</td>
+			
+				<td>47,035</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,095</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">610.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=6&amp;simple=False">2019-06</a></td>
+			
+				<td>1,444,188</td>
+			
+				<td>48,140</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,272</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">625.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=5&amp;simple=False">2019-05</a></td>
+			
+				<td>1,442,936</td>
+			
+				<td>46,546</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,389</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">604.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=4&amp;simple=False">2019-04</a></td>
+			
+				<td>1,621,249</td>
+			
+				<td>54,042</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>239,807</td>
+			
+			<td class="colHide2">103.8</td>
+			<td class="colHide2">701.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=3&amp;simple=False">2019-03</a></td>
+			
+				<td>1,645,452</td>
+			
+				<td>53,079</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>245,350</td>
+			
+			<td class="colHide2">102.8</td>
+			<td class="colHide2">689.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=2&amp;simple=False">2019-02</a></td>
+			
+				<td>1,329,271</td>
+			
+				<td>47,474</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>223,311</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">616.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2019&amp;m=1&amp;simple=False">2019-01</a></td>
+			
+				<td>1,510,930</td>
+			
+				<td>48,740</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,458</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">633.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=12&amp;simple=False">2018-12</a></td>
+			
+				<td>1,634,404</td>
+			
+				<td>52,723</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,122</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">684.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=11&amp;simple=False">2018-11</a></td>
+			
+				<td>1,599,993</td>
+			
+				<td>53,333</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>239,321</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">692.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=10&amp;simple=False">2018-10</a></td>
+			
+				<td>1,621,452</td>
+			
+				<td>52,305</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,294</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">679.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=9&amp;simple=False">2018-09</a></td>
+			
+				<td>1,492,221</td>
+			
+				<td>49,741</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>231,765</td>
+			
+			<td class="colHide2">100.3</td>
+			<td class="colHide2">646.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=8&amp;simple=False">2018-08</a></td>
+			
+				<td>1,438,736</td>
+			
+				<td>46,411</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,211</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">602.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=7&amp;simple=False">2018-07</a></td>
+			
+				<td>1,425,001</td>
+			
+				<td>45,968</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,424</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">597.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=6&amp;simple=False">2018-06</a></td>
+			
+				<td>1,451,920</td>
+			
+				<td>48,397</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,729</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">628.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=5&amp;simple=False">2018-05</a></td>
+			
+				<td>1,355,077</td>
+			
+				<td>43,712</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,389</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">567.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=4&amp;simple=False">2018-04</a></td>
+			
+				<td>1,554,322</td>
+			
+				<td>51,811</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,451</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">672.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=3&amp;simple=False">2018-03</a></td>
+			
+				<td>1,518,216</td>
+			
+				<td>48,975</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,269</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">636.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=2&amp;simple=False">2018-02</a></td>
+			
+				<td>1,216,140</td>
+			
+				<td>43,434</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>223,414</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">564.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2018&amp;m=1&amp;simple=False">2018-01</a></td>
+			
+				<td>1,402,469</td>
+			
+				<td>45,241</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,389</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">587.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=12&amp;simple=False">2017-12</a></td>
+			
+				<td>1,513,483</td>
+			
+				<td>48,822</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,227</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">634.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=11&amp;simple=False">2017-11</a></td>
+			
+				<td>1,402,998</td>
+			
+				<td>46,767</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,338</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">607.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=10&amp;simple=False">2017-10</a></td>
+			
+				<td>1,563,242</td>
+			
+				<td>50,427</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,562</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">654.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=9&amp;simple=False">2017-09</a></td>
+			
+				<td>1,409,079</td>
+			
+				<td>46,969</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,730</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">610.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=8&amp;simple=False">2017-08</a></td>
+			
+				<td>1,408,859</td>
+			
+				<td>45,447</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>242,412</td>
+			
+			<td class="colHide2">101.6</td>
+			<td class="colHide2">590.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=7&amp;simple=False">2017-07</a></td>
+			
+				<td>1,317,480</td>
+			
+				<td>42,499</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,110</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">551.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=6&amp;simple=False">2017-06</a></td>
+			
+				<td>1,323,308</td>
+			
+				<td>44,110</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,412</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">572.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=5&amp;simple=False">2017-05</a></td>
+			
+				<td>1,321,868</td>
+			
+				<td>42,641</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,528</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">553.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=4&amp;simple=False">2017-04</a></td>
+			
+				<td>1,453,926</td>
+			
+				<td>48,464</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>239,429</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">629.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=3&amp;simple=False">2017-03</a></td>
+			
+				<td>1,368,274</td>
+			
+				<td>44,138</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,598</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">573.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=2&amp;simple=False">2017-02</a></td>
+			
+				<td>1,194,286</td>
+			
+				<td>42,653</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>222,645</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">553.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2017&amp;m=1&amp;simple=False">2017-01</a></td>
+			
+				<td>1,344,665</td>
+			
+				<td>43,376</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,260</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">563.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=12&amp;simple=False">2016-12</a></td>
+			
+				<td>1,461,229</td>
+			
+				<td>47,136</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,226</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">612.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=11&amp;simple=False">2016-11</a></td>
+			
+				<td>1,321,104</td>
+			
+				<td>44,037</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,277</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">571.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=10&amp;simple=False">2016-10</a></td>
+			
+				<td>1,437,775</td>
+			
+				<td>46,380</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>244,609</td>
+			
+			<td class="colHide2">102.5</td>
+			<td class="colHide2">602.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=9&amp;simple=False">2016-09</a></td>
+			
+				<td>1,386,360</td>
+			
+				<td>46,212</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,729</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">600.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=8&amp;simple=False">2016-08</a></td>
+			
+				<td>1,336,509</td>
+			
+				<td>43,113</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>245,478</td>
+			
+			<td class="colHide2">102.8</td>
+			<td class="colHide2">559.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=7&amp;simple=False">2016-07</a></td>
+			
+				<td>1,396,406</td>
+			
+				<td>45,045</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,493</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">585.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=6&amp;simple=False">2016-06</a></td>
+			
+				<td>1,313,233</td>
+			
+				<td>43,774</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,521</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">568.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=5&amp;simple=False">2016-05</a></td>
+			
+				<td>1,260,291</td>
+			
+				<td>40,655</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,250</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">528.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=4&amp;simple=False">2016-04</a></td>
+			
+				<td>1,375,571</td>
+			
+				<td>45,852</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,764</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">595.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=3&amp;simple=False">2016-03</a></td>
+			
+				<td>1,354,874</td>
+			
+				<td>43,706</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,257</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">567.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=2&amp;simple=False">2016-02</a></td>
+			
+				<td>1,158,202</td>
+			
+				<td>39,938</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>231,352</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">518.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2016&amp;m=1&amp;simple=False">2016-01</a></td>
+			
+				<td>1,331,810</td>
+			
+				<td>42,962</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,562</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">557.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=12&amp;simple=False">2015-12</a></td>
+			
+				<td>1,459,342</td>
+			
+				<td>47,076</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,193</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">611.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=11&amp;simple=False">2015-11</a></td>
+			
+				<td>1,308,020</td>
+			
+				<td>43,601</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,346</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">566.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=10&amp;simple=False">2015-10</a></td>
+			
+				<td>1,397,553</td>
+			
+				<td>45,082</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>245,940</td>
+			
+			<td class="colHide2">103.0</td>
+			<td class="colHide2">585.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=9&amp;simple=False">2015-09</a></td>
+			
+				<td>1,324,202</td>
+			
+				<td>44,140</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,958</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">573.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=8&amp;simple=False">2015-08</a></td>
+			
+				<td>1,335,573</td>
+			
+				<td>43,083</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,191</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">559.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=7&amp;simple=False">2015-07</a></td>
+			
+				<td>1,308,965</td>
+			
+				<td>42,225</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,259</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">548.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=6&amp;simple=False">2015-06</a></td>
+			
+				<td>1,281,335</td>
+			
+				<td>42,711</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,692</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">554.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=5&amp;simple=False">2015-05</a></td>
+			
+				<td>1,218,430</td>
+			
+				<td>39,304</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,496</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">510.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=4&amp;simple=False">2015-04</a></td>
+			
+				<td>1,348,704</td>
+			
+				<td>44,957</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>239,394</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">583.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=3&amp;simple=False">2015-03</a></td>
+			
+				<td>1,370,819</td>
+			
+				<td>44,220</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,500</td>
+			
+			<td class="colHide2">103.7</td>
+			<td class="colHide2">574.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=2&amp;simple=False">2015-02</a></td>
+			
+				<td>1,102,604</td>
+			
+				<td>39,379</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>223,133</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">511.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2015&amp;m=1&amp;simple=False">2015-01</a></td>
+			
+				<td>1,269,711</td>
+			
+				<td>40,958</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,143</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">531.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=12&amp;simple=False">2014-12</a></td>
+			
+				<td>1,381,970</td>
+			
+				<td>44,580</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,610</td>
+			
+			<td class="colHide2">103.7</td>
+			<td class="colHide2">579.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=11&amp;simple=False">2014-11</a></td>
+			
+				<td>1,270,434</td>
+			
+				<td>42,348</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,660</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">550.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=10&amp;simple=False">2014-10</a></td>
+			
+				<td>1,376,420</td>
+			
+				<td>44,401</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,424</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">576.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=9&amp;simple=False">2014-09</a></td>
+			
+				<td>1,299,216</td>
+			
+				<td>43,307</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,970</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">562.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=8&amp;simple=False">2014-08</a></td>
+			
+				<td>1,236,373</td>
+			
+				<td>39,883</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,215</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">518.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=7&amp;simple=False">2014-07</a></td>
+			
+				<td>1,176,887</td>
+			
+				<td>37,964</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,109</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">493.0</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=6&amp;simple=False">2014-06</a></td>
+			
+				<td>1,221,255</td>
+			
+				<td>40,709</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,625</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">528.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=5&amp;simple=False">2014-05</a></td>
+			
+				<td>1,146,312</td>
+			
+				<td>36,978</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,248</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">480.2</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=4&amp;simple=False">2014-04</a></td>
+			
+				<td>1,265,236</td>
+			
+				<td>42,175</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,813</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">547.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=3&amp;simple=False">2014-03</a></td>
+			
+				<td>1,288,325</td>
+			
+				<td>41,559</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,702</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">539.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=2&amp;simple=False">2014-02</a></td>
+			
+				<td>1,044,168</td>
+			
+				<td>37,292</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>222,714</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">484.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2014&amp;m=1&amp;simple=False">2014-01</a></td>
+			
+				<td>1,173,990</td>
+			
+				<td>37,871</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,961</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">491.8</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=12&amp;simple=False">2013-12</a></td>
+			
+				<td>1,266,654</td>
+			
+				<td>40,860</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>247,019</td>
+			
+			<td class="colHide2">103.5</td>
+			<td class="colHide2">530.6</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=11&amp;simple=False">2013-11</a></td>
+			
+				<td>1,201,069</td>
+			
+				<td>40,036</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,520</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">519.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=10&amp;simple=False">2013-10</a></td>
+			
+				<td>1,247,614</td>
+			
+				<td>40,246</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,319</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">522.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=9&amp;simple=False">2013-09</a></td>
+			
+				<td>1,183,874</td>
+			
+				<td>39,462</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>237,916</td>
+			
+			<td class="colHide2">103.0</td>
+			<td class="colHide2">512.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=8&amp;simple=False">2013-08</a></td>
+			
+				<td>1,193,727</td>
+			
+				<td>38,507</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,562</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">500.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=7&amp;simple=False">2013-07</a></td>
+			
+				<td>1,161,818</td>
+			
+				<td>37,478</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,214</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">486.7</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=6&amp;simple=False">2013-06</a></td>
+			
+				<td>1,079,534</td>
+			
+				<td>35,984</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,268</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">467.3</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=5&amp;simple=False">2013-05</a></td>
+			
+				<td>1,083,549</td>
+			
+				<td>34,953</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,459</td>
+			
+			<td class="colHide2">103.3</td>
+			<td class="colHide2">453.9</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=4&amp;simple=False">2013-04</a></td>
+			
+				<td>1,132,849</td>
+			
+				<td>37,762</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>238,486</td>
+			
+			<td class="colHide2">103.2</td>
+			<td class="colHide2">490.4</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=3&amp;simple=False">2013-03</a></td>
+			
+				<td>1,145,913</td>
+			
+				<td>36,965</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,784</td>
+			
+			<td class="colHide2">103.4</td>
+			<td class="colHide2">480.1</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=2&amp;simple=False">2013-02</a></td>
+			
+				<td>932,392</td>
+			
+				<td>33,300</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>223,275</td>
+			
+			<td class="colHide2">103.6</td>
+			<td class="colHide2">432.5</td>
+		</tr>
+	
+		<tr>
+			<td class="nowrap"><a href="veJourneys.asp?y=2013&amp;m=1&amp;simple=False">2013-01</a></td>
+			
+				<td>1,035,941</td>
+			
+				<td>33,417</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>246,145</td>
+			
+			<td class="colHide2">103.1</td>
+			<td class="colHide2">434.0</td>
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

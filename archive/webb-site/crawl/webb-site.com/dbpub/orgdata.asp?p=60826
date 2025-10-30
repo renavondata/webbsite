@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<script type="text/javascript" src="rating.js"></script>
+<style type="text/css">
+	table.rating {
+	border-collapse:collapse;
+	border:thin gray solid;
+}
+	table.rating tr {
+	border:thin gray solid;
+}
+	table.rating th {
+	font-weight:bold;
+	border:inherit;
+	text-align:center;
+}
+	table.rating td {
+	text-align:center;
+}
+</style>
+<title>Besunyen Holdings Company Limited 碧生源控股有限公司</title>
+</head>
+<body onload="setRating(60826)">
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+	<h2>Besunyen Holdings Company Limited 碧生源控股有限公司</h2>
+	<ul class="navlist">
+		<li class='livebutton'>Key Data</li><li><a href='/dbpub/officers.asp?p=60826'>Officers</a></li><li><a href='/dbpub/overlap.asp?p=60826'>Overlaps</a></li><li><a href='/dbpub/pay.asp?p=60826'>Pay</a></li><li><a href='/dbpub/advisers.asp?p=60826'>Advisers</a></li><li><a href='/dbpub/docs.asp?p=60826'>Financials</a></li><li><a href='/dbpub/ESSraw.asp?p=60826'>ESS</a></li><li><a href='/dbpub/articles.asp?p=60826'>Webb-site Reports</a></li><li><a href='/dbpub/complain.asp?p=60826'>Complain</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	<ul class="navlist">
+		<li><a target="_blank" href="FAQWWW.asp">FAQ</a></li>
+	</ul>
+	<div class="clear"></div>
+	<table>
+		
+			<tr><td>Domicile:</td><td>Cayman Islands</td></tr>
+		
+			<tr><td>Type:</td><td>Listed company</td></tr>
+				
+			<tr><td>Formed:</td><td>2009-08-05</td></tr>
+		
+			<tr>
+				<td>Last check on companies registry:</td>
+				<td>2017-03-11</td>
+			</tr>
+		
+				<tr><td>Year-end:</td><td>31-Dec</td></tr>
+			
+	</table>
+	
+		<h3>Web sites</h3>		
+		
+				<a target="blank" href="http://www.besunyen.com">www.besunyen.com</a><br>
+			
+		<h3>Foreign registrations</h3>
+		<table class="txtable">
+			<tr>
+				<th>Place</th>
+				<th>ID</th>
+				<th>Registered</th>
+				<th>Ceased</th>
+			</tr>
+			
+				<tr>
+					<td>Hong Kong</td>
+					<td>
+						
+									<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do"><span class="info">52825698<span>Until 2023-12-27:F0017771</span></span></a>
+								
+					</td>
+					<td>2010-08-19</td>
+					<td></td>
+				</tr>
+				
+		</table>
+		
+		<h3>Employment Support Subsidy (COVID-19)</h3>
+<p>The HK Government <a href="https://www.ess.gov.hk/" target="_blank">paid</a> 
+employers a subsidy of half of staff salaries up to a subsidy cap of HK$9k per 
+month for 6 months in 2 phases covering Jun-Aug and Sep-Nov 2020. Amounts shown 
+do not include subsidiaries. P1 and p2 indicate whether a claim has been made 
+and approved in each phase. <a href="ESSraw.asp?p=60826">Click here</a> for raw 
+filing data.</p>
+		<p class='widthAlert2'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="numtable fcl c2l">
+			<tr>
+				<th>English name</th>
+				<th class="colHide3">Chinese name</th>
+				<th>Amount<br>HK$</th>
+				<th>Heads</th>
+				<th>Average<br>HK$</th>
+				<th class="colHide2">p1</th>
+				<th class="colHide2">p2</th>
+			</tr>
+			
+				<tr>
+					<td>BESUNYEN HOLDINGS COMPANY LIMITED</td>
+					<td class="colHide3">碧生源控股有限公司</td>
+					<td>108,000</td>
+					<td>2</td>
+					<td>54,000</td>
+					<td class="colHide2">1</td>
+					<td class="colHide2">1</td>
+				</tr>
+				
+		</table>
+		
+	<h3>Webb-site Governance Rating</h3>
+	
+		<p><a href="../webbmail/login.asp"><b>Log in</b></a> to add your anonymous rating. Webb-site users rate this organisation as follows:</p>
+		<table class="rating">
+			<tr>
+				<th>Users</th>
+				<th>Average (0-5)</th>
+			</tr>
+			<tr>
+				<td style="border-right:thin gray solid" id="usercnt"></td>
+				<td id="score"></td>
+			</tr>
+		</table>
+	
+		<h3>Name history</h3>
+		<table class="txtable">
+			<tr>
+				<th>Old English name</th>
+				<th>Old Chinese name</th>
+				<th class="right">Until</th>
+			</tr>
+			
+				<tr>
+					<td>Tea-Care Group Ltd</td>
+					<td></td>		
+					<td class="right">2010-06</td>
+				</tr>
+				
+		</table>
+	
+		<h3>HK-listed equities</h3>
+		
+			<h4>Ordinary shares: HKD</h4>
+			
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">HK Main</td>
+				<td style="text-align:left;vertical-align:middle">00926</td>
+				<td style="vertical-align:middle">&nbsp;2010-09-29</td>
+				<td style="vertical-align:middle">&nbsp;</td>
+				<td style="vertical-align:middle">&nbsp;</td>
+				<td>
+				
+					<ul class="navlist"><li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId=52670&category=0">Docs</a></li></ul>
+				
+				</td>
+			</tr>
+			
+		</table>
+		<div class="clear"></div>
+	
+	<ul class="navlist">
+		<li><a href='/dbpub/buybacks.asp?i=6186'>Buybacks</a></li><li><a href='/dbpub/outstanding.asp?i=6186'>Outstanding</a></li><li><a href='/ccass/choldings.asp?i=6186'>CCASS</a></li><li><a href='/dbpub/str.asp?i=6186'>Total return</a></li><li><a href='/dbpub/ctr.asp?i1=6186'>Compare returns</a></li><li><a href='/dbpub/hpu.asp?i=6186'>Prices</a></li><li><a href='/dbpub/events.asp?i=6186'>Events</a></li><li><a href='/dbpub/sdiissue.asp?i=6186'>Dealings</a></li>
+				<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym=926">Quote</a></li>
+			
+	</ul>
+	<div class="clear"></div>
+	
+			<h4>Nil-paid rights: HKD</h4>
+			
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">HK Main</td>
+				<td style="text-align:left;vertical-align:middle">02964</td>
+				<td style="vertical-align:middle">&nbsp;2022-09-28</td>
+				<td style="vertical-align:middle">&nbsp;2022-10-06</td>
+				<td style="vertical-align:middle">&nbsp;2022-10-07</td>
+				<td>
+				
+				</td>
+			</tr>
+			
+		</table>
+		<div class="clear"></div>
+	
+	<ul class="navlist">
+		<li><a href='/dbpub/str.asp?i=33500'>Total return</a></li><li><a href='/dbpub/ctr.asp?i1=33500'>Compare returns</a></li><li><a href='/dbpub/hpu.asp?i=33500'>Prices</a></li><li><a href='/dbpub/events.asp?i=33500'>Events</a></li>
+	</ul>
+	<div class="clear"></div>
+	<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

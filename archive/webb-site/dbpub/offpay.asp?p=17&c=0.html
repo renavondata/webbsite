@@ -1,0 +1,2279 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Officer pay: Ng, Stephen Tin Hoi 吳天海</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+	<h2>Ng, Stephen Tin Hoi 吳天海</h2>
+	
+	<ul class="navlist">
+		<li><a href='../dbpub/natperson.asp?p=17'>Key data</a></li><li><a href='../dbpub/positions.asp?p=17'>Positions</a></li><li class='livebutton'>Pay</li><li><a href='../dbpub/sdidir.asp?p=17'>Dealings</a></li>
+	</ul>
+	<div class="clear"></div>
+	
+	<form method="get" action="offpay.asp?c=0">
+		<input type="hidden" name="p" value="17">
+		<input type="hidden" name="sort" value="yrdn">
+		<div class="inputs">
+			<input type="radio" name="o" value="1"  onchange="this.form.submit()">Show original currency
+		</div>
+		<div class="inputs">
+			<input type="radio" name="o" value="2"  checked onchange="this.form.submit()">Convert all records at financial year-end to: <select name='c' onchange="this.form.submit()"><option value='6'>AUD</option><option value='5'>CAD</option><option value='1'>CNY</option><option value='8'>EUR</option><option value='4'>GBP</option><option value='0' selected>HKD</option><option value='9'>JPY</option><option value='18'>MOP</option><option value='7'>MYR</option><option value='3'>SGD</option><option value='10'>THB</option><option value='14'>TWD</option><option value='2'>USD</option></select>
+		</div>
+		<div class="clear"></div>
+	</form>
+	<h3>Pay records</h3>
+	
+		<p>Click on "Organisation" or "Year-end" to sort by firm or year. Click on the date to see all the pay of the 
+		organisation for that year.</p>
+		<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+		<table class="numtable">
+			<tr>
+				
+					<th class="left"><a href='/dbpub/offpay.asp?p=17&amp;c=0&amp;o=2&amp;sort=nam'><b>Organisation</b></a></th>
+				
+				<th class="left">Last<br>position</th>
+				<th><a href='/dbpub/offpay.asp?p=17&amp;c=0&amp;o=2&amp;sort=yrdn'><b>Year-end</b></a></th>
+				<th class="colHide3">Fees</th>
+				<th class="colHide3">Salary &amp;<br>benefits</th>
+				<th class="colHide3">Bonus</th>
+				<th class="colHide3">Retire</th>
+				<th class="colHide3">Share-<br>based</th>
+				<th>Total</th>
+			</tr>
+			
+					<tr>
+						<td class="left" colspan="9"><h4>2024 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">425</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>425</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">80</td>
+						
+							<td class="colHide3">1,200</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,280</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">410</td>
+						
+							<td class="colHide3">5,784</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>15,194</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2024-12-31">2024-12-31</a></td>
+					
+							<td class="colHide3">410</td>
+						
+							<td class="colHide3">3,856</td>
+						
+							<td class="colHide3">4,100</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">4,863</td>
+						
+						<td>13,229</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,325</td>
+						
+							<td class="colHide3">10,840</td>
+						
+							<td class="colHide3">13,100</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">4,863</td>
+						
+						<td>30,128</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2023 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">452</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>452</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,150</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">5,620</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>14,970</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2023-12-31">2023-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">3,743</td>
+						
+							<td class="colHide3">4,100</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">2,216</td>
+						
+						<td>10,409</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,222</td>
+						
+							<td class="colHide3">10,443</td>
+						
+							<td class="colHide3">13,100</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">2,216</td>
+						
+						<td>26,981</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2022 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">447</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>447</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,150</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">5,460</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>14,810</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2022-12-31">2022-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">3,631</td>
+						
+							<td class="colHide3">4,100</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>8,081</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,217</td>
+						
+							<td class="colHide3">10,171</td>
+						
+							<td class="colHide3">13,100</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>24,488</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2021 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3">489</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>489</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,150</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">5,350</td>
+						
+							<td class="colHide3">26,088</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>31,788</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2021-12-31">2021-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">3,558</td>
+						
+							<td class="colHide3">16,392</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>20,300</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,259</td>
+						
+							<td class="colHide3">9,988</td>
+						
+							<td class="colHide3">42,480</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>53,727</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2020 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3">380</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>380</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,150</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">5,196</td>
+						
+							<td class="colHide3">12,707</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>18,253</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2020-12-31">2020-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">3,455</td>
+						
+							<td class="colHide3">7,738</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,543</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,150</td>
+						
+							<td class="colHide3">9,731</td>
+						
+							<td class="colHide3">20,445</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>31,326</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2019 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">169</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>169</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,150</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">5,195</td>
+						
+							<td class="colHide3">13,956</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>19,501</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">3,455</td>
+						
+							<td class="colHide3">9,304</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>13,109</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2019-12-31">2019-12-31</a></td>
+					
+							<td class="colHide3">350</td>
+						
+							<td class="colHide3">8,650</td>
+						
+							<td class="colHide3">23,260</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">3,206</td>
+						
+						<td>35,466</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">1,289</td>
+						
+							<td class="colHide3">18,380</td>
+						
+							<td class="colHide3">46,520</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">3,206</td>
+						
+						<td>69,395</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2018 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,080</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,140</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">5,040</td>
+						
+							<td class="colHide3">23,772</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>29,112</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">3,352</td>
+						
+							<td class="colHide3">17,868</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>21,520</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2018-12-31">2018-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">8,392</td>
+						
+							<td class="colHide3">41,640</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>50,332</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3">17,864</td>
+						
+							<td class="colHide3">83,280</td>
+						
+							<td class="colHide3">0</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>102,104</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2017 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,010</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">42</td>
+						
+							<td class="colHide3">1,376</td>
+						
+							<td class="colHide3">2,032</td>
+						
+							<td class="colHide3">4</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>3,454</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">7,721</td>
+						
+							<td class="colHide3">84,100</td>
+						
+							<td class="colHide3">12</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>92,133</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf Real Estate Investment Company Limited</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=10931034&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">174</td>
+						
+							<td class="colHide3">1,343</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3">1</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,518</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2017-12-31">2017-12-31</a></td>
+					
+							<td class="colHide3">300</td>
+						
+							<td class="colHide3">8,063</td>
+						
+							<td class="colHide3">84,100</td>
+						
+							<td class="colHide3">12</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>92,475</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">866</td>
+						
+							<td class="colHide3">19,463</td>
+						
+							<td class="colHide3">170,232</td>
+						
+							<td class="colHide3">29</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>190,590</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2016 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,010</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,947</td>
+						
+							<td class="colHide3">2,875</td>
+						
+							<td class="colHide3">5</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>4,887</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">225</td>
+						
+							<td class="colHide3">7,827</td>
+						
+							<td class="colHide3">11,500</td>
+						
+							<td class="colHide3">18</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>19,570</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2016-12-31">2016-12-31</a></td>
+					
+							<td class="colHide3">225</td>
+						
+							<td class="colHide3">7,827</td>
+						
+							<td class="colHide3">11,500</td>
+						
+							<td class="colHide3">18</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>19,570</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">560</td>
+						
+							<td class="colHide3">18,561</td>
+						
+							<td class="colHide3">25,875</td>
+						
+							<td class="colHide3">41</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>45,037</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2015 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">73</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>73</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,010</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,802</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3">5</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>4,867</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">197</td>
+						
+							<td class="colHide3">7,243</td>
+						
+							<td class="colHide3">15,500</td>
+						
+							<td class="colHide3">18</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>22,958</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2015-12-31">2015-12-31</a></td>
+					
+							<td class="colHide3">197</td>
+						
+							<td class="colHide3">7,243</td>
+						
+							<td class="colHide3">15,500</td>
+						
+							<td class="colHide3">18</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>22,958</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">577</td>
+						
+							<td class="colHide3">17,248</td>
+						
+							<td class="colHide3">34,000</td>
+						
+							<td class="colHide3">41</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>51,866</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2014 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">328</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>328</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,010</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,890</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3">5</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>4,955</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">6,335</td>
+						
+							<td class="colHide3">15,000</td>
+						
+							<td class="colHide3">17</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>21,452</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2014-12-31">2014-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">6,335</td>
+						
+							<td class="colHide3">15,000</td>
+						
+							<td class="colHide3">17</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>21,452</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">638</td>
+						
+							<td class="colHide3">15,520</td>
+						
+							<td class="colHide3">33,000</td>
+						
+							<td class="colHide3">39</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>49,197</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2013 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">330</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>330</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">960</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>1,010</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,800</td>
+						
+							<td class="colHide3">3,000</td>
+						
+							<td class="colHide3">5</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>4,865</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">6,033</td>
+						
+							<td class="colHide3">20,000</td>
+						
+							<td class="colHide3">15</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>26,148</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2013-12-31">2013-12-31</a></td>
+					
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">6,033</td>
+						
+							<td class="colHide3">20,000</td>
+						
+							<td class="colHide3">15</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>26,148</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">640</td>
+						
+							<td class="colHide3">14,826</td>
+						
+							<td class="colHide3">43,000</td>
+						
+							<td class="colHide3">35</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>58,501</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2012 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">Greentown China Holdings Limited</td>
+					
+					<td class="left">NED</td>
+					<td><a href="pay.asp?p=35229&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">173</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>173</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">40</td>
+						
+							<td class="colHide3">780</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>820</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">2,004</td>
+						
+							<td class="colHide3">4,000</td>
+						
+							<td class="colHide3">77</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>6,141</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">5,011</td>
+						
+							<td class="colHide3">10,000</td>
+						
+							<td class="colHide3">192</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>15,273</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2012-12-31">2012-12-31</a></td>
+					
+							<td class="colHide3">70</td>
+						
+							<td class="colHide3">5,011</td>
+						
+							<td class="colHide3">10,000</td>
+						
+							<td class="colHide3">192</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>15,273</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">413</td>
+						
+							<td class="colHide3">12,806</td>
+						
+							<td class="colHide3">24,000</td>
+						
+							<td class="colHide3">461</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>37,680</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2011 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">40</td>
+						
+							<td class="colHide3">780</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>820</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,908</td>
+						
+							<td class="colHide3">4,000</td>
+						
+							<td class="colHide3">117</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>6,085</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,769</td>
+						
+							<td class="colHide3">10,000</td>
+						
+							<td class="colHide3">294</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>15,123</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2011-12-31">2011-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,769</td>
+						
+							<td class="colHide3">10,000</td>
+						
+							<td class="colHide3">294</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>15,123</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">220</td>
+						
+							<td class="colHide3">12,226</td>
+						
+							<td class="colHide3">24,000</td>
+						
+							<td class="colHide3">705</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>37,151</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2010 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">40</td>
+						
+							<td class="colHide3">780</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>820</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,859</td>
+						
+							<td class="colHide3">3,600</td>
+						
+							<td class="colHide3">111</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>5,630</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,646</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3">276</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>13,982</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2010-12-31">2010-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,646</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3">276</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>13,982</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">220</td>
+						
+							<td class="colHide3">11,931</td>
+						
+							<td class="colHide3">21,600</td>
+						
+							<td class="colHide3">663</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>34,414</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2009 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">HARBOUR CENTRE DEVELOPMENT LIMITED</td>
+					
+					<td class="left">Ch</td>
+					<td><a href="pay.asp?p=343&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">30</td>
+						
+							<td class="colHide3">586</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>616</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">1,784</td>
+						
+							<td class="colHide3">2,700</td>
+						
+							<td class="colHide3">106</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>4,650</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,461</td>
+						
+							<td class="colHide3">6,750</td>
+						
+							<td class="colHide3">264</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,535</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2009-12-31">2009-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,461</td>
+						
+							<td class="colHide3">6,750</td>
+						
+							<td class="colHide3">264</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,535</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">210</td>
+						
+							<td class="colHide3">11,292</td>
+						
+							<td class="colHide3">16,200</td>
+						
+							<td class="colHide3">634</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>28,336</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2008 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2008-12-31">2008-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">2,240</td>
+						
+							<td class="colHide3">4,500</td>
+						
+							<td class="colHide3">132</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>6,932</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2008-12-31">2008-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,482</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3">264</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>13,806</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2008-12-31">2008-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,482</td>
+						
+							<td class="colHide3">9,000</td>
+						
+							<td class="colHide3">264</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>13,806</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">180</td>
+						
+							<td class="colHide3">11,204</td>
+						
+							<td class="colHide3">22,500</td>
+						
+							<td class="colHide3">660</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>34,544</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2007 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2007-12-31">2007-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">2,499</td>
+						
+							<td class="colHide3">4,800</td>
+						
+							<td class="colHide3">144</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>7,503</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2007-12-31">2007-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,208</td>
+						
+							<td class="colHide3">8,000</td>
+						
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>12,508</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2007-12-31">2007-12-31</a></td>
+					
+							<td class="colHide3">60</td>
+						
+							<td class="colHide3">4,208</td>
+						
+							<td class="colHide3">8,000</td>
+						
+							<td class="colHide3">240</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>12,508</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2007-03-31">2007-03-31</a></td>
+					
+							<td class="colHide3">52</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>52</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">232</td>
+						
+							<td class="colHide3">10,915</td>
+						
+							<td class="colHide3">20,800</td>
+						
+							<td class="colHide3">624</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>32,571</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2006 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2006-12-31">2006-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">2,508</td>
+						
+							<td class="colHide3">4,667</td>
+						
+							<td class="colHide3">144</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>7,369</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2006-12-31">2006-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">3,850</td>
+						
+							<td class="colHide3">7,000</td>
+						
+							<td class="colHide3">216</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,116</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">WHEELOCK AND COMPANY LIMITED</td>
+					
+					<td class="left">Dep Ch</td>
+					<td><a href="pay.asp?p=346&amp;d=2006-03-31">2006-03-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+							<td class="colHide3"></td>
+						
+						<td>50</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">150</td>
+						
+							<td class="colHide3">6,358</td>
+						
+							<td class="colHide3">11,667</td>
+						
+							<td class="colHide3">360</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>18,535</td>
+					</tr>
+				
+					<tr>
+						<td class="left" colspan="9"><h4>2005 HKD'000</h4></td>
+					</tr>
+				
+				<tr>
+					
+						<td class="left">i-CABLE Communications Limited</td>
+					
+					<td class="left">Ch, CEO</td>
+					<td><a href="pay.asp?p=9354&amp;d=2005-12-31">2005-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">2,427</td>
+						
+							<td class="colHide3">4,747</td>
+						
+							<td class="colHide3">136</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>7,360</td>
+					
+				</tr>
+				
+				<tr>
+					
+						<td class="left">Wharf (Holdings) Limited (The)</td>
+					
+					<td class="left">Dep Ch, MD</td>
+					<td><a href="pay.asp?p=342&amp;d=2005-12-31">2005-12-31</a></td>
+					
+							<td class="colHide3">50</td>
+						
+							<td class="colHide3">3,716</td>
+						
+							<td class="colHide3">7,120</td>
+						
+							<td class="colHide3">204</td>
+						
+							<td class="colHide3"></td>
+						
+						<td>11,090</td>
+					
+				</tr>
+				
+					<tr class="total">
+						<td class="left" colspan="3">Total</td>
+						
+							<td class="colHide3">100</td>
+						
+							<td class="colHide3">6,143</td>
+						
+							<td class="colHide3">11,867</td>
+						
+							<td class="colHide3">340</td>
+						
+							<td class="colHide3">0</td>
+						
+						<td>18,450</td>
+					</tr>
+				
+		</table>
+	
+<h3>Notes</h3>
+<ol>
+	<li>These data are incomplete. They are entered and checked by volunteers, so if you want to expand them then
+	<strong><a href="../webbmail/username.asp">volunteer</a></strong> to be a Webb-site editor and add pay records 
+	from annual reports! Please <strong><a href="../contact">report</a></strong> any errors.</li>
+	<li>If a director sits on the boards of both a listed company and its listed subsidiary, then the parent company 
+	records will normally include the pay at the subsidiary, so you should subtract that when looking at annual totals.</li>
+</ol>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

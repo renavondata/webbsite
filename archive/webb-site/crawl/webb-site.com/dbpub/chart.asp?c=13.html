@@ -1,0 +1,2265 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+<script type="text/javascript" src="../templates/highstock.js"></script>
+<script type="text/javascript" src="../templates/exporting.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({
+		lang: {
+	      thousandsSep: ','
+	    }
+	});
+	Highcharts.stockChart('chart1', {
+        time: {
+        	useUTC:true
+        },
+    	chart: {
+    		backgroundColor: "#FFFFFF",
+	        borderWidth: 1,
+	        borderColor: "black",
+    	},
+    	rangeSelector:{
+    		selected: 9,
+    		buttons: [{
+				type: 'month',
+				count: 1,
+				text: '1m'
+			}, {
+				type: 'month',
+				count: 3,
+				text: '3m'
+			}, {
+				type: 'month',
+				count: 6,
+				text: '6m'
+			}, {
+				type: 'ytd',
+				text: 'YTD'
+			}, {
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 3,
+				text: '3y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}],
+			inputDateFormat:"%e %b %Y"
+    	},
+        title: {
+            text: '<b>LPG International Price monthly, HK$/L</b>',
+            margin: 10,
+            style: {
+            	fontSize:'1.2em'
+	        }	            
+        },
+        subtitle: {
+        	text: 'Webb-site.com',
+        	style: {
+        		fontWeight: 'bold',
+        		fontSize: '1.2em'
+        	}
+        },
+        yAxis: [{
+			title: {
+	            text: 'HK$/L'
+	        },
+	        height:'100%',
+	        gridLineColor:'gray',
+	        minorTickInterval:'auto',
+	        lineWidth: 1,
+	        min:null,
+	    }],
+        series: [
+        
+        {
+        	type: 'line',
+        	name: 'Price',
+            data: [[1009843200000,0.907999992370605],[1012521600000,0.83899998664856],[1014940800000,0.818000018596649],[1017619200000,0.833000004291534],[1020211200000,0.926999986171722],[1022889600000,0.935999989509583],[1025481600000,0.935999989509583],[1028160000000,0.978999972343445],[1030838400000,1.10099995136261],[1033430400000,1.26600003242493],[1036108800000,1.40400004386902],[1038700800000,1.40299999713898],[1041379200000,1.44700002670288],[1044057600000,1.58000004291534],[1046476800000,1.57700002193451],[1049155200000,1.35000002384186],[1051747200000,0.926999986171722],[1054425600000,1.02499997615814],[1057017600000,1.13499999046326],[1059696000000,1.13499999046326],[1062374400000,1.15199995040894],[1064966400000,1.09300005435944],[1067644800000,1.19599997997284],[1070236800000,1.33899998664856],[1072915200000,1.36800003051758],[1075593600000,1.41199994087219],[1078099200000,1.1360000371933],[1080777600000,1.25600004196167],[1083369600000,1.37000000476837],[1086048000000,1.50100004673004],[1088640000000,1.41199994087219],[1091318400000,1.46599996089935],[1093996800000,1.64400005340576],[1096588800000,1.72099995613098],[1099267200000,2.01099991798401],[1101859200000,1.81500005722046],[1104537600000,1.58700001239777],[1107216000000,1.58800005912781],[1109635200000,1.63300001621246],[1112313600000,1.78999996185303],[1114905600000,1.80999994277954],[1117584000000,1.69099998474121],[1120176000000,1.71200001239777],[1122854400000,1.72899997234344],[1125532800000,1.88100004196167],[1128124800000,2.21499991416931],[1130803200000,2.34299993515015],[1133395200000,2.2960000038147],[1136073600000,2.48300004005432],[1138752000000,2.66899991035461],[1141171200000,2.26300001144409],[1143849600000,1.82799994945526],[1146441600000,2.00600004196167],[1149120000000,2.00600004196167],[1151712000000,2.14499998092651],[1154390400000,2.33999991416931],[1157068800000,2.40000009536743],[1159660800000,2.07100009918213],[1162339200000,1.98800003528595],[1164931200000,2.1010000705719],[1167609600000,2.34599995613098],[1170288000000,2.25799989700317],[1172707200000,2.17499995231628],[1175385600000,2.32399988174438],[1177977600000,2.4539999961853],[1180656000000,2.60800004005432],[1183248000000,2.53299999237061],[1185926400000,2.57100009918213],[1188604800000,2.46900010108948],[1191196800000,2.81699991226196],[1193875200000,3.19000005722046],[1196467200000,3.75600004196167],[1199145600000,3.74900007247925],[1201824000000,3.45099997520447],[1204329600000,3.53399991989136],[1207008000000,3.4779999256134],[1209600000000,3.66899991035461],[1212278400000,3.91700005531311],[1214870400000,4.02400016784668],[1217548800000,3.78200006484985],[1220227200000,3.55900001525879],[1222819200000,3.44700002670288],[1225497600000,2.09200000762939],[1228089600000,1.43499994277954],[1230768000000,1.62100005149841],[1233446400000,2.15599989891052],[1235865600000,1.94599997997284],[1238544000000,1.7150000333786],[1241136000000,1.68099999427795],[1243814400000,1.8639999628067],[1246406400000,2.25200009346008],[1249084800000,2.1800000667572],[1251763200000,2.5],[1254355200000,2.51300001144409],[1257033600000,2.81500005722046],[1259625600000,3.1010000705719],[1262304000000,3.14299988746643],[1264982400000,3.14000010490417],[1267401600000,3.07599997520447],[1270080000000,3.06699991226196],[1272672000000,3.06699991226196],[1275350400000,2.87100005149841],[1277942400000,2.66599988937378],[1280620800000,2.52099990844727],[1283299200000,2.75399994850159],[1285891200000,2.98099994659424],[1288569600000,3.37800002098083],[1291161600000,3.98200011253357],[1293840000000,3.95499992370605],[1296518400000,3.48200011253357],[1298937600000,3.63499999046326],[1301616000000,3.79699993133545],[1304208000000,4.19199991226196],[1306886400000,3.86800003051758],[1309478400000,3.61199998855591],[1312156800000,3.72900009155273],[1314835200000,3.61500000953674],[1317427200000,3.39299988746643],[1320105600000,3.39000010490417],[1322697600000,3.44700002670288],[1325376000000,3.81800007820129],[1328054400000,4.40500020980835],[1330560000000,5.09999990463257],[1333238400000,4.24399995803833],[1335830400000,3.71399998664856],[1338508800000,3.15899991989136],[1341100800000,2.58999991416931],[1343779200000,3.30800008773804],[1346457600000,4.02099990844727],[1349049600000,4.19500017166138],[1351728000000,4.30000019073486],[1354320000000,4.12900018692017],[1356998400000,4.07299995422363],[1359676800000,3.88299989700317],[1362096000000,3.8199999332428],[1364774400000,3.50799989700317],[1367366400000,3.25999999046326],[1370044800000,3.25699996948242],[1372636800000,3.38000011444092],[1375315200000,3.5],[1377993600000,3.70300006866455],[1380585600000,3.58899998664856],[1383264000000,3.8529999256134],[1385856000000,5.06599998474121],[1388534400000,4.33900022506714],[1391212800000,4.14099979400635],[1393632000000,3.6949999332428],[1396310400000,3.51300001144409],[1398902400000,3.50099992752075],[1401580800000,3.56200003623962],[1404172800000,3.55800008773804],[1406851200000,3.38700008392334],[1409529600000,3.29699993133545],[1412121600000,3.22499990463257],[1414800000000,2.57399988174438],[1417392000000,2.40700006484985],[1420070400000,1.94799995422363],[1422748800000,2.00999999046326],[1425168000000,2.01399993896484],[1427846400000,1.99399995803833],[1430438400000,2.01300001144409],[1433116800000,1.83200001716614],[1435708800000,1.77499997615814],[1438387200000,1.66199994087219],[1441065600000,1.43400001525879],[1443657600000,1.54999995231628],[1446336000000,1.80400002002716],[1448928000000,2.00699996948242],[1451606400000,1.60599994659424],[1454284800000,1.30999994277954],[1456790400000,1.33200001716614],[1459468800000,1.45700001716614],[1462060800000,1.55200004577637],[1464739200000,1.51499998569489],[1467331200000,1.30499994754791],[1470009600000,1.23099994659424],[1472688000000,1.33399999141693],[1475280000000,1.54100000858307],[1477958400000,1.81459999084473],[1480550400000,1.74199998378754],[1483228800000,2.03715991973877],[1485907200000,2.44619989395142],[1488326400000,2.41000008583069],[1491004800000,2.01999998092651],[1493596800000,1.6599999666214],[1496275200000,1.66999995708466],[1498867200000,1.53999996185303],[1501545600000,1.92999994754791],[1504224000000,2.12700009346008],[1506816000000,2.48799991607666],[1509494400000,2.48499989509583],[1512086400000,2.47499990463257],[1514764800000,2.47699999809265],[1517443200000,2.19950008392334],[1519862400000,2.02099990844727],[1522540800000,2.03500008583069],[1525132800000,2.17499995231628],[1527811200000,2.41899991035461],[1530403200000,2.44300007820129],[1533081600000,2.55100011825562],[1535760000000,2.69799995422363],[1538352000000,2.82599997520447],[1541030400000,2.28399991989136],[1543622400000,1.82700002193451],[1546300800000,1.82099997997284],[1548979200000,1.99000000953674],[1551398400000,2.20700001716614],[1554076800000,2.28500008583069],[1556668800000,2.28200006484985],[1559347200000,1.81200003623962],[1561939200000,1.55490005016327],[1564617600000,1.55999994277954],[1567296000000,1.54100000858307],[1569888000000,1.85699999332428],[1572566400000,1.90100002288818],[1575158400000,1.94099998474121],[1577836800000,2.50300002098083],[1580515200000,2.27999997138977],[1583020800000,1.99000000953674],[1585699200000,1.01300001144409],[1588291200000,1.45099997520447],[1590969600000,1.43400001525879],[1593561600000,1.47599995136261],[1596240000000,1.49768996238708],[1598918400000,1.52699995040894],[1601510400000,1.61500000953674],[1604188800000,1.8639999628067],[1606780800000,1.95000004768372],[1609459200000,2.28699994087219],[1612137600000,2.5220000743866],[1614556800000,2.57800006866455],[1617235200000,2.30399990081787],[1619827200000,2.05699992179871],[1622505600000,2.25],[1625097600000,2.6489999294281],[1627776000000,2.80800008773804],[1630454400000,2.84899997711182],[1633046400000,3.41100001335144],[1635724800000,3.60500001907349],[1638316800000,3.2739999294281],[1640995200000,3.08599996566772],[1643673600000,3.32399988174438],[1646092800000,3.91799998283386],[1648771200000,4.10799980163574],[1651363200000,3.69899988174438],[1654041600000,3.24000000953674],[1656633600000,3.13199996948242],[1659312000000,2.86400008201599],[1661990400000,2.74699997901917],[1664582400000,2.45799994468689],[1667260800000,2.63599991798401],[1669852800000,2.80100011825562],[1672531200000,2.57399988174438],[1675209600000,3.40000009536743],[1677628800000,3.17000007629395],[1680307200000,2.36800003051758],[1682899200000,2.39800000190735],[1685577600000,1.94000005722046],[1688169600000,1.67400002479553],[1690848000000,2.0220000743866],[1693526400000,2.43499994277954],[1696118400000,2.67000007629395],[1698796800000,2.69799995422363],[1701388800000,2.69099998474121],[1704067200000,2.73600006103516],[1706745600000,2.78200006484985],[1709251200000,2.78399991989136],[1711929600000,2.70300006866455],[1714521600000,2.55299997329712],[1717200000000,2.48499989509583],[1719792000000,2.48499989509583],[1722470400000,2.51309990882874],[1725148800000,2.60500001907349],[1727740800000,2.70499992370605],[1730419200000,2.74200010299683],[1733011200000,2.74499988555908],[1735689600000,2.68400001525879],[1738368000000,2.73099994659424],[1740787200000,2.64400005340576],[1743465600000,2.64100003242493],[1746057600000,2.58500003814697],[1748736000000,2.52500009536743],[1751328000000,2.4300000667572],[1754006400000,2.18899989128113],[1756684800000,2.18199992179871],],
+            dataGrouping: {
+            	enabled:false
+			},
+		    tooltip: {
+		    	pointFormat: "<span style='color:{series.color}'>\u25CF</span> {series.name}: <b>{point.y:,.3f}</b><br>",
+		    	shared:true,
+		    }, 
+		},
+		],
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 50,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+		tooltip:{
+			backgroundColor: 'yellow',
+			xDateFormat: '%Y-%m',
+			headerFormat: '<span style="font-size: 12px">{point.key}</span><br/>'
+		},
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    		},
+	        },
+	    },
+		credits:{
+			enabled: true,
+			position: {
+				align:'left',
+				x:5,
+				verticalAlign:'bottom',
+				y:-5
+			}
+		}
+	});
+});
+</script>
+<title>LPG International Price monthly, HK$/L</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>LPG International Price monthly, HK$/L</h2>
+<p>Note: These prices are used in the LPG retail pricing formula, plus operating charge. They are calculated from the monthly contract prices of LPG from Saudi Arabia.</p>
+	<h4>Sources</h4>
+	
+		<p><a href="orgdata.asp?p=2533676">HKSAR Electrical and Mechanical Services Department</a></p>
+		
+<form method="get" action="chart.asp">
+	<div class="inputs">
+	Chart <select name='c' onchange="this.form.submit()"><option value='9'>HK consumer price indices 2020 series</option><option value='10'>HK consumer price indices Year-on-Year</option><option value='11'>HK cremations & coffin burials</option><option value='14'>HK electricity & gas consumption</option><option value='2'>HK electricity consumption by user type</option><option value='12'>HK electricity generation</option><option value='1'>HK gas consumption by user type</option><option value='8'>HK import prices: coal products</option><option value='7'>HK import prices: gas products</option><option value='6'>HK import prices: oil products</option><option value='5'>HK net imports: coal products</option><option value='4'>HK net imports: gas products</option><option value='3'>HK net imports: oil products</option><option value='13' selected>LPG International Price</option></select>
+	</div>
+	
+	<div class="clear"></div>
+</form>
+<p>Click on the legend to remove items from the chart.</p>
+<div id="chart1" style="width:95%;height:550px;margin-left:0"></div>
+<div class="clear"></div>
+<table class="numtable fcl center">
+	<tr>
+		<th>Month</th>
+		
+			<th>Price</th>
+		
+	</tr>
+	
+		<tr>
+			<td class="nowrap">2025-09</td>
+			
+				<td>2.182</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-08</td>
+			
+				<td>2.189</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-07</td>
+			
+				<td>2.430</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-06</td>
+			
+				<td>2.525</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-05</td>
+			
+				<td>2.585</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-04</td>
+			
+				<td>2.641</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-03</td>
+			
+				<td>2.644</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-02</td>
+			
+				<td>2.731</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2025-01</td>
+			
+				<td>2.684</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-12</td>
+			
+				<td>2.745</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-11</td>
+			
+				<td>2.742</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-10</td>
+			
+				<td>2.705</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-09</td>
+			
+				<td>2.605</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-08</td>
+			
+				<td>2.513</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-07</td>
+			
+				<td>2.485</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-06</td>
+			
+				<td>2.485</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-05</td>
+			
+				<td>2.553</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-04</td>
+			
+				<td>2.703</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-03</td>
+			
+				<td>2.784</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-02</td>
+			
+				<td>2.782</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2024-01</td>
+			
+				<td>2.736</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-12</td>
+			
+				<td>2.691</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-11</td>
+			
+				<td>2.698</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-10</td>
+			
+				<td>2.670</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-09</td>
+			
+				<td>2.435</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-08</td>
+			
+				<td>2.022</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-07</td>
+			
+				<td>1.674</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-06</td>
+			
+				<td>1.940</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-05</td>
+			
+				<td>2.398</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-04</td>
+			
+				<td>2.368</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-03</td>
+			
+				<td>3.170</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-02</td>
+			
+				<td>3.400</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2023-01</td>
+			
+				<td>2.574</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-12</td>
+			
+				<td>2.801</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-11</td>
+			
+				<td>2.636</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-10</td>
+			
+				<td>2.458</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-09</td>
+			
+				<td>2.747</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-08</td>
+			
+				<td>2.864</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-07</td>
+			
+				<td>3.132</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-06</td>
+			
+				<td>3.240</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-05</td>
+			
+				<td>3.699</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-04</td>
+			
+				<td>4.108</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-03</td>
+			
+				<td>3.918</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-02</td>
+			
+				<td>3.324</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2022-01</td>
+			
+				<td>3.086</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-12</td>
+			
+				<td>3.274</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-11</td>
+			
+				<td>3.605</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-10</td>
+			
+				<td>3.411</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-09</td>
+			
+				<td>2.849</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-08</td>
+			
+				<td>2.808</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-07</td>
+			
+				<td>2.649</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-06</td>
+			
+				<td>2.250</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-05</td>
+			
+				<td>2.057</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-04</td>
+			
+				<td>2.304</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-03</td>
+			
+				<td>2.578</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-02</td>
+			
+				<td>2.522</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2021-01</td>
+			
+				<td>2.287</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-12</td>
+			
+				<td>1.950</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-11</td>
+			
+				<td>1.864</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-10</td>
+			
+				<td>1.615</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-09</td>
+			
+				<td>1.527</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-08</td>
+			
+				<td>1.498</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-07</td>
+			
+				<td>1.476</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-06</td>
+			
+				<td>1.434</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-05</td>
+			
+				<td>1.451</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-04</td>
+			
+				<td>1.013</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-03</td>
+			
+				<td>1.990</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-02</td>
+			
+				<td>2.280</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2020-01</td>
+			
+				<td>2.503</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-12</td>
+			
+				<td>1.941</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-11</td>
+			
+				<td>1.901</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-10</td>
+			
+				<td>1.857</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-09</td>
+			
+				<td>1.541</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-08</td>
+			
+				<td>1.560</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-07</td>
+			
+				<td>1.555</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-06</td>
+			
+				<td>1.812</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-05</td>
+			
+				<td>2.282</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-04</td>
+			
+				<td>2.285</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-03</td>
+			
+				<td>2.207</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-02</td>
+			
+				<td>1.990</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2019-01</td>
+			
+				<td>1.821</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-12</td>
+			
+				<td>1.827</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-11</td>
+			
+				<td>2.284</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-10</td>
+			
+				<td>2.826</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-09</td>
+			
+				<td>2.698</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-08</td>
+			
+				<td>2.551</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-07</td>
+			
+				<td>2.443</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-06</td>
+			
+				<td>2.419</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-05</td>
+			
+				<td>2.175</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-04</td>
+			
+				<td>2.035</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-03</td>
+			
+				<td>2.021</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-02</td>
+			
+				<td>2.200</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2018-01</td>
+			
+				<td>2.477</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-12</td>
+			
+				<td>2.475</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-11</td>
+			
+				<td>2.485</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-10</td>
+			
+				<td>2.488</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-09</td>
+			
+				<td>2.127</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-08</td>
+			
+				<td>1.930</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-07</td>
+			
+				<td>1.540</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-06</td>
+			
+				<td>1.670</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-05</td>
+			
+				<td>1.660</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-04</td>
+			
+				<td>2.020</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-03</td>
+			
+				<td>2.410</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-02</td>
+			
+				<td>2.446</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2017-01</td>
+			
+				<td>2.037</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-12</td>
+			
+				<td>1.742</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-11</td>
+			
+				<td>1.815</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-10</td>
+			
+				<td>1.541</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-09</td>
+			
+				<td>1.334</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-08</td>
+			
+				<td>1.231</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-07</td>
+			
+				<td>1.305</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-06</td>
+			
+				<td>1.515</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-05</td>
+			
+				<td>1.552</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-04</td>
+			
+				<td>1.457</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-03</td>
+			
+				<td>1.332</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-02</td>
+			
+				<td>1.310</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2016-01</td>
+			
+				<td>1.606</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-12</td>
+			
+				<td>2.007</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-11</td>
+			
+				<td>1.804</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-10</td>
+			
+				<td>1.550</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-09</td>
+			
+				<td>1.434</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-08</td>
+			
+				<td>1.662</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-07</td>
+			
+				<td>1.775</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-06</td>
+			
+				<td>1.832</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-05</td>
+			
+				<td>2.013</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-04</td>
+			
+				<td>1.994</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-03</td>
+			
+				<td>2.014</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-02</td>
+			
+				<td>2.010</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2015-01</td>
+			
+				<td>1.948</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-12</td>
+			
+				<td>2.407</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-11</td>
+			
+				<td>2.574</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-10</td>
+			
+				<td>3.225</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-09</td>
+			
+				<td>3.297</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-08</td>
+			
+				<td>3.387</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-07</td>
+			
+				<td>3.558</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-06</td>
+			
+				<td>3.562</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-05</td>
+			
+				<td>3.501</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-04</td>
+			
+				<td>3.513</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-03</td>
+			
+				<td>3.695</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-02</td>
+			
+				<td>4.141</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2014-01</td>
+			
+				<td>4.339</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-12</td>
+			
+				<td>5.066</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-11</td>
+			
+				<td>3.853</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-10</td>
+			
+				<td>3.589</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-09</td>
+			
+				<td>3.703</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-08</td>
+			
+				<td>3.500</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-07</td>
+			
+				<td>3.380</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-06</td>
+			
+				<td>3.257</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-05</td>
+			
+				<td>3.260</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-04</td>
+			
+				<td>3.508</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-03</td>
+			
+				<td>3.820</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-02</td>
+			
+				<td>3.883</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2013-01</td>
+			
+				<td>4.073</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-12</td>
+			
+				<td>4.129</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-11</td>
+			
+				<td>4.300</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-10</td>
+			
+				<td>4.195</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-09</td>
+			
+				<td>4.021</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-08</td>
+			
+				<td>3.308</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-07</td>
+			
+				<td>2.590</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-06</td>
+			
+				<td>3.159</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-05</td>
+			
+				<td>3.714</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-04</td>
+			
+				<td>4.244</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-03</td>
+			
+				<td>5.100</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-02</td>
+			
+				<td>4.405</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2012-01</td>
+			
+				<td>3.818</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-12</td>
+			
+				<td>3.447</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-11</td>
+			
+				<td>3.390</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-10</td>
+			
+				<td>3.393</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-09</td>
+			
+				<td>3.615</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-08</td>
+			
+				<td>3.729</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-07</td>
+			
+				<td>3.612</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-06</td>
+			
+				<td>3.868</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-05</td>
+			
+				<td>4.192</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-04</td>
+			
+				<td>3.797</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-03</td>
+			
+				<td>3.635</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-02</td>
+			
+				<td>3.482</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2011-01</td>
+			
+				<td>3.955</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-12</td>
+			
+				<td>3.982</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-11</td>
+			
+				<td>3.378</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-10</td>
+			
+				<td>2.981</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-09</td>
+			
+				<td>2.754</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-08</td>
+			
+				<td>2.521</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-07</td>
+			
+				<td>2.666</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-06</td>
+			
+				<td>2.871</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-05</td>
+			
+				<td>3.067</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-04</td>
+			
+				<td>3.067</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-03</td>
+			
+				<td>3.076</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-02</td>
+			
+				<td>3.140</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2010-01</td>
+			
+				<td>3.143</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-12</td>
+			
+				<td>3.101</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-11</td>
+			
+				<td>2.815</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-10</td>
+			
+				<td>2.513</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-09</td>
+			
+				<td>2.500</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-08</td>
+			
+				<td>2.180</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-07</td>
+			
+				<td>2.252</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-06</td>
+			
+				<td>1.864</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-05</td>
+			
+				<td>1.681</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-04</td>
+			
+				<td>1.715</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-03</td>
+			
+				<td>1.946</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-02</td>
+			
+				<td>2.156</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2009-01</td>
+			
+				<td>1.621</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-12</td>
+			
+				<td>1.435</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-11</td>
+			
+				<td>2.092</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-10</td>
+			
+				<td>3.447</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-09</td>
+			
+				<td>3.559</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-08</td>
+			
+				<td>3.782</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-07</td>
+			
+				<td>4.024</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-06</td>
+			
+				<td>3.917</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-05</td>
+			
+				<td>3.669</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-04</td>
+			
+				<td>3.478</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-03</td>
+			
+				<td>3.534</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-02</td>
+			
+				<td>3.451</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2008-01</td>
+			
+				<td>3.749</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-12</td>
+			
+				<td>3.756</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-11</td>
+			
+				<td>3.190</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-10</td>
+			
+				<td>2.817</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-09</td>
+			
+				<td>2.469</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-08</td>
+			
+				<td>2.571</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-07</td>
+			
+				<td>2.533</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-06</td>
+			
+				<td>2.608</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-05</td>
+			
+				<td>2.454</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-04</td>
+			
+				<td>2.324</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-03</td>
+			
+				<td>2.175</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-02</td>
+			
+				<td>2.258</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2007-01</td>
+			
+				<td>2.346</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-12</td>
+			
+				<td>2.101</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-11</td>
+			
+				<td>1.988</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-10</td>
+			
+				<td>2.071</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-09</td>
+			
+				<td>2.400</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-08</td>
+			
+				<td>2.340</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-07</td>
+			
+				<td>2.145</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-06</td>
+			
+				<td>2.006</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-05</td>
+			
+				<td>2.006</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-04</td>
+			
+				<td>1.828</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-03</td>
+			
+				<td>2.263</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-02</td>
+			
+				<td>2.669</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2006-01</td>
+			
+				<td>2.483</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-12</td>
+			
+				<td>2.296</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-11</td>
+			
+				<td>2.343</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-10</td>
+			
+				<td>2.215</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-09</td>
+			
+				<td>1.881</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-08</td>
+			
+				<td>1.729</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-07</td>
+			
+				<td>1.712</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-06</td>
+			
+				<td>1.691</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-05</td>
+			
+				<td>1.810</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-04</td>
+			
+				<td>1.790</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-03</td>
+			
+				<td>1.633</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-02</td>
+			
+				<td>1.588</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2005-01</td>
+			
+				<td>1.587</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-12</td>
+			
+				<td>1.815</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-11</td>
+			
+				<td>2.011</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-10</td>
+			
+				<td>1.721</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-09</td>
+			
+				<td>1.644</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-08</td>
+			
+				<td>1.466</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-07</td>
+			
+				<td>1.412</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-06</td>
+			
+				<td>1.501</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-05</td>
+			
+				<td>1.370</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-04</td>
+			
+				<td>1.256</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-03</td>
+			
+				<td>1.136</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-02</td>
+			
+				<td>1.412</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2004-01</td>
+			
+				<td>1.368</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-12</td>
+			
+				<td>1.339</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-11</td>
+			
+				<td>1.196</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-10</td>
+			
+				<td>1.093</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-09</td>
+			
+				<td>1.152</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-08</td>
+			
+				<td>1.135</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-07</td>
+			
+				<td>1.135</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-06</td>
+			
+				<td>1.025</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-05</td>
+			
+				<td>0.927</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-04</td>
+			
+				<td>1.350</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-03</td>
+			
+				<td>1.577</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-02</td>
+			
+				<td>1.580</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2003-01</td>
+			
+				<td>1.447</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-12</td>
+			
+				<td>1.403</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-11</td>
+			
+				<td>1.404</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-10</td>
+			
+				<td>1.266</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-09</td>
+			
+				<td>1.101</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-08</td>
+			
+				<td>0.979</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-07</td>
+			
+				<td>0.936</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-06</td>
+			
+				<td>0.936</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-05</td>
+			
+				<td>0.927</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-04</td>
+			
+				<td>0.833</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-03</td>
+			
+				<td>0.818</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-02</td>
+			
+				<td>0.839</td>
+			
+		</tr>
+	
+		<tr>
+			<td class="nowrap">2002-01</td>
+			
+				<td>0.908</td>
+			
+		</tr>
+	
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

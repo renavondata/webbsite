@@ -1,0 +1,2054 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Performance since transfer from GEM to Main Board up to 2025-10-30</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Performance since transfer from GEM to Main Board up to 2025-10-30</h2>
+<ul class="navlist">
+	<li><a href="TRnotes.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+<p>Current company names are shown but may have been different on the snapshot date. 
+Total returns are measured from the last closing price on the GEM before 
+transfer, to the snapshot date or delisting date if earlier. CAGR is the annualised return and is not shown for 
+periods under 180 days. Relative returns are to the
+<a href="orgdata.asp?p=51819">Tracker Fund of 
+HK</a> (2800) over the same periods.</p>
+<form method="get" action="gemgrads.asp">
+	<input type="hidden" name="sort" value="cagreldn">
+	<div class="inputs">
+		Snapshot date: <input type="date" name="d" id="d" value="2025-10-30" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value=''">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class='widthAlert2'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+	<table class="numtable yscroll">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=codeup'><b>Stock<br>Code</b></a></th>
+			<th class="left colHide3"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=typeup'><b>Sec.<br>type</b></a></th>
+			<th class="left"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=nameup'><b>Issuer</b></a></th>
+			<th class="colHide3"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=datedn'><b>Last trade<br>on GEM</b></a></th>
+			<th class="colHide2"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=totrdn'><b>Total<br>return<br>%</b></a></th>
+			<th class="colHide2"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=cagretdn'><b>CAGR<br>total<br>return<br>%</b></a></th>
+			<th><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=cagrelup'><b>CAGR<br>relative<br>return<br>%</b></a></th>		
+			<th class="colHide1"><a href='/dbpub/gemgrads.asp?d=2025-10-30&amp;sort=dldn'><b>Delisted</b></a></th>
+		</tr>
+		
+			<tr>
+				<td class="colHide1">1</td>
+				<td>9900</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11785498'>HONG KONG ZCLOUD TECHNOLOGY CONSTRUCTION LIMITED (KY)</a></td>
+				<td class="colHide3 nowrap">2019-12-27</td>
+				<td class="colHide2"><a href="str.asp?i=25925">2,244.15</a></td>
+				<td class="colHide2">71.67</td>
+				<td>67.85</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">2</td>
+				<td>9893</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=22006'>Pizu Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2025-02-17</td>
+				<td class="colHide2"><a href="str.asp?i=3648">61.32</a></td>
+				<td class="colHide2">99.45</td>
+				<td>54.40</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">3</td>
+				<td>2176</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=17871'>CCID CONSULTING COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2021-05-13</td>
+				<td class="colHide2"><a href="str.asp?i=3398">524.06</a></td>
+				<td class="colHide2">50.77</td>
+				<td>47.18</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">4</td>
+				<td>1908</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=152905'>C&D International Investment Group Limited</a></td>
+				<td class="colHide3 nowrap">2014-05-23</td>
+				<td class="colHide2"><a href="str.asp?i=10173">3,985.90</a></td>
+				<td class="colHide2">38.33</td>
+				<td>32.09</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">5</td>
+				<td>2295</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=22894326'>Maxicity Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2021-12-30</td>
+				<td class="colHide2"><a href="str.asp?i=28707">254.12</a></td>
+				<td class="colHide2">39.15</td>
+				<td>29.65</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">6</td>
+				<td>1481</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11550564'>Smart Globe Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2020-12-10</td>
+				<td class="colHide2"><a href="str.asp?i=25647">264.57</a></td>
+				<td class="colHide2">30.34</td>
+				<td>25.96</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">7</td>
+				<td>1236</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=9878'>National Agricultural Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2011-08-26</td>
+				<td class="colHide2"><a href="str.asp?i=2394">416.19</a></td>
+				<td class="colHide2">34.16</td>
+				<td>25.09</td>
+				<td class="colHide1">2019-11-22</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">8</td>
+				<td>1782</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2617001'>International Business Digital Technology Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2018-11-28</td>
+				<td class="colHide2"><a href="str.asp?i=22089">330.97</a></td>
+				<td class="colHide2">23.52</td>
+				<td>19.60</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">9</td>
+				<td>1177</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12538'>SINO BIOPHARMACEUTICAL LIMITED</a></td>
+				<td class="colHide3 nowrap">2003-12-05</td>
+				<td class="colHide2"><a href="str.asp?i=2821">14,611.84</a></td>
+				<td class="colHide2">25.60</td>
+				<td>17.41</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">10</td>
+				<td>1854</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2573322'>China Wantian Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-03-20</td>
+				<td class="colHide2"><a href="str.asp?i=21444">224.08</a></td>
+				<td class="colHide2">19.47</td>
+				<td>17.28</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">11</td>
+				<td>1709</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2429689'>DL Holdings Group Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2017-09-26</td>
+				<td class="colHide2"><a href="str.asp?i=16095">327.77</a></td>
+				<td class="colHide2">19.69</td>
+				<td>16.40</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">12</td>
+				<td>3966</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=153229'>China Baofeng (International) Limited</a></td>
+				<td class="colHide3 nowrap">2015-08-04</td>
+				<td class="colHide2"><a href="str.asp?i=9647">135.73</a></td>
+				<td class="colHide2">18.51</td>
+				<td>13.94</td>
+				<td class="colHide1">2020-09-08</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">13</td>
+				<td>0268</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13032'>KINGDEE INTERNATIONAL SOFTWARE GROUP COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2005-07-19</td>
+				<td class="colHide2"><a href="str.asp?i=2901">4,102.88</a></td>
+				<td class="colHide2">20.25</td>
+				<td>13.01</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">14</td>
+				<td>0863</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=153159'>OSL Group Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2015-09-07</td>
+				<td class="colHide2"><a href="str.asp?i=9245">459.68</a></td>
+				<td class="colHide2">18.51</td>
+				<td>11.89</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">15</td>
+				<td>1385</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11503'>Shanghai Fudan Microelectronics Group Company Limited</a></td>
+				<td class="colHide3 nowrap">2014-01-07</td>
+				<td class="colHide2"><a href="str.asp?i=2632">400.76</a></td>
+				<td class="colHide2">14.62</td>
+				<td>9.38</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">16</td>
+				<td>1061</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13827'>ESSEX BIO-TECHNOLOGY LIMITED</a></td>
+				<td class="colHide3 nowrap">2011-06-22</td>
+				<td class="colHide2"><a href="str.asp?i=3080">515.19</a></td>
+				<td class="colHide2">13.49</td>
+				<td>8.36</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">17</td>
+				<td>1657</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2612146'>SG Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2020-03-19</td>
+				<td class="colHide2"><a href="str.asp?i=23197">129.71</a></td>
+				<td class="colHide2">15.98</td>
+				<td>8.25</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">18</td>
+				<td>2688</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14005'>ENN Energy Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2002-05-31</td>
+				<td class="colHide2"><a href="str.asp?i=2975">2,866.08</a></td>
+				<td class="colHide2">15.58</td>
+				<td>7.88</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">19</td>
+				<td>0354</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18160'>CHINASOFT INTERNATIONAL LIMITED</a></td>
+				<td class="colHide3 nowrap">2008-12-24</td>
+				<td class="colHide2"><a href="str.asp?i=3375">1,028.09</a></td>
+				<td class="colHide2">15.47</td>
+				<td>7.76</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">20</td>
+				<td>2218</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18166'>YANTAI NORTH ANDRE JUICE CO., LTD.</a></td>
+				<td class="colHide3 nowrap">2011-01-18</td>
+				<td class="colHide2"><a href="str.asp?i=3392">405.37</a></td>
+				<td class="colHide2">11.59</td>
+				<td>7.28</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">21</td>
+				<td>6069</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2696057'>SY Holdings Group Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2019-10-23</td>
+				<td class="colHide2"><a href="str.asp?i=25050">74.69</a></td>
+				<td class="colHide2">9.72</td>
+				<td>6.26</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">22</td>
+				<td>3633</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14031'>Zhongyu Energy Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2012-07-10</td>
+				<td class="colHide2"><a href="str.asp?i=2989">276.76</a></td>
+				<td class="colHide2">10.49</td>
+				<td>4.45</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">23</td>
+				<td>6966</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=6714321'>China Wan Tong Yuan (Holdings) Limited</a></td>
+				<td class="colHide3 nowrap">2019-12-16</td>
+				<td class="colHide2"><a href="str.asp?i=25221">48.49</a></td>
+				<td class="colHide2">6.97</td>
+				<td>4.15</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">24</td>
+				<td>1057</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=34301'>Zhejiang Shibao Company Limited</a></td>
+				<td class="colHide3 nowrap">2011-03-08</td>
+				<td class="colHide2"><a href="str.asp?i=4741">229.68</a></td>
+				<td class="colHide2">8.49</td>
+				<td>4.13</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">25</td>
+				<td>2102</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2622059'>Tak Lee Machinery Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2020-10-05</td>
+				<td class="colHide2"><a href="str.asp?i=25133">58.76</a></td>
+				<td class="colHide2">9.56</td>
+				<td>3.77</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">26</td>
+				<td>0777</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=41400'>NetDragon Websoft Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2008-06-23</td>
+				<td class="colHide2"><a href="str.asp?i=4925">272.82</a></td>
+				<td class="colHide2">7.88</td>
+				<td>3.49</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">27</td>
+				<td>1302</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=133242'>LifeTech Scientific Corporation</a></td>
+				<td class="colHide3 nowrap">2013-11-05</td>
+				<td class="colHide2"><a href="str.asp?i=7165">155.19</a></td>
+				<td class="colHide2">8.14</td>
+				<td>3.38</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">28</td>
+				<td>2488</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18161'>LAUNCH TECH COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2011-03-25</td>
+				<td class="colHide2"><a href="str.asp?i=3378">198.85</a></td>
+				<td class="colHide2">7.79</td>
+				<td>3.28</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">29</td>
+				<td>1639</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=22014'>AKM INDUSTRIAL COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2014-06-17</td>
+				<td class="colHide2"><a href="str.asp?i=3649">55.41</a></td>
+				<td class="colHide2">5.64</td>
+				<td>2.81</td>
+				<td class="colHide1">2022-07-28</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">30</td>
+				<td>1164</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=15450'>CGN Mining Company Limited</a></td>
+				<td class="colHide3 nowrap">2003-08-01</td>
+				<td class="colHide2"><a href="str.asp?i=3467">876.38</a></td>
+				<td class="colHide2">10.79</td>
+				<td>2.75</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">31</td>
+				<td>3991</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=10021'>Changhong Jiahua Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2020-03-17</td>
+				<td class="colHide2"><a href="str.asp?i=2435">52.81</a></td>
+				<td class="colHide2">7.84</td>
+				<td>1.93</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">32</td>
+				<td>1666</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12466'>TONG REN TANG TECHNOLOGIES CO. LTD.</a></td>
+				<td class="colHide3 nowrap">2010-07-08</td>
+				<td class="colHide2"><a href="str.asp?i=2794">153.13</a></td>
+				<td class="colHide2">6.26</td>
+				<td>0.99</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">33</td>
+				<td>1686</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=10577'>SUNEVISION HOLDINGS LTD.</a></td>
+				<td class="colHide3 nowrap">2018-01-19</td>
+				<td class="colHide2"><a href="str.asp?i=2566">14.65</a></td>
+				<td class="colHide2">1.77</td>
+				<td>0.86</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">34</td>
+				<td>2663</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2441116'>KPa-BM Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-10-23</td>
+				<td class="colHide2"><a href="str.asp?i=16178">27.82</a></td>
+				<td class="colHide2">3.11</td>
+				<td>0.58</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">35</td>
+				<td>1867</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2546053'>Standard Development Group Limited</a></td>
+				<td class="colHide3 nowrap">2019-05-08</td>
+				<td class="colHide2"><a href="str.asp?i=22274">17.95</a></td>
+				<td class="colHide2">2.58</td>
+				<td>0.48</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">36</td>
+				<td>0775</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=17035'>CK LIFE SCIENCES INT'L., (HOLDINGS) INC.</a></td>
+				<td class="colHide3 nowrap">2008-09-05</td>
+				<td class="colHide2"><a href="str.asp?i=3384">153.71</a></td>
+				<td class="colHide2">5.58</td>
+				<td>0.48</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">37</td>
+				<td>0799</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2114425'>IGG Inc</a></td>
+				<td class="colHide3 nowrap">2015-07-06</td>
+				<td class="colHide2"><a href="str.asp?i=11402">52.92</a></td>
+				<td class="colHide2">4.20</td>
+				<td>0.34</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">38</td>
+				<td>3928</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=16931'>Zhengzhou China Resources Gas Company Limited</a></td>
+				<td class="colHide3 nowrap">2007-06-28</td>
+				<td class="colHide2"><a href="str.asp?i=3347">6.87</a></td>
+				<td class="colHide2">1.46</td>
+				<td>0.08</td>
+				<td class="colHide1">2012-02-14</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">39</td>
+				<td>0596</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=20941'>Inspur Digital Enterprise Technology Limited</a></td>
+				<td class="colHide3 nowrap">2008-08-28</td>
+				<td class="colHide2"><a href="str.asp?i=3576">120.50</a></td>
+				<td class="colHide2">4.71</td>
+				<td>-0.04</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">40</td>
+				<td>0776</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=30060'>Imperium Technology Group Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2008-09-09</td>
+				<td class="colHide2"><a href="str.asp?i=4654">110.17</a></td>
+				<td class="colHide2">4.43</td>
+				<td>-0.47</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">41</td>
+				<td>1079</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=9325'>PINE TECHNOLOGY HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2010-11-17</td>
+				<td class="colHide2"><a href="str.asp?i=2273">50.85</a></td>
+				<td class="colHide2">2.79</td>
+				<td>-1.41</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">42</td>
+				<td>2308</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18178'>EVOC Intelligent Technology Company Limited</a></td>
+				<td class="colHide3 nowrap">2010-07-09</td>
+				<td class="colHide2"><a href="str.asp?i=3409">-1.74</a></td>
+				<td class="colHide2">-0.14</td>
+				<td>-1.54</td>
+				<td class="colHide1">2022-10-28</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">43</td>
+				<td>3899</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=30125'>CIMC Enric Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2006-07-19</td>
+				<td class="colHide2"><a href="str.asp?i=4659">121.82</a></td>
+				<td class="colHide2">4.22</td>
+				<td>-1.68</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">44</td>
+				<td>3860</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2606682'>EPS Creative Health Technology Group Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2019-12-11</td>
+				<td class="colHide2"><a href="str.asp?i=22604">9.29</a></td>
+				<td class="colHide2">1.52</td>
+				<td>-1.70</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">45</td>
+				<td>1483</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2119052'>Net-a-Go Technology Company Limited</a></td>
+				<td class="colHide3 nowrap">2015-08-28</td>
+				<td class="colHide2"><a href="str.asp?i=11586">41.03</a></td>
+				<td class="colHide2">3.44</td>
+				<td>-1.84</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">46</td>
+				<td>0839</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=37001'>Anhui Tianda Oil Pipe Company Limited</a></td>
+				<td class="colHide3 nowrap">2007-12-21</td>
+				<td class="colHide2"><a href="str.asp?i=4791">-9.27</a></td>
+				<td class="colHide2">-1.08</td>
+				<td>-2.08</td>
+				<td class="colHide1">2016-12-12</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">47</td>
+				<td>0568</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=20774'>SHANDONG MOLONG PETROLEUM MACHINERY COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2007-02-06</td>
+				<td class="colHide2"><a href="str.asp?i=3550">51.41</a></td>
+				<td class="colHide2">2.24</td>
+				<td>-2.35</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">48</td>
+				<td>0831</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12696'>CONVENIENCE RETAIL ASIA LIMITED</a></td>
+				<td class="colHide3 nowrap">2011-06-17</td>
+				<td class="colHide2"><a href="str.asp?i=2860">31.43</a></td>
+				<td class="colHide2">1.92</td>
+				<td>-2.73</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">49</td>
+				<td>0096</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=29992'>YUSEI HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2010-12-14</td>
+				<td class="colHide2"><a href="str.asp?i=4650">14.72</a></td>
+				<td class="colHide2">0.93</td>
+				<td>-3.15</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">50</td>
+				<td>1009</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11237'>INTERNATIONAL ENTERTAINMENT CORPORATION</a></td>
+				<td class="colHide3 nowrap">2010-09-24</td>
+				<td class="colHide2"><a href="str.asp?i=2592">19.15</a></td>
+				<td class="colHide2">1.17</td>
+				<td>-3.24</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">51</td>
+				<td>1083</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13348'>Towngas Smart Energy Company Limited</a></td>
+				<td class="colHide3 nowrap">2005-12-07</td>
+				<td class="colHide2"><a href="str.asp?i=2984">50.59</a></td>
+				<td class="colHide2">2.08</td>
+				<td>-3.89</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">52</td>
+				<td>1075</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=15095'>CAPINFO COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2011-01-20</td>
+				<td class="colHide2"><a href="str.asp?i=3355">-3.05</a></td>
+				<td class="colHide2">-0.21</td>
+				<td>-4.12</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">53</td>
+				<td>6083</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2475849'>WORLD-LINK LOGISTICS (ASIA) HOLDING LIMITED</a></td>
+				<td class="colHide3 nowrap">2017-11-14</td>
+				<td class="colHide2"><a href="str.asp?i=18273">-22.91</a></td>
+				<td class="colHide2">-3.22</td>
+				<td>-5.23</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">54</td>
+				<td>1066</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=19738'>Shandong Weigao Group Medical Polymer Company Limited</a></td>
+				<td class="colHide3 nowrap">2010-07-28</td>
+				<td class="colHide2"><a href="str.asp?i=3485">-17.87</a></td>
+				<td class="colHide2">-1.28</td>
+				<td>-5.86</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">55</td>
+				<td>3628</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=133171'>RENHENG Enterprise Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2013-11-22</td>
+				<td class="colHide2"><a href="str.asp?i=7158">-26.59</a></td>
+				<td class="colHide2">-2.56</td>
+				<td>-6.65</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">56</td>
+				<td>1328</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=41335'>Goldstream Investment Limited</a></td>
+				<td class="colHide3 nowrap">2009-05-22</td>
+				<td class="colHide2"><a href="str.asp?i=4922">-15.38</a></td>
+				<td class="colHide2">-1.01</td>
+				<td>-6.68</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">57</td>
+				<td>0502</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18172'>PAN SINO INTERNATIONAL HOLDING LIMITED</a></td>
+				<td class="colHide3 nowrap">2006-02-28</td>
+				<td class="colHide2"><a href="str.asp?i=3402">23.40</a></td>
+				<td class="colHide2">19.91</td>
+				<td>-6.82</td>
+				<td class="colHide1">2011-09-19</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">58</td>
+				<td>3613</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1037544'>BEIJING TONG REN TANG CHINESE MEDICINE COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2018-05-28</td>
+				<td class="colHide2"><a href="str.asp?i=9474">-35.50</a></td>
+				<td class="colHide2">-5.74</td>
+				<td>-7.03</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">59</td>
+				<td>1292</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=32551'>Changan Minsheng APLL Logistics Co., Ltd.</a></td>
+				<td class="colHide3 nowrap">2013-07-17</td>
+				<td class="colHide2"><a href="str.asp?i=4704">-24.45</a></td>
+				<td class="colHide2">-2.26</td>
+				<td>-7.06</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">60</td>
+				<td>1732</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2568680'>XiangXing International Holding Limited</a></td>
+				<td class="colHide3 nowrap">2019-09-05</td>
+				<td class="colHide2"><a href="str.asp?i=23033">-24.44</a></td>
+				<td class="colHide2">-4.46</td>
+				<td>-7.46</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">61</td>
+				<td>0445</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=17031'>CIMC-TianDa Holdings Company Limited</a></td>
+				<td class="colHide3 nowrap">2008-10-03</td>
+				<td class="colHide2"><a href="str.asp?i=3328">-16.15</a></td>
+				<td class="colHide2">-1.43</td>
+				<td>-7.65</td>
+				<td class="colHide1">2021-01-26</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">62</td>
+				<td>1349</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=16187'>SHANGHAI FUDAN-ZHANGJIANG BIO-PHARMACEUTICAL CO., LIMITED</a></td>
+				<td class="colHide3 nowrap">2013-12-13</td>
+				<td class="colHide2"><a href="str.asp?i=3388">-35.32</a></td>
+				<td class="colHide2">-3.60</td>
+				<td>-7.80</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">63</td>
+				<td>0950</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=17032'>LEE'S PHARMACEUTICAL HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2010-05-13</td>
+				<td class="colHide2"><a href="str.asp?i=3376">-41.87</a></td>
+				<td class="colHide2">-3.45</td>
+				<td>-8.13</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">64</td>
+				<td>1631</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2222385'>REF Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-06-19</td>
+				<td class="colHide2"><a href="str.asp?i=15873">-35.40</a></td>
+				<td class="colHide2">-5.09</td>
+				<td>-8.50</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">65</td>
+				<td>6908</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2456486'>HG Semiconductor Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2019-11-12</td>
+				<td class="colHide2"><a href="str.asp?i=22195">-30.56</a></td>
+				<td class="colHide2">-5.93</td>
+				<td>-8.65</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">66</td>
+				<td>0895</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18169'>Dongjiang Environmental Company Limited</a></td>
+				<td class="colHide3 nowrap">2010-09-27</td>
+				<td class="colHide2"><a href="str.asp?i=3397">-51.52</a></td>
+				<td class="colHide2">-4.69</td>
+				<td>-8.78</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">67</td>
+				<td>1402</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2370258'>i-Control Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-12-17</td>
+				<td class="colHide2"><a href="str.asp?i=14009">-34.41</a></td>
+				<td class="colHide2">-6.94</td>
+				<td>-9.22</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">68</td>
+				<td>2086</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18179'>Leadway Technology Investment Group Limited</a></td>
+				<td class="colHide3 nowrap">2015-09-25</td>
+				<td class="colHide2"><a href="str.asp?i=3410">-38.76</a></td>
+				<td class="colHide2">-4.74</td>
+				<td>-9.80</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">69</td>
+				<td>1522</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=153115'>BII Railway Transportation Technology Holdings Company Limited</a></td>
+				<td class="colHide3 nowrap">2013-12-05</td>
+				<td class="colHide2"><a href="str.asp?i=9331">-53.60</a></td>
+				<td class="colHide2">-6.25</td>
+				<td>-10.18</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">70</td>
+				<td>2362</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13614'>Jinchuan Group International Resources Co. Ltd</a></td>
+				<td class="colHide3 nowrap">2003-10-24</td>
+				<td class="colHide2"><a href="str.asp?i=2951">-62.06</a></td>
+				<td class="colHide2">-4.42</td>
+				<td>-10.45</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">71</td>
+				<td>1410</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2628280'>Edvance International Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-12-23</td>
+				<td class="colHide2"><a href="str.asp?i=24306">-39.69</a></td>
+				<td class="colHide2">-8.28</td>
+				<td>-10.49</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">72</td>
+				<td>2293</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2000318'>Bamboos Health Care Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-02-28</td>
+				<td class="colHide2"><a href="str.asp?i=12575">-44.44</a></td>
+				<td class="colHide2">-6.56</td>
+				<td>-10.79</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">73</td>
+				<td>0550</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=10902'>Allegro Culture Limited</a></td>
+				<td class="colHide3 nowrap">2007-07-20</td>
+				<td class="colHide2"><a href="str.asp?i=2523">-82.01</a></td>
+				<td class="colHide2">-9.77</td>
+				<td>-10.85</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">74</td>
+				<td>0801</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14493'>Golden Meditech Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2009-06-15</td>
+				<td class="colHide2"><a href="str.asp?i=3013">-54.26</a></td>
+				<td class="colHide2">-6.70</td>
+				<td>-11.63</td>
+				<td class="colHide1">2020-10-21</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">75</td>
+				<td>1026</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14236'>Universal Technologies Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2010-06-21</td>
+				<td class="colHide2"><a href="str.asp?i=3001">-68.96</a></td>
+				<td class="colHide2">-7.34</td>
+				<td>-11.66</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">76</td>
+				<td>1841</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2426208'>A.Plus Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-01-10</td>
+				<td class="colHide2"><a href="str.asp?i=19664">-47.01</a></td>
+				<td class="colHide2">-8.92</td>
+				<td>-11.89</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">77</td>
+				<td>1162</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2625603'>LUMINA GROUP LIMITED (KY)</a></td>
+				<td class="colHide3 nowrap">2020-04-17</td>
+				<td class="colHide2"><a href="str.asp?i=25301">-36.18</a></td>
+				<td class="colHide2">-7.80</td>
+				<td>-12.31</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">78</td>
+				<td>2383</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=10265'>TOM GROUP LIMITED</a></td>
+				<td class="colHide3 nowrap">2004-08-03</td>
+				<td class="colHide2"><a href="str.asp?i=2467">-75.29</a></td>
+				<td class="colHide2">-6.37</td>
+				<td>-12.59</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">79</td>
+				<td>6058</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2474085'>China Industrial Securities International Financial Group Limited</a></td>
+				<td class="colHide3 nowrap">2019-01-02</td>
+				<td class="colHide2"><a href="str.asp?i=21381">-47.71</a></td>
+				<td class="colHide2">-9.07</td>
+				<td>-12.76</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">80</td>
+				<td>0954</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18162'>Changmao Biochemical Engineering Company Limited</a></td>
+				<td class="colHide3 nowrap">2013-06-27</td>
+				<td class="colHide2"><a href="str.asp?i=3381">-64.05</a></td>
+				<td class="colHide2">-7.96</td>
+				<td>-12.77</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">81</td>
+				<td>3997</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1952125'>Telecom Service One Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2018-03-26</td>
+				<td class="colHide2"><a href="str.asp?i=10837">-61.13</a></td>
+				<td class="colHide2">-11.70</td>
+				<td>-13.06</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">82</td>
+				<td>1827</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2634034'>Miricor Enterprises Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-02-15</td>
+				<td class="colHide2"><a href="str.asp?i=22283">-54.68</a></td>
+				<td class="colHide2">-11.14</td>
+				<td>-13.44</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">83</td>
+				<td>0206</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=30696'>CM Energy Tech Co., Ltd.</a></td>
+				<td class="colHide3 nowrap">2009-06-04</td>
+				<td class="colHide2"><a href="str.asp?i=4672">-77.88</a></td>
+				<td class="colHide2">-8.79</td>
+				<td>-13.59</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">84</td>
+				<td>2008</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11790'>Phoenix Media Investment (Holdings) Limited</a></td>
+				<td class="colHide3 nowrap">2008-12-04</td>
+				<td class="colHide2"><a href="str.asp?i=2772">-71.75</a></td>
+				<td class="colHide2">-7.21</td>
+				<td>-13.65</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">85</td>
+				<td>0459</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12996'>Legend Upstar Holdings Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2008-08-15</td>
+				<td class="colHide2"><a href="str.asp?i=2899">-83.33</a></td>
+				<td class="colHide2">-9.89</td>
+				<td>-13.96</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">86</td>
+				<td>3886</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11691'>Town Health International Medical Group Limited</a></td>
+				<td class="colHide3 nowrap">2008-08-11</td>
+				<td class="colHide2"><a href="str.asp?i=2644">-85.58</a></td>
+				<td class="colHide2">-10.64</td>
+				<td>-14.50</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">87</td>
+				<td>0814</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=36170'>Beijing Jingkelong Company Limited</a></td>
+				<td class="colHide3 nowrap">2008-02-25</td>
+				<td class="colHide2"><a href="str.asp?i=4768">-88.05</a></td>
+				<td class="colHide2">-11.32</td>
+				<td>-14.84</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">88</td>
+				<td>3638</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=152908'>Hunlicar Group Limited</a></td>
+				<td class="colHide3 nowrap">2016-03-29</td>
+				<td class="colHide2"><a href="str.asp?i=11149">-61.30</a></td>
+				<td class="colHide2">-9.43</td>
+				<td>-14.84</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">89</td>
+				<td>2886</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11144'>Binhai Investment Company Limited</a></td>
+				<td class="colHide3 nowrap">2014-02-10</td>
+				<td class="colHide2"><a href="str.asp?i=2986">-73.56</a></td>
+				<td class="colHide2">-10.74</td>
+				<td>-15.22</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">90</td>
+				<td>0872</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=23788'>Titan Invo Technology Limited</a></td>
+				<td class="colHide3 nowrap">2008-11-11</td>
+				<td class="colHide2"><a href="str.asp?i=4543">-77.06</a></td>
+				<td class="colHide2">-10.21</td>
+				<td>-15.32</td>
+				<td class="colHide1">2024-05-17</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">91</td>
+				<td>6033</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2267060'>TELECOM DIGITAL HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2017-05-09</td>
+				<td class="colHide2"><a href="str.asp?i=12308">-67.08</a></td>
+				<td class="colHide2">-12.29</td>
+				<td>-15.89</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">92</td>
+				<td>1690</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2421388'>Lap Kei Engineering (Holdings) Limited</a></td>
+				<td class="colHide3 nowrap">2018-02-09</td>
+				<td class="colHide2"><a href="str.asp?i=15947">-69.68</a></td>
+				<td class="colHide2">-14.33</td>
+				<td>-16.08</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">93</td>
+				<td>1265</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18254'>Tianjin Jinran Public Utilities Company Limited</a></td>
+				<td class="colHide3 nowrap">2011-10-17</td>
+				<td class="colHide2"><a href="str.asp?i=3461">-81.73</a></td>
+				<td class="colHide2">-11.41</td>
+				<td>-16.33</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">94</td>
+				<td>0510</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12091'>CASH FINANCIAL SERVICES GROUP LIMITED</a></td>
+				<td class="colHide3 nowrap">2008-02-29</td>
+				<td class="colHide2"><a href="str.asp?i=2725">-91.77</a></td>
+				<td class="colHide2">-13.18</td>
+				<td>-16.44</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">95</td>
+				<td>0840</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=32593'>XINJIANG TIANYE WATER SAVING IRRIGATION SYSTEM COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2008-01-23</td>
+				<td class="colHide2"><a href="str.asp?i=4706">-92.76</a></td>
+				<td class="colHide2">-13.74</td>
+				<td>-16.98</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">96</td>
+				<td>1520</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2104420'>Virtual Mind Holding Company Limited</a></td>
+				<td class="colHide3 nowrap">2015-05-29</td>
+				<td class="colHide2"><a href="str.asp?i=11582">-80.69</a></td>
+				<td class="colHide2">-14.60</td>
+				<td>-17.16</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">97</td>
+				<td>1751</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2550678'>Kingland Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2018-06-11</td>
+				<td class="colHide2"><a href="str.asp?i=22091">-73.04</a></td>
+				<td class="colHide2">-16.27</td>
+				<td>-17.30</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">98</td>
+				<td>2203</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2356055'>Brainhole Technology Limited</a></td>
+				<td class="colHide3 nowrap">2017-07-20</td>
+				<td class="colHide2"><a href="str.asp?i=16174">-72.93</a></td>
+				<td class="colHide2">-14.61</td>
+				<td>-17.32</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">99</td>
+				<td>6877</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=153014'>Top Eminent Healthcare Group Limited</a></td>
+				<td class="colHide3 nowrap">2017-12-14</td>
+				<td class="colHide2"><a href="str.asp?i=10896">-75.63</a></td>
+				<td class="colHide2">-16.42</td>
+				<td>-18.21</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">100</td>
+				<td>1708</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=21251'>NANJING SAMPLE TECHNOLOGY COMPANY LIMITED</a></td>
+				<td class="colHide3 nowrap">2010-11-30</td>
+				<td class="colHide2"><a href="str.asp?i=3599">-90.69</a></td>
+				<td class="colHide2">-14.72</td>
+				<td>-18.25</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">101</td>
+				<td>6928</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2697046'>TOMO Holdings Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2019-12-20</td>
+				<td class="colHide2"><a href="str.asp?i=25075">-64.78</a></td>
+				<td class="colHide2">-16.32</td>
+				<td>-18.30</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">102</td>
+				<td>0865</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=12519'>Jiande International Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2008-11-05</td>
+				<td class="colHide2"><a href="str.asp?i=2815">-90.38</a></td>
+				<td class="colHide2">-12.88</td>
+				<td>-18.45</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">103</td>
+				<td>2330</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13027'>China Uptown Group Company Limited</a></td>
+				<td class="colHide3 nowrap">2003-01-28</td>
+				<td class="colHide2"><a href="str.asp?i=2919">-94.26</a></td>
+				<td class="colHide2">-11.81</td>
+				<td>-18.51</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">104</td>
+				<td>1486</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2092128'>C Cheng Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2015-07-31</td>
+				<td class="colHide2"><a href="str.asp?i=11660">-82.18</a></td>
+				<td class="colHide2">-15.49</td>
+				<td>-18.85</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">105</td>
+				<td>0821</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13553'>VALUE CONVERGENCE HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2008-08-14</td>
+				<td class="colHide2"><a href="str.asp?i=2964">-94.65</a></td>
+				<td class="colHide2">-15.65</td>
+				<td>-19.40</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">106</td>
+				<td>6812</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2599961'>Winson Holdings Hong Kong Limited</a></td>
+				<td class="colHide3 nowrap">2020-06-10</td>
+				<td class="colHide2"><a href="str.asp?i=23196">-60.97</a></td>
+				<td class="colHide2">-16.04</td>
+				<td>-19.66</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">107</td>
+				<td>1792</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2448034'>CMON Limited</a></td>
+				<td class="colHide3 nowrap">2019-11-18</td>
+				<td class="colHide2"><a href="str.asp?i=22075">-67.11</a></td>
+				<td class="colHide2">-17.06</td>
+				<td>-19.67</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">108</td>
+				<td>1195</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13475'>Kingwell Group Limited</a></td>
+				<td class="colHide3 nowrap">2003-01-17</td>
+				<td class="colHide2"><a href="str.asp?i=2933">-96.69</a></td>
+				<td class="colHide2">-13.90</td>
+				<td>-20.31</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">109</td>
+				<td>1869</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2492946'>Kafelaku Coffee Holding Limited</a></td>
+				<td class="colHide3 nowrap">2018-09-04</td>
+				<td class="colHide2"><a href="str.asp?i=20578">-76.40</a></td>
+				<td class="colHide2">-18.29</td>
+				<td>-20.33</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">110</td>
+				<td>1539</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1849978'>Unity Group Holdings International Limited</a></td>
+				<td class="colHide3 nowrap">2016-10-25</td>
+				<td class="colHide2"><a href="str.asp?i=13630">-81.71</a></td>
+				<td class="colHide2">-17.19</td>
+				<td>-20.92</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">111</td>
+				<td>1719</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=22865'>China Infrastructure & Logistics Group Ltd.</a></td>
+				<td class="colHide3 nowrap">2018-01-26</td>
+				<td class="colHide2"><a href="str.asp?i=4627">-83.24</a></td>
+				<td class="colHide2">-20.58</td>
+				<td>-21.00</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">112</td>
+				<td>1673</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1954105'>HUAZHANG TECHNOLOGY HOLDING LIMITED</a></td>
+				<td class="colHide3 nowrap">2015-01-02</td>
+				<td class="colHide2"><a href="str.asp?i=10809">-88.77</a></td>
+				<td class="colHide2">-18.30</td>
+				<td>-21.76</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">113</td>
+				<td>0827</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=17673'>Ko Yo Chemical (Group) Limited</a></td>
+				<td class="colHide3 nowrap">2008-08-22</td>
+				<td class="colHide2"><a href="str.asp?i=3314">-96.87</a></td>
+				<td class="colHide2">-18.26</td>
+				<td>-21.97</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">114</td>
+				<td>9963</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2652818'>Transtech Optelecom Science Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2020-11-04</td>
+				<td class="colHide2"><a href="str.asp?i=25076">-63.79</a></td>
+				<td class="colHide2">-18.45</td>
+				<td>-22.12</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">115</td>
+				<td>1025</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18175'>WUMART STORES, INC.</a></td>
+				<td class="colHide3 nowrap">2011-06-29</td>
+				<td class="colHide2"><a href="str.asp?i=3406">-62.81</a></td>
+				<td class="colHide2">-19.72</td>
+				<td>-22.15</td>
+				<td class="colHide1">2016-01-07</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">116</td>
+				<td>1389</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2068787'>Major Holdings Limited (KY)</a></td>
+				<td class="colHide3 nowrap">2015-10-29</td>
+				<td class="colHide2"><a href="str.asp?i=11700">-86.80</a></td>
+				<td class="colHide2">-18.33</td>
+				<td>-22.18</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">117</td>
+				<td>0150</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2551870'>Hypebeast Limited</a></td>
+				<td class="colHide3 nowrap">2019-03-07</td>
+				<td class="colHide2"><a href="str.asp?i=19662">-78.24</a></td>
+				<td class="colHide2">-20.51</td>
+				<td>-22.22</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">118</td>
+				<td>1073</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=9342'>Da Yu Financial Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2002-01-11</td>
+				<td class="colHide2"><a href="str.asp?i=2277">-98.70</a></td>
+				<td class="colHide2">-16.67</td>
+				<td>-22.25</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">119</td>
+				<td>1355</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=67269'>Legend Strategy International Holdings Group Company Limited</a></td>
+				<td class="colHide3 nowrap">2013-08-20</td>
+				<td class="colHide2"><a href="str.asp?i=7021">-91.60</a></td>
+				<td class="colHide2">-18.39</td>
+				<td>-22.29</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">120</td>
+				<td>0110</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=10574'>China Fortune Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2004-01-21</td>
+				<td class="colHide2"><a href="str.asp?i=2740">-98.60</a></td>
+				<td class="colHide2">-17.79</td>
+				<td>-22.79</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">121</td>
+				<td>0509</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18952'>Century Sunshine Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2008-07-31</td>
+				<td class="colHide2"><a href="str.asp?i=3469">-97.86</a></td>
+				<td class="colHide2">-20.59</td>
+				<td>-23.27</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">122</td>
+				<td>1460</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2108461'>ICO Group Limited</a></td>
+				<td class="colHide3 nowrap">2016-10-11</td>
+				<td class="colHide2"><a href="str.asp?i=13622">-86.30</a></td>
+				<td class="colHide2">-19.73</td>
+				<td>-23.36</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">123</td>
+				<td>1826</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2433670'>FDB Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-07-07</td>
+				<td class="colHide2"><a href="str.asp?i=15971">-85.28</a></td>
+				<td class="colHide2">-20.59</td>
+				<td>-23.56</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">124</td>
+				<td>3728</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2514657'>Ching Lee Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-09-15</td>
+				<td class="colHide2"><a href="str.asp?i=19534">-86.00</a></td>
+				<td class="colHide2">-21.51</td>
+				<td>-23.60</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">125</td>
+				<td>1103</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=27505'>Shanghai Dasheng Agriculture Finance Technology Co., Ltd.</a></td>
+				<td class="colHide3 nowrap">2012-07-13</td>
+				<td class="colHide2"><a href="str.asp?i=4606">-86.69</a></td>
+				<td class="colHide2">-18.98</td>
+				<td>-23.63</td>
+				<td class="colHide1">2024-01-05</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">126</td>
+				<td>0065</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14235'>Grand Ocean Advanced Resources Company Limited</a></td>
+				<td class="colHide3 nowrap">2009-06-19</td>
+				<td class="colHide2"><a href="str.asp?i=3131">-97.05</a></td>
+				<td class="colHide2">-19.38</td>
+				<td>-23.76</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">127</td>
+				<td>1178</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14734'>Huiyin Holdings Group Limited</a></td>
+				<td class="colHide3 nowrap">2003-02-07</td>
+				<td class="colHide2"><a href="str.asp?i=3065">-96.26</a></td>
+				<td class="colHide2">-16.99</td>
+				<td>-23.89</td>
+				<td class="colHide1">2022-08-22</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">128</td>
+				<td>0436</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11221'>New Universe Environmental Group Limited</a></td>
+				<td class="colHide3 nowrap">2016-07-29</td>
+				<td class="colHide2"><a href="str.asp?i=2588">-86.92</a></td>
+				<td class="colHide2">-19.75</td>
+				<td>-23.94</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">129</td>
+				<td>1909</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2400435'>Fire Rock Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2019-06-26</td>
+				<td class="colHide2"><a href="str.asp?i=19053">-79.95</a></td>
+				<td class="colHide2">-22.39</td>
+				<td>-24.18</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">130</td>
+				<td>1326</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1905917'>Transmit Entertainment Limited</a></td>
+				<td class="colHide3 nowrap">2015-01-08</td>
+				<td class="colHide2"><a href="str.asp?i=9886">-93.41</a></td>
+				<td class="colHide2">-22.40</td>
+				<td>-25.84</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">131</td>
+				<td>0932</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1873172'>Shunten International (Holdings) Limited</a></td>
+				<td class="colHide3 nowrap">2015-11-19</td>
+				<td class="colHide2"><a href="str.asp?i=11281">-92.33</a></td>
+				<td class="colHide2">-22.77</td>
+				<td>-26.50</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">132</td>
+				<td>1468</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=152971'>Jakota Capital (Holding) Group</a></td>
+				<td class="colHide3 nowrap">2015-03-19</td>
+				<td class="colHide2"><a href="str.asp?i=9733">-94.10</a></td>
+				<td class="colHide2">-23.41</td>
+				<td>-26.51</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">133</td>
+				<td>1546</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2443850'>Thelloy Development Group Limited</a></td>
+				<td class="colHide3 nowrap">2017-10-25</td>
+				<td class="colHide2"><a href="str.asp?i=16116">-89.76</a></td>
+				<td class="colHide2">-24.76</td>
+				<td>-26.61</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">134</td>
+				<td>1529</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2706950'>Yues International Holdings Group Limited</a></td>
+				<td class="colHide3 nowrap">2019-12-18</td>
+				<td class="colHide2"><a href="str.asp?i=25300">-82.81</a></td>
+				<td class="colHide2">-25.94</td>
+				<td>-27.74</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">135</td>
+				<td>0183</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=16951'>Winfull Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2010-12-01</td>
+				<td class="colHide2"><a href="str.asp?i=3356">-98.62</a></td>
+				<td class="colHide2">-24.98</td>
+				<td>-28.04</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">136</td>
+				<td>1885</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1942942'>China Wood Optimization (Holding) Limited</a></td>
+				<td class="colHide3 nowrap">2016-09-09</td>
+				<td class="colHide2"><a href="str.asp?i=11691">-70.12</a></td>
+				<td class="colHide2">-23.29</td>
+				<td>-28.22</td>
+				<td class="colHide1">2023-05-16</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">137</td>
+				<td>1106</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18155'>Ming Lam Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2011-05-11</td>
+				<td class="colHide2"><a href="str.asp?i=3341">-93.85</a></td>
+				<td class="colHide2">-26.92</td>
+				<td>-29.39</td>
+				<td class="colHide1">2021-11-02</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">138</td>
+				<td>0804</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2383683'>Pinestone Capital Limited</a></td>
+				<td class="colHide3 nowrap">2017-06-07</td>
+				<td class="colHide2"><a href="str.asp?i=14124">-92.91</a></td>
+				<td class="colHide2">-27.05</td>
+				<td>-29.66</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">139</td>
+				<td>1102</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=16848'>Enviro Energy International Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2010-12-16</td>
+				<td class="colHide2"><a href="str.asp?i=3266">-99.11</a></td>
+				<td class="colHide2">-27.20</td>
+				<td>-30.31</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">140</td>
+				<td>1559</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2012333'>Kwan On Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2016-08-12</td>
+				<td class="colHide2"><a href="str.asp?i=13679">-94.91</a></td>
+				<td class="colHide2">-27.62</td>
+				<td>-31.13</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">141</td>
+				<td>3919</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2103922'>Golden Power Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2017-11-09</td>
+				<td class="colHide2"><a href="str.asp?i=14130">-93.96</a></td>
+				<td class="colHide2">-29.69</td>
+				<td>-31.18</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">142</td>
+				<td>0803</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=13783'>PROSPERITY INTERNATIONAL HOLDINGS (H.K.) LIMITED</a></td>
+				<td class="colHide3 nowrap">2008-12-17</td>
+				<td class="colHide2"><a href="str.asp?i=2987">-97.50</a></td>
+				<td class="colHide2">-25.50</td>
+				<td>-31.31</td>
+				<td class="colHide1">2023-02-09</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">143</td>
+				<td>6168</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=153040'>China U-Ton Future Space Industrial Group Holdings Ltd.</a></td>
+				<td class="colHide3 nowrap">2014-07-31</td>
+				<td class="colHide2"><a href="str.asp?i=9500">-90.34</a></td>
+				<td class="colHide2">-29.22</td>
+				<td>-32.81</td>
+				<td class="colHide1">2023-05-02</td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">144</td>
+				<td>1915</td>
+				<td class="left colHide3"><span class="info">H<span>H-share</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2427484'>Yangzhou Guangling District Taihe Rural Micro-finance Company Limited</a></td>
+				<td class="colHide3 nowrap">2019-07-16</td>
+				<td class="colHide2"><a href="str.asp?i=24753">-90.43</a></td>
+				<td class="colHide2">-33.71</td>
+				<td>-33.47</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">145</td>
+				<td>2280</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=18176'>HC Group Inc.</a></td>
+				<td class="colHide3 nowrap">2014-10-09</td>
+				<td class="colHide2"><a href="str.asp?i=3407">-98.21</a></td>
+				<td class="colHide2">-30.51</td>
+				<td>-33.47</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">146</td>
+				<td>9978</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=8317688'>Fineland Living Services Group Limited</a></td>
+				<td class="colHide3 nowrap">2020-05-27</td>
+				<td class="colHide2"><a href="str.asp?i=25402">-86.19</a></td>
+				<td class="colHide2">-30.59</td>
+				<td>-34.54</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">147</td>
+				<td>1822</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=55439'>China Wood International Holding Co., Limited</a></td>
+				<td class="colHide3 nowrap">2011-06-02</td>
+				<td class="colHide2"><a href="str.asp?i=5532">-99.63</a></td>
+				<td class="colHide2">-32.16</td>
+				<td>-34.96</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">148</td>
+				<td>0048</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=60877'>CHINA AUTOMOTIVE INTERIOR DECORATION HOLDINGS LIMITED</a></td>
+				<td class="colHide3 nowrap">2014-08-22</td>
+				<td class="colHide2"><a href="str.asp?i=6193">-98.81</a></td>
+				<td class="colHide2">-32.73</td>
+				<td>-35.24</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">149</td>
+				<td>1371</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=14198'>China Ecotourism Group Limited</a></td>
+				<td class="colHide3 nowrap">2013-10-15</td>
+				<td class="colHide2"><a href="str.asp?i=3357">-99.12</a></td>
+				<td class="colHide2">-32.49</td>
+				<td>-35.37</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">150</td>
+				<td>6663</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=15059976'>IWS Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2022-03-04</td>
+				<td class="colHide2"><a href="str.asp?i=28440">-74.07</a></td>
+				<td class="colHide2">-30.90</td>
+				<td>-36.77</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">151</td>
+				<td>6108</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=1958748'>New Ray Medicine International Holding Limited</a></td>
+				<td class="colHide3 nowrap">2015-06-15</td>
+				<td class="colHide2"><a href="str.asp?i=11425">-98.92</a></td>
+				<td class="colHide2">-35.38</td>
+				<td>-37.46</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">152</td>
+				<td>9689</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2362838'>JTF International Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2023-05-16</td>
+				<td class="colHide2"><a href="str.asp?i=25810">-54.67</a></td>
+				<td class="colHide2">-27.57</td>
+				<td>-37.76</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">153</td>
+				<td>1069</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=51958'>China Health Technology Group Holding Company Limited</a></td>
+				<td class="colHide3 nowrap">2011-05-13</td>
+				<td class="colHide2"><a href="str.asp?i=5431">-99.82</a></td>
+				<td class="colHide2">-35.36</td>
+				<td>-38.03</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">154</td>
+				<td>1736</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2387837'>China Parenting Network Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2018-10-05</td>
+				<td class="colHide2"><a href="str.asp?i=14566">-97.58</a></td>
+				<td class="colHide2">-40.97</td>
+				<td>-42.85</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">155</td>
+				<td>0933</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=11285'>Viva Goods Company Limited</a></td>
+				<td class="colHide3 nowrap">2023-06-26</td>
+				<td class="colHide2"><a href="str.asp?i=2604">-60.09</a></td>
+				<td class="colHide2">-32.45</td>
+				<td>-43.58</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">156</td>
+				<td>9882</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=22633225'>Best Linking Group Holdings Limited</a></td>
+				<td class="colHide3 nowrap">2023-09-28</td>
+				<td class="colHide2"><a href="str.asp?i=28618">-52.90</a></td>
+				<td class="colHide2">-30.33</td>
+				<td>-44.75</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">157</td>
+				<td>1850</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2638318'>HSC Resources Group Limited</a></td>
+				<td class="colHide3 nowrap">2019-02-13</td>
+				<td class="colHide2"><a href="str.asp?i=24299">-98.21</a></td>
+				<td class="colHide2">-45.13</td>
+				<td>-46.38</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">158</td>
+				<td>6878</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=2050826'>Differ Group Auto Limited</a></td>
+				<td class="colHide3 nowrap">2015-07-03</td>
+				<td class="colHide2"><a href="str.asp?i=11603">-99.84</a></td>
+				<td class="colHide2">-48.47</td>
+				<td>-49.56</td>
+				<td class="colHide1"></td>
+			</tr>
+			
+			<tr>
+				<td class="colHide1">159</td>
+				<td>1659</td>
+				<td class="left colHide3"><span class="info">O<span>Ordinary shares</span></span></td>
+				<td class="left"><a href='orgdata.asp?p=152536'>Haitian Energy International Limited</a></td>
+				<td class="colHide3 nowrap">2018-02-02</td>
+				<td class="colHide2"><a href="str.asp?i=9615">-64.47</a></td>
+				<td class="colHide2">-62.54</td>
+				<td>-59.47</td>
+				<td class="colHide1">2020-12-07</td>
+			</tr>
+			
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

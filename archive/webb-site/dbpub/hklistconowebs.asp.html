@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/templates/main.css">
+
+<title>HK-listed companies without web sites</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK-listed companies without web sites</h2>
+<p>As far as we know, the following HK-listed companies have no web site. If you know of one, then please 
+<a href="../contact/">tell us</a>! For a list of 
+those who do have web sites, <a href="../dbpub/hklistcowebs.asp">click here</a>.</p>
+
+	<table class="txtable">
+		
+			<tr><td><a href='orgdata.asp?p=32197045'>Jiangsu Zenergy Battery Technologies Group Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32314892'>Duality Biotherapeutics, Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31612787'>Breton Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31205776'>AUNTEA JENNY (SHANGHAI) INDUSTRIAL CO., LTD.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31145634'>Hainan Drinda New Energy Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=26657259'>Green Tea Group Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=27717062'>Mirxes Holding Company Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=2332834'>Jiangsu Hengrui Pharmaceuticals Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31498859'>Xiamen Jihong Co., Ltd</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31233693'>PegBio Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31182285'>Shouhui Group Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31536905'>Rongta Technology (Xiamen) Group Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31769877'>MetaLight Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32013428'>Newtrend Group Holding Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32905613'>Foshan Haitian Flavouring and Food Company Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31498861'>TransThera Sciences (Nanjing), Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=30810028'>Bayzed Health Group Inc</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32845992'>ZHEJIANG SANHUA INTELLIGENT CONTROLS CO., LTD.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=28976527'>CaoCao Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32469082'>X.J. ELECTRICS (HU BEI) CO., LTD</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32659495'>Eternal Beauty Holdings Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32073205'>Zhou Liu Fu Jewellery Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32073197'>SAINT BELLA Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=30206995'>Unisound AI Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33463870'>IFBH Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31890091'>Medtide Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31317161'>Cloudbreak Pharma Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32845988'>Anjoy Foods Group Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=23981412'>FWD Group Holdings Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33228174'>Lens Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32739848'>Wuhan Dazhong Dental Medical Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32013425'>Beijing Xunzhong Communication Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32659516'>Beijing Geekplus Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32905615'>Fortior Technology (Shenzhen) Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32073203'>Nanjing Leads Biolabs Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31536906'>Sunshine Lake Pharma Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32878809'>Ab&B Bio-Tech CO., LTD. JS</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32659517'>Guangzhou Innogen Pharmaceutical Group Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33151219'>SICC Co., Ltd</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32252832'>Shuangdeng Group Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=2313919'>Jiaxin International Resources Investment Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32878774'>Aux Electric Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32975434'>DAHON TECH (SHENZHEN) CO., LTD.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33495591'>Hesai Group</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=30461016'>160 Health International Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32768233'>GenFleet Therapeutics (Shanghai) Inc.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33009626'>BUTONG GROUP</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33228168'>CHERY AUTOMOBILE CO., LTD</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=1324435'>Zijin Gold International Company Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32659519'>Shenzhen Hipine Precision Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32073204'>PATEO CONNECT Technology (Shanghai) Corporation</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=27654835'>CF PharmTech, Inc. (CN)</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=31498858'>Shanghai Zhida Technology Development Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33531125'>Golden Leaf International Group Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32717508'>Xuanzhu Biopharmaceutical Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33042980'>Beijing Yunji Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32878812'>Fujian Haixi Pharmaceuticals Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=30140451'>JST Group Corporation Limited</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33430201'>FIBOCOM WIRELESS INC.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33362150'>Deepexi Technology Co., Ltd.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=21637'>SANY HEAVY INDUSTRY CO., LTD.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=33228167'>CIG SHANGHAI CO., LTD.</a></td></tr>
+			
+			<tr><td><a href='orgdata.asp?p=32940194'>Bama Tea Co., Ltd.</a></td></tr>
+			
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

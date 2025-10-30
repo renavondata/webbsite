@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css">
+
+<title>HK passenger journeys in 2025 up to 2025-07</title>
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>HK passenger journeys in 2025 up to 2025-07</h2>
+
+	<ul class="navlist">
+		<li><a href='veFR.asp?vc=1'>Brands</a></li><li><a href='vedet.asp?vc=1&amp;brand=0'>Brand details</a></li><li><a href='vebrandhist.asp?vc=1&amp;brand=0'>Brand history</a></li><li><a href='veFRtype.asp'>Types</a></li><li><a href='veFRtypehist.asp?vc=1'>Type history</a></li><li><a href='vefuel.asp'>Fuels</a></li><li><a href='vefuelhist.asp?vc=1'>Fuel history</a></li><li><a href='veengine.asp'>Cars: engine size</a></li><li><a href='tuntraff.asp'>Tunnels</a></li><li class='livebutton'>Journeys</li><li><a href='veJourneyhist.asp'>Journey history</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This page shows the number of passenger journeys and distance covered by vehicle class, from Jan-2013 onwards, using data from the Transport Department. 
+Choose simple or detailed view. For trains, cars are passenger carriages but car kilometres are train kilometres. So you 
+need to multiply km/car/day by the number of cars per train. Red Minibus journeys are based on surveys, not regular 
+returns. MTR fleet data exclude cross-border trains. For periods longer than 1 month, we show the monthly average 
+capacity and vehicles. Click on the vehicle class to see the history. The latest available month is 2025-07.</p>
+<form method="get" action="veJourneys.asp">
+	<input type="hidden" name="sort" value="jdn">
+	<div class="inputs">
+		Year <select name='y' onchange='this.form.submit()'><option value='0'>All</option><option value='2013'>2013</option><option value='2014'>2014</option><option value='2015'>2015</option><option value='2016'>2016</option><option value='2017'>2017</option><option value='2018'>2018</option><option value='2019'>2019</option><option value='2020'>2020</option><option value='2021'>2021</option><option value='2022'>2022</option><option value='2023'>2023</option><option value='2024'>2024</option><option value='2025' selected>2025</option></select>
+		Month <select name='m' onchange='this.form.submit()'><option value='0'selected>All</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option></select>
+	</div>
+	<div class="inputs">
+		Breakdown <select id='simple' name='simple' onchange='this.form.submit()'><option value='True'>Simple</option><option value='False' selected>Detailed</option></select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable c2l">
+	<tr>
+		<th class="colHide1"></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=desup'><b>Vehicle class</b></a></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=jup'><b>Journeys</b></a></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=jup'><b>Per day</b></a></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=licdn'><b>Licensed vehicles</b></a></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=capdn'><b>Vehicle capacity</b></a></th>
+		<th><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=kmdn'><b>Car Km</b></a></th>
+		<th class="colHide2"><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=kcddn'><b>Km/<br>car/<br>day</b></a></th>
+		<th class="colHide2"><a href='/dbpub/veJourneys.asp?y=2025&amp;m=0&amp;simple=False&amp;sort=jcddn'><b>Journeys/<br>car/<br>day</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide1">1</td>
+			<td><a href="veJourneyhist.asp?vc=79&amp;simple=False">MTR local</a></td>
+			
+				<td>996,034,473</td>
+			
+				<td>4,698,276</td>
+			
+				<td>2,039</td>
+			
+				<td>649,057</td>
+			
+				<td>22,740,121</td>
+			
+			<td class="colHide2">52.6</td>
+			<td class="colHide2">2,304.2</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">2</td>
+			<td><a href="veJourneyhist.asp?vc=75&amp;simple=False">Franchised bus: KMB</a></td>
+			
+				<td>535,817,926</td>
+			
+				<td>2,527,443</td>
+			
+				<td>3,956</td>
+			
+				<td>517,152</td>
+			
+				<td>146,592,763</td>
+			
+			<td class="colHide2">174.8</td>
+			<td class="colHide2">638.9</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">3</td>
+			<td><a href="veJourneyhist.asp?vc=46&amp;simple=False">Green Minibus</a></td>
+			
+				<td>286,345,419</td>
+			
+				<td>1,350,686</td>
+			
+				<td>3,352</td>
+			
+				<td>59,172</td>
+			
+				<td>172,768,485</td>
+			
+			<td class="colHide2">243.1</td>
+			<td class="colHide2">402.9</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">4</td>
+			<td><a href="veJourneyhist.asp?vc=74&amp;simple=False">Franchised bus: CTB: Urban & NT</a></td>
+			
+				<td>187,255,423</td>
+			
+				<td>883,280</td>
+			
+				<td>1,337</td>
+			
+				<td>174,956</td>
+			
+				<td>50,693,306</td>
+			
+			<td class="colHide2">178.9</td>
+			<td class="colHide2">660.7</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">5</td>
+			<td><a href="veJourneyhist.asp?vc=3&amp;simple=False">Taxis</a></td>
+			
+				<td>142,806,091</td>
+			
+				<td>673,614</td>
+			
+				<td>17,734</td>
+			
+				<td>72,888</td>
+			
+				<td>0</td>
+			
+			<td class="colHide2">0.0</td>
+			<td class="colHide2">38.0</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">6</td>
+			<td><a href="veJourneyhist.asp?vc=38&amp;simple=False">MTR Light Rail Vehicles</a></td>
+			
+				<td>89,065,002</td>
+			
+				<td>420,118</td>
+			
+				<td>149</td>
+			
+				<td>36,505</td>
+			
+				<td>3,871,838</td>
+			
+			<td class="colHide2">122.6</td>
+			<td class="colHide2">2,819.6</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">7</td>
+			<td><a href="veJourneyhist.asp?vc=81&amp;simple=False">Non-franchised residents' bus</a></td>
+			
+				<td>38,689,340</td>
+			
+				<td>182,497</td>
+			
+				<td>875</td>
+			
+				<td>39,564</td>
+			
+				<td>18,884,626</td>
+			
+			<td class="colHide2">101.8</td>
+			<td class="colHide2">208.6</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">8</td>
+			<td><a href="veJourneyhist.asp?vc=86&amp;simple=False">Non-franchised public bus: MTR</a></td>
+			
+				<td>33,908,481</td>
+			
+				<td>159,946</td>
+			
+				<td>156</td>
+			
+				<td>18,469</td>
+			
+				<td>3,661,005</td>
+			
+			<td class="colHide2">110.9</td>
+			<td class="colHide2">1,027.2</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">9</td>
+			<td><a href="veJourneyhist.asp?vc=47&amp;simple=False">Red Minibus</a></td>
+			
+				<td>29,635,030</td>
+			
+				<td>139,788</td>
+			
+				<td>719</td>
+			
+				<td>12,079</td>
+			
+				<td>0</td>
+			
+			<td class="colHide2">0.0</td>
+			<td class="colHide2">194.5</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">10</td>
+			<td><a href="veJourneyhist.asp?vc=85&amp;simple=False">Tramways</a></td>
+			
+				<td>29,622,033</td>
+			
+				<td>139,727</td>
+			
+				<td>161</td>
+			
+				<td>18,515</td>
+			
+				<td>2,609,366</td>
+			
+			<td class="colHide2">76.4</td>
+			<td class="colHide2">867.9</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">11</td>
+			<td><a href="veJourneyhist.asp?vc=76&amp;simple=False">Franchised bus: LWB</a></td>
+			
+				<td>28,320,377</td>
+			
+				<td>133,587</td>
+			
+				<td>295</td>
+			
+				<td>38,807</td>
+			
+				<td>20,120,199</td>
+			
+			<td class="colHide2">321.9</td>
+			<td class="colHide2">453.1</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">12</td>
+			<td><a href="veJourneyhist.asp?vc=73&amp;simple=False">Franchised bus: CTB: Lantau</a></td>
+			
+				<td>21,303,214</td>
+			
+				<td>100,487</td>
+			
+				<td>224</td>
+			
+				<td>29,326</td>
+			
+				<td>16,774,537</td>
+			
+			<td class="colHide2">353.2</td>
+			<td class="colHide2">448.6</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">13</td>
+			<td><a href="veJourneyhist.asp?vc=77&amp;simple=False">Franchised bus: NLB</a></td>
+			
+				<td>21,246,414</td>
+			
+				<td>100,219</td>
+			
+				<td>142</td>
+			
+				<td>13,058</td>
+			
+				<td>4,695,621</td>
+			
+			<td class="colHide2">155.5</td>
+			<td class="colHide2">703.6</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">14</td>
+			<td><a href="veJourneyhist.asp?vc=84&amp;simple=False">Ferries: Star Ferry</a></td>
+			
+				<td>9,358,801</td>
+			
+				<td>44,145</td>
+			
+				<td>10</td>
+			
+				<td>4,750</td>
+			
+				<td>0</td>
+			
+			<td class="colHide2">0.0</td>
+			<td class="colHide2">4,414.5</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">15</td>
+			<td><a href="veJourneyhist.asp?vc=80&amp;simple=False">MTR Airport Express</a></td>
+			
+				<td>7,523,782</td>
+			
+				<td>35,490</td>
+			
+				<td>77</td>
+			
+				<td>7,700</td>
+			
+				<td>1,680,480</td>
+			
+			<td class="colHide2">102.9</td>
+			<td class="colHide2">460.9</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">16</td>
+			<td><a href="veJourneyhist.asp?vc=82&amp;simple=False">Ferries: other licensed</a></td>
+			
+				<td>6,804,258</td>
+			
+				<td>32,096</td>
+			
+				<td>53</td>
+			
+				<td>14,680</td>
+			
+				<td>0</td>
+			
+			<td class="colHide2">0.0</td>
+			<td class="colHide2">610.5</td>
+		</tr>
+	
+		<tr>
+			<td class="colHide1">17</td>
+			<td><a href="veJourneyhist.asp?vc=83&amp;simple=False">Ferries: Sun Ferry</a></td>
+			
+				<td>6,525,284</td>
+			
+				<td>30,780</td>
+			
+				<td>27</td>
+			
+				<td>15,055</td>
+			
+				<td>0</td>
+			
+			<td class="colHide2">0.0</td>
+			<td class="colHide2">1,146.1</td>
+		</tr>
+	
+	<tr class="total">
+		<td class="colHide1"></td>
+		<td>All classes</td>
+		
+			<td>2,470,261,348</td>
+		
+			<td>11,652,179</td>
+		
+			<td>31,306</td>
+		
+			<td>1,721,733</td>
+		
+			<td>465,092,347</td>
+		
+	</tr>
+</table>
+
+	<h3>Operators</h3>
+	<table class="opltable">
+	
+		<tr>
+			<td>CTB</td>
+			<td><a href="orgdata.asp?p=11582">CITYBUS LIMITED (HK) 城巴有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>HKT</td>
+			<td><a href="orgdata.asp?p=26112">HONG KONG TRAMWAYS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td>KMB</td>
+			<td><a href="orgdata.asp?p=11579">KOWLOON MOTOR BUS COMPANY (1933) LIMITED (THE) 九龍巴士(一九三三)有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>LRB</td>
+			<td><a href="orgdata.asp?p=11569">MTR CORPORATION LIMITED 香港鐵路有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>LWB</td>
+			<td><a href="orgdata.asp?p=11580">LONG WIN BUS COMPANY LIMITED 龍運巴士有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>MTRC</td>
+			<td><a href="orgdata.asp?p=11569">MTR CORPORATION LIMITED 香港鐵路有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>NLB</td>
+			<td><a href="orgdata.asp?p=11581">NEW LANTAO BUS COMPANY (1973) LIMITED 新大嶼山巴士(1973)有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>NWFB</td>
+			<td><a href="orgdata.asp?p=8896">NEW WORLD FIRST BUS SERVICES LIMITED 新世界第一巴士服務有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>NWFF</td>
+			<td><a href="orgdata.asp?p=23213">SUN FERRY SERVICES COMPANY LIMITED 新渡輪服務有限公司</a></td>
+		</tr>
+		
+		<tr>
+			<td>STF</td>
+			<td><a href="orgdata.asp?p=24905">"STAR" FERRY COMPANY LIMITED (THE)</a></td>
+		</tr>
+		
+	</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

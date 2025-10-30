@@ -1,0 +1,2229 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="../templates/main.css"/>
+
+<title>Moves in HK law firms</title></head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Moves in HK law firms</h2>
+
+	<ul class="navlist">
+		<li><a href='hksols.asp?p=0'>By name</a></li><li><a href='hksolfirms.asp?p=0'>By firm</a></li><li><a href='hksolsadmhk.asp?p=0'>By year</a></li><li class='livebutton'>Moves</li><li><a href='hksolsadmos.asp?p=0'>Overseas</a></li><li><a href='hksolemps.asp?p=0'>Non-law firms</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>This table lists the latest moves in HK solicitors associated with HK law firms seen in the 
+<a href="https://www.hklawsoc.org.hk/en/Serve-the-Public/The-Law-List" target="_blank">Law Society's Law List</a> in the last 30 days. 
+Click the column-headings to sort.</p>
+<table class="opltable">
+	<tr>
+		<th><a href='/dbpub/hksolsmoves.asp?sort=solup'><b>Lawyer</b></a></th>
+		<th><a href='/dbpub/hksolsmoves.asp?sort=orgdn'><b>Firm</b></a></th>
+		<th>Role</th>
+		<th><a href='/dbpub/hksolsmoves.asp?sort=datdn'><b>From</b></a></th>
+		<th><a href='/dbpub/hksolsmoves.asp?sort=datdn'><b>Until</b></a></th>
+	</tr>
+	
+			<tr class="total">
+				<td><a href='positions.asp?p=32996936'>Kan, Rita Chung Lam 簡仲霖</a></td>
+				<td><a href='officers.asp?p=2213707'>Akin Gump Strauss Hauer & Feld (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33154799'>Kangara, Kuterera Myrmidon Zvikomborero</a></td>
+				<td><a href='officers.asp?p=48280'>Alan Lam, Yam & Pe</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668583'>Hui, Osbert Yee 許懿</a></td>
+				<td><a href='officers.asp?p=30709799'>ALLBRIGHT LAW (HONG KONG) OFFICES LLP</a></td>
+				<td>Partner</td>
+				<td>2023-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671414'>Ng, Alroy Garrett Tzyy Yeh 吳梓爗</a></td>
+				<td><a href='officers.asp?p=30709799'>ALLBRIGHT LAW (HONG KONG) OFFICES LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31822620'>Wong, Man Sum (LSHK:2024-04) 黃敏芯</a></td>
+				<td><a href='officers.asp?p=10417'>Alvan Liu & Partners</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12665870'>Boreham, Kim 白梅</a></td>
+				<td><a href='officers.asp?p=58637'>Ashurst Hong Kong</a></td>
+				<td>Consultant</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=2247060'>Cole, Joshua Anthony</a></td>
+				<td><a href='officers.asp?p=58637'>Ashurst Hong Kong</a></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23864624'>Lam, Joey On Sun 林安生</a></td>
+				<td><a href='officers.asp?p=58637'>Ashurst Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28561945'>Ng, Wing Lam (LSHK:2022-06) 吳泳霖</a></td>
+				<td><a href='officers.asp?p=58637'>Ashurst Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31756213'>Wong, Christy Wai Lam 王慧琳</a></td>
+				<td><a href='officers.asp?p=58637'>Ashurst Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12669604'>Lau, James Kwing Yu 劉炯宇</a></td>
+				<td><a href='officers.asp?p=5418'>Baker & McKenzie (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26419886'>Ma, Hei Tung 馬希彤</a></td>
+				<td><a href='officers.asp?p=5418'>Baker & McKenzie (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28249948'>Tse, Shing Chi (LSHK:2022-04) 謝晟致</a></td>
+				<td><a href='officers.asp?p=5418'>Baker & McKenzie (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28884856'>Zhang, Qiongyu 張予</a></td>
+				<td><a href='officers.asp?p=5418'>Baker & McKenzie (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671106'>Macgeoch, Andrew Philip Bushill 麥建安</a></td>
+				<td><a href='officers.asp?p=19431'>Bird & Bird (HK)</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31282790'>Kwan, Cherie 關寫意</a></td>
+				<td><a href='officers.asp?p=2582'>Boase Cohen & Collins</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34007463'>Chan, Wing Lam Clarrie 陳泳霖</a></td>
+				<td><a href='officers.asp?p=24417225'>BOWERS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671108'>Mackenzie-Smith, Roderick James P.</a></td>
+				<td><a href='officers.asp?p=24417225'>BOWERS</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2021-04-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28826971'>Chan, Hilary Pui Tong 陳沛彤</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666751'>Cheng, Ian Chun Man 鄭浚文</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25689115'>Cheng, Yuet Yi 鄭月怡</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24868603'>Cheung, Kevin (LSHK:2020-06) 張志恒</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667785'>Docherty, Michael John (LSHK:2009-10)</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Consultant</td>
+				<td>2020-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29581'>Haley, Glenn Rex Allen</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671106'>Macgeoch, Andrew Philip Bushill 麥建安</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Partner</td>
+				<td>2017-08-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24503252'>Pang, Chak Hang 彭澤恒</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2020-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29589'>Shaw, Geoffrey James</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672150'>Sin, Raymond 冼晞文</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672214'>Smith, Phillip Kevin 施偉立</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Consultant</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672573'>Tang, Clara Fung Man 鄧鳳雯</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Consultant</td>
+				<td>2022-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12692540'>Wong, Hon Ting (LSHK:2017-12) 黃瀚霆</a></td>
+				<td><a href='officers.asp?p=12404405'>BRYAN CAVE LEIGHTON PAISNER LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2018-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670488'>Li, Han Sheng 李漢生</a></td>
+				<td><a href='officers.asp?p=63541'>C.O. YU & CO., SOLICITORS LLP</a></td>
+				<td>Consultant</td>
+				<td>2021-03-08</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34201898'>Yu, Kin Wai (LSHK:2025-08) 余建偉</a></td>
+				<td><a href='officers.asp?p=1869'>C.P. Lin & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666495'>Chan, Wai Ling (LSHK:2008-08) 陳維寧</a></td>
+				<td><a href='officers.asp?p=46263'>C.Y. Tsang & Co.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12669177'>Lai, Hiu Yeung (LSHK:2009-11) 黎曉洋</a></td>
+				<td><a href='officers.asp?p=46263'>C.Y. Tsang & Co.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=52255'>Lau, Rebecca Kim Pang 劉劍鵬</a></td>
+				<td><a href='officers.asp?p=12371884'>CCW LAWYERS</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671414'>Ng, Alroy Garrett Tzyy Yeh 吳梓爗</a></td>
+				<td><a href='officers.asp?p=23106613'>CHAN & ASSOCIATES</a></td>
+				<td>Consultant</td>
+				<td>2025-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670409'>Leung, Wing Ngai (LSHK:2009-10) 梁榮毅</a></td>
+				<td><a href='officers.asp?p=12341373'>Chan Ching Man & Co.</a></td>
+				<td>Consultant</td>
+				<td>2023-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12674503'>Zhang, Huan (LSHK:2013-10) 張歡</a></td>
+				<td><a href='officers.asp?p=33466057'>CHARLES WILSON LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27050715'>Tang, Nga Yi 鄧雅怡</a></td>
+				<td><a href='officers.asp?p=27158898'>CHEN & LEE LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30801226'>Wong, Gwyneth Zhi Xi 王志喜</a></td>
+				<td><a href='officers.asp?p=6855'>Cheng, Yeung & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31711369'>Ho, Yik Yu 何翊渝</a></td>
+				<td><a href='officers.asp?p=6065'>Chiu & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=52255'>Lau, Rebecca Kim Pang 劉劍鵬</a></td>
+				<td><a href='officers.asp?p=6065'>Chiu & Co.</a></td>
+				<td>Partner</td>
+				<td>2021-08-23</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30527822'>Chong, Ming Fei 莊明斐</a></td>
+				<td><a href='officers.asp?p=34227141'>CHONG MING FEI & CO.</a></td>
+				<td>Sole Practitioner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=22914585'>Li, Chu Wing Sze Ceslia 李朱詠詩</a></td>
+				<td><a href='officers.asp?p=12680822'>CHOW JUSTIN & DE BEDIN SOLICITORS LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666143'>Chan, Hiu Mei (LSHK:2017-03) 陳曉薇</a></td>
+				<td><a href='officers.asp?p=12404361'>CHOY & TUN</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28249948'>Tse, Shing Chi (LSHK:2022-04) 謝晟致</a></td>
+				<td><a href='officers.asp?p=12404365'>CLEARY GOTTLIEB STEEN & HAMILTON (HONG KONG)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33577916'>Lehmann, Sebastian (LSHK:2025-05)</a></td>
+				<td><a href='officers.asp?p=5631'>Clifford Chance (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26891394'>Leung, Yat Hin Hinny 梁逸軒</a></td>
+				<td><a href='officers.asp?p=5631'>Clifford Chance (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26860619'>Liu, Yazhe 劉雅哲</a></td>
+				<td><a href='officers.asp?p=5631'>Clifford Chance (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28826971'>Chan, Hilary Pui Tong 陳沛彤</a></td>
+				<td><a href='officers.asp?p=15267893'>CMS HONG KONG LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29581'>Haley, Glenn Rex Allen</a></td>
+				<td><a href='officers.asp?p=15267893'>CMS HONG KONG LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24503252'>Pang, Chak Hang 彭澤恒</a></td>
+				<td><a href='officers.asp?p=15267893'>CMS HONG KONG LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29589'>Shaw, Geoffrey James</a></td>
+				<td><a href='officers.asp?p=15267893'>CMS HONG KONG LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12692540'>Wong, Hon Ting (LSHK:2017-12) 黃瀚霆</a></td>
+				<td><a href='officers.asp?p=15267893'>CMS HONG KONG LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27105423'>Ko, Cheuk Ho 高卓豪</a></td>
+				<td><a href='officers.asp?p=30961106'>CMY LAWYERS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33064139'>Ye, Haoxian 叶浩賢</a></td>
+				<td><a href='officers.asp?p=22912539'>COOLEY HK</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28741064'>Chan, Chadwick Wing Hang 陳永鏗</a></td>
+				<td><a href='officers.asp?p=5726'>D.S. Cheung & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667298'>Chong, Pui Choi 莊佩才</a></td>
+				<td><a href='officers.asp?p=12404370'>DANNY LAU & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31711369'>Ho, Yik Yu 何翊渝</a></td>
+				<td><a href='officers.asp?p=12404370'>DANNY LAU & CO.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-03</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34113031'>Low, Tak Yip 劉特業</a></td>
+				<td><a href='officers.asp?p=11715'>Davis Polk & Wardwell (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=13690194'>Lam, Sharon Sze Ching 林思靜</a></td>
+				<td><a href='officers.asp?p=5626'>Deacons</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27911627'>Lo, Ting Hei (LSHK:2022-01) 盧庭曦</a></td>
+				<td><a href='officers.asp?p=5626'>Deacons</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25396648'>Yim, Yiu Chun 嚴珧真</a></td>
+				<td><a href='officers.asp?p=5626'>Deacons</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-12</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672328'>Sun, Flora Harmony 申蘿娜</a></td>
+				<td><a href='officers.asp?p=12370137'>Deannie Yew and Associates</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=21043062'>Xu, Xiaowen (LSHK:2018-07) 徐&#26195;雯</a></td>
+				<td><a href='officers.asp?p=22448959'>DEHENG LAW OFFICES (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27517974'>Yuen, Wing Lam (LSHK:2021-10) 袁詠琳</a></td>
+				<td><a href='officers.asp?p=22448959'>DEHENG LAW OFFICES (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-12</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668141'>Gregory, Dominic James Fergusson (LSHK:2010-05)</a></td>
+				<td><a href='officers.asp?p=2279837'>DENTONS HONG KONG LLP</a></td>
+				<td>Partner</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34216429'>Wong, Cheuk Hei (LSHK:2024-10) 黃卓僖</a></td>
+				<td><a href='officers.asp?p=2279837'>DENTONS HONG KONG LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27244569'>Wong, Eric (LSHK:2021-08) 黃繼勇</a></td>
+				<td><a href='officers.asp?p=2279837'>DENTONS HONG KONG LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33402242'>Chan, Sophie Jing Soen 陳靖錞</a></td>
+				<td><a href='officers.asp?p=13798421'>DEREK TSANG LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31301318'>Chu, Nicole Po Yue 朱保如</a></td>
+				<td><a href='officers.asp?p=29405'>Dorsey & Whitney (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=2621387'>Tsui, Kwok Ho 徐國豪</a></td>
+				<td><a href='officers.asp?p=29405'>Dorsey & Whitney (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671226'>Marrin, Anthony Thomas 馬瑞安</a></td>
+				<td><a href='officers.asp?p=48445'>Edward C.T. Wong & Co.</a></td>
+				<td>Partner</td>
+				<td>2024-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666918'>Cheung, Eric Chi On 張子安</a></td>
+				<td><a href='officers.asp?p=12347997'>Eric Cheung & Lau</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667558'>Chuk, Siu Hung 祝笑虹</a></td>
+				<td><a href='officers.asp?p=12347997'>Eric Cheung & Lau</a></td>
+				<td>Consultant</td>
+				<td>2023-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12669584'>Lau, Eric King Sun 劉景新</a></td>
+				<td><a href='officers.asp?p=12347997'>Eric Cheung & Lau</a></td>
+				<td>Sole Practitioner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667735'>Dan, Jessica Man Yee 鄧曼儀</a></td>
+				<td><a href='officers.asp?p=2541313'>Ernest Li & Co.</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=49864'>Li, Ernest Shiu Ki 李紹基</a></td>
+				<td><a href='officers.asp?p=2541313'>Ernest Li & Co.</a></td>
+				<td>Sole Practitioner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24138082'>But, Yee Man 畢綺雯</a></td>
+				<td><a href='officers.asp?p=2406484'>FANGDA PARTNERS (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-04</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31044750'>Wang, Zeyu (LSHK:2023-12) 王澤宇</a></td>
+				<td><a href='officers.asp?p=2406484'>FANGDA PARTNERS (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26458879'>Yau, Mandy Pui Man 邱佩雯</a></td>
+				<td><a href='officers.asp?p=2406484'>FANGDA PARTNERS (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670543'>Li, Linda Sau Lin 李秀蓮</a></td>
+				<td><a href='officers.asp?p=4617'>Gallant</a></td>
+				<td>Consultant</td>
+				<td>2023-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672927'>Tse, Bonnie Tsz Kwan 謝芷君</a></td>
+				<td><a href='officers.asp?p=5687'>Gibson, Dunn & Crutcher (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12665909'>Byon, You Jung 卞維楨</a></td>
+				<td><a href='officers.asp?p=2317972'>GOODWIN PROCTER (HONG KONG) LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28762987'>Ho, Wing Yuk (LSHK:2022-10) 何穎彧</a></td>
+				<td><a href='officers.asp?p=2317972'>GOODWIN PROCTER (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28747635'>Pan, Shih-Chi</a></td>
+				<td><a href='officers.asp?p=2317972'>GOODWIN PROCTER (HONG KONG) LLP</a></td>
+				<td>Partner</td>
+				<td>2022-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672328'>Sun, Flora Harmony 申蘿娜</a></td>
+				<td><a href='officers.asp?p=12404404'>H.Y. LEUNG & CO., LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31775699'>Cheung, Giselle Ling 張凌</a></td>
+				<td><a href='officers.asp?p=25434605'>HAIWEN & PARTNERS LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23509808'>Fan, Chaobo 樊超波</a></td>
+				<td><a href='officers.asp?p=25434605'>HAIWEN & PARTNERS LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=22475112'>Li, Wing Tung 李穎彤</a></td>
+				<td><a href='officers.asp?p=25434605'>HAIWEN & PARTNERS LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670738'>Liu, Liyi 劉李依</a></td>
+				<td><a href='officers.asp?p=25434605'>HAIWEN & PARTNERS LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668173'>Ham, Yan Ki 咸欣琦</a></td>
+				<td><a href='officers.asp?p=12404496'>HAN KUN LAW OFFICES LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30978538'>Lau, Catherine 劉思朗</a></td>
+				<td><a href='officers.asp?p=12404496'>HAN KUN LAW OFFICES LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30978539'>Li, Miranda Meiwah 李美樺</a></td>
+				<td><a href='officers.asp?p=12404496'>HAN KUN LAW OFFICES LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-06</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29687824'>Chan, Ka Foon 陳家歡</a></td>
+				<td><a href='officers.asp?p=12357357'>Henry Chiu & Partners</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670262'>Leung, Hoi Chui 梁凱翠</a></td>
+				<td><a href='officers.asp?p=5556'>HERBERT SMITH FREEHILLS KRAMER</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31435280'>Chu, Carlin Chia Ling 朱家令</a></td>
+				<td><a href='officers.asp?p=11736668'>HEUNG MASSIE & CLEMENT</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32622740'>Li, Man Wah (LSHK:2024-10) 李敏華</a></td>
+				<td><a href='officers.asp?p=12366969'>Ho & Partners</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32787425'>Koc, Rachael Sze Yin 郭思賢</a></td>
+				<td><a href='officers.asp?p=60615'>Hogan Lovells (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-01</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34113032'>Tso, Ho Hei 曹浩熙</a></td>
+				<td><a href='officers.asp?p=16201'>Hon & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667505'>Chu, Po King 朱寶&#29756;</a></td>
+				<td><a href='officers.asp?p=22215766'>HUGILL & IP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=35957'>Hooley, Christopher Richard John 何浩禮</a></td>
+				<td><a href='officers.asp?p=22215766'>HUGILL & IP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2018-09-17</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31250292'>Lee, Yan Wing 李炘穎</a></td>
+				<td><a href='officers.asp?p=22215766'>HUGILL & IP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28884841'>Singh, Saajandeep 胜治平</a></td>
+				<td><a href='officers.asp?p=22215766'>HUGILL & IP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26231'>Siu, Sylvia Wing Yee 蕭詠儀</a></td>
+				<td><a href='officers.asp?p=27575105'>HUI DOE & SUM LAW FIRM LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28833414'>Li, Wai Ting (LSHK:2022-12) 李煒霆</a></td>
+				<td><a href='officers.asp?p=12404419'>IP & HEATHFIELD</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29687827'>Fung, Wing Yan (LSHK:2023-02) 馮穎欣</a></td>
+				<td><a href='officers.asp?p=34154529'>J YANG & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28818158'>Yang, Jun (LSHK:2022-07) 楊俊</a></td>
+				<td><a href='officers.asp?p=34154529'>J YANG & CO.</a></td>
+				<td>Sole Practitioner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33154799'>Kangara, Kuterera Myrmidon Zvikomborero</a></td>
+				<td><a href='officers.asp?p=12404423'>JAL N. KARBHARI & CO.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=29687824'>Chan, Ka Foon 陳家歡</a></td>
+				<td><a href='officers.asp?p=2520622'>Jennifer Lee & Co.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27105423'>Ko, Cheuk Ho 高卓豪</a></td>
+				<td><a href='officers.asp?p=2520622'>Jennifer Lee & Co.</a></td>
+				<td>Consultant</td>
+				<td>2023-12</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30978534'>Fung, Veronica 馮淯昕</a></td>
+				<td><a href='officers.asp?p=24270237'>JIA YUAN LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27013159'>Lam, Emma Po Man 林溥雯</a></td>
+				<td><a href='officers.asp?p=24270237'>JIA YUAN LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27050715'>Tang, Nga Yi 鄧雅怡</a></td>
+				<td><a href='officers.asp?p=24270237'>JIA YUAN LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26974063'>Wong, Ho Yan (LSHK:2020-11) 黃可欣</a></td>
+				<td><a href='officers.asp?p=24270237'>JIA YUAN LAW OFFICE</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28826973'>Cheng, Ka Man (LSHK:2022-11) 鄭嘉汶</a></td>
+				<td><a href='officers.asp?p=22123043'>JINGTIAN & GONGCHENG LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23838171'>Ho, Cheuk Him 何卓謙</a></td>
+				<td><a href='officers.asp?p=22123043'>JINGTIAN & GONGCHENG LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=2621387'>Tsui, Kwok Ho 徐國豪</a></td>
+				<td><a href='officers.asp?p=22123043'>JINGTIAN & GONGCHENG LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30123953'>Wun, Beatrice Yuet Yan 温悅妡</a></td>
+				<td><a href='officers.asp?p=22123043'>JINGTIAN & GONGCHENG LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33064139'>Ye, Haoxian 叶浩賢</a></td>
+				<td><a href='officers.asp?p=22123043'>JINGTIAN & GONGCHENG LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-03</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28818102'>Chung, Christine Cheuk Kwan 鍾卓君</a></td>
+				<td><a href='officers.asp?p=12353696'>John Lam, Law & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31282784'>Cheung, Priscilla Hiu Man 張曉敏</a></td>
+				<td><a href='officers.asp?p=5341'>JOHNSON STOKES & MASTER</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31220624'>Leung, Hon Yin 梁瀚賢</a></td>
+				<td><a href='officers.asp?p=5341'>JOHNSON STOKES & MASTER</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31044750'>Wang, Zeyu (LSHK:2023-12) 王澤宇</a></td>
+				<td><a href='officers.asp?p=21311'>Jones Day (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27105427'>Lui, Henry Lok Hin 呂躒軒</a></td>
+				<td><a href='officers.asp?p=12404433'>JUN HE LAW OFFICES</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25703326'>Siu, Hing Chong 蕭鑫壯</a></td>
+				<td><a href='officers.asp?p=12404433'>JUN HE LAW OFFICES</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-04</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30772080'>Wong, Brian Wui Ching 黃匯正</a></td>
+				<td><a href='officers.asp?p=12404433'>JUN HE LAW OFFICES</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32527864'>Wong, Teresa Ching Lan 黃瀞蘭</a></td>
+				<td><a href='officers.asp?p=6841'>K.B. Chau & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672438'>Tam, Eileen Ho Yee 譚可兒</a></td>
+				<td><a href='officers.asp?p=12340328'>K.L. Chan & Co.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667856'>Fan, Kwan Wah 樊君華</a></td>
+				<td><a href='officers.asp?p=6006'>K.M. Lai & Li</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34241812'>Chan, Samuel Nok Yin 陳諾言</a></td>
+				<td><a href='officers.asp?p=12340365'>K.T. Chan & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666452'>Chan, Sum Yee 陳沁怡</a></td>
+				<td><a href='officers.asp?p=12404445'>K.T. LO & CO.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=2516924'>Lo, Kenny Kam Ting 盧錦霆</a></td>
+				<td><a href='officers.asp?p=12404445'>K.T. LO & CO.</a></td>
+				<td>Sole Practitioner</td>
+				<td>2024-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28769896'>Yeung, King Tung 楊敬童</a></td>
+				<td><a href='officers.asp?p=12404445'>K.T. LO & CO.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12674525'>Zhang, Yuanhong (LSHK:2015-03) 張元洪</a></td>
+				<td><a href='officers.asp?p=12404445'>K.T. LO & CO.</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34241813'>Ng, Kelly Ching Kwan 伍靖筠</a></td>
+				<td><a href='officers.asp?p=6039'>Kao, Lee & Yip</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666715'>Cheng, Carmen Ka Yue 鄭嘉瑜</a></td>
+				<td><a href='officers.asp?p=1959339'>KARAS SO LLP</a></td>
+				<td>Consultant</td>
+				<td>2022-12</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25696304'>Kong, April Kiu Ming 江翹名</a></td>
+				<td><a href='officers.asp?p=1959339'>KARAS SO LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28833414'>Li, Wai Ting (LSHK:2022-12) 李煒霆</a></td>
+				<td><a href='officers.asp?p=1959339'>KARAS SO LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28818123'>Lam, Michelle Man Hei 林文希</a></td>
+				<td><a href='officers.asp?p=65720'>Keith Lam Lau & Chan</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26860616'>Jang, Yunyoung 張允榮</a></td>
+				<td><a href='officers.asp?p=12404455'>KIM & COMPANY</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31250292'>Lee, Yan Wing 李炘穎</a></td>
+				<td><a href='officers.asp?p=1862099'>King & Wood Mallesons (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28308348'>Wong, Sunny Tin Leong 黃天亮</a></td>
+				<td><a href='officers.asp?p=1862099'>King & Wood Mallesons (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33773219'>Toh, Jeremy Zhen Teck 杜振德</a></td>
+				<td><a href='officers.asp?p=2028448'>KOBRE & KIM (HK) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668677'>Ip, Johnny Chun Yuen 葉俊遠</a></td>
+				<td><a href='officers.asp?p=31214240'>KONG & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668960'>Krishnan, Sundaramoothy</a></td>
+				<td><a href='officers.asp?p=57417'>Krishnan & Tsang</a></td>
+				<td>Consultant</td>
+				<td>2019-07-31</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28867743'>Tso, Matthew Ming Hang 曹銘恒</a></td>
+				<td><a href='officers.asp?p=32178367'>KWOK GILBERT & PARTNERS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32655'>Ng, Ambrose Cheuk Tat 伍卓達</a></td>
+				<td><a href='officers.asp?p=23479271'>KWONG & LEE</a></td>
+				<td>Consultant</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12673982'>Yao, Yao (LSHK:2012-12) 姚瑤</a></td>
+				<td><a href='officers.asp?p=12404462'>L & Y LAW OFFICE</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33256278'>Wong, Jennifer Wing Yin 黃穎姸</a></td>
+				<td><a href='officers.asp?p=17233'>Lam & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24561317'>Lao, Joanne Kit Yu 劉潔茹</a></td>
+				<td><a href='officers.asp?p=18765'>LATHAM & WATKINS LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2020-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671641'>Ng, Yiu Wah 吳耀華</a></td>
+				<td><a href='officers.asp?p=12404467'>LAWRENCE Y. W. NG & CO.</a></td>
+				<td>Sole Practitioner</td>
+				<td>2023-08</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666495'>Chan, Wai Ling (LSHK:2008-08) 陳維寧</a></td>
+				<td><a href='officers.asp?p=12404473'>LEE & YIK LAWYERS</a></td>
+				<td>Consultant</td>
+				<td>2019-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12669177'>Lai, Hiu Yeung (LSHK:2009-11) 黎曉洋</a></td>
+				<td><a href='officers.asp?p=12404473'>LEE & YIK LAWYERS</a></td>
+				<td>Consultant</td>
+				<td>2021-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668567'>Hui, Katherine Gee Wai 許智慧</a></td>
+				<td><a href='officers.asp?p=49848'>LEUNG & LAU, SOLICITORS LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30329355'>Lee, Chris Man Tat 李文達</a></td>
+				<td><a href='officers.asp?p=49848'>LEUNG & LAU, SOLICITORS LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12674503'>Zhang, Huan (LSHK:2013-10) 張歡</a></td>
+				<td><a href='officers.asp?p=9128'>Li & Partners</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670880'>Lo, Wing Yee (LSHK:1996-07) 盧詠儀</a></td>
+				<td><a href='officers.asp?p=23195597'>LING & LAWYERS</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12665893'>Bu, Qingqing 卜青青</a></td>
+				<td><a href='officers.asp?p=5642'>Linklaters (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23917287'>Ho, Austin Ngao Tsung 何翱聰</a></td>
+				<td><a href='officers.asp?p=5642'>Linklaters (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-04</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33213728'>Yuen, Justin Wilson 袁德善</a></td>
+				<td><a href='officers.asp?p=5642'>Linklaters (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31435280'>Chu, Carlin Chia Ling 朱家令</a></td>
+				<td><a href='officers.asp?p=24404861'>LO & LAWYERS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34201895'>Chan, Wing Yin (LSHK:2025-08) 陳穎燕</a></td>
+				<td><a href='officers.asp?p=2289567'>Loeb & Loeb LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34216428'>Ng, Kin Yi 吳健兒</a></td>
+				<td><a href='officers.asp?p=2289567'>Loeb & Loeb LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26974063'>Wong, Ho Yan (LSHK:2020-11) 黃可欣</a></td>
+				<td><a href='officers.asp?p=34362'>LONG AN & LAM LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-04</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672807'>Toullec, Jean-Yves Paul Andre</a></td>
+				<td><a href='officers.asp?p=34173645'>LPA LAW LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27396266'>Vanderchmitt, Nicolas Frederic</a></td>
+				<td><a href='officers.asp?p=34173645'>LPA LAW LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28896216'>Hardy-Abeloos, Joseph Daniel Thibault</a></td>
+				<td><a href='officers.asp?p=32726971'>MAYER BROWN HONG KONG LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-12-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667682'>Conway, Maurice</a></td>
+				<td><a href='officers.asp?p=28733440'>MILBANK (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28747628'>Lee, Hei Shun (LSHK:2022-09) 李熙信</a></td>
+				<td><a href='officers.asp?p=21291'>MINTERELLISON LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670258'>Leung, Ho Ting 梁浩霆</a></td>
+				<td><a href='officers.asp?p=21291'>MINTERELLISON LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666715'>Cheng, Carmen Ka Yue 鄭嘉瑜</a></td>
+				<td><a href='officers.asp?p=33676149'>MISHCON DE REYA LLP (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25696304'>Kong, April Kiu Ming 江翹名</a></td>
+				<td><a href='officers.asp?p=33676149'>MISHCON DE REYA LLP (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27487481'>Lee, Jacqui 李津淇</a></td>
+				<td><a href='officers.asp?p=2701931'>MORGAN, LEWIS & BOCKIUS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33064136'>To, Ho Wai (LSHK:2025-01) 杜浩瑋</a></td>
+				<td><a href='officers.asp?p=2701931'>MORGAN, LEWIS & BOCKIUS</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31020994'>Chan, Ka Wing (LSHK:2023-11) 陳家咏</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28818089'>Chan, Samantha (LSHK:2022-10) 陳芊語</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27300172'>Cheung, Evelyn Ying 張凝</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667016'>Cheung, Polly Tsang Wah 張增華</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25689116'>Ho, Chui Sze 何翠詩</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=22604651'>Ho, Wing Lun 何穎倫</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31756213'>Wong, Christy Wai Lam 王慧琳</a></td>
+				<td><a href='officers.asp?p=2221422'>Norton Rose Fulbright Hong Kong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666023'>Chan, Chi Ho (LSHK:2016-10) 陳智灝</a></td>
+				<td><a href='officers.asp?p=22703291'>O TSE & CO.</a></td>
+				<td>Consultant</td>
+				<td>2024-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666554'>Chan, Yik Kan 陳奕勤</a></td>
+				<td><a href='officers.asp?p=22703291'>O TSE & CO.</a></td>
+				<td>Consultant</td>
+				<td>2024-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26860619'>Liu, Yazhe 劉雅哲</a></td>
+				<td><a href='officers.asp?p=12411'>O'Melveny & Myers (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-06</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670405'>Leung, Dantes Wing Chak 梁泳澤</a></td>
+				<td><a href='officers.asp?p=35953'>Oldham, Li & Nie</a></td>
+				<td>Partner</td>
+				<td>2019-11-18</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668854'>Kim, Jungsun (LSHK:2014-10) 金政善</a></td>
+				<td><a href='officers.asp?p=46943'>ONC Lawyers</a></td>
+				<td>Consultant</td>
+				<td>2023-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670268'>Leung, Hoi Yan (LSHK:2015-10) 梁凱欣</a></td>
+				<td><a href='officers.asp?p=5825'>P.C. Woo & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30801226'>Wong, Gwyneth Zhi Xi 王志喜</a></td>
+				<td><a href='officers.asp?p=5825'>P.C. Woo & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31078762'>Yuen, Charmaine Garwei 袁嘉慧</a></td>
+				<td><a href='officers.asp?p=5825'>P.C. Woo & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23509808'>Fan, Chaobo 樊超波</a></td>
+				<td><a href='officers.asp?p=18460'>PAUL HASTINGS (HONG KONG) LLP</a></td>
+				<td>Partner</td>
+				<td>2019-12-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31020998'>Lai, Wing Wun 黎咏媛</a></td>
+				<td><a href='officers.asp?p=18460'>PAUL HASTINGS (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-12</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23864624'>Lam, Joey On Sun 林安生</a></td>
+				<td><a href='officers.asp?p=18460'>PAUL HASTINGS (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670738'>Liu, Liyi 劉李依</a></td>
+				<td><a href='officers.asp?p=18460'>PAUL HASTINGS (HONG KONG) LLP</a></td>
+				<td>Partner</td>
+				<td>2024-04</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28884856'>Zhang, Qiongyu 張予</a></td>
+				<td><a href='officers.asp?p=18460'>PAUL HASTINGS (HONG KONG) LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27215037'>Poon, Michael Chi Fung 潘子豐</a></td>
+				<td><a href='officers.asp?p=24467'>RAVENSCROFT & SCHMIERER</a></td>
+				<td>Consultant</td>
+				<td>2024-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12779894'>Chang, Jensen Chun Shen 張俊燊</a></td>
+				<td><a href='officers.asp?p=952'>Reed Smith Richards Butler (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26826329'>Pepper, Michael Ross David 彭懷谷</a></td>
+				<td><a href='officers.asp?p=952'>Reed Smith Richards Butler (HK)</a></td>
+				<td>Consultant</td>
+				<td>2023-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12666099'>Chan, Fanny Sze Wan 陳詩韻</a></td>
+				<td><a href='officers.asp?p=16366'>Robertsons</a></td>
+				<td>Assistant Solicitor</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12673993'>Yau, Chi Keung (LSHK:1998-02) 丘志強</a></td>
+				<td><a href='officers.asp?p=12374481'>Robinsons, Lawyers</a></td>
+				<td>Consultant</td>
+				<td>2023-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667298'>Chong, Pui Choi 莊佩才</a></td>
+				<td><a href='officers.asp?p=12340652'>S.C. Chan & Co.</a></td>
+				<td>Consultant</td>
+				<td></td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667370'>Chow, Ka Tung 周嘉彤</a></td>
+				<td><a href='officers.asp?p=9356'>Sidley Austin (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25623078'>Ho, Yuen Ying (LSHK:2020-11) 何宛螢</a></td>
+				<td><a href='officers.asp?p=9356'>Sidley Austin (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672845'>Tsang, Douglas Chiu Leung 曾昭樑</a></td>
+				<td><a href='officers.asp?p=9356'>Sidley Austin (HK)</a></td>
+				<td>Consultant</td>
+				<td>2020-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12673272'>Wong, Alan Chun Kit (LSHK:2010-12) 王俊傑</a></td>
+				<td><a href='officers.asp?p=9356'>Sidley Austin (HK)</a></td>
+				<td>Consultant</td>
+				<td>2019-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25396648'>Yim, Yiu Chun 嚴珧真</a></td>
+				<td><a href='officers.asp?p=9356'>Sidley Austin (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=25689115'>Cheng, Yuet Yi 鄭月怡</a></td>
+				<td><a href='officers.asp?p=2306773'>Simon Reid-Kay & Associates</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672214'>Smith, Phillip Kevin 施偉立</a></td>
+				<td><a href='officers.asp?p=2306773'>Simon Reid-Kay & Associates</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12672573'>Tang, Clara Fung Man 鄧鳳雯</a></td>
+				<td><a href='officers.asp?p=2306773'>Simon Reid-Kay & Associates</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31282784'>Cheung, Priscilla Hiu Man 張曉敏</a></td>
+				<td><a href='officers.asp?p=5885'>Sit, Fung, Kwong & Shum</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26231'>Siu, Sylvia Wing Yee 蕭詠儀</a></td>
+				<td><a href='officers.asp?p=5885'>Sit, Fung, Kwong & Shum</a></td>
+				<td>Consultant</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32996936'>Kan, Rita Chung Lam 簡仲霖</a></td>
+				<td><a href='officers.asp?p=5759'>Slaughter and May (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27013159'>Lam, Emma Po Man 林溥雯</a></td>
+				<td><a href='officers.asp?p=5759'>Slaughter and May (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12673819'>Wong, Ying Yee 王瑩儀</a></td>
+				<td><a href='officers.asp?p=5759'>Slaughter and May (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671395'>Nandwani, Preeti Arjan 洛慧賢</a></td>
+				<td><a href='officers.asp?p=30866561'>SOLAR WONG & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28249946'>Tsang, Hei Man 曾熹文</a></td>
+				<td><a href='officers.asp?p=2387570'>Squire Patton Boggs (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-05</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28859958'>Chui, Clifford Shin Hang 徐善行</a></td>
+				<td><a href='officers.asp?p=5571'>Stephenson Harwood (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671707'>On, Maria 安美怡</a></td>
+				<td><a href='officers.asp?p=5571'>Stephenson Harwood (HK)</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668583'>Hui, Osbert Yee 許懿</a></td>
+				<td><a href='officers.asp?p=12116'>Stevenson, Wong & Co.</a></td>
+				<td>Partner</td>
+				<td>2019-11-18</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23539065'>Mak, Tin Ning Tinnie 麥天寧</a></td>
+				<td><a href='officers.asp?p=12116'>Stevenson, Wong & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671414'>Ng, Alroy Garrett Tzyy Yeh 吳梓爗</a></td>
+				<td><a href='officers.asp?p=12116'>Stevenson, Wong & Co.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667767'>Desombre, Michael George</a></td>
+				<td><a href='officers.asp?p=5597'>Sullivan & Cromwell (Hong Kong) LLP</a></td>
+				<td>Partner</td>
+				<td>2021-12-07</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30527822'>Chong, Ming Fei 莊明斐</a></td>
+				<td><a href='officers.asp?p=28147711'>T.C. TSE & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=8842'>Cheng, Henry Wui See 鄭會詩</a></td>
+				<td><a href='officers.asp?p=9814'>T.S. Tong & Co.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td></td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32787405'>Chan, Julian (LSHK:2024-11) 陳上羲</a></td>
+				<td><a href='officers.asp?p=21820'>Tanner De Witt</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-01</td>
+				<td>2025-09</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12671395'>Nandwani, Preeti Arjan 洛慧賢</a></td>
+				<td><a href='officers.asp?p=21820'>Tanner De Witt</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27517971'>Wong, Abby 王禮端</a></td>
+				<td><a href='officers.asp?p=21820'>Tanner De Witt</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=23838171'>Ho, Cheuk Him 何卓謙</a></td>
+				<td><a href='officers.asp?p=2520050'>TAYLOR WESSING (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-08</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670880'>Lo, Wing Yee (LSHK:1996-07) 盧詠儀</a></td>
+				<td><a href='officers.asp?p=2079731'>TC & Co.</a></td>
+				<td>Consultant</td>
+				<td>2021-09</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667410'>Chow, Stephen Yoenbon 周潤梆</a></td>
+				<td><a href='officers.asp?p=12369360'>Tian Yuan Law Firm LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670405'>Leung, Dantes Wing Chak 梁泳澤</a></td>
+				<td><a href='officers.asp?p=12369360'>Tian Yuan Law Firm LLP</a></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12669164'>Lai, Edmond Man Fai 賴汶徽</a></td>
+				<td><a href='officers.asp?p=12404567'>TITUS & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12670308'>Leung, Katherine Nga Wun 梁雅媛</a></td>
+				<td><a href='officers.asp?p=61152'>TONY AU & CO.</a></td>
+				<td>Consultant</td>
+				<td>2025-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=27396266'>Vanderchmitt, Nicolas Frederic</a></td>
+				<td><a href='officers.asp?p=12404570'>TOULLEC</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-12</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=30527828'>Tong, Fiona Fu Yi 湯富兒</a></td>
+				<td><a href='officers.asp?p=7061'>Tsang, Chan & Wong</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24868606'>Ho, Emily Wing Tung 何穎桐</a></td>
+				<td><a href='officers.asp?p=12357805'>V. Hau & Chow</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28056'>Lam, Kenny Kin Man 林健文</a></td>
+				<td><a href='officers.asp?p=12404575'>VICTOR YEUNG & CO.</a></td>
+				<td>Consultant</td>
+				<td>2022-11</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28818127'>Lau, Yee Lam 劉依琳</a></td>
+				<td><a href='officers.asp?p=2948'>W K TO & CO.</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=33558585'>Tsang, Sze Ting (LSHK:2025-04) 曾詩婷</a></td>
+				<td><a href='officers.asp?p=12404587'>WELLINGTON LEGAL LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-06</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668367'>Ho, Paulina Woon Lam 何浣琳</a></td>
+				<td><a href='officers.asp?p=2238'>White & Case (HK)</a></td>
+				<td>Consultant</td>
+				<td>2023-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=31301318'>Chu, Nicole Po Yue 朱保如</a></td>
+				<td><a href='officers.asp?p=3352'>Wilkinson & Grist</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2024-02</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=34113029'>Hui, Celeste Kwan Kiew 許君翹</a></td>
+				<td><a href='officers.asp?p=3352'>Wilkinson & Grist</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28826973'>Cheng, Ka Man (LSHK:2022-11) 鄭嘉汶</a></td>
+				<td><a href='officers.asp?p=57776'>Wilson Sonsini Goodrich & Rosati (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2023-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=26419886'>Ma, Hei Tung 馬希彤</a></td>
+				<td><a href='officers.asp?p=57776'>Wilson Sonsini Goodrich & Rosati (HK)</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2021-03</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667505'>Chu, Po King 朱寶&#29756;</a></td>
+				<td><a href='officers.asp?p=12404593'>WITHERS (HK)</a></td>
+				<td>Partner</td>
+				<td>2017-07-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12668854'>Kim, Jungsun (LSHK:2014-10) 金政善</a></td>
+				<td><a href='officers.asp?p=32617466'>WONG & CHUN LAWYERS</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12667625'>Chung, Renee Wing Yin 鍾穎姸</a></td>
+				<td><a href='officers.asp?p=729'>Woo Kwan Lee & Lo</a></td>
+				<td>Consultant</td>
+				<td>2022-04</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28747628'>Lee, Hei Shun (LSHK:2022-09) 李熙信</a></td>
+				<td><a href='officers.asp?p=729'>Woo Kwan Lee & Lo</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2022-10</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=24064117'>Lam, Ho Hin 林浩軒</a></td>
+				<td><a href='officers.asp?p=12076'>Yip, Tse & Tang</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2020-01</td>
+				<td>2025-10</td>
+			</tr>
+		
+			<tr>
+				<td colspan="2"></td>
+				<td>Partner</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=32787405'>Chan, Julian (LSHK:2024-11) 陳上羲</a></td>
+				<td><a href='officers.asp?p=12053069'>ZHONG LUN LAW FIRM LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=12673272'>Wong, Alan Chun Kit (LSHK:2010-12) 王俊傑</a></td>
+				<td><a href='officers.asp?p=12053069'>ZHONG LUN LAW FIRM LLP</a></td>
+				<td>Consultant</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+			<tr class="total">
+				<td><a href='positions.asp?p=28884855'>Yiu, Christopher Tsz Chun 姚梓駿</a></td>
+				<td><a href='officers.asp?p=12053069'>ZHONG LUN LAW FIRM LLP</a></td>
+				<td>Assistant Solicitor</td>
+				<td>2025-10</td>
+				<td></td>
+			</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>
