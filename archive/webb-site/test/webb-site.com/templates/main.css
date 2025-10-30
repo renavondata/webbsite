@@ -1,0 +1,853 @@
+﻿a:link
+{text-decoration:none;
+}
+a:active
+{
+}
+a:visited
+{
+text-decoration:none;
+}
+a:hover
+{
+	color:red;
+	text-decoration:underline
+}
+/*html elements first*/
+body
+{
+	font-size: 3.44mm;/*3.44mm=13px*/
+	font-weight: normal;
+	font-style: normal;
+	font-family: Verdana;
+	text-align:left;
+	vertical-align:top;
+}
+h1,h2,h3,h4,h5,h6,p,li,form,table,blockquote,ul {
+	margin-top:0.5em;
+	margin-bottom:0.5em;
+}
+h1
+{
+	color: red;
+	font-weight: bold;
+	font-size: 1.6em;
+	font-style: normal;
+}
+h2
+{
+	color: red;
+	font-weight: bold;
+	font-size:1.4em;
+}
+h3
+{
+	color: red;
+	font-weight: bold;
+	font-size:1.2em;
+}
+h4
+{
+	font-weight: bold;
+	color:red;
+	font-size: 1em;
+}
+h5
+{
+	font-weight: normal;
+	font-style: normal;
+}
+h6
+{
+	font-weight: normal;
+	font-style: normal;
+}
+ul ul {
+	margin-top:0.5em;
+}
+li {
+}
+p,th,td,input,select {
+	font-size: 1em;
+}
+input[type=date]
+{
+    font:inherit;
+}
+table
+{
+	border-width:0;
+	border-spacing:0;
+}
+td {
+	vertical-align:top;
+	padding:2px;
+	text-align:left;
+}
+/*generic class selectors*/
+.mainbody {
+	border:0px;
+	margin:0px;
+	text-align:left;
+	padding:0px;
+}
+.center {
+	text-align:center;
+}
+.vcenter{
+	vertical-align:middle;
+}
+.right {
+	text-align:right;
+}
+.left {
+	text-align:left
+}
+.clear {
+	clear:both
+}
+.highlight {
+	background-color:yellow
+}
+.nowrap {
+	white-space:nowrap
+}
+.videobox {
+	position:relative;
+	padding-bottom:56.25%;
+	padding-top:30px;
+	height:0;
+	overflow:hidden;
+}
+.videobox iframe {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+/*element class selectors*/
+.headlinedate{
+	font-size:0.8em;
+	color:black;
+	font-style:italic;
+}
+p.revisedate {
+	font-size:1em;
+	text-align:center;
+	font-style:italic;
+	font-weight:bold;
+	position:relative;
+	top:-10px;
+}
+.inputs {
+	margin:5px 5px 5px 0;
+	float:left;
+	min-height:1.8em;
+}
+div.pollbox {
+	border:thin black solid;
+	width:250px;
+	padding:2px;
+	margin-left:10px;
+	float:right;
+	text-align:center;
+}
+div.centerpicbox {
+	border:thin solid;
+	margin: 5px auto;
+	text-align:center;
+	max-width:100%;
+}
+div.leftpicbox {
+	/*picture box, centred caption, floating to left*/
+	float:left;
+	position:relative;
+	border:thin solid;
+	margin:5px;
+	text-align:center;
+}
+div.rightpicbox {
+	/*picture box, centred caption, floating to left*/
+	float:right;
+	position:relative;
+	border:thin solid;
+	margin:5px;
+	text-align:center;
+}
+div.leftpicbox img, div.rightpicbox img, div.centerpicbox img {
+	max-width:100%;
+	display:block;
+}
+p.regbox, div.regbox {
+	/*regulatory note or text box for p or div*/
+	border:thin solid;
+	padding:4px;
+}
+p.letterbox, div.letterbox {
+	border:thin gray solid;
+	padding:20px;
+	box-shadow:10px 10px 10px gray;
+	margin-bottom:15px;
+}
+/*for address,pw on user forms*/
+input.ws {
+	width:15em;
+}
+table.center {
+	margin:auto;
+}
+img.center {
+	display:block;
+	margin:5px auto;
+	max-width:100%;
+}
+.smallprint {
+	font-size:0.8em
+}
+.info {
+	position:relative;
+	text-decoration:none;
+	color:blue;
+}
+.info:hover {
+	z-index:1;
+	background-color:#FF0;
+}
+.info:visited {
+	color:blue;
+	text-decoration:none;
+}
+.info:link {
+	color:blue;
+	text-decoration:none;
+}
+.info:hover span {
+	display:inline;
+	position:absolute;
+	top:15px; left:20px; width:200px;
+	border:1px;
+	background-color:yellow;
+	color:black;
+	border-style:solid;
+	text-align:left;
+	text-decoration:none;
+}
+.info span {
+	display:none
+}
+
+/*for top of page, desktop default*/
+#banner {
+	width:100%;
+	min-height:118px;
+	color:white;
+	position:relative;
+}
+#menubar {
+	clear:both
+}
+#loginbtn, #menubtn {
+	float:right;
+	padding:2px;
+	margin:5px;
+	font-size:1em;
+	border:thin white solid
+}
+.box1 {
+	float:left;
+	width:270px;
+	padding:2px 0px 0 2px;
+}
+.stockbox {
+	float:right;
+	width:120px;
+	/*height:100%;*/
+	text-align:center;
+	padding-top:15px;
+}
+.box3,.box4 {
+	float:right;
+	padding-top:5px;
+	text-align:left;
+	font-weight:bold;
+}
+.group1 {
+	float:right;
+}
+.box3a,.box3b {
+	width:100%
+}
+.box3,.box4 {
+	width:170px;
+}
+.box4a {
+	margin-bottom:5px
+}
+.box1,.group1,.stockbox,.box3,.box4 {
+	background-color:inherit;
+	color:inherit;
+}
+input.orgsearch {
+	width:12em
+}
+input.famsearch {
+	width:5.5em
+}
+input.searchws, input.signup {
+	width:12em
+}
+input.stockcode {
+	width:5em;
+	text-align:center
+}
+.widthAlert,.widthAlert1,.widthAlert2,.widthAlert3 {
+	display:none
+}
+span.portrait {
+	display:none
+}
+@media only screen and (orientation:portrait) {
+	span.portrait {
+		display:inline;
+	}
+}
+@media only screen and (min-width:481px) and (max-width: 768px) {
+	/*mobile landscape mode, 2-column*/
+	body {
+		/*font-size: 3.44mm;/*3.44m=13px*/
+        font-size:13px;
+		-webkit-text-size-adjust: 100%; /*stop iOS resizing text*/
+		-moz-text-size-adjust: 100%;
+		-ms-text-size-adjust:100%;
+	}
+	.box1,.box4,.group1 {
+		width:100%;
+		padding:3px 0;
+		border-bottom:thin white solid;
+		text-align:center;
+	}
+	.box3 {
+		float:left;
+		width:73%;
+		border:0;
+		padding:0;
+	}
+		.box3a,.box3b {
+			float:left;
+			text-align:center;
+		}
+		.box3a {
+			width:45%
+		}
+			input.orgsearch {
+				width:90%
+			}
+		.box3b {
+			width:55%
+		}
+			input.famsearch {
+				width:45%
+			}
+	.stockbox {
+		padding:0;
+		width:27%;
+		float:right;
+	}
+		input.stockcode {
+			width:80%
+		}
+	.box4a,.box4b {
+		width:50%;
+		float:left;
+		margin-bottom:0;
+	}
+		input.searchws,input.signup {
+			width:10em
+		}
+}
+@media only screen and (max-width: 640px) {
+	.colHide2 {
+		display:none;
+	}
+	.widthAlert2 {
+		display:block;
+		font-weight:bold;
+	}
+}
+@media only screen and (max-width: 480px) {
+	/*mobile portrait mode, single column*/
+	body {
+        font-size:13px;
+		-webkit-text-size-adjust: 100%; /*stop iOS resizing text*/
+		-moz-text-size-adjust: 100%;
+		-ms-text-size-adjust:100%;
+	}
+	.box1,.stockbox,.box3,.box4 {
+		width:100%;
+		padding:3px 0;
+		border-bottom:thin white solid;
+		text-align:center;
+	}
+	input.orgsearch {
+		width:11.75em
+	}
+	input.famsearch {
+		width:6.75em
+	}
+	input.signup {
+		width:13em
+	}
+	.colHide3 {
+		display:none
+	}
+	.widthAlert3 {
+		display:block;
+		font-weight:bold
+	}
+	div.pollbox {
+	width:100%;
+	margin:0;
+	text-align:left;
+	}
+	div.leftpicbox {
+	clear:both;
+	float:none;
+	margin:5px auto;
+	}
+	div.rightpicbox {
+	clear:both;
+	float:none;
+	margin:5px auto;
+	}
+}
+@media only screen and (max-width:360px) {
+/*hide social media buttons in smartphone portrait mode and warn hidden items*/
+	#social {
+		display:none
+	}
+}
+/*Horizontal navigation bar*/
+.hnav li {
+	background-color:gray;
+	color:white;
+	padding:3px;
+	margin:0;
+	white-space:nowrap;
+}
+@media (min-width: 769px) {
+	/*desktop mode. Hide the menu and search toggles used in mobile mode*/
+	body {
+        font-size:13px;
+		-webkit-text-size-adjust: 100%; /*stop iOS resizing text*/
+		-moz-text-size-adjust: 100%;
+		-ms-text-size-adjust:100%;
+	}
+	#menubtn,#srchbtn {
+		display:none;
+	}
+	#menubar {
+		position:relative;
+		height:25px;
+	}	
+	.hnav{
+		/*stick to bottom-left corner of menubar*/
+		position:absolute;
+		bottom:0;
+		left:0;
+		width:100%;
+		padding:0;
+	}
+	.hnav ul{
+		margin:0;
+		padding:0;
+		}
+	.hnav ul li {
+		display:inline;
+		font-size:1em;
+		float:left;
+		list-style:none;
+		position:relative;
+		border-right:thin white solid;
+		}
+	.hnav li a{
+		display:inline-block;
+		color:white;
+		width:100%;
+	}
+	.hnav li:hover{
+		background-color:lightgray;
+	}
+	.hnav li a:hover{
+		text-decoration:none; /*don't underline the URLs*/
+		color:black;
+	}
+	.hnav li ul{
+		display:none;
+		position:absolute; /*0,0 in containing element*/
+		top:22px; /*offset from item above*/
+		left:0;
+		}
+	.hnav li:hover ul{
+		display:block; /*show dropdown on hover*/
+		z-index:2; /*above other text and yscroll */
+		}
+	.hnav li li{
+		width:100%; /*fill the width of the ul, to the widest list-item*/
+		padding:3px;
+		border-top:1px white solid; /*separate the menu items in the list*/
+	}
+}
+@media only screen and (max-width:768px) {
+	body {
+        font-size:13px;
+		-webkit-text-size-adjust: 100%; /*stop iOS resizing text*/
+		-moz-text-size-adjust: 100%;
+		-ms-text-size-adjust:100%;
+	}
+	/*banner collapses*/
+	#banner {
+		min-height:0
+	}
+	/*mobile drop-down menu, up to typical tablet portrait width*/
+	#menubtn {
+		display:block;
+		color:white;
+		float:right;
+	}
+	#menuchk:checked + ul {
+		display:block;
+		width:auto;
+		padding: 0px;
+		list-style:none;
+		position: absolute; /* position is relative to positioned parent*/
+		top:-8px;
+		right: 6px;/*for alignment, = 2 x (li padding size) */
+		z-index:1; /*put it above text*/
+	}
+	#srchbtn {
+		display:inline-block;
+		border:thin white solid;
+		margin: 5px 0;
+		padding: 2px;
+	}
+	#srchblk {
+		display:none
+	}
+	#srchchk:checked + div {
+		/*display the search block*/
+		display:block;
+	}	
+	.colHide1 {
+		display:none;
+	}
+	.widthAlert1 {
+		display:block;
+		font-weight:bold
+	}
+	.hnav {
+		position:relative;
+		float:right;
+	}
+	.hnav ul, .hnav:active ul {
+		display: none; /*hidden until menuchk is on*/
+	}
+	/*was used for hover-link drop-down menu
+	.hnav:hover > ul {
+		display:block;
+		width:auto;
+		top:5px;
+		z-index:1;
+	}
+	*/
+	/* > means only the direct descendant ul */
+	.hnav li {
+		border-bottom:thin white solid;
+		height:1.6em;
+		font-size:1em;
+		text-align: center;
+		width: 100%;
+		position:relative;
+	}
+	.hnav li a {
+		display:inline-block; /*so link covers whole width except for li padding*/
+		color:white;
+		width:100%;
+	}
+	.hnav li:hover {
+		background-color:lightgray;
+		color:black;
+	}
+	.hnav li a:hover {
+		text-decoration:none;
+		color:black;
+	}
+	.hnav li > ul {
+		display:none;
+	}
+	.hnav li:hover > ul {
+		display:inline-block;
+		z-index:1; /*put it above text*/
+		position:absolute;
+		top: -7px;
+		right:100%;
+		margin-right:6px;
+	}
+	.hnav li li {
+		display:block;
+		position:relative;
+		white-space:nowrap;
+		border-right:thin white solid;
+	}
+}
+@media print {
+	#menubar,#srchblk,#rss,#loginbtn {
+		display:none
+	}
+	#banner {
+		min-height:0
+	}
+}
+/*for navigation bars and org/people/topic lists*/
+ul.navlist {
+	clear:both;
+	padding:0;
+	margin:0;
+	z-index:3;
+	}
+ul.navlist li {
+	float:left;
+	list-style:none;
+	position:relative;
+	background-color:gray;
+	color:white;
+	padding:2px;
+	border-right:thin white solid;
+	margin:3px 0;
+	}
+ul.navlist li#livebutton{
+	background-color:blue;
+}
+ul.navlist li.livebutton{
+	background-color:blue;
+}
+ul.navlist li.livebutton:hover{
+	background-color:blue;
+}
+ul.navlist li a{
+	color:white;
+}
+ul.navlist li:hover{
+	background-color:lightgray;
+}
+ul.navlist li a:hover{
+	text-decoration:none;
+	color:black;
+}
+ul.navlist li ul{
+	margin:0px; 
+	padding:0px; 
+	display:none;/*does not display list unless hover over li*/
+	position:absolute;
+	left:0px;
+	top:1.5em;
+	}
+ul.navlist li:hover ul{
+	display:block;/* displays list when hovering over li*/
+	z-index:1;
+	}
+ul.navlist li ul li{
+	list-style:none; 
+	display:list-item;
+	padding:0px;
+	margin:0px;
+	}
+ul.navlist li ul li a{
+	background-color:gray;
+	width:300px;
+	display:list-item;
+	text-decoration:none;
+	padding-left:2px;
+	}
+ul.navlist li ul li a:hover{
+	background-color:lightgray;
+}
+div.xscroll{
+	overflow-x:auto;
+	direction:rtl;
+}
+.xscroll table{
+	direction:ltr;
+	outline:gray solid thin;
+}
+/*table with fixed left column*/
+.xscroll td:first-child, .xscroll th:first-child {
+	position:sticky;
+	z-index:2;
+	left:0;
+	border:gray solid thin;
+	outline:gray solid thin;
+	background-clip:padding-box;
+	background-color:white;
+}
+/* table with fixed header row*/
+table.yscroll {
+}
+.yscroll th, .yscroll thead {
+	position:sticky;
+	z-index:1;
+	top:0;
+	border:gray solid thin;
+	outline:gray solid thin;
+	background-clip:padding-box;
+	background-color:white;
+}
+/*table with visible grid and default right-align*/
+table.numtable{
+	border-collapse:collapse;
+	border:thin gray solid;
+}
+.numtable td,.numtable th{
+	text-align:right;
+	padding:2px;
+	border:thin gray solid
+}
+.numtable td.left,.numtable th.left{
+	text-align:left;
+}
+.numtable td.center,.numtable th.center{
+	text-align:center
+}
+.numtable tr.total{
+	border-top:2px gray solid;
+}
+/*table with visible grid and default left-align*/
+.txtable{
+	border-collapse:collapse;
+}
+.txtable td,.txtable th{
+	text-align:left;
+	padding:2px;
+	border:thin gray solid;
+}
+.txtable td.center,.txtable th.center{
+	text-align:center
+}
+.txtable td.right,.txtable th.right{
+	text-align:right;
+	padding:2px;
+}
+.txtable tr.total{
+	border-top:2px gray solid
+}
+/*table without visible grid, default right-aligned*/
+.optable{
+	border-collapse:collapse;
+}
+.optable td,.optable th{
+	text-align:right;
+	padding:2px;
+}
+.optable tr.total{
+	border-top:thin gray solid
+}
+.optable td.left,.optable th.left{
+	text-align:left;
+	padding:2px;
+}
+/*table without visible grid, default left-aligned*/
+.opltable{
+	border-collapse:collapse;
+}
+.opltable td,.opltable th{
+	text-align:left;
+	padding:2px;
+}
+.opltable tr.total{
+	border-top:thin gray solid
+}
+.opltable td.right,.opltable th.right {
+	text-align:right;
+	padding:2px;
+}
+/*first column left-aligned*/
+table.fcl td:first-child, table.fcl th:first-child {
+	text-align:left
+}
+/*first column right-aligned*/
+table.fcr td:first-child, table.fcr th:first-child {
+	text-align:right
+}
+/*second column left-aligned*/
+table.c2l td:nth-child(2), table.c2l th:nth-child(2) {
+	text-align:left
+}
+/*second column right-aligned*/
+table.c2r td:nth-child(2), table.c2r th:nth-child(2) {
+	text-align:right
+}
+/*third column left-aligned*/
+table.c3l td:nth-child(3), table.c3l th:nth-child(3) {
+	text-align:left
+}
+/*third column right-aligned*/
+table.c3r td:nth-child(3), table.c3r th:nth-child(3) {
+	text-align:right
+}
+/*last column left-aligned*/
+table.lcl td:last-child, table.lcl th:last-child {
+	text-align:left
+}
+/*last column right-aligned*/
+table.lcr td:last-child, table.lcr th:last-child {
+	text-align:right
+}
+/*2nd-last column left-aligned*/
+table.l2cl td:nth-last-child(2), table.l2cl th:nth-last-child(2) {
+	text-align:left
+}
+/*2nd-last column right-aligned*/
+table.l2cr td:nth-last-child(2), table.l2cr th:nth-last-child(2) {
+	text-align:right
+}
+/*button styling*/
+.btnFont {
+	background-color:lightgray;
+	font-size:1em;
+	text-align:center;
+	border-radius:2px;
+	padding:1px;
+	margin:1px 0 0 0;
+}
+/*search input styling*/
+.inptxt {
+	padding:1px;
+	margin:1px;
+	font-size:1em;
+}
+/*synopsis at head of articles*/
+.summary {
+	border:thin black solid;
+	background-color:lightgray;
+	padding:2px;
+	margin-top:5px;
+}
+/* article summary for headlines and article lists*/
+.artsum {
+	margin-bottom:6px;
+	margin-top:6px;
+	padding-top:6px;
+	border-top:1px gray dotted;
+}
+/*no decoration for banner hyperlinks*/
+.nodec,.nodec:hover {
+	color:white;
+	text-decoration:none;
+	outline:0
+}
+.chart {height:160px}
+@media only screen and (min-width:480px) {.chart {height:240px}}
+@media only screen and (min-width:640px) {.chart {height:320px}}
+@media only screen and (min-width:768px) {.chart {height:384px}}
+@media only screen and (min-width:1024px) {.chart {height:512px}}
+@media only screen and (min-width:1280px) {.chart {height:640px}}

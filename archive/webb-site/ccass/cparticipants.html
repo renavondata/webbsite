@@ -1,0 +1,7537 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CCASS participants</title>
+<link rel="stylesheet" type="text/css" href="../templates/main.css" />
+</head>
+<body>
+
+<div id="banner" style="background-color:maroon">
+	<div class="box1">
+		<a href="/dbpub/" class="nodec">
+		<span style="font-size:1.6em;margin:0"><b>Webb-site Database</b></span><br>
+		<span style="font-size:0.9em"><b>Scientia potentia est</b></span><br></a>
+		<div id="rss" style="float:left;height:30px;padding:2px;margin-top:4px;">
+			<a type="application/rss+xml" href="/rss.asp"><img alt="RSS feed" src="/images/RSS28x28.png"></a>
+			<div id="social" style="float:right;margin-left:2px">
+				<a href="https://x.com/webbhk"><img alt="Follow us on X" src="/images/x27x28.png" style="background-color:black;margin-left:2px"></a>
+				<a href="https://www.facebook.com/webbfb"><img alt="Follow us on Facebook" src="/images/facebook28x28.png" style="margin-left:2px"></a>
+			</div>
+		</div>
+		<label for="menuchk" id="menubtn">Menu</label>
+		<div id="loginbtn">
+			
+				<a href="/webbmail/login.asp" class="nodec">log in</a>
+			
+		</div>
+		<div class="clear"></div>
+		<div id="volunteer">
+			<a href="/webbmail/username.asp" class="nodec"><b>Volunteer to edit the database</b></a>
+		</div>
+		<label for="srchchk" id="srchbtn">search</label>
+	</div>
+	<input type="checkbox" id="srchchk" style="display:none">
+	<div id="srchblk" style="background-color:inherit;">
+		<div class="box4">
+			<!-- SiteSearch Google -->
+			<form class="box4a" method="get" action="https://www.google.com/search">
+				<input type="hidden" name="ie" value="UTF-8">
+				<input type="hidden" name="oe" value="UTF-8">
+				<input type="hidden" name="domains" value="Webb-site.com">
+				<input type="hidden" name="sitesearch" value="Webb-site.com">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Webb-site.com" onclick="value=''">
+				<input type="submit" class="btnFont" name="btnG" value="search">
+			</form>
+			<form class="box4b" method="post" action="/webbmail/join.asp">
+				<input type="text" class="inptxt signup" name="e" value="email address" onclick="value=''">
+				<input type="submit" class="btnFont" value="sign up">
+				<input type="hidden" name="R1" value="join">
+			</form>
+		</div>
+		<div class="group1">
+			<div class="box3">
+				<form class="box3a" method="post" action="/dbpub/searchorgs.asp" style="margin-bottom:5px">
+					<input type="text" class="inptxt orgsearch" name="n" maxlength="255" value="Organisation" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search organisations">
+				</form>
+				<form class="box3b" method="post" action="/dbpub/searchpeople.asp">
+					<input type="text" class="inptxt famsearch" name="n1" maxlength="255" value="Family name" onclick="value=''">
+					<input type="text" class="inptxt famsearch" name="n2" maxlength="255" value="First name" onclick="value=''">
+					<input type="submit" class="btnFont" name="btnG" value="search people">
+				</form>
+			</div>
+			<form class="stockbox" action="/dbpub/orgdata.asp" method="get" name="f1">
+				<p>Stock code</p>
+				<input type="number" class="inptxt stockcode" name="code" min="1" max="99999" pattern="[0-9]*" onclick="value=''"><br>
+				<input type="submit" class="btnFont" name="Submit" value="current" onclick="f1.action='/dbpub/orgdata.asp'">
+				<input type="submit" class="btnFont" value="past" onclick="f1.action='/dbpub/code.asp'">
+			</form>
+		</div>
+	</div>
+</div>
+<div id="menubar" style="background-color:maroon;">
+	<div class="hnav">
+		<input type="checkbox" id="menuchk" style="display:none">
+		<ul>
+			<li><a href="/dbpub/">Home</a></li>
+			<li><a href="/">Webb-site Reports</a></li>
+			<li><a href="/webbmail/login.asp">User</a>
+				<ul>
+					
+						<li><a href="/webbmail/login.asp">Log in</a></li>
+					
+					<li><a href="/webbmail/join.asp">Sign up</a></li>
+					<li><a href="/webbmail/forgot.asp">Forgot password</a></li>
+					
+				</ul>
+			</li>
+			<li><a href="/contact/">Contact</a></li>
+			<li><a href="/pages/refer.asp">Tell a Friend!</a></li>
+		</ul>
+	</div>
+</div>
+<div class="clear"></div>
+<div class="mainbody">
+
+<h2>Named CCASS Participants</h2>
+
+	<ul class="navlist">
+		<li><a href='bigchanges.asp?d='>Big changes</a></li><li><a href='cconc.asp?d='>Concentration</a></li><li class='livebutton'>Named participants</li><li><a href='ipstakes.asp?d='>Investor participants</a></li><li><a href='CCASSnotes.asp'>About CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
+
+<p>Click on the links below to show the current CCASS shareholdings of each 
+participant. Sort by CCASS ID to show Investor Participants first (who have no 
+ID).</p>
+<table class="txtable yscroll">
+	<tr>
+		<th class="colHide3">Count</th>
+		<th><a href='/ccass/cparticipants.asp?sort=ccidup'><b>CCASS ID</b></a></th>
+		<th><a href='/ccass/cparticipants.asp?sort=namedn'><b>Name</b></a></th>
+	</tr>
+	
+		<tr>
+			<td class="colHide3">1</td>
+			<td>B01811</td>
+			<td><a href='cholder.asp?part=410'>3V CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">2</td>
+			<td>B01420</td>
+			<td><a href='cholder.asp?part=138'>A ONE INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">3</td>
+			<td>B02045</td>
+			<td><a href='cholder.asp?part=1479'>AAA SECURITIES CO. LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">4</td>
+			<td>B02221</td>
+			<td><a href='cholder.asp?part=1738'>AACAT FINTECH LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">5</td>
+			<td>B01564</td>
+			<td><a href='cholder.asp?part=222'>ABCI SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">6</td>
+			<td>C00097</td>
+			<td><a href='cholder.asp?part=1142'>ABN AMRO BANK N.V.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">7</td>
+			<td>B01555</td>
+			<td><a href='cholder.asp?part=217'>ABN AMRO CLEARING HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">8</td>
+			<td>B02101</td>
+			<td><a href='cholder.asp?part=1568'>ACER KING SECURITIES INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">9</td>
+			<td>B02013</td>
+			<td><a href='cholder.asp?part=1413'>ACU SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">10</td>
+			<td>B02155</td>
+			<td><a href='cholder.asp?part=1651'>ADEN FINANCIAL GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">11</td>
+			<td>B02094</td>
+			<td><a href='cholder.asp?part=1559'>ADVENT SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">12</td>
+			<td>B01671</td>
+			<td><a href='cholder.asp?part=296'>AEVITAS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">13</td>
+			<td>B02078</td>
+			<td><a href='cholder.asp?part=1529'>AFFLUX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">14</td>
+			<td>B02096</td>
+			<td><a href='cholder.asp?part=1562'>AFG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">15</td>
+			<td>C00105</td>
+			<td><a href='cholder.asp?part=1484'>AGRICULTURAL BANK OF CHINA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">16</td>
+			<td>B01776</td>
+			<td><a href='cholder.asp?part=377'>AIF SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">17</td>
+			<td>B01728</td>
+			<td><a href='cholder.asp?part=336'>AJ SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">18</td>
+			<td></td>
+			<td><a href='cholder.asp?part=516'>ALLAN INVESTMENT COMPANY LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">19</td>
+			<td>B00695</td>
+			<td><a href='cholder.asp?part=696'>ALPHA SECURITIES CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">20</td>
+			<td>B01292</td>
+			<td><a href='cholder.asp?part=79'>ALPHA SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">21</td>
+			<td>B01916</td>
+			<td><a href='cholder.asp?part=1148'>AMBITION SECURITIES CO. LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">22</td>
+			<td>C00053</td>
+			<td><a href='cholder.asp?part=472'>AMERICAN EXPRESS BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">23</td>
+			<td>B01823</td>
+			<td><a href='cholder.asp?part=420'>ANGLO CHINESE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">24</td>
+			<td>B01630</td>
+			<td><a href='cholder.asp?part=264'>ANLI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">25</td>
+			<td>B01677</td>
+			<td><a href='cholder.asp?part=301'>ANUENUE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">26</td>
+			<td>B01960</td>
+			<td><a href='cholder.asp?part=1259'>ANZ SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">27</td>
+			<td>B02066</td>
+			<td><a href='cholder.asp?part=1741'>AP CAPITAL MANAGEMENT (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">28</td>
+			<td>B01579</td>
+			<td><a href='cholder.asp?part=234'>APRICOT CAPITAL (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">29</td>
+			<td>B01974</td>
+			<td><a href='cholder.asp?part=1324'>ARISTO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">30</td>
+			<td>B02210</td>
+			<td><a href='cholder.asp?part=1716'>ARK GROUP HOLDINGS (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">31</td>
+			<td>B01685</td>
+			<td><a href='cholder.asp?part=306'>ARK SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">32</td>
+			<td>B01852</td>
+			<td><a href='cholder.asp?part=446'>ARTA GLOBAL MARKETS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">33</td>
+			<td>B01908</td>
+			<td><a href='cholder.asp?part=1122'>ASA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">34</td>
+			<td>B01793</td>
+			<td><a href='cholder.asp?part=394'>ASIA PACIFIC CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">35</td>
+			<td>B01754</td>
+			<td><a href='cholder.asp?part=358'>ASIA PACIFIC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">36</td>
+			<td>B02025</td>
+			<td><a href='cholder.asp?part=1439'>ASIA WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">37</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1109'>ASIALINK UNIVERSAL LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">38</td>
+			<td>B01810</td>
+			<td><a href='cholder.asp?part=980'>ASTRUM CAPITAL MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">39</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1594'>AU SHUK MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">40</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1464'>AU YEE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">41</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1567'>AU-YEUNG MAN KEEN DAVID</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">42</td>
+			<td>B01494</td>
+			<td><a href='cholder.asp?part=184'>AUDREY CHOW SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">43</td>
+			<td>B01375</td>
+			<td><a href='cholder.asp?part=116'>AVEREST CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">44</td>
+			<td>B01968</td>
+			<td><a href='cholder.asp?part=1295'>AYERS ALLIANCE SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">45</td>
+			<td>B01328</td>
+			<td><a href='cholder.asp?part=95'>BAN HIN SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">46</td>
+			<td>C00047</td>
+			<td><a href='cholder.asp?part=470'>BANGKOK BANK PUBLIC CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">47</td>
+			<td>C00083</td>
+			<td><a href='cholder.asp?part=483'>BANK CONSORTIUM TRUST CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">48</td>
+			<td>C00033</td>
+			<td><a href='cholder.asp?part=463'>BANK OF CHINA (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">49</td>
+			<td>C00112</td>
+			<td><a href='cholder.asp?part=1737'>BANK OF COMMUNICATIONS (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">50</td>
+			<td>C00109</td>
+			<td><a href='cholder.asp?part=1624'>BANK OF COMMUNICATIONS CO., LTD.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">51</td>
+			<td>C00002</td>
+			<td><a href='cholder.asp?part=451'>BANK OF COMMUNICATIONS TRUSTEE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">52</td>
+			<td>C00101</td>
+			<td><a href='cholder.asp?part=1211'>BANK OF EAST ASIA (TRUSTEES) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">53</td>
+			<td>C00091</td>
+			<td><a href='cholder.asp?part=1057'>BANK OF SINGAPORE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">54</td>
+			<td>C00098</td>
+			<td><a href='cholder.asp?part=1147'>BARCLAYS BANK PLC</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">55</td>
+			<td>B01781</td>
+			<td><a href='cholder.asp?part=382'>BARCLAYS CAPITAL ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">56</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1406'>BARNETT MATTHEW JOHN, BARNETT DIANA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">57</td>
+			<td>B01506</td>
+			<td><a href='cholder.asp?part=189'>BEAR STEARNS ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">58</td>
+			<td>B01434</td>
+			<td><a href='cholder.asp?part=148'>BEEVEST SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">59</td>
+			<td>B01640</td>
+			<td><a href='cholder.asp?part=270'>BEIJING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">60</td>
+			<td></td>
+			<td><a href='cholder.asp?part=507'>BELIEVECITY LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">61</td>
+			<td>B01460</td>
+			<td><a href='cholder.asp?part=164'>BERICH BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">62</td>
+			<td>B01447</td>
+			<td><a href='cholder.asp?part=156'>BETA INTERNATIONAL SECURITIES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">63</td>
+			<td>B02086</td>
+			<td><a href='cholder.asp?part=1541'>BG SECURITIES (HK) CO., LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">64</td>
+			<td>B01926</td>
+			<td><a href='cholder.asp?part=1174'>BIG BAY SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">65</td>
+			<td>B01702</td>
+			<td><a href='cholder.asp?part=316'>BLACK MARBLE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">66</td>
+			<td>B02063</td>
+			<td><a href='cholder.asp?part=1506'>BLACKWELL GLOBAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">67</td>
+			<td>B01329</td>
+			<td><a href='cholder.asp?part=96'>BLOOMYEARS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">68</td>
+			<td>B02054</td>
+			<td><a href='cholder.asp?part=1493'>BLUEMOUNT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">69</td>
+			<td>B01981</td>
+			<td><a href='cholder.asp?part=1357'>BLUESTONE SECURITIES (HK) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">70</td>
+			<td>B01925</td>
+			<td><a href='cholder.asp?part=1168'>BMI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">71</td>
+			<td>C00064</td>
+			<td><a href='cholder.asp?part=477'>BNP PARIBAS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">72</td>
+			<td>C00093</td>
+			<td><a href='cholder.asp?part=1077'>BNP PARIBAS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">73</td>
+			<td>B01299</td>
+			<td><a href='cholder.asp?part=84'>BNP PARIBAS SECURITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">74</td>
+			<td>C00086</td>
+			<td><a href='cholder.asp?part=484'>BNP PARIBAS WEALTH MANAGEMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">75</td>
+			<td>B01130</td>
+			<td><a href='cholder.asp?part=17'>BOCI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">76</td>
+			<td>B01842</td>
+			<td><a href='cholder.asp?part=437'>BOCOM INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">77</td>
+			<td>B01662</td>
+			<td><a href='cholder.asp?part=289'>BOKHARY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">78</td>
+			<td>B01994</td>
+			<td><a href='cholder.asp?part=1382'>BONUS EVENTUS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">79</td>
+			<td>B02132</td>
+			<td><a href='cholder.asp?part=1627'>BOOM SECURITIES (H.K.) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">80</td>
+			<td>B02012</td>
+			<td><a href='cholder.asp?part=1412'>BOSC INTERNATIONAL CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">81</td>
+			<td>B02218</td>
+			<td><a href='cholder.asp?part=1731'>BOSC INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">82</td>
+			<td>B01277</td>
+			<td><a href='cholder.asp?part=73'>BRADBURY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">83</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1573'>BRIGHT JOY VENTURES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">84</td>
+			<td>B01668</td>
+			<td><a href='cholder.asp?part=293'>BRIGHT SMART SECURITIES INTERNATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">85</td>
+			<td>B01933</td>
+			<td><a href='cholder.asp?part=1197'>BRILLIANT NORTON SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">86</td>
+			<td>B01874</td>
+			<td><a href='cholder.asp?part=1446'>BTIG HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">87</td>
+			<td>B01483</td>
+			<td><a href='cholder.asp?part=177'>BULLISH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">88</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1083'>BUSINESS NOMINEES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">89</td>
+			<td>B01636</td>
+			<td><a href='cholder.asp?part=268'>BUSINESS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">90</td>
+			<td>B01726</td>
+			<td><a href='cholder.asp?part=334'>C.P. SECURITIES INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">91</td>
+			<td>B01948</td>
+			<td><a href='cholder.asp?part=1230'>CAITONG INTERNATIONAL SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">92</td>
+			<td>B02068</td>
+			<td><a href='cholder.asp?part=1513'>CANFIELD SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">93</td>
+			<td>B01774</td>
+			<td><a href='cholder.asp?part=375'>CANTOR FITZGERALD (HONG KONG) CAPITAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">94</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1242'>CANYON SERVICES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">95</td>
+			<td>B02088</td>
+			<td><a href='cholder.asp?part=1544'>CARLYON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">96</td>
+			<td>B01552</td>
+			<td><a href='cholder.asp?part=215'>CARRIER STOCK INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">97</td>
+			<td>B01848</td>
+			<td><a href='cholder.asp?part=442'>CATHAY SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">98</td>
+			<td>B01813</td>
+			<td><a href='cholder.asp?part=411'>CCB INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">99</td>
+			<td>B01730</td>
+			<td><a href='cholder.asp?part=338'>CCB SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">100</td>
+			<td>B02103</td>
+			<td><a href='cholder.asp?part=1574'>CEB INTERNATIONAL CAPITAL CORPORATION</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">101</td>
+			<td>B01119</td>
+			<td><a href='cholder.asp?part=11'>CELESTIAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">102</td>
+			<td>B01343</td>
+			<td><a href='cholder.asp?part=102'>CELETIO INVESTMENTS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">103</td>
+			<td>B01941</td>
+			<td><a href='cholder.asp?part=1215'>CENTALINE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">104</td>
+			<td>B01982</td>
+			<td><a href='cholder.asp?part=1361'>CENTRAL CHINA INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">105</td>
+			<td>B01897</td>
+			<td><a href='cholder.asp?part=1105'>CENTRAL WEALTH SECURITIES INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">106</td>
+			<td>B01743</td>
+			<td><a href='cholder.asp?part=348'>CEPA ALLIANCE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">107</td>
+			<td>B01738</td>
+			<td><a href='cholder.asp?part=344'>CES CAPITAL INTERNATIONAL (HONG KONG) CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">108</td>
+			<td>B01999</td>
+			<td><a href='cholder.asp?part=1392'>CF SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">109</td>
+			<td>B01347</td>
+			<td><a href='cholder.asp?part=105'>CGS INTERNATIONAL SECURITIES HK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">110</td>
+			<td></td>
+			<td><a href='cholder.asp?part=497'>CHAN CHO CHAK JOHN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">111</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1225'>CHAN FONG WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">112</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1545'>CHAN HO TAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">113</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1672'>CHAN HUNG ANG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">114</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1354'>CHAN KA KEI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">115</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1226'>CHAN KA WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">116</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1053'>CHAN KING LEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">117</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1133'>CHAN KU KIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">118</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1299'>CHAN KWOK KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">119</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1194'>CHAN KWOK WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">120</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1497'>CHAN KWONG WING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">121</td>
+			<td></td>
+			<td><a href='cholder.asp?part=544'>CHAN LAI KA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">122</td>
+			<td></td>
+			<td><a href='cholder.asp?part=532'>CHAN LIM CHEE, LAU MEI YI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">123</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1220'>CHAN MAN PAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">124</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1603'>CHAN MEI LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">125</td>
+			<td>B01521</td>
+			<td><a href='cholder.asp?part=197'>CHAN NGOK MING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">126</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1419'>CHAN PAK BING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">127</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1346'>CHAN PAK HEI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">128</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1670'>CHAN PING YIP</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">129</td>
+			<td></td>
+			<td><a href='cholder.asp?part=529'>CHAN SAU KING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">130</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1271'>CHAN SHEUNG WING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">131</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1546'>CHAN SHUK WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">132</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1117'>CHAN SIN AH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">133</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1054'>CHAN SIU LAN STELLA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">134</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1261'>CHAN TING CHEUNG GARY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">135</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1140'>CHAN VAI HA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">136</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1291'>CHAN WAI JING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">137</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1744'>CHAN WAI MUI ELLIS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">138</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1219'>CHAN WING KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">139</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1329'>CHAN WING NG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">140</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1424'>CHAN WING SEE EVA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">141</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1170'>CHAN WING TONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">142</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1381'>CHAN YAN FAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">143</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1060'>CHAN YICK LUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">144</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1124'>CHAN YIM TAO MARGARET</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">145</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1467'>CHAN YUE TAK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">146</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1349'>CHAN YUK YIN ISIS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">147</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1728'>CHANG WAN TING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">148</td>
+			<td>B01937</td>
+			<td><a href='cholder.asp?part=1203'>CHANGJIANG SECURITIES BROKERAGE (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">149</td>
+			<td>B02022</td>
+			<td><a href='cholder.asp?part=1436'>CHAOSHANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">150</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1254'>CHARMFAIR INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">151</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1518'>CHAU HO LEUNG, WONG SUI SHAN CANDY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">152</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1389'>CHAU KWOK HUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">153</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1185'>CHAU SHUM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">154</td>
+			<td>B01417</td>
+			<td><a href='cholder.asp?part=137'>CHEE TAK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">155</td>
+			<td>B01659</td>
+			<td><a href='cholder.asp?part=286'>CHEER UNION SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">156</td>
+			<td>B01124</td>
+			<td><a href='cholder.asp?part=14'>CHEKIANG FIRST SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">157</td>
+			<td>B01282</td>
+			<td><a href='cholder.asp?part=75'>CHELSEA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">158</td>
+			<td></td>
+			<td><a href='cholder.asp?part=511'>CHENG CHI HUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">159</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1593'>CHENG TAK SHUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">160</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1335'>CHENG WAI LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">161</td>
+			<td>B01816</td>
+			<td><a href='cholder.asp?part=414'>CHEONG LEE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">162</td>
+			<td></td>
+			<td><a href='cholder.asp?part=539'>CHEUNG CHEUNG MING ANTHONY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">163</td>
+			<td></td>
+			<td><a href='cholder.asp?part=528'>CHEUNG HON KWONG RANJO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">164</td>
+			<td></td>
+			<td><a href='cholder.asp?part=504'>CHEUNG KAM FUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">165</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1614'>CHEUNG KWAN FAT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">166</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1059'>CHEUNG KWAN HO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">167</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1314'>CHEUNG MAN FUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">168</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1695'>CHEUNG MEI LAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">169</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1102'>CHEUNG WAI MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">170</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1317'>CHEUNG WAI MAN (DECEASED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">171</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1258'>CHEUNG WAI PING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">172</td>
+			<td></td>
+			<td><a href='cholder.asp?part=512'>CHEUNG YEE LAINE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">173</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1344'>CHEUNG YUEN YU</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">174</td>
+			<td>B01861</td>
+			<td><a href='cholder.asp?part=1058'>CHI CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">175</td>
+			<td>B01584</td>
+			<td><a href='cholder.asp?part=239'>CHIEF SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">176</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1304'>CHIK HUNG LAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">177</td>
+			<td>B01985</td>
+			<td><a href='cholder.asp?part=1369'>CHINA BEST INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">178</td>
+			<td>B01992</td>
+			<td><a href='cholder.asp?part=1379'>CHINA CIFCO SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">179</td>
+			<td>C00058</td>
+			<td><a href='cholder.asp?part=474'>CHINA CITIC BANK INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">180</td>
+			<td>C00036</td>
+			<td><a href='cholder.asp?part=464'>CHINA CONSTRUCTION BANK (ASIA)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">181</td>
+			<td>B01907</td>
+			<td><a href='cholder.asp?part=1121'>CHINA DEMETER SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">182</td>
+			<td>B02123</td>
+			<td><a href='cholder.asp?part=1612'>CHINA DIFI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">183</td>
+			<td>B01355</td>
+			<td><a href='cholder.asp?part=109'>CHINA EVERBRIGHT SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">184</td>
+			<td>B01929</td>
+			<td><a href='cholder.asp?part=1184'>CHINA GALAXY INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">185</td>
+			<td>B01806</td>
+			<td><a href='cholder.asp?part=406'>CHINA GATHER WEALTH FINANCIAL CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">186</td>
+			<td>B01624</td>
+			<td><a href='cholder.asp?part=261'>CHINA GUARD INVESTMENTS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">187</td>
+			<td>B01614</td>
+			<td><a href='cholder.asp?part=256'>CHINA HONG KONG CAPITAL ASSET MANAGEMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">188</td>
+			<td>B01938</td>
+			<td><a href='cholder.asp?part=1208'>CHINA INDUSTRIAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">189</td>
+			<td>B01654</td>
+			<td><a href='cholder.asp?part=283'>CHINA INTERNATIONAL CAPITAL CORPORATION</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">190</td>
+			<td>B02062</td>
+			<td><a href='cholder.asp?part=1505'>CHINA INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">191</td>
+			<td>B01887</td>
+			<td><a href='cholder.asp?part=1088'>CHINA JIANXIN FINANCIAL SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">192</td>
+			<td>C00088</td>
+			<td><a href='cholder.asp?part=486'>CHINA MERCHANTS BANK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">193</td>
+			<td>B01148</td>
+			<td><a href='cholder.asp?part=24'>CHINA MERCHANTS SECURITIES (HK) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">194</td>
+			<td>C00108</td>
+			<td><a href='cholder.asp?part=1553'>CHINA MINSHENG BANKING CORP., LTD.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">195</td>
+			<td>B02084</td>
+			<td><a href='cholder.asp?part=1536'>CHINA ON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">196</td>
+			<td>B01346</td>
+			<td><a href='cholder.asp?part=104'>CHINA PACIFIC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">197</td>
+			<td>B01258</td>
+			<td><a href='cholder.asp?part=61'>CHINA POINT STOCK BROKERS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">198</td>
+			<td>B02001</td>
+			<td><a href='cholder.asp?part=1394'>CHINA PROSPECT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">199</td>
+			<td>B01487</td>
+			<td><a href='cholder.asp?part=178'>CHINA RENAISSANCE BROKING SERVICES (HONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">200</td>
+			<td>B01758</td>
+			<td><a href='cholder.asp?part=362'>CHINA RESERVE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">201</td>
+			<td>B01883</td>
+			<td><a href='cholder.asp?part=1076'>CHINA RISE SECURITIES ASSET MANAGEMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">202</td>
+			<td>B01962</td>
+			<td><a href='cholder.asp?part=1274'>CHINA SECURITIES (INTERNATIONAL)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">203</td>
+			<td>A00002</td>
+			<td><a href='cholder.asp?part=1296'>CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">204</td>
+			<td>A00003</td>
+			<td><a href='cholder.asp?part=1323'>CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">205</td>
+			<td>A00004</td>
+			<td><a href='cholder.asp?part=1456'>CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">206</td>
+			<td>A00005</td>
+			<td><a href='cholder.asp?part=1684'>CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">207</td>
+			<td>A00006</td>
+			<td><a href='cholder.asp?part=1714'>CHINA SECURITIES DEPOSITORY AND CLEARING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">208</td>
+			<td>B01406</td>
+			<td><a href='cholder.asp?part=130'>CHINA SECURITIES HOLDINGS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">209</td>
+			<td>B02133</td>
+			<td><a href='cholder.asp?part=1628'>CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">210</td>
+			<td>B01756</td>
+			<td><a href='cholder.asp?part=360'>CHINA SKY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">211</td>
+			<td>B01998</td>
+			<td><a href='cholder.asp?part=1391'>CHINA SUNRISE SECURITIES (INTL) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">212</td>
+			<td>B01809</td>
+			<td><a href='cholder.asp?part=409'>CHINA SYSTEM SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">213</td>
+			<td>B01917</td>
+			<td><a href='cholder.asp?part=1156'>CHINA TIMES SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">214</td>
+			<td>B02048</td>
+			<td><a href='cholder.asp?part=1483'>CHINA TRANSFER CAPITAL INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">215</td>
+			<td>B01969</td>
+			<td><a href='cholder.asp?part=1307'>CHINA VERED SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">216</td>
+			<td>B02125</td>
+			<td><a href='cholder.asp?part=1615'>CHINA YINSHENG INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">217</td>
+			<td>B02046</td>
+			<td><a href='cholder.asp?part=1481'>CHINA ZHONG HENG FINANCE GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">218</td>
+			<td>B02071</td>
+			<td><a href='cholder.asp?part=1520'>CHINA-HONG KONG CONNECT INTERNATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">219</td>
+			<td>B02007</td>
+			<td><a href='cholder.asp?part=1404'>CHINA-HONG KONG LINK SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">220</td>
+			<td>B01913</td>
+			<td><a href='cholder.asp?part=1141'>CHINAWIDE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">221</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1270'>CHIU KIT YI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">222</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1374'>CHIU SAI CHUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">223</td>
+			<td>C00048</td>
+			<td><a href='cholder.asp?part=471'>CHIYU BANKING CORPORATION LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">224</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1082'>CHOI HING SING, CHOY FUNG YIN PUFFY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">225</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1327'>CHOI WAI TUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">226</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1697'>CHOI WAI TUNG (DECEASED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">227</td>
+			<td>C00026</td>
+			<td><a href='cholder.asp?part=461'>CHONG HING BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">228</td>
+			<td>B01183</td>
+			<td><a href='cholder.asp?part=36'>CHONG HING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">229</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1070'>CHONG NGA LAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">230</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1081'>CHOW KA LAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">231</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1663'>CHOW KAM HA EMILY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">232</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1465'>CHOW KIN SUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">233</td>
+			<td></td>
+			<td><a href='cholder.asp?part=502'>CHOW LAI HAR</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">234</td>
+			<td>B01137</td>
+			<td><a href='cholder.asp?part=19'>CHOW SANG SANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">235</td>
+			<td>P00013</td>
+			<td><a href='cholder.asp?part=490'>CHOW TAI FOOK JEWELLERY CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">236</td>
+			<td>B01373</td>
+			<td><a href='cholder.asp?part=114'>CHRISTFUND SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">237</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1265'>CHU CHI KONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">238</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1596'>CHU KING YIN RENNY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">239</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1213'>CHU SHUN YAN TOBY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">240</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1577'>CHU TIT TO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">241</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1537'>CHU WAI KWAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">242</td>
+			<td>B01522</td>
+			<td><a href='cholder.asp?part=198'>CHUANGS & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">243</td>
+			<td>B02034</td>
+			<td><a href='cholder.asp?part=1451'>CHUENMAN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">244</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1496'>CHUI HON MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">245</td>
+			<td>B01739</td>
+			<td><a href='cholder.asp?part=345'>CHUNG LEE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">246</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1196'>CHUNG LOK LAM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">247</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1360'>CHUNG MAN CHIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">248</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1100'>CHUNG YUK SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">249</td>
+			<td>B02145</td>
+			<td><a href='cholder.asp?part=1642'>CIF SECURITIES FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">250</td>
+			<td>B01649</td>
+			<td><a href='cholder.asp?part=278'>CINDA INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">251</td>
+			<td>B01849</td>
+			<td><a href='cholder.asp?part=443'>CIS SECURITIES ASSET MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">252</td>
+			<td>C00010</td>
+			<td><a href='cholder.asp?part=454'>CITIBANK N.A.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">253</td>
+			<td>B02213</td>
+			<td><a href='cholder.asp?part=1722'>CITIC CFI SECURITIES COMPANY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">254</td>
+			<td>B01228</td>
+			<td><a href='cholder.asp?part=50'>CITIC SECURITIES BROKERAGE (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">255</td>
+			<td>B01430</td>
+			<td><a href='cholder.asp?part=146'>CITIGROUP GLOBAL MARKETS ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">256</td>
+			<td>B02198</td>
+			<td><a href='cholder.asp?part=1705'>CITRUS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">257</td>
+			<td>B02172</td>
+			<td><a href='cholder.asp?part=1671'>CITYLINE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">258</td>
+			<td>B01859</td>
+			<td><a href='cholder.asp?part=531'>CLC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">259</td>
+			<td>B01138</td>
+			<td><a href='cholder.asp?part=20'>CLSA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">260</td>
+			<td>B01820</td>
+			<td><a href='cholder.asp?part=418'>CMB INTERNATIONAL CAPITAL CORPORATION</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">261</td>
+			<td>B01156</td>
+			<td><a href='cholder.asp?part=27'>CMB INTERNATIONAL GLOBAL MARKETS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">262</td>
+			<td>B01901</td>
+			<td><a href='cholder.asp?part=1112'>CMB INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">263</td>
+			<td>C00042</td>
+			<td><a href='cholder.asp?part=469'>CMB WING LUNG BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">264</td>
+			<td>B01853</td>
+			<td><a href='cholder.asp?part=447'>CMBC SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">265</td>
+			<td>B02208</td>
+			<td><a href='cholder.asp?part=1715'>CN FIRST INTERNATIONAL FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">266</td>
+			<td>B02041</td>
+			<td><a href='cholder.asp?part=1466'>CNCB (HONG KONG) CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">267</td>
+			<td>B01886</td>
+			<td><a href='cholder.asp?part=1086'>CNI SECURITIES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">268</td>
+			<td></td>
+			<td><a href='cholder.asp?part=505'>COKAGE LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">269</td>
+			<td>B01748</td>
+			<td><a href='cholder.asp?part=352'>COL SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">270</td>
+			<td></td>
+			<td><a href='cholder.asp?part=515'>COMMENCE INVESTMENT LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">271</td>
+			<td>B02077</td>
+			<td><a href='cholder.asp?part=1528'>CONRAD INVESTMENT SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">272</td>
+			<td>B02058</td>
+			<td><a href='cholder.asp?part=1499'>CONSTANCE CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">273</td>
+			<td>B02112</td>
+			<td><a href='cholder.asp?part=1599'>CORE CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">274</td>
+			<td>B01413</td>
+			<td><a href='cholder.asp?part=133'>CORE PACIFIC - YAMAICHI INTERNATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">275</td>
+			<td>B02018</td>
+			<td><a href='cholder.asp?part=1425'>CORNERSTONE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">276</td>
+			<td>B01252</td>
+			<td><a href='cholder.asp?part=58'>CORPORATE BROKERS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">277</td>
+			<td>B01368</td>
+			<td><a href='cholder.asp?part=112'>CORRINGTON SECURITIES & INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">278</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1097'>CP INVESTMENT ASSETS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">279</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1128'>CREATIVE CHINA LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">280</td>
+			<td>C00062</td>
+			<td><a href='cholder.asp?part=476'>CREDIT AGRICOLE CORPORATE AND INVESTMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">281</td>
+			<td>B01775</td>
+			<td><a href='cholder.asp?part=376'>CREDIT AGRICOLE SECURITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">282</td>
+			<td>B01491</td>
+			<td><a href='cholder.asp?part=181'>CREDIT SUISSE SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">283</td>
+			<td>B01993</td>
+			<td><a href='cholder.asp?part=1380'>CROSBY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">284</td>
+			<td>B01294</td>
+			<td><a href='cholder.asp?part=80'>CS WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">285</td>
+			<td>B01601</td>
+			<td><a href='cholder.asp?part=248'>CSC SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">286</td>
+			<td>B01833</td>
+			<td><a href='cholder.asp?part=430'>CTBC ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">287</td>
+			<td>C00092</td>
+			<td><a href='cholder.asp?part=1071'>CTBC BANK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">288</td>
+			<td>B01722</td>
+			<td><a href='cholder.asp?part=331'>CTW SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">289</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1180'>CURICAO COMPANY LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">290</td>
+			<td>B01771</td>
+			<td><a href='cholder.asp?part=372'>CVP SECURITIES LTD (IN LIQUIDATION)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">291</td>
+			<td>B01500</td>
+			<td><a href='cholder.asp?part=186'>D.J. SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">292</td>
+			<td>B02099</td>
+			<td><a href='cholder.asp?part=1565'>DA INTERNATIONAL FINANCIAL SERVICE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">293</td>
+			<td>C00012</td>
+			<td><a href='cholder.asp?part=456'>DAH SING BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">294</td>
+			<td>B01695</td>
+			<td><a href='cholder.asp?part=311'>DAH SING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">295</td>
+			<td>B01777</td>
+			<td><a href='cholder.asp?part=378'>DAIWA CAPITAL MARKETS HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">296</td>
+			<td>B01737</td>
+			<td><a href='cholder.asp?part=343'>DAIWA CAPITAL MARKETS TRADING HONG KONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">297</td>
+			<td>B02036</td>
+			<td><a href='cholder.asp?part=1454'>DAKIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">298</td>
+			<td>B01466</td>
+			<td><a href='cholder.asp?part=168'>DAOKOU SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">299</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1693'>DARYANANI DILIP ARJANDAS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">300</td>
+			<td>C00015</td>
+			<td><a href='cholder.asp?part=457'>DBS BANK (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">301</td>
+			<td>C00016</td>
+			<td><a href='cholder.asp?part=458'>DBS BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">302</td>
+			<td>B01762</td>
+			<td><a href='cholder.asp?part=365'>DBS VICKERS (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">303</td>
+			<td>B01356</td>
+			<td><a href='cholder.asp?part=110'>DELTA ASIA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">304</td>
+			<td>C00074</td>
+			<td><a href='cholder.asp?part=482'>DEUTSCHE BANK AG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">305</td>
+			<td>B01323</td>
+			<td><a href='cholder.asp?part=92'>DEUTSCHE SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">306</td>
+			<td>B02131</td>
+			<td><a href='cholder.asp?part=1623'>DIFFER FINANCIAL AND SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">307</td>
+			<td>B02184</td>
+			<td><a href='cholder.asp?part=1687'>DINGXIN (SECURITIES) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">308</td>
+			<td>B01450</td>
+			<td><a href='cholder.asp?part=157'>DL BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">309</td>
+			<td>B02171</td>
+			<td><a href='cholder.asp?part=1669'>DL SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">310</td>
+			<td>B02023</td>
+			<td><a href='cholder.asp?part=1437'>DONGHAI INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">311</td>
+			<td>B02003</td>
+			<td><a href='cholder.asp?part=1398'>DONGXING SECURITIES (HONG KONG) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">312</td>
+			<td>B02223</td>
+			<td><a href='cholder.asp?part=1743'>DOO FINANCIAL HK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">313</td>
+			<td>B01658</td>
+			<td><a href='cholder.asp?part=285'>DRAKE & MORGAN LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">314</td>
+			<td>B02158</td>
+			<td><a href='cholder.asp?part=1654'>DT SECURITIES & FUTURES CO. LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">315</td>
+			<td>B01528</td>
+			<td><a href='cholder.asp?part=203'>EAA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">316</td>
+			<td>B01118</td>
+			<td><a href='cholder.asp?part=10'>EAST ASIA SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">317</td>
+			<td>B02047</td>
+			<td><a href='cholder.asp?part=1482'>EDDID SECURITIES AND FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">318</td>
+			<td>C00095</td>
+			<td><a href='cholder.asp?part=1125'>EFG BANK AG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">319</td>
+			<td>B02161</td>
+			<td><a href='cholder.asp?part=1657'>EMPERIO SECURITIES AND ASSETS MANAGEMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">320</td>
+			<td>B01338</td>
+			<td><a href='cholder.asp?part=98'>EMPEROR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">321</td>
+			<td>B01928</td>
+			<td><a href='cholder.asp?part=1179'>ENHANCED SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">322</td>
+			<td>B01633</td>
+			<td><a href='cholder.asp?part=267'>ENLIGHTEN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">323</td>
+			<td>B01605</td>
+			<td><a href='cholder.asp?part=250'>ESSENCE INTERNATIONAL FINANCIAL HOLDINGS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">324</td>
+			<td>B01837</td>
+			<td><a href='cholder.asp?part=432'>ETRADE SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">325</td>
+			<td>B01523</td>
+			<td><a href='cholder.asp?part=199'>EVER-LONG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">326</td>
+			<td>B01086</td>
+			<td><a href='cholder.asp?part=6'>EVERBRIGHT SECURITIES INVESTMENT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">327</td>
+			<td>B01414</td>
+			<td><a href='cholder.asp?part=134'>EVERHOT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">328</td>
+			<td>B01606</td>
+			<td><a href='cholder.asp?part=251'>EWARTON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">329</td>
+			<td>B02124</td>
+			<td><a href='cholder.asp?part=1613'>EXCEL PRECISE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">330</td>
+			<td>B01817</td>
+			<td><a href='cholder.asp?part=415'>EXECUTION NOBLE (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">331</td>
+			<td>B01175</td>
+			<td><a href='cholder.asp?part=34'>F. R. ZIMMERN LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">332</td>
+			<td>B01259</td>
+			<td><a href='cholder.asp?part=62'>FAIR EAGLE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">333</td>
+			<td>B01385</td>
+			<td><a href='cholder.asp?part=119'>FAIRWIN BROKING LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">334</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1301'>FAN MUK SING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">335</td>
+			<td>B01272</td>
+			<td><a href='cholder.asp?part=69'>FB SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">336</td>
+			<td>B01141</td>
+			<td><a href='cholder.asp?part=21'>FE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">337</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1575'>FENG MAN CHIK ALEX</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">338</td>
+			<td>B02044</td>
+			<td><a href='cholder.asp?part=1475'>FERRAN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">339</td>
+			<td>B01856</td>
+			<td><a href='cholder.asp?part=450'>FINET SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">340</td>
+			<td>B02081</td>
+			<td><a href='cholder.asp?part=1532'>FIRST FIDELITY CAPITAL (INTERNATIONAL)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">341</td>
+			<td>B01669</td>
+			<td><a href='cholder.asp?part=294'>FIRST SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">342</td>
+			<td>B01686</td>
+			<td><a href='cholder.asp?part=307'>FIRST SHANGHAI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">343</td>
+			<td>B01372</td>
+			<td><a href='cholder.asp?part=113'>FIRST WORLDSEC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">344</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1162'>FOK GRACE WAN MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">345</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1305'>FONG CHIU KIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">346</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1311'>FONG WAI MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">347</td>
+			<td>B01979</td>
+			<td><a href='cholder.asp?part=1336'>FORMAX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">348</td>
+			<td>B02032</td>
+			<td><a href='cholder.asp?part=1449'>FORTHRIGHT SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">349</td>
+			<td>B01753</td>
+			<td><a href='cholder.asp?part=357'>FORTUNE (HK) SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">350</td>
+			<td>B02065</td>
+			<td><a href='cholder.asp?part=1509'>FORTUNE ORIGIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">351</td>
+			<td>B01984</td>
+			<td><a href='cholder.asp?part=1363'>FORWIN SECURITIES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">352</td>
+			<td>B01181</td>
+			<td><a href='cholder.asp?part=35'>FOSUN INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">353</td>
+			<td>B01978</td>
+			<td><a href='cholder.asp?part=1351'>FOUNDER SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">354</td>
+			<td>B01783</td>
+			<td><a href='cholder.asp?part=384'>FREDDY CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">355</td>
+			<td>B01976</td>
+			<td><a href='cholder.asp?part=1334'>FRONTIER CAPITAL MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">356</td>
+			<td>B02074</td>
+			<td><a href='cholder.asp?part=1523'>FRUIT TREE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">357</td>
+			<td>B01477</td>
+			<td><a href='cholder.asp?part=174'>FT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">358</td>
+			<td>B01910</td>
+			<td><a href='cholder.asp?part=1136'>FTFT INTERNATIONAL SECURITIES AND</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">359</td>
+			<td>B01784</td>
+			<td><a href='cholder.asp?part=385'>FU YIP SECURITIES AND INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">360</td>
+			<td>B01947</td>
+			<td><a href='cholder.asp?part=1248'>FUBON SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">361</td>
+			<td>B01673</td>
+			<td><a href='cholder.asp?part=298'>FULBRIGHT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">362</td>
+			<td>B01641</td>
+			<td><a href='cholder.asp?part=271'>FULL WIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">363</td>
+			<td>B01530</td>
+			<td><a href='cholder.asp?part=204'>FULLJET SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">364</td>
+			<td>B02057</td>
+			<td><a href='cholder.asp?part=1498'>FUNDE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">365</td>
+			<td>B01324</td>
+			<td><a href='cholder.asp?part=93'>FUNDERSTONE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">366</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1246'>FUNG CHE KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">367</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1195'>FUNG CHUN MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">368</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1727'>FUNG HO SUET MUI CARMEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">369</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1420'>FUNG HOU LING STELLA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">370</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1726'>FUNG KAI LUN KAREN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">371</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1111'>FUNG KING HIM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">372</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1264'>FUNG KING HING EDWIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">373</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1725'>FUNG LAI HON</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">374</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1341'>FUNG SHIU LAN RUBY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">375</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1557'>FUNG SZE YAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">376</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1158'>FUNG YU CHEONG, LAW YUET CHUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">377</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1674'>FUNG YUK BING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">378</td>
+			<td>B02080</td>
+			<td><a href='cholder.asp?part=1531'>FUTEC FINANCIAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">379</td>
+			<td>B01955</td>
+			<td><a href='cholder.asp?part=1243'>FUTU SECURITIES INTERNATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">380</td>
+			<td>B01891</td>
+			<td><a href='cholder.asp?part=1098'>FUTURE GROWTH FINANCIAL SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">381</td>
+			<td>B02117</td>
+			<td><a href='cholder.asp?part=1605'>FUTURE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">382</td>
+			<td>B01670</td>
+			<td><a href='cholder.asp?part=295'>FUZE SECURITIES (INTERNATIONAL) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">383</td>
+			<td>B02064</td>
+			<td><a href='cholder.asp?part=1508'>GALAXY TREASURE SECURITIES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">384</td>
+			<td>B02162</td>
+			<td><a href='cholder.asp?part=1658'>GAMMA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">385</td>
+			<td>B01230</td>
+			<td><a href='cholder.asp?part=51'>GAOYU SECURITIES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">386</td>
+			<td>B01995</td>
+			<td><a href='cholder.asp?part=1385'>GARY CHENG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">387</td>
+			<td>B02119</td>
+			<td><a href='cholder.asp?part=1607'>GAYANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">388</td>
+			<td>B01951</td>
+			<td><a href='cholder.asp?part=1240'>GENTING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">389</td>
+			<td>B02019</td>
+			<td><a href='cholder.asp?part=1427'>GEO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">390</td>
+			<td>B01298</td>
+			<td><a href='cholder.asp?part=83'>GET NICE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">391</td>
+			<td>B01821</td>
+			<td><a href='cholder.asp?part=419'>GETTA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">392</td>
+			<td>B01826</td>
+			<td><a href='cholder.asp?part=423'>GF SECURITIES (HONG KONG) BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">393</td>
+			<td>B01400</td>
+			<td><a href='cholder.asp?part=125'>GLOBAL CREDIT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">394</td>
+			<td>B01950</td>
+			<td><a href='cholder.asp?part=1234'>GLOBAL GROUP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">395</td>
+			<td>B02087</td>
+			<td><a href='cholder.asp?part=1543'>GLOBAL MASTERMIND SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">396</td>
+			<td>B01666</td>
+			<td><a href='cholder.asp?part=292'>GLORY SUN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">397</td>
+			<td>B01678</td>
+			<td><a href='cholder.asp?part=302'>GLS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">398</td>
+			<td>B01558</td>
+			<td><a href='cholder.asp?part=219'>GOLD FUND SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">399</td>
+			<td>B01478</td>
+			<td><a href='cholder.asp?part=175'>GOLDBRIDGE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">400</td>
+			<td>B02163</td>
+			<td><a href='cholder.asp?part=1659'>GOLDEN EAGLE BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">401</td>
+			<td>B01524</td>
+			<td><a href='cholder.asp?part=200'>GOLDEN HILL INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">402</td>
+			<td>B02009</td>
+			<td><a href='cholder.asp?part=1408'>GOLDEN RICH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">403</td>
+			<td>B01570</td>
+			<td><a href='cholder.asp?part=228'>GOLDENWAY SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">404</td>
+			<td>B02016</td>
+			<td><a href='cholder.asp?part=1422'>GOLDHORSE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">405</td>
+			<td>B01717</td>
+			<td><a href='cholder.asp?part=328'>GOLDIN EQUITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">406</td>
+			<td>B02031</td>
+			<td><a href='cholder.asp?part=1448'>GOLDLINK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">407</td>
+			<td>B01451</td>
+			<td><a href='cholder.asp?part=158'>GOLDMAN SACHS (ASIA) SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">408</td>
+			<td>B01501</td>
+			<td><a href='cholder.asp?part=187'>GOLDRIDE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">409</td>
+			<td>B01921</td>
+			<td><a href='cholder.asp?part=1159'>GONG PING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">410</td>
+			<td>B01519</td>
+			<td><a href='cholder.asp?part=195'>GOOD HARVEST SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">411</td>
+			<td>B02181</td>
+			<td><a href='cholder.asp?part=1685'>GRAND CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">412</td>
+			<td>B01489</td>
+			<td><a href='cholder.asp?part=179'>GRAND CARTEL SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">413</td>
+			<td>B01733</td>
+			<td><a href='cholder.asp?part=341'>GRAND CATHAY SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">414</td>
+			<td>B01949</td>
+			<td><a href='cholder.asp?part=1235'>GRAND CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">415</td>
+			<td>C00106</td>
+			<td><a href='cholder.asp?part=1502'>GRAND MOORE CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">416</td>
+			<td>B02061</td>
+			<td><a href='cholder.asp?part=1504'>GRAND PARTNERS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">417</td>
+			<td>B02146</td>
+			<td><a href='cholder.asp?part=1643'>GRAND RICH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">418</td>
+			<td>B02051</td>
+			<td><a href='cholder.asp?part=1489'>GRAND VIEW SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">419</td>
+			<td>B01990</td>
+			<td><a href='cholder.asp?part=1376'>GRANDLY FINANCIAL SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">420</td>
+			<td>B01660</td>
+			<td><a href='cholder.asp?part=287'>GRANSING SECURITIES CO., LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">421</td>
+			<td>B02130</td>
+			<td><a href='cholder.asp?part=1620'>GRANVILLE FINANCIAL SERVICES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">422</td>
+			<td>B01471</td>
+			<td><a href='cholder.asp?part=887'>GREAT BAY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">423</td>
+			<td>B01200</td>
+			<td><a href='cholder.asp?part=796'>GREAT HONEST INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">424</td>
+			<td>B01691</td>
+			<td><a href='cholder.asp?part=308'>GREATER CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">425</td>
+			<td>B02137</td>
+			<td><a href='cholder.asp?part=1632'>GREENCOURT FINANCIAL CO., LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">426</td>
+			<td>B01729</td>
+			<td><a href='cholder.asp?part=337'>GRIT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">427</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1365'>GROW WEALTH LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">428</td>
+			<td>B01725</td>
+			<td><a href='cholder.asp?part=333'>GT CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">429</td>
+			<td>B01745</td>
+			<td><a href='cholder.asp?part=349'>GUOCHUANG SECURITIES FINANCIAL HOLDING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">430</td>
+			<td>B01875</td>
+			<td><a href='cholder.asp?part=1068'>GUODU SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">431</td>
+			<td>B01890</td>
+			<td><a href='cholder.asp?part=1091'>GUOSEN SECURITIES (HK) BROKERAGE CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">432</td>
+			<td>B01565</td>
+			<td><a href='cholder.asp?part=223'>GUOTAI JUNAN SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">433</td>
+			<td>B01825</td>
+			<td><a href='cholder.asp?part=422'>GUOYUAN SECURITIES BROKERAGE (HONG KONG)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">434</td>
+			<td>B01885</td>
+			<td><a href='cholder.asp?part=1085'>HAFOO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">435</td>
+			<td>B01850</td>
+			<td><a href='cholder.asp?part=444'>HAI TONG SECURITIES (HK) BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">436</td>
+			<td>B01143</td>
+			<td><a href='cholder.asp?part=22'>HAITONG INTERNATIONAL SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">437</td>
+			<td>B01964</td>
+			<td><a href='cholder.asp?part=1283'>HALCYON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">438</td>
+			<td></td>
+			<td><a href='cholder.asp?part=508'>HANG KONG COMPANY LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">439</td>
+			<td></td>
+			<td><a href='cholder.asp?part=510'>HANG LUNG ENTERPRISES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">440</td>
+			<td></td>
+			<td><a href='cholder.asp?part=509'>HANG LUNG INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">441</td>
+			<td>C00018</td>
+			<td><a href='cholder.asp?part=459'>HANG SENG BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">442</td>
+			<td>B01284</td>
+			<td><a href='cholder.asp?part=76'>HANG SENG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">443</td>
+			<td>B01271</td>
+			<td><a href='cholder.asp?part=68'>HANG TAI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">444</td>
+			<td>B01199</td>
+			<td><a href='cholder.asp?part=41'>HANG TUNG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">445</td>
+			<td>B01696</td>
+			<td><a href='cholder.asp?part=312'>HANTEC SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">446</td>
+			<td>B01454</td>
+			<td><a href='cholder.asp?part=159'>HAO TIAN INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">447</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1681'>HAPPY LING'S LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">448</td>
+			<td>B02194</td>
+			<td><a href='cholder.asp?part=1701'>HARMONIA CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">449</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1247'>HARMONY ENTERPRISES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">450</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1330'>HAYLOCK MANAGEMENT LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">451</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1337'>HE YONGYI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">452</td>
+			<td>B01714</td>
+			<td><a href='cholder.asp?part=325'>HEAD & SHOULDERS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">453</td>
+			<td>B01705</td>
+			<td><a href='cholder.asp?part=318'>HENIK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">454</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1353'>HENKE VON PARPART AILYN CORTEZ</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">455</td>
+			<td>B01212</td>
+			<td><a href='cholder.asp?part=44'>HENYEP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">456</td>
+			<td>B01661</td>
+			<td><a href='cholder.asp?part=288'>HERMES SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">457</td>
+			<td>B01991</td>
+			<td><a href='cholder.asp?part=1378'>HF SECURITIES AND FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">458</td>
+			<td>B01971</td>
+			<td><a href='cholder.asp?part=1315'>HGNH INTERNATIONAL SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">459</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1625'>HIGH FASHION CHARITABLE FOUNDATION, LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">460</td>
+			<td>B01433</td>
+			<td><a href='cholder.asp?part=147'>HING WAI ALLIED SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">461</td>
+			<td>B01123</td>
+			<td><a href='cholder.asp?part=13'>HING WONG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">462</td>
+			<td>B01428</td>
+			<td><a href='cholder.asp?part=145'>HIP HING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">463</td>
+			<td>B02127</td>
+			<td><a href='cholder.asp?part=1617'>HK MONKEY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">464</td>
+			<td>B01965</td>
+			<td><a href='cholder.asp?part=1287'>HK NOBLE SKY TREASURE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">465</td>
+			<td>B01789</td>
+			<td><a href='cholder.asp?part=390'>HO FUNG SHARES INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">466</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1692'>HO JOHANNA TSI-YAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">467</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1107'>HO MING HANG, WONG YU PING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">468</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1089'>HO PAK SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">469</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1426'>HO SUK KWAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">470</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1192'>HO YAU CHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">471</td>
+			<td>B01752</td>
+			<td><a href='cholder.asp?part=356'>HOI SANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">472</td>
+			<td>B02106</td>
+			<td><a href='cholder.asp?part=1581'>HOLLY INTERNATIONAL FINANCIAL HOLDINGS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">473</td>
+			<td>B02188</td>
+			<td><a href='cholder.asp?part=1690'>HOMILY WORLDWIDE SECURITIES COMPANY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">474</td>
+			<td>B01884</td>
+			<td><a href='cholder.asp?part=1080'>HONG KONG SECURITIES (INTERNATIONAL)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">475</td>
+			<td></td>
+			<td><a href='cholder.asp?part=495'>HONG KONG SECURITIES CLEARING CO. LTD.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">476</td>
+			<td>B01404</td>
+			<td><a href='cholder.asp?part=129'>HONG KONG STOCK LINK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">477</td>
+			<td>B01792</td>
+			<td><a href='cholder.asp?part=393'>HONG KONG WAN KIU INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">478</td>
+			<td>B01674</td>
+			<td><a href='cholder.asp?part=299'>HONGKONG BAY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">479</td>
+			<td>B02173</td>
+			<td><a href='cholder.asp?part=1673'>HONGKONG RICH & FORTUNE SECURITIES CO.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">480</td>
+			<td>B02029</td>
+			<td><a href='cholder.asp?part=1444'>HONOR SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">481</td>
+			<td>B01227</td>
+			<td><a href='cholder.asp?part=49'>HOORAY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">482</td>
+			<td>B02134</td>
+			<td><a href='cholder.asp?part=1629'>HOPE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">483</td>
+			<td>B01440</td>
+			<td><a href='cholder.asp?part=152'>HOU TAK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">484</td>
+			<td>B02136</td>
+			<td><a href='cholder.asp?part=1631'>HS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">485</td>
+			<td>B01089</td>
+			<td><a href='cholder.asp?part=7'>HSBC BROKING SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">486</td>
+			<td>C00065</td>
+			<td><a href='cholder.asp?part=478'>HSBC PRIVATE BANK (SUISSE) SA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">487</td>
+			<td>B01490</td>
+			<td><a href='cholder.asp?part=180'>HSBC SECURITIES BROKERS (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">488</td>
+			<td>B02166</td>
+			<td><a href='cholder.asp?part=1665'>HTF SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">489</td>
+			<td>B01721</td>
+			<td><a href='cholder.asp?part=330'>HUA NAN SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">490</td>
+			<td>B02212</td>
+			<td><a href='cholder.asp?part=1718'>HUAAN SECURITIES (HONG KONG) BROKERAGE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">491</td>
+			<td>B02192</td>
+			<td><a href='cholder.asp?part=1699'>HUAFU INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">492</td>
+			<td>B01986</td>
+			<td><a href='cholder.asp?part=1370'>HUAJIN SECURITIES (INTERNATIONAL) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">493</td>
+			<td></td>
+			<td><a href='cholder.asp?part=522'>HUANG MIN CHIOU</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">494</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1384'>HUANG TJING YIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">495</td>
+			<td>B01829</td>
+			<td><a href='cholder.asp?part=426'>HUATAI FINANCIAL HOLDINGS (HONG KONG)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">496</td>
+			<td>B01550</td>
+			<td><a href='cholder.asp?part=213'>HUAYU SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">497</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1303'>HUI FUNG PING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">498</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1269'>HUI SAU WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">499</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1696'>HUI WING WONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">500</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1367'>HUI YIU CHEONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">501</td>
+			<td>B00045</td>
+			<td><a href='cholder.asp?part=552'>HUNG CHEONG SECURITIES CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">502</td>
+			<td></td>
+			<td><a href='cholder.asp?part=527'>HUNG CONSTANTINE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">503</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1239'>HUNG HING SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">504</td>
+			<td>C00087</td>
+			<td><a href='cholder.asp?part=485'>HUNG KAI FINANCE CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">505</td>
+			<td>B01470</td>
+			<td><a href='cholder.asp?part=171'>HUNG SING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">506</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1155'>HUNG WAI FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">507</td>
+			<td>B02092</td>
+			<td><a href='cholder.asp?part=1556'>I WIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">508</td>
+			<td>B01818</td>
+			<td><a href='cholder.asp?part=416'>I-ACCESS INVESTORS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">509</td>
+			<td>B01827</td>
+			<td><a href='cholder.asp?part=424'>IBTS ASIA (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">510</td>
+			<td>B01727</td>
+			<td><a href='cholder.asp?part=335'>ICBC (ASIA) SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">511</td>
+			<td>B01866</td>
+			<td><a href='cholder.asp?part=1064'>ICBC INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">512</td>
+			<td>B01459</td>
+			<td><a href='cholder.asp?part=163'>IFAST SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">513</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1430'>IM KWOK FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">514</td>
+			<td>B01751</td>
+			<td><a href='cholder.asp?part=355'>IMAGI BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">515</td>
+			<td>B01828</td>
+			<td><a href='cholder.asp?part=425'>IMC ASIA PACIFIC LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">516</td>
+			<td>B01906</td>
+			<td><a href='cholder.asp?part=1120'>IMPERIUM INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">517</td>
+			<td>C00040</td>
+			<td><a href='cholder.asp?part=467'>INDUSTRIAL AND COMMERCIAL BANK OF CHINA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">518</td>
+			<td>C00107</td>
+			<td><a href='cholder.asp?part=1512'>INDUSTRIAL BANK CO., LTD.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">519</td>
+			<td>C00071</td>
+			<td><a href='cholder.asp?part=481'>ING BANK N.V.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">520</td>
+			<td>B02004</td>
+			<td><a href='cholder.asp?part=1399'>INNOVATION SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">521</td>
+			<td>B02075</td>
+			<td><a href='cholder.asp?part=1524'>INNOVAX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">522</td>
+			<td>B01824</td>
+			<td><a href='cholder.asp?part=421'>INSTINET PACIFIC LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">523</td>
+			<td>B01945</td>
+			<td><a href='cholder.asp?part=1229'>INTEGRITY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">524</td>
+			<td>B01590</td>
+			<td><a href='cholder.asp?part=243'>INTERACTIVE BROKERS HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">525</td>
+			<td>B01424</td>
+			<td><a href='cholder.asp?part=141'>INTERCHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">526</td>
+			<td>B01794</td>
+			<td><a href='cholder.asp?part=395'>INTERCONTINENT SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">527</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1190'>IP CHI HO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">528</td>
+			<td></td>
+			<td><a href='cholder.asp?part=525'>IP LAI HIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">529</td>
+			<td>B01746</td>
+			<td><a href='cholder.asp?part=350'>ITG HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">530</td>
+			<td>B01110</td>
+			<td><a href='cholder.asp?part=8'>J.P. MORGAN BROKING (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">531</td>
+			<td>B01914</td>
+			<td><a href='cholder.asp?part=1143'>JEFFERIES HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">532</td>
+			<td>B01868</td>
+			<td><a href='cholder.asp?part=1055'>JIMEI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">533</td>
+			<td>B02215</td>
+			<td><a href='cholder.asp?part=1724'>JIN YI FINANCIAL GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">534</td>
+			<td>B02202</td>
+			<td><a href='cholder.asp?part=1709'>JMC CAPITAL INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">535</td>
+			<td>B01362</td>
+			<td><a href='cholder.asp?part=111'>JOSPA INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">536</td>
+			<td>B02085</td>
+			<td><a href='cholder.asp?part=1540'>JOY RICH SECURITIES INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">537</td>
+			<td>C00100</td>
+			<td><a href='cholder.asp?part=1193'>JPMORGAN CHASE BANK, NATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">538</td>
+			<td>B02140</td>
+			<td><a href='cholder.asp?part=1635'>JQ SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">539</td>
+			<td>B01657</td>
+			<td><a href='cholder.asp?part=284'>JS CRESVALE SECURITIES INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">540</td>
+			<td>B01697</td>
+			<td><a href='cholder.asp?part=965'>JS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">541</td>
+			<td>B01704</td>
+			<td><a href='cholder.asp?part=317'>JVSAKK ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">542</td>
+			<td>B01566</td>
+			<td><a href='cholder.asp?part=224'>K.K.M. SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">543</td>
+			<td>B02037</td>
+			<td><a href='cholder.asp?part=1455'>KAI YIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">544</td>
+			<td>B01857</td>
+			<td><a href='cholder.asp?part=530'>KAISA FINANCIAL GROUP CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">545</td>
+			<td>B01469</td>
+			<td><a href='cholder.asp?part=170'>KAISER SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">546</td>
+			<td>B01615</td>
+			<td><a href='cholder.asp?part=257'>KAM FAI SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">547</td>
+			<td>B01650</td>
+			<td><a href='cholder.asp?part=279'>KAM LUEN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">548</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1144'>KAM MUNG LAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">549</td>
+			<td>B01492</td>
+			<td><a href='cholder.asp?part=182'>KAM WAH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">550</td>
+			<td>B01571</td>
+			<td><a href='cholder.asp?part=229'>KARFORD SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">551</td>
+			<td>B01514</td>
+			<td><a href='cholder.asp?part=194'>KARL-THOMSON SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">552</td>
+			<td>B01391</td>
+			<td><a href='cholder.asp?part=123'>KAY YUE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">553</td>
+			<td>C00090</td>
+			<td><a href='cholder.asp?part=488'>KBC BANK N.V.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">554</td>
+			<td>B01734</td>
+			<td><a href='cholder.asp?part=342'>KCG SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">555</td>
+			<td>B01525</td>
+			<td><a href='cholder.asp?part=201'>KEE CHEONG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">556</td>
+			<td>B01610</td>
+			<td><a href='cholder.asp?part=255'>KGI ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">557</td>
+			<td>B01463</td>
+			<td><a href='cholder.asp?part=166'>KGI WEALTH MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">558</td>
+			<td>B01638</td>
+			<td><a href='cholder.asp?part=269'>KILMOREY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">559</td>
+			<td>B01801</td>
+			<td><a href='cholder.asp?part=402'>KIN FUNG STOCK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">560</td>
+			<td>B01166</td>
+			<td><a href='cholder.asp?part=31'>KING FOOK SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">561</td>
+			<td>B01326</td>
+			<td><a href='cholder.asp?part=94'>KING SUN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">562</td>
+			<td>B01927</td>
+			<td><a href='cholder.asp?part=1178'>KINGKEY SECURITIES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">563</td>
+			<td>B01438</td>
+			<td><a href='cholder.asp?part=150'>KINGSTON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">564</td>
+			<td>B01581</td>
+			<td><a href='cholder.asp?part=236'>KINGSWAY FINANCIAL SERVICES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">565</td>
+			<td>B01642</td>
+			<td><a href='cholder.asp?part=272'>KMT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">566</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1164'>KO CHUI KING CORNELIA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">567</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1152'>KO KA WO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">568</td>
+			<td>B01786</td>
+			<td><a href='cholder.asp?part=387'>KO KUN STOCK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">569</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1641'>KO TIN FOOK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">570</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1129'>KO WAI SAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">571</td>
+			<td>B01761</td>
+			<td><a href='cholder.asp?part=364'>KO'S BROTHER SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">572</td>
+			<td>B01988</td>
+			<td><a href='cholder.asp?part=1372'>KOALA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">573</td>
+			<td></td>
+			<td><a href='cholder.asp?part=520'>KONG TAK LUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">574</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1316'>KOO SZE WAI RAYMOND</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">575</td>
+			<td>B02185</td>
+			<td><a href='cholder.asp?part=1688'>KOREA INVESTMENT & SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">576</td>
+			<td>B01860</td>
+			<td><a href='cholder.asp?part=535'>KVB KUNLUN SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">577</td>
+			<td>B01247</td>
+			<td><a href='cholder.asp?part=56'>KWAI HUNG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">578</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1280'>KWAN KWOK WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">579</td>
+			<td>B01248</td>
+			<td><a href='cholder.asp?part=57'>KWAN YICK SECURITIES (INTERNATIONAL) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">580</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1468'>KWOK CHUN BONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">581</td>
+			<td>B01547</td>
+			<td><a href='cholder.asp?part=212'>KWOK HING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">582</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1173'>KWOK LAI FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">583</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1276'>KWOK LAI HA KAREN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">584</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1073'>KWOK SHUN TIM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">585</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1131'>KWOK TAK YING ADA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">586</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1177'>KWOK WAI MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">587</td>
+			<td>B01543</td>
+			<td><a href='cholder.asp?part=209'>KWONG FAT HONG (SECURITIES) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">588</td>
+			<td>B01841</td>
+			<td><a href='cholder.asp?part=436'>LA (GLOBAL) SINOMIX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">589</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1096'>LAI CHIU WING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">590</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1253'>LAI CHUN MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">591</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1302'>LAI CHUN YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">592</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1217'>LAI PING WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">593</td>
+			<td>B01643</td>
+			<td><a href='cholder.asp?part=273'>LAI PO HUNG & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">594</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1319'>LAM CHI SHAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">595</td>
+			<td></td>
+			<td><a href='cholder.asp?part=500'>LAM CHIK KUEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">596</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1440'>LAM CHIK KUEN (DECEASED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">597</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1331'>LAM HING SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">598</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1209'>LAM HO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">599</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1401'>LAM KA KI TAMMY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">600</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1092'>LAM KWOK WAH ERIC</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">601</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1445'>LAM PING HEI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">602</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1289'>LAM SIU KEI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">603</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1595'>LAM SIU LAN, LAM TSZ WAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">604</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1078'>LAM SZE MAN ADA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">605</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1488'>LAM TING KWOK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">606</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1414'>LAM WANG HOI STEPHEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">607</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1300'>LAM WING TAK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">608</td>
+			<td></td>
+			<td><a href='cholder.asp?part=533'>LAM YIU KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">609</td>
+			<td>B01260</td>
+			<td><a href='cholder.asp?part=63'>LAMTEX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">610</td>
+			<td>B01531</td>
+			<td><a href='cholder.asp?part=205'>LAU & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">611</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1377'>LAU FUNG YEE ROSANNA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">612</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1198'>LAU HO CHUEN TOMMY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">613</td>
+			<td></td>
+			<td><a href='cholder.asp?part=526'>LAU KAM CHEUK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">614</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1273'>LAU SUK HAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">615</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1368'>LAU YIN HUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">616</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1084'>LAU YUK CHUN MARGARET</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">617</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1373'>LAU YUK YU PEGGY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">618</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1383'>LAW CHI WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">619</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1154'>LAW KAR CHUNG EDDIE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">620</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1429'>LAW SAU MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">621</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1288'>LAW SIK MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">622</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1277'>LAW YUEN HUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">623</td>
+			<td>B00988</td>
+			<td><a href='cholder.asp?part=741'>LAWSONS SECURITIES CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">624</td>
+			<td>B02027</td>
+			<td><a href='cholder.asp?part=1442'>LEADING SECURITIES COMPANY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">625</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1598'>LEE CHEE KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">626</td>
+			<td></td>
+			<td><a href='cholder.asp?part=538'>LEE CHI KWONG STEVE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">627</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1587'>LEE CHUN BIU</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">628</td>
+			<td>B02178</td>
+			<td><a href='cholder.asp?part=1680'>LEE GO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">629</td>
+			<td></td>
+			<td><a href='cholder.asp?part=537'>LEE HON KIN TONY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">630</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1600'>LEE KA WING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">631</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1320'>LEE KING FAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">632</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1095'>LEE KIT YUEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">633</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1457'>LEE LING LING, YUEN CHIK PUI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">634</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1052'>LEE MAN BAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">635</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1145'>LEE NGA TING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">636</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1231'>LEE PUI SEE FIONA, TAO HARRY H.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">637</td>
+			<td>B01270</td>
+			<td><a href='cholder.asp?part=816'>LEE TAT & CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">638</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1087'>LEE YAT SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">639</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1621'>LEE YU MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">640</td>
+			<td></td>
+			<td><a href='cholder.asp?part=519'>LEE YUEN YIN ROSA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">641</td>
+			<td>B01779</td>
+			<td><a href='cholder.asp?part=380'>LEE'S SECURITIES CO LTD (IN LIQUIDATION)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">642</td>
+			<td>B02148</td>
+			<td><a href='cholder.asp?part=1645'>LEEDS SECURITIES INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">643</td>
+			<td>B02060</td>
+			<td><a href='cholder.asp?part=1501'>LEGO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">644</td>
+			<td>B01340</td>
+			<td><a href='cholder.asp?part=99'>LEHIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">645</td>
+			<td>B01276</td>
+			<td><a href='cholder.asp?part=72'>LEHMAN BROTHERS SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">646</td>
+			<td>B01588</td>
+			<td><a href='cholder.asp?part=242'>LEI SHING HONG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">647</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1167'>LEUNG CHING FAR, CHAN TING SING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">648</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1608'>LEUNG HANG FAI HENRY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">649</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1395'>LEUNG KA CHUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">650</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1279'>LEUNG KOON SHAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">651</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1281'>LEUNG PAK WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">652</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1397'>LEUNG SAU CHI GARY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">653</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1472'>LEUNG SIU TAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">654</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1183'>LEUNG SIU YIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">655</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1263'>LEUNG TSZ KIT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">656</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1473'>LEUNG U MUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">657</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1549'>LEUNG YIP HANG STEVEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">658</td>
+			<td></td>
+			<td><a href='cholder.asp?part=501'>LEUNG YIU KAI JAMES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">659</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1224'>LI CHAK SUM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">660</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1597'>LI CHI KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">661</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1534'>LI FUNG CHOW</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">662</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1139'>LI KWOK KIT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">663</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1409'>LI KWOK WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">664</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1050'>LI SIU FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">665</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1294'>LI WAI LEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">666</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1740'>LI WI LEY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">667</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1591'>LI WING YEUNG PETER</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">668</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1232'>LI YAU KING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">669</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1676'>LI YING TSUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">670</td>
+			<td>B02067</td>
+			<td><a href='cholder.asp?part=1510'>LIGHTHOUSE CAPITAL (HK) FINANCIAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">671</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1310'>LIN RONG YVONNE, WONG CHUNG YUNG OSCAR</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">672</td>
+			<td>B02156</td>
+			<td><a href='cholder.asp?part=1652'>LINKWAYS INVESTMENT MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">673</td>
+			<td>B02095</td>
+			<td><a href='cholder.asp?part=1560'>LION INTERNATIONAL SECURITIES GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">674</td>
+			<td>B01840</td>
+			<td><a href='cholder.asp?part=435'>LIQUIDNET ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">675</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1730'>LIU HON WAI, AU LAI HANG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">676</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1359'>LIU KIN SING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">677</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1306'>LIU KOI WUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">678</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1308'>LIU YEE CHEONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">679</td>
+			<td>B02120</td>
+			<td><a href='cholder.asp?part=1609'>LIVERMORE HOLDINGS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">680</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1348'>LO CHI HANG ROBERT</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">681</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1539'>LO CHI WAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">682</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1580'>LO CHING FUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">683</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1237'>LO KWOK WAH GEORGE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">684</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1134'>LO MAN FAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">685</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1503'>LO SIK MO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">686</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1202'>LO SUI YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">687</td>
+			<td>B02195</td>
+			<td><a href='cholder.asp?part=1702'>LONG BRIDGE HK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">688</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1343'>LOO WAI YIN MICHELLE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">689</td>
+			<td>B01924</td>
+			<td><a href='cholder.asp?part=1165'>LT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">690</td>
+			<td>B02199</td>
+			<td><a href='cholder.asp?part=1706'>LU INTERNATIONAL (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">691</td>
+			<td></td>
+			<td><a href='cholder.asp?part=513'>LUCKYSON INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">692</td>
+			<td>B01320</td>
+			<td><a href='cholder.asp?part=90'>LUEN FAT SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">693</td>
+			<td>B01387</td>
+			<td><a href='cholder.asp?part=121'>LUEN HING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">694</td>
+			<td>B01698</td>
+			<td><a href='cholder.asp?part=313'>LUEN SING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">695</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1660'>LUI HONG, CHAN YUEN LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">696</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1732'>LUI KAM WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">697</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1338'>LUI YUEN CHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">698</td>
+			<td>B01556</td>
+			<td><a href='cholder.asp?part=218'>LUK FOOK SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">699</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1245'>LUK HO CHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">700</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1257'>LUK HONG SZE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">701</td>
+			<td>B02190</td>
+			<td><a href='cholder.asp?part=1694'>LUMINEUX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">702</td>
+			<td>B01819</td>
+			<td><a href='cholder.asp?part=417'>M SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">703</td>
+			<td>B01308</td>
+			<td><a href='cholder.asp?part=87'>M&F ASSET MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">704</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1238'>MA LAP SHEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">705</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1212'>MACK TING KAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">706</td>
+			<td>C00102</td>
+			<td><a href='cholder.asp?part=1233'>MACQUARIE BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">707</td>
+			<td>B01077</td>
+			<td><a href='cholder.asp?part=3'>MACQUARIE CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">708</td>
+			<td>B01554</td>
+			<td><a href='cholder.asp?part=216'>MACQUARIE EQUITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">709</td>
+			<td>B01935</td>
+			<td><a href='cholder.asp?part=1201'>MAGIC COMPASS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">710</td>
+			<td>B02154</td>
+			<td><a href='cholder.asp?part=1650'>MAGNUM RESEARCH LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">711</td>
+			<td>B02104</td>
+			<td><a href='cholder.asp?part=1578'>MAGPIE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">712</td>
+			<td>B01854</td>
+			<td><a href='cholder.asp?part=448'>MAINFIRST SECURITIES HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">713</td>
+			<td>B01791</td>
+			<td><a href='cholder.asp?part=392'>MAINLAND SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">714</td>
+			<td></td>
+			<td><a href='cholder.asp?part=540'>MAK KIN LUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">715</td>
+			<td></td>
+			<td><a href='cholder.asp?part=518'>MAK KWOK BUN DELIA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">716</td>
+			<td>B01706</td>
+			<td><a href='cholder.asp?part=319'>MAN HON YEUNG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">717</td>
+			<td>B01532</td>
+			<td><a href='cholder.asp?part=914'>MAN LUNG HONG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">718</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1322'>MAN SAU HAN BECKY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">719</td>
+			<td>B01462</td>
+			<td><a href='cholder.asp?part=165'>MANGO FINANCIAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">720</td>
+			<td>B01895</td>
+			<td><a href='cholder.asp?part=1104'>MARIGOLD INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">721</td>
+			<td>B02107</td>
+			<td><a href='cholder.asp?part=1584'>MARKETSENSE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">722</td>
+			<td>B01457</td>
+			<td><a href='cholder.asp?part=161'>MARS SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">723</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1326'>MARVELLOUS HOLDINGS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">724</td>
+			<td>B01209</td>
+			<td><a href='cholder.asp?part=43'>MASON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">725</td>
+			<td>B01575</td>
+			<td><a href='cholder.asp?part=231'>MASTER TRADEMORE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">726</td>
+			<td>B01699</td>
+			<td><a href='cholder.asp?part=314'>MASTERLINK SECURITIES (HONG KONG)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">727</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1286'>MATSUSUE CHOI LAN JULIVER</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">728</td>
+			<td>B01401</td>
+			<td><a href='cholder.asp?part=126'>MEGABASE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">729</td>
+			<td></td>
+			<td><a href='cholder.asp?part=498'>MEIJI DAIRY PRODUCTS HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">730</td>
+			<td>B01747</td>
+			<td><a href='cholder.asp?part=351'>MERDEKA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">731</td>
+			<td>B01224</td>
+			<td><a href='cholder.asp?part=48'>MERRILL LYNCH FAR EAST LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">732</td>
+			<td>B01915</td>
+			<td><a href='cholder.asp?part=1151'>METAVERSE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">733</td>
+			<td>B01625</td>
+			<td><a href='cholder.asp?part=262'>METRO CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">734</td>
+			<td>B01845</td>
+			<td><a href='cholder.asp?part=440'>MF GLOBAL HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">735</td>
+			<td>B01894</td>
+			<td><a href='cholder.asp?part=1101'>MFG LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">736</td>
+			<td>B01264</td>
+			<td><a href='cholder.asp?part=64'>MIB SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">737</td>
+			<td>B02059</td>
+			<td><a href='cholder.asp?part=1500'>MIDAS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">738</td>
+			<td>B01936</td>
+			<td><a href='cholder.asp?part=1200'>MIGHTY BROKERAGE (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">739</td>
+			<td>B02196</td>
+			<td><a href='cholder.asp?part=1703'>MIGHTY DIVINE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">740</td>
+			<td>B01694</td>
+			<td><a href='cholder.asp?part=310'>MINERVA HOLDING FINANCIAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">741</td>
+			<td>B01651</td>
+			<td><a href='cholder.asp?part=280'>MING HON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">742</td>
+			<td>B01830</td>
+			<td><a href='cholder.asp?part=427'>MIRAE ASSET SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">743</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1312'>MITSUBISHI CORPORATION (HONG KONG), LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">744</td>
+			<td>B01832</td>
+			<td><a href='cholder.asp?part=429'>MIZUHO SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">745</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1146'>MOK MEI HA MIMI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">746</td>
+			<td>B01213</td>
+			<td><a href='cholder.asp?part=45'>MONEYMORE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">747</td>
+			<td>B02042</td>
+			<td><a href='cholder.asp?part=1470'>MONMONKEY GROUP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">748</td>
+			<td>B02186</td>
+			<td><a href='cholder.asp?part=1689'>MONT AVENIR CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">749</td>
+			<td>B01296</td>
+			<td><a href='cholder.asp?part=81'>MONTGOMERY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">750</td>
+			<td>B01274</td>
+			<td><a href='cholder.asp?part=70'>MORGAN STANLEY HONG KONG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">751</td>
+			<td>B01538</td>
+			<td><a href='cholder.asp?part=207'>MORTON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">752</td>
+			<td>B02116</td>
+			<td><a href='cholder.asp?part=1604'>MOUETTE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">753</td>
+			<td>B01150</td>
+			<td><a href='cholder.asp?part=25'>MTF SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">754</td>
+			<td>C00004</td>
+			<td><a href='cholder.asp?part=453'>MUFG BANK, LTD.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">755</td>
+			<td>B01911</td>
+			<td><a href='cholder.asp?part=1137'>MUFG SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">756</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1051'>MUI FAT SHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">757</td>
+			<td>B01766</td>
+			<td><a href='cholder.asp?part=367'>MUSHK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">758</td>
+			<td>B02024</td>
+			<td><a href='cholder.asp?part=1438'>NAN GUO INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">759</td>
+			<td>C00028</td>
+			<td><a href='cholder.asp?part=462'>NANYANG COMMERCIAL BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">760</td>
+			<td>B01455</td>
+			<td><a href='cholder.asp?part=160'>NATIONAL RESOURCES SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">761</td>
+			<td>B01844</td>
+			<td><a href='cholder.asp?part=439'>NATIXIS ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">762</td>
+			<td>B01831</td>
+			<td><a href='cholder.asp?part=428'>NERICO BROTHERS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">763</td>
+			<td>B01767</td>
+			<td><a href='cholder.asp?part=368'>NEW GALA SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">764</td>
+			<td>B02021</td>
+			<td><a href='cholder.asp?part=1435'>NEW HARVEST WEALTH SECURITIES COMPANY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">765</td>
+			<td>B01481</td>
+			<td><a href='cholder.asp?part=176'>NEW REGION SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">766</td>
+			<td>B01807</td>
+			<td><a href='cholder.asp?part=407'>NEWEDGE BROKER LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">767</td>
+			<td>B01871</td>
+			<td><a href='cholder.asp?part=1063'>NEWEDGE FINANCIAL HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">768</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1626'>NG CHE WO RAYMOND</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">769</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1733'>NG CHEUK MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">770</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1090'>NG HAU NGAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">771</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1667'>NG SHUK MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">772</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1218'>NG SUI PING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">773</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1585'>NG TANG KWAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">774</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1639'>NG YUK KWAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">775</td>
+			<td>B02191</td>
+			<td><a href='cholder.asp?part=1698'>NH INVESTMENT & SECURITIES (H.K.) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">776</td>
+			<td>B01987</td>
+			<td><a href='cholder.asp?part=1371'>NINE RIVERS CAPITAL PARTNERS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">777</td>
+			<td>B02200</td>
+			<td><a href='cholder.asp?part=1707'>NINTH ETERNITY SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">778</td>
+			<td>B01527</td>
+			<td><a href='cholder.asp?part=202'>NITTAN SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">779</td>
+			<td>B01961</td>
+			<td><a href='cholder.asp?part=1266'>NOMURA INTERNATIONAL (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">780</td>
+			<td>B01330</td>
+			<td><a href='cholder.asp?part=97'>NOMURA SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">781</td>
+			<td>B01720</td>
+			<td><a href='cholder.asp?part=329'>NORMAN KONG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">782</td>
+			<td>B01880</td>
+			<td><a href='cholder.asp?part=1072'>NORTH BETA INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">783</td>
+			<td>B01520</td>
+			<td><a href='cholder.asp?part=196'>NORTH SEA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">784</td>
+			<td>C00041</td>
+			<td><a href='cholder.asp?part=468'>OCBC BANK (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">785</td>
+			<td>B01300</td>
+			<td><a href='cholder.asp?part=85'>OCBC SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">786</td>
+			<td>B01265</td>
+			<td><a href='cholder.asp?part=65'>OCBC SECURITIES BROKERAGE (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">787</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1298'>OCEAN CHIEF LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">788</td>
+			<td>B02157</td>
+			<td><a href='cholder.asp?part=1653'>OIL ASSETS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">789</td>
+			<td>B01191</td>
+			<td><a href='cholder.asp?part=38'>OKACHI INVESTMENTS (HONG KONG) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">790</td>
+			<td>B01318</td>
+			<td><a href='cholder.asp?part=89'>OKASAN INTERNATIONAL (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">791</td>
+			<td>B01769</td>
+			<td><a href='cholder.asp?part=370'>ONE CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">792</td>
+			<td>B01421</td>
+			<td><a href='cholder.asp?part=139'>ONEPLATFORM SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">793</td>
+			<td>B01297</td>
+			<td><a href='cholder.asp?part=82'>ONSHINE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">794</td>
+			<td>B02008</td>
+			<td><a href='cholder.asp?part=1407'>OOO SECURITIES (HK) GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">795</td>
+			<td>B01608</td>
+			<td><a href='cholder.asp?part=253'>OPEN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">796</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1476'>OR DEN FUNG BONNIE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">797</td>
+			<td>B01900</td>
+			<td><a href='cholder.asp?part=1108'>ORIENT SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">798</td>
+			<td>B01716</td>
+			<td><a href='cholder.asp?part=327'>ORIENT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">799</td>
+			<td>B01510</td>
+			<td><a href='cholder.asp?part=192'>ORIENTAL PATRON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">800</td>
+			<td>B01862</td>
+			<td><a href='cholder.asp?part=542'>ORIENTAL WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">801</td>
+			<td>B02053</td>
+			<td><a href='cholder.asp?part=1492'>ORIGINAL GROUP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">802</td>
+			<td>B01580</td>
+			<td><a href='cholder.asp?part=235'>OSHIDORI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">803</td>
+			<td>C00070</td>
+			<td><a href='cholder.asp?part=480'>OVERSEA-CHINESE BANKING CORPORATION LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">804</td>
+			<td>B02049</td>
+			<td><a href='cholder.asp?part=1486'>PACIFIC INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">805</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1241'>PAN INN INVESTMENT LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">806</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1313'>PANG KWOK CHI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">807</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1182'>PANG WING WO PAUL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">808</td>
+			<td>B02152</td>
+			<td><a href='cholder.asp?part=1648'>PARCHMENT INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">809</td>
+			<td>B01301</td>
+			<td><a href='cholder.asp?part=86'>PARIBAS ASIA EQUITY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">810</td>
+			<td>B01785</td>
+			<td><a href='cholder.asp?part=386'>PARTNERS CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">811</td>
+			<td>B01157</td>
+			<td><a href='cholder.asp?part=28'>PASAY STOCK AND SHARES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">812</td>
+			<td>B02193</td>
+			<td><a href='cholder.asp?part=1700'>PATRONS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">813</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1555'>PAU HANG YEE MAUD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">814</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1175'>PAU LAN YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">815</td>
+			<td>B01973</td>
+			<td><a href='cholder.asp?part=1321'>PC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">816</td>
+			<td>B02126</td>
+			<td><a href='cholder.asp?part=1616'>PFC INTERNATIONAL CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">817</td>
+			<td>B01345</td>
+			<td><a href='cholder.asp?part=103'>PHILLIP SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">818</td>
+			<td>B01402</td>
+			<td><a href='cholder.asp?part=127'>PHOENIX CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">819</td>
+			<td>B01903</td>
+			<td><a href='cholder.asp?part=1113'>PICO ZEMAN SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">820</td>
+			<td>B01957</td>
+			<td><a href='cholder.asp?part=1250'>PINESTONE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">821</td>
+			<td>B02109</td>
+			<td><a href='cholder.asp?part=1589'>PINETREE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">822</td>
+			<td>B01882</td>
+			<td><a href='cholder.asp?part=1075'>PING AN OF CHINA SECURITIES (HONG KONG)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">823</td>
+			<td>B02176</td>
+			<td><a href='cholder.asp?part=1678'>PING AN SECURITIES (HONG KONG) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">824</td>
+			<td>B01464</td>
+			<td><a href='cholder.asp?part=167'>PIPER JAFFRAY ASIA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">825</td>
+			<td>B01631</td>
+			<td><a href='cholder.asp?part=265'>PLANETREE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">826</td>
+			<td>B01592</td>
+			<td><a href='cholder.asp?part=244'>PLATINUM BROKING CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">827</td>
+			<td>B02180</td>
+			<td><a href='cholder.asp?part=1683'>PLUTUS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">828</td>
+			<td>B01198</td>
+			<td><a href='cholder.asp?part=40'>PO KAY SECURITIES & SHARES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">829</td>
+			<td>B01374</td>
+			<td><a href='cholder.asp?part=115'>PO LEE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">830</td>
+			<td>B01943</td>
+			<td><a href='cholder.asp?part=1222'>PO SANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">831</td>
+			<td>B02118</td>
+			<td><a href='cholder.asp?part=1606'>PO TAI SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">832</td>
+			<td>B01750</td>
+			<td><a href='cholder.asp?part=354'>POLARIS CAPITAL (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">833</td>
+			<td>B01599</td>
+			<td><a href='cholder.asp?part=246'>POLARIS SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">834</td>
+			<td>B02097</td>
+			<td><a href='cholder.asp?part=1563'>POLY WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">835</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1572'>POON KIT SHAN BRENDA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">836</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1207'>POON MIU FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">837</td>
+			<td>B01715</td>
+			<td><a href='cholder.asp?part=326'>PRESIDENT SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">838</td>
+			<td>B01989</td>
+			<td><a href='cholder.asp?part=1375'>PRESTIGE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">839</td>
+			<td>B01266</td>
+			<td><a href='cholder.asp?part=66'>PRIME CDEX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">840</td>
+			<td>B02035</td>
+			<td><a href='cholder.asp?part=1452'>PRIME CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">841</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1227'>PRIME CHOICE INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">842</td>
+			<td>B01930</td>
+			<td><a href='cholder.asp?part=1191'>PRIME COURAGE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">843</td>
+			<td>B01567</td>
+			<td><a href='cholder.asp?part=225'>PRIME SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">844</td>
+			<td>B02026</td>
+			<td><a href='cholder.asp?part=1441'>PRIOR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">845</td>
+			<td>B01765</td>
+			<td><a href='cholder.asp?part=366'>PROMISING SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">846</td>
+			<td>B01423</td>
+			<td><a href='cholder.asp?part=140'>PRUDENTIAL BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">847</td>
+			<td>C00011</td>
+			<td><a href='cholder.asp?part=455'>PUBLIC BANK (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">848</td>
+			<td>B01169</td>
+			<td><a href='cholder.asp?part=32'>PUBLIC FINANCIAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">849</td>
+			<td>B01376</td>
+			<td><a href='cholder.asp?part=117'>PUBLIC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">850</td>
+			<td>B02090</td>
+			<td><a href='cholder.asp?part=1550'>PULUN INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">851</td>
+			<td></td>
+			<td><a href='cholder.asp?part=506'>PUROTAT LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">852</td>
+			<td>B01184</td>
+			<td><a href='cholder.asp?part=37'>QUAM SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">853</td>
+			<td>B02050</td>
+			<td><a href='cholder.asp?part=1487'>QUASAR SECURITIES CO., LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">854</td>
+			<td>B01403</td>
+			<td><a href='cholder.asp?part=128'>QUEST STOCKBROKERS (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">855</td>
+			<td>B01839</td>
+			<td><a href='cholder.asp?part=434'>RABO BROKERAGE HK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">856</td>
+			<td>B01795</td>
+			<td><a href='cholder.asp?part=396'>RAFFAELLO SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">857</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1255'>RAGLESS JULIAN CHARLES MICHAEL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">858</td>
+			<td>B01724</td>
+			<td><a href='cholder.asp?part=332'>RAMON INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">859</td>
+			<td>B01133</td>
+			<td><a href='cholder.asp?part=18'>RBC INVESTMENT SERVICES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">860</td>
+			<td>B01700</td>
+			<td><a href='cholder.asp?part=315'>REALINK FINANCIAL TRADE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">861</td>
+			<td>B01918</td>
+			<td><a href='cholder.asp?part=1149'>REALORD ASIA PACIFIC SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">862</td>
+			<td>B02110</td>
+			<td><a href='cholder.asp?part=1590'>RED EAGLE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">863</td>
+			<td>B01802</td>
+			<td><a href='cholder.asp?part=403'>REDFORD SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">864</td>
+			<td>B02147</td>
+			<td><a href='cholder.asp?part=1644'>REGAN INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">865</td>
+			<td>B01127</td>
+			<td><a href='cholder.asp?part=15'>REORIENT FINANCIAL MARKETS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">866</td>
+			<td>B01583</td>
+			<td><a href='cholder.asp?part=238'>RESIDENTS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">867</td>
+			<td>B01607</td>
+			<td><a href='cholder.asp?part=252'>RHB SECURITIES HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">868</td>
+			<td>B01803</td>
+			<td><a href='cholder.asp?part=404'>RICH BAY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">869</td>
+			<td>B01383</td>
+			<td><a href='cholder.asp?part=118'>RICH PLEASURE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">870</td>
+			<td>B01851</td>
+			<td><a href='cholder.asp?part=445'>RICHE BRIGHT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">871</td>
+			<td>B01972</td>
+			<td><a href='cholder.asp?part=1318'>RICHES DEPOT SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">872</td>
+			<td>B01173</td>
+			<td><a href='cholder.asp?part=33'>RIFA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">873</td>
+			<td>B01246</td>
+			<td><a href='cholder.asp?part=55'>ROCTEC SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">874</td>
+			<td>B01664</td>
+			<td><a href='cholder.asp?part=290'>ROOFER SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">875</td>
+			<td>B01708</td>
+			<td><a href='cholder.asp?part=320'>ROSA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">876</td>
+			<td>B01709</td>
+			<td><a href='cholder.asp?part=321'>RPS INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">877</td>
+			<td>B02056</td>
+			<td><a href='cholder.asp?part=1495'>RUIBANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">878</td>
+			<td>B01923</td>
+			<td><a href='cholder.asp?part=1161'>RUISEN PORT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">879</td>
+			<td>B01350</td>
+			<td><a href='cholder.asp?part=106'>S. W. WOO & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">880</td>
+			<td>B01805</td>
+			<td><a href='cholder.asp?part=405'>SALISBURY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">881</td>
+			<td></td>
+			<td><a href='cholder.asp?part=499'>SAMMA INDUSTRIES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">882</td>
+			<td>B01275</td>
+			<td><a href='cholder.asp?part=71'>SANFULL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">883</td>
+			<td>B01386</td>
+			<td><a href='cholder.asp?part=120'>SBI CHINA CAPITAL FINANCIAL SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">884</td>
+			<td>B02072</td>
+			<td><a href='cholder.asp?part=1521'>SBI E2-CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">885</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1221'>SCOTCHTON LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">886</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1094'>SCOUT ASSOCIATION OF HONG KONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">887</td>
+			<td>B02167</td>
+			<td><a href='cholder.asp?part=1666'>SDG SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">888</td>
+			<td>B01627</td>
+			<td><a href='cholder.asp?part=263'>SDHG INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">889</td>
+			<td>B01905</td>
+			<td><a href='cholder.asp?part=1119'>SDICS INTERNATIONAL SECURITIES (HONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">890</td>
+			<td>B01782</td>
+			<td><a href='cholder.asp?part=383'>SEAGA INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">891</td>
+			<td>B02002</td>
+			<td><a href='cholder.asp?part=1396'>SEAZEN RESOURCES SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">892</td>
+			<td>B01192</td>
+			<td><a href='cholder.asp?part=39'>SEEKERS MARKETS LTD (IN LIQUIDATION)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">893</td>
+			<td></td>
+			<td><a href='cholder.asp?part=496'>SEEN SIU LAM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">894</td>
+			<td>B01479</td>
+			<td><a href='cholder.asp?part=891'>SEG INTERNATIONAL SECURITIES (H.K.) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">895</td>
+			<td>B01934</td>
+			<td><a href='cholder.asp?part=1199'>SELECT INVESTMENT SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">896</td>
+			<td>B01645</td>
+			<td><a href='cholder.asp?part=274'>SELINA & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">897</td>
+			<td>B01899</td>
+			<td><a href='cholder.asp?part=1106'>SFGHK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">898</td>
+			<td>B01121</td>
+			<td><a href='cholder.asp?part=12'>SG SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">899</td>
+			<td>B01505</td>
+			<td><a href='cholder.asp?part=188'>SHACOM SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">900</td>
+			<td>C00037</td>
+			<td><a href='cholder.asp?part=465'>SHANGHAI COMMERCIAL BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">901</td>
+			<td>C00104</td>
+			<td><a href='cholder.asp?part=1474'>SHANGHAI PUDONG DEVELOPMENT BANK CO.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">902</td>
+			<td>B01980</td>
+			<td><a href='cholder.asp?part=1356'>SHANXI SECURITIES INTERNATIONAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">903</td>
+			<td>B01207</td>
+			<td><a href='cholder.asp?part=42'>SHAREGAIN DEVELOPMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">904</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1181'>SHE HOI YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">905</td>
+			<td>B01909</td>
+			<td><a href='cholder.asp?part=1127'>SHENG YUAN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">906</td>
+			<td>B01115</td>
+			<td><a href='cholder.asp?part=9'>SHENWAN HONGYUAN SECURITIES (H.K.) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">907</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1272'>SHIH WING CHING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">908</td>
+			<td>B01808</td>
+			<td><a href='cholder.asp?part=408'>SHINKO SECURITIES (H.K.) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">909</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1535'>SHIU GENEVIEVE KIT YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">910</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1236'>SHUM HIU FAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">911</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1345'>SHUM LUNG YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">912</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1554'>SHUM PORTIA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">913</td>
+			<td></td>
+			<td><a href='cholder.asp?part=534'>SHUM WAI NAP</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">914</td>
+			<td>B01731</td>
+			<td><a href='cholder.asp?part=339'>SHUN HENG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">915</td>
+			<td>B01568</td>
+			<td><a href='cholder.asp?part=226'>SHUN LOONG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">916</td>
+			<td>B02128</td>
+			<td><a href='cholder.asp?part=1618'>SILVERBRICKS SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">917</td>
+			<td></td>
+			<td><a href='cholder.asp?part=523'>SIN OI FUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">918</td>
+			<td>B01437</td>
+			<td><a href='cholder.asp?part=149'>SINO CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">919</td>
+			<td>B01585</td>
+			<td><a href='cholder.asp?part=240'>SINO GRADE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">920</td>
+			<td>B01942</td>
+			<td><a href='cholder.asp?part=1223'>SINO WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">921</td>
+			<td>B01710</td>
+			<td><a href='cholder.asp?part=322'>SINO-RICH SECURITIES & FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">922</td>
+			<td>B01256</td>
+			<td><a href='cholder.asp?part=60'>SINOLINK SECURITIES (HONG KONG) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">923</td>
+			<td>B01741</td>
+			<td><a href='cholder.asp?part=347'>SINOMAX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">924</td>
+			<td>B01497</td>
+			<td><a href='cholder.asp?part=185'>SINOPAC SECURITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">925</td>
+			<td>B02076</td>
+			<td><a href='cholder.asp?part=1527'>SINOSTAR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">926</td>
+			<td>B01576</td>
+			<td><a href='cholder.asp?part=232'>SIU ON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">927</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1460'>SIU TIT LUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">928</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1206'>SIU YUK LUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">929</td>
+			<td>B01692</td>
+			<td><a href='cholder.asp?part=309'>SMBC NIKKO SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">930</td>
+			<td></td>
+			<td><a href='cholder.asp?part=524'>SO KAI YUEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">931</td>
+			<td></td>
+			<td><a href='cholder.asp?part=521'>SO KWAI YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">932</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1275'>SO LAI SAN DAPHNE NICOLAS, SO LAI SZE, SO LAI TING, SO MING TAK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">933</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1461'>SO MING TAK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">934</td>
+			<td></td>
+			<td><a href='cholder.asp?part=503'>SO SAU SHAN SIMON</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">935</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1561'>SO SAU SHAN SIMON (DECEASED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">936</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1387'>SO SHING FAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">937</td>
+			<td>C00111</td>
+			<td><a href='cholder.asp?part=1729'>SOCIETE GENERALE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">938</td>
+			<td>B01940</td>
+			<td><a href='cholder.asp?part=1214'>SOFI SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">939</td>
+			<td>P00018</td>
+			<td><a href='cholder.asp?part=493'>SOLID CAPITAL HOLDINGS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">940</td>
+			<td>B01158</td>
+			<td><a href='cholder.asp?part=29'>SOLID KING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">941</td>
+			<td>B02151</td>
+			<td><a href='cholder.asp?part=1647'>SOLITON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">942</td>
+			<td>B02073</td>
+			<td><a href='cholder.asp?part=1522'>SOLOMON JFZ (ASIA) HOLDINGS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">943</td>
+			<td>B01796</td>
+			<td><a href='cholder.asp?part=397'>SOO PEI SHAO & CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">944</td>
+			<td>B01787</td>
+			<td><a href='cholder.asp?part=388'>SOO PUI CHEN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">945</td>
+			<td>B01939</td>
+			<td><a href='cholder.asp?part=1210'>SOOCHOW SECURITIES INTERNATIONAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">946</td>
+			<td>B02028</td>
+			<td><a href='cholder.asp?part=1443'>SORRENTO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">947</td>
+			<td>B01289</td>
+			<td><a href='cholder.asp?part=77'>SOUTH CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">948</td>
+			<td>B01508</td>
+			<td><a href='cholder.asp?part=190'>SOUTHWEST SECURITIES (HK) BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">949</td>
+			<td>B02098</td>
+			<td><a href='cholder.asp?part=1564'>SP GLOBAL ACCESS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">950</td>
+			<td>B02006</td>
+			<td><a href='cholder.asp?part=1403'>SP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">951</td>
+			<td>B02033</td>
+			<td><a href='cholder.asp?part=1450'>SPDB INTERNATIONAL CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">952</td>
+			<td>B02183</td>
+			<td><a href='cholder.asp?part=1686'>SPDB INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">953</td>
+			<td>B02121</td>
+			<td><a href='cholder.asp?part=1610'>SPRING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">954</td>
+			<td>B01290</td>
+			<td><a href='cholder.asp?part=78'>SPS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">955</td>
+			<td>B02030</td>
+			<td><a href='cholder.asp?part=1447'>SR WEALTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">956</td>
+			<td>C00039</td>
+			<td><a href='cholder.asp?part=466'>STANDARD CHARTERED BANK (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">957</td>
+			<td>B01078</td>
+			<td><a href='cholder.asp?part=4'>STANDARD CHARTERED SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">958</td>
+			<td>B01835</td>
+			<td><a href='cholder.asp?part=431'>STANDARD SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">959</td>
+			<td>B02091</td>
+			<td><a href='cholder.asp?part=1551'>STAR RIVER SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">960</td>
+			<td>B01467</td>
+			<td><a href='cholder.asp?part=169'>STAR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">961</td>
+			<td>B01867</td>
+			<td><a href='cholder.asp?part=1056'>STARLING GROUP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">962</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1410'>STAVERLEY ASSETS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">963</td>
+			<td>B01648</td>
+			<td><a href='cholder.asp?part=277'>STELLAR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">964</td>
+			<td>B02005</td>
+			<td><a href='cholder.asp?part=1402'>STI ASSET MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">965</td>
+			<td>B01253</td>
+			<td><a href='cholder.asp?part=59'>STOCKWELL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">966</td>
+			<td>B01680</td>
+			<td><a href='cholder.asp?part=304'>SUCCESS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">967</td>
+			<td>B01800</td>
+			<td><a href='cholder.asp?part=401'>SUN CAPITAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">968</td>
+			<td>B01472</td>
+			<td><a href='cholder.asp?part=172'>SUN GROWTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">969</td>
+			<td>B01922</td>
+			<td><a href='cholder.asp?part=1160'>SUN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">970</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1130'>SUN SHENG YUN, CHUI LOK KIN BRIAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">971</td>
+			<td>B01997</td>
+			<td><a href='cholder.asp?part=1388'>SUNCORP SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">972</td>
+			<td>B02055</td>
+			<td><a href='cholder.asp?part=1494'>SUNFUND SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">973</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1260'>SUNG MEI HEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">974</td>
+			<td>B02052</td>
+			<td><a href='cholder.asp?part=1491'>SUNHIGH FINANCIAL HOLDINGS LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">975</td>
+			<td>B01473</td>
+			<td><a href='cholder.asp?part=173'>SUNNY WORLD INVESTMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">976</td>
+			<td>B01788</td>
+			<td><a href='cholder.asp?part=389'>SUNRISE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">977</td>
+			<td>B02160</td>
+			<td><a href='cholder.asp?part=1656'>SUNTEK FINANCIAL INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">978</td>
+			<td>B01975</td>
+			<td><a href='cholder.asp?part=1332'>SUPREME CHINA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">979</td>
+			<td>B01869</td>
+			<td><a href='cholder.asp?part=1061'>SYNERWEALTH FINANCIAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">980</td>
+			<td>B01797</td>
+			<td><a href='cholder.asp?part=398'>SZEHOPE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">981</td>
+			<td>B01815</td>
+			<td><a href='cholder.asp?part=413'>T & F EQUITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">982</td>
+			<td>B01755</td>
+			<td><a href='cholder.asp?part=359'>T G SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">983</td>
+			<td>B01623</td>
+			<td><a href='cholder.asp?part=260'>TAI FUNG KUENTAI SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">984</td>
+			<td>B01679</td>
+			<td><a href='cholder.asp?part=303'>TAI FUNG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">985</td>
+			<td>B01646</td>
+			<td><a href='cholder.asp?part=275'>TAI NING STOCK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">986</td>
+			<td>B01676</td>
+			<td><a href='cholder.asp?part=300'>TAI SHING STOCK INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">987</td>
+			<td>B01439</td>
+			<td><a href='cholder.asp?part=151'>TAI TAK SECURITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">988</td>
+			<td>B01635</td>
+			<td><a href='cholder.asp?part=949'>TAI WAH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">989</td>
+			<td>B01238</td>
+			<td><a href='cholder.asp?part=53'>TAI YIP STOCK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">990</td>
+			<td>B01392</td>
+			<td><a href='cholder.asp?part=124'>TAIFAIR SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">991</td>
+			<td>B01217</td>
+			<td><a href='cholder.asp?part=46'>TAIPING SECURITIES (HK) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">992</td>
+			<td>C00099</td>
+			<td><a href='cholder.asp?part=1150'>TAISHIN INTERNATIONAL BANK CO., LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">993</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1582'>TAK FUNG INTERNATIONAL LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">994</td>
+			<td>B01144</td>
+			<td><a href='cholder.asp?part=23'>TAK FUNG SHARES INVESTMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">995</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1187'>TAM CHI KIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">996</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1507'>TAM LAI FONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">997</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1358'>TAM WAI LAM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">998</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1339'>TAM WING YIP</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">999</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1432'>TANG CHEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1000</td>
+			<td>B01749</td>
+			<td><a href='cholder.asp?part=353'>TANG KEE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1001</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1469'>TANG KWAN HUI RONNY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1002</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1188'>TANG LAI WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1003</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1542'>TANG LEI BING VICKY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1004</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1350'>TANG MEI PO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1005</td>
+			<td>B01569</td>
+			<td><a href='cholder.asp?part=227'>TANG PING KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1006</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1400'>TANG PO CHEONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1007</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1477'>TAO KWOK YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1008</td>
+			<td>B02150</td>
+			<td><a href='cholder.asp?part=1646'>TARGET CAPITAL MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1009</td>
+			<td>B01415</td>
+			<td><a href='cholder.asp?part=135'>TARZAN STOCK & SHARES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1010</td>
+			<td>B01511</td>
+			<td><a href='cholder.asp?part=193'>TAT LEE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1011</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1405'>TCW REALTY LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1012</td>
+			<td>B01068</td>
+			<td><a href='cholder.asp?part=2'>TEIL STOCK INVESTMENT CO (ADMINISTRATORS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1013</td>
+			<td>B01843</td>
+			<td><a href='cholder.asp?part=438'>TELECOM KING SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1014</td>
+			<td>B01243</td>
+			<td><a href='cholder.asp?part=809'>TEN & TEN SECURITIES CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1015</td>
+			<td>B01772</td>
+			<td><a href='cholder.asp?part=373'>TENSANT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1016</td>
+			<td>B01963</td>
+			<td><a href='cholder.asp?part=1284'>TFI SECURITIES AND FUTURES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1017</td>
+			<td>C00003</td>
+			<td><a href='cholder.asp?part=452'>THE BANK OF EAST ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1018</td>
+			<td>C00067</td>
+			<td><a href='cholder.asp?part=479'>THE BANK OF NOVA SCOTIA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1019</td>
+			<td>B01799</td>
+			<td><a href='cholder.asp?part=400'>THE BRIGHT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1020</td>
+			<td>B01912</td>
+			<td><a href='cholder.asp?part=1138'>THE CORE SECURITIES COMPANY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1021</td>
+			<td>C00019</td>
+			<td><a href='cholder.asp?part=460'>THE HONGKONG AND SHANGHAI BANKING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1022</td>
+			<td>C00060</td>
+			<td><a href='cholder.asp?part=475'>THE ROYAL BANK OF SCOTLAND N.V.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1023</td>
+			<td>B02114</td>
+			<td><a href='cholder.asp?part=1602'>THEIA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1024</td>
+			<td>B01582</td>
+			<td><a href='cholder.asp?part=237'>THING ON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1025</td>
+			<td>B01600</td>
+			<td><a href='cholder.asp?part=247'>THOMAS GLOBAL FINANCIAL SERVICES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1026</td>
+			<td>B02000</td>
+			<td><a href='cholder.asp?part=1393'>TIAN YUAN FINANCE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1027</td>
+			<td>B01920</td>
+			<td><a href='cholder.asp?part=1157'>TIANDA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1028</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1478'>TIDYCORP COMPANY INC.</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1029</td>
+			<td>B01736</td>
+			<td><a href='cholder.asp?part=974'>TIFFIT SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1030</td>
+			<td>B02142</td>
+			<td><a href='cholder.asp?part=1637'>TIGER BROKERS (HK) GLOBAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1031</td>
+			<td>B02138</td>
+			<td><a href='cholder.asp?part=1633'>TIGER FAITH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1032</td>
+			<td>B01919</td>
+			<td><a href='cholder.asp?part=1153'>TIGER SECURITIES ASSET MANAGEMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1033</td>
+			<td>B01597</td>
+			<td><a href='cholder.asp?part=245'>TIMES SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1034</td>
+			<td>B01652</td>
+			<td><a href='cholder.asp?part=281'>TIS SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1035</td>
+			<td>B01846</td>
+			<td><a href='cholder.asp?part=441'>TISCO GLOBAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1036</td>
+			<td>B01204</td>
+			<td><a href='cholder.asp?part=798'>TISCO SECURITIES HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1037</td>
+			<td>B01770</td>
+			<td><a href='cholder.asp?part=371'>TOKAI TOKYO SECURITIES (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1038</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1079'>TONG WUN LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1039</td>
+			<td>B02089</td>
+			<td><a href='cholder.asp?part=1548'>TONGFANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1040</td>
+			<td>B01958</td>
+			<td><a href='cholder.asp?part=1251'>TOPAZ FINANCIAL GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1041</td>
+			<td>B01870</td>
+			<td><a href='cholder.asp?part=1065'>TOTAL SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1042</td>
+			<td>B01773</td>
+			<td><a href='cholder.asp?part=374'>TOYO SECURITIES ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1043</td>
+			<td>B02219</td>
+			<td><a href='cholder.asp?part=1735'>TRADEGO MARKETS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1044</td>
+			<td>B02040</td>
+			<td><a href='cholder.asp?part=1463'>TRADEMASTER SECURITIES (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1045</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1166'>TREASURE GATE HOLDINGS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1046</td>
+			<td>B01647</td>
+			<td><a href='cholder.asp?part=276'>TRUTH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1047</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1519'>TSANG KWONG CHUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1048</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1244'>TSE CHI WANG PHIL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1049</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1118'>TSE HING LIANG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1050</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1268'>TSE MIU MUI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1051</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1390'>TSE PIK HEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1052</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1172'>TSE YUK YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1053</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1292'>TSE YUK YING (DECEASED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1054</td>
+			<td>B01427</td>
+			<td><a href='cholder.asp?part=144'>TSE'S SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1055</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1116'>TSOI CHI NA FANDY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1056</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1352'>TSOI KWEI YEE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1057</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1586'>TSUI YEE MUI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1058</td>
+			<td>B01240</td>
+			<td><a href='cholder.asp?part=54'>TSUN CHI YUEN SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1059</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1525'>TUNG SAI YI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1060</td>
+			<td>B01545</td>
+			<td><a href='cholder.asp?part=210'>TUNG SHING SECURITIES (BROKERS) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1061</td>
+			<td>B01780</td>
+			<td><a href='cholder.asp?part=381'>TUNG SHUN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1062</td>
+			<td>B01341</td>
+			<td><a href='cholder.asp?part=100'>TUNG TAI SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1063</td>
+			<td>B01310</td>
+			<td><a href='cholder.asp?part=88'>TUNG TAK SECURITIES (H.K.) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1064</td>
+			<td>B01619</td>
+			<td><a href='cholder.asp?part=258'>TUNG WUI SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1065</td>
+			<td>B02164</td>
+			<td><a href='cholder.asp?part=1661'>TUNG YAT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1066</td>
+			<td>B01161</td>
+			<td><a href='cholder.asp?part=30'>UBS SECURITIES HONG KONG LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1067</td>
+			<td>B01509</td>
+			<td><a href='cholder.asp?part=191'>UNICORN SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1068</td>
+			<td>C00057</td>
+			<td><a href='cholder.asp?part=473'>UNITED OVERSEAS BANK LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1069</td>
+			<td>B02113</td>
+			<td><a href='cholder.asp?part=1601'>UNITED SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1070</td>
+			<td>B01778</td>
+			<td><a href='cholder.asp?part=379'>UNITED WORLD ONLINE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1071</td>
+			<td>B01353</td>
+			<td><a href='cholder.asp?part=108'>UOB KAY HIAN (HONG KONG) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1072</td>
+			<td>B01540</td>
+			<td><a href='cholder.asp?part=208'>UPBEST SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1073</td>
+			<td>B02093</td>
+			<td><a href='cholder.asp?part=1558'>UPMAX SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1074</td>
+			<td>B02159</td>
+			<td><a href='cholder.asp?part=1655'>USMART SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1075</td>
+			<td>B02070</td>
+			<td><a href='cholder.asp?part=1517'>UZEN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1076</td>
+			<td>B01904</td>
+			<td><a href='cholder.asp?part=1114'>VALUABLE CAPITAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1077</td>
+			<td>B01416</td>
+			<td><a href='cholder.asp?part=136'>VC BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1078</td>
+			<td>B02203</td>
+			<td><a href='cholder.asp?part=1710'>VENTURE SMART ASIA LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1079</td>
+			<td>B01474</td>
+			<td><a href='cholder.asp?part=888'>VICTORFIELD SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1080</td>
+			<td>B01620</td>
+			<td><a href='cholder.asp?part=259'>VICTORY ENTERPRISES (INVESTMENT) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1081</td>
+			<td>B02205</td>
+			<td><a href='cholder.asp?part=1712'>VICTORY SECURITIES (GLOBAL) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1082</td>
+			<td>B01445</td>
+			<td><a href='cholder.asp?part=155'>VICTORY SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1083</td>
+			<td>B02015</td>
+			<td><a href='cholder.asp?part=1421'>VISION CAPITAL INTERNATIONAL HOLDINGS</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1084</td>
+			<td>B01855</td>
+			<td><a href='cholder.asp?part=449'>VISION FINANCE (SECURITIES) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1085</td>
+			<td>B02105</td>
+			<td><a href='cholder.asp?part=1579'>VMI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1086</td>
+			<td>B01080</td>
+			<td><a href='cholder.asp?part=5'>VMS SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1087</td>
+			<td>B01983</td>
+			<td><a href='cholder.asp?part=1362'>W. FALCON ASSET MANAGEMENT (ASIA) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1088</td>
+			<td>B01574</td>
+			<td><a href='cholder.asp?part=230'>WADER SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1089</td>
+			<td>B01712</td>
+			<td><a href='cholder.asp?part=324'>WAH SANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1090</td>
+			<td>B01342</td>
+			<td><a href='cholder.asp?part=101'>WAH THAI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1091</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1515'>WAI CHI TIM JACKY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1092</td>
+			<td>B01632</td>
+			<td><a href='cholder.asp?part=266'>WAI FAT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1093</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1734'>WAI KWONG YUEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1094</td>
+			<td>B01653</td>
+			<td><a href='cholder.asp?part=282'>WAI MAN STOCK & SHARES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1095</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1216'>WAN CHI MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1096</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1739'>WAN KIT SUM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1097</td>
+			<td>B02129</td>
+			<td><a href='cholder.asp?part=1619'>WAN LUNG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1098</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1571'>WAN YUK WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1099</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1093'>WANDLE INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1100</td>
+			<td>B00610</td>
+			<td><a href='cholder.asp?part=679'>WANG LEE CO (ADMINISTRATOR APPOINTED)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1101</td>
+			<td>B01684</td>
+			<td><a href='cholder.asp?part=305'>WANG ON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1102</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1066'>WANG ZHENHUI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1103</td>
+			<td>B01604</td>
+			<td><a href='cholder.asp?part=249'>WANHAI SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1104</td>
+			<td>B01876</td>
+			<td><a href='cholder.asp?part=1069'>WATERLAND SECURITIES (HK) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1105</td>
+			<td>B01322</td>
+			<td><a href='cholder.asp?part=91'>WATON SECURITIES INTERNATIONAL LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1106</td>
+			<td>B02153</td>
+			<td><a href='cholder.asp?part=1649'>WE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1107</td>
+			<td>B02020</td>
+			<td><a href='cholder.asp?part=1433'>WEALTH LINK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1108</td>
+			<td>B02100</td>
+			<td><a href='cholder.asp?part=1566'>WEALTHY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1109</td>
+			<td>B02175</td>
+			<td><a href='cholder.asp?part=1677'>WEBULL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1110</td>
+			<td>B02139</td>
+			<td><a href='cholder.asp?part=1634'>WELL LINK INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1111</td>
+			<td>B01814</td>
+			<td><a href='cholder.asp?part=412'>WELL LINK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1112</td>
+			<td>B01425</td>
+			<td><a href='cholder.asp?part=142'>WELLFULL SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1113</td>
+			<td>B02038</td>
+			<td><a href='cholder.asp?part=1459'>WEST BULL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1114</td>
+			<td>B01863</td>
+			<td><a href='cholder.asp?part=543'>WESTOCK SECURITIES INTERNATIONAL (HK)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1115</td>
+			<td>B01586</td>
+			<td><a href='cholder.asp?part=241'>WHOLE WIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1116</td>
+			<td>B01609</td>
+			<td><a href='cholder.asp?part=254'>WILBY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1117</td>
+			<td>B02017</td>
+			<td><a href='cholder.asp?part=1423'>WILSON SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1118</td>
+			<td>B01740</td>
+			<td><a href='cholder.asp?part=346'>WIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1119</td>
+			<td>B01407</td>
+			<td><a href='cholder.asp?part=131'>WIN WONG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1120</td>
+			<td>B02214</td>
+			<td><a href='cholder.asp?part=1723'>WINBULL SECURITIES INTERNATIONAL (HONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1121</td>
+			<td>B01893</td>
+			<td><a href='cholder.asp?part=1103'>WINCO SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1122</td>
+			<td>B01267</td>
+			<td><a href='cholder.asp?part=67'>WINFULL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1123</td>
+			<td>B01280</td>
+			<td><a href='cholder.asp?part=74'>WING FAT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1124</td>
+			<td>B01351</td>
+			<td><a href='cholder.asp?part=107'>WING FUNG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1125</td>
+			<td>B01220</td>
+			<td><a href='cholder.asp?part=47'>WING ON CHEONG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1126</td>
+			<td>B01757</td>
+			<td><a href='cholder.asp?part=361'>WING TAK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1127</td>
+			<td>B01535</td>
+			<td><a href='cholder.asp?part=206'>WING YEE SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1128</td>
+			<td>B01485</td>
+			<td><a href='cholder.asp?part=895'>WING YIP CO LTD (IN LIQUIDATION)</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1129</td>
+			<td>B01410</td>
+			<td><a href='cholder.asp?part=132'>WINGS SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1130</td>
+			<td>B01759</td>
+			<td><a href='cholder.asp?part=363'>WINLAND WEALTH MANAGEMENT LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1131</td>
+			<td>B01231</td>
+			<td><a href='cholder.asp?part=52'>WINNER INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1132</td>
+			<td>B01798</td>
+			<td><a href='cholder.asp?part=399'>WINNING SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1133</td>
+			<td>B01665</td>
+			<td><a href='cholder.asp?part=291'>WINSOME STOCK CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1134</td>
+			<td>B01732</td>
+			<td><a href='cholder.asp?part=340'>WINTECH SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1135</td>
+			<td>B01768</td>
+			<td><a href='cholder.asp?part=369'>WINTONE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1136</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1228'>WISE LOGIC INVESTMENTS LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1137</td>
+			<td>B01559</td>
+			<td><a href='cholder.asp?part=220'>WISETRADE SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1138</td>
+			<td>B02108</td>
+			<td><a href='cholder.asp?part=1588'>WK SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1139</td>
+			<td>B01546</td>
+			<td><a href='cholder.asp?part=211'>WO FUNG SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1140</td>
+			<td>B01129</td>
+			<td><a href='cholder.asp?part=16'>WOCOM SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1141</td>
+			<td>B02079</td>
+			<td><a href='cholder.asp?part=1530'>WONDER FACE FUND MANAGEMENT CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1142</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1293'>WONG CHEUNG YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1143</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1099'>WONG CHI HO SANDRA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1144</td>
+			<td></td>
+			<td><a href='cholder.asp?part=517'>WONG CHI LIN IVY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1145</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1189'>WONG CHUI LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1146</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1511'>WONG DI FAI ANDY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1147</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1526'>WONG JING YUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1148</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1552'>WONG KA LEI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1149</td>
+			<td></td>
+			<td><a href='cholder.asp?part=514'>WONG KAM FAI WARREN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1150</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1285'>WONG KAM WAH</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1151</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1074'>WONG KIN MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1152</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1067'>WONG KUK BUI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1153</td>
+			<td></td>
+			<td><a href='cholder.asp?part=536'>WONG KWOK LEUNG WESLEY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1154</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1576'>WONG KWOK WA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1155</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1485'>WONG LAI MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1156</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1538'>WONG MAN LOK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1157</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1364'>WONG MEI KUEN ADELA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1158</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1262'>WONG NGA LAI ALICE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1159</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1386'>WONG SUK WAH WENDY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1160</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1115'>WONG TAK WO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1161</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1516'>WONG WAI CHUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1162</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1434'>WONG WAI KEUNG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1163</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1431'>WONG WAI KWONG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1164</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1171'>WONG WAI MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1165</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1417'>WONG WING HANG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1166</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1169'>WONG WING KWAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1167</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1428'>WONG YUE CHIU HORACE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1168</td>
+			<td>B01672</td>
+			<td><a href='cholder.asp?part=297'>WORLDWIDE BROKERAGE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1169</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1204'>WUN CHI KEUNG WILSON</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1170</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1132'>WUN CHUNG YUNG CHRISTINE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1171</td>
+			<td>B02141</td>
+			<td><a href='cholder.asp?part=1636'>XIN YONGAN INTERNATIONAL SECURITIES</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1172</td>
+			<td>B01563</td>
+			<td><a href='cholder.asp?part=221'>XINKONG INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1173</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1355'>YANG ZHENFU</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1174</td>
+			<td>B01493</td>
+			<td><a href='cholder.asp?part=183'>YARDLEY SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1175</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1278'>YAU CHUN SHU</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1176</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1347'>YAU KWOK KEE LAURENCE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1177</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1418'>YAU SZE HOK</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1178</td>
+			<td>B02179</td>
+			<td><a href='cholder.asp?part=1682'>YAW KAI FINANCIAL GROUP LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1179</td>
+			<td>B01426</td>
+			<td><a href='cholder.asp?part=143'>YEE FAT SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1180</td>
+			<td>B02082</td>
+			<td><a href='cholder.asp?part=1533'>YELLOW RIVER SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1181</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1342'>YEUNG CHEUNG YIP</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1182</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1333'>YEUNG KA KIN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1183</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1163'>YEUNG MIU YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1184</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1049'>YEUNG SAU FAN CHERRY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1185</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1480'>YEUNG WING SANG</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1186</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1547'>YEUNG YING LAI</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1187</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1583'>YEUNG YUEN BUN BENNY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1188</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1664'>YEUNG YUI MING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1189</td>
+			<td>B02144</td>
+			<td><a href='cholder.asp?part=1640'>YEW TREE LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1190</td>
+			<td>B01577</td>
+			<td><a href='cholder.asp?part=233'>YF SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1191</td>
+			<td>B01458</td>
+			<td><a href='cholder.asp?part=162'>YICKO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1192</td>
+			<td>B01790</td>
+			<td><a href='cholder.asp?part=391'>YIELDFUL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1193</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1290'>YIM WAI KI VICKY</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1194</td>
+			<td>B01443</td>
+			<td><a href='cholder.asp?part=153'>YING WAH SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1195</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1415'>YIP LAI YING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1196</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1490'>YIP MING SHUM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1197</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1062'>YIP PATRICK PAK-CHUEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1198</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1176'>YIP SHU LAM CHARITABLE FOUNDATION LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1199</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1205'>YIP YUK LING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1200</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1622'>YIU YIN MAN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1201</td>
+			<td>B02201</td>
+			<td><a href='cholder.asp?part=1708'>YONXI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1202</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1186'>YOUNG JAMES JOHN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1203</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1267'>YU MAN TING</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1204</td>
+			<td>B01152</td>
+			<td><a href='cholder.asp?part=26'>YU ON SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1205</td>
+			<td>B02122</td>
+			<td><a href='cholder.asp?part=1611'>YUAN TONG GLOBAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1206</td>
+			<td>B01858</td>
+			<td><a href='cholder.asp?part=541'>YUANTA SECURITIES (HONG KONG) CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1207</td>
+			<td>B02143</td>
+			<td><a href='cholder.asp?part=1638'>YUANYIN SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1208</td>
+			<td>B02069</td>
+			<td><a href='cholder.asp?part=1514'>YUBO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1209</td>
+			<td>B01970</td>
+			<td><a href='cholder.asp?part=1309'>YUE KUN RESEARCH LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1210</td>
+			<td>B01551</td>
+			<td><a href='cholder.asp?part=214'>YUE XIU SECURITIES CO LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1211</td>
+			<td>B02165</td>
+			<td><a href='cholder.asp?part=1662'>YUEN META (INTERNATIONAL) SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1212</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1570'>YUEN TUNG HA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1213</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1110'>YUEN WAI SHAN VALANCIA</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1214</td>
+			<td>B02014</td>
+			<td><a href='cholder.asp?part=1416'>YUET SHEUNG INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1215</td>
+			<td>B01444</td>
+			<td><a href='cholder.asp?part=154'>YUEXING SECURITIES COMPANY LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1216</td>
+			<td>B01967</td>
+			<td><a href='cholder.asp?part=1297'>YUNFENG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1217</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1135'>YUNG JEFFREY YAN-LEUN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1218</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1282'>YUNG KAY SUM</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1219</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1691'>YUNG KIT YI ALICE</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1220</td>
+			<td>B02197</td>
+			<td><a href='cholder.asp?part=1704'>YUNRUI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1221</td>
+			<td>B02170</td>
+			<td><a href='cholder.asp?part=1668'>ZERO2IPO SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1222</td>
+			<td>B02220</td>
+			<td><a href='cholder.asp?part=1736'>ZH SECURITIES LIMITED</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1223</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1252'>ZHANG WEN</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1224</td>
+			<td>B02177</td>
+			<td><a href='cholder.asp?part=1679'>ZHESHANG INTERNATIONAL FINANCIAL</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1225</td>
+			<td>B02039</td>
+			<td><a href='cholder.asp?part=1462'>ZHONG JIA SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1226</td>
+			<td>B02111</td>
+			<td><a href='cholder.asp?part=1592'>ZHONG XIANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1227</td>
+			<td>B02011</td>
+			<td><a href='cholder.asp?part=1411'>ZHONG YANG SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1228</td>
+			<td>B01977</td>
+			<td><a href='cholder.asp?part=1340'>ZHONGCAI SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1229</td>
+			<td>B01389</td>
+			<td><a href='cholder.asp?part=122'>ZHONGRONG PT SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1230</td>
+			<td>B01959</td>
+			<td><a href='cholder.asp?part=1256'>ZHONGTAI INTERNATIONAL SECURITIES LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1231</td>
+			<td>B00129</td>
+			<td><a href='cholder.asp?part=574'>ZIAR & CO</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1232</td>
+			<td>B02102</td>
+			<td><a href='cholder.asp?part=1569'>ZINVEST GLOBAL LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1233</td>
+			<td>B02206</td>
+			<td><a href='cholder.asp?part=1713'>ZIRCON SECURITIES (HK) LTD</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1234</td>
+			<td></td>
+			<td><a href='cholder.asp?part=1328'>ZOLAD BRYAN CHRISTOPHER</a></td>
+		</tr>
+		
+		<tr>
+			<td class="colHide3">1235</td>
+			<td>B02135</td>
+			<td><a href='cholder.asp?part=1630'>ZUNDIAO SECURITIES LTD</a></td>
+		</tr>
+		
+</table>
+<div class="clear"></div>
+<hr>
+<p><a href="/webbmail/join.asp">Sign up for our <b>free</b> newsletter</a></p>
+<p><a href="/pages/refer.asp">Recommend <i>Webb-site</i> to a friend</a></p>
+<p><a href="/pages/aboutus.asp">Copyright &amp; disclaimer</a>, <a href="/pages/privacypolicy.asp">Privacy policy</a></p>
+<p><a href="#top">Back to top</a></p>
+<hr>
+</div>
+</body>
+</html>

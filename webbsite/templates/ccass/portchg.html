@@ -108,34 +108,20 @@
 			<th></th>
 			<th class="colHide3">{# TODO: Port ASP logic: SL "Last<br>holding","lastdn","lastup"... #}</th>
 		</tr>
-		{# cnt=0
-		rs.Open "Call ccass.portchgext3("&p&",'"&d1&"','"&d2&"','"&e&"')",con
-		Do Until rs.EOF
-			holding=Cdbl(rs("holding"))
-			hldchg=Cdbl(rs("hldchg"))
-			issueID=rs("issueID")
-			lastDate=rs("lastDate")
-			stake=rs("stake")*100
-			If isnull(stake) Then stake="-" Else stake=FormatNumber(stake,2)
-			stkchg=rs("stkchg")*100
-			If isnull(stkchg) Then stkchg="-" Else stkchg=FormatNumber(stkchg,2)
-			valchg=rs("valchg")
-			If isnull(valchg) Then valchg="-" Else valchg=FormatNumber(valchg,0)
-			cnt=cnt+1 #}
-			<tr>
-				<td class="colHide1">{{ cnt }}</td>
-				<td>{{ row.stockCode }}</td>
-				<td class="left"><a href="chldchg.asp?i={{ issueID }}&d1={{ d1 }}&d={{ d2 }}">{{ row.stockName }}</a></td>
-				<td class="colHide1">{{ "{:,.\2f}".format(holding) }}</td>
-				<td class="colHide1">{{ "{:,.\2f}".format(hldchg) }}</td>
-				<td>{{ stake }}</td>
-				<td><a href="chistory.asp?i={{ issueID }}&part={{ p }}">{{ stkchg }}</a></td>
-				<td class="colHide3">{{ valchg }}</td>
-				<td>{# TODO: Port ASP logic: If rs("susp") Then Response.Write "*"... #}</td>
-				<td class="colHide3" style="white-space:nowrap">{{ lastDate }}</td>
-			</tr>
-			{# TODO: Port ASP logic: rs.MoveNext
-		Loop... #}
+		{% for row in changes %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td>{{ row.stockcode or '' }}</td>
+			<td class="left"><a href="chldchg.asp?i={{ row.issueid }}&d1={{ d1 }}&d={{ d2 }}">{{ row.stockname }}</a></td>
+			<td class="colHide1">{{ '{:,.2f}'.format(row.holding) if row.holding else '-' }}</td>
+			<td class="colHide1">-</td>
+			<td>-</td>
+			<td><a href="chistory.asp?i={{ row.issueid }}&part={{ p }}">-</a></td>
+			<td class="colHide3">-</td>
+			<td></td>
+			<td class="colHide3" style="white-space:nowrap">-</td>
+		</tr>
+		{% endfor %}
 	</table>
 	{# TODO: Port ASP logic: Call CloseConRs(con,rs) #}
 {% endif %}

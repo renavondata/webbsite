@@ -23,6 +23,7 @@ def create_app(config_class=Config):
         sig2,
         mobile,
         checked,
+        checkbox,
         selected,
         tick,
         ms_date,
@@ -51,6 +52,7 @@ def create_app(config_class=Config):
     # Register as global functions (can be called directly)
     app.jinja_env.globals["mobile"] = mobile
     app.jinja_env.globals["checked"] = checked
+    app.jinja_env.globals["checkbox"] = checkbox
     app.jinja_env.globals["selected"] = selected
     app.jinja_env.globals["tick"] = tick
     app.jinja_env.globals["sig"] = sig

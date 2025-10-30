@@ -51,7 +51,19 @@ def chart():
     items = execute_query(sql, (c,))
 
     if not items:
-        return render_template("dbpub/chart.html", error="No chart items found")
+        # Get all available charts for dropdown even in error case
+        charts_sql = "SELECT id, title FROM enigma.charts ORDER BY title"
+        all_charts = execute_query(charts_sql)
+        return render_template(
+            "dbpub/chart.html",
+            error="No chart items found",
+            title=chart_title or "Economic Data Charts",
+            c=c,
+            all_charts=all_charts,
+            quant=False,
+            freq=1,
+            daily=False,
+        )
 
     # Get chart configuration from first item
     units = items[0].get("units", "")
@@ -92,14 +104,14 @@ def chart():
     # Build data query for all items
     item_ids = [item.get("dataitem") for item in items]
 
-    # Build SELECT for each data item
+    # Build SELECT for each data item with explicit column aliases
     select_parts = []
-    for item in items:
+    for i, item in enumerate(items):
         item_id = item.get("dataitem")
         negate = item.get("negate", False)
         sign = "-" if negate else ""
         select_parts.append(
-            f"{sign}SUM(CASE WHEN item = {item_id} THEN v ELSE 0 END){denom}"
+            f"{sign}SUM(CASE WHEN item = {item_id} THEN v ELSE 0 END){denom} AS item{i}"
         )
 
     data_sql = f"""
@@ -134,12 +146,8 @@ def chart():
             # Add data point to each series
             row_values = []
             for i, item in enumerate(items):
-                # PostgreSQL returns columns in order: d, item1, item2, ...
-                value = (
-                    row.get(f"sum", None)
-                    if len(items) == 1
-                    else list(row.values())[i + 1]
-                )
+                # Access column by name (item0, item1, item2, ...)
+                value = row.get(f"item{i}", None)
                 if value is not None:
                     series_data[i].append([timestamp, float(value)])
                     row_values.append(value)

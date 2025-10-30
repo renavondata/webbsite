@@ -1,6 +1,78 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Economic Data Charts</h2>
+
+{% if error %}
+<p><b>{{ error }}</b></p>
+{% else %}
+
+<form method="get" action="{{ url_for('dbpub_market_data.chart') }}">
+	<div class="inputs">
+		Chart:
+		<select name="c" onchange="this.form.submit()">
+			{% for ch in all_charts %}
+			<option value="{{ ch.id }}" {% if ch.id == c %}selected{% endif %}>{{ ch.title }}</option>
+			{% endfor %}
+		</select>
+		{% if quant and freq < 3 %}
+			<input type="checkbox" name="d" id="d" value="1" {% if daily %}checked{% endif %} onchange="this.form.submit()">
+			<label for="d">Show per day</label>
+		{% endif %}
+	</div>
+</form>
+
+<h3>{{ title }}</h3>
+{% if note %}
+<p><em>{{ note }}</em></p>
+{% endif %}
+
+{% if table_data %}
+<p class="widthAlert1">Some columns may be hidden on narrow displays.</p>
+<table class="numtable yscroll">
+	<tr>
+		<th class="colHide1">Row</th>
+		<th>Date</th>
+		{% for item in items %}
+		<th>{{ item.shortname or item.ddes }}</th>
+		{% endfor %}
+	</tr>
+	{% for row in table_data %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td>{{ row.date.strftime(tipdate) if row.date else '' }}</td>
+		{% for value in row['values'] %}
+		<td>
+			{% if value is not none %}
+				{% set item = items[loop.index0] %}
+				{% if item.dp %}
+					{{ ('{:,.%df}' % (item.dp + dpinc)).format(value) }}
+				{% else %}
+					{{ '{:,.2f}'.format(value) }}
+				{% endif %}
+			{% else %}
+				-
+			{% endif %}
+		</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+
+{% if sources %}
+<p class="footnote">
+	<b>Source{{ 's' if sources|length > 1 else '' }}:</b>
+	{% for source in sources %}
+		<a href="{{ url_for('dbpub_statistics.orgdata', p=source.source) }}">{{ source.name1 }}</a>{% if not loop.last %}, {% endif %}
+	{% endfor %}
+</p>
+{% endif %}
+
+<p class="footnote"><em>Note: Interactive charting with Highstock will be implemented in a future update. Currently showing tabular data.</em></p>
+{% else %}
+<p><b>No data available for this chart.</b></p>
+{% endif %}
+
+{% endif %}
 {% endblock %}
