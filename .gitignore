@@ -50,3 +50,11 @@ scripts/
 *.log
 tests/ground_truth/*
 *.txt
+
+# Archive data - store locally only, too large for GitHub
+archive/webb-site/
+*.tar.gz
+# Keep documentation
+!FINAL_ARCHIVE_STATUS*.md
+!ARCHIVE_*.md
+!TEST_RESULTS*.md
