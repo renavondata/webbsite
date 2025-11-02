@@ -1,6 +1,88 @@
 # Code Style and Conventions
 
-## VB.NET Modules
+## Flask/Python (Production Platform)
+
+### Module Structure
+```python
+"""Module docstring explaining purpose."""
+
+from flask import Blueprint, request, render_template
+from webbsite.db import get_db_connection
+from webbsite.asp_helpers import get_int, get_str, get_bool
+
+bp = Blueprint('module_name', __name__, url_prefix='/prefix')
+
+@bp.route('/route_name')
+def route_name():
+    """Route docstring explaining functionality."""
+    # Implementation
+    pass
+```
+
+### Naming Conventions
+
+**Functions and Routes:**
+- snake_case for Python functions: `get_int()`, `get_str()`, `rem_space()`
+- Route URLs match ASP filenames: `/dbpub/searchorgs`, `/ccass/bigchanges`
+
+**Variables:**
+- snake_case: `person_id`, `issue_id`, `stock_code`
+- Descriptive names preferred over single letters
+- SQL query variables: `query`, `params`, `result`
+
+**Database Fields:**
+- camelCase preserved from original schema: `issueID`, `personID`, `atDate`
+- Use column names exactly as in PostgreSQL schema
+
+### Code Patterns
+
+**Parameter Extraction:**
+```python
+from webbsite.asp_helpers import get_int, get_str, get_bool
+
+person_id = get_int(request.args.get('p'))
+search_term = get_str(request.args.get('q'))
+show_all = get_bool(request.args.get('all'))
+```
+
+**Database Queries (ALWAYS use parameterized queries):**
+```python
+with get_db_connection() as conn:
+    result = conn.execute(
+        "SELECT * FROM enigma.organisations WHERE personID = %s",
+        (person_id,)
+    ).fetchone()
+```
+
+**Error Handling:**
+- Use try/except for expected errors
+- Log errors to stderr (captured by Render.com)
+- Return user-friendly error messages
+
+**Functional Programming:**
+- Prefer functional approach over imperative
+- Use list comprehensions and map/filter where appropriate
+- Minimize side effects
+- Example: `[row['name'] for row in results]`
+
+### Comments and Docstrings
+```python
+def route_name():
+    """Brief description of what route does.
+    
+    Query Parameters:
+        p (int): Person ID
+        q (str): Search query
+        all (bool): Show all results
+    
+    Returns:
+        Rendered template with results.
+    """
+    # Implementation comments explain "why" not "what"
+    pass
+```
+
+## VB.NET Modules (Windows Backend)
 
 ### Module Structure
 ```vb
@@ -61,11 +143,21 @@ End Function
 - Placed above code or at end of line
 - Explain "why" not "what" for non-obvious code
 
-## Classic ASP (VBScript)
+## Classic ASP (RETIRED - Archived Reference Only)
+
+**Status:** Classic ASP code is archived for reference only. Original webb-site.com shut down October 31, 2025. ASP files preserved in repository for:
+- Reference when implementing Flask routes
+- Historical documentation
+- Understanding original business logic
+
+**Do NOT modify ASP files unless:**
+- Correcting historical documentation
+- Clarifying original implementation for Flask migration
+- Updating comments for clarity
 
 ### File Structure
-- **functions1.asp** - Core function library (imported by most pages)
-- **navbars.asp** - Navigation menus
+- **functions1.asp** - Core function library (reference for Flask asp_helpers.py)
+- **navbars.asp** - Navigation menus (reference for Flask templates)
 - Page-specific logic in individual .asp files
 
 ### Naming Conventions
@@ -111,7 +203,7 @@ Call closeCon(con)
 - Explain business logic and database relationships
 - Note performance considerations for complex queries
 
-## SQL Code
+## SQL Code (PostgreSQL Production)
 
 ### Naming Conventions
 
@@ -151,28 +243,44 @@ People:
 - Enforce privilege checks (insertUserID, updUserID)
 - Use stored procedures for complex logic
 
+### PostgreSQL Specifics
+- Schema qualification required: `enigma.organisations`, `ccass.holdings`
+- Modulo operator: Use `MOD()` function instead of `%`
+- Full-text search: Use `to_tsvector()` and `to_tsquery()`
+- Date arithmetic: Use PostgreSQL interval syntax
+- String concatenation: Use `||` operator
+
 ## General Principles
 
 1. **Functional over Imperative:** Prefer functional programming where possible (per user instructions)
-2. **Defensive Checks:** Always check for NULL/Nothing before using database values
-3. **Logging:** Use log tables to track scraper progress and detect failures
-4. **Error Reporting:** Email errors immediately using ErrMail function
-5. **Character Encoding:** Use UTF-8/utf8mb4 for all text to support Chinese characters
+2. **Defensive Checks:** Always check for NULL/None before using database values
+3. **Logging:** Use log tables to track scraper progress and detect failures (VB.NET)
+4. **Error Reporting:** Email errors immediately using ErrMail function (VB.NET)
+5. **Character Encoding:** Use UTF-8 for all text to support Chinese characters
 6. **Date Handling:** Use MSdate() function to convert VB.NET dates to MySQL format
-7. **SQL Injection Prevention:** Use Apos() function to escape strings in SQL
-8. **Performance:** CCASS schema must be resident in RAM for reasonable speed
+7. **SQL Injection Prevention:** 
+   - Flask: Use parameterized queries (psycopg2 handles escaping)
+   - VB.NET: Use Apos() function to escape strings
+8. **Performance:** Connection pooling in Flask, CCASS schema optimization for PostgreSQL
 
 ## File Organization
 
-**VB.NET:**
+**Flask (Production):**
+- Routes organized in blueprints: `webbsite/routes/`
+- 15 route modules by function: `statistics.py`, `corporate.py`, `ccass.py`, etc.
+- Templates in: `webbsite/templates/`
+- Helpers in: `webbsite/asp_helpers.py`, `webbsite/db.py`
+
+**VB.NET (Windows Backend):**
 - One module per file: `CCASS.vb`, `Quotes.vb`, `SFC.vb`
 - Shared utilities in: `ScraperKit.vb`, `JSONkit.vb`
 - No solution (.sln) files in repository (individual modules)
 
-**ASP:**
+**ASP (Archived):**
 - Organized by function in subdirectories: `dbpub/`, `ccass/`, `webbmail/`
 - Shared functions in: `functions1.asp`, `navbars.asp`
 - Templates in: `templates/` directory
+- **For reference only** - not for production use
 
 **SQL:**
 - Schema dumps in dated folders: `enigma251011/`, `ccass251011/`

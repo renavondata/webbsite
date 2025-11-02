@@ -844,6 +844,38 @@ def bigchangesissue():
             current_app.logger.error(f"Error looking up stock name: {ex}")
             stock_name = f"Stock {issue_id}"
 
+    # Query stock listings for navigation
+    stock_listings = []
+    if person_id > 0:
+        try:
+            listings_result = execute_query(
+                """
+                SELECT sl.stockCode, sl.firsttradedate, sl.finaltradedate,
+                       sl.delistdate, sl.issueID, l.longname
+                FROM enigma.stocklistings sl
+                JOIN enigma.issue i ON sl.issueID = i.id1
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE i.issuer = %s
+                ORDER BY sl.firsttradedate DESC
+            """,
+                (person_id,),
+            )
+            for row in listings_result:
+                stock_listings.append(
+                    {
+                        "stockCode": row["stockcode"],
+                        "firstTradeDate": row["firsttradedate"],
+                        "finalTradeDate": row["finaltradedate"],
+                        "delistDate": row["delistdate"],
+                        "issueID": row["issueid"],
+                        "listingName": row["longname"],
+                    }
+                )
+        except Exception as ex:
+            from flask import current_app
+
+            current_app.logger.error(f"Error fetching stock listings: {ex}")
+
     # Query bigchanges for this issue
     try:
         changes_result = execute_query(
@@ -881,6 +913,7 @@ def bigchangesissue():
         person_id=person_id,
         changes=changes,
         sort=sort_param,
+        stock_listings=stock_listings,
     )
 
 
@@ -890,12 +923,12 @@ def bigchangespart():
     Big changes for a specific CCASS participant
 
     Query params:
-    - part: partID of participant
+    - part: partID (integer) or ccassID (string like "A00001")
     - sort: sorting column
 
     Tables used: ccass.bigchanges, ccass.participants, issue, organisations
     """
-    part_id = request.args.get("part", type=int, default=0)
+    part_param = request.args.get("part", "")
     sort_param = request.args.get("sort", "datedn")
 
     # Sort order mapping
@@ -910,6 +943,30 @@ def bigchangespart():
     ob = sort_orders.get(sort_param, "atDate DESC, stkchg DESC")
     if sort_param not in sort_orders:
         sort_param = "datedn"
+
+    # Determine if part_param is an integer partID or string ccassID
+    part_id = 0
+    if part_param:
+        try:
+            # Try as integer partID first
+            part_id = int(part_param)
+        except ValueError:
+            # Must be a ccassID string - look up the partID
+            try:
+                result = execute_query(
+                    """
+                    SELECT partID
+                    FROM ccass.participants
+                    WHERE ccassID = %s
+                """,
+                    (part_param,),
+                )
+                if result:
+                    part_id = result[0]["partid"]
+            except Exception as ex:
+                from flask import current_app
+
+                current_app.logger.error(f"Error looking up ccassID: {ex}")
 
     # Look up participant name and person
     part_name = "No participant specified"
@@ -978,6 +1035,7 @@ def bigchangespart():
         "ccass/bigchangespart.html",
         part_id=part_id,
         part_name=part_name,
+        person_id=person_id,
         changes=changes,
         sort=sort_param,
     )

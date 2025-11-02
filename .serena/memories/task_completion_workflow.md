@@ -2,19 +2,84 @@
 
 ## Important: Windows vs Linux Environment
 
-This project is designed for **Windows development**. The current Linux environment can be used for:
+This project has multiple components with different platform requirements:
+
+**Can be done on Linux:**
+- Flask development and testing
 - Code browsing and exploration
 - Documentation updates
-- SQL script editing
+- SQL script editing (PostgreSQL)
 - Repository management (git operations)
+- Python testing
 
-**Cannot be done on Linux:**
+**Requires Windows:**
 - Building/compiling VB.NET scrapers (requires Visual Studio 2022)
-- Testing Classic ASP pages (requires IIS)
 - Running scrapers (requires Windows ODBC and MySQL setup)
 - Using Access frontend (requires Microsoft Access)
 
+**Retired (Classic ASP):**
+- Testing Classic ASP pages (requires IIS) - **Original webb-site.com shut down Oct 31, 2025**
+- ASP code in repository is archived for reference only
+
 ## When Task is Completed
+
+### For Flask Code Changes (Current Production Platform)
+
+**On Linux or Windows:**
+
+1. **Test Locally**
+   ```bash
+   # Run Flask development server
+   uv run flask run --port 5000
+   
+   # Test the route in browser
+   curl http://localhost:5000/dbpub/searchorgs?q=webb
+   ```
+
+2. **Run Tests** (if applicable)
+   ```bash
+   # Run route tests
+   uv run python tests/test_routes.py --route <route_name>
+   
+   # Check for errors
+   ```
+
+3. **Validate Output**
+   - Check route functionality
+   - Verify SQL queries return correct data
+   - Test parameter handling (get_int, get_str, get_bool)
+   - Check for SQL injection vulnerabilities
+   - Verify HTML rendering in browser
+   - Test mobile responsiveness
+
+4. **Check Performance**
+   - Monitor query execution time
+   - Check for N+1 query issues
+   - Verify connection pooling is working
+
+5. **Commit and Deploy**
+   ```bash
+   # Add changes
+   git add webbsite/routes/<module>.py webbsite/templates/<template>.html
+   
+   # Commit with descriptive message
+   git commit -m "feat: Implement <route_name> route - description
+   
+   Added route showing <functionality>
+   
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+   
+   Co-Authored-By: Claude <noreply@anthropic.com>"
+   
+   # Push to trigger auto-deployment
+   git push origin master
+   ```
+
+6. **Monitor Deployment**
+   - Check Render.com dashboard for deployment status
+   - Verify deployment succeeded (typically 2-3 minutes)
+   - Test route on production: https://webb-site.onrender.com
+   - Check logs for errors
 
 ### For Code Changes (VB.NET Scrapers)
 
@@ -57,86 +122,65 @@ This project is designed for **Windows development**. The current Linux environm
 - Cannot run scrapers without Windows/MySQL/ODBC setup
 - Can only review code and commit changes
 
-### For Code Changes (Classic ASP Pages)
+### For Code Changes (Classic ASP Pages) - ARCHIVED
 
-**On Windows Development Machine with IIS:**
+**Note:** Classic ASP pages are **archived for reference only**. Original webb-site.com shut down October 31, 2025. ASP code is preserved in repository for:
+- Reference when implementing Flask routes
+- Historical documentation
+- Understanding original business logic
 
-1. **Deploy to IIS**
-   - Copy .asp files to IIS web directory
-   - Changes take effect immediately (interpreted language)
+**ASP files should NOT be modified unless:**
+- Correcting historical documentation
+- Clarifying original implementation for Flask migration
+- Updating comments for clarity
 
-2. **Test in Browser**
-   - Navigate to the page
-   - Test all query parameters
-   - Verify database connections work
-   - Check for VBScript errors
-   - Test with different user privileges (if applicable)
+**Flask is the sole production platform.** All new features and fixes should be implemented in Flask.
 
-3. **Validate Output**
-   - Check HTML rendering
-   - Verify data accuracy from database
-   - Test CSV exports if applicable
-   - Check mobile responsive design
+### For SQL Schema Changes (PostgreSQL Production)
 
-4. **Check Performance**
-   - Monitor page load times
-   - Check for slow queries
-   - Verify caching is working
-
-5. **Commit Changes**
-   ```bash
-   git add "Webb-site ASP files/..."
-   git commit -m "description"
-   git push origin <branch>
-   ```
-
-**No Testing on Linux:**
-- Cannot run IIS on Linux
-- Can only review code and commit changes
-
-### For SQL Schema Changes
-
-**On Windows or Linux (if MySQL installed):**
+**On Linux or Windows (with PostgreSQL installed):**
 
 1. **Test SQL Script**
    ```bash
-   # Dry run on test database
-   mysql -u root -p test_database < schema_changes.sql
+   # Test on local PostgreSQL
+   psql postgresql://postgres:@localhost:5432/enigma_pg < schema_changes.sql
    ```
 
 2. **Verify Changes**
    ```sql
-   USE test_database;
-   SHOW TABLES;
-   DESCRIBE table_name;
-   SHOW TRIGGERS;
+   -- Connect to database
+   \c enigma_pg
+   
+   -- Check tables
+   \dt enigma.*
+   
+   -- Describe table
+   \d enigma.table_name
+   
+   -- Check functions
+   \df enigma.*
    ```
 
-3. **Check Triggers/Procedures**
-   - Verify trigger logic with INSERT/UPDATE tests
-   - Test stored procedures with sample data
-   - Check for errors in trigger execution
+3. **Check Functions/Views**
+   - Verify function logic with test queries
+   - Test views with sample data
+   - Check for errors in function execution
 
-4. **Backup Production**
+4. **Apply to Production**
+   - Render.com PostgreSQL has automated backups
+   - Apply changes via connection string from Render dashboard
+   - Or use database migration tools (Alembic, etc.)
+
+5. **Verify Production**
+   - Run test queries on production database
+   - Check Flask application functionality
+   - Monitor logs for errors
+
+6. **Commit Schema Changes**
    ```bash
-   mysqldump -u root -p production_db > backup_$(date +%Y%m%d).sql
-   ```
-
-5. **Apply to Production**
-   ```bash
-   mysql -u root -p production_db < schema_changes.sql
-   ```
-
-6. **Verify Production**
-   - Run test queries
-   - Check application functionality
-   - Monitor error logs
-
-7. **Commit Schema Changes**
-   ```bash
-   git add "Setting up the Webb-site database/..."
-   git commit -m "description"
-   git push origin <branch>
+   git add "migrations/" # or schema files
+   git commit -m "schema: description of changes"
+   git push origin master
    ```
 
 ### For Documentation Changes
@@ -156,51 +200,69 @@ This project is designed for **Windows development**. The current Linux environm
 3. **Commit Changes**
    ```bash
    git add "*.md"
-   git commit -m "Update documentation: description"
-   git push origin <branch>
+   git commit -m "docs: Update documentation - description"
+   git push origin master
    ```
 
-## No Formal Testing Framework
+## Testing Framework (Flask)
 
-**Important:** This project does NOT have:
-- Unit tests
-- Integration tests
-- Automated test suites
-- CI/CD pipelines
-- Linting tools
-- Code formatters
+**Flask Testing Infrastructure:**
+- Custom Python test suite in `tests/`
+- 64 routes in test configuration
+- HTML normalization for comparison
+- Archived ASP outputs as ground truth (historical reference only)
 
-**Why?**
-- Legacy codebase (35 years of history)
-- VB.NET and Classic ASP lack modern testing frameworks
-- Data scrapers are tested by running and verifying results
-- ASP pages are tested manually in browser
+**Running Tests:**
+```bash
+# Test specific route
+uv run python tests/test_routes.py --route searchpeople
+
+# Test all configured routes
+uv run python tests/test_routes.py
+
+# Verbose output
+uv run python tests/test_routes.py --verbose
+```
+
+**Important:** ASP comparison testing no longer possible (original server shut down Oct 31, 2025). Tests use archived outputs from `tests/ground_truth/` and `archive/` directories.
 
 ## Quality Assurance Approach
 
+### For Flask Routes
+1. **Local testing** - Test route in development server
+2. **Automated tests** - Run test suite if route is configured
+3. **Browser testing** - Manually verify functionality
+4. **Database queries** - Verify correct data retrieval
+5. **Production testing** - Test on Render.com after deployment
+6. **Monitor logs** - Check Render.com logs for errors
+
 ### For Scrapers
-1. **Run scraper manually** - best test is actual execution
+1. **Run scraper manually** - Best test is actual execution
 2. **Check error emails** - ErrMail function sends alerts
 3. **Verify log entries** - GetLog/PutLog track progress
-4. **Inspect database** - query tables to verify data updates
-5. **Compare with previous runs** - check for anomalies
+4. **Inspect database** - Query tables to verify data updates
+5. **Compare with previous runs** - Check for anomalies
 
-### For ASP Pages
-1. **Browser testing** - manually test all functionality
-2. **Check IIS logs** - monitor for errors
-3. **Database queries** - verify correct data retrieval
-4. **Cross-browser testing** - test on different browsers
-5. **Mobile testing** - verify responsive design
-
-### For SQL Changes
-1. **Test on non-production database first**
-2. **Backup before applying to production**
+### For SQL Changes (PostgreSQL)
+1. **Test on local PostgreSQL first**
+2. **Backup exists** (Render.com automated backups)
 3. **Monitor application after changes**
 4. **Have rollback plan ready**
 
 ## Code Review Checklist
 
 Before committing changes:
+
+### Flask Routes
+- [ ] Route tested locally
+- [ ] SQL queries use parameterized queries (prevent SQL injection)
+- [ ] Input validation uses asp_helpers (get_int, get_str, get_bool)
+- [ ] Template renders correctly
+- [ ] Mobile responsive design
+- [ ] Error handling present
+- [ ] Docstring explains route functionality
+- [ ] Comments explain complex queries
+- [ ] No hardcoded credentials
 
 ### VB.NET Scrapers
 - [ ] Compiles without errors (x64 platform)
@@ -212,24 +274,38 @@ Before committing changes:
 - [ ] Database connections properly closed
 - [ ] Comments explain business logic
 
-### Classic ASP
-- [ ] No syntax errors (test in browser)
-- [ ] Database connections opened and closed properly
-- [ ] SQL injection prevented (use parameterization or escape)
-- [ ] Error handling present
-- [ ] Authentication checked for secure pages
-- [ ] Output is HTML-escaped to prevent XSS
-- [ ] Comments explain complex queries
-
-### SQL
-- [ ] Syntax is valid
+### SQL (PostgreSQL)
+- [ ] Syntax is valid for PostgreSQL
 - [ ] Indexes are appropriate
 - [ ] Foreign keys maintain referential integrity
-- [ ] Triggers are efficient (not called recursively)
-- [ ] Character set is utf8mb4
-- [ ] Backup exists before applying
+- [ ] Functions use PostgreSQL syntax
+- [ ] Schema qualification (enigma.table_name)
+- [ ] Character set is UTF8
+- [ ] Tested on local PostgreSQL first
 
 ## Deployment Workflow
+
+### Flask Application (Render.com Production)
+
+**Automatic Deployment:**
+1. Commit changes to master branch
+   ```bash
+   git push origin master
+   ```
+
+2. GitHub webhook triggers Render.com deployment
+3. Render runs build command: `uv sync --frozen && uv cache prune --ci`
+4. Zero-downtime rolling deploy
+5. Health check validation
+6. Automatic rollback on failure
+
+**Deployment typically completes in 2-3 minutes.**
+
+**Manual Verification:**
+1. Check Render.com dashboard for deployment status
+2. Test route on production: https://webb-site.onrender.com
+3. Check logs in Render dashboard
+4. Monitor for errors
 
 ### Scrapers (Windows Production Server)
 1. Build executable in Visual Studio (Release, x64)
@@ -239,19 +315,20 @@ Before committing changes:
 5. Monitor first scheduled run
 6. Check error emails and logs
 
-### ASP Pages (Windows Web Server)
-1. Copy .asp files to IIS directory
-2. Test immediately (no compilation needed)
-3. Check IIS logs for errors
-4. Monitor page load times
-
-### Database (MySQL Server)
-1. Backup current database
+### Database (PostgreSQL on Render.com)
+1. Automated daily backups by Render
 2. Apply schema changes during low-traffic period
 3. Verify application functionality
-4. Keep backup until confirmed working
+4. Monitor logs for errors
 
 ## Post-Deployment Monitoring
+
+### For Flask Routes
+- Check Render.com logs for errors
+- Monitor response times
+- Watch for user error reports
+- Check database query performance
+- Monitor memory and CPU usage
 
 ### For Scrapers
 - Check email for error reports daily
@@ -259,19 +336,22 @@ Before committing changes:
 - Monitor data freshness (latest dates)
 - Watch for anomalies in data counts
 
-### For Web Pages
-- Monitor IIS logs for errors
-- Check page load performance
-- Watch for user error reports
-- Monitor database query performance
-
 ### For Database
-- Check replication status (master-slave)
+- Check backup status (Render dashboard)
 - Monitor disk space usage
 - Review slow query log
-- Check backup completion
+- Monitor connection counts
 
 ## When Things Go Wrong
+
+### Flask Errors
+1. Check Render.com logs in dashboard
+2. Check local development logs
+3. Test route locally to reproduce
+4. Check database connectivity
+5. Review SQL queries for errors
+6. Fix code and push (auto-deploys)
+7. Monitor deployment in Render dashboard
 
 ### Scraper Failures
 1. Check error email for details
@@ -281,19 +361,12 @@ Before committing changes:
 5. Run manually with debug output
 6. Fix code and redeploy
 
-### ASP Errors
-1. Check IIS error logs
-2. Enable "Send Errors to Browser" temporarily
-3. Check database connection
-4. Review SQL queries for errors
-5. Fix code (takes effect immediately)
-
 ### Database Issues
-1. Check replication status
-2. Review error log
-3. Verify disk space
-4. Check for corrupted tables
-5. Restore from backup if necessary
+1. Check Render.com database status
+2. Review connection pool settings
+3. Verify disk space (Render dashboard)
+4. Check for slow queries
+5. Restore from backup if necessary (Render backups)
 
 ## Functional Programming Preference
 
@@ -303,17 +376,20 @@ Per user instructions, prefer **functional programming** approach:
 - Minimize side effects
 - Avoid mutable state when practical
 - Heavy use of data transformation functions
-- Examples in ScraperKit: `Apos()`, `CleanStr()`, `DBdate()`
+- Examples in asp_helpers: `get_int()`, `get_str()`, `rem_space()`
+- Examples in ScraperKit (VB.NET): `Apos()`, `CleanStr()`, `DBdate()`
 
 ## Final Checklist
 
 Before marking task complete:
 
-- [ ] Code compiles/runs without errors (if testable)
+- [ ] Code tested locally (Flask) or compiles (VB.NET)
 - [ ] Changes committed to git with clear message
 - [ ] Documentation updated if needed
 - [ ] No hardcoded credentials or private data
 - [ ] Functional programming approach used where applicable
 - [ ] Code follows existing conventions
-- [ ] Database changes tested on non-production first
-- [ ] Backup exists for any destructive changes
+- [ ] SQL injection prevented (parameterized queries)
+- [ ] For Flask: deployment verified on Render.com
+- [ ] For scrapers: tested on Windows
+- [ ] Monitoring in place for production changes

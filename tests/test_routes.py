@@ -192,7 +192,7 @@ class RouteComparator:
         Normalize HTML for comparison using BeautifulSoup - focus on human-visible differences only
 
         Normalization steps:
-        - Parse HTML into DOM tree
+        - Extract only main content area (ignore headers/footers)
         - Remove HTML comments
         - Sort attributes alphabetically
         - Normalize whitespace in text content
@@ -205,6 +205,31 @@ class RouteComparator:
         # Simple normalization: just normalize whitespace and paths
         # Don't use BeautifulSoup prettify as it reformats the entire HTML
         import re
+        from bs4 import BeautifulSoup
+
+        # Extract main content only (ignore headers/footers)
+        soup = BeautifulSoup(html, "html.parser")
+
+        # Try to extract main content area
+        main_content = soup.find("div", class_="mainbody")
+        if main_content:
+            # Use only the main content for comparison
+            html = str(main_content)
+        else:
+            # Fallback: remove common header/footer elements
+            # Remove banner
+            for elem in soup.find_all("div", id="banner"):
+                elem.decompose()
+            # Remove menubar/navigation
+            for elem in soup.find_all("div", id="menubar"):
+                elem.decompose()
+            for elem in soup.find_all("div", class_="hnav"):
+                elem.decompose()
+            # Remove search block
+            for elem in soup.find_all("div", id="srchblk"):
+                elem.decompose()
+            # Convert back to string
+            html = str(soup)
 
         # Remove HTML comments
         html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
@@ -220,6 +245,9 @@ class RouteComparator:
 
         # Normalize image paths
         html = re.sub(r'src="[^"]*/([^/"]+\.(png|jpg|gif|svg))"', r'src="\1"', html)
+
+        # Normalize branding differences (Webb-site vs Renavon)
+        html = re.sub(r'Webb-site|Renavon|renavon\.com|webb-site\.com', 'SITE', html, flags=re.IGNORECASE)
 
         # Normalize multiple whitespace to single space
         html = re.sub(r"\s+", " ", html)
