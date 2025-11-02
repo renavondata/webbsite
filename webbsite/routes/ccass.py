@@ -41,14 +41,14 @@ def bigchanges():
     try:
         result = execute_query(
             """
-            SELECT MAX(settleDate)
+            SELECT MAX(settleDate) as max_date
             FROM ccass.calendar
             WHERE settleDate <= %s
         """,
             (d,),
         )
-        if result and result[0][0]:
-            d = ms_date(result[0][0])
+        if result and result[0]['max_date']:
+            d = ms_date(result[0]['max_date'])
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         from flask import current_app
@@ -79,8 +79,8 @@ def bigchanges():
                    o.name1, p.partName,
                    (SELECT stockCode
                     FROM enigma.stocklistings
-                    WHERE issueID=b.issueID AND toDate IS NULL
-                    ORDER BY fromDate DESC LIMIT 1) AS stockCode,
+                    WHERE issueID=b.issueID AND delistdate IS NULL
+                    ORDER BY firsttradedate DESC LIMIT 1) AS stockCode,
                    s.typeShort
             FROM ccass.bigchanges b
             JOIN enigma.issue i ON b.issueID=i.id1
@@ -229,9 +229,9 @@ def ipstakes():
     # Get latest CCASS date if not specified
     if not d:
         try:
-            result = execute_query("SELECT MAX(atDate) FROM ccass.dailylog")
-            if result and result[0][0]:
-                d = ms_date(result[0][0])
+            result = execute_query("SELECT MAX(atDate) as max_date FROM ccass.dailylog")
+            if result and result[0]['max_date']:
+                d = ms_date(result[0]['max_date'])
             else:
                 d = "2025-10-17"  # Fallback
         except Exception as ex:
@@ -244,14 +244,14 @@ def ipstakes():
     try:
         result = execute_query(
             """
-            SELECT MAX(settleDate)
+            SELECT MAX(settleDate) as max_date
             FROM ccass.calendar
             WHERE settleDate <= %s
         """,
             (d,),
         )
-        if result and result[0][0]:
-            d = ms_date(result[0][0])
+        if result and result[0]['max_date']:
+            d = ms_date(result[0]['max_date'])
     except Exception as ex:
         from flask import current_app
 
@@ -511,8 +511,8 @@ def cholder():
                        (SELECT sl.stockCode
                         FROM enigma.stocklistings sl
                         WHERE sl.issueID = ph.issueID
-                          AND sl.toDate IS NULL
-                        ORDER BY sl.fromDate DESC
+                          AND sl.delistdate IS NULL
+                        ORDER BY sl.firsttradedate DESC
                         LIMIT 1) AS lastCode,
                        CASE WHEN ph.holding > 0 AND os.shares > 0
                             THEN ph.holding / os.shares
@@ -535,8 +535,8 @@ def cholder():
                 LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
                     AND ph.atDate = q.atDate
                 LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
-                    AND ph.atDate >= sl2.fromDate
-                    AND (sl2.toDate IS NULL OR ph.atDate < sl2.toDate)
+                    AND ph.atDate >= sl2.firsttradedate
+                    AND (sl2.delistdate IS NULL OR ph.atDate < sl2.delistdate)
                 WHERE ph.partID = %s
                   AND ph.atDate = %s
                   {holding_filter}
@@ -1013,8 +1013,8 @@ def chistory():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -1404,8 +1404,8 @@ def cconchist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -1544,8 +1544,8 @@ def ctothist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -1748,8 +1748,8 @@ def custhist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -1954,8 +1954,8 @@ def ncipchg():
                 (SELECT sl.stockCode
                  FROM enigma.stocklistings sl
                  WHERE sl.issueID = COALESCE(n2.issueID, n1.issueID)
-                   AND sl.toDate IS NULL
-                 ORDER BY sl.fromDate DESC
+                   AND sl.delistdate IS NULL
+                 ORDER BY sl.firsttradedate DESC
                  LIMIT 1) AS stockCode,
                 o.name1 || ':' || st.typeShort AS stockName,
                 CASE WHEN q.susp OR sl2."2ndCtr"
@@ -1972,8 +1972,8 @@ def ncipchg():
             LEFT JOIN ccass.quotes q ON COALESCE(n2.issueID, n1.issueID) = q.issueID
                 AND q.atDate = %s
             LEFT JOIN enigma.stocklistings sl2 ON COALESCE(n2.issueID, n1.issueID) = sl2.issueID
-                AND %s >= sl2.fromDate
-                AND (sl2.toDate IS NULL OR %s < sl2.toDate)
+                AND %s >= sl2.firsttradedate
+                AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
             WHERE COALESCE(n2.holding, 0) <> 0 OR COALESCE(n1.holding, 0) <> 0
               {change_filter}
             ORDER BY {ob}
@@ -2038,8 +2038,8 @@ def nciphist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -2427,8 +2427,8 @@ def portchg():
                        o.name1 || ':' || st.typeShort AS stockName,
                        (SELECT sl.stockCode
                         FROM enigma.stocklistings sl
-                        WHERE sl.issueID = ph.issueID AND sl.toDate IS NULL
-                        ORDER BY sl.fromDate DESC LIMIT 1) AS stockCode
+                        WHERE sl.issueID = ph.issueID AND sl.delistdate IS NULL
+                        ORDER BY sl.firsttradedate DESC LIMIT 1) AS stockCode
                 FROM ccass.parthold ph
                 JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
@@ -2494,8 +2494,8 @@ def reghist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -2590,8 +2590,8 @@ def brokhist():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -2720,8 +2720,8 @@ def chldchg():
             result = execute_query(
                 """
                 SELECT issueID FROM enigma.stocklistings
-                WHERE stockCode = %s AND toDate IS NULL
-                ORDER BY fromDate DESC LIMIT 1
+                WHERE stockCode = %s AND delistdate IS NULL
+                ORDER BY firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
