@@ -37,61 +37,55 @@ Click the "Change" heading to sort by absolute size of change. Click the
 participant name to see the history of its holding in this stock. Click the date
 of change to see the CCASS movements on that date.</p>
 
-{% if changes|length == 0 %}
-    <p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
-{% else %}
-    {# Mobile hide columns indicator #}
-    <div class="mobile">
-        <p><i>Columns with grey headers hidden on mobile</i></p>
-    </div>
+{# Mobile hide columns indicator #}
+<p class="widthAlert2">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
 
-    <table class="numtable yscroll">
-        <tr>
-            <th class="colHide2">Row</th>
-            <th>
-                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='datedn' if sort!='datedn' else 'dateup') }}">
-                    Date<br>Y-M-D</a>
-            </th>
-            <th class="left">
-                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='partup' if sort!='partup' else 'partdn') }}">
-                    Participant</a>
-            </th>
-            <th>
-                <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='chgdn' if sort!='chgdn' else 'chgup') }}">
-                    Change</a>
-            </th>
-            <th class="colHide3">Previous<br>change</th>
-        </tr>
-        {% set last_date = None %}
-        {% for change in changes %}
-        <tr>
-            <td class="colHide2">{{ loop.index }}</td>
-            <td class="nowrap">
-                {% if (sort in ['datedn', 'dateup']) and change.atDate == last_date %}
-                    {# Suppress duplicate dates when sorted by date #}
-                {% else %}
-                    <a href="{{ url_for('ccass.chldchg', i=issue_id, d=change.atDate.strftime('%Y-%m-%d')) }}">
-                        {{ change.atDate.strftime('%Y-%m-%d') }}
-                    </a>
-                    {% set last_date = change.atDate %}
-                {% endif %}
-            </td>
-            <td class="left">
-                <a href="{{ url_for('ccass.chistory', i=issue_id, part=change.partID) }}">
-                    {{ change.partName }}
+<table class="numtable yscroll">
+    <tr>
+        <th class="colHide2">Row</th>
+        <th>
+            <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='datedn' if sort!='datedn' else 'dateup') }}">
+                <b>Date<br>Y-M-D</b></a>
+        </th>
+        <th class="left">
+            <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='partup' if sort!='partup' else 'partdn') }}">
+                <b>Participant</b></a>
+        </th>
+        <th>
+            <a href="{{ url_for('ccass.bigchangesissue', i=issue_id, sort='chgdn' if sort!='chgdn' else 'chgup') }}">
+                <b>Change</b></a>
+        </th>
+        <th class="colHide3">Previous<br>change</th>
+    </tr>
+    {% set last_date = None %}
+    {% for change in changes %}
+    <tr>
+        <td class="colHide2">{{ loop.index }}</td>
+        <td class="nowrap">
+            {% if (sort in ['datedn', 'dateup']) and change.atDate == last_date %}
+                {# Suppress duplicate dates when sorted by date #}
+            {% else %}
+                <a href="{{ url_for('ccass.chldchg', i=issue_id, d=change.atDate.strftime('%Y-%m-%d')) }}">
+                    {{ change.atDate.strftime('%Y-%m-%d') }}
                 </a>
-            </td>
-            <td>{{ "{:.2f}".format(change.stkchg * 100) }}</td>
-            <td class="nowrap colHide3">
-                {{ change.prevDate.strftime('%Y-%m-%d') if change.prevDate else '' }}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+                {% set last_date = change.atDate %}
+            {% endif %}
+        </td>
+        <td class="left">
+            <a href="{{ url_for('ccass.chistory', i=issue_id, part=change.partID) }}">
+                {{ change.partName }}
+            </a>
+        </td>
+        <td>{{ "{:.2f}".format(change.stkchg * 100) }}</td>
+        <td class="nowrap colHide3">
+            {{ change.prevDate.strftime('%Y-%m-%d') if change.prevDate else '' }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-    {% if changes|length == 0 %}
-        <p>None found.</p>
-    {% endif %}
+{% if changes|length == 0 %}
+    <p>None found.</p>
 {% endif %}
 
 {% include 'includes/footer.html' %}
