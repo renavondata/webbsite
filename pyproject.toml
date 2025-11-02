@@ -8,6 +8,7 @@ dependencies = [
     "sqlalchemy",
     "gunicorn",
     "python-dotenv",
+    "colorama>=0.4.6",
 ]
 
 [dependency-groups]

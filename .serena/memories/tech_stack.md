@@ -1,6 +1,8 @@
 # Webb-site Tech Stack
 
-## Production Stack (Oct 26, 2025 - LIVE on Render.com)
+## Production Stack (Nov 1, 2025 - Post-Shutdown)
+
+**MIGRATION STATUS:** ✅ Successfully completed ahead of October 31, 2025 deadline. Original webb-site.com server shut down as scheduled on Oct 31, 2025. Production site now exclusively operates on Render.com.
 
 ### Python Web Framework
 
@@ -9,7 +11,7 @@
 - **WSGI Server:** Gunicorn with 4 workers
 - **Package Manager:** uv (fast Python package manager)
 - **Python Version:** 3.13
-- **Purpose:** Production web interface on Render.com
+- **Purpose:** Production web interface on Render.com (sole platform)
 
 **Key Dependencies (pyproject.toml):**
 ```toml
@@ -31,7 +33,7 @@ webbsite/
 │   ├── config.py            # Environment variables
 │   ├── db.py                # Database connection management with pooling
 │   ├── asp_helpers.py       # ASP compatibility functions
-│   ├── routes/              # Route blueprints (14 files, 279 routes)
+│   ├── routes/              # Route blueprints (14 files, 284 routes)
 │   │   ├── search.py        # Company/person search (2 routes)
 │   │   ├── prices.py        # Stock price charts (2 routes)
 │   │   ├── events.py        # Corporate actions (1 route)
@@ -152,13 +154,13 @@ databases:
 
 ---
 
-## Legacy Stack (Continues Operating on Windows Backend)
+## Legacy Stack (Backend Continues Operating - Windows Only)
 
 ### VB.NET (Visual Basic .NET)
 - **Version:** .NET Framework (Console App targeting .NET Framework)
 - **Platform:** x64 compilation required
 - **IDE:** Visual Studio 2022 or later
-- **Purpose:** All data scraping and processing modules (CONTINUES TO OPERATE)
+- **Purpose:** All data scraping and processing modules (CONTINUES TO OPERATE on Windows backend)
 
 **Key Libraries:**
 - **Microsoft ADODB** (Version 7.0.3300.0) - Database connectivity
@@ -205,10 +207,13 @@ activate_all_roles_on_login = ON
 - **ccass** - CCASS data (weekly export to PostgreSQL)
 - **private** - Private keys and credentials (NOT exported)
 
-### Classic ASP (RETIRED - Legacy Reference Only)
+### Classic ASP (RETIRED - Archived Oct 31, 2025)
 - **Version:** Classic ASP (pre-.NET) on IIS
-- **Status:** RETIRED Oct 26, 2025 (replaced by Flask)
-- **Purpose:** Legacy code preserved for reference only
+- **Status:** RETIRED - Original webb-site.com server shut down Oct 31, 2025
+- **Purpose:** Legacy code preserved in repository for reference/historical purposes only
+- **Location:** `Webb-site ASP files/` directory in repository
+
+**Note:** Classic ASP code cannot be tested against live server (no longer exists). Archive files in repository serve as reference for remaining route implementations.
 
 ---
 
@@ -252,7 +257,7 @@ uv run --group test python tests/test_routes.py
 - **Framework:** Custom Python test suite
 - **Coverage:** 64 routes in test configuration
 - **Features:**
-  - Flask vs ASP output comparison
+  - Flask vs archived ASP output comparison
   - HTML normalization
   - Whitespace/formatting tolerance
   - Column order independence
@@ -262,18 +267,20 @@ uv run --group test python tests/test_routes.py
 - `tests/test_routes.py` - Main test runner
 - `tests/test_config.yaml` - Route test configuration (64 routes)
 - `tests/test_normalization.py` - Output normalization logic
-- `tests/ground_truth/` - Archived ASP outputs for comparison
+- `tests/ground_truth/` - Archived ASP outputs for comparison (historical reference)
 - `tests/ROUTE_INVENTORY.md` - Route implementation status
+
+**Note:** All testing now uses archived ASP outputs from `tests/ground_truth/` and `archive/` directories. Live ASP comparison no longer possible.
 
 ---
 
-## Production Statistics (Oct 26, 2025)
+## Production Statistics (Nov 1, 2025 - Post-Shutdown)
 
 **Routes:**
-- 279 total routes created
-- 139+ routes with SQL implementations (50% working)
-- 70 stub routes (lower priority)
-- 70 deferred routes (authentication/admin features)
+- 284 total routes created
+- 147 routes with SQL implementations (52% working)
+- ~50 stub routes (lower priority, in progress)
+- 87 deferred routes (authentication/admin features for post-launch)
 
 **Deployment:**
 - Render.com web service (starter plan, 4 workers)
@@ -285,32 +292,38 @@ uv run --group test python tests/test_routes.py
 - Page load times: < 2 seconds (95th percentile)
 - Database queries: < 500ms average
 - Zero downtime since deployment
-- 47 successful deploys since Oct 19
+- 50+ successful deploys since Oct 19
 
-**Traffic:** (to be monitored post-launch)
+**Data Preservation:**
+- 35 years of Hong Kong financial data (1990-2025)
+- Successfully migrated from MySQL to PostgreSQL
+- Weekly updates continue via VB.NET scrapers
 
 ---
 
-## Migration Status
+## Migration Status (Final - Nov 1, 2025)
 
-**✅ Completed:**
-- Flask application with 279 routes
-- 139+ routes with SQL implementations
+**✅ MISSION ACCOMPLISHED:**
+- Migration completed 5 days ahead of October 31, 2025 deadline
+- Original webb-site.com shut down as scheduled Oct 31, 2025
+- Flask application with 284 routes deployed
+- 147 routes fully working with SQL implementations (635% above MVP target of 20!)
 - PostgreSQL database in production
-- Render.com deployment with CI/CD
+- Render.com deployment with CI/CD operational
 - Testing framework operational
-- Performance optimization
+- 35 years of data successfully preserved
 
 **⚠️ In Progress:**
-- 70 stub routes need SQL implementation
-- holders.asp recursive algorithm
-- Performance monitoring and tuning
+- ~50 stub routes (lower priority specialty pages)
+- holders.asp recursive ownership trees
+- Performance monitoring and optimization
+- Automated database imports from Google Drive
 
-**❌ Deferred:**
+**❌ Intentionally Deferred (Post-Launch):**
 - Authentication system (36 routes)
 - Database editing interface (53 routes)
-- VB.NET scraper migration to Python (optional)
-- Real-time data updates (weekly is acceptable)
+- VB.NET scraper migration to Python (optional, not urgent)
+- Real-time data updates (weekly acceptable for historical data)
 
 ---
 
@@ -353,22 +366,23 @@ uv run --group test python tests/test_routes.py
 
 ## Architecture Evolution
 
-**Phase 1 (Oct 17-26, 2025): ✅ COMPLETED**
-- Classic ASP → Flask
+**Phase 1 (Oct 17-31, 2025): ✅ COMPLETED - DEADLINE MET**
+- Classic ASP → Flask (284 routes, 147 working)
 - MySQL replica → PostgreSQL
 - Dedicated server → Render.com
 - Manual deploys → CI/CD
+- **Result:** Original server retired Oct 31, 2025 with 35 years of data preserved
 
-**Phase 2 (Q4 2025): In Progress**
-- Implement remaining routes
+**Phase 2 (Q4 2025 - Q1 2026): In Progress**
+- Implement remaining stub routes
 - Authentication system
 - Performance optimization
 - Automated database imports
 
-**Phase 3 (Q1-Q2 2026): Future**
+**Phase 3 (Q2-Q3 2026): Future**
 - Optional VB.NET → Python scraper migration
 - Real-time data updates
 - API endpoints
 - Mobile app
 
-The Webb-site now runs on a modern, sustainable technology stack that will serve users for decades to come.
+The Webb-site now runs on a modern, sustainable technology stack on Render.com that will serve users for decades to come.

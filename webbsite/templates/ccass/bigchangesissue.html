@@ -13,9 +13,65 @@
     <h2>Big changes in CCASS holders</h2>
     <p><b>{{ stock_name }}</b></p>
 {% else %}
-    {# TODO: Add orgBar navigation when database available #}
-    {# TODO: Add ccassbar navigation when database available #}
-    <h2>Big changes in CCASS holders: {{ stock_name }}</h2>
+    <h2>{{ stock_name }}</h2>
+
+    {# Organization navigation bar #}
+    <ul class="navlist">
+        <li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+        <li><a href="{{ url_for('dbpub_corporate.officers', p=person_id) }}">Officers</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.overlap', p=person_id) }}">Overlaps</a></li>
+        <li><a href="{{ url_for('dbpub_corporate.advisers', p=person_id) }}">Advisers</a></li>
+        <li><a href="{{ url_for('dbpub_events.docs', p=person_id) }}">Financials</a></li>
+    </ul>
+    <div class="clear"></div>
+
+    {# Stock listings table #}
+    {% if stock_listings %}
+        <table class="numtable" style="margin-top:5px">
+        <tr>
+        <th class="left">Exchange</th>
+        <th>Code</th>
+        <th>Listed</th>
+        <th>Last trade</th>
+        <th>Delisted</th>
+        <th></th>
+        </tr>
+        {% for listing in stock_listings %}
+            <tr>
+                <td class="left" style="width:75px;vertical-align:middle">{{ listing.listingName }}</td>
+                <td style="text-align:left;vertical-align:middle">{{ listing.stockCode }}</td>
+                <td style="vertical-align:middle">&nbsp;{{ listing.firstTradeDate.strftime('%Y-%m-%d') if listing.firstTradeDate else '' }}</td>
+                <td style="vertical-align:middle">&nbsp;{{ listing.finalTradeDate.strftime('%Y-%m-%d') if listing.finalTradeDate else '' }}</td>
+                <td style="vertical-align:middle">&nbsp;{{ listing.delistDate.strftime('%Y-%m-%d') if listing.delistDate else '' }}</td>
+                <td></td>
+            </tr>
+        {% endfor %}
+        </table>
+        <div class="clear"></div>
+    {% endif %}
+
+    {# Stock-specific navigation #}
+    <ul class="navlist">
+        <li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id) }}">Buybacks</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.outstanding', i=issue_id) }}">Outstanding</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.str_route', i=issue_id) }}">Total return</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.ctr', i1=issue_id) }}">Compare returns</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.hpu', i=issue_id) }}">Prices</a></li>
+        <li><a href="{{ url_for('dbpub_events.events', i=issue_id) }}">Events</a></li>
+    </ul>
+    <div class="clear"></div>
+
+    {# CCASS navigation bar #}
+    <ul class="navlist">
+        <li><a href="{{ url_for('ccass.choldings', i=issue_id, d='') }}">Holdings</a></li>
+        <li><a href="{{ url_for('ccass.chldchg', sort='chngdn', i=issue_id, d='') }}">Changes</a></li>
+        <li class="livebutton">Big changes</li>
+        <li><a href="{{ url_for('ccass.cconchist', i=issue_id) }}">Concentration</a></li>
+        <li><a href="{{ url_for('ccass.bigchanges', d='') }}">Big changes all stocks</a></li>
+        <li><a href="{{ url_for('ccass.cparticipants') }}">Participants</a></li>
+        <li><a target="_blank" href="{{ url_for('ccass.ccass_notes') }}">About CCASS</a></li>
+    </ul>
+    <div class="clear"></div>
 {% endif %}
 
 <form method="get" action="{{ url_for('ccass.bigchangesissue') }}">

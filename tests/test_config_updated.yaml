@@ -1,0 +1,665 @@
+asp_base: https://webb-site.com
+flask_base: http://127.0.0.1:5000
+test_date: '2024-10-02'
+routes:
+- name: DirsHKAgeDistn - 2 files archived
+  path: /dbpub/DirsHKAgeDistn.asp
+  params:
+  - {}
+- name: DirsHKDistnPeople - 2 files archived
+  path: /dbpub/DirsHKDistnPeople.asp
+  params:
+  - {}
+- name: DirsPerListcoHKdstn - 2 files archived
+  path: /dbpub/DirsPerListcoHKdstn.asp
+  params:
+  - {}
+- name: FAQW - 2 files archived
+  path: /dbpub/FAQW.asp
+  params:
+  - {}
+- name: FAQWWW - 2 files archived
+  path: /dbpub/FAQWWW.asp
+  params:
+  - {}
+- name: FDirsPerListcoHKdstn - 2 files archived
+  path: /dbpub/FDirsPerListcoHKdstn.asp
+  params:
+  - {}
+- name: HKdirsTypeSex - HK directors by type and sex
+  path: /dbpub/HKdirsTypeSex.asp
+  params:
+  - d: '2024-10-01'
+- name: HKstocksByBoardLot - stocks by board lot
+  path: /dbpub/HKstocksByBoardLot.asp
+  params:
+  - d: '2024-10-01'
+- name: INEDHKDistnCos - INED distribution by company
+  path: /dbpub/INEDHKDistnCos.asp
+  params:
+  - d: '2024-10-01'
+- name: INEDHKDistnPeople - INED distribution by people
+  path: /dbpub/INEDHKDistnPeople.asp
+  params:
+  - d: '2024-10-01'
+- name: SFCchanges - SFC license changes
+  path: /dbpub/SFCchanges.asp
+  params:
+  - {}
+  - d: '2024-10-01'
+- name: SFChistall - SFC license history all
+  path: /dbpub/SFChistall.asp
+  params:
+  - p: '100'
+  - p: '1'
+- name: SFChistfirm - SFC license history firm
+  path: /dbpub/SFChistfirm.asp
+  params:
+  - p: '100'
+  - p: '1'
+- name: SFClicensees - SFC licensee directory
+  path: /dbpub/SFClicensees.asp
+  params:
+  - {}
+  - search: HSBC
+  - search: Goldman
+- name: SFClicount - SFC licensee count
+  path: /dbpub/SFClicount.asp
+  params:
+  - {}
+- name: SFColicrec - SFC online record
+  path: /dbpub/SFColicrec.asp
+  params:
+  - ce: '123456'
+- name: advisers - corporate advisors
+  path: /dbpub/advisers.asp
+  params:
+  - p: '1'
+    d: '2024-10-01'
+  - p: '24855630'
+    sort: advup
+    d: '2025-10-14'
+  - p: '100'
+    d: '2024-10-01'
+    role: auditor
+- name: adviserships - advisership listing
+  path: /dbpub/adviserships.asp
+  params:
+  - p: '100'
+- name: alltotrets - all stock total returns
+  path: /dbpub/alltotrets.asp
+  params:
+  - {}
+  - d1: '1994-01-03'
+    d2: '2023-08-22'
+    sort: tretdn
+  - d1: '2020-01-01'
+    d2: '2024-10-01'
+    i: '1'
+  - d1: '2000-01-01'
+    d2: '2024-10-01'
+    sort: cagrdn
+  - d1: '2024-01-01'
+    d2: '2024-10-01'
+    sort: nameup
+- name: articles - root
+  path: /dbpub/articles/
+  params: []
+- name: auditorchanges - 2 files archived
+  path: /dbpub/auditorchanges.asp
+  params:
+  - {}
+- name: bigchanges - 3 files archived
+  path: /ccass/bigchanges.asp
+  params:
+  - sc: 1
+  - sc: 5
+  - sc: 700
+- name: bigchangesissue - 15 files archived
+  path: /ccass/bigchangesissue.asp
+  params:
+  - i: 1
+  - i: 5
+  - i: 62
+  - i: 1
+    d: '2023-03-31'
+  - i: 1
+    d: '2023-06-30'
+- name: bigchangespart - 7 files archived
+  path: /ccass/bigchangespart.asp
+  params:
+  - d: '2023-03-31'
+  - d: '2023-06-30'
+  - part: C00001
+  - part: C00002
+- name: boardcomp - 2 files archived
+  path: /dbpub/boardcomp.asp
+  params:
+  - {}
+- name: bornday - 2 files archived
+  path: /dbpub/bornday.asp
+  params:
+  - {}
+- name: bornyear - 2 files archived
+  path: /dbpub/bornyear.asp
+  params:
+  - {}
+- name: brokhist - 6 files archived
+  path: /ccass/brokhist.asp
+  params:
+  - sc: 1
+  - sc: 388
+  - sc: 5
+- name: buybacks - share buyback transactions
+  path: /dbpub/buybacks.asp
+  params:
+  - i: '31946'
+    sc: '5'
+    f: d
+    sort: datedn
+  - i: '62'
+    f: d
+  - i: '62'
+    f: m
+  - i: '62'
+    f: y
+    u: '1'
+  - i: '62'
+    f: d
+    e: '1'
+    sort: valudn
+- name: cat - 8 files archived
+  path: /dbpub/cat.asp
+  params:
+  - c: 2
+- name: cconc - CCASS concentration
+  path: /ccass/cconc.asp
+  params:
+  - d: '2024-10-01'
+    e: m
+  - d: '2024-10-01'
+    e: g
+    sort: top5dn
+- name: cconchist - 3 files archived
+  path: /ccass/cconchist.asp
+  params:
+  - sc: 1
+  - sc: 5
+  - sc: 700
+- name: chart - 13 files archived
+  path: /dbpub/chart.asp
+  params:
+  - c: 1
+- name: chldchg - CCASS holding changes
+  path: /ccass/chldchg.asp
+  params:
+  - i: '1088'
+    d1: '2024-10-09'
+    d: '2024-10-10'
+    sort: chngdn
+  - i: '1088'
+    d: '2024-10-10'
+  - i: '1088'
+    d1: '2024-10-09'
+    d: '2024-10-10'
+    sort: nameup
+  - i: '62'
+    d1: '2024-10-01'
+    d: '2024-10-02'
+    sort: chngdn
+  - i: '12'
+    d1: '2024-10-01'
+    d: '2024-10-02'
+- name: cholder - 12 files archived
+  path: /ccass/cholder.asp
+  params:
+  - i: 5
+  - i: 62
+  - i: 700
+  - i: 5
+    d: '2023-06-30'
+  - i: 5
+    d: '2023-12-31'
+- name: choldings - 2 files archived
+  path: /ccass/choldings.asp
+  params:
+  - sc: 5
+  - sc: 700
+- name: code - stock code lookup
+  path: /dbpub/code.asp
+  params:
+  - code: '5'
+  - code: '9'
+  - code: '941'
+  - code: '1'
+- name: cosperdomHK - HK companies by domicile
+  path: /dbpub/cosperdomHK.asp
+  params:
+  - {}
+- name: cparticipants - CCASS participants
+  path: /ccass/cparticipants.asp
+  params:
+  - {}
+  - search: HSBC
+- name: ctothist - 3 files archived
+  path: /ccass/ctothist.asp
+  params:
+  - sc: 1
+  - sc: 5
+  - sc: 700
+- name: ctr - capital total return
+  path: /dbpub/ctr.asp
+  params:
+  - i: '62'
+  - i: '941'
+- name: custhist - custody history
+  path: /ccass/custhist.asp
+  params:
+  - i: '62'
+- name: dbpub index
+  path: /dbpub/
+  params: []
+- name: delisted - 2 files archived
+  path: /dbpub/delisted.asp
+  params:
+  - {}
+- name: dirsHKPerPerson - 2 files archived
+  path: /dbpub/dirsHKPerPerson.asp
+  params:
+  - {}
+- name: disFcal - 2 files archived
+  path: /dbpub/disFcal.asp
+  params:
+  - {}
+- name: disHKcaltype - HK dissolution by calendar type
+  path: /dbpub/disHKcaltype.asp
+  params:
+  - {}
+- name: domicile - 2 files archived
+  path: /dbpub/domicile.asp
+  params:
+  - {}
+- name: domicilechange - 2 files archived
+  path: /dbpub/domicilechange.asp
+  params:
+  - {}
+- name: domicilecos - companies by domicile
+  path: /dbpub/domicilecos.asp
+  params:
+  - dom: HK
+- name: domregHK - 2 files archived
+  path: /dbpub/domregHK.asp
+  params:
+  - {}
+- name: events - 5 files archived
+  path: /dbpub/events.asp
+  params:
+  - sc: 1
+  - sc: 1299
+  - sc: 5
+- name: freecodesunder1000 - 2 files archived
+  path: /dbpub/freecodesunder1000.asp
+  params:
+  - {}
+- name: gemgrads - 2 files archived
+  path: /dbpub/gemgrads.asp
+  params:
+  - {}
+- name: govac - 6 files archived
+  path: /dbpub/govac.asp
+  params:
+  - i: 1196
+  - i: 1197
+  - i: 1252
+- name: hklistconowebs - HK listcos without websites
+  path: /dbpub/hklistconowebs.asp
+  params:
+  - d: '2024-10-01'
+- name: hklistcowebs - HK listcos with websites
+  path: /dbpub/hklistcowebs.asp
+  params:
+  - d: '2024-10-01'
+- name: hksolemps - HK solicitor employers
+  path: /dbpub/hksolemps.asp
+  params:
+  - {}
+- name: hksolfirms - HK solicitor firms
+  path: /dbpub/hksolfirms.asp
+  params:
+  - {}
+- name: hksols - HK solicitors
+  path: /dbpub/hksols.asp
+  params:
+  - {}
+  - search: Wong
+- name: holders - ownership tree
+  path: /dbpub/holders.asp
+  params:
+  - p: '1'
+    d: '2024-10-01'
+- name: holdings - shareholdings
+  path: /dbpub/holdings.asp
+  params:
+  - p: '100'
+    d: '2024-10-01'
+- name: incFcal - 2 files archived
+  path: /dbpub/incFcal.asp
+  params:
+  - {}
+- name: incHKannual - HK incorporations annual
+  path: /dbpub/incHKannual.asp
+  params:
+  - {}
+- name: incHKcaltype - 2 files archived
+  path: /dbpub/incHKcaltype.asp
+  params:
+  - {}
+- name: incHKmonth - HK incorporations by month
+  path: /dbpub/incHKmonth.asp
+  params:
+  - {}
+- name: incHKsurvive - HK survival rates
+  path: /dbpub/incHKsurvive.asp
+  params:
+  - {}
+- name: incUKcaltype - 2 files archived
+  path: /dbpub/incUKcaltype.asp
+  params:
+  - {}
+- name: index - 2 files archived
+  path: /ccass/index.asp
+  params:
+  - {}
+- name: ipstakes - investor participant stakes
+  path: /ccass/ipstakes.asp
+  params:
+  - d: '2024-10-01'
+  - d: '2024-10-01'
+    minpct: '5'
+- name: latestdirsHK - latest directors HK
+  path: /dbpub/latestdirsHK.asp
+  params:
+  - {}
+- name: leagueDirsHK - league of directors
+  path: /dbpub/leagueDirsHK.asp
+  params:
+  - d: '2024-10-01'
+- name: lirteams - listing teams
+  path: /dbpub/lirteams.asp
+  params:
+  - {}
+- name: listed - currently listed stocks
+  path: /dbpub/listed.asp
+  params:
+  - e: m
+    t: s
+    d: '2024-10-01'
+  - e: g
+    t: s
+    d: '2024-10-01'
+    sort: codeup
+  - e: a
+    t: s
+    d: '2024-10-01'
+- name: listingtrend - listing trends
+  path: /dbpub/listingtrend.asp
+  params:
+  - {}
+- name: matches - director matches
+  path: /dbpub/matches.asp
+  params:
+  - p: '100'
+- name: mcap - 2 files archived
+  path: /dbpub/mcap.asp
+  params:
+  - {}
+- name: mcaphist - market cap history
+  path: /dbpub/mcaphist.asp
+  params:
+  - i: '62'
+- name: namechangeHK - HK name changes
+  path: /dbpub/namechangeHK.asp
+  params:
+  - {}
+- name: namechangeHKlisted - HK listed name changes
+  path: /dbpub/namechangeHKlisted.asp
+  params:
+  - {}
+- name: natperson - natural person profile
+  path: /dbpub/natperson.asp
+  params:
+  - p: '100'
+  - p: '200'
+- name: ncipchg - non-CIP changes
+  path: /ccass/ncipchg.asp
+  params:
+  - d: '2024-10-01'
+- name: officers - 10 files archived
+  path: /dbpub/officers.asp
+  params:
+  - p: 120937
+  - p: 12345
+  - p: 156890
+  - sc: 1
+  - sc: 1299
+- name: offpay - 451 files archived
+  path: /dbpub/offpay.asp
+  params:
+  - p: 101
+  - p: 10190
+  - p: 10293
+- name: oldestHKcos - 2 files archived
+  path: /dbpub/oldestHKcos.asp
+  params:
+  - {}
+- name: orgdata - company data page
+  path: /dbpub/orgdata.asp
+  params:
+  - p: '16954'
+  - p: '1'
+  - p: '12'
+  - code: '5'
+  - code: '5'
+    Submit: current
+- name: outstanding - outstanding shares
+  path: /dbpub/outstanding.asp
+  params:
+  - i: '62'
+- name: overlap - director overlap
+  path: /dbpub/overlap.asp
+  params:
+  - p1: '1'
+    p2: '100'
+- name: pay - director remuneration
+  path: /dbpub/pay.asp
+  params:
+  - p: '100'
+- name: payleague - 8 files archived
+  path: /dbpub/payleague.asp
+  params:
+  - i: 'False'
+- name: payleagueorg - remuneration league by org
+  path: /dbpub/payleagueorg.asp
+  params:
+  - {}
+- name: portchg - portfolio changes
+  path: /ccass/portchg.asp
+  params:
+  - part: C00001
+    d: '2024-10-01'
+- name: positions - 5 files archived
+  path: /dbpub/positions.asp
+  params:
+  - sc: 1
+  - sc: 1299
+  - sc: 5
+- name: possum - position summary
+  path: /dbpub/possum.asp
+  params:
+  - p: '100'
+- name: regHKannual - 2 files archived
+  path: /dbpub/regHKannual.asp
+  params:
+  - {}
+- name: reghist - registered holder history
+  path: /ccass/reghist.asp
+  params:
+  - i: '62'
+- name: reportspeed - reporting speed
+  path: /dbpub/reportspeed.asp
+  params:
+  - {}
+- name: rightsoo - rights out-of-the-money
+  path: /dbpub/rightsoo.asp
+  params:
+  - {}
+- name: roles - corporate roles
+  path: /dbpub/roles.asp
+  params:
+  - {}
+- name: sdiNotes - SDI notes
+  path: /dbpub/sdiNotes.asp
+  params: []
+- name: sdicap - SDI capital analysis
+  path: /dbpub/sdicap.asp
+  params:
+  - i: '62'
+- name: sdidir - SDI by director
+  path: /dbpub/sdidir.asp
+  params:
+  - p: '100'
+- name: sdidirco - SDI director by company
+  path: /dbpub/sdidirco.asp
+  params:
+  - p: '1'
+- name: sdiissue - SDI by stock
+  path: /dbpub/sdiissue.asp
+  params:
+  - i: '62'
+  - i: '12'
+- name: sdilatest - latest SDI positions
+  path: /dbpub/sdilatest.asp
+  params:
+  - {}
+- name: searchorgs - company search
+  path: /dbpub/searchorgs.asp
+  params:
+  - n: Tencent
+  - n: Alibaba
+- name: searchpeople - person search
+  path: /dbpub/searchpeople.asp
+  params:
+  - n1: Webb
+    n2: David
+  - n1: Li
+    n2: Ka
+- name: short - short positions
+  path: /dbpub/short.asp
+  params:
+  - i: '62'
+  - i: '941'
+- name: shortdate - short positions by date
+  path: /dbpub/shortdate.asp
+  params:
+  - d: '2024-10-01'
+  - d: '2024-10-01'
+    minpct: '1'
+- name: shortnotes - short selling notes
+  path: /dbpub/shortnotes.asp
+  params: []
+- name: shortsum - short position summary
+  path: /dbpub/shortsum.asp
+  params:
+  - {}
+- name: splits - stock splits and consolidations
+  path: /dbpub/splits.asp
+  params:
+  - {}
+  - cat: split
+    limit: '50'
+- name: str - stock total return chart
+  path: /dbpub/str.asp
+  params:
+  - {}
+  - i: '34920'
+  - i: '62'
+    f: '1'
+    b: '1'
+- name: tuntraff - tunnel traffic
+  path: /dbpub/tuntraff.asp
+  params:
+  - {}
+- name: vax - vaccination stats
+  path: /dbpub/vax.asp
+  params:
+  - {}
+- name: veFR - vehicle first registration
+  path: /dbpub/veFR.asp
+  params:
+  - {}
+- name: veFRtype - vehicle FR by type
+  path: /dbpub/veFRtype.asp
+  params:
+  - {}
+- name: veFRtypehist - vehicle FR type history
+  path: /dbpub/veFRtypehist.asp
+  params:
+  - vetype: '1'
+- name: veJourneyhist - vehicle journey history
+  path: /dbpub/veJourneyhist.asp
+  params:
+  - {}
+- name: veJourneys - vehicle journeys
+  path: /dbpub/veJourneys.asp
+  params:
+  - {}
+- name: vebrandhist - vehicle brand history
+  path: /dbpub/vebrandhist.asp
+  params:
+  - brand: TOYOTA
+- name: vedet - vehicle details
+  path: /dbpub/vedet.asp
+  params:
+  - vetype: '1'
+- name: veengine - 2 files archived
+  path: /dbpub/veengine.asp
+  params:
+  - {}
+- name: vefuel - 2 files archived
+  path: /dbpub/vefuel.asp
+  params:
+  - {}
+- name: vefuelhist - vehicle fuel history
+  path: /dbpub/vefuelhist.asp
+  params:
+  - fuel: '1'
+- name: webbchips - 7 files archived
+  path: /dbpub/webbchips.asp
+  params:
+  - sort: codeup
+- name: websites - company websites
+  path: /dbpub/websites.asp
+  params:
+  - {}
+- name: yearend - year-end statistics
+  path: /dbpub/yearend.asp
+  params:
+  - {}
+normalize:
+  strip_whitespace: true
+  remove_comments: true
+  lowercase_tags: false
+  collapse_spaces: true
+timeout:
+  request: 60
+  total: 300
+  route_timeouts:
+    leagueDirsHK: 60
+    incHKannual: 60
+    incHKmonth: 60
+    incHKsurvive: 60
+    disHKcaltype: 60
+report:
+  show_diff: true
+  max_diff_lines: 20
+  color_output: true
