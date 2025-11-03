@@ -46,15 +46,13 @@ instance/
 # testing
 tests/outputs
 tests/*.md
-scripts/
-*.log
 tests/ground_truth/*
 *.txt
 
+# Logs directory
+logs/
+
 # Archive data - store locally only, too large for GitHub
-archive/webb-site/
-*.tar.gz
-# Keep documentation
-!FINAL_ARCHIVE_STATUS*.md
-!ARCHIVE_*.md
-!TEST_RESULTS*.md
+archive/
+scripts/
+docs/

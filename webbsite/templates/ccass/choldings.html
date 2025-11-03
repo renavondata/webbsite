@@ -23,6 +23,92 @@
 {% else %}
 	<h2>{{ stock_name }}</h2>
 
+	{# Organization navigation bar - conditional on stock_listings #}
+	{% if stock_listings %}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.officers', p=person_id) }}">Officers</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.overlap', p=person_id) }}">Overlaps</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.advisers', p=person_id) }}">Advisers</a></li>
+			<li><a href="{{ url_for('dbpub_events.docs', p=person_id) }}">Financials</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% else %}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+
+	{# Stock listings table and navigation - conditional on stock_listings #}
+	{% if stock_listings %}
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		{% for listing in stock_listings %}
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">{{ listing.listingName }}</td>
+				<td style="text-align:left;vertical-align:middle">{{ listing.stockCode }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.firstTradeDate.strftime('%Y-%m-%d') if listing.firstTradeDate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.finalTradeDate.strftime('%Y-%m-%d') if listing.finalTradeDate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.delistDate.strftime('%Y-%m-%d') if listing.delistDate else '' }}</td>
+				<td></td>
+			</tr>
+		{% endfor %}
+		</table>
+		<div class="clear"></div>
+
+		{# Stock-specific navigation #}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id) }}">Buybacks</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.outstanding', i=issue_id) }}">Outstanding</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.str_route', i=issue_id) }}">Total return</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.ctr', i1=issue_id) }}">Compare returns</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.hpu', i=issue_id) }}">Prices</a></li>
+			<li><a href="{{ url_for('dbpub_events.events', i=issue_id) }}">Events</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% else %}
+		{# Empty navlist when no stock listings - matches ASP behavior #}
+		<ul class="navlist">
+
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+
+	{# CCASS navigation bar #}
+	<ul class="navlist">
+		<li class="livebutton">Holdings</li>
+		<li><a href="{{ url_for('ccass.chldchg', sort='chngdn', i=issue_id, d=d) }}">Changes</a></li>
+		<li><a href="{{ url_for('ccass.bigchangesissue', i=issue_id) }}">Big changes</a></li>
+		<li><a href="{{ url_for('ccass.cconchist', i=issue_id) }}">Concentration</a></li>
+		<li><a href="{{ url_for('ccass.bigchanges', d=d) }}">Big changes all stocks</a></li>
+		<li><a href="{{ url_for('ccass.cparticipants') }}">Participants</a></li>
+		<li><a target="_blank" href="{{ url_for('ccass.ccass_notes') }}">About CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	{# Snapshot navigation #}
+	<ul class="navlist">
+		<li class="livebutton">Snapshot</li>
+		<li><a href="{{ url_for('ccass.custhist', i=issue_id) }}">Custodians</a></li>
+		<li><a href="{{ url_for('ccass.brokhist', i=issue_id) }}">Brokers</a></li>
+		<li><a href="{{ url_for('ccass.nciphist', i=issue_id) }}">Investors</a></li>
+		<li><a href="{{ url_for('ccass.ctothist', i=issue_id) }}">CCASS total</a></li>
+		<li><a href="{{ url_for('ccass.reghist', i=issue_id) }}">Non-CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	{% if holdings|length == 0 %}
+		<p><b>There are no records of CCASS holdings.</b></p>
+	{% endif %}
+
 	<form method="get" action="{{ url_for('ccass.choldings') }}">
 		<input type="hidden" name="sort" value="{{ sort }}">
 		<input type="hidden" name="i" value="{{ issue_id }}">
@@ -43,10 +129,7 @@
 		<div class="clear"></div>
 	</form>
 
-	{% if holdings|length == 0 %}
-		<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
-		<p>This page will show all CCASS participants holding this stock on {{ d }}.</p>
-	{% else %}
+	{% if holdings|length > 0 %}
 		<h3>CCASS holdings on {{ d }}</h3>
 		<table class="numtable yscroll">
 			<tr>

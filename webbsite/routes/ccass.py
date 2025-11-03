@@ -623,10 +623,13 @@ def choldings():
         try:
             result = execute_query(
                 """
-                SELECT o.name1 || ':' || st.typeShort AS stockName, o.personID
+                SELECT o.name1 || ':  ' || st.typeShort || ' ' ||
+                       COALESCE(c.currency, 'HKD') AS stockName,
+                       o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.sehkcurr = c.id
                 WHERE i.id1 = %s
             """,
                 (issue_id,),
@@ -700,6 +703,38 @@ def choldings():
 
             current_app.logger.error(f"Error getting summary data: {ex}")
 
+    # Query stock listings for navigation
+    stock_listings = []
+    if person_id > 0:
+        try:
+            listings_result = execute_query(
+                """
+                SELECT sl.stockCode, sl.firsttradedate, sl.finaltradedate,
+                       sl.delistdate, sl.issueID, l.longname
+                FROM enigma.stocklistings sl
+                JOIN enigma.issue i ON sl.issueID = i.id1
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE i.issuer = %s
+                ORDER BY sl.firsttradedate DESC
+            """,
+                (person_id,),
+            )
+            for row in listings_result:
+                stock_listings.append(
+                    {
+                        "stockCode": row["stockcode"],
+                        "firstTradeDate": row["firsttradedate"],
+                        "finalTradeDate": row["finaltradedate"],
+                        "delistDate": row["delistdate"],
+                        "issueID": row["issueid"],
+                        "listingName": row["longname"],
+                    }
+                )
+        except Exception as ex:
+            from flask import current_app
+
+            current_app.logger.error(f"Error getting stock listings: {ex}")
+
     # Get issued shares as of date
     issued = 0
     if issue_id > 0 and d:
@@ -765,6 +800,7 @@ def choldings():
         issue_id=issue_id,
         stock_name=stock_name,
         person_id=person_id,
+        stock_listings=stock_listings,
         holdings=holdings,
         summary=summary,
         issued=issued,
@@ -1619,10 +1655,13 @@ def ctothist():
         try:
             result = execute_query(
                 """
-                SELECT o.name1 || ':' || st.typeShort AS stockName, o.personID
+                SELECT o.name1 || ':  ' || st.typeShort || ' ' ||
+                       COALESCE(c.currency, 'HKD') AS stockName,
+                       o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.sehkcurr = c.id
                 WHERE i.id1 = %s
             """,
                 (issue_id,),
@@ -2015,7 +2054,7 @@ def ncipchg():
                    AND sl.delistdate IS NULL
                  ORDER BY sl.firsttradedate DESC
                  LIMIT 1) AS stockCode,
-                o.name1 || ':' || st.typeShort AS stockName,
+                o.name1 || ':  ' || st.typeShort || ' ' || COALESCE(c.currency, 'HKD') AS stockName,
                 CASE WHEN q.susp OR sl2."2ndCtr"
                      THEN TRUE
                      ELSE FALSE
@@ -2482,7 +2521,7 @@ def portchg():
         try:
             sql = """
                 SELECT ph.issueID, ph.holding,
-                       o.name1 || ':' || st.typeShort AS stockName,
+                       o.name1 || ':  ' || st.typeShort || ' ' || COALESCE(c.currency, 'HKD') AS stockName,
                        (SELECT sl.stockCode
                         FROM enigma.stocklistings sl
                         WHERE sl.issueID = ph.issueID AND sl.delistdate IS NULL
