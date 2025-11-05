@@ -35,7 +35,7 @@
         <li><a href="{{ url_for('dbpub_statistics.enigma_positions', p=person_id) }}">Positions</a></li>
         {% endif %}
         {% if has_pay %}
-        <li><a href="{{ url_for('dbpub.offpay', p=person_id) }}">Pay</a></li>
+        <li><a href="{{ url_for('dbpub_statistics.pay', p=person_id) }}">Pay</a></li>
         {% endif %}
         {% if has_sdi %}
         <li><a href="{{ url_for('dbpub_sdi.sdidir', p=person_id) }}">Dealings</a></li>

@@ -249,6 +249,8 @@ def buybacks():
 
     buybacks_data = []
     totals = []
+    initial_os = None
+    initial_osd = None
     if issue_id:
         try:
             # Always use webbuybacks - the u parameter only affects outstanding shares adjustment, not buyback shares
