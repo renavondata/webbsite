@@ -15,10 +15,10 @@
 {% block content %}
 {% if not i %}
 	<h2>CCASS concentration analysis</h2>
-	<p><b>{{ n }}</b></p>
+	<p><b>{{ stock_name }}</b></p>
 {% else %}
 {# TODO: Port ASP logic:
-	Call orgBar(n,p,0)
+	Call orgBar(stock_name,p,0)
 	Call ccassbar(i,d,3) #}
 {% endif %}
 <ul class="navlist"><li><a href="cconc.asp">All stocks</a></li></ul>
@@ -40,25 +40,24 @@
 	<table class="numtable yscroll">
 	<tr>
 		<th class="colHide1">Row</th>
-		<th>{# TODO: Port ASP logic: SL "Date","datedn","dateup"... #}</th>
-		<th><%SL "Top 5<br>%","cp5dn","cp5up"%></th>
-		<th><%SL "Top 10<br>%","cp10dn","cp10up"%></th>
-		<th><%SL "Top 10<br>+NCIP<br>%","cp10ipdn","cp10ipup"%></th>
-		<th><%SL "Stake in<br>CCASS<br>%","stakup","stakdn"%></th>
+		<th><a href="?i={{ i }}&amp;sort={% if sort == 'datedn' %}dateup{% else %}datedn{% endif %}">Date</a></th>
+		<th><a href="?i={{ i }}&amp;sort={% if sort == 'cp5dn' %}cp5up{% else %}cp5dn{% endif %}">Top 5<br>%</a></th>
+		<th><a href="?i={{ i }}&amp;sort={% if sort == 'cp10dn' %}cp10up{% else %}cp10dn{% endif %}">Top 10<br>%</a></th>
+		<th><a href="?i={{ i }}&amp;sort={% if sort == 'cp10ipdn' %}cp10ipup{% else %}cp10ipdn{% endif %}">Top 10<br>+NCIP<br>%</a></th>
+		<th><a href="?i={{ i }}&amp;sort={% if sort == 'stakdn' %}stakup{% else %}stakdn{% endif %}">Stake in<br>CCASS<br>%</a></th>
 	</tr>
-	
+	{% for row in history %}
 		<tr>
-			<td class="colHide1">{{ cnt }}</td>
-			<td><a href="choldings.asp?i={{ i }}&amp;d={{ d }}">{{ d }}</a></td>
-			<td>{{ "{:,.\2f}".format(cdbl(row.cp5)*100) }}</td>
-			<td>{{ "{:,.\2f}".format(cdbl(row.cp10)*100) }}</td>
-			<td>{{ "{:,.\2f}".format(cdbl(row.cp10ip)*100) }}</td>
-			<td>{# TODO: Port ASP logic: If not isnull(stake) then Response.Write FormatNum... #}</td>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td><a href="choldings.asp?i={{ i }}&amp;d={{ row.atDate }}">{{ row.atDate }}</a></td>
+			<td>{{ "%.2f"|format(row.cp5 * 100) if row.cp5 is not none else '' }}</td>
+			<td>{{ "%.2f"|format(row.cp10 * 100) if row.cp10 is not none else '' }}</td>
+			<td>{{ "%.2f"|format(row.cp10ip * 100) if row.cp10ip is not none else '' }}</td>
+			<td>{{ "%.2f"|format(row.stake * 100) if row.stake is not none else '' }}</td>
 		</tr>
-		{# TODO: Port ASP logic: rs.MoveNext
-	Loop... #}
+	{% endfor %}
 	</table>
-	{% if not cnt %}
+	{% if not history %}
 		<p>None found.</p>
 	{% endif %}
 {% endif %}

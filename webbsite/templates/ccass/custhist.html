@@ -15,10 +15,10 @@
 {% block content %}
 {% if not i %}
 	<h2>Holdings of custodian participants</h2>
-	<p><b>{{ n }}</b></p>
+	<p><b>{{ stock_name }}</b></p>
 {% else %}
 {# TODO: Port ASP logic:
-	Call orgBar(n,p,0)
+	Call orgBar(stock_name,p,0)
 	Call ccassholdbar(i,atDa... #}
 {% endif %}
 <form method="get" action="custhist.asp">
@@ -30,50 +30,34 @@
 	<div class="clear"></div>
 </form>
 {% if i>0 %}
-	<h3>Holdings of custodian particpants</h3>
-	{# TODO: Port ASP logic: If sort="dateup" Then
-		ob="atDate"
-	Else
-		ob="at... #}
+	<h3>Holdings of custodian participants</h3>
+	{% if not history %}
 		<p><b>No records for this issue.</b></p>
 	{% else %}
-		{{ mobile(1) }}
 		<table class="numtable yscroll">
 		<tr>
 			<th class="colHide1">Row</th>
-			<th>{# TODO: Port ASP logic: SL "Holding<br>date","dateup","datedn"... #}</th>
+			<th><a href="?i={{ i }}&amp;sort={% if sort == 'datedn' %}dateup{% else %}datedn{% endif %}">Holding<br>date</a></th>
 			<th>Holding</th>
 			<th class="colHide3">Change</th>
 			<th>Stake<br>%</th>
 			<th class="colHide2">Issued<br>shares</th>
 			<th class="colHide1">As at date</th>
 		</tr>
-		{# Do Until rs.EOF
-			cnt=cnt+1
-			atDate=rs("atDate")
-			issued=rs("shares")
-			If not isNull(issued) Then issued=Cdbl(issued)
-			osDate=rs("maxDate")
-			If sort="dateup" Then
-				lastholding=holding
-				holding=CDbl(rs("holding"))
-				change=holding-lastholding
-				rs.MoveNext
-			Else
-				holding=CDbl(rs("holding"))
-				rs.MoveNext
-				If Not rs.EOF Then lastholding=CDbl(rs("holding"))
-				change=holding-lastholding
-			End If #}
+		{% for row in history %}
 			<tr>
-				<td class="colHide1">{{ cnt }}</td>
-				<td><a href="chldchg.asp?i={{ i }}&amp;d={{ atDate }}">{{ atDate }}</a></td>
-				<td>{{ "{:,.\2f}".format(holding) }}</td>
-				<td class="colHide3">{# TODO: Port ASP logic: If (sort="dateup" And cnt>1) Or (sort="datedn" And... #}</td>		
-				{% if not isNull(issued) %}
-					<td>{{ "{:,.\2f}".format(holding*100/issued) }}</td>
-					<td class="colHide2">{{ "{:,.\2f}".format(issued) }}</td>
-					<td class="colHide1">{{ osDate }}</td>
+				<td class="colHide1">{{ loop.index }}</td>
+				<td><a href="chldchg.asp?i={{ i }}&amp;d={{ row.atDate }}">{{ row.atDate }}</a></td>
+				<td>{{ "{:,.0f}".format(row.holding) if row.holding is not none else '' }}</td>
+				<td class="colHide3">
+					{% if row.change is not none %}
+						{{ "{:+,.0f}".format(row.change) }}
+					{% endif %}
+				</td>
+				{% if row.shares is not none and row.shares > 0 %}
+					<td>{{ "%.2f"|format(row.stake * 100) if row.stake is not none else '' }}</td>
+					<td class="colHide2">{{ "{:,.0f}".format(row.shares) }}</td>
+					<td class="colHide1">{{ row.atDate }}</td>
 				{% else %}
 					<td></td>
 					<td class="colHide2"></td>
@@ -82,6 +66,7 @@
 			</tr>
 		{% endfor %}
 		</table>
+	{% endif %}
 {% endif %}
 	{# TODO: Port ASP logic: End If Call CloseConRs(con,rs)... #}
 {% endblock %}

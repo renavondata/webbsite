@@ -44,41 +44,30 @@
 <table class="numtable yscroll">
 	<tr>
 		<th class="colHide1">Row</th>
-		<th>{# TODO: Port ASP logic: SL "Last<br>code","codeup","codedn"... #}</th>
-		<th style="text-align:left">{# TODO: Port ASP logic: SL "Name","nameup","namedn"... #}</th>
-		<th class="colHide2">{# TODO: Port ASP logic: SL "Holding","holddn","holdup"... #}</th>
-		<th class="colHide2">{# TODO: Port ASP logic: SL "Change", "chngdn","chngup"... #}</th>
-		<th class="colHide3">{# TODO: Port ASP logic: SL "Holders<br>Change", "hchgdn","hchgup"... #}</th>
-		<th class="colHide3"><%SL "Stake<br>%","stakdn","stakup"%></th>
-		<th><%SL "Stake<br>&#x0394; %","stkcdn","stkcup"%></th>
-		<th>{# TODO: Port ASP logic: SL "Value<br>change","valcdn","valcup"... #}</th>
+		<th><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'codedn' %}codeup{% else %}codedn{% endif %}">Last<br>code</a></th>
+		<th style="text-align:left"><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'namedn' %}nameup{% else %}namedn{% endif %}">Name</a></th>
+		<th class="colHide2"><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'holddn' %}holdup{% else %}holddn{% endif %}">Holding</a></th>
+		<th class="colHide2"><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'chngdn' %}chngup{% else %}chngdn{% endif %}">Change</a></th>
+		<th class="colHide3"><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'hchgdn' %}hchgup{% else %}hchgdn{% endif %}">Holders<br>Change</a></th>
+		<th class="colHide3"><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'stakdn' %}stakup{% else %}stakdn{% endif %}">Stake<br>%</a></th>
+		<th><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'stkcdn' %}stkcup{% else %}stkcdn{% endif %}">Stake<br>&#x0394; %</a></th>
+		<th><a href="?d1={{ d1 }}&amp;d={{ d2 }}&amp;z={{ z }}&amp;sort={% if sort == 'valcdn' %}valcup{% else %}valcdn{% endif %}">Value<br>change</a></th>
 		<th></th>
 	</tr>
-	{# cnt=0
-	Do Until rs.EOF
-		holding=Cdbl(rs("holding"))
-		hldchg=Cdbl(rs("hldchg"))
-		issueID=rs("issueID")
-		stake=rs("stake")*100
-		stkchg=rs("stkchg")*100
-		valchg=rs("valchg")
-		cntchg=rs("cntchg")
-		cnt=cnt+1 #}
+	{% for row in changes %}
 		<tr>
-			<td class="colHide1">{{ cnt }}</td>
+			<td class="colHide1">{{ loop.index }}</td>
 			<td>{{ row.stockCode }}</td>
-			<td style="text-align:left"><a href="chldchg.asp?i={{ issueID }}&d1={{ d1 }}&d={{ d2 }}">{{ row.stockName }}</a></td>
-			<td class="colHide2">{{ "{:,.\2f}".format(holding) }}</td>
-			<td class="colHide2">{{ "{:,.\2f}".format(hldchg) }}</td>			
-			<td class="colHide3">{{ "{:,.\2f}".format(cntchg) }}</td>
-			<td class="colHide3">{{ "{:,.\2f}".format(stake) }}</td>
-			<td><a href="nciphist.asp?i={{ issueID }}">{{ "{:,.\2f}".format(stkchg) }}</a></td>
-			<td>{{ "{:,.\2f}".format(valchg) }}</td>
-			<td>{# TODO: Port ASP logic: If rs("susp") Then Response.Write "*"... #}</td>
+			<td style="text-align:left"><a href="chldchg.asp?i={{ row.issueID }}&amp;d1={{ d1 }}&amp;d={{ d2 }}">{{ row.stockName }}</a></td>
+			<td class="colHide2">{{ "{:,.0f}".format(row.holding) if row.holding is not none else '' }}</td>
+			<td class="colHide2">{{ "{:+,.0f}".format(row.hldchg) if row.hldchg is not none else '' }}</td>
+			<td class="colHide3">{{ "{:+,.0f}".format(row.cntchg) if row.cntchg is not none else '' }}</td>
+			<td class="colHide3">{{ "%.2f"|format(row.stake * 100) if row.stake is not none else '' }}</td>
+			<td><a href="nciphist.asp?i={{ row.issueID }}">{{ "%.2f"|format(row.stkchg * 100) if row.stkchg is not none else '' }}</a></td>
+			<td>{{ "{:+,.0f}".format(row.valchg) if row.valchg is not none else '' }}</td>
+			<td>{% if row.susp %}*{% endif %}</td>
 		</tr>
-		{# TODO: Port ASP logic: rs.MoveNext
-	Loop
-	Call CloseConRs(con,rs)... #}
+	{% endfor %}
 </table>
 {% endblock %}
 </body>
