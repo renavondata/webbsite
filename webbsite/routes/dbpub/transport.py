@@ -282,11 +282,11 @@ def veengine():
     where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
     data = execute_query(
         f"""
-        SELECT es.des, SUM(ve.fr) AS total_fr, SUM(ve.totreg) AS total_reg
+        SELECT es.id, es.des, SUM(ve.fr) AS total_fr, SUM(ve.totreg) AS total_reg
         FROM enigma.veengine ve
         JOIN enigma.enginesize es ON ve.engid = es.id
         WHERE {where}
-        GROUP BY es.des
+        GROUP BY es.id, es.des
         ORDER BY es.id
     """
     )
@@ -306,8 +306,8 @@ def vefuel():
         FROM enigma.vehiclefr v
         JOIN enigma.vehiclefuel vf ON v.fuelid = vf.id
         WHERE {where}
-        GROUP BY vf.friendly
-        ORDER BY total DESC
+        GROUP BY vf.friendly, vf.id
+        ORDER BY vf.id DESC
     """
     )
 
