@@ -46,6 +46,22 @@ routes:
       - cat: "div"
         limit: "50"
 
+  - name: "enigma.events - enigma events"
+    path: "/dbpub/enigma.events.asp"
+    params:
+      - {}
+
+  - name: "eventdets - event details"
+    path: "/dbpub/eventdets.asp"
+    params:
+      - e: "1"  # Event ID
+
+  - name: "docs - documents"
+    path: "/dbpub/docs.asp"
+    params:
+      - p: "1"  # Person/organization ID
+      - p: "100"
+
   # ==========================================
   # Stock Listings (3 routes)
   # ==========================================
@@ -119,6 +135,12 @@ routes:
       - p: "200"  # Example personID
         d: "2024-10-01"
 
+  - name: "prices - stock prices"
+    path: "/dbpub/prices.asp"
+    params:
+      - i: "62"  # HSBC
+      - i: "941"  # China Mobile
+
   # ==========================================
   # Company Data (1 route)
   # ==========================================
@@ -146,6 +168,31 @@ routes:
   - name: "articles - root"
     path: "/dbpub/articles/"
     params: []
+
+  - name: "articles - article listing"
+    path: "/dbpub/articles.asp"
+    params:
+      - {}
+
+  - name: "articlesyear - articles by year"
+    path: "/dbpub/articlesyear.asp"
+    params:
+      - y: "2024"
+
+  - name: "artlinks - article links"
+    path: "/dbpub/artlinks.asp"
+    params:
+      - s: "1"  # Story ID
+
+  - name: "cat - category listing"
+    path: "/dbpub/cat.asp"
+    params:
+      - c: "1"  # Category ID
+
+  - name: "subject - subject listing"
+    path: "/dbpub/subject.asp"
+    params:
+      - {}
 
   # ==========================================
   # CCASS Analysis (7 routes)
@@ -271,6 +318,20 @@ routes:
       - part: "C00001"
         d: "2024-10-01"
 
+  - name: "CCASSnotes - CCASS notes and methodology"
+    path: "/ccass/CCASSnotes.asp"
+    params: []
+
+  - name: "chistory - CCASS history"
+    path: "/ccass/chistory.asp"
+    params:
+      - i: "62"
+
+  - name: "nciphist - non-CIP history"
+    path: "/ccass/nciphist.asp"
+    params:
+      - i: "62"
+
   # ==========================================
   # Directors & Board Composition (7 routes)
   # ==========================================
@@ -372,19 +433,24 @@ routes:
   # ==========================================
   # Law & Finance Professionals (4 routes)
   # ==========================================
-  - name: "hksols - HK solicitors"
-    path: "/dbpub/hksols.asp"
+  - name: "HKsols - HK solicitors"
+    path: "/dbpub/HKsols.asp"
     params:
       - {}
       - search: "Wong"
 
-  - name: "hksolfirms - HK solicitor firms"
-    path: "/dbpub/hksolfirms.asp"
+  - name: "HKsolfirms - HK solicitor firms"
+    path: "/dbpub/HKsolfirms.asp"
     params:
       - {}
 
-  - name: "hksolemps - HK solicitor employers"
-    path: "/dbpub/hksolemps.asp"
+  - name: "HKsolemps - HK solicitor employers"
+    path: "/dbpub/HKsolemps.asp"
+    params:
+      - {}
+
+  - name: "HKsolsmoves - HK solicitor moves"
+    path: "/dbpub/HKsolsmoves.asp"
     params:
       - {}
 
@@ -485,6 +551,16 @@ routes:
         f: "d"
         e: "1"
         sort: "valudn"
+
+  - name: "buybackstime - buyback time series"
+    path: "/dbpub/buybackstime.asp"
+    params:
+      - {}
+
+  - name: "buybacksum - buyback summary"
+    path: "/dbpub/buybacksum.asp"
+    params:
+      - {}
 
   # ==========================================
   # SFC Licensees (6 routes) - NEW
@@ -811,6 +887,257 @@ routes:
     path: "/dbpub/bornyear.asp"
     params:
       - y: "1970"
+
+  # ==========================================
+  # Additional Statistics Routes (40 routes)
+  # ==========================================
+  - name: "CSV - CSV export"
+    path: "/dbpub/CSV.asp"
+    params: []
+
+  - name: "EFBS - EFBS data"
+    path: "/dbpub/EFBS.asp"
+    params: []
+
+  - name: "ESSraw - ESS raw data"
+    path: "/dbpub/ESSraw.asp"
+    params: []
+
+  - name: "ESStop - ESS top data"
+    path: "/dbpub/ESStop.asp"
+    params: []
+
+  - name: "FAQW - FAQ Webb"
+    path: "/dbpub/FAQW.asp"
+    params: []
+
+  - name: "FAQWWW - FAQ WWW"
+    path: "/dbpub/FAQWWW.asp"
+    params: []
+
+  - name: "HKBRcheck - HK BR check"
+    path: "/dbpub/HKBRcheck.asp"
+    params: []
+
+  - name: "HKDtender - HKD tender"
+    path: "/dbpub/HKDtender.asp"
+    params: []
+
+  - name: "HKIDindex - HKID index"
+    path: "/dbpub/HKIDindex.asp"
+    params: []
+
+  - name: "HKflights - HK flights"
+    path: "/dbpub/HKflights.asp"
+    params: []
+
+  - name: "HKflightscan - HK flights cancelled"
+    path: "/dbpub/HKflightscan.asp"
+    params: []
+
+  - name: "LIRteamNotes - LIR team notes"
+    path: "/dbpub/LIRteamNotes.asp"
+    params: []
+
+  - name: "TRnotes - TR notes"
+    path: "/dbpub/TRnotes.asp"
+    params: []
+
+  - name: "advltsnap - advisers latest snapshot"
+    path: "/dbpub/advltsnap.asp"
+    params: []
+
+  - name: "auditornotes - auditor notes"
+    path: "/dbpub/auditornotes.asp"
+    params: []
+
+  - name: "complain - complaint form"
+    path: "/dbpub/complain.asp"
+    params: []
+
+  - name: "enigma.orgdata - enigma organization data"
+    path: "/dbpub/enigma.orgdata.asp"
+    params:
+      - p: "1"
+
+  - name: "enigma.positions - enigma positions"
+    path: "/dbpub/enigma.positions.asp"
+    params:
+      - p: "1"
+
+  - name: "functions1 - functions helper"
+    path: "/dbpub/functions1.asp"
+    params: []
+
+  - name: "govacCSV - govac CSV export"
+    path: "/dbpub/govacCSV.asp"
+    params: []
+
+  - name: "govacNotes - govac notes"
+    path: "/dbpub/govacNotes.asp"
+    params: []
+
+  - name: "govacsearch - govac search"
+    path: "/dbpub/govacsearch.asp"
+    params:
+      - {}
+
+  - name: "hkpax - HK passenger stats"
+    path: "/dbpub/hkpax.asp"
+    params: []
+
+  - name: "hksolsadmhk - HK solicitors admitted HK"
+    path: "/dbpub/hksolsadmhk.asp"
+    params: []
+
+  - name: "hksolsadmos - HK solicitors admitted overseas"
+    path: "/dbpub/hksolsadmos.asp"
+    params: []
+
+  - name: "hksolsdom - HK solicitors domicile"
+    path: "/dbpub/hksolsdom.asp"
+    params: []
+
+  - name: "hksolsmoves - HK solicitors moves (duplicate in statistics)"
+    path: "/dbpub/hksolsmoves.asp"
+    params: []
+
+  - name: "hpu - HPU data"
+    path: "/dbpub/hpu.asp"
+    params: []
+
+  - name: "indexhk - HK index"
+    path: "/dbpub/indexhk.asp"
+    params: []
+
+  - name: "jail - jail data"
+    path: "/dbpub/jail.asp"
+    params: []
+
+  - name: "judgments - legal judgments"
+    path: "/dbpub/judgments.asp"
+    params: []
+
+  - name: "landreg - land registry"
+    path: "/dbpub/landreg.asp"
+    params: []
+
+  - name: "lrvaluecats - land registry value categories"
+    path: "/dbpub/lrvaluecats.asp"
+    params: []
+
+  - name: "navbars - navigation bars"
+    path: "/dbpub/navbars.asp"
+    params: []
+
+  - name: "prhblocks - PRH blocks"
+    path: "/dbpub/prhblocks.asp"
+    params: []
+
+  - name: "prhdistricts - PRH districts"
+    path: "/dbpub/prhdistricts.asp"
+    params: []
+
+  - name: "prhestates - PRH estates"
+    path: "/dbpub/prhestates.asp"
+    params: []
+
+  - name: "pricesCSV - prices CSV export"
+    path: "/dbpub/pricesCSV.asp"
+    params:
+      - i: "62"
+
+  - name: "qt - quick tools"
+    path: "/dbpub/qt.asp"
+    params: []
+
+  - name: "searchESS - search ESS"
+    path: "/dbpub/searchESS.asp"
+    params:
+      - {}
+
+  # Solicitor routes (lowercase versions from statistics.py)
+  # Note: These duplicate the uppercase versions in solicitors.py
+  - name: "hksols - HK solicitors (lowercase)"
+    path: "/dbpub/hksols.asp"
+    params:
+      - {}
+
+  - name: "hksolfirms - HK solicitor firms (lowercase)"
+    path: "/dbpub/hksolfirms.asp"
+    params:
+      - {}
+
+  - name: "hksolemps - HK solicitor employers (lowercase)"
+    path: "/dbpub/hksolemps.asp"
+    params:
+      - {}
+
+  # ==========================================
+  # Static Content Pages (13 routes)
+  # ==========================================
+  - name: "TV - TV page"
+    path: "/pages/TV.asp"
+    params: []
+
+  - name: "about - about page"
+    path: "/pages/about.asp"
+    params: []
+
+  - name: "aboutus - about us page"
+    path: "/pages/aboutus.asp"
+    params: []
+
+  - name: "electiondisclosures - election disclosures"
+    path: "/pages/electiondisclosures.asp"
+    params: []
+
+  - name: "hallofshame - hall of shame"
+    path: "/pages/hallofshame.asp"
+    params: []
+
+  - name: "hkradio - HK radio"
+    path: "/pages/hkradio.asp"
+    params: []
+
+  - name: "howtovote - how to vote"
+    path: "/pages/howtovote.asp"
+    params: []
+
+  - name: "loopholes - loopholes"
+    path: "/pages/loopholes.asp"
+    params: []
+
+  - name: "mediaroom - media room"
+    path: "/pages/mediaroom.asp"
+    params: []
+
+  - name: "privacypolicy - privacy policy"
+    path: "/pages/privacypolicy.asp"
+    params: []
+
+  - name: "refer - refer page"
+    path: "/pages/refer.asp"
+    params: []
+
+  - name: "stuff - stuff page"
+    path: "/pages/stuff.asp"
+    params: []
+
+  - name: "tools - tools page"
+    path: "/pages/tools.asp"
+    params: []
+
+  # ==========================================
+  # Contact & Articles (2 routes)
+  # ==========================================
+  - name: "contact - contact form"
+    path: "/contact/default.asp"
+    params: []
+
+  - name: "articles index - articles homepage"
+    path: "/articles/index.html"
+    params: []
 
 # Normalization options
 normalize:
