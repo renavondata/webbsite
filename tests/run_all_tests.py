@@ -2,6 +2,7 @@
 """
 Run all tests from test_config.yaml and generate comprehensive report.
 Unlike test_routes.py which stops on first failure, this continues through all tests.
+Supports parallel execution for faster results.
 """
 
 import subprocess
@@ -9,6 +10,8 @@ import yaml
 import sys
 from pathlib import Path
 from collections import defaultdict
+from multiprocessing import Pool, cpu_count
+import time
 
 def load_test_config():
     """Load test configuration"""
@@ -16,14 +19,14 @@ def load_test_config():
     with open(config_path) as f:
         return yaml.safe_load(f)
 
-def run_single_test(route_name):
+def run_single_test(route_name, timeout=15):
     """Run test for a single route and return pass/fail status"""
     try:
         result = subprocess.run(
             ["uv", "run", "python", "tests/test_routes.py", "--ground-truth", "--route", route_name],
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=timeout
         )
 
         # Check for different failure types
@@ -53,7 +56,43 @@ def run_single_test(route_name):
     except Exception as e:
         return f"ERROR: {str(e)}"
 
+def test_route_wrapper(args):
+    """Wrapper function for multiprocessing - must be picklable"""
+    idx, total, route_name, path = args
+
+    # Extract category from path
+    if "/ccass/" in path:
+        category = "CCASS"
+    elif "/dbpub/" in path:
+        category = "Database"
+    else:
+        category = "Other"
+
+    status = run_single_test(route_name)
+
+    # Return tuple of (idx, route_name, category, status) for sorting later
+    return (idx, route_name, category, status)
+
+
 def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Run all tests with optional parallel execution"
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=4,
+        help="Number of parallel workers (default: 4, max: cpu_count)",
+    )
+    parser.add_argument(
+        "--serial",
+        action="store_true",
+        help="Run tests serially (no parallelization)",
+    )
+    args = parser.parse_args()
+
     print("=" * 70)
     print("COMPREHENSIVE TEST SUITE RUNNER")
     print("=" * 70)
@@ -61,46 +100,85 @@ def main():
 
     config = load_test_config()
     routes = config.get("routes", [])
+    total = len(routes)
+
+    # Determine number of workers
+    max_workers = cpu_count()
+    if args.serial:
+        workers = 1
+        print(f"Running in SERIAL mode (1 worker)\n")
+    else:
+        workers = min(args.workers, max_workers)
+        print(f"Running in PARALLEL mode ({workers} workers, {max_workers} CPUs available)\n")
+
+    start_time = time.time()
+
+    # Prepare work items
+    work_items = [
+        (idx + 1, total, route.get("name", "Unknown"), route.get("path", ""))
+        for idx, route in enumerate(routes)
+    ]
 
     results = {}
     categories = defaultdict(list)
 
-    total = len(routes)
-    for idx, route in enumerate(routes, 1):
-        route_name = route.get("name", "Unknown")
-        path = route.get("path", "")
+    if workers == 1:
+        # Serial execution
+        for work_item in work_items:
+            idx, route_name, category, status = test_route_wrapper(work_item)
+            results[route_name] = status
+            categories[category].append((route_name, status))
 
-        # Extract category from path
-        if "/ccass/" in path:
-            category = "CCASS"
-        elif "/dbpub/" in path:
-            category = "Database"
-        else:
-            category = "Other"
+            print(f"[{idx}/{total}] Testing: {route_name}...", end=" ", flush=True)
 
-        print(f"[{idx}/{total}] Testing: {route_name}...", end=" ", flush=True)
+            # Color-code output
+            if status == "PASSED":
+                print("✓ PASSED")
+            elif status == "NO_TESTS":
+                print("⊘ NO TESTS")
+            elif status == "SKIPPED":
+                print("⊘ SKIPPED")
+            elif status == "HTTP_500":
+                print("✗ HTTP 500 ERROR")
+            elif status == "FAILED":
+                print("✗ FAILED")
+            elif status == "PARTIAL":
+                print("⚠ PARTIAL")
+            elif status == "TIMEOUT":
+                print("⏱ TIMEOUT")
+            else:
+                print(f"? {status}")
+    else:
+        # Parallel execution
+        completed = 0
+        with Pool(workers) as pool:
+            for idx, route_name, category, status in pool.imap_unordered(test_route_wrapper, work_items):
+                completed += 1
+                results[route_name] = status
+                categories[category].append((route_name, status))
 
-        status = run_single_test(route_name)
-        results[route_name] = status
-        categories[category].append((route_name, status))
+                print(f"[{completed}/{total}] {route_name}...", end=" ", flush=True)
 
-        # Color-code output
-        if status == "PASSED":
-            print("✓ PASSED")
-        elif status == "NO_TESTS":
-            print("⊘ NO TESTS")
-        elif status == "SKIPPED":
-            print("⊘ SKIPPED")
-        elif status == "HTTP_500":
-            print("✗ HTTP 500 ERROR")
-        elif status == "FAILED":
-            print("✗ FAILED")
-        elif status == "PARTIAL":
-            print("⚠ PARTIAL")
-        elif status == "TIMEOUT":
-            print("⏱ TIMEOUT")
-        else:
-            print(f"? {status}")
+                # Color-code output
+                if status == "PASSED":
+                    print("✓ PASSED")
+                elif status == "NO_TESTS":
+                    print("⊘ NO TESTS")
+                elif status == "SKIPPED":
+                    print("⊘ SKIPPED")
+                elif status == "HTTP_500":
+                    print("✗ HTTP 500 ERROR")
+                elif status == "FAILED":
+                    print("✗ FAILED")
+                elif status == "PARTIAL":
+                    print("⚠ PARTIAL")
+                elif status == "TIMEOUT":
+                    print("⏱ TIMEOUT")
+                else:
+                    print(f"? {status}")
+
+    elapsed = time.time() - start_time
+    print(f"\nCompleted in {elapsed:.1f} seconds ({elapsed/60:.1f} minutes)\n")
 
     print()
     print("=" * 70)
