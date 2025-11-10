@@ -1,6 +1,53 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<form method="get" action="/dbpub/qt.asp">
+    <label for="q">Quarantine centre:</label>
+    <select name="q" id="q" onchange="this.form.submit()">
+        {% for qtc in qtcs %}
+        <option value="{{ qtc.id }}" {% if qtc.id == selected_q %}selected{% endif %}>
+            {{ qtc.name }}{% if qtc.inuse %} &#9658;{% endif %}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if max_date %}
+<p>Latest data: {{ max_date }}</p>
+{% endif %}
+
+{% if data %}
+<table class="txtable">
+    <tr>
+        <th>Date</th>
+        <th>Capacity (units)</th>
+        <th>People</th>
+        <th>Units used</th>
+        <th>Units available</th>
+        {% if selected_q == 0 %}
+        <th>COVID cases</th>
+        <th>Other</th>
+        <th>Cumulative COVID</th>
+        {% endif %}
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        <td>{{ row.capunit }}</td>
+        <td>{{ row.pax }}</td>
+        <td>{{ row.useunit }}</td>
+        <td>{{ row.availunit }}</td>
+        {% if selected_q == 0 %}
+        <td>{{ row.cc }}</td>
+        <td>{{ row.other }}</td>
+        <td>{{ row.cumcc }}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

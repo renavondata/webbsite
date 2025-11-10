@@ -1,6 +1,25 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <label><input type="checkbox" name="g" value="1" {% if selected_g %}checked{% endif %} onchange="this.form.submit()"> Group by $5m bands</label>
+    <label><input type="checkbox" name="p" value="1" {% if selected_p %}checked{% endif %} onchange="this.form.submit()"> Show as percentage</label>
+    <select name="f" onchange="this.form.submit()">
+        <option value="0" {% if selected_f == 0 %}selected{% endif %}>Monthly</option>
+        <option value="1" {% if selected_f == 1 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+{% if data %}
+<p>Data by value category. Latest data: {{ max_date }}</p>
+{% for cat_data in data[:5] %}
+<h3>{{ cat_data.category }}</h3>
+<p>Total transactions in this category: {{ "{:,}".format(cat_data.data|sum(attribute='units')|int) if cat_data.data else '0' }}</p>
+{% endfor %}
+<p>Showing 5 of {{ data|length }} categories</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

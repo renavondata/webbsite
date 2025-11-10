@@ -15,12 +15,149 @@ bp = Blueprint("dbpub_transport", __name__)
 
 @bp.route("/vax.asp")
 def vax():
-    """Vaccination statistics"""
-    from webbsite.db import execute_query
-    from flask import render_template
+    """
+    Hong Kong COVID-19 Vaccination statistics
 
-    # Stub - would need vaccination-specific tables
-    return render_template("dbpub/vax.html", data=[])
+    Query params:
+    - s: Sex filter (m=male, f=female, blank=all)
+    - t: Vaccine type (1=inactivated/SinoVac, 2=mRNA/BioNTech, 0=all)
+    - c: Cohort ID (age group, 0=all)
+    - v: Dose number (0=all doses, 1-10=specific dose)
+
+    Tables: enigma.vax, enigma.vaxcohorts
+    """
+    from webbsite.asp_helpers import get_int, get_str
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    # Get parameters
+    s = get_str("s", "")  # sex: m, f, or blank
+    if s not in ("m", "f"):
+        s = ""
+
+    t = get_int("t", 0)  # vaccine type: 1=sino, 2=bion, 0=all
+    if t not in (0, 1, 2):
+        t = 0
+
+    c = get_int("c", 0)  # cohort (age group)
+    v = get_int("v", 1)  # dose number
+
+    # Determine max doses available
+    doses_result = execute_query(
+        "SELECT SUM(bion10 + sino10) AS has10, SUM(bion9 + sino9) AS has9 FROM enigma.vax"
+    )
+    if doses_result and doses_result[0]["has10"] and doses_result[0]["has10"] > 0:
+        max_doses = 10
+    elif doses_result and doses_result[0]["has9"] and doses_result[0]["has9"] > 0:
+        max_doses = 9
+    else:
+        max_doses = 8
+
+    if v < 0 or v > max_doses:
+        v = 1
+
+    # Get latest provisional date
+    prov_date_result = execute_query(
+        "SELECT MAX(d) AS maxd FROM enigma.vax WHERE NOT prov"
+    )
+    prov_date = prov_date_result[0]["maxd"] if prov_date_result and prov_date_result[0]["maxd"] else None
+
+    # Get age cohorts with population data
+    pop_col = f"{s}popn" if s else "mpopn + fpopn"
+    cohorts = execute_query(
+        f"""
+        SELECT 0 AS ID, 'All' AS txt, 0 AS minAge,
+               ({pop_col}) AS popn
+        FROM (SELECT SUM(mpopn) AS mpopn, SUM(fpopn) AS fpopn FROM enigma.vaxcohorts) t
+        UNION
+        SELECT ID, txt, minAge, {pop_col} AS popn
+        FROM enigma.vaxcohorts
+        ORDER BY minAge
+        """
+    )
+
+    # Validate cohort
+    if c < 0 or c >= len(cohorts):
+        c = 0
+
+    # Build WHERE clause for sex filter
+    where_clauses = []
+    sex_label = ""
+    if s == "m":
+        where_clauses.append("male = TRUE")
+        sex_label = " male"
+    elif s == "f":
+        where_clauses.append("male = FALSE")
+        sex_label = " female"
+
+    # Add cohort filter if specified
+    cohort_label = ""
+    if c > 0:
+        where_clauses.append(f"cohort = {cohorts[c]['id']}")
+        cohort_label = f" aged {cohorts[c]['txt']}"
+
+    where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+
+    # Build title
+    dose_label = f" dose {v}" if v > 0 else " all doses"
+    title = f"Hong Kong COVID-19 Vaccinations{sex_label}{dose_label}{cohort_label}"
+
+    # Get vaccination data
+    if v == 0:
+        # All doses - sum across all dose columns
+        sino_cols = " + ".join([f"sino{i}" for i in range(1, max_doses + 1)])
+        bion_cols = " + ".join([f"bion{i}" for i in range(1, max_doses + 1)])
+        sql = f"""
+            SELECT d,
+                   SUM({sino_cols}) AS sino,
+                   SUM({bion_cols}) AS bion
+            FROM enigma.vax
+            WHERE {where_sql}
+            GROUP BY d
+            ORDER BY d
+        """
+    else:
+        # Specific dose
+        sql = f"""
+            SELECT d,
+                   SUM(sino{v}) AS sino,
+                   SUM(bion{v}) AS bion
+            FROM enigma.vax
+            WHERE {where_sql}
+            GROUP BY d
+            ORDER BY d
+        """
+
+    vax_data = execute_query(sql)
+
+    # Calculate cumulative percentages if we have population
+    popn = cohorts[c]["popn"] if c < len(cohorts) else 0
+    cumulative_data = []
+    cum_total = 0
+    for row in vax_data:
+        cum_total += (row["sino"] or 0) + (row["bion"] or 0)
+        pct = (100.0 * cum_total / popn) if popn > 0 else 0
+        cumulative_data.append({
+            "d": row["d"],
+            "sino": row["sino"],
+            "bion": row["bion"],
+            "cumulative": cum_total,
+            "pct": round(pct, 2)
+        })
+
+    return render_template(
+        "dbpub/vax.html",
+        title=title,
+        cohorts=cohorts,
+        data=cumulative_data,
+        selected_s=s,
+        selected_t=t,
+        selected_c=c,
+        selected_v=v,
+        max_doses=max_doses,
+        prov_date=prov_date,
+        popn=popn
+    )
 
 
 # ESS (Employee Stock Scheme) top holdings
