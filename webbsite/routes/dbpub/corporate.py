@@ -705,6 +705,25 @@ def holders():
                 issue_id, 0, 0, ob, holders_tree, seen_holders, expand == "c"
             )
 
+            # For condensed mode, apply aggregation and sorting
+            if expand == "c":
+                _aggregate_condensed_holders(holders_tree)
+
+                # Determine sort key and direction from sort_param
+                sort_key_map = {
+                    "stakdn": (lambda h: h.get("stakecomp") or 0, True),
+                    "stakup": (lambda h: h.get("stakecomp") or 0, False),
+                    "namedn": (lambda h: (h.get("name") or "").lower(), True),
+                    "nameup": (lambda h: (h.get("name") or "").lower(), False),
+                    "datedn": (lambda h: h.get("holdingdate") or "", True),
+                    "dateup": (lambda h: h.get("holdingdate") or "", False),
+                }
+                sort_key_func, reverse = sort_key_map.get(
+                    sort_param, (lambda h: h.get("stakecomp") or 0, True)
+                )
+
+                _sort_holders_tree(holders_tree, 0, 0, sort_key_func, reverse)
+
             issues_with_holders.append(
                 {
                     "issue_data": issue_data,
@@ -843,6 +862,178 @@ def _build_holders_tree(
                             # If more than one issue, make this holder visible
                             if i > 0:
                                 tree[current_idx]["visible"] = True
+
+
+def _aggregate_condensed_holders(tree):
+    """
+    For condensed mode (x=c): Aggregate ownership chains and remove intermediate nodes.
+
+    This function implements the ASP drawTable aggregation logic (lines 147-173):
+    1. Attribute indirect holdings: For each visible holder, trace up to nearest visible parent
+       and inherit their stake, level, issue info
+    2. Aggregate duplicates: If same personID + issueID appear multiple times, sum stakes
+       and mark duplicates invisible
+
+    Args:
+        tree: List of holder nodes built by _build_holders_tree()
+
+    Modifies tree in place.
+    """
+    # Step 1: Attribute indirect holdings (ASP lines 150-163)
+    # For each visible holder, find the nearest visible parent and inherit their attributes
+    for idx, node in enumerate(tree):
+        if not node["visible"]:
+            continue
+
+        # Trace up to find nearest visible parent
+        parent_idx = node["parent_idx"]
+        while parent_idx >= 0 and not tree[parent_idx]["visible"]:
+            parent_idx = tree[parent_idx]["parent_idx"]
+
+        # If we have a visible parent, inherit stake/issue/level from them
+        if parent_idx >= 0:
+            parent_holder = tree[parent_idx]["holder"]
+            node["holder"]["stakecomp"] = parent_holder.get("stakecomp")
+            node["holder"]["issue"] = parent_holder.get("issue")
+            node["holder"]["typeshort"] = parent_holder.get("typeshort")
+            # Level is one below the visible parent
+            node["level"] = tree[parent_idx]["level"] + 1
+
+    # Step 2: Aggregate duplicate holdings (ASP lines 165-173)
+    # If same personID holds same issueID multiple times (via different paths),
+    # aggregate their stakes and mark duplicates invisible
+    for i in range(len(tree)):
+        if not tree[i]["visible"]:
+            continue
+
+        holder_i = tree[i]["holder"]
+        person_id_i = holder_i["personid"]
+        issue_i = holder_i.get("issue")
+
+        # Scan all previous holders
+        for j in range(i):
+            if not tree[j]["visible"]:
+                continue
+
+            holder_j = tree[j]["holder"]
+
+            # Check if same person holding same issue
+            if (holder_j["personid"] == person_id_i and
+                holder_j.get("issue") == issue_i):
+                # Aggregate: add stake from current to previous
+                stake_i = holder_i.get("stakecomp", 0) or 0
+                stake_j = holder_j.get("stakecomp", 0) or 0
+                holder_j["stakecomp"] = stake_j + stake_i
+
+                # Mark current as invisible (duplicate)
+                tree[i]["visible"] = False
+                break
+
+
+def _sort_holders_tree(tree, start_idx, level, sort_key, reverse):
+    """
+    Recursively sort visible holders at each level of the ownership tree.
+
+    This implements the ASP sortVisHold subroutine (lines 77-139).
+    Uses bubble sort to maintain stability and preserve parent-child relationships.
+
+    Args:
+        tree: List of holder nodes
+        start_idx: Index to start scanning from
+        level: Current tree level to sort
+        sort_key: Function to extract sort value from holder dict
+        reverse: If True, sort descending; if False, ascending
+
+    Modifies tree in place by reordering nodes at each level.
+    """
+    # Build list of visible items at this level
+    items_at_level = []
+    scan_idx = start_idx
+
+    while scan_idx < len(tree):
+        node = tree[scan_idx]
+
+        # Stop if we've gone past this level
+        if node["level"] < level:
+            break
+
+        # Collect visible items at exactly this level
+        if node["level"] == level and node["visible"]:
+            sort_value = sort_key(node["holder"])
+            items_at_level.append((sort_value, scan_idx, node))
+
+        scan_idx += 1
+
+    # If fewer than 2 items, nothing to sort
+    if len(items_at_level) < 2:
+        # Still need to recursively sort children
+        for _, idx, _ in items_at_level:
+            _sort_holders_tree(tree, idx + 1, level + 1, sort_key, reverse)
+        return
+
+    # Bubble sort (matches ASP implementation for stability)
+    changed = True
+    while changed:
+        changed = False
+        for i in range(len(items_at_level) - 1):
+            val1, idx1, node1 = items_at_level[i]
+            val2, idx2, node2 = items_at_level[i + 1]
+
+            # Compare based on sort direction
+            should_swap = False
+            if reverse:
+                # Descending: swap if first < second
+                should_swap = (val1 < val2)
+            else:
+                # Ascending: swap if first > second
+                should_swap = (val1 > val2)
+
+            if should_swap:
+                items_at_level[i], items_at_level[i + 1] = items_at_level[i + 1], items_at_level[i]
+                changed = True
+
+    # Now rebuild tree section with sorted order
+    # This is complex: we need to move entire subtrees, not just individual nodes
+
+    # Build a mapping of old index -> new position
+    sorted_indices = [idx for _, idx, _ in items_at_level]
+
+    # Extract all nodes that belong to these subtrees
+    subtrees = []
+    for _, root_idx, _ in items_at_level:
+        # Find all descendants of this node
+        subtree_nodes = [tree[root_idx]]
+        subtree_indices = [root_idx]
+
+        # Scan for children at deeper levels
+        scan_idx = root_idx + 1
+        while scan_idx < len(tree) and tree[scan_idx]["level"] > level:
+            subtree_nodes.append(tree[scan_idx])
+            subtree_indices.append(scan_idx)
+            scan_idx += 1
+
+        subtrees.append((subtree_nodes, subtree_indices))
+
+    # Now reconstruct this section of the tree in sorted order
+    # Start writing at the position of the first node at this level
+    write_idx = min(sorted_indices)
+    for subtree_nodes, _ in subtrees:
+        for node in subtree_nodes:
+            tree[write_idx] = node
+            write_idx += 1
+
+    # Recursively sort children at next level
+    # After reordering, need to find where each sorted parent is now
+    current_idx = min(sorted_indices)
+    for i, (_, original_idx, _) in enumerate(items_at_level):
+        # Find where this subtree is now located
+        subtree_length = len(subtrees[i][0])
+
+        # Recursively sort this subtree's children
+        _sort_holders_tree(tree, current_idx + 1, level + 1, sort_key, reverse)
+
+        # Move to next subtree
+        current_idx += subtree_length
 
 
 @bp.route("/holdings.asp")
