@@ -1,6 +1,82 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Position Summary: {{ name }}{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Position Summary: {{ name }}</h2>
+
+<form method="get" action="/dbpub/possum.asp">
+    <input type="hidden" name="p" value="{{ person_id }}">
+    <div class="inputs">
+        <label>From date: <input type="date" name="f" value="{{ from_date }}"></label>
+        <label>To date: <input type="date" name="t" value="{{ to_date }}"></label>
+    </div>
+    <div class="inputs">
+        <label><input type="checkbox" name="c" value="1" {% if c %}checked{% endif %}> Include appointments after start date</label>
+        <label><input type="checkbox" name="n" value="1" {% if n %}checked{% endif %}> Show old organization names</label>
+    </div>
+    <div class="inputs">
+        <label>Show:
+            <select name="hide" onchange="this.form.submit()">
+                <option value="Y" {% if hide == 'Y' %}selected{% endif %}>Current positions only</option>
+                <option value="N" {% if hide == 'N' %}selected{% endif %}>All positions (historical)</option>
+            </select>
+        </label>
+    </div>
+    <button type="submit">Apply Filters</button>
+</form>
+
+{% if positions %}
+<table class="txtable">
+    <tr>
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'orgup' %}orgdn{% else %}orgup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">Organization</a></th>
+        {% if n %}<th>Name at time</th>{% endif %}
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'appup' %}appdn{% else %}appup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">From</a></th>
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'resup' %}resdn{% else %}resup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">Until</a></th>
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'serup' %}serdn{% else %}serup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">Service (years)</a></th>
+        {% if has_ret %}
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'totup' %}totdn{% else %}totup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">Total Return</a></th>
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'cagretup' %}cagretdn{% else %}cagretup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">CAGR</a></th>
+        <th><a href="?p={{ person_id }}&sort={% if sort == 'cagrelup' %}cagreldn{% else %}cagrelup{% endif %}&hide={{ hide }}&f={{ from_date }}&t={{ to_date }}{% if c %}&c=1{% endif %}{% if n %}&n=1{% endif %}">Relative CAGR</a></th>
+        {% endif %}
+    </tr>
+    {% for pos in positions %}
+    <tr>
+        <td><a href="/dbpub/orgdata.asp?p={{ pos.orgid }}">{{ pos.name1 }}</a></td>
+        {% if n %}<td>{{ pos.old_name|default('', true) }}</td>{% endif %}
+        <td>{{ pos.app|default('', true) }}</td>
+        <td>{{ pos.res|default('', true) }}</td>
+        <td class="fcr">{{ "%.2f"|format(pos.service_years) if pos.service_years else '' }}</td>
+        {% if has_ret %}
+        <td class="fcr">{% if pos.totret_value %}{{ "%.1f"|format((pos.totret_value - 1) * 100) }}%{% endif %}</td>
+        <td class="fcr">{% if pos.cagret_value %}{{ "%.1f"|format((pos.cagret_value - 1) * 100) }}%{% endif %}</td>
+        <td class="fcr">{% if pos.cagrel_value %}{{ "%.1f"|format((pos.cagrel_value - 1) * 100) }}%{% endif %}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    {% if has_ret and (avg_cagret or avg_cagrel) %}
+    <tr class="foot">
+        <td colspan="{% if n %}6{% else %}5{% endif %}"><strong>Average (listed companies only)</strong></td>
+        <td class="fcr"><strong>{% if avg_cagret %}{{ "%.1f"|format(avg_cagret * 100) }}%{% endif %}</strong></td>
+        <td class="fcr"><strong>{% if avg_cagrel %}{{ "%.1f"|format(avg_cagrel * 100) }}%{% endif %}</strong></td>
+    </tr>
+    {% endif %}
+</table>
+
+<p><strong>{{ positions|length }}</strong> position(s) found</p>
+
+<h3>Notes</h3>
+<ul>
+    <li>Service years calculated to {{ to_date }}</li>
+    <li>Consecutive directorships at the same company are consolidated into single rows</li>
+    {% if has_ret %}
+    <li>Total Return shows share price performance during directorship at HK-listed companies</li>
+    <li>CAGR = Compound Annual Growth Rate of share price</li>
+    <li>Relative CAGR = CAGR relative to market index (Hang Seng Index)</li>
+    {% endif %}
+</ul>
+
+{% else %}
+<p>No positions found for this person/organization.</p>
+{% endif %}
+
+<p><a href="/dbpub/{% if is_org %}orgdata{% else %}natperson{% endif %}.asp?p={{ person_id }}">Back to {% if is_org %}Organization{% else %}Person{% endif %} Details</a></p>
 {% endblock %}
