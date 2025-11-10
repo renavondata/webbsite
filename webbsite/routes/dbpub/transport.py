@@ -302,12 +302,12 @@ def vefuel():
     where = f"EXTRACT(YEAR FROM d) = {y}" if y > 0 else "1=1"
     data = execute_query(
         f"""
-        SELECT vf.friendly AS fuel, SUM(v.freg) AS total
+        SELECT ft.friendly AS fuel, SUM(v.freg) AS total
         FROM enigma.vehiclefr v
-        JOIN enigma.vehiclefuel vf ON v.fuelid = vf.id
+        JOIN enigma.fueltype ft ON v.fuelid = ft.id
         WHERE {where}
-        GROUP BY vf.friendly, vf.id
-        ORDER BY vf.id DESC
+        GROUP BY ft.friendly, ft.id
+        ORDER BY ft.id DESC
     """
     )
 
@@ -336,7 +336,7 @@ def vefuelhist():
     fuelname = ""
     if fuelid > 0:
         fueldata = execute_query(
-            f"SELECT friendly FROM enigma.vehiclefuel WHERE id = {fuelid}"
+            f"SELECT friendly FROM enigma.fueltype WHERE id = {fuelid}"
         )
         fuelname = fueldata[0]["friendly"] if fueldata else ""
 
