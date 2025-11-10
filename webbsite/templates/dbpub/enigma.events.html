@@ -1,35 +1,53 @@
 {% extends "base_database.html" %}
 
-{% block title %}Corporate Events - {{ n if n else 'Renavon Hong Kong Database' }}{% endblock %}
+{% block title %}Events: {{ stock_name if stock_name else 'Unknown' }}{% endblock %}
 
 {% block content %}
-<h2>Corporate Events</h2>
+<h2>Events of an issue</h2>
 
-{% if n %}
-<h3>{{ n }}</h3>
+{% if stock_name %}
+<h3><a href="{{ url_for('dbpub_corporate.orgdata', p=person_id) }}">{{ stock_name }}</a></h3>
+{% else %}
+<p><b>Stock not found. </b></p>
 {% endif %}
 
-{% if events and events|length > 0 %}
+<ul class="navlist">
+<li><a href="/dbpub/TRnotes.asp" target="_blank">Notes</a></li>
+</ul>
+
+<div class="clear"></div>
+
+<form action="events.asp" method="get">
+<input name="s" type="hidden" value="{{ sort }}"/>
+<div class="inputs">
+Stock code: <input name="sc" size="5" type="text" value="{{ request.args.get('sc', '') }}"/>
+<input type="submit" value="Go"/>
+</div>
+<div class="clear"></div>
+</form>
+
+<div class="clear"></div>
+
+{% if enigma_events and enigma_events|length > 0 %}
 <table class="txtable">
 	<tr>
-		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='anndup') }}">Announced</a></th>
-		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='evntdn') }}">Event Type</a></th>
-		<th><a href="{{ url_for('events.events', i=i, sc=request.args.get('sc',''), sort='exdtdn') }}">Ex-date</a></th>
+		<th><a href="{{ url_for('dbpub_events.events', i=issue_id, sc=request.args.get('sc',''), sort='anndup') }}">Announced</a></th>
+		<th><a href="{{ url_for('dbpub_events.events', i=issue_id, sc=request.args.get('sc',''), sort='evntdn') }}">Event Type</a></th>
+		<th><a href="{{ url_for('dbpub_events.events', i=issue_id, sc=request.args.get('sc',''), sort='exdtdn') }}">Ex-date</a></th>
 		<th>Details</th>
 	</tr>
-	{% for event in events %}
+	{% for event in enigma_events %}
 	<tr>
 		<td>{{ event.announced }}</td>
 		<td>{{ event.change }}</td>
 		<td>{{ event.exdate }}</td>
 		<td>
 			{% if event.currency %}{{ event.currency }}{% endif %}
-			{% if event.amount %}{{ event.amount }}{% endif %}
+			{% if event.price %}{{ event.price }}{% endif %}
 		</td>
 	</tr>
 	{% endfor %}
 </table>
-{% else %}
-<p>No events found.</p>
 {% endif %}
+
 {% endblock %}
