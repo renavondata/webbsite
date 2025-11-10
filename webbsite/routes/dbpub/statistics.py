@@ -2777,10 +2777,182 @@ def cosperdomhk():
 
 @bp.route("/possum.asp")
 def possum():
-    """Position summary"""
-    # TODO: Query position summary
-    summary = []
-    return render_template("dbpub/possum.html", summary=summary)
+    """
+    Position Summary Analysis - consolidates consecutive directorships and calculates returns
+
+    Query params:
+    - p: personID (required)
+    - sort: Sort column (orgup/orgdn, appup/appdn, resup/resdn, serup/serdn, totup/totdn, cagretup/cagretdn, cagrelup/cagreldn)
+    - hide: Y/N - show only current positions or all history
+    - f: from date filter
+    - t: to date filter (default: today)
+    - c: boolean - include appointments after start date
+    - n: boolean - show old organization names
+
+    Tables: enigma.directorships, organisations, positions, namechanges, hklistedordsever
+    Functions: totRet(), CAGRet(), CAGRel(), service(), MSdateAcc(), orgName()
+    """
+    from datetime import date
+
+    person_id = get_int("p", 0)
+    sort_param = request.args.get("sort", "orgup")
+    hide = request.args.get("hide", "Y")
+    from_date = request.args.get("f", "")
+    to_date = request.args.get("t", str(date.today()))
+    c = get_bool("c")  # include appointments after start date
+    n = get_bool("n")  # show old names
+
+    if not person_id:
+        return render_template("error.html", message="PersonID required"), 400
+
+    # Get person/org info
+    person_info = execute_query(
+        """
+        SELECT p.name1, p.name2, p.cName,
+               CASE WHEN EXISTS(SELECT 1 FROM enigma.organisations WHERE personID = %s)
+               THEN TRUE ELSE FALSE END as is_org
+        FROM enigma.people p
+        WHERE p.personID = %s
+        UNION
+        SELECT o.name1, NULL, NULL, TRUE as is_org
+        FROM enigma.organisations o
+        WHERE o.personID = %s
+        LIMIT 1
+        """,
+        (person_id, person_id, person_id)
+    )
+
+    if not person_info:
+        return render_template("error.html", message="Person not found"), 404
+
+    is_org = person_info[0]["is_org"]
+    name = person_info[0]["name1"]
+    if person_info[0].get("name2"):
+        name = f"{person_info[0]['name1']}, {person_info[0]['name2']}"
+
+    # Build date filter conditions for WHERE clause
+    hide_str = ""
+    if from_date and not c:
+        hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{from_date}')"
+    elif to_date:
+        hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{to_date}')"
+
+    if hide == "Y":
+        hide_str += f" AND (d.resDate IS NULL OR d.resDate > '{to_date}')"
+
+    # Determine sort order
+    sort_map = {
+        "orgup": "name1, d1_apptdate",
+        "orgdn": "name1 DESC, d1_apptdate",
+        "appup": "d1_apptdate, name1",
+        "appdn": "d1_apptdate DESC, name1",
+        "resup": "d2_resdate, name1",
+        "resdn": "d2_resdate DESC, name1",
+        "serup": "service_years, name1",
+        "serdn": "service_years DESC, name1",
+        "totup": "totret_value, name1",
+        "totdn": "totret_value DESC, name1",
+        "cagretup": "cagret_value, name1",
+        "cagretdn": "cagret_value DESC, name1",
+        "cagrelup": "cagrel_value, name1",
+        "cagreldn": "cagrel_value DESC, name1",
+    }
+    order_by = sort_map.get(sort_param, "name1, d1_apptdate")
+
+    # Calculate date range for total returns
+    ret_from_date = f"GREATEST(COALESCE(d1.apptDate, '{from_date or to_date}'), '{from_date}')" if from_date else "d1.apptDate"
+    ret_to_date = f"LEAST(COALESCE(d2.resDate, '{to_date}'), '{to_date}')"
+
+    # Optional old name field
+    org_name_field = f"enigma.orgName(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
+
+    # Main SQL query with window functions to consolidate consecutive directorships
+    sql = f"""
+    WITH consecutive_directorships AS (
+        -- Identify consecutive directorships using window functions
+        SELECT
+            d.id1,
+            d.director,
+            d.company,
+            d.apptDate,
+            d.resDate,
+            d.apptAcc,
+            d.resAcc,
+            -- Create groups: new group when previous resignation != current appointment
+            SUM(CASE
+                WHEN LAG(d.resDate) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) = d.apptDate
+                THEN 0
+                ELSE 1
+            END) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) as group_id
+        FROM enigma.directorships d
+        JOIN enigma.positions p ON d.positionID = p.positionID
+        WHERE d.director = %s
+          AND p.rank = 1
+        {hide_str}
+    ),
+    consolidated AS (
+        -- Consolidate consecutive directorships into single rows
+        SELECT
+            MIN(id1) as first_pos,
+            MAX(id1) as last_pos,
+            company,
+            MIN(apptDate) as apptDate,
+            MAX(resDate) as resDate,
+            MIN(apptAcc) as apptAcc,
+            MAX(resAcc) as resAcc
+        FROM consecutive_directorships
+        GROUP BY company, group_id
+    )
+    SELECT
+        {org_name_field}
+        o.name1,
+        d1.apptDate as d1_apptdate,
+        d2.resDate as d2_resdate,
+        enigma.MSdateAcc(d1.apptDate, d1.apptAcc) as app,
+        enigma.MSdateAcc(d2.resDate, d2.resAcc) as res,
+        d1.company as orgID,
+        hkl.issueID,
+        enigma.totRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
+        enigma.CAGRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
+        enigma.CAGRel(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagrel_value,
+        enigma.service(d1.apptDate, d2.resDate, '{to_date}') as service_years
+    FROM consolidated c
+    JOIN enigma.directorships d1 ON c.first_pos = d1.id1
+    JOIN enigma.directorships d2 ON c.last_pos = d2.id1
+    JOIN enigma.organisations o ON d1.company = o.personID
+    LEFT JOIN enigma.hklistedordsever hkl ON d1.company = hkl.issuer
+    ORDER BY {order_by}
+    """
+
+    positions = execute_query(sql, (person_id,))
+
+    # Calculate averages for footer (only for listed companies with returns)
+    has_ret = any(row.get("totret_value") for row in positions)
+    avg_cagret = None
+    avg_cagrel = None
+
+    if has_ret:
+        cagret_values = [row["cagret_value"] - 1 for row in positions if row.get("cagret_value")]
+        cagrel_values = [row["cagrel_value"] - 1 for row in positions if row.get("cagrel_value")]
+        avg_cagret = sum(cagret_values) / len(cagret_values) if cagret_values else None
+        avg_cagrel = sum(cagrel_values) / len(cagrel_values) if cagrel_values else None
+
+    return render_template(
+        "dbpub/possum.html",
+        person_id=person_id,
+        name=name,
+        is_org=is_org,
+        positions=positions,
+        has_ret=has_ret,
+        avg_cagret=avg_cagret,
+        avg_cagrel=avg_cagrel,
+        sort=sort_param,
+        hide=hide,
+        from_date=from_date,
+        to_date=to_date,
+        c=c,
+        n=n,
+    )
 
 
 # Recent HK-listed director appointments
