@@ -1,6 +1,31 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<p>This page shows items from the balance sheet of the Exchange Fund of the Hong Kong Monetary Authority.</p>
+
+<form method="get">
+    <label>Select item:</label>
+    <select name="t" onchange="this.form.submit()">
+        {% for item in items %}
+        <option value="{{ item.id }}" {% if item.id == selected_item %}selected{% endif %}>
+            {{ item.dispname }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
+{% if data %}
+<table class="txtable">
+    <tr><th>Date</th><th>Value (HK$ million)</th></tr>
+    {% for row in data[-50:] %}
+    <tr>
+        <td>{{ row.atdate }}</td>
+        <td>{{ "{:,.2f}".format(row.acval) if row.acval else '0.00' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>Showing last 50 of {{ data|length }} records</p>
+{% endif %}
 {% endblock %}

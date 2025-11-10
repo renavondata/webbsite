@@ -1,6 +1,43 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <label>Statistic:</label>
+    <select name="s" onchange="this.form.submit()">
+        {% for stat in stats %}
+        <option value="{{ stat.id }}" {% if stat.id == selected_s %}selected{% endif %}>
+            {{ stat.statname }}
+        </option>
+        {% endfor %}
+    </select>
+    <label>Frequency:</label>
+    <select name="f" onchange="this.form.submit()">
+        <option value="0" {% if selected_f == 0 %}selected{% endif %}>Monthly</option>
+        <option value="1" {% if selected_f == 1 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+{% if hint %}<p>{{ hint }}</p>{% endif %}
+
+{% if data %}
+<table class="txtable">
+    <tr>
+        <th>Period</th>
+        <th>Units</th>
+        <th>Avg Price</th>
+        <th>Total Consideration</th>
+    </tr>
+    {% for row in data[-50:] %}
+    <tr>
+        <td>{{ row.period }}</td>
+        <td>{{ "{:,}".format(row.units|int) if row.units else '' }}</td>
+        <td>{{ "{:,.0f}".format(row.avg_price) if row.avg_price else '' }}</td>
+        <td>{{ "{:,.0f}".format(row.consid) if row.consid else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>Showing last 50 of {{ data|length }} records</p>
+{% endif %}
 {% endblock %}

@@ -4417,12 +4417,106 @@ def indexhk():
 
 @bp.route("/qt.asp")
 def qt():
-    """Quarantine data (COVID-19 related)"""
+    """
+    Hong Kong Quarantine Centre statistics (COVID-19 related)
+
+    Query params:
+    - q: Quarantine centre ID (0 = total across all centres)
+
+    Tables: enigma.qt, enigma.qtcentres, enigma.qtbytype
+    """
+    from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    # Stub - would need quarantine-specific tables
-    return render_template("dbpub/qt.html", data=[])
+    q = get_int("q", 0)
+
+    # Get latest date in qt table
+    max_date_result = execute_query("SELECT MAX(d) AS maxd FROM enigma.qt")
+    max_date = max_date_result[0]["maxd"] if max_date_result and max_date_result[0]["maxd"] else None
+
+    # Get list of quarantine centres (with usage flag based on latest date)
+    if max_date:
+        qtcs = execute_query(
+            """
+            SELECT 0 AS ID, 'Total' AS name, false AS inUse
+            UNION
+            SELECT qc.ID, qc.name,
+                   CASE WHEN qt.capUnit IS NOT NULL THEN true ELSE false END AS inUse
+            FROM enigma.qtcentres qc
+            LEFT JOIN enigma.qt qt ON qc.ID = qt.qtID AND qt.d = %s
+            ORDER BY ID <> 0, name
+            """,
+            (max_date,)
+        )
+    else:
+        qtcs = execute_query(
+            """
+            SELECT 0 AS ID, 'Total' AS name, false AS inUse
+            UNION
+            SELECT ID, name, false AS inUse
+            FROM enigma.qtcentres
+            ORDER BY ID <> 0, name
+            """
+        )
+
+    # Get name of selected centre
+    qtc_name_result = execute_query(
+        """
+        SELECT name FROM (
+            SELECT 0 AS ID, 'Total' AS name
+            UNION
+            SELECT ID, name FROM enigma.qtcentres
+        ) t1
+        WHERE ID = %s
+        """,
+        (q,)
+    )
+    qtc_name = qtc_name_result[0]["name"] if qtc_name_result else "Unknown"
+
+    # Get time series data
+    if q == 0:
+        # Total across all centres
+        data = execute_query(
+            """
+            SELECT t1.d, t1.capunit, t1.pax, t1.useUnit, t1.availUnit,
+                   bt.CC, t1.pax - bt.CC AS other, bt.cumCC
+            FROM (
+                SELECT d,
+                       SUM(capunit) AS capunit,
+                       SUM(pax) AS pax,
+                       SUM(useUnit) AS useUnit,
+                       SUM(availUnit) AS availUnit
+                FROM enigma.qt
+                GROUP BY d
+            ) t1
+            JOIN enigma.qtbytype bt ON t1.d = bt.d
+            ORDER BY d
+            """
+        )
+    else:
+        # Individual centre
+        data = execute_query(
+            """
+            SELECT d, capunit, pax, useUnit, availUnit
+            FROM enigma.qt
+            WHERE qtID = %s
+            ORDER BY d
+            """,
+            (q,)
+        )
+
+    title = f"Quarantine: {qtc_name}"
+
+    return render_template(
+        "dbpub/qt.html",
+        title=title,
+        qtc_name=qtc_name,
+        qtcs=qtcs,
+        data=data,
+        selected_q=q,
+        max_date=max_date
+    )
 
 
 # Judgments database
@@ -4826,12 +4920,13 @@ def searchess():
 
 @bp.route("/HKIDindex.asp")
 def hkidindex():
-    """HKID (Hong Kong Identity Card) index"""
-    from webbsite.db import execute_query
+    """
+    HKID (Hong Kong Identity Card) index - SUSPENDED
+    Static page explaining why the service was suspended in 2013 due to Privacy Commissioner concerns
+    """
     from flask import render_template
 
-    # Stub - would need HKID-specific data
-    return render_template("dbpub/hkidindex.html", data=[])
+    return render_template("dbpub/hkidindex.html")
 
 
 # Land registry data
@@ -4839,16 +4934,133 @@ def hkidindex():
 
 @bp.route("/landreg.asp")
 def landreg():
-    """Land registry transactions"""
+    """
+    HK Land Registry transaction statistics
+
+    Query params:
+    - s: Statistic ID (default: 31)
+    - f: Frequency (0=monthly, 1=annual)
+
+    Tables: enigma.landreg, enigma.stats
+    """
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
-    from datetime import date
 
-    y = get_int("y", date.today().year)
+    s = get_int("s", 31)
+    f = get_int("f", 0)  # 0=monthly, 1=annual
 
-    # Stub - would need land registry tables
-    return render_template("dbpub/landreg.html", y=y, transactions=[])
+    # Get statistic name
+    stat_result = execute_query(
+        "SELECT statName FROM enigma.stats WHERE ID = %s",
+        (s,)
+    )
+
+    if not stat_result:
+        return render_template(
+            "dbpub/landreg.html",
+            title="HK Land Registry",
+            hint="No such statistic",
+            data=[],
+            stats=[],
+            selected_s=s,
+            selected_f=f
+        )
+
+    stat_name = stat_result[0]["statname"]
+    title = f"HK Land Registry: {stat_name}"
+
+    # Get list of available statistics
+    stats = execute_query(
+        """
+        SELECT ID, statName
+        FROM enigma.stats
+        WHERE ID IN (41, 42, 43, 44)
+           OR ID IN (
+               SELECT DISTINCT statID
+               FROM enigma.landreg
+               JOIN enigma.stats ON statID = ID
+               WHERE consid IS NOT NULL
+           )
+        ORDER BY statName
+        """
+    )
+
+    # Build SQL for data retrieval
+    if s > 40:
+        # Need consideration from a different statistic
+        s2_map = {41: 1, 42: 2, 43: 5, 44: 6}
+        s2 = s2_map.get(s)
+
+        if s2:
+            if f == 1:
+                # Annual
+                sql = """
+                    SELECT EXTRACT(YEAR FROM l1.d) AS period,
+                           SUM(l1.units) AS units,
+                           SUM(l2.consid) / NULLIF(SUM(l1.units), 0) AS avg_price,
+                           SUM(l2.consid) AS consid
+                    FROM enigma.landreg l1
+                    JOIN enigma.landreg l2 ON l1.d = l2.d
+                    WHERE l1.statID = %s AND l2.statID = %s
+                    GROUP BY EXTRACT(YEAR FROM l1.d)
+                    ORDER BY period
+                """
+            else:
+                # Monthly
+                sql = """
+                    SELECT l1.d AS period,
+                           SUM(l1.units) AS units,
+                           SUM(l2.consid) / NULLIF(SUM(l1.units), 0) AS avg_price,
+                           SUM(l2.consid) AS consid
+                    FROM enigma.landreg l1
+                    JOIN enigma.landreg l2 ON l1.d = l2.d
+                    WHERE l1.statID = %s AND l2.statID = %s
+                    GROUP BY l1.d
+                    ORDER BY l1.d
+                """
+            data = execute_query(sql, (s, s2))
+        else:
+            data = []
+    else:
+        if f == 1:
+            # Annual
+            sql = """
+                SELECT EXTRACT(YEAR FROM d) AS period,
+                       SUM(units) AS units,
+                       SUM(consid) / NULLIF(SUM(units), 0) AS avg_price,
+                       SUM(consid) AS consid
+                FROM enigma.landreg
+                WHERE statID = %s
+                GROUP BY EXTRACT(YEAR FROM d)
+                ORDER BY period
+            """
+        else:
+            # Monthly
+            sql = """
+                SELECT d AS period,
+                       SUM(units) AS units,
+                       SUM(consid) / NULLIF(SUM(units), 0) AS avg_price,
+                       SUM(consid) AS consid
+                FROM enigma.landreg
+                WHERE statID = %s
+                GROUP BY d
+                ORDER BY d
+            """
+        data = execute_query(sql, (s,))
+
+    hint = "No data found" if not data else ""
+
+    return render_template(
+        "dbpub/landreg.html",
+        title=title,
+        stat_name=stat_name,
+        hint=hint,
+        data=data,
+        stats=stats,
+        selected_s=s,
+        selected_f=f
+    )
 
 
 # Land registry value categories
@@ -4856,12 +5068,104 @@ def landreg():
 
 @bp.route("/lrvaluecats.asp")
 def lrvaluecats():
-    """Land registry transactions by value category"""
+    """
+    HK Land Registry residential transactions by value category
+
+    Query params:
+    - g: Group by $5m bands (boolean, default: False)
+    - f: Frequency (0=monthly, 1=annual, default: 0)
+    - p: Show as percentage (boolean, default: False)
+
+    Tables: enigma.landreg, enigma.stats
+    """
+    from webbsite.asp_helpers import get_int, get_bool
     from webbsite.db import execute_query
     from flask import render_template
 
-    # Stub - would need land registry tables
-    return render_template("dbpub/lrvaluecats.html", categories=[])
+    g = get_bool("g")  # Group by $5m bands
+    f = get_int("f", 0)  # 0=monthly, 1=annual
+    p = get_bool("p")  # Show as percentage
+
+    title = "HK Land Registry residential transactions by value"
+
+    # Get maximum date from landreg
+    max_date_result = execute_query("SELECT MAX(d) AS maxd FROM enigma.landreg")
+    max_date = max_date_result[0]["maxd"] if max_date_result and max_date_result[0]["maxd"] else None
+
+    if not max_date:
+        return render_template(
+            "dbpub/lrvaluecats.html",
+            title=title,
+            data=[],
+            categories=[],
+            selected_g=g,
+            selected_f=f,
+            selected_p=p
+        )
+
+    # Define value categories
+    if g:
+        # Grouped by $5m bands
+        categories = [
+            {"name": "<$5m", "stat_ids": [35, 36, 37, 38, 47, 48]},
+            {"name": "<$10m", "stat_ids": [39, 49, 50, 51, 52, 53]},
+            {"name": ">$10m", "stat_ids": [40]},
+            {"name": "<$15m", "stat_ids": [54, 55, 56, 57, 58]},
+            {"name": "<$20m", "stat_ids": [59, 60, 61, 62, 63]},
+            {"name": ">$20m", "stat_ids": [64]},
+        ]
+    else:
+        # Individual value bands - get from stats table
+        cat_results = execute_query(
+            """
+            SELECT ID,
+                   RIGHT(statName, LENGTH(statName) - 31) AS short_name
+            FROM enigma.stats
+            WHERE ID BETWEEN 35 AND 64
+            ORDER BY ID
+            """
+        )
+        categories = [{"name": c["short_name"], "stat_ids": [c["id"]]} for c in cat_results]
+
+    # Get time series data for each category
+    data = []
+    for cat in categories:
+        stat_ids_str = ",".join(str(sid) for sid in cat["stat_ids"])
+
+        if f == 1:
+            # Annual
+            sql = f"""
+                SELECT EXTRACT(YEAR FROM d) AS period,
+                       SUM(units) AS units
+                FROM enigma.landreg
+                WHERE statID IN ({stat_ids_str})
+                GROUP BY EXTRACT(YEAR FROM d)
+                ORDER BY period
+            """
+        else:
+            # Monthly
+            sql = f"""
+                SELECT d AS period,
+                       SUM(units) AS units
+                FROM enigma.landreg
+                WHERE statID IN ({stat_ids_str})
+                GROUP BY d
+                ORDER BY d
+            """
+
+        cat_data = execute_query(sql)
+        data.append({"category": cat["name"], "data": cat_data})
+
+    return render_template(
+        "dbpub/lrvaluecats.html",
+        title=title,
+        data=data,
+        categories=[c["name"] for c in categories],
+        selected_g=g,
+        selected_f=f,
+        selected_p=p,
+        max_date=max_date
+    )
 
 
 # Public rental housing districts
@@ -5012,12 +5316,61 @@ def hkflightscan():
 
 @bp.route("/HKDtender.asp")
 def hkdtender():
-    """Government tenders"""
+    """
+    HKD legal tender (currency) - NOT government tenders!
+    Shows HKD notes and coins in circulation from HKMA data
+
+    Query params:
+    - t: acItem ID (default: 23 for total banknotes)
+
+    Tables: enigma.acitems, enigma.acdata
+    """
+    from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    # Stub - would need tender tables
-    return render_template("dbpub/hkdtender.html", tenders=[])
+    t = get_int("t", 23)
+
+    # Get list of currency items (datasource=2)
+    items = execute_query(
+        """
+        SELECT ID, dispName
+        FROM enigma.acitems
+        WHERE refDate IS NULL
+          AND type <> 'string'
+          AND datasource = 2
+        ORDER BY ID
+        """
+    )
+
+    # Get selected item name
+    name_result = execute_query(
+        "SELECT dispName FROM enigma.acItems WHERE ID = %s",
+        (t,)
+    )
+    name = name_result[0]["dispname"] if name_result else "Unknown"
+
+    # Get time series data
+    data = execute_query(
+        """
+        SELECT atDate, acVal
+        FROM enigma.acdata
+        WHERE acItem = %s
+        ORDER BY atDate
+        """,
+        (t,)
+    )
+
+    title = f"HKD legal tender: {name}"
+
+    return render_template(
+        "dbpub/hkdtender.html",
+        title=title,
+        name=name,
+        items=items,
+        data=data,
+        selected_item=t
+    )
 
 
 # EFBS (Exchange Fund Bills and Notes)
@@ -5025,12 +5378,77 @@ def hkdtender():
 
 @bp.route("/EFBS.asp")
 def efbs():
-    """Exchange Fund Bills and Notes"""
+    """
+    HKMA Exchange Fund Balance Sheet
+    Shows items from the HKMA's Exchange Fund balance sheet
+
+    Query params:
+    - t: acItem ID (default: 0 for fiscal reserves + equity)
+
+    Tables: enigma.acitems, enigma.acdata
+    """
+    from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    # Stub - would need EFBS tables
-    return render_template("dbpub/efbs.html", securities=[])
+    t = get_int("t", 0)
+
+    # Get list of Exchange Fund items (datasource=1) plus fiscal reserves option
+    items = execute_query(
+        """
+        SELECT 0 AS ID, 'Fiscal reserves+equity' AS dispName
+        UNION
+        SELECT ID, dispName
+        FROM enigma.acitems
+        WHERE refDate IS NULL
+          AND type <> 'string'
+          AND datasource = 1
+        ORDER BY ID
+        """
+    )
+
+    # Get data based on selected item
+    if t == 0:
+        # Special case: Fiscal reserves + equity (sum of items 10 and 17)
+        name = "Fiscal reserves+equity"
+        data = execute_query(
+            """
+            SELECT atDate, SUM(acVal) AS acVal
+            FROM enigma.acdata
+            WHERE acItem IN (10, 17)
+            GROUP BY atDate
+            ORDER BY atDate
+            """
+        )
+    else:
+        # Get item name
+        name_result = execute_query(
+            "SELECT dispName FROM enigma.acItems WHERE ID = %s",
+            (t,)
+        )
+        name = name_result[0]["dispname"] if name_result else "Unknown"
+
+        # Get time series data
+        data = execute_query(
+            """
+            SELECT atDate, acVal
+            FROM enigma.acdata
+            WHERE acItem = %s
+            ORDER BY atDate
+            """,
+            (t,)
+        )
+
+    title = f"HKMA Exchange Fund Balance Sheet: {name}"
+
+    return render_template(
+        "dbpub/efbs.html",
+        title=title,
+        name=name,
+        items=items,
+        data=data,
+        selected_item=t
+    )
 
 
 # Female directors distribution per HK-listed company
@@ -7864,9 +8282,122 @@ def essraw():
 
 @bp.route("/complain.asp")
 def complain():
-    """Complaint form for regulatory organizations (stub)"""
+    """
+    Complaint information for HK-listed issuers
+    Shows SEHK Listing Division team contact details for filing complaints
+
+    Query params:
+    - p: personID of organization
+
+    Tables: enigma.lirorgteam, enigma.lirteams, enigma.lirteamstaff, enigma.lirstaff, enigma.lirroles
+    """
     person_id = get_int("p", 0)
-    return f"<h2>Complain</h2><p>Route stub - person_id: {person_id}</p><p><a href='/dbpub/orgdata.asp?p={person_id}'>Back to Key Data</a></p>"
+
+    if not person_id:
+        return render_template("error.html", message="Missing organization ID"), 400
+
+    # Get organization name
+    org_result = execute_query(
+        "SELECT name1 FROM enigma.organisations WHERE personID = %s",
+        (person_id,)
+    )
+
+    if not org_result:
+        return render_template("error.html", message="Organization not found"), 404
+
+    org_name = org_result[0]["name1"]
+
+    # Get stock code (last 5 digits of ordCodeLast)
+    stock_code_result = execute_query(
+        """
+        SELECT LPAD(CAST(
+            (SELECT sl.stockCode
+             FROM enigma.issue i
+             JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+             WHERE i.issuer = %s
+               AND sl.stockexid IN (1, 20)
+               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+             ORDER BY sl.firsttradedate DESC
+             LIMIT 1) AS VARCHAR), 5, '0') AS stock_code
+        """,
+        (person_id,)
+    )
+    stock_code = stock_code_result[0]["stock_code"] if stock_code_result and stock_code_result[0]["stock_code"] else "00000"
+
+    # Check if HKEX (special case)
+    is_hkex = (person_id == 9643)
+
+    # Get current SEHK listing team
+    current_team = None
+    if not is_hkex:
+        current_team_result = execute_query(
+            """
+            SELECT o.teamID, t.teamno
+            FROM enigma.lirorgteam o
+            JOIN enigma.lirteams t ON o.teamID = t.ID
+            WHERE NOT o.dead AND o.orgID = %s
+            """,
+            (person_id,)
+        )
+
+        if current_team_result:
+            team_id = current_team_result[0]["teamid"]
+            team_no = current_team_result[0]["teamno"]
+
+            # Get team staff
+            staff_result = execute_query(
+                """
+                SELECT
+                    CONCAT(s.n1, ' ', COALESCE(s.n2, ''), ' ', COALESCE(s.cn, '')) AS name,
+                    r.title,
+                    s.tel
+                FROM enigma.lirteamstaff ls
+                JOIN enigma.lirstaff s ON ls.staffID = s.ID
+                JOIN enigma.lirroles r ON ls.posID = r.ID
+                WHERE NOT ls.dead AND ls.teamID = %s
+                ORDER BY ls.posID DESC
+                """,
+                (team_id,)
+            )
+
+            # Format phone numbers
+            for staff in staff_result:
+                if staff["tel"]:
+                    tel = str(staff["tel"])
+                    if len(tel) == 8:
+                        staff["tel_formatted"] = f"{tel[:4]}-{tel[4:]}"
+                    else:
+                        staff["tel_formatted"] = tel
+
+            current_team = {
+                "team_id": team_id,
+                "team_no": team_no,
+                "staff": staff_result
+            }
+
+    # Get former SEHK listing teams
+    former_teams = execute_query(
+        """
+        SELECT o.teamID, t.teamno,
+               CASE WHEN o.firstseen = '2023-12-30' THEN NULL ELSE o.firstseen END AS firstseen,
+               o.lastseen
+        FROM enigma.lirorgteam o
+        JOIN enigma.lirteams t ON o.teamID = t.ID
+        WHERE o.dead AND o.orgID = %s
+        ORDER BY o.lastseen DESC
+        """,
+        (person_id,)
+    )
+
+    return render_template(
+        "dbpub/complain.html",
+        person_id=person_id,
+        org_name=org_name,
+        stock_code=stock_code,
+        is_hkex=is_hkex,
+        current_team=current_team,
+        former_teams=former_teams
+    )
 
 
 @bp.route("/hpu.asp")

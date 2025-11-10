@@ -1,6 +1,32 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+{% if data %}
+<p>Population: {{ "{:,}".format(popn|int) if popn else 'N/A' }}</p>
+{% if prov_date %}<p>Latest data: {{ prov_date }}</p>{% endif %}
+
+<table class="txtable">
+    <tr>
+        <th>Date</th>
+        <th>SinoVac</th>
+        <th>BioNTech</th>
+        <th>Cumulative</th>
+        <th>% of Population</th>
+    </tr>
+    {% for row in data[-30:] %}
+    <tr>
+        <td>{{ row.d }}</td>
+        <td>{{ "{:,}".format(row.sino|int) if row.sino else '0' }}</td>
+        <td>{{ "{:,}".format(row.bion|int) if row.bion else '0' }}</td>
+        <td>{{ "{:,}".format(row.cumulative|int) }}</td>
+        <td>{{ "%.2f"|format(row.pct) }}%</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>Showing last 30 days of {{ data|length }} total records</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

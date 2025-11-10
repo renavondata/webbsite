@@ -1,0 +1,60 @@
+{% extends "base_database.html" %}
+{% block title %}Complain about: {{ org_name }}{% endblock %}
+{% block content %}
+<h2>How to complain about: {{ org_name }}</h2>
+
+{% if is_hkex %}
+<p>HKEX cannot regulate itself, so if you think that it is breaching its own Listing Rules then complain to the SFC
+<a href="mailto:complaint@sfc.hk?subject=Complaint about HKEX as a listed company (stock code 0388)">by e-mail at this link</a>.</p>
+{% elif current_team %}
+<p>This is a HK-listed issuer. The listing is regulated by the monopoly for-profit Stock Exchange of Hong Kong Ltd (<strong>SEHK</strong>,
+wholly owned by Hong Kong Exchanges and Clearing Ltd, 0388.HK),
+under the supervision of the Securities and Futures Commission (<strong>SFC</strong>). If you suspect a breach of the
+Listing Rules, then please email the relevant team in the Listing Division of SEHK and copy the SFC, or just
+call the SEHK team.</p>
+
+<h3>SEHK Listing Team</h3>
+<p>Team number: {{ current_team.team_no }}</p>
+<p>Complaint e-mail: <a href="mailto:{{ stock_code }}@hkex.com.hk?cc=complaint@sfc.hk&subject=Complaint about {{ org_name }} (stock code {{ stock_code }})">Click here</a></p>
+
+{% if current_team.staff %}
+<p>Team members</p>
+<table class="txtable">
+    <tr>
+        <th>Name</th>
+        <th>Title</th>
+        <th>Phone</th>
+    </tr>
+    {% for staff_member in current_team.staff %}
+    <tr>
+        <td>{{ staff_member.name }}</td>
+        <td>{{ staff_member.title }}</td>
+        <td>{{ staff_member.tel_formatted|default(staff_member.tel, true) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% else %}
+<p>No current SEHK listing team information available for this organization.</p>
+{% endif %}
+
+{% if former_teams %}
+<h3>Former SEHK Listing Teams on this issuer</h3>
+<table class="txtable fcr">
+    <tr>
+        <th>Team</th>
+        <th>First seen</th>
+        <th>Last seen</th>
+    </tr>
+    {% for team in former_teams %}
+    <tr>
+        <td><a href="/dbpub/lirteams.asp?t={{ team.teamid }}">{{ team.teamno }}</a></td>
+        <td>{{ team.firstseen|default('', true) }}</td>
+        <td>{{ team.lastseen }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<p><a href="/dbpub/orgdata.asp?p={{ person_id }}">Back to Key Data</a></p>
+{% endblock %}
