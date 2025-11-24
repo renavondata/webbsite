@@ -130,16 +130,12 @@ routes:
   - name: "positions - director positions"
     path: "/dbpub/positions.asp"
     params:
-      - p: "100"  # Example personID (was 'pid', corrected to 'p')
+      - p: "1"  # HSBC personID
         d: "2024-10-01"
-      - p: "200"  # Example personID
+      - p: "100"  # Valid personID
         d: "2024-10-01"
 
-  - name: "prices - stock prices"
-    path: "/dbpub/prices.asp"
-    params:
-      - i: "62"  # HSBC
-      - i: "941"  # China Mobile
+  # Note: prices.asp not deployed on live server - returns 404
 
   # ==========================================
   # Company Data (1 route)
@@ -750,8 +746,8 @@ routes:
   - name: "natperson - natural person profile"
     path: "/dbpub/natperson.asp"
     params:
+      - p: "1"  # HSBC
       - p: "100"
-      - p: "200"
 
   - name: "roles - corporate roles"
     path: "/dbpub/roles.asp"
@@ -1152,15 +1148,16 @@ normalize:
 
 # Timeout settings (seconds)
 timeout:
-  request: 60
-  total: 300
-  # Per-route timeout overrides for slow ASP queries
+  request: 120  # Increased from 60 to handle slow queries (disHKcaltype, etc.)
+  total: 600
+  # Note: Per-route timeout overrides not currently implemented in test_routes.py
+  # Using global timeout of 120s for all routes
   route_timeouts:
-    leagueDirsHK: 60
-    incHKannual: 60
-    incHKmonth: 60
-    incHKsurvive: 60
-    disHKcaltype: 60
+    leagueDirsHK: 120
+    incHKannual: 120
+    incHKmonth: 120
+    incHKsurvive: 120
+    disHKcaltype: 120
 
 # Normalization options
 normalize:
@@ -1172,18 +1169,6 @@ normalize:
   # ASP uses relative paths (href="main.css")
   # Flask uses absolute paths (href="/static/css/main.css")
   # The normalize_html() function in test_routes.py handles this
-
-# Timeout settings (seconds)
-timeout:
-  request: 60
-  total: 300
-  # Per-route timeout overrides for slow ASP queries
-  route_timeouts:
-    leagueDirsHK: 60
-    incHKannual: 60
-    incHKmonth: 60
-    incHKsurvive: 60
-    disHKcaltype: 60
 
 # Reporting options
 report:
