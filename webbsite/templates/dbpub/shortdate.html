@@ -1,6 +1,84 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Short Positions on {{ d }} - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Short Positions disclosed to SFC</h2>
+
+<form method="get" action="{{ url_for('dbpub_short_selling.shortdate') }}">
+	<div class="inputs">
+		Date:
+		<select name="d" onchange="this.form.submit()">
+			{% for date in date_list %}
+			<option value="{{ date.strftime('%Y-%m-%d') }}" {% if date.strftime('%Y-%m-%d') == d %}selected{% endif %}>
+				{{ date.strftime('%Y-%m-%d') }}
+			</option>
+			{% endfor %}
+		</select>
+	</div>
+</form>
+
+<h3>Short positions on {{ d }}</h3>
+
+{% if shorts %}
+<p>{{ shorts|length }} stocks with short positions disclosed on this date.</p>
+
+<table class="numtable">
+	<tr>
+		<th class="left">
+			{% if sort == 'nameup' %}<strong>Company</strong>
+			{% elif sort == 'namedn' %}<strong>Company ↓</strong>
+			{% else %}<a href="?d={{ d }}&sort=nameup">Company</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'codeup' %}<strong>Code</strong>
+			{% elif sort == 'codedn' %}<strong>Code ↓</strong>
+			{% else %}<a href="?d={{ d }}&sort=codeup">Code</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'issup' %}<strong>Outstanding</strong>
+			{% elif sort == 'issdn' %}<strong>Outstanding ↓</strong>
+			{% else %}<a href="?d={{ d }}&sort=issdn">Outstanding</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'shtup' %}<strong>Short Pos</strong>
+			{% elif sort == 'shtdn' %}<strong>Short Pos ↓</strong>
+			{% else %}<a href="?d={{ d }}&sort=shtdn">Short Pos</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'pctup' %}<strong>% of IS</strong>
+			{% elif sort == 'pctdn' %}<strong>% of IS ↓</strong>
+			{% else %}<a href="?d={{ d }}&sort=pctdn">% of IS</a>
+			{% endif %}
+		</th>
+		<th>Change</th>
+		<th>% Change</th>
+	</tr>
+
+	{% for row in shorts %}
+	<tr>
+		<td class="left">
+			<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
+		</td>
+		<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+		<td class="right">{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '-' }}</td>
+		<td class="right">{{ '{:,.0f}'.format(row.shortpos) if row.shortpos else '-' }}</td>
+		<td class="right">{{ '{:.3f}%'.format(row.pct) if row.pct else '-' }}</td>
+		<td class="right">{{ '{:+,.0f}'.format(row.change) if row.change else '-' }}</td>
+		<td class="right">{{ '{:+.3f}%'.format(row.pctchange) if row.pctchange else '-' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+
+<p class="footnote">Short positions are disclosed to SFC when they exceed 0.02% of issued shares. Change is vs {{ prev_date.strftime('%Y-%m-%d') if prev_date else 'previous date' }}.</p>
+
+<p><a href="{{ url_for('dbpub_short_selling.short_notes') }}">About short selling disclosure</a></p>
+
+{% else %}
+<p>No short positions disclosed on this date.</p>
+{% endif %}
+
 {% endblock %}
