@@ -259,7 +259,7 @@ def docs():
         f"""
         SELECT d.recorddate,
                d.reportdate,
-               EXTRACT(DAY FROM (d.reportdate - d.recorddate))::INTEGER AS speed,
+               (d.reportdate::date - d.recorddate::date) AS speed,
                dt.doclong,
                COALESCE(r.url, '') AS url,
                r.repfiled,
