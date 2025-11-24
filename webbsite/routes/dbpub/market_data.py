@@ -459,14 +459,14 @@ def mcap():
                        COALESCE(h.nomprice * os.outstanding, 0) AS mcap,
                        COALESCE(h.nomprice * h.boardlot, 0) AS lotVal
                 FROM enigma.stockListings sl
-                JOIN enigma.issue i ON sl.issueID = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.issue i ON sl.issueid = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
-                LEFT JOIN enigma.hkexdata h ON sl.issueID = h.issueID
+                LEFT JOIN enigma.hkexdata h ON sl.issueid = h.issueid
                 LEFT JOIN LATERAL (
                     SELECT outstanding
                     FROM enigma.issuedshares
-                    WHERE issueID = sl.issueID
+                    WHERE issueid = sl.issueid
                       AND atDate <= CURRENT_DATE
                     ORDER BY atDate DESC
                     LIMIT 1
@@ -588,7 +588,7 @@ def mcaphist():
             f"""
             SELECT DISTINCT sl.SEHKcurr, c.currency
             FROM enigma.stockListings sl
-            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.issue i ON sl.issueid = i.ID1
             JOIN enigma.currencies c ON sl.SEHKcurr = c.id
             WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
               AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
@@ -628,16 +628,16 @@ def mcaphist():
                            COALESCE(q.closing, 0) AS closing
                     FROM (
                         SELECT sl.stockCode AS sc,
-                               sl.issueID AS i,
+                               sl.issueid AS i,
                                i.typeID,
                                i.issuer AS p,
                                COALESCE(
                                    (SELECT MAX(q2.atDate)
                                     FROM ccass.quotes q2
-                                    WHERE q2.issueID = sl.issueID
+                                    WHERE q2.issueid = sl.issueid
                                       AND q2.atDate <= %s), %s) AS td
                         FROM enigma.stockListings sl
-                        JOIN enigma.issue i ON sl.issueID = i.ID1
+                        JOIN enigma.issue i ON sl.issueid = i.ID1
                         WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
                           AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
                           AND NOT sl.`2ndCtr`
@@ -648,25 +648,25 @@ def mcaphist():
                     LEFT JOIN LATERAL (
                         SELECT outstanding
                         FROM enigma.issuedshares
-                        WHERE issueID = t1.i AND atDate <= t1.td
+                        WHERE issueid = t1.i AND atDate <= t1.td
                         ORDER BY atDate DESC
                         LIMIT 1
                     ) os ON TRUE
                     LEFT JOIN LATERAL (
                         SELECT SUM(sharesPost - sharesPre) AS pending
                         FROM enigma.splitpends
-                        WHERE issueID = t1.i AND effDate > t1.td
+                        WHERE issueid = t1.i AND effDate > t1.td
                     ) pend ON TRUE
                     LEFT JOIN LATERAL (
                         SELECT boardlot
                         FROM enigma.boardlotchanges
-                        WHERE issueID = t1.i AND effDate <= t1.td
+                        WHERE issueid = t1.i AND effDate <= t1.td
                         ORDER BY effDate DESC
                         LIMIT 1
                     ) bl ON TRUE
-                    LEFT JOIN ccass.quotes q ON t1.i = q.issueID AND t1.td = q.atDate
+                    LEFT JOIN ccass.quotes q ON t1.i = q.issueid AND t1.td = q.atDate
                 ) t2
-                JOIN enigma.organisations o ON t2.p = o.personID
+                JOIN enigma.organisations o ON t2.p = o.personid
                 JOIN enigma.secTypes st ON t2.typeID = st.typeID
                 ORDER BY {ob}
             """,
