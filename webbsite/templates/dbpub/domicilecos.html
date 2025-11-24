@@ -1,6 +1,46 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+
+<ul class='navlist'>
+	<li{% if e == 'm' %} class='livebutton'{% endif %}><a href='?sort={{ sort_param }}&amp;dom={{ dom }}&amp;e=m'>Main Board</a></li>
+	<li{% if e == 'g' %} class='livebutton'{% endif %}><a href='?sort={{ sort_param }}&amp;dom={{ dom }}&amp;e=g'>GEM</a></li>
+	<li{% if e == 'a' %} class='livebutton'{% endif %}><a href='?sort={{ sort_param }}&amp;dom={{ dom }}&amp;e=a'>All HK</a></li>
+</ul>
+
+<ul class="navlist"><li><a href="domicile.asp?e={{ e }}">All domiciles</a></li></ul>
+<div class="clear"></div>
+
+<form method="get" action="domicilecos.asp">
+	<input type="hidden" name="sort" value="{{ sort_param }}">
+	<input type="hidden" name="e" value="{{ e }}">
+	Select domicile: <select name="dom" onchange="this.form.submit()">
+	{% for domicile in all_domiciles %}
+		<option value="{{ domicile.domicile }}" {% if domicile.domicile == dom %}selected{% endif %}>{{ domicile.friendly }}</option>
+	{% endfor %}
+	</select>
+</form>
+
+<p>Note: the table includes only companies with a primary listing in HK.</p>
+
+<div class="widthAlert3"></div>
+<table class="numtable c3l">
+	<tr>
+		<th class="colHide3">Row</th>
+		<th class="colHide3"><a href="?e={{ e }}&amp;dom={{ dom }}&amp;sort={% if sort_param == 'scup' %}scdn{% else %}scup{% endif %}">Stock<br>code</a></th>
+		<th><a href="?e={{ e }}&amp;dom={{ dom }}&amp;sort={% if sort_param == 'nameup' %}namedn{% else %}nameup{% endif %}">Company name</a></th>
+		<th class="nowrap"><a href="?e={{ e }}&amp;dom={{ dom }}&amp;sort={% if sort_param == 'incdup' %}incddn{% else %}incdup{% endif %}">Inc. date</a></th>
+	</tr>
+	{% for company in companies_data %}
+		<tr>
+			<td class="colHide3">{{ loop.index }}</td>
+			<td class="colHide3">{{ company.sc or '' }}</td>
+			<td><a href='orgdata.asp?p={{ company.personid }}'>{{ company.name }}</a></td>
+			<td class="nowrap">{{ company.incdate or '' }}</td>
+		</tr>
+	{% endfor %}
+</table>
 {% endblock %}
