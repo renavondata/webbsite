@@ -28,10 +28,10 @@ def short():
         try:
             result = execute_query(
                 """
-                SELECT i.ID1 AS issueID, o.name1, o.personID
+                SELECT i.ID1 AS issueid, o.name1, o.personid
                 FROM enigma.stockListings sl
-                JOIN enigma.issue i ON sl.issueID = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.issue i ON sl.issueid = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 WHERE sl.stockCode = %s AND sl.toDate IS NULL
                 ORDER BY sl.fromDate DESC LIMIT 1
             """,
@@ -49,9 +49,9 @@ def short():
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID
+                SELECT o.name1, o.personid
                 FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 WHERE i.ID1 = %s
             """,
                 (issue_id,),
@@ -75,35 +75,35 @@ def short():
                        COALESCE(
                            (SELECT q.closing
                             FROM ccass.quotes q
-                            WHERE q.issueID = s.issueID
+                            WHERE q.issueid = s.issueid
                               AND q.atDate <= s.atDate
                             ORDER BY q.atDate DESC
                             LIMIT 1), 0) AS price,
                        COALESCE(
                            (SELECT os.outstanding
                             FROM enigma.issuedshares os
-                            WHERE os.issueID = s.issueID
+                            WHERE os.issueid = s.issueid
                               AND os.atDate <= s.atDate
                             ORDER BY os.atDate DESC
                             LIMIT 1), 0) AS outstanding,
                        CASE WHEN COALESCE(
                                 (SELECT os.outstanding
                                  FROM enigma.issuedshares os
-                                 WHERE os.issueID = s.issueID
+                                 WHERE os.issueid = s.issueid
                                    AND os.atDate <= s.atDate
                                  ORDER BY os.atDate DESC
                                  LIMIT 1), 0) > 0
                             THEN s.shares / COALESCE(
                                 (SELECT os.outstanding
                                  FROM enigma.issuedshares os
-                                 WHERE os.issueID = s.issueID
+                                 WHERE os.issueid = s.issueid
                                    AND os.atDate <= s.atDate
                                  ORDER BY os.atDate DESC
                                  LIMIT 1), 1)
                             ELSE 0
                        END AS stake
                 FROM enigma.sfcshort s
-                WHERE s.issueID = %s
+                WHERE s.issueid = %s
                 ORDER BY s.atDate DESC
             """,
                 (issue_id,),
@@ -140,14 +140,14 @@ def shortsum():
                        COALESCE(
                            (SELECT os.outstanding
                             FROM enigma.issuedshares os
-                            WHERE os.issueID = s.issueID
+                            WHERE os.issueid = s.issueid
                               AND os.atDate <= s.atDate
                             ORDER BY os.atDate DESC
                             LIMIT 1), 0) *
                        COALESCE(
                            (SELECT q.closing
                             FROM ccass.quotes q
-                            WHERE q.issueID = s.issueID
+                            WHERE q.issueid = s.issueid
                               AND q.atDate <= s.atDate
                             ORDER BY q.atDate DESC
                             LIMIT 1), 0)
@@ -156,14 +156,14 @@ def shortsum():
                             COALESCE(
                                 (SELECT os.outstanding
                                  FROM enigma.issuedshares os
-                                 WHERE os.issueID = s.issueID
+                                 WHERE os.issueid = s.issueid
                                    AND os.atDate <= s.atDate
                                  ORDER BY os.atDate DESC
                                  LIMIT 1), 0) *
                             COALESCE(
                                 (SELECT q.closing
                                  FROM ccass.quotes q
-                                 WHERE q.issueID = s.issueID
+                                 WHERE q.issueid = s.issueid
                                    AND q.atDate <= s.atDate
                                  ORDER BY q.atDate DESC
                                  LIMIT 1), 0)
@@ -172,14 +172,14 @@ def shortsum():
                             COALESCE(
                                 (SELECT os.outstanding
                                  FROM enigma.issuedshares os
-                                 WHERE os.issueID = s.issueID
+                                 WHERE os.issueid = s.issueid
                                    AND os.atDate <= s.atDate
                                  ORDER BY os.atDate DESC
                                  LIMIT 1), 0) *
                             COALESCE(
                                 (SELECT q.closing
                                  FROM ccass.quotes q
-                                 WHERE q.issueID = s.issueID
+                                 WHERE q.issueid = s.issueid
                                    AND q.atDate <= s.atDate
                                  ORDER BY q.atDate DESC
                                  LIMIT 1), 0)
@@ -270,12 +270,12 @@ def shortdate():
         # Query all short positions on the specified date
         shorts = execute_query(
             f"""
-            SELECT sl.stockCode, t1.issueID, t1.shares, t1.value,
+            SELECT sl.stockCode, t1.issueid, t1.shares, t1.value,
                    t1.stake, o.name1, st.typeShort, st.typeLong,
                    COALESCE(t1.stake - t2.prevStake, 0) AS diff,
                    t1.mcap, t1.os
             FROM (
-                SELECT s.issueID, s.shares, s.value,
+                SELECT s.issueid, s.shares, s.value,
                        os.outstanding AS os,
                        CASE WHEN os.outstanding > 0
                             THEN s.shares / os.outstanding
@@ -285,24 +285,24 @@ def shortdate():
                 LEFT JOIN LATERAL (
                     SELECT outstanding
                     FROM enigma.issuedshares
-                    WHERE issueID = s.issueID AND atDate <= %s
+                    WHERE issueid = s.issueid AND atDate <= %s
                     ORDER BY atDate DESC
                     LIMIT 1
                 ) os ON TRUE
                 LEFT JOIN LATERAL (
                     SELECT closing
                     FROM ccass.quotes
-                    WHERE issueID = s.issueID AND atDate <= %s
+                    WHERE issueid = s.issueid AND atDate <= %s
                     ORDER BY atDate DESC
                     LIMIT 1
                 ) q ON TRUE
                 WHERE s.atDate = %s
             ) t1
-            JOIN enigma.issue i ON t1.issueID = i.ID1
-            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.issue i ON t1.issueid = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             LEFT JOIN (
-                SELECT s2.issueID,
+                SELECT s2.issueid,
                        CASE WHEN os2.outstanding > 0
                             THEN s2.shares / os2.outstanding
                             ELSE 0 END AS prevStake
@@ -310,16 +310,16 @@ def shortdate():
                 LEFT JOIN LATERAL (
                     SELECT outstanding
                     FROM enigma.issuedshares
-                    WHERE issueID = s2.issueID AND atDate <= %s
+                    WHERE issueid = s2.issueid AND atDate <= %s
                     ORDER BY atDate DESC
                     LIMIT 1
                 ) os2 ON TRUE
                 WHERE s2.atDate = %s
-            ) t2 ON t1.issueID = t2.issueID
+            ) t2 ON t1.issueid = t2.issueid
             LEFT JOIN LATERAL (
                 SELECT stockCode
                 FROM enigma.stockListings
-                WHERE issueID = t1.issueID AND toDate IS NULL
+                WHERE issueid = t1.issueid AND toDate IS NULL
                 ORDER BY fromDate DESC
                 LIMIT 1
             ) sl ON TRUE

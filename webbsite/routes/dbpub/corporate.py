@@ -40,7 +40,7 @@ def advisers():
     # Get organization name (with Chinese name if available, like ASP fnameOrg function)
     try:
         org_result = execute_query(
-            "SELECT name1, cname FROM enigma.organisations WHERE personID = %s",
+            "SELECT name1, cname FROM enigma.organisations WHERE personid = %s",
             (person_id,),
         )
         if org_result:
@@ -210,7 +210,7 @@ def officers():
     # Get organization name
     try:
         org_result = execute_query(
-            "SELECT name1 FROM enigma.organisations WHERE personID = %s", (person_id,)
+            "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
         )
         org_name = org_result[0]["name1"] if org_result else "Unknown"
     except Exception as ex:
@@ -464,7 +464,7 @@ def positions():
     try:
         # Try organization first
         org_result = execute_query(
-            "SELECT name1, cname, 'org' as type FROM enigma.organisations WHERE personID = %s",
+            "SELECT name1, cname, 'org' as type FROM enigma.organisations WHERE personid = %s",
             (person_id,),
         )
         if org_result:
@@ -475,7 +475,7 @@ def positions():
         else:
             # Try person
             person_result = execute_query(
-                "SELECT name1, name2, 'person' as type FROM enigma.people WHERE personID = %s",
+                "SELECT name1, name2, 'person' as type FROM enigma.people WHERE personid = %s",
                 (person_id,),
             )
             if person_result:
@@ -554,7 +554,7 @@ def positions():
         sql = f"""
             SELECT
                 company,
-                {f"enigma.orgName(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
+                {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
                 o.name1,
                 apptDate,
                 resDate,
@@ -562,8 +562,8 @@ def positions():
                 p.posLong,
                 CASE WHEN i.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed
             FROM enigma.directorships d
-            JOIN enigma.organisations o ON company = o.personID
-            JOIN enigma.positions p ON d.positionID = p.positionID
+            JOIN enigma.organisations o ON company = o.personid
+            JOIN enigma.positions p ON d.positionid = p.positionid
             LEFT JOIN enigma.listedcoshkever i ON company = i.issuer
             WHERE rank = %s AND director = %s {hide_str}
             ORDER BY {order_by}

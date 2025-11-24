@@ -1,0 +1,52 @@
+{% extends "base_database.html" %}
+
+{% block title %}Housing Authority public rental flats on a floor{% endblock %}
+
+{% block content %}
+<h2>Housing Authority public rental flats on a floor</h2>
+
+<table class="txtable" style="font-weight:bold">
+	<tr><td>Floor:</td><td>{{ floor }}</td></tr>
+	<tr><td>Block:</td><td>{{ block_name }}</td></tr>
+	<tr><td>Estate:</td><td>{{ est_name }}</td></tr>
+	<tr><td>District:</td><td>{{ dis_name }}</td></tr>
+	<tr><td>Map:</td><td><a href="https://maps.google.com/?q={{ coords }}" target="_blank">Open</a></td></tr>
+</table>
+
+<p>This page shows the HK Housing Authority's stock of Public Rental units, on one floor of one Block in one Estate. Data are
+<a href="https://data.gov.hk/en-datasets/provider/hk-housing" target="_blank">
+sourced here</a>. Click on the menu to go back up.</p>
+
+<ul class="navlist">
+	<li><a href="prhdistricts.asp?sort={{ sort_param }}">Districts</a></li>
+	<li><a href="prhestates.asp?sort={{ sort_param }}&amp;dis={{ dis }}">Estates</a></li>
+	<li><a href="prhblocks.asp?sort={{ sort_param }}&amp;e={{ eid }}">Blocks</a></li>
+	<li><a href="prhfloors.asp?sort={{ sort_param }}&amp;b={{ block_id }}">Floors</a></li>
+</ul>
+<div class="clear"></div>
+
+<table class="numtable">
+	<tr>
+		<th></th>
+		<th><a href="?b={{ block_id }}&amp;f={{ floor }}&amp;sort={% if sort_param == 'end' %}en{% else %}end{% endif %}">Flat</a></th>
+		<th><a href="?b={{ block_id }}&amp;f={{ floor }}&amp;sort={% if sort_param == 'ad' %}a{% else %}ad{% endif %}">Internal<br>floor<br>area sq.m.</a></th>
+		<th><a href="?b={{ block_id }}&amp;f={{ floor }}&amp;sort={% if sort_param == 'el' %}eln{% else %}el{% endif %}">Elevator?</a></th>
+	</tr>
+	{% set ns = namespace(suma=0) %}
+	{% for flat in flats %}
+		<tr>
+			<td>{{ loop.index }}</td>
+			<td>{{ flat.flat }}</td>
+			<td>{{ "{:.2f}".format(flat.area|float) }}</td>
+			<td>{{ 'Y' if flat.elevator else 'N' }}</td>
+		</tr>
+		{% set _ = ns.__setitem__('suma', ns.suma + flat.area|float) %}
+	{% endfor %}
+	<tr class="total">
+		<td></td>
+		<td>Total</td>
+		<td>{{ "{:.2f}".format(ns.suma / flats|length) if flats else '-' }}</td>
+		<td></td>
+	</tr>
+</table>
+{% endblock %}
