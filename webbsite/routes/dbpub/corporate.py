@@ -554,7 +554,7 @@ def positions():
         sql = f"""
             SELECT
                 company,
-                {f"enigma.orgName(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
+                {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
                 o.name1,
                 apptDate,
                 resDate,

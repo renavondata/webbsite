@@ -772,7 +772,7 @@ def sfc_lic_rec():
         # Build name selection based on show_old_names flag
         name_field = "name1"
         if show_old_names:
-            name_field = "enigma.orgName(orgid, COALESCE(startDate, endDate))"
+            name_field = "enigma.orgname(orgid, COALESCE(startDate, endDate))"
 
         sql = f"""
             SELECT {name_field} AS name1, orgid, role, actType, startDate, endDate, actName
