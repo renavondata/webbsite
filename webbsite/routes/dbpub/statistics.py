@@ -20,7 +20,7 @@ def enigma_orgdata():
     Company/organization data page - COMPLEX, HIGH PRIORITY
 
     Query params:
-    - p: personID of organization
+    - p: personid of organization
 
     This is one of the most important pages - shows comprehensive company data
     including directors, shareholdings, corporate enigma.events, financial reports, etc.
@@ -63,7 +63,7 @@ def enigma_orgdata():
 
         org_row = org_result[0]
         org_data = {
-            "personID": org_row["personid"],
+            "personid": org_row["personid"],
             "Name1": org_row["name1"],
             "cName": org_row["cname"],
             "domicile": org_row["domicile"],
@@ -128,7 +128,7 @@ def enigma_orgdata():
     # Using right-open interval: period includes "from" date, excludes "until" date
     directors_sql = """
         SELECT
-            p.personID,
+            p.personid,
             p.name1,
             p.name2,
             pos.posshort,
@@ -149,7 +149,7 @@ def enigma_orgdata():
         for row in directors_result:
             directors.append(
                 {
-                    "personID": row["personid"],
+                    "personid": row["personid"],
                     "Name1": row["name1"],
                     "Name2": row["name2"],
                     "position": row["posshort"],
@@ -212,7 +212,7 @@ def enigma_positions():
     Director enigma.positions across all companies - port of enigma.positions.asp
 
     Query params:
-    - p: personID of the person/director
+    - p: personid of the person/director
     - sort: sorting column (orgup/orgdn, posup/posdn, appup/appdn, resup/resdn)
     - hide: Y=current only, N=show history
 
@@ -365,7 +365,7 @@ def websites():
     Company websites listing
 
     Query params:
-    - p: personID (organization)
+    - p: personid (organization)
 
     Shows all websites associated with an organization (active and archived)
     Tables used: enigma.web
@@ -400,8 +400,8 @@ def matches():
     Find common directors between two organizations
 
     Query params:
-    - org1: first organization personID
-    - org2: second organization personID
+    - org1: first organization personid
+    - org2: second organization personid
     - d: snapshot date (defaults to today)
     - sort: sorting column
 
@@ -1091,7 +1091,7 @@ def pay():
     Director remuneration details by company and year
 
     Query params:
-    - p: organization personID
+    - p: organization personid
     - d: record date (financial year end)
     - sort: fee/sal/bon/ret/sha/tot/nam/pos
 
@@ -1108,7 +1108,7 @@ def pay():
     if person_id:
         org_result = execute_query(
             """
-            SELECT name1 FROM enigma.organisations WHERE personID = %s
+            SELECT name1 FROM enigma.organisations WHERE personid = %s
         """,
             (person_id,),
         )
@@ -2482,7 +2482,7 @@ def overlap():
     Director overlap between companies - shows organizations that share directors
 
     Query params:
-    - p: organization personID
+    - p: organization personid
     - d: date for overlap analysis (default: today)
     - sort: nam=by name, cnt=by overlap count
 
@@ -2499,7 +2499,7 @@ def overlap():
     if person_id:
         org_result = execute_query(
             """
-            SELECT name1 FROM enigma.organisations WHERE personID = %s
+            SELECT name1 FROM enigma.organisations WHERE personid = %s
         """,
             (person_id,),
         )
@@ -2594,7 +2594,7 @@ def outstanding():
             """
             SELECT o.name1
             FROM enigma.issue i
-            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.organisations o ON i.issuer = o.personid
             WHERE i.ID1 = %s
         """,
             (issue_id,),
@@ -3133,7 +3133,7 @@ def possum():
     Position Summary Analysis - consolidates consecutive directorships and calculates returns
 
     Query params:
-    - p: personID (required)
+    - p: personid (required)
     - sort: Sort column (orgup/orgdn, appup/appdn, resup/resdn, serup/serdn, totup/totdn, cagretup/cagretdn, cagrelup/cagreldn)
     - hide: Y/N - show only current positions or all history
     - f: from date filter
@@ -3161,14 +3161,14 @@ def possum():
     person_info = execute_query(
         """
         SELECT p.name1, p.name2, p.cName,
-               CASE WHEN EXISTS(SELECT 1 FROM enigma.organisations WHERE personID = %s)
+               CASE WHEN EXISTS(SELECT 1 FROM enigma.organisations WHERE personid = %s)
                THEN TRUE ELSE FALSE END as is_org
         FROM enigma.people p
-        WHERE p.personID = %s
+        WHERE p.personid = %s
         UNION
         SELECT o.name1, NULL, NULL, TRUE as is_org
         FROM enigma.organisations o
-        WHERE o.personID = %s
+        WHERE o.personid = %s
         LIMIT 1
         """,
         (person_id, person_id, person_id)
@@ -3237,7 +3237,7 @@ def possum():
                 ELSE 1
             END) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) as group_id
         FROM enigma.directorships d
-        JOIN enigma.positions p ON d.positionID = p.positionID
+        JOIN enigma.positions p ON d.positionid = p.positionid
         WHERE d.director = %s
           AND p.rank = 1
         {hide_str}
@@ -3262,7 +3262,7 @@ def possum():
         d2.resDate as d2_resdate,
         enigma.MSdateAcc(d1.apptDate, d1.apptAcc) as app,
         enigma.MSdateAcc(d2.resDate, d2.resAcc) as res,
-        d1.company as orgID,
+        d1.company as orgid,
         hkl.issueID,
         enigma.totRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
         enigma.CAGRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
@@ -3271,7 +3271,7 @@ def possum():
     FROM consolidated c
     JOIN enigma.directorships d1 ON c.first_pos = d1.id1
     JOIN enigma.directorships d2 ON c.last_pos = d2.id1
-    JOIN enigma.organisations o ON d1.company = o.personID
+    JOIN enigma.organisations o ON d1.company = o.personid
     LEFT JOIN enigma.hklistedordsever hkl ON d1.company = hkl.issuer
     ORDER BY {order_by}
     """
@@ -3375,7 +3375,7 @@ def latest_dirs_hk():
         SELECT
             p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '') AS dir,
             director AS dirID,
-            company AS orgID,
+            company AS orgid,
             o.name1 AS org,
             sex,
             TO_CHAR(apptDate, 'YYYY-MM-DD') AS appt,
@@ -3384,9 +3384,9 @@ def latest_dirs_hk():
             YOB
         FROM enigma.directorships d
         JOIN enigma.listedcoshkever ON company = issuer
-        JOIN enigma.people p ON director = p.personID
-        JOIN enigma.organisations o ON company = o.personID
-        JOIN enigma.positions pn ON d.positionID = pn.positionID
+        JOIN enigma.people p ON director = p.personid
+        JOIN enigma.organisations o ON company = o.personid
+        JOIN enigma.positions pn ON d.positionid = pn.positionid
         WHERE apptDate <= %s
           AND apptDate >= %s
           AND rank = 1
@@ -4906,7 +4906,7 @@ def indexhk():
             SELECT DISTINCT lc.issuer, o.name1 AS name
             FROM enigma.listedcoshk lc
             JOIN enigma.organisations o ON lc.issuer = o.personid
-            JOIN enigma.personstories ps ON lc.issuer = ps.personID
+            JOIN enigma.personstories ps ON lc.issuer = ps.personid
             WHERE {where_clause}
             ORDER BY name
         """
@@ -6352,7 +6352,7 @@ def str_route():
             except:
                 pass
         else:
-            # Get personID if we have stock name but not person_id
+            # Get personid if we have stock name but not person_id
             try:
                 person_result = execute_query(
                     """
@@ -6503,7 +6503,7 @@ def str_route():
                 # Check for pay data
                 pay_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6534,7 +6534,7 @@ def str_route():
                 # Check for SFC licenses
                 sfc_lic_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6545,7 +6545,7 @@ def str_route():
                 # Check for CCASS participant
                 ccass_part_result = execute_query(
                     """
-                    SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+                    SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1
                 """,
                     (person_id,),
                 )
@@ -6556,7 +6556,7 @@ def str_route():
                 # Check for financial documents
                 financials_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6567,7 +6567,7 @@ def str_route():
                 # Check for ESS data
                 ess_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6576,7 +6576,7 @@ def str_route():
                 # Check for Webb-site articles
                 articles_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6587,7 +6587,7 @@ def str_route():
                 # Check for complain page (HKEX or has lirorgteam)
                 complain_result = execute_query(
                     """
-                    SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+                    SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) as has_data
                 """,
                     (person_id,),
                 )
@@ -6623,7 +6623,7 @@ def str_route():
                 c.currency
             FROM enigma.sdi s
             JOIN enigma.sdievent ON s.id = sdiID
-            JOIN enigma.people p ON dir = personID
+            JOIN enigma.people p ON dir = personid
             JOIN enigma.currencies c ON curr = c.ID
             WHERE serNoSuper IS NULL
               AND probReason IN(21,22,23,1101,1113,1201,1213,1302)
@@ -6771,14 +6771,14 @@ def ctr():
         # Get issue details
         if issue_id:
             sql = """
-                SELECT i.id1 as issueID, o.personID, o.name1,
+                SELECT i.id1 as issueID, o.personid, o.name1,
                        enigma.lastCode(i.id1) as lastCode,
                        st.typeShort,
                        CASE WHEN i.expmat IS NOT NULL THEN
                            TO_CHAR(i.expmat, 'YYYY-MM-DD')
                        ELSE '' END as exp
                 FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE i.id1 = %s
             """
@@ -6787,7 +6787,7 @@ def ctr():
                 return {
                     "issueID": result[0]["issueid"],
                     "lastCode": result[0]["lastcode"],
-                    "personID": result[0]["personid"],
+                    "personid": result[0]["personid"],
                     "name": f"{result[0]['name1']}: {result[0]['typeshort']} {result[0]['exp']}",
                 }
 
@@ -6919,7 +6919,7 @@ def ctr():
         }
 
         # Organization navigation flags (matching orgBar from navbars.asp)
-        person_id = issues[0]["personID"]
+        person_id = issues[0]["personid"]
         org_nav = {}
 
         # Check for officers/directorships
@@ -6936,7 +6936,7 @@ def ctr():
         # Check for pay data
         pay_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -6967,7 +6967,7 @@ def ctr():
         # Check for SFC licenses
         sfc_lic_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -6978,7 +6978,7 @@ def ctr():
         # Check for CCASS participant
         ccass_part_result = execute_query(
             """
-            SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+            SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1
         """,
             (person_id,),
         )
@@ -6989,7 +6989,7 @@ def ctr():
         # Check for financial documents
         financials_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -7000,7 +7000,7 @@ def ctr():
         # Check for ESS data
         ess_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -7009,7 +7009,7 @@ def ctr():
         # Check for Webb-site articles
         articles_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) as has_data
         """,
             (person_id,),
         )
@@ -7020,7 +7020,7 @@ def ctr():
         # Check for complain page (HKEX or has lirorgteam)
         complain_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -7490,8 +7490,8 @@ def orgdata():
     - Reorganization history
 
     Query params:
-    - p: personID (organization ID)
-    - code: stock code (converts to personID)
+    - p: personid (organization ID)
+    - code: stock code (converts to personid)
     - s1, s2, s3: sort parameters for holders/holdings/debt tables
     - x: expand parameter
 
@@ -7510,17 +7510,17 @@ def orgdata():
     if expand not in ("n", "y"):
         expand = "c"
 
-    # Convert stock code to personID if provided
+    # Convert stock code to personid if provided
     if code > 0:
         # Pad stock code: 4 digits for Main Board (1-9999), 5 digits for GEM (80000+)
         padded_code = str(code).zfill(5) if code >= 8000 else str(code).zfill(4)
         result = execute_query(
             """
             SELECT COALESCE((
-                SELECT orgID FROM enigma.WebListings
+                SELECT orgid FROM enigma.WebListings
                 WHERE StockCode = %s
                 AND (DelistDate IS NULL OR DelistDate >= NOW())
-            ), 0) as personID
+            ), 0) as personid
         """,
             (padded_code,),
         )
@@ -7573,7 +7573,7 @@ def orgdata():
                 (person_id,),
             )
             if merged:
-                # Redirect to new personID
+                # Redirect to new personid
                 from flask import redirect, url_for
 
                 return redirect(url_for("dbpub.orgdata", p=merged[0]["newp"]))
@@ -7583,7 +7583,7 @@ def orgdata():
             lsorg_result = execute_query(
                 """
                 SELECT lsid FROM enigma.lsorgs
-                WHERE NOT dead AND personID = %s
+                WHERE NOT dead AND personid = %s
             """,
                 (person_id,),
             )
@@ -7612,7 +7612,7 @@ def orgdata():
             FROM enigma.freg f
             JOIN enigma.domiciles d ON f.hostDom = d.ID
             LEFT JOIN enigma.oldcrf o ON f.ID = o.fregID
-            WHERE f.orgID = %s
+            WHERE f.orgid = %s
         """,
             (person_id,),
         )
@@ -7624,7 +7624,7 @@ def orgdata():
         # Check if ESS data exists
         ess_check = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) as has_ess
+            SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgid = %s) as has_ess
         """,
             (person_id,),
         )
@@ -7642,7 +7642,7 @@ def orgdata():
                 FROM (
                     SELECT eName, cName, phase, SUM(amt) as amt, SUM(heads) as hds
                     FROM enigma.ess
-                    WHERE orgID = %s
+                    WHERE orgid = %s
                     GROUP BY eName, cName, phase
                 ) t
                 GROUP BY eName, cName
@@ -7679,7 +7679,7 @@ def orgdata():
                    END as chg
             FROM enigma.nameChanges
             WHERE (OldName IS NOT NULL OR oldCName IS NOT NULL)
-              AND personID = %s
+              AND personid = %s
             ORDER BY DateChanged DESC
         """,
             (person_id,),
@@ -7699,7 +7699,7 @@ def orgdata():
                    END as chg
             FROM enigma.domChanges c
             JOIN enigma.domiciles d ON c.oldDom = d.ID
-            WHERE c.orgID = %s
+            WHERE c.orgid = %s
             ORDER BY c.dateChanged DESC
         """,
             (person_id,),
@@ -7718,7 +7718,7 @@ def orgdata():
                        ELSE TO_CHAR(r.effDate, 'YYYY-MM-DD')
                    END as chg
             FROM enigma.reorg r
-            JOIN enigma.organisations o ON r.fromOrg = o.personID
+            JOIN enigma.organisations o ON r.fromOrg = o.personid
             WHERE r.toOrg = %s
         """,
             (person_id,),
@@ -7737,7 +7737,7 @@ def orgdata():
                        ELSE TO_CHAR(r.effDate, 'YYYY-MM-DD')
                    END as chg
             FROM enigma.reorg r
-            JOIN enigma.organisations o ON r.toOrg = o.personID
+            JOIN enigma.organisations o ON r.toOrg = o.personid
             WHERE r.fromOrg = %s
         """,
             (person_id,),
@@ -7929,9 +7929,9 @@ def orgdata():
     if person_id > 0 and org_data and org_data.get("sfcid"):
         old_sfc_ids = execute_query(
             """
-            SELECT SFCID, SFCri, TO_CHAR(until, 'YYYY-MM-DD') as until
+            SELECT sfcid, SFCri, TO_CHAR(until, 'YYYY-MM-DD') as until
             FROM enigma.oldsfcids
-            WHERE orgID = %s
+            WHERE orgid = %s
             ORDER BY until DESC
         """,
             (person_id,),
@@ -7973,7 +7973,7 @@ def orgdata():
         # Check for pay records
         result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -8000,7 +8000,7 @@ def orgdata():
         # Check for SFC licenses
         result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -8009,7 +8009,7 @@ def orgdata():
         # Check for CCASS participant
         result = execute_query(
             """
-            SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1
+            SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1
         """,
             (person_id,),
         )
@@ -8019,7 +8019,7 @@ def orgdata():
         # Check for documents
         result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -8028,16 +8028,16 @@ def orgdata():
         # Check for stories
         result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) as has_data
         """,
             (person_id,),
         )
         nav_has_stories = result[0]["has_data"] if result else False
 
-        # Check for LIR team or is HKEX (personID 9643)
+        # Check for LIR team or is HKEX (personid 9643)
         result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) as has_data
         """,
             (person_id,),
         )
@@ -8536,7 +8536,7 @@ def adviserships():
     Shows organizations where this entity acts as an adviser (auditor, solicitor, sponsor, etc.)
 
     Query params:
-    - p: personID (adviser)
+    - p: personid (adviser)
     - r: roleID (specific role, defaults to most popular)
     - sort: sorting column
     - hide: hide history (Y/N)
@@ -8562,7 +8562,7 @@ def adviserships():
 
     # Get organization name
     org_name = execute_query(
-        "SELECT name1 FROM enigma.organisations WHERE personID = %s", (person_id,)
+        "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
     )
     if not org_name:
         return render_template("error.html", message="Organization not found"), 404
@@ -8661,14 +8661,14 @@ def adviserships():
     adviserships = execute_query(
         f"""
         SELECT
-            company AS orgID,
+            company AS orgid,
             o.name1 AS org,
             a.ID1 AS issueID,
             addDate,
             remDate,
             i.name1 AS issue_name
         FROM enigma.adviserships adv
-        JOIN enigma.organisations o ON adv.company = o.personID
+        JOIN enigma.organisations o ON adv.company = o.personid
         JOIN enigma.issue a ON adv.company = a.issuer
         JOIN enigma.issue i ON a.ID1 = i.ID1
         WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
@@ -8710,7 +8710,7 @@ def essraw():
     Shows raw ESS filings from HK government COVID scheme for an organization
 
     Query params:
-    - p: personID
+    - p: personid
     - sort: sorting column
 
     Tables: enigma.ess
@@ -8723,7 +8723,7 @@ def essraw():
 
     # Get organization name
     org_name = execute_query(
-        "SELECT name1 FROM enigma.organisations WHERE personID = %s", (person_id,)
+        "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
     )
     if not org_name:
         return render_template("error.html", message="Organization not found"), 404
@@ -8755,7 +8755,7 @@ def essraw():
             heads,
             CASE WHEN heads = 0 THEN NULL ELSE amt::numeric / heads END AS avg
         FROM enigma.ess
-        WHERE orgID = %s
+        WHERE orgid = %s
         ORDER BY {order_by}
     """,
         (person_id,),
@@ -8774,7 +8774,7 @@ def essraw():
                      ELSE SUM(amt)::numeric / SUM(heads)
                 END AS avg
             FROM enigma.ess
-            WHERE orgID = %s
+            WHERE orgid = %s
             GROUP BY phase
             ORDER BY phase
         """,
@@ -8811,7 +8811,7 @@ def complain():
     Shows SEHK Listing Division team contact details for filing complaints
 
     Query params:
-    - p: personID of organization
+    - p: personid of organization
 
     Tables: enigma.lirorgteam, enigma.lirteams, enigma.lirteamstaff, enigma.lirstaff, enigma.lirroles
     """
@@ -8822,7 +8822,7 @@ def complain():
 
     # Get organization name
     org_result = execute_query(
-        "SELECT name1 FROM enigma.organisations WHERE personID = %s",
+        "SELECT name1 FROM enigma.organisations WHERE personid = %s",
         (person_id,)
     )
 
@@ -8859,7 +8859,7 @@ def complain():
             SELECT o.teamID, t.teamno
             FROM enigma.lirorgteam o
             JOIN enigma.lirteams t ON o.teamID = t.ID
-            WHERE NOT o.dead AND o.orgID = %s
+            WHERE NOT o.dead AND o.orgid = %s
             """,
             (person_id,)
         )
@@ -8876,7 +8876,7 @@ def complain():
                     r.title,
                     s.tel
                 FROM enigma.lirteamstaff ls
-                JOIN enigma.lirstaff s ON ls.staffID = s.ID
+                JOIN enigma.lirstaff s ON ls.staffid = s.ID
                 JOIN enigma.lirroles r ON ls.posID = r.ID
                 WHERE NOT ls.dead AND ls.teamID = %s
                 ORDER BY ls.posID DESC
@@ -8907,7 +8907,7 @@ def complain():
                o.lastseen
         FROM enigma.lirorgteam o
         JOIN enigma.lirteams t ON o.teamID = t.ID
-        WHERE o.dead AND o.orgID = %s
+        WHERE o.dead AND o.orgid = %s
         ORDER BY o.lastseen DESC
         """,
         (person_id,)
@@ -8947,9 +8947,9 @@ def hpu():
         """
         SELECT
             i.name1,
-            o.personID
+            o.personid
         FROM enigma.issue i
-        JOIN enigma.organisations o ON i.issuer = o.personID
+        JOIN enigma.organisations o ON i.issuer = o.personid
         WHERE i.ID1 = %s
     """,
         (issue_id,),

@@ -20,7 +20,7 @@ def sfc_licensees():
     Shows Responsible Officers (ROs) and Representatives (Reps) for a firm
 
     Query params:
-    - p: personID (organization)
+    - p: personid (organization)
     - d: date (defaults to today)
     - a: activity type (0 = all activities)
     - hide: Y (current only) or N (history)
@@ -42,7 +42,7 @@ def sfc_licensees():
         try:
             result = execute_query(
                 """
-                SELECT name1 FROM enigma.organisations WHERE personID = %s
+                SELECT name1 FROM enigma.organisations WHERE personid = %s
             """,
                 (person_id,),
             )
@@ -93,10 +93,10 @@ def sfc_licensees():
                        CONCAT(COALESCE(p.name1,''),
                               CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
                               CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS name,
-                       lr.staffID, lr.startDate, lr.endDate, lr.role, p.SFCID
+                       lr.staffid, lr.startDate, lr.endDate, lr.role, p.sfcid
                 FROM enigma.licrec lr
-                JOIN enigma.people p ON lr.staffID = p.personID
-                WHERE lr.actType = %s AND lr.orgID = %s {hide_str}
+                JOIN enigma.people p ON lr.staffid = p.personid
+                WHERE lr.actType = %s AND lr.orgid = %s {hide_str}
                 ORDER BY {ob}
             """
             params = [act] + params
@@ -107,12 +107,12 @@ def sfc_licensees():
                        CONCAT(COALESCE(p.name1,''),
                               CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
                               CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS name,
-                       p.personID AS staffID, d.apptDate AS startDate, d.resDate AS endDate,
-                       CASE WHEN d.positionID = 395 THEN 1 ELSE 0 END AS role,
-                       p.SFCID
+                       p.personid AS staffid, d.apptDate AS startDate, d.resDate AS endDate,
+                       CASE WHEN d.positionid = 395 THEN 1 ELSE 0 END AS role,
+                       p.sfcid
                 FROM enigma.directorships d
-                JOIN enigma.people p ON d.director = p.personID
-                WHERE d.positionID IN (394, 395) AND d.company = %s {hide_str}
+                JOIN enigma.people p ON d.director = p.personid
+                WHERE d.positionid IN (394, 395) AND d.company = %s {hide_str}
                 ORDER BY {ob}
             """
 
@@ -210,7 +210,7 @@ def sfc_hist_firm():
     Shows historic number of SFC licensees (ROs and Reps) for one firm
 
     Query params:
-    - p: personID (organization)
+    - p: personid (organization)
     - a: activity type (0 = all activities)
     - f: frequency (m=monthly, y=yearly, defaults to yearly)
 
@@ -232,7 +232,7 @@ def sfc_hist_firm():
         try:
             result = execute_query(
                 """
-                SELECT name1 FROM enigma.organisations WHERE personID = %s
+                SELECT name1 FROM enigma.organisations WHERE personid = %s
             """,
                 (person_id,),
             )
@@ -294,10 +294,10 @@ def sfc_hist_firm():
                 if act > 0:
                     result = execute_query(
                         """
-                        SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
-                        FROM (SELECT DISTINCT staffID, role
+                        SELECT COUNT(DISTINCT staffid) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
+                        FROM (SELECT DISTINCT staffid, role
                               FROM enigma.licrec
-                              WHERE orgID = %s
+                              WHERE orgid = %s
                                 AND actType = %s
                                 AND (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
@@ -308,10 +308,10 @@ def sfc_hist_firm():
                 else:
                     result = execute_query(
                         """
-                        SELECT COUNT(DISTINCT staffID) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
-                        FROM (SELECT DISTINCT staffID, role
+                        SELECT COUNT(DISTINCT staffid) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
+                        FROM (SELECT DISTINCT staffid, role
                               FROM enigma.licrec
-                              WHERE orgID = %s
+                              WHERE orgid = %s
                                 AND (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
                         ) t
@@ -362,7 +362,7 @@ def sfc_changes():
     - d: end date (defaults to today)
     - sort: sorting column
 
-    Tables used: enigma.directorships (positionID 394=Rep, 395=RO)
+    Tables used: enigma.directorships (positionid 394=Rep, 395=RO)
     """
     from flask import current_app
     from datetime import timedelta
@@ -398,14 +398,14 @@ def sfc_changes():
                    CONCAT(COALESCE(p.name1,''),
                           CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
                           CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pplName,
-                   d.company AS orgID, d.director AS pplID,
-                   d.apptDate, d.resDate, d.positionID,
+                   d.company AS orgid, d.director AS pplID,
+                   d.apptDate, d.resDate, d.positionid,
                    CASE WHEN d.resDate >= %s THEN '-' ELSE '+' END AS appCes,
                    CASE WHEN d.resDate >= %s THEN d.resDate ELSE d.apptDate END AS relDate
             FROM enigma.directorships d
-            JOIN enigma.organisations o ON d.company = o.personID
-            JOIN enigma.people p ON d.director = p.personID
-            WHERE d.positionID IN (394, 395)
+            JOIN enigma.organisations o ON d.company = o.personid
+            JOIN enigma.people p ON d.director = p.personid
+            WHERE d.positionid IN (394, 395)
               AND ((d.apptDate >= %s AND d.apptDate <= %s)
                    OR (d.resDate >= %s AND d.resDate <= %s))
             ORDER BY {ob}
@@ -522,7 +522,7 @@ def sfc_licount():
         if act == 0:
             # All activities
             sql = f"""
-                SELECT t.orgID, o.name1 AS name, t.startDate, t.endDate,
+                SELECT t.orgid, o.name1 AS name, t.startDate, t.endDate,
                        t.bRO, t.bcnt - t.bRO AS brep, t.bcnt,
                        t.aRO, t.acnt - t.aRO AS arep, t.acnt,
                        CASE WHEN t.acnt > 0 THEN 1 - t.aRO / NULLIF(t.acnt, 0) ELSE NULL END AS arat,
@@ -531,36 +531,36 @@ def sfc_licount():
                 FROM (
                     SELECT COALESCE(a.cnt, 0) AS acnt, COALESCE(a.RO, 0) AS aRO,
                            COALESCE(b.cnt, 0) AS bcnt, COALESCE(b.RO, 0) AS bRO,
-                           ol.orgID, ol.startDate, ol.endDate
+                           ol.orgid, ol.startDate, ol.endDate
                     FROM (
-                        SELECT orgID, MIN(startDate) AS startDate,
+                        SELECT orgid, MIN(startDate) AS startDate,
                                CASE WHEN MAX(COALESCE(endDate, '9999-12-31')) = '9999-12-31'
                                     THEN NULL ELSE MAX(endDate) END AS endDate
                         FROM enigma.olicrec
                         WHERE (endDate IS NULL OR endDate > %s)
                           AND (startDate IS NULL OR startDate <= %s)
-                        GROUP BY orgID
+                        GROUP BY orgid
                     ) ol
                     LEFT JOIN (
-                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
-                        FROM (SELECT DISTINCT orgID, staffID, role
+                        SELECT orgid, COUNT(DISTINCT staffid) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM (SELECT DISTINCT orgid, staffid, role
                               FROM enigma.licrec
                               WHERE (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
                         ) t
-                        GROUP BY orgID
-                    ) b ON ol.orgID = b.orgID
+                        GROUP BY orgid
+                    ) b ON ol.orgid = b.orgid
                     LEFT JOIN (
-                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
-                        FROM (SELECT DISTINCT orgID, staffID, role
+                        SELECT orgid, COUNT(DISTINCT staffid) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        FROM (SELECT DISTINCT orgid, staffid, role
                               FROM enigma.licrec
                               WHERE (endDate IS NULL OR endDate > %s)
                                 AND (startDate IS NULL OR startDate <= %s)
                         ) t
-                        GROUP BY orgID
-                    ) a ON ol.orgID = a.orgID
+                        GROUP BY orgid
+                    ) a ON ol.orgid = a.orgid
                 ) t
-                JOIN enigma.organisations o ON o.personID = t.orgID
+                JOIN enigma.organisations o ON o.personid = t.orgid
                 WHERE t.acnt + t.bcnt > 0
                 ORDER BY {ob}
             """
@@ -568,38 +568,38 @@ def sfc_licount():
         else:
             # Specific activity
             sql = f"""
-                SELECT t.orgID, o.name1 AS name, t.startDate, t.endDate,
+                SELECT t.orgid, o.name1 AS name, t.startDate, t.endDate,
                        t.bRO, t.brep, t.bcnt, t.aRO, t.arep, t.acnt,
                        t.arat, t.brat, t.acnt - t.bcnt AS ccnt,
                        t.aRO - t.bRO AS cRO, t.arep - t.brep AS crep
                 FROM (
-                    SELECT ol.orgID, ol.startDate, ol.endDate,
+                    SELECT ol.orgid, ol.startDate, ol.endDate,
                            COALESCE(b.RO, 0) AS bRO, COALESCE(b.cnt - b.RO, 0) AS brep, COALESCE(b.cnt, 0) AS bcnt,
                            COALESCE(a.RO, 0) AS aRO, COALESCE(a.cnt - a.RO, 0) AS arep, COALESCE(a.cnt, 0) AS acnt,
                            CASE WHEN b.cnt > 0 THEN 1 - b.RO / NULLIF(b.cnt, 0) ELSE NULL END AS brat,
                            CASE WHEN a.cnt > 0 THEN 1 - a.RO / NULLIF(a.cnt, 0) ELSE NULL END AS arat
                     FROM enigma.olicrec ol
                     LEFT JOIN (
-                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        SELECT orgid, COUNT(DISTINCT staffid) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
                         FROM enigma.licrec
                         WHERE (endDate IS NULL OR endDate > %s)
                           AND (startDate IS NULL OR startDate <= %s)
                           AND actType = %s
-                        GROUP BY orgID
-                    ) b ON ol.orgID = b.orgID
+                        GROUP BY orgid
+                    ) b ON ol.orgid = b.orgid
                     LEFT JOIN (
-                        SELECT orgID, COUNT(DISTINCT staffID) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
+                        SELECT orgid, COUNT(DISTINCT staffid) AS cnt, SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS RO
                         FROM enigma.licrec
                         WHERE (endDate IS NULL OR endDate > %s)
                           AND (startDate IS NULL OR startDate <= %s)
                           AND actType = %s
-                        GROUP BY orgID
-                    ) a ON ol.orgID = a.orgID
+                        GROUP BY orgid
+                    ) a ON ol.orgid = a.orgid
                     WHERE ol.actType = %s
                       AND (ol.endDate IS NULL OR ol.endDate > %s)
                       AND (ol.startDate IS NULL OR ol.startDate <= %s)
                 ) t
-                JOIN enigma.organisations o ON t.orgID = o.personID
+                JOIN enigma.organisations o ON t.orgid = o.personid
                 WHERE t.acnt + t.bcnt > 0
                 ORDER BY {ob}
             """
@@ -629,7 +629,7 @@ def sfcolicrec():
     Shows SFC regulated activity licenses across all activities
 
     Query params:
-    - p: personID
+    - p: personid
     - sort: sorting column
     - h: hide history (Y/N)
 
@@ -645,9 +645,9 @@ def sfcolicrec():
     # Get organization info
     org_info = execute_query(
         """
-        SELECT name1, SFCID, SFCri
+        SELECT name1, sfcid, SFCri
         FROM enigma.organisations
-        WHERE personID = %s
+        WHERE personid = %s
     """,
         (person_id,),
     )
@@ -687,7 +687,7 @@ def sfcolicrec():
             a.actName
         FROM enigma.olicrec o
         JOIN enigma.activity a ON o.actType = a.ID
-        WHERE o.orgID = %s {hide_clause}
+        WHERE o.orgid = %s {hide_clause}
         ORDER BY {order_by}
     """,
         (person_id,),
@@ -712,7 +712,7 @@ def sfc_lic_rec():
     Shows all SFC licenses held by a person across different organizations
 
     Query params:
-    - p: personID (staffID)
+    - p: personid (staffid)
     - hide: Y (current only) or N (history)
     - sort: sorting column
     - n: boolean - show old organization names
@@ -737,7 +737,7 @@ def sfc_lic_rec():
             SELECT CONCAT(COALESCE(name1,''),
                          CASE WHEN name2 IS NOT NULL THEN CONCAT(', ', name2) ELSE '' END,
                          CASE WHEN cName IS NOT NULL THEN CONCAT(' ', cName) ELSE '' END) AS name
-            FROM enigma.people WHERE personID = %s
+            FROM enigma.people WHERE personid = %s
         """,
             (person_id,),
         )
@@ -772,14 +772,14 @@ def sfc_lic_rec():
         # Build name selection based on show_old_names flag
         name_field = "name1"
         if show_old_names:
-            name_field = "enigma.orgName(orgID, COALESCE(startDate, endDate))"
+            name_field = "enigma.orgName(orgid, COALESCE(startDate, endDate))"
 
         sql = f"""
-            SELECT {name_field} AS name1, orgID, role, actType, startDate, endDate, actName
+            SELECT {name_field} AS name1, orgid, role, actType, startDate, endDate, actName
             FROM enigma.licrec
-            JOIN enigma.organisations o ON orgID = o.personID
+            JOIN enigma.organisations o ON orgid = o.personid
             JOIN enigma.activity a ON actType = a.ID
-            WHERE staffID = %s {hide_str}
+            WHERE staffid = %s {hide_str}
             ORDER BY {ob}
         """
 
