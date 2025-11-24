@@ -1,6 +1,48 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Moves in HK law firms{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Moves in HK law firms</h2>
+
+{# solsBar navigation - matches ASP solsBar(p,3) function #}
+<ul class="navlist">
+	<li><a href='/dbpub/hksols.asp?p=0'>By name</a></li><li><a href='/dbpub/hksolfirms.asp?p=0'>By firm</a></li><li><a href='/dbpub/hksolsadmhk.asp?p=0'>By year</a></li><li class='livebutton'>Moves</li><li><a href='/dbpub/hksolsadmos.asp?p=0'>Overseas</a></li><li><a href='/dbpub/hksolemps.asp?p=0'>Non-law firms</a></li>
+</ul>
+<div class="clear"></div>
+
+<p>This table lists the latest moves in HK solicitors associated with HK law firms seen in the
+<a href="https://www.hklawsoc.org.hk/en/Serve-the-Public/The-Law-List" target="_blank">Law Society's Law List</a> in the last 30 days.
+Click the column-headings to sort.</p>
+
+<table class="opltable">
+	<tr>
+		<th><a href="?sort={% if sort == 'solup' %}soldn{% else %}solup{% endif %}">Lawyer</a></th>
+		<th><a href="?sort={% if sort == 'orgup' %}orgdn{% else %}orgup{% endif %}">Firm</a></th>
+		<th>Role</th>
+		<th><a href="?sort={% if sort == 'datup' %}datdn{% else %}datup{% endif %}">From</a></th>
+		<th><a href="?sort={% if sort == 'datup' %}datdn{% else %}datup{% endif %}">Until</a></th>
+	</tr>
+	{% set ns = namespace(last_pid=None, last_orgid=None) %}
+	{% for move in moves %}
+		{% if ns.last_pid != move['pid'] or ns.last_orgid != move['orgid'] %}
+			<tr class="total">
+				<td><a href='positions.asp?p={{ move["pid"] }}'>{{ move["pname"] }}</a></td>
+				<td><a href='officers.asp?p={{ move["orgid"] }}'>{{ move["oname"] }}</a></td>
+				<td>{{ move["lstxt"] }}</td>
+				<td>{{ move["appt"] or '' }}</td>
+				<td>{{ move["res"] or '' }}</td>
+			</tr>
+			{% set ns.last_pid = move['pid'] %}
+			{% set ns.last_orgid = move['orgid'] %}
+		{% else %}
+			<tr>
+				<td colspan="2"></td>
+				<td>{{ move["lstxt"] }}</td>
+				<td>{{ move["appt"] or '' }}</td>
+				<td>{{ move["res"] or '' }}</td>
+			</tr>
+		{% endif %}
+	{% endfor %}
+</table>
 {% endblock %}

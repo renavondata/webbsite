@@ -1,6 +1,42 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Non-law firms with HK solicitors{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Non-law firms with HK solicitors</h2>
+
+{# solsBar navigation - matches ASP solsBar(p,6) function #}
+<ul class="navlist">
+	<li><a href='/dbpub/hksols.asp?p=0'>By name</a></li><li><a href='/dbpub/hksolfirms.asp?p=0'>By firm</a></li><li><a href='/dbpub/hksolsadmhk.asp?p=0'>By year</a></li><li><a href='/dbpub/hksolsmoves.asp?p=0'>Moves</a></li><li><a href='/dbpub/hksolsadmos.asp?p=0'>Overseas</a></li><li class='livebutton'>Non-law firms</li>
+</ul>
+<div class="clear"></div>
+
+<p>This table lists known employers of HK solicitors which are not law firms, by number of solicitors admitted in HK, based on information seen in the
+Law Society's Law List,
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withcert.asp" target="_blank">with</a> or
+<a href="http://www.hklawsoc.org.hk/pub_e/memberlawlist/mem_withoutcert.asp" target="_blank">without</a> a practising certificate.&nbsp;Some people are associated with more than one
+employer. Click a column heading to sort. The list is not exhaustive, because some solicitors
+don't disclose an employer or
+give only a vague name of their employer which is not sufficient for us to
+associate the name with a particular legal entity.</p>
+
+<table class="numtable c2l">
+	<tr>
+		<th class="colHide3 right"></th>
+		<th><a href="?sort={% if sort == 'orgup' %}orgdn{% else %}orgup{% endif %}">Employer</a></th>
+		<th><a href="?sort={% if sort == 'cntdn' %}cntup{% else %}cntdn{% endif %}">Sols.</a></th>
+	</tr>
+	{% for emp in employers %}
+		<tr>
+			<td class="colHide3 right">{{ loop.index }}</td>
+			<td><a href='officers.asp?p={{ emp["personid"] }}'>{{ emp["name1"] }}</a></td>
+			<td>{{ emp["cnt"] }}</td>
+		</tr>
+	{% endfor %}
+	<tr class="total">
+		<td class="colHide3"></td>
+		<td>Total</td>
+		<td>{{ total }}</td>
+	</tr>
+</table>
 {% endblock %}

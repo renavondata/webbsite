@@ -1,6 +1,107 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Board pay: {{ org_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{# orgBar navigation would go here #}
+
+{% if found and pay_records %}
+	<h3>Pay for financial year ended {{ d }}</h3>
+	<p>Source: <a href="{{ rep_url }}" target="_blank">Annual report</a></p>
+	<p>Note: while most data are extracted from annual reports, some data in these tables may have been taken from supplemental filings made in response to complaints
+	to SEHK by our volunteer editors. Please <a href="../contact">report</a> any errors.</p>
+
+	<table class="numtable c2l yscroll">
+		<tr>
+			<th></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=nam">Name</a></th>
+			<th class="left"><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=pos">Last<br>position</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=fee">Fees</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=sal">Salary &amp;<br>benefits</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=bon">Bonus</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=ret">Retire</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=sha">Share-<br>based</a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=tot">Total</a></th>
+		</tr>
+
+		{% set ns = namespace(last_curr=None, last_rank=None, row_num=0,
+		                      curr_sum=[0,0,0,0,0,0], grand_sum=[0,0,0,0,0,0]) %}
+
+		{% for rec in pay_records %}
+			{% set rank_names = ['Supervisors', 'Directors', 'Senior Management'] %}
+
+			{# Currency header #}
+			{% if rec.currency != ns.last_curr %}
+				<tr>
+					<td class="left" colspan="9"><h4>{{ rec.currency }} '000</h4></td>
+				</tr>
+				{% set ns.curr_sum = [0,0,0,0,0,0] %}
+				{% set ns.grand_sum = [0,0,0,0,0,0] %}
+				{% set ns.last_rank = None %}
+			{% endif %}
+
+			{# Rank header #}
+			{% if rec.prank != ns.last_rank %}
+				<tr>
+					<td></td>
+					<td colspan="8"><h4>{{ rank_names[rec.prank] if rec.prank < 3 else 'Unknown' }}</h4></td>
+				</tr>
+				{% set ns.curr_sum = [0,0,0,0,0,0] %}
+			{% endif %}
+
+			{# Data row #}
+			{% set ns.row_num = ns.row_num + 1 %}
+			<tr>
+				<td>{{ ns.row_num }}</td>
+				<td><a href="offpay.asp?sort=nam&amp;p={{ rec.pplid }}">{{ rec.dirname }}</a></td>
+				<td class="left">{{ rec.posshort or '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.fees|float) if rec.fees else '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.salary|float) if rec.salary else '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.bonus|float) if rec.bonus else '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.retire|float) if rec.retire else '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.share|float) if rec.share else '' }}</td>
+				<td>{{ "{:,.0f}".format(rec.total|float) if rec.total else '' }}</td>
+			</tr>
+
+			{# Update sums #}
+			{% set _ = ns.curr_sum.__setitem__(0, ns.curr_sum[0] + (rec.fees or 0)) %}
+			{% set _ = ns.curr_sum.__setitem__(1, ns.curr_sum[1] + (rec.salary or 0)) %}
+			{% set _ = ns.curr_sum.__setitem__(2, ns.curr_sum[2] + (rec.bonus or 0)) %}
+			{% set _ = ns.curr_sum.__setitem__(3, ns.curr_sum[3] + (rec.retire or 0)) %}
+			{% set _ = ns.curr_sum.__setitem__(4, ns.curr_sum[4] + (rec.share or 0)) %}
+			{% set _ = ns.curr_sum.__setitem__(5, ns.curr_sum[5] + (rec.total or 0)) %}
+
+			{# Check if next row changes rank or currency #}
+			{% set ns.last_rank = rec.prank %}
+			{% set ns.last_curr = rec.currency %}
+
+			{# Show subtotal if rank changes or end of list #}
+			{% if loop.last or pay_records[loop.index].prank != rec.prank or pay_records[loop.index].currency != rec.currency %}
+				<tr class="total">
+					<td></td>
+					<td class="left" colspan="2">Total</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[0]) }}</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[1]) }}</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[2]) }}</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[3]) }}</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[4]) }}</td>
+					<td>{{ "{:,.0f}".format(ns.curr_sum[5]) }}</td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+
+	{# Historical pay summary would go here - TODO: requires additional query #}
+	<h3>Main board pay history</h3>
+	<p>Click on the year-end to see the pay details.</p>
+	<p><em>Historical summary table not yet implemented.</em></p>
+
+{% else %}
+	<p><b>No records found. If you want to see board pay for this firm, then
+	<a href="../webbmail/username.asp">volunteer</a>
+	to be a Webb-site editor and add the data from annual reports!</b></p>
+{% endif %}
+
+<p><b>Want to see more years here? <a href="../webbmail/username.asp">volunteer</a>
+to be a Webb-site editor and add the data from annual reports!</b></p>
 {% endblock %}
