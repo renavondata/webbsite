@@ -1,0 +1,75 @@
+{% extends "base_reports.html" %}
+
+{% block title %}Server Error - Renavon Hong Kong Database{% endblock %}
+
+{% block content %}
+<div class="mainbody">
+
+<h2>Internal Server Error (500)</h2>
+
+<p>Sorry, something went wrong while processing your request.</p>
+
+<h3>What happened?</h3>
+
+<p>The server encountered an unexpected error. This could be due to:</p>
+<ul>
+<li>A database query error</li>
+<li>A temporary server overload</li>
+<li>A bug in the application code</li>
+<li>Missing or incomplete data</li>
+</ul>
+
+<h3>What can you do?</h3>
+
+<h4>Try Again</h4>
+<p>Sometimes temporary issues resolve themselves. Try:</p>
+<ul>
+<li><strong>Refresh the page</strong> (press F5 or reload)</li>
+<li><strong>Wait a few minutes</strong> and try again</li>
+<li><strong>Simplify your query</strong> if using search filters</li>
+</ul>
+
+<h4>Go Back</h4>
+<p><a href="javascript:history.back()"><strong>← Go back to the previous page</strong></a></p>
+
+<h4>Start Fresh</h4>
+<p><a href="/dbpub/"><strong>Return to the Database Homepage</strong></a></p>
+
+<h3>Need Help?</h3>
+
+<h4>Check the FAQ</h4>
+<p><a href="/pages/faq.asp">Frequently Asked Questions</a> - Common issues and solutions</p>
+
+<h4>View Database Status</h4>
+<p><a href="/pages/status.asp">Database Status</a> - Check if there are known issues</p>
+
+<h3>Report This Error</h3>
+
+<p>If this error persists, please help us fix it by <a href="/contact/default.asp">contacting us</a> with:</p>
+<ul>
+<li><strong>The full URL</strong> where the error occurred</li>
+<li><strong>What you were doing</strong> when the error happened</li>
+<li><strong>The error message</strong> (if any was displayed)</li>
+<li><strong>The date and time</strong> of the error</li>
+</ul>
+
+<p>This is a community-maintained open source project. Your error reports help us improve the database for everyone.</p>
+
+<h3>Technical Details</h3>
+
+<p>This site is running on:</p>
+<ul>
+<li><strong>Platform:</strong> Flask (Python 3.11)</li>
+<li><strong>Database:</strong> PostgreSQL 16</li>
+<li><strong>Hosting:</strong> Render.com cloud platform</li>
+<li><strong>Source:</strong> <a href="https://github.com/renavondata/webbsite" target="_blank">GitHub</a></li>
+</ul>
+
+<p>If you're a developer and want to help fix bugs, contributions are welcome!</p>
+
+<div class="clear"></div>
+<hr>
+<p><a href="/dbpub/"><strong>← Return to Database Home</strong></a></p>
+
+</div>
+{% endblock %}

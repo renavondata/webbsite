@@ -1,6 +1,37 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Matching members between {{ org1_name }} and {{ org2_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Matching members</h2>
+
+<h3>{{ org1_name }}</h3>
+<h3>{{ org2_name }}</h3>
+
+<p>Persons holding positions in both organisations on {{ d }}:</p>
+
+{% if matches %}
+	<table class="txtable">
+		<tr>
+			<th><a href="?org1={{ org1 }}&amp;org2={{ org2 }}&amp;d={{ d }}&amp;sort=name">Name</a></th>
+			<th><a href="?org1={{ org1 }}&amp;org2={{ org2 }}&amp;d={{ d }}&amp;sort=pos1">Position in<br>{{ org1_name }}</a></th>
+			<th><a href="?org1={{ org1 }}&amp;org2={{ org2 }}&amp;d={{ d }}&amp;sort=app1">From</a></th>
+			<th><a href="?org1={{ org1 }}&amp;org2={{ org2 }}&amp;d={{ d }}&amp;sort=pos2">Position in<br>{{ org2_name }}</a></th>
+			<th><a href="?org1={{ org1 }}&amp;org2={{ org2 }}&amp;d={{ d }}&amp;sort=app2">From</a></th>
+		</tr>
+		{% for match in matches %}
+			<tr>
+				<td><a href="positions.asp?p={{ match.personid }}">{{ match.name }}</a></td>
+				<td title="{{ match.pos1long or '' }}">{{ match.pos1 or '' }}</td>
+				<td>{{ match.app1 or '' }}</td>
+				<td title="{{ match.pos2long or '' }}">{{ match.pos2 or '' }}</td>
+				<td>{{ match.app2 or '' }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<p>{{ matches|length }} matching member(s) found.</p>
+{% else %}
+	<p>No matching members found.</p>
+{% endif %}
 {% endblock %}

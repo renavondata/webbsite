@@ -983,7 +983,7 @@ def incfcal():
     sql = """
         SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, d.domName
         FROM enigma.organisations o
-        JOIN enigma.domiciles d ON o.domicile = d.ID
+        JOIN enigma.domiciles d ON o.domicile = d.id
         WHERE o.domicile != 1
           AND o.incid ~ '^[0-9]'
           AND EXTRACT(YEAR FROM o.incdate) = %s
@@ -1015,7 +1015,7 @@ def disfcal():
     sql = """
         SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate, d.domName
         FROM enigma.organisations o
-        JOIN enigma.domiciles d ON o.domicile = d.ID
+        JOIN enigma.domiciles d ON o.domicile = d.id
         WHERE o.domicile != 1
           AND o.incid ~ '^[0-9]'
           AND EXTRACT(YEAR FROM o.disdate) = %s

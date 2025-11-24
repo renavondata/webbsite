@@ -1,0 +1,145 @@
+{% extends "base_reports.html" %}
+
+{% block title %}FAQ - Renavon Hong Kong Database{% endblock %}
+
+{% block content %}
+<div class="mainbody">
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>General Questions</h3>
+
+<h4>What is the Renavon Hong Kong Database?</h4>
+<p>The Renavon Hong Kong Database is a comprehensive archive of Hong Kong financial market data spanning over 35 years (1990-2025). It contains information about listed companies, directors, beneficial ownership, corporate actions, SFC licensees, solicitors, and much more.</p>
+
+<h4>Is this data free to use?</h4>
+<p>Yes! The database was released under the <strong>Creative Commons CC-BY 4.0</strong> license in October 2025. You are free to use it for commercial or non-commercial purposes, as long as you attribute Webb-site.com as the source.</p>
+
+<h4>What is the relationship with Webb-site.com?</h4>
+<p>This database contains data originally compiled by <a href="https://webb-site.com" target="_blank">Webb-site.com</a>, founded and operated by David M. Webb MBE since 1998. David generously open-sourced the database schemas and scrapers in October 2025 to preserve public access to this valuable Hong Kong financial data.</p>
+
+<h4>Are Webb-site articles included?</h4>
+<p>No. The <strong>editorial content</strong> from Webb-site Reports (articles, analysis, opinions) remains copyright David M. Webb and is NOT included in this database. Where articles are referenced, we link to <a href="https://web.archive.org/web/*/webb-site.com/articles/" target="_blank">Archive.org</a> preserved copies.</p>
+
+<h3>Data Coverage</h3>
+
+<h4>What time period does the data cover?</h4>
+<ul>
+<li><strong>Stock Quotes</strong>: Daily since 1994-01-03</li>
+<li><strong>CCASS Holdings</strong>: Daily since 2007-06-26</li>
+<li><strong>Corporate Actions & Directors</strong>: Since 1990</li>
+<li><strong>SFC Licensees</strong>: Since 2003-04-01</li>
+<li><strong>HK Solicitors</strong>: Current with historical moves</li>
+</ul>
+
+<h4>How often is the data updated?</h4>
+<p>Different data sources are updated on different schedules:</p>
+<ul>
+<li>Stock quotes and CCASS: <strong>Daily</strong></li>
+<li>Financial reports: <strong>Continuous</strong> monitoring</li>
+<li>SFC licensees & HK solicitors: <strong>Daily</strong></li>
+<li>Companies Registry: <strong>Weekly</strong></li>
+<li>UK Companies House: <strong>Continuous</strong> via API</li>
+</ul>
+
+<h4>What makes CCASS data special?</h4>
+<p>Our CCASS holdings data goes back to <strong>2007-06-26</strong>, while HKEX public data only shows 1 year of history. This allows analysis of long-term beneficial ownership trends. Once a stock is delisted, HKEX deletes the data immediately, making historical CCASS data unrecoverable without independent archiving.</p>
+
+<h3>Using the Database</h3>
+
+<h4>How do I search for a company?</h4>
+<p>Use the <strong>Company Search</strong> box at the top of any database page. You can search by:</p>
+<ul>
+<li>Company name (English or Chinese)</li>
+<li>Stock code (e.g., "5" for HSBC)</li>
+<li>Incorporation number</li>
+</ul>
+
+<h4>How do I search for a person?</h4>
+<p>Use the <strong>Person Search</strong> box at the top of any database page. Enter:</p>
+<ul>
+<li><strong>Family name</strong> in the first box (e.g., "Webb")</li>
+<li><strong>Given name(s)</strong> in the second box (e.g., "David")</li>
+<li>Check options for exact match vs. full-text search</li>
+</ul>
+
+<h4>How do I find CCASS holdings for a stock?</h4>
+<p>There are several ways:</p>
+<ul>
+<li>Search for the company, then click on <strong>CCASS</strong> links in the navigation</li>
+<li>Use <a href="/ccass/bigchanges.asp">Top CCASS Changes</a> to see recent significant changes</li>
+<li>Use <a href="/ccass/cconc.asp">CCASS Concentration Analysis</a> to analyze ownership concentration</li>
+</ul>
+
+<h4>What are "Webb Total Returns"?</h4>
+<p>Webb Total Returns (WTR) measure stock performance including both capital gains and reinvested dividends. This gives a more accurate picture of investment returns than price changes alone. See <a href="/dbpub/TRnotes.asp">About Total Returns</a> for methodology details.</p>
+
+<h3>Technical Questions</h3>
+
+<h4>Can I download the entire database?</h4>
+<p>The database schemas and scrapers are open source on <a href="https://github.com/renavondata/webbsite" target="_blank">GitHub</a>. You can set up your own mirror using PostgreSQL. Contact us for database dump files.</p>
+
+<h4>Is there an API?</h4>
+<p>Currently, there is no formal API. However, all pages support direct URL queries (e.g., <code>/dbpub/orgdata.asp?p=16954</code>). You can bookmark or link to specific queries. Please be respectful with automated access.</p>
+
+<h4>What database technology is used?</h4>
+<p>The production system uses:</p>
+<ul>
+<li><strong>Database</strong>: PostgreSQL 16</li>
+<li><strong>Web Framework</strong>: Flask (Python 3.11)</li>
+<li><strong>Hosting</strong>: Render.com cloud platform</li>
+</ul>
+
+<h4>Can I contribute code or data?</h4>
+<p>Yes! The project is open source. Visit our <a href="https://github.com/renavondata/webbsite" target="_blank">GitHub repository</a> to contribute. We welcome bug fixes, feature enhancements, and data quality improvements.</p>
+
+<h3>Data Quality & Corrections</h3>
+
+<h4>What if I find an error in the data?</h4>
+<p>Please <a href="/contact/default.asp">contact us</a> with details about the error. Include:</p>
+<ul>
+<li>The page URL where you found the error</li>
+<li>Description of what's wrong</li>
+<li>Correct information (if known)</li>
+<li>Source documentation (if available)</li>
+</ul>
+
+<h4>How accurate is the data?</h4>
+<p>Data is scraped from official sources (HKEX, SFC, Companies Registry, etc.) and generally reflects what those sources publish. However:</p>
+<ul>
+<li>Source data may contain errors or be outdated</li>
+<li>Scraping may occasionally miss updates during system maintenance</li>
+<li>Complex data (like cross-holdings) requires manual verification</li>
+</ul>
+<p>Data is provided "as is" without warranty. See <a href="/pages/aboutus.asp">Copyright & Disclaimer</a> for details.</p>
+
+<h3>Privacy & Usage</h3>
+
+<h4>Do you track user activity?</h4>
+<p>We use minimal analytics to monitor site performance and prevent abuse. See our <a href="/pages/privacypolicy.asp">Privacy Policy</a> for details.</p>
+
+<h4>Can I use this data for academic research?</h4>
+<p>Absolutely! Please cite Webb-site.com as the data source in your publications. We'd love to hear about your research—consider sharing your findings with us.</p>
+
+<h4>Can I republish this data?</h4>
+<p>Yes, under the CC-BY 4.0 license. Requirements:</p>
+<ul>
+<li>Attribute Webb-site.com as the source</li>
+<li>Indicate if you made changes</li>
+<li>Link to the license</li>
+</ul>
+
+<h3>Contact & Support</h3>
+
+<h4>How do I contact you?</h4>
+<p>Use our <a href="/contact/default.asp">contact form</a> for inquiries.</p>
+
+<h4>Do you offer consulting services?</h4>
+<p>We focus on maintaining this free public resource. For specialized data analysis or consulting, please inquire via our contact form.</p>
+
+<div class="clear"></div>
+<hr>
+<p><a href="/dbpub/">Return to Database Home</a></p>
+
+</div>
+{% endblock %}

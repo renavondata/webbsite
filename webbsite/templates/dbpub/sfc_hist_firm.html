@@ -1,6 +1,104 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}SFC licensee history of: {{ org_name }}{% endblock %}
+
+{% block head_extra %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(drawChart);
+
+function drawChart() {
+	var data = google.visualization.arrayToDataTable([
+		['Date', 'ROs', 'Reps', 'Total'],
+		{% for row in history %}
+		['{{ row.d }}', {{ row.ros|int }}, {{ row.reps|int }}, {{ row.total|int }}],
+		{% endfor %}
+	]);
+
+	var options = {
+		width: '100%',
+		height: 400,
+		legend: {position: 'bottom'},
+		chartArea: {left: 50, top: 20, width: '85%', height: '70%'},
+		hAxis: {
+			title: 'Date',
+			slantedText: true,
+			slantedTextAngle: 45
+		},
+		vAxis: {
+			title: 'Licensees',
+			minValue: 0
+		},
+		series: {
+			0: {color: '#1b9e77'},
+			1: {color: '#d95f02'},
+			2: {color: '#7570b3'}
+		}
+	};
+
+	var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+	chart.draw(data, options);
+}
+
+window.addEventListener('resize', drawChart);
+</script>
+{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{# officersBar navigation would go here #}
+
+<ul class='navlist'>
+	<li{% if freq == 'm' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;a={{ act }}&amp;f=m'>Monthly</a></li>
+	<li{% if freq == 'y' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;a={{ act }}&amp;f=y'>Yearly</a></li>
+</ul>
+<div class='clear'></div>
+
+<form method="get" action="SFChistfirm.asp">
+	<input type="hidden" name="f" value="{{ freq }}">
+	<input type="hidden" name="p" value="{{ person_id }}">
+	<div class="inputs">
+		Activity type:
+		<select name="a" onchange="this.form.submit()">
+			<option value="0" {% if act == 0 %}selected{% endif %}>All</option>
+			{# TODO: Populate from activity table #}
+		</select>
+	</div>
+	<div class="clear"></div>
+</form>
+
+<p>This page shows the historic number of SFC licensees for a firm. Licensees
+are either Responsible Officers (<strong>ROs</strong>) or Representatives (<strong>Reps</strong>).
+When Activity is set to "All", we treat a person who holds both roles (in different
+activities) as
+an RO. The Reps v total is a measure of how bottom-heavy a firm is, because the
+ROs are supposed to supervise the Reps. For other firms,
+<a href="SFClicount.asp?a={{ act }}">click here</a>. For the total in all firms,
+<a href="SFChistall.asp?a={{ act }}">click here</a>. Note that due to a
+transitional period which ended on 31-Mar-2005, many licenses in some activities
+were surrendered or not extended beyond that date.</p>
+
+<div class="chart" id="chart_div"></div>
+<p></p>
+
+<table class="numtable center">
+	<tr>
+		<th>Date</th>
+		<th>ROs</th>
+		<th>Reps</th>
+		<th>Total</th>
+		<th>Reps v total</th>
+	</tr>
+	{% if org_name != "FIRM NOT FOUND" %}
+		{% for row in history %}
+			<tr>
+				<td><a href="SFClicensees.asp?p={{ person_id }}&amp;a={{ act }}&amp;d={{ row.d }}">{{ row.d }}</a></td>
+				<td>{{ row.ros }}</td>
+				<td>{{ row.reps }}</td>
+				<td>{{ row.total }}</td>
+				<td>{{ "{:.2%}".format(row.rep_ratio) }}</td>
+			</tr>
+		{% endfor %}
+	{% endif %}
+</table>
 {% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base_database.html" %}
+
+{% block title %}Housing Authority public rental floors in a block{% endblock %}
+
+{% block content %}
+<h2>Housing Authority public rental floors in a block</h2>
+
+<table class="txtable" style="font-weight:bold">
+	<tr><td>Block:</td><td>{{ block_name }}</td></tr>
+	<tr><td>Estate:</td><td>{{ est_name }}</td></tr>
+	<tr><td>District:</td><td>{{ dis_name }}</td></tr>
+	<tr><td>Map:</td><td><a href="https://maps.google.com/?q={{ coords }}" target="_blank">Open</a></td></tr>
+</table>
+
+<p>This page shows the HK Housing Authority's stock of Public Rental units, in one Block of one Estate. Data are
+<a href="https://data.gov.hk/en-datasets/provider/hk-housing" target="_blank">
+sourced here</a>. Click on a floor to see the flats.</p>
+
+<ul class="navlist">
+	<li><a href="prhdistricts.asp?sort={{ sort_param }}">Districts</a></li>
+	<li><a href="prhestates.asp?sort={{ sort_param }}&amp;dis={{ dis }}">Estates</a></li>
+	<li><a href="prhblocks.asp?sort={{ sort_param }}&amp;e={{ eid }}">Blocks</a></li>
+</ul>
+<div class="clear"></div>
+
+<div class="widthAlert2"></div>
+<table class="numtable">
+	<tr>
+		<th class="colHide2"></th>
+		<th><a href="?b={{ block_id }}&amp;sort={% if sort_param == 'end' %}en{% else %}end{% endif %}">Floor</a></th>
+		<th><a href="?b={{ block_id }}&amp;sort={% if sort_param == 'cd' %}c{% else %}cd{% endif %}">Units</a></th>
+		<th>Units<br>with<br>elevator</th>
+		<th><a href="?b={{ block_id }}&amp;sort={% if sort_param == 'totad' %}tota{% else %}totad{% endif %}">Total<br>internal<br>floor<br>area sq.m.</a></th>
+		<th><a href="?b={{ block_id }}&amp;sort={% if sort_param == 'ad' %}a{% else %}ad{% endif %}">Average<br>internal<br>floor<br>area sq.m.</a></th>
+	</tr>
+	{% set ns = namespace(sumc=0, suma=0, sumelev=0) %}
+	{% for floor in floors %}
+		<tr>
+			<td class="colHide2">{{ loop.index }}</td>
+			<td><a href="prhunits.asp?sort={{ sort_param }}&amp;b={{ block_id }}&amp;f={{ floor.floor }}">{{ floor.floor }}</a></td>
+			<td>{{ "{:,}".format(floor.c|int) }}</td>
+			<td>{{ "{:,}".format(floor.elev|int) }}</td>
+			<td>{{ "{:,}".format(floor.tota|int) }}</td>
+			<td>{{ "{:.2f}".format(floor.a|float) if floor.c else '-' }}</td>
+		</tr>
+		{% set _ = ns.__setitem__('sumc', ns.sumc + floor.c|int) %}
+		{% set _ = ns.__setitem__('suma', ns.suma + floor.tota|int) %}
+		{% set _ = ns.__setitem__('sumelev', ns.sumelev + floor.elev|int) %}
+	{% endfor %}
+	<tr class="total">
+		<td class="colHide2"></td>
+		<td>Total</td>
+		<td>{{ "{:,}".format(ns.sumc) }}</td>
+		<td>{{ "{:,}".format(ns.sumelev) }}</td>
+		<td>{{ "{:,}".format(ns.suma) }}</td>
+		<td>{{ "{:.2f}".format(ns.suma / ns.sumc) if ns.sumc else '-' }}</td>
+	</tr>
+</table>
+{% endblock %}

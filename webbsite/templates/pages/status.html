@@ -1,0 +1,145 @@
+{% extends "base_reports.html" %}
+
+{% block title %}Database Status - Renavon Hong Kong{% endblock %}
+
+{% block content %}
+<div class="mainbody">
+
+<h2>Renavon Hong Kong Database Status</h2>
+
+<p>This page provides an overview of the coverage and current state of the Renavon Hong Kong Database, which preserves 35 years of Hong Kong financial market data originally compiled by <a href="https://webb-site.com" target="_blank">Webb-site.com</a>.</p>
+
+<p><strong>Data as of:</strong> {{ today.strftime('%Y-%m-%d') }}</p>
+
+<h3>Core Data Coverage</h3>
+
+<table class="numtable">
+<tr>
+<th class="left">Category</th>
+<th>Count</th>
+<th class="left">Description</th>
+</tr>
+<tr>
+<td class="left">Organizations</td>
+<td class="right">{{ '{:,}'.format(stats.orgs) if stats.orgs != '?' else '?' }}</td>
+<td class="left">Companies, partnerships, trusts, and other entities</td>
+</tr>
+<tr>
+<td class="left">People</td>
+<td class="right">{{ '{:,}'.format(stats.people) if stats.people != '?' else '?' }}</td>
+<td class="left">Individual persons tracked in the database</td>
+</tr>
+<tr>
+<td class="left">HK-listed Companies</td>
+<td class="right">{{ '{:,}'.format(stats.listed) if stats.listed != '?' else '?' }}</td>
+<td class="left">Currently listed on Main Board or GEM (excludes warrants, structured products)</td>
+</tr>
+<tr>
+<td class="left">SFC Licensees</td>
+<td class="right">{{ '{:,}'.format(stats.sfc_licensees) if stats.sfc_licensees != '?' else '?' }}</td>
+<td class="left">Current SFC Responsible Officers and Representatives</td>
+</tr>
+<tr>
+<td class="left">HK Solicitors</td>
+<td class="right">{{ '{:,}'.format(stats.solicitors) if stats.solicitors != '?' else '?' }}</td>
+<td class="left">Solicitors in private practice in Hong Kong</td>
+</tr>
+<tr>
+<td class="left">Financial Reports</td>
+<td class="right">{{ '{:,}'.format(stats.reports) if stats.reports != '?' else '?' }}</td>
+<td class="left">Company announcements and financial reports</td>
+</tr>
+</table>
+
+<h3>CCASS Holdings Data</h3>
+
+<table class="numtable">
+<tr>
+<th class="left">Metric</th>
+<th>Value</th>
+<th class="left">Description</th>
+</tr>
+<tr>
+<td class="left">Total Holdings Records</td>
+<td class="right">{{ '{:,}'.format(stats.ccass_holdings) if stats.ccass_holdings != '?' else '?' }}</td>
+<td class="left">Historical beneficial ownership records since 2007</td>
+</tr>
+<tr>
+<td class="left">Latest CCASS Date</td>
+<td class="right">{{ stats.ccass_latest.strftime('%Y-%m-%d') if stats.ccass_latest else 'N/A' }}</td>
+<td class="left">Most recent CCASS data available</td>
+</tr>
+</table>
+
+<h3>Data Sources</h3>
+
+<p>Data is collected from multiple Hong Kong and international sources:</p>
+
+<ul>
+<li><strong>HKEX</strong> - Hong Kong Stock Exchange (stock quotes, corporate actions, CCASS beneficial ownership)</li>
+<li><strong>SFC</strong> - Securities and Futures Commission (licensee data)</li>
+<li><strong>Companies Registry</strong> - Hong Kong company incorporations and dissolutions</li>
+<li><strong>Law Society of Hong Kong</strong> - Solicitor admissions and firm positions</li>
+<li><strong>UK Companies House</strong> - UK company data (via API)</li>
+<li><strong>HKMA</strong> - Hong Kong Monetary Authority</li>
+<li><strong>Immigration Department</strong> - Passenger statistics</li>
+<li><strong>Transport Department</strong> - Vehicle registrations and traffic data</li>
+</ul>
+
+<h3>Data Coverage Timeline</h3>
+
+<ul>
+<li><strong>Stock Quotes</strong>: Daily since 1994-01-03</li>
+<li><strong>CCASS Holdings</strong>: Daily since 2007-06-26 (vs. HKEX public data: only 1 year)</li>
+<li><strong>Corporate Actions</strong>: Since 1990</li>
+<li><strong>Directors & Officers</strong>: Since 1990</li>
+<li><strong>SFC Licensees</strong>: Since 2003-04-01</li>
+<li><strong>HK Solicitors</strong>: Current data with historical moves</li>
+</ul>
+
+<h3>Update Frequency</h3>
+
+<p>The database is updated through automated scrapers that run on various schedules:</p>
+
+<ul>
+<li><strong>Stock Quotes</strong>: Daily (evenings, after market close)</li>
+<li><strong>CCASS Data</strong>: Daily (early mornings, T+2 settlement)</li>
+<li><strong>Financial Reports</strong>: Continuous monitoring of HKEX announcements</li>
+<li><strong>SFC Licensees</strong>: Daily</li>
+<li><strong>HK Solicitors</strong>: Daily</li>
+<li><strong>Companies Registry</strong>: Weekly (when new data published)</li>
+<li><strong>UK Companies House</strong>: Continuous (via API)</li>
+</ul>
+
+<h3>Attribution & License</h3>
+
+<p>This database contains data originally compiled by <a href="https://webb-site.com" target="_blank">Webb-site.com</a>, founded and operated by David M. Webb MBE since 1998. The database was released as open source in October 2025 under the <strong>Creative Commons CC-BY 4.0</strong> license.</p>
+
+<p>You are free to:</p>
+<ul>
+<li>Use this data for commercial or non-commercial purposes</li>
+<li>Mirror this database on your own servers</li>
+<li>Build upon these datasets</li>
+</ul>
+
+<p><strong>Attribution Required:</strong> Please acknowledge <em>Webb-site.com</em> as the source when using or republishing this data.</p>
+
+<p>See <a href="/pages/aboutus.asp">Copyright &amp; Disclaimer</a> for full details.</p>
+
+<h3>Technical Details</h3>
+
+<p><strong>Database Technology:</strong> PostgreSQL 16</p>
+<p><strong>Web Framework:</strong> Flask + Python 3.11</p>
+<p><strong>Hosting:</strong> Render.com cloud platform</p>
+<p><strong>Source Code:</strong> Available at <a href="https://github.com/renavondata/webbsite" target="_blank">GitHub</a></p>
+
+<h3>What's NOT Included</h3>
+
+<p><strong>Editorial content</strong> from Webb-site Reports (articles, analysis, opinions published 1998-2025) remains copyright David M. Webb and is NOT included in this database or covered by the CC-BY 4.0 license. Where this site references Webb-site articles, links direct to <a href="https://web.archive.org/web/*/webb-site.com/articles/" target="_blank">Archive.org</a> preserved copies for historical reference only.</p>
+
+<div class="clear"></div>
+<hr>
+<p><a href="/dbpub/">Return to Database Home</a></p>
+
+</div>
+{% endblock %}

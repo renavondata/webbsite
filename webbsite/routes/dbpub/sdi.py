@@ -41,9 +41,9 @@ def sdilatest():
         # Complex query to get latest 200 SDI filings
         sdi = execute_query(
             f"""
-            SELECT t2.id, t2.filing, t2.relDate, t2.issueID,
+            SELECT t2.id, t2.filing, t2.relDate, t2.issueid,
                    (SELECT sl.stockCode FROM enigma.stockListings sl
-                    WHERE sl.issueID = t2.issueID AND sl.toDate IS NULL
+                    WHERE sl.issueid = t2.issueid AND sl.toDate IS NULL
                     ORDER BY sl.fromDate DESC LIMIT 1) AS stockCode,
                    t2.posType, r.rsnSht, r.rsnLng, t2.dir,
                    t2.shsInv, t2.longShs1, t2.longShs2, t2.shortShs1, t2.shortShs2,
@@ -52,12 +52,12 @@ def sdilatest():
                    COALESCE(org.name1, CONCAT(pp.name1,
                             CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
                    CASE WHEN org.name1 IS NULL THEN 'P' ELSE 'O' END AS pType,
-                   p.personID AS holderID,
+                   p.personid AS holderID,
                    COALESCE(t2.price, t2.avCon) * t2.shsInv AS value,
                    CONCAT(o.name1, ':', st.typeShort) AS oName,
                    c3.settleDate
             FROM (
-                SELECT s.id, s.curr, s.filing, s.relDate, s.issueID, s.dir,
+                SELECT s.id, s.curr, s.filing, s.relDate, s.issueid, s.dir,
                        s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
                        COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon,
                        s.longStk2, s.shortStk2, s.shsInv,
@@ -68,14 +68,14 @@ def sdilatest():
                 ORDER BY s.relDate DESC
                 LIMIT 200
             ) AS t2
-            JOIN enigma.persons p ON t2.dir = p.personID
+            JOIN enigma.persons p ON t2.dir = p.personid
             JOIN enigma.sdievent se ON t2.id = se.sdiID
             JOIN enigma.sdireason r ON se.reason = r.id
-            JOIN enigma.issue i ON t2.issueID = i.ID1
-            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.issue i ON t2.issueid = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.secTypes st ON i.typeID = st.typeID
-            LEFT JOIN enigma.organisations org ON p.personID = org.personID
-            LEFT JOIN enigma.people pp ON p.personID = pp.personID
+            LEFT JOIN enigma.organisations org ON p.personid = org.personid
+            LEFT JOIN enigma.people pp ON p.personid = pp.personid
             LEFT JOIN enigma.currencies c ON t2.curr = c.id
             LEFT JOIN ccass.calendar c3 ON t2.relDate = c3.tradeDate
             ORDER BY {ob}
@@ -119,10 +119,10 @@ def sdiissue():
         try:
             result = execute_query(
                 """
-                SELECT i.ID1 AS issueID, o.name1, o.personID, st.typeShort
+                SELECT i.ID1 AS issueid, o.name1, o.personid, st.typeShort
                 FROM enigma.stockListings sl
-                JOIN enigma.issue i ON sl.issueID = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.issue i ON sl.issueid = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE sl.stockCode = %s AND sl.toDate IS NULL
                 ORDER BY sl.fromDate DESC LIMIT 1
@@ -141,9 +141,9 @@ def sdiissue():
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID, st.typeShort
+                SELECT o.name1, o.personid, st.typeShort
                 FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE i.ID1 = %s
             """,
@@ -179,13 +179,13 @@ def sdiissue():
                                     CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
                            p.personID
                     FROM enigma.sdi s
-                    JOIN enigma.persons p ON s.dir = p.personID
+                    JOIN enigma.persons p ON s.dir = p.personid
                     JOIN enigma.sdievent se ON s.id = se.sdiID
                     JOIN enigma.sdireason r ON se.probReason = r.id
-                    LEFT JOIN enigma.people pp ON p.personID = pp.personID
-                    LEFT JOIN enigma.organisations o ON p.personID = o.personID
+                    LEFT JOIN enigma.people pp ON p.personid = pp.personid
+                    LEFT JOIN enigma.organisations o ON p.personid = o.personid
                     LEFT JOIN enigma.currencies c ON s.curr = c.id
-                    WHERE s.serNoSuper IS NULL AND s.issueID = %s
+                    WHERE s.serNoSuper IS NULL AND s.issueid = %s
                 ) AS t1
                 LEFT JOIN ccass.calendar c3 ON t1.relDate = c3.tradeDate
                 ORDER BY {ob}
@@ -234,9 +234,9 @@ def sdidir():
                 SELECT COALESCE(o.name1, CONCAT(p.name1,
                                 CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name
                 FROM enigma.persons ps
-                LEFT JOIN enigma.organisations o ON ps.personID = o.personID
-                LEFT JOIN enigma.people p ON ps.personID = p.personID
-                WHERE ps.personID = %s
+                LEFT JOIN enigma.organisations o ON ps.personid = o.personid
+                LEFT JOIN enigma.people p ON ps.personid = p.personid
+                WHERE ps.personid = %s
             """,
                 (person_id,),
             )
@@ -251,21 +251,21 @@ def sdidir():
             # Query all stocks where person has filed SDI, showing latest position
             sdi = execute_query(
                 f"""
-                SELECT t1.issueID,
+                SELECT t1.issueid,
                        CONCAT(o.name1, ':', st.typeShort) AS stock,
                        t1.maxDate, s.longShs2, s.longStk2
                 FROM (
-                    SELECT issueID, MAX(relDate) AS maxDate
+                    SELECT issueid, MAX(relDate) AS maxDate
                     FROM enigma.sdi
                     WHERE dir = %s
                     GROUP BY issueID
                 ) t1
-                JOIN enigma.sdi s ON t1.issueID = s.issueID
+                JOIN enigma.sdi s ON t1.issueid = s.issueid
                                   AND t1.maxDate = s.relDate
                                   AND s.dir = %s
-                JOIN enigma.issue i ON s.issueID = i.ID1
+                JOIN enigma.issue i ON s.issueid = i.ID1
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 ORDER BY {ob}
             """,
                 (person_id, person_id),
@@ -316,9 +316,9 @@ def sdidirco():
                                 CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name,
                        CASE WHEN o.name1 IS NOT NULL THEN TRUE ELSE FALSE END AS is_org
                 FROM enigma.persons ps
-                LEFT JOIN enigma.organisations o ON ps.personID = o.personID
-                LEFT JOIN enigma.people p ON ps.personID = p.personID
-                WHERE ps.personID = %s
+                LEFT JOIN enigma.organisations o ON ps.personid = o.personid
+                LEFT JOIN enigma.people p ON ps.personid = p.personid
+                WHERE ps.personid = %s
             """,
                 (person_id,),
             )
@@ -335,9 +335,9 @@ def sdidirco():
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID, st.typeShort
+                SELECT o.name1, o.personid, st.typeShort
                 FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE i.ID1 = %s
             """,
@@ -376,7 +376,7 @@ def sdidirco():
                     LEFT JOIN enigma.currencies c ON s.curr = c.id
                     LEFT JOIN enigma.capacity cap ON COALESCE(s.capAfter, s.capBefore) = cap.id
                     WHERE s.serNoSuper IS NULL
-                      AND s.issueID = %s
+                      AND s.issueid = %s
                       AND s.dir = %s
                 ) AS t1
                 LEFT JOIN ccass.calendar c3 ON t1.relDate = c3.tradeDate
@@ -433,12 +433,12 @@ def sdicap():
                        s.avPrice, s.hiPrice, s.avCon, c1.currency, c2.settleDate,
                        q.high, q.low, q.vol, q.turn
                 FROM enigma.sdi s
-                JOIN enigma.persons p ON s.dir = p.personID
-                LEFT JOIN enigma.organisations o ON p.personID = o.personID
-                LEFT JOIN enigma.people pp ON p.personID = pp.personID
+                JOIN enigma.persons p ON s.dir = p.personid
+                LEFT JOIN enigma.organisations o ON p.personid = o.personid
+                LEFT JOIN enigma.people pp ON p.personid = pp.personid
                 LEFT JOIN enigma.currencies c1 ON s.curr = c1.id
                 LEFT JOIN ccass.calendar c2 ON s.relDate = c2.tradeDate
-                LEFT JOIN ccass.quotes q ON s.relDate = q.atDate AND s.issueID = q.issueID
+                LEFT JOIN ccass.quotes q ON s.relDate = q.atDate AND s.issueid = q.issueid
                 WHERE s.id = %s
             """,
                 (sdi_id,),
@@ -454,9 +454,9 @@ def sdicap():
                 # Get stock info
                 stock_result = execute_query(
                     """
-                    SELECT o.name1, o.personID, st.typeShort
+                    SELECT o.name1, o.personid, st.typeShort
                     FROM enigma.issue i
-                    JOIN enigma.organisations o ON i.issuer = o.personID
+                    JOIN enigma.organisations o ON i.issuer = o.personid
                     JOIN enigma.secTypes st ON i.typeID = st.typeID
                     WHERE i.ID1 = %s
                 """,
