@@ -1728,6 +1728,204 @@ def prh_blocks():
     )
 
 
+@bp.route("/prhfloors.asp")
+def prh_floors():
+    """
+    Hong Kong public rental housing floors in a block
+    Port of dbpub/prhfloors.asp
+
+    Query params:
+    - b: block ID (required)
+    - sort: en/end/tota/totad/a/ad/c/cd
+
+    Tables used: enigma.prhflat, enigma.prhblock, enigma.prhestate, enigma.hkdistrict
+    """
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    block_id = get_int("b", 1)
+    sort_param = request.args.get("sort", "en")
+
+    # Map sort parameters to ORDER BY clauses
+    order_by_map = {
+        "en": "floor",
+        "end": "floor DESC",
+        "tota": "tota",
+        "totad": "tota DESC",
+        "a": "a",
+        "ad": "a DESC",
+        "c": "c, floor",
+        "cd": "c DESC, floor DESC",
+    }
+    order_by = order_by_map.get(sort_param, "floor DESC")
+
+    # Get block, estate and district info
+    block_info = execute_query(
+        """
+        SELECT
+            CONCAT(b.en, ' ', b.cn) as block_name,
+            e.id as eid,
+            CONCAT(e.en, ' ', e.cn) as est_name,
+            d.id as dis,
+            CONCAT(d.en, ' ', d.cn) as dis_name,
+            e.latitude,
+            e.longitude
+        FROM enigma.prhblock b
+        JOIN enigma.prhestate e ON b.estateid = e.id
+        JOIN enigma.hkdistrict d ON e.district = d.id
+        WHERE b.id = %s
+    """,
+        (block_id,),
+    )
+
+    if block_info:
+        block_name = block_info[0]["block_name"]
+        eid = block_info[0]["eid"]
+        est_name = block_info[0]["est_name"]
+        dis = block_info[0]["dis"]
+        dis_name = block_info[0]["dis_name"]
+        coords = f"{block_info[0]['latitude']},{block_info[0]['longitude']}"
+    else:
+        block_name = est_name = dis_name = coords = ""
+        eid = dis = 1
+
+    # Query floors in block with aggregated flat data
+    floors = execute_query(
+        f"""
+        SELECT
+            floor,
+            COUNT(*) as c,
+            SUM(area) as tota,
+            CASE WHEN COUNT(*) > 0 THEN SUM(area) / COUNT(*) ELSE 0 END as a,
+            SUM(elevator) as elev
+        FROM enigma.prhflat
+        WHERE blockid = %s
+          AND lastseen >= (SELECT DATE(MAX(lastseen)) FROM enigma.prhflat)
+        GROUP BY floor
+        ORDER BY {order_by}
+    """,
+        (block_id,),
+    )
+
+    return render_template(
+        "dbpub/prh_floors.html",
+        block_id=block_id,
+        block_name=block_name,
+        eid=eid,
+        est_name=est_name,
+        dis=dis,
+        dis_name=dis_name,
+        coords=coords,
+        sort_param=sort_param,
+        floors=floors,
+    )
+
+
+@bp.route("/prhunits.asp")
+def prh_units():
+    """
+    Hong Kong public rental housing flats on a floor
+    Port of dbpub/prhunits.asp
+
+    Query params:
+    - b: block ID (required)
+    - f: floor (required)
+    - sort: en/end/a/ad/el/eln
+
+    Tables used: enigma.prhflat, enigma.prhblock, enigma.prhestate, enigma.hkdistrict
+    """
+    from webbsite.asp_helpers import get_int
+    from webbsite.db import execute_query
+    from flask import render_template, request
+
+    block_id = get_int("b", 1)
+    floor = request.args.get("f", "")[:6]  # Limit length to avoid injection
+    sort_param = request.args.get("sort", "en")
+
+    # Get default floor if not specified
+    if not floor:
+        floor_result = execute_query(
+            """
+            SELECT floor FROM enigma.prhflat
+            WHERE blockid = %s
+            ORDER BY floor
+            LIMIT 1
+        """,
+            (block_id,),
+        )
+        if floor_result:
+            floor = floor_result[0]["floor"]
+
+    # Map sort parameters to ORDER BY clauses
+    order_by_map = {
+        "en": "flat",
+        "end": "flat DESC",
+        "a": "area, flat",
+        "ad": "area DESC, flat",
+        "el": "elevator, flat DESC",
+        "eln": "elevator DESC, flat",
+    }
+    order_by = order_by_map.get(sort_param, "flat")
+
+    # Get block, estate and district info
+    block_info = execute_query(
+        """
+        SELECT
+            CONCAT(b.en, ' ', b.cn) as block_name,
+            e.id as eid,
+            CONCAT(e.en, ' ', e.cn) as est_name,
+            d.id as dis,
+            CONCAT(d.en, ' ', d.cn) as dis_name,
+            e.latitude,
+            e.longitude
+        FROM enigma.prhblock b
+        JOIN enigma.prhestate e ON b.estateid = e.id
+        JOIN enigma.hkdistrict d ON e.district = d.id
+        WHERE b.id = %s
+    """,
+        (block_id,),
+    )
+
+    if block_info:
+        block_name = block_info[0]["block_name"]
+        eid = block_info[0]["eid"]
+        est_name = block_info[0]["est_name"]
+        dis = block_info[0]["dis"]
+        dis_name = block_info[0]["dis_name"]
+        coords = f"{block_info[0]['latitude']},{block_info[0]['longitude']}"
+    else:
+        block_name = est_name = dis_name = coords = ""
+        eid = dis = 1
+
+    # Query flats on floor
+    flats = execute_query(
+        f"""
+        SELECT flat, area, elevator
+        FROM enigma.prhflat
+        WHERE blockid = %s
+          AND floor = %s
+          AND lastseen >= (SELECT DATE(MAX(lastseen)) FROM enigma.prhflat)
+        ORDER BY {order_by}
+    """,
+        (block_id, floor),
+    )
+
+    return render_template(
+        "dbpub/prh_units.html",
+        block_id=block_id,
+        block_name=block_name,
+        floor=floor,
+        eid=eid,
+        est_name=est_name,
+        dis=dis,
+        dis_name=dis_name,
+        coords=coords,
+        sort_param=sort_param,
+        flats=flats,
+    )
+
+
 # Government accounts
 
 
@@ -2670,6 +2868,160 @@ def advltsnap():
         total=total,
         roles=roles,
         sort=sort_param,
+    )
+
+
+@bp.route("/advbyrole.asp")
+def advbyrole():
+    """
+    Advisers league table by role with total returns
+
+    Shows league table of advisers by role (auditors, bankers, IFAs, etc.)
+    with compound average total returns over a specified period.
+    Supports both one-time roles (appointed in period) and continuing roles (serving during period).
+
+    Query params:
+    - r: roleID (defaults to 0 = auditor)
+    - f: fromYear (defaults to previous year)
+    - t: toYear (defaults to current year)
+    - y: years for CAG calculation (defaults to 1)
+    - sort: sorting column
+    """
+    from webbsite.asp_helpers import get_int, get_dbl
+    from webbsite.db import execute_query
+    from flask import render_template, current_app
+    from datetime import date as dt_date, datetime
+
+    now_year = dt_date.today().year
+    r = get_int("r", 0)
+    from_year = get_int("f", now_year - 1)
+    to_year = get_int("t", now_year)
+    years = get_dbl("y", 1.0)
+    sort_param = get_str("sort", "cntdn")
+
+    # Validate and adjust years
+    if from_year < 1993 or from_year > now_year:
+        from_year = now_year - 1
+    if to_year < from_year:
+        from_year, to_year = to_year, from_year
+
+    # Calculate days for CAG returns
+    days = round(years * 365.25, 0)
+
+    # Helper function to find last trading date
+    def last_trading(year):
+        """Find last trading date on or before Dec 31 of given year"""
+        # For now, just use Dec 31 - in production would check specialdays table
+        return f"{year}-12-31"
+
+    from_date = last_trading(from_year - 1)
+    to_date = last_trading(to_year)
+
+    # Get role information
+    role_name = "Auditor"
+    one_time = False
+    try:
+        role_result = execute_query(
+            "SELECT rolelong, onetime FROM enigma.roles WHERE roleid = %s", (r,)
+        )
+        if role_result:
+            role_name = role_result[0]["rolelong"]
+            one_time = role_result[0]["onetime"]
+    except Exception:
+        r = 0  # Default to auditor
+
+    # Build sort order
+    sort_orders = {
+        "nameup": "name1",
+        "namedn": "name1 DESC",
+        "cntup": "cntPos, name1",
+        "cntdn": "cntPos DESC, name1 DESC",
+        "cagretup": "CAGret, name1",
+        "cagretdn": "CAGret DESC, name1",
+        "cagrelup": "CAGrel, name1",
+        "cagreldn": "CAGrel DESC, name1",
+    }
+    ob = sort_orders.get(sort_param, "cntPos DESC, CAGret DESC")
+    if sort_param not in sort_orders:
+        sort_param = "cntdn"
+
+    # Build SQL based on role type
+    results = []
+    try:
+        if one_time:
+            # One-time roles: appointments in the period
+            sql = f"""
+                SELECT o.personid, o.name1,
+                       COUNT(a.company) AS cntPos,
+                       AVG(enigma.CAGretDays(i.ID1, a.addDate, {days})) - 1 AS CAGret,
+                       AVG(enigma.CAGrelDays(i.ID1, a.addDate, {days})) - 1 AS CAGrel
+                FROM enigma.adviserships a
+                JOIN enigma.issue i ON a.company = i.issuer
+                JOIN enigma.organisations o ON a.adviser = o.personid
+                WHERE i.typeid IN (0,6,7,8,10,42)
+                  AND i.ID1 IN (
+                      SELECT DISTINCT issueid FROM enigma.stocklistings
+                      WHERE stockexid IN (1,20,23)
+                        AND (delistdate IS NULL OR delistdate > %s)
+                  )
+                  AND a.role = %s
+                  AND a.adddate > %s
+                  AND a.adddate <= %s
+                GROUP BY a.adviser
+                ORDER BY {ob}
+            """
+            results = execute_query(sql, (from_date, r, from_date, to_date))
+        else:
+            # Continuing roles: serving during the period
+            sql = f"""
+                SELECT o.personid, o.name1,
+                       COUNT(a.company) AS cntPos,
+                       AVG(enigma.CAGret(i.ID1, %s, LEAST(%s, COALESCE(a.remdate, %s)))) - 1 AS CAGret,
+                       AVG(enigma.CAGrel(i.ID1, %s, LEAST(%s, COALESCE(a.remdate, %s)))) - 1 AS CAGrel
+                FROM enigma.adviserships a
+                JOIN enigma.issue i ON a.company = i.issuer
+                JOIN enigma.organisations o ON a.adviser = o.personid
+                WHERE i.typeid IN (0,6,7,8,10,42)
+                  AND i.ID1 IN (
+                      SELECT DISTINCT issueid FROM enigma.stocklistings
+                      WHERE stockexid IN (1,20,23)
+                        AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                        AND (delistdate IS NULL OR delistdate > %s)
+                  )
+                  AND a.role = %s
+                  AND (a.adddate IS NULL OR a.adddate <= %s)
+                  AND (a.remdate IS NULL OR a.remdate > %s)
+                GROUP BY a.adviser
+                ORDER BY {ob}
+            """
+            results = execute_query(
+                sql, (from_date, to_date, to_date, from_date, to_date, to_date,
+                      from_date, from_date, r, from_date, from_date)
+            )
+    except Exception as ex:
+        current_app.logger.error(f"Error in advbyrole.asp: {ex}", exc_info=True)
+        results = []
+
+    # Get all roles for dropdown
+    try:
+        roles = execute_query(
+            "SELECT roleid, rolelong FROM enigma.roles ORDER BY rolelong"
+        )
+    except Exception:
+        roles = []
+
+    return render_template(
+        "dbpub/advbyrole.html",
+        results=results,
+        r=r,
+        role_name=role_name,
+        one_time=one_time,
+        from_year=from_year,
+        to_year=to_year,
+        years=years,
+        sort=sort_param,
+        roles=roles,
+        now_year=now_year,
     )
 
 

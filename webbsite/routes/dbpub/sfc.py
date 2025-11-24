@@ -703,3 +703,101 @@ def sfcolicrec():
         sort=sort_param,
         hide=hide,
     )
+
+
+@bp.route("/sfclicrec.asp")
+def sfc_lic_rec():
+    """
+    SFC license records for a person - port of sfclicrec.asp
+    Shows all SFC licenses held by a person across different organizations
+
+    Query params:
+    - p: personID (staffID)
+    - hide: Y (current only) or N (history)
+    - sort: sorting column
+    - n: boolean - show old organization names
+
+    Tables used: enigma.licrec, enigma.organisations, enigma.activity
+    """
+    from flask import current_app
+
+    person_id = get_int("p", 0)
+    if not person_id:
+        return "PersonID required", 400
+
+    hide = get_str("hide", "Y")
+    sort_param = request.args.get("sort", "orgup")
+    show_old_names = get_bool("n")
+
+    # Get person name
+    person_name = "Unknown"
+    try:
+        result = execute_query(
+            """
+            SELECT CONCAT(COALESCE(name1,''),
+                         CASE WHEN name2 IS NOT NULL THEN CONCAT(', ', name2) ELSE '' END,
+                         CASE WHEN cName IS NOT NULL THEN CONCAT(' ', cName) ELSE '' END) AS name
+            FROM enigma.people WHERE personID = %s
+        """,
+            (person_id,),
+        )
+        if result:
+            person_name = result[0]["name"]
+    except Exception as ex:
+        current_app.logger.error(f"Error getting person name: {ex}")
+
+    # Build hide filter
+    hide_str = ""
+    if hide == "Y":
+        hide_str = " AND (endDate IS NULL OR endDate > CURRENT_DATE)"
+
+    # Build sort order
+    sort_map = {
+        "orgup": "name1, startDate, endDate, actName",
+        "orgdn": "name1 DESC, startDate, endDate, actName",
+        "actup": "actName, startDate, name1",
+        "actdn": "actName DESC, startDate, name1",
+        "appup": "startDate, endDate, name1, actName",
+        "appdn": "startDate DESC, endDate DESC, name1, actName",
+        "resup": "endDate, startDate, name1, actName",
+        "resdn": "endDate DESC, startDate DESC, name1, actName",
+        "rolup": "role, actName, startDate, name1",
+        "roldn": "role DESC, actName, startDate, name1",
+    }
+    ob = sort_map.get(sort_param, "name1, startDate, endDate, role, actName")
+
+    # Query license records
+    licenses = []
+    try:
+        # Build name selection based on show_old_names flag
+        name_field = "name1"
+        if show_old_names:
+            name_field = "enigma.orgName(orgID, COALESCE(startDate, endDate))"
+
+        sql = f"""
+            SELECT {name_field} AS name1, orgID, role, actType, startDate, endDate, actName
+            FROM enigma.licrec
+            JOIN enigma.organisations o ON orgID = o.personID
+            JOIN enigma.activity a ON actType = a.ID
+            WHERE staffID = %s {hide_str}
+            ORDER BY {ob}
+        """
+
+        licenses = execute_query(sql, (person_id,))
+
+        # Add role text
+        for lic in licenses:
+            lic["role_text"] = "RO" if lic["role"] == 1 else "Rep"
+
+    except Exception as ex:
+        current_app.logger.error(f"Error querying SFC license records: {ex}")
+
+    return render_template(
+        "dbpub/sfclicrec.html",
+        person_id=person_id,
+        person_name=person_name,
+        licenses=licenses,
+        hide=hide,
+        sort=sort_param,
+        show_old_names=show_old_names,
+    )
