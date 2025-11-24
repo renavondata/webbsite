@@ -1,6 +1,125 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}{{ title }} - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get" action="{{ url_for('dbpub_market_data.mcap') }}">
+	<div class="inputs">
+		Exchange:
+		<select name="e" onchange="this.form.submit()">
+			<option value="a" {% if e == 'a' %}selected{% endif %}>Main Board, GEM & Secondary</option>
+			<option value="m" {% if e == 'm' %}selected{% endif %}>Main Board</option>
+			<option value="g" {% if e == 'g' %}selected{% endif %}>GEM</option>
+			<option value="s" {% if e == 's' %}selected{% endif %}>Secondary-listed</option>
+			<option value="r" {% if e == 'r' %}selected{% endif %}>REITs</option>
+			<option value="c" {% if e == 'c' %}selected{% endif %}>CIS</option>
+		</select>
+
+		Type:
+		<select name="t" onchange="this.form.submit()">
+			<option value="s" {% if t == 's' %}selected{% endif %}>Shares/Units</option>
+			<option value="w" {% if t == 'w' %}selected{% endif %}>Warrants</option>
+			<option value="h" {% if t == 'h' %}selected{% endif %}>H-shares</option>
+		</select>
+	</div>
+</form>
+
+{% if market_caps %}
+	{% for curr_group in market_caps %}
+		{% if curr_group.data %}
+			<h3>{{ curr_group.currency }}</h3>
+			<table class="numtable">
+				<tr>
+					<th class="left">
+						{% if sort == 'nameup' %}<strong>Company</strong>
+						{% elif sort == 'namedn' %}<strong>Company ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=nameup">Company</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'codeup' %}<strong>Code</strong>
+						{% elif sort == 'codedn' %}<strong>Code ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=codeup">Code</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'typeup' %}<strong>Type</strong>
+						{% elif sort == 'typedn' %}<strong>Type ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=typeup">Type</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'prcup' %}<strong>Price</strong>
+						{% elif sort == 'prcdn' %}<strong>Price ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=prcdn">Price</a>
+						{% endif %}
+					</th>
+					<th>Price Date</th>
+					<th>
+						{% if sort == 'lotup' %}<strong>Lot</strong>
+						{% elif sort == 'lotdn' %}<strong>Lot ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=lotdn">Lot</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'ltvup' %}<strong>Lot Value</strong>
+						{% elif sort == 'ltvdn' %}<strong>Lot Value ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=ltvdn">Lot Value</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'issup' %}<strong>Outstanding</strong>
+						{% elif sort == 'issdn' %}<strong>Outstanding ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=issdn">Outstanding</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'mcpup' %}<strong>Market Cap</strong>
+						{% elif sort == 'mcapdn' %}<strong>Market Cap ↓</strong>
+						{% else %}<a href="?e={{ e }}&t={{ t }}&sort=mcapdn">Market Cap</a>
+						{% endif %}
+					</th>
+				</tr>
+
+				{% set total_mcap = namespace(value=0) %}
+				{% for row in curr_group.data %}
+				<tr>
+					<td class="left">
+						<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
+					</td>
+					<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+					<td>{{ row.typeshort }}</td>
+					<td class="right">{{ '{:.3f}'.format(row.closing) if row.closing else '-' }}</td>
+					<td>{{ row.pricedate.strftime('%Y-%m-%d') if row.pricedate else '-' }}</td>
+					<td class="right">{{ '{:,.0f}'.format(row.lot) if row.lot else '-' }}</td>
+					<td class="right">{{ '{:,.0f}'.format(row.lotval) if row.lotval else '-' }}</td>
+					<td class="right">{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '-' }}</td>
+					<td class="right">
+						{% if row.mcap %}
+							{{ '{:,.0f}'.format(row.mcap) }}
+							{% set total_mcap.value = total_mcap.value + row.mcap %}
+						{% else %}
+							-
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+
+				<tr class="total">
+					<td colspan="8" class="left"><strong>Total Market Cap:</strong></td>
+					<td class="right"><strong>{{ '{:,.0f}'.format(total_mcap.value) }}</strong></td>
+				</tr>
+			</table>
+
+			<p class="footnote">{{ curr_group.data|length }} securities. Market cap = Closing price × Outstanding shares.</p>
+		{% endif %}
+	{% endfor %}
+
+	<p><a href="{{ url_for('dbpub_market_data.mcaphist') }}?e={{ e }}&t={{ t }}">View historical market caps</a></p>
+
+{% else %}
+	<p>No market cap data available.</p>
+{% endif %}
+
 {% endblock %}

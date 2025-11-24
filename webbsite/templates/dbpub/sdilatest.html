@@ -1,6 +1,57 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Latest Director Dealings - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Latest Director Dealings (SDI)</h2>
+
+<p>Latest 200 significant dealings by directors and their associates, disclosed under Part XV of the SFO.</p>
+
+{% if sdi %}
+<table class="numtable">
+	<tr>
+		<th>Release Date</th>
+		<th>Settle Date</th>
+		<th class="left">
+			{% if sort == 'nameup' %}<strong>Company</strong>
+			{% elif sort == 'namedn' %}<strong>Company ↓</strong>
+			{% else %}<a href="?sort=nameup">Company</a>
+			{% endif %}
+		</th>
+		<th class="left">Director</th>
+		<th>Reason</th>
+		<th>Shares</th>
+		<th>Curr</th>
+		<th>Price</th>
+		<th>Value</th>
+	</tr>
+
+	{% for row in sdi %}
+	<tr>
+		<td>{{ row.reldate.strftime('%Y-%m-%d') if row.reldate else '-' }}</td>
+		<td>{{ row.settledate.strftime('%Y-%m-%d') if row.settledate else '-' }}</td>
+		<td class="left">
+			<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
+		</td>
+		<td class="left">
+			{% if row.isperson %}
+				<a href="{{ url_for('dbpub_people.natperson', p=row.dir) }}">{{ row.pname }}</a>
+			{% else %}
+				<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.dir) }}">{{ row.oname }}</a>
+			{% endif %}
+		</td>
+		<td>{{ row.reason }}</td>
+		<td class="right">{{ '{:,.0f}'.format(row.shares) if row.shares else '-' }}</td>
+		<td>{{ row.currid if row.currid else '-' }}</td>
+		<td class="right">{{ '{:.3f}'.format(row.price) if row.price else '-' }}</td>
+		<td class="right">{{ '{:,.0f}'.format(row.value) if row.value else '-' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+
+<p class="footnote">SDI = Significant Dealer Information disclosed under Part XV of the Securities and Futures Ordinance.</p>
+
+{% else %}
+<p>No recent director dealings found.</p>
+{% endif %}
+
 {% endblock %}
