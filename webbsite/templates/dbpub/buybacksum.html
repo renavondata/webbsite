@@ -1,6 +1,134 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Share Buybacks Summary - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Share Buybacks Summary</h2>
+
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacksum') }}">
+	<div class="inputs">
+		Year:
+		<select name="y" onchange="this.form.submit()">
+			{% for yr in range(max_date.year, 1990, -1) %}
+			<option value="{{ yr }}" {% if yr == year %}selected{% endif %}>{{ yr }}</option>
+			{% endfor %}
+		</select>
+
+		Month:
+		<select name="m" onchange="this.form.submit()">
+			<option value="0" {% if month == 0 %}selected{% endif %}>Whole year</option>
+			{% for mo in range(1, 13) %}
+			<option value="{{ mo }}" {% if mo == month %}selected{% endif %}>{{ ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][mo] }}</option>
+			{% endfor %}
+		</select>
+
+		{% if month > 0 %}
+		Day:
+		<select name="d" onchange="this.form.submit()">
+			<option value="0" {% if day == 0 %}selected{% endif %}>Whole month</option>
+			{% for dy in range(1, 32) %}
+			<option value="{{ dy }}" {% if dy == day %}selected{% endif %}>{{ dy }}</option>
+			{% endfor %}
+		</select>
+		{% endif %}
+
+		<input type="checkbox" name="u" id="u" value="1" {% if unadj %}checked{% endif %} onchange="this.form.submit()">
+		<label for="u">Unadjusted for splits</label>
+	</div>
+</form>
+
+<h3>Buybacks {% if freq == 'y' %}in {{ year }}{% elif freq == 'm' %}in {{ ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][month] }} {{ year }}{% else %}on {{ year }}-{{ '%02d' % month }}-{{ '%02d' % day }}{% endif %}</h3>
+
+{% if summaries %}
+<p>{{ summaries|length }} companies bought back shares during this period.</p>
+
+<table class="numtable">
+	<tr>
+		<th class="left">
+			{% if sort == 'namup' %}<strong>Company</strong>
+			{% elif sort == 'namdn' %}<strong>Company ↓</strong>
+			{% else %}<a href="?y={{ year }}&m={{ month }}&d={{ day }}&{% if unadj %}u=1&{% endif %}sort=namup">Company</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'codup' %}<strong>Code</strong>
+			{% elif sort == 'coddn' %}<strong>Code ↓</strong>
+			{% else %}<a href="?y={{ year }}&m={{ month }}&d={{ day }}&{% if unadj %}u=1&{% endif %}sort=codup">Code</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'curup' %}<strong>Curr</strong>
+			{% elif sort == 'curdn' %}<strong>Curr ↓</strong>
+			{% else %}<a href="?y={{ year }}&m={{ month }}&d={{ day }}&{% if unadj %}u=1&{% endif %}sort=curup">Curr</a>
+			{% endif %}
+		</th>
+		<th>Shares</th>
+		<th>
+			{% if sort == 'valup' %}<strong>Value</strong>
+			{% elif sort == 'valdn' %}<strong>Value ↓</strong>
+			{% else %}<a href="?y={{ year }}&m={{ month }}&d={{ day }}&{% if unadj %}u=1&{% endif %}sort=valdn">Value</a>
+			{% endif %}
+		</th>
+		<th>Avg Price</th>
+		<th>
+			{% if sort == 'stkup' %}<strong>% of OS</strong>
+			{% elif sort == 'stkdn' %}<strong>% of OS ↓</strong>
+			{% else %}<a href="?y={{ year }}&m={{ month }}&d={{ day }}&{% if unadj %}u=1&{% endif %}sort=stkdn">% of OS</a>
+			{% endif %}
+		</th>
+		<th>OS Date</th>
+	</tr>
+
+	{% set total_value = namespace(hkd=0, usd=0, cny=0, other=0) %}
+	{% for row in summaries %}
+	<tr>
+		<td class="left">
+			<a href="{{ url_for('dbpub_buybacks.buybacks', i=row.issueid) }}">{{ row.name }}</a>
+		</td>
+		<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+		<td>{{ row.currency }}</td>
+		<td class="right">{{ '{:,.0f}'.format(row.shares) if row.shares else '-' }}</td>
+		<td class="right">
+			{% if row.value %}
+				{{ '{:,.0f}'.format(row.value) }}
+				{% if row.currency == 'HKD' %}
+					{% set total_value.hkd = total_value.hkd + row.value %}
+				{% elif row.currency == 'USD' %}
+					{% set total_value.usd = total_value.usd + row.value %}
+				{% elif row.currency == 'CNY' %}
+					{% set total_value.cny = total_value.cny + row.value %}
+				{% else %}
+					{% set total_value.other = total_value.other + row.value %}
+				{% endif %}
+			{% else %}
+				-
+			{% endif %}
+		</td>
+		<td class="right">{{ '{:.3f}'.format(row.price) if row.price else '-' }}</td>
+		<td class="right">{{ '{:.3f}%'.format(row.stake) if row.stake else '-' }}</td>
+		<td>{{ row.osd.strftime('%Y-%m-%d') if row.osd else '-' }}</td>
+	</tr>
+	{% endfor %}
+
+	<tr class="total">
+		<td colspan="4" class="left"><strong>Total Value:</strong></td>
+		<td class="right">
+			<strong>
+			{% if total_value.hkd > 0 %}HKD {{ '{:,.0f}'.format(total_value.hkd) }}{% endif %}
+			{% if total_value.usd > 0 %}{% if total_value.hkd > 0 %}<br>{% endif %}USD {{ '{:,.0f}'.format(total_value.usd) }}{% endif %}
+			{% if total_value.cny > 0 %}{% if total_value.hkd > 0 or total_value.usd > 0 %}<br>{% endif %}CNY {{ '{:,.0f}'.format(total_value.cny) }}{% endif %}
+			{% if total_value.other > 0 %}{% if total_value.hkd > 0 or total_value.usd > 0 or total_value.cny > 0 %}<br>{% endif %}Other {{ '{:,.0f}'.format(total_value.other) }}{% endif %}
+			</strong>
+		</td>
+		<td colspan="3"></td>
+	</tr>
+</table>
+
+<p class="footnote">{% if unadj %}Shares and values are unadjusted for subsequent splits/consolidations.{% else %}Shares and values are adjusted for subsequent splits/consolidations.{% endif %}</p>
+
+<p><a href="{{ url_for('dbpub_buybacks.buybacks_time') }}">View recent buybacks (lookback)</a></p>
+
+{% else %}
+<p>No buyback activity found for this period.</p>
+{% endif %}
+
 {% endblock %}
