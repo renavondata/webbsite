@@ -213,12 +213,12 @@ def hk_sols_moves():
                 lr.LStxt,
                 COALESCE(d.resDate, d.apptDate) AS relDate
             FROM enigma.directorships d
-            JOIN enigma.lsppl lp ON d.director = lp.personID
-            JOIN enigma.lsorgs lo ON d.company = lo.personID
-            JOIN enigma.organisations o ON d.company = o.personID
-            JOIN enigma.people p ON d.director = p.PersonID
-            JOIN enigma.positions pn ON d.positionID = pn.positionID
-            JOIN enigma.lsroles lr ON pn.LSrole = lr.ID
+            JOIN enigma.lsppl lp ON d.director = lp.personid
+            JOIN enigma.lsorgs lo ON d.company = lo.personid
+            JOIN enigma.organisations o ON d.company = o.personid
+            JOIN enigma.people p ON d.director = p.personid
+            JOIN enigma.positions pn ON d.positionid = pn.positionid
+            JOIN enigma.lsroles lr ON pn.lsrole = lr.id
             WHERE d.resDate >= CURRENT_DATE - INTERVAL '30 days'
                OR d.apptDate >= CURRENT_DATE - INTERVAL '30 days'
             ORDER BY {ob}
