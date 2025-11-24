@@ -1,0 +1,66 @@
+{% extends "base_database.html" %}
+
+{% block title %}SFC licenses of {{ person_name }}{% endblock %}
+
+{% block content %}
+{# humanBar and positionsBar navigation would go here #}
+
+{# Current/History navigation #}
+<ul class='navlist'>
+	<li{% if hide == 'Y' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;sort={{ sort }}&amp;n={{ 1 if show_old_names else 0 }}&amp;hide=Y'>Current</a></li>
+	<li{% if hide != 'Y' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;sort={{ sort }}&amp;n={{ 1 if show_old_names else 0 }}&amp;hide=N'>History</a></li>
+</ul>
+<div class='clear'></div>
+
+<form method="get" action="sfclicrec.asp">
+	<input type="hidden" name="p" value="{{ person_id }}">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="hide" value="{{ hide }}">
+	<label>
+		<input type="checkbox" name="n" value="1" {% if show_old_names %}checked{% endif %} onchange="this.form.submit()">
+		show old organisation names
+	</label>
+</form>
+
+{% if licenses %}
+	<h3>SFC licenses</h3>
+	<p>Rep=Representative, RO=Responsible Officer. A person without a starting date was in that role since at least 1-Apr-2003 when the current register began.</p>
+	<table class="opltable">
+		<tr>
+			<th></th>
+			<th><a href="?p={{ person_id }}&amp;hide={{ hide }}&amp;n={{ 1 if show_old_names else 0 }}&amp;sort={% if sort == 'orgup' %}orgdn{% else %}orgup{% endif %}">Organisation</a></th>
+			<th><a href="?p={{ person_id }}&amp;hide={{ hide }}&amp;n={{ 1 if show_old_names else 0 }}&amp;sort={% if sort == 'rolup' %}roldn{% else %}rolup{% endif %}">Role</a></th>
+			<th><a href="?p={{ person_id }}&amp;hide={{ hide }}&amp;n={{ 1 if show_old_names else 0 }}&amp;sort={% if sort == 'actup' %}actdn{% else %}actup{% endif %}">Activity</a></th>
+			<th class="colHide3 nowrap"><a href="?p={{ person_id }}&amp;hide={{ hide }}&amp;n={{ 1 if show_old_names else 0 }}&amp;sort={% if sort == 'appup' %}appdn{% else %}appup{% endif %}">From</a></th>
+			<th class="nowrap"><a href="?p={{ person_id }}&amp;hide={{ hide }}&amp;n={{ 1 if show_old_names else 0 }}&amp;sort={% if sort == 'resup' %}resdn{% else %}resup{% endif %}">Until</a></th>
+		</tr>
+		{% set ns = namespace(last_org=None, last_act=None, cnt=1) %}
+		{% for lic in licenses %}
+			{% set show_org = (lic['orgid'] != ns.last_org or not sort.startswith('org')) %}
+			{% set show_act = (lic['actname'] != ns.last_act or not sort.startswith('act')) %}
+			{% set is_total_row = show_org or show_act or (not sort.startswith('org') and not sort.startswith('act')) %}
+
+			<tr{% if is_total_row %} class="total"{% endif %}>
+				<td>{% if is_total_row %}{{ ns.cnt }}{% endif %}</td>
+				<td>
+					{% if show_org or not sort.startswith('org') %}
+						<a href="SFClicensees.asp?a=0&amp;p={{ lic['orgid'] }}">{{ lic['name1'] }}</a>
+					{% endif %}
+				</td>
+				<td>{{ lic['role_text'] }}</td>
+				<td>{% if show_act or not sort.startswith('act') %}{{ lic['actname'] }}{% endif %}</td>
+				<td class="colHide3 nowrap">{{ lic['startdate'] or '' }}</td>
+				<td class="nowrap">{{ lic['enddate'] or '' }}</td>
+			</tr>
+
+			{% if is_total_row %}
+				{% set ns.cnt = ns.cnt + 1 %}
+			{% endif %}
+			{% set ns.last_org = lic['orgid'] %}
+			{% set ns.last_act = lic['actname'] %}
+		{% endfor %}
+	</table>
+{% else %}
+	<p>None found.</p>
+{% endif %}
+{% endblock %}
