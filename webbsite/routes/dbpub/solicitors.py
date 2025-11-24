@@ -58,8 +58,8 @@ def hk_sols():
             SELECT
                 CONCAT(EXTRACT(YEAR FROM p.admHK), '-',
                        LPAD(EXTRACT(MONTH FROM p.admHK), 2, '0')) AS admHK,
-                o.personID AS orgID, o.name1 AS oName,
-                ppl.personID AS pID,
+                o.personid AS orgID, o.name1 AS oName,
+                ppl.personid AS pID,
                 CONCAT(COALESCE(ppl.name1,''),
                        CASE WHEN ppl.name2 IS NOT NULL THEN CONCAT(', ', ppl.name2) ELSE '' END,
                        CASE WHEN ppl.cName IS NOT NULL THEN CONCAT(' ', ppl.cName) ELSE '' END) AS pName,
@@ -69,8 +69,8 @@ def hk_sols():
             JOIN enigma.lsppl lp ON ps.lsppl = lp.lsid
             JOIN enigma.lsorgs lo ON ps.lsorg = lo.lsid
             JOIN enigma.lsroles lr ON ps.post = lr.id
-            JOIN enigma.organisations o ON lo.personID = o.PersonID
-            JOIN enigma.people ppl ON lp.personID = ppl.personID
+            JOIN enigma.organisations o ON lo.personid = o.personid
+            JOIN enigma.people ppl ON lp.personid = ppl.personid
             JOIN enigma.lsppl p ON lp.lsid = p.lsid
             WHERE NOT ps.dead {role_sql}
             ORDER BY {ob}
@@ -124,7 +124,7 @@ def hk_sol_firms():
     try:
         firms = execute_query(
             f"""
-            SELECT lo.personID, o.name1,
+            SELECT lo.personid, o.name1,
                    COUNT(lp.lsppl) AS tot,
                    SUM(CASE WHEN lp.post = 1 THEN 1 ELSE 0 END) AS partner,
                    SUM(CASE WHEN lp.post = 2 THEN 1 ELSE 0 END) AS con,
@@ -132,10 +132,10 @@ def hk_sol_firms():
                    SUM(CASE WHEN lp.post = 5 THEN 1 ELSE 0 END) AS prop
             FROM enigma.lsposts lp
             JOIN enigma.lsorgs lo ON lp.lsorg = lo.lsid
-            JOIN enigma.organisations o ON lo.personID = o.personID
+            JOIN enigma.organisations o ON lo.personid = o.personid
             WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
               AND (NOT lp.dead OR lp.lastSeen >= %s)
-            GROUP BY lo.personID, o.name1
+            GROUP BY lo.personid, o.name1
             ORDER BY {ob}
         """,
             (d, d),
@@ -204,21 +204,17 @@ def hk_sols_moves():
                        CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
                        CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pName,
                 o.name1 AS oName,
-                CONCAT(EXTRACT(YEAR FROM d.apptDate), '-',
-                       LPAD(EXTRACT(MONTH FROM d.apptDate), 2, '0'),
-                       CASE WHEN d.apptAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.apptDate), 2, '0')) END) AS appt,
-                CONCAT(EXTRACT(YEAR FROM d.resDate), '-',
-                       LPAD(EXTRACT(MONTH FROM d.resDate), 2, '0'),
-                       CASE WHEN d.resAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.resDate), 2, '0')) END) AS res,
+                enigma.MSdateAcc(d.apptDate, d.apptAcc) AS appt,
+                enigma.MSdateAcc(d.resDate, d.resAcc) AS res,
                 lr.LStxt,
                 COALESCE(d.resDate, d.apptDate) AS relDate
             FROM enigma.directorships d
-            JOIN enigma.lsppl lp ON d.director = lp.personID
-            JOIN enigma.lsorgs lo ON d.company = lo.personID
-            JOIN enigma.organisations o ON d.company = o.personID
-            JOIN enigma.people p ON d.director = p.PersonID
-            JOIN enigma.positions pn ON d.positionID = pn.positionID
-            JOIN enigma.lsroles lr ON pn.LSrole = lr.ID
+            JOIN enigma.lsppl lp ON d.director = lp.personid
+            JOIN enigma.lsorgs lo ON d.company = lo.personid
+            JOIN enigma.organisations o ON d.company = o.personid
+            JOIN enigma.people p ON d.director = p.personid
+            JOIN enigma.positions pn ON d.positionid = pn.positionid
+            JOIN enigma.lsroles lr ON pn.lsrole = lr.id
             WHERE d.resDate >= CURRENT_DATE - INTERVAL '30 days'
                OR d.apptDate >= CURRENT_DATE - INTERVAL '30 days'
             ORDER BY {ob}
@@ -260,12 +256,12 @@ def hk_sol_emps():
     try:
         employers = execute_query(
             f"""
-            SELECT o.name1, o.personID, COUNT(*) AS cnt
+            SELECT o.name1, o.personid, COUNT(*) AS cnt
             FROM enigma.lsjobs j
-            JOIN enigma.lsemps e ON j.empID = e.ID
-            JOIN enigma.organisations o ON e.personID = o.personID
+            JOIN enigma.lsemps e ON j.empid = e.id
+            JOIN enigma.organisations o ON e.personid = o.personid
             WHERE NOT j.dead
-            GROUP BY e.personID, o.name1, o.personID
+            GROUP BY e.personid, o.name1, o.personid
             ORDER BY {ob}
         """
         )

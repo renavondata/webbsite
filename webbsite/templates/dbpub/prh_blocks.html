@@ -1,6 +1,60 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Housing Authority public rental blocks in an estate{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Housing Authority public rental blocks in an estate</h2>
+
+<table class="txtable" style="font-weight:bold">
+	<tr><td>Estate:</td><td>{{ estate_name }}</td></tr>
+	<tr><td>District:</td><td>{{ dis_name }}</td></tr>
+	<tr><td>Map:</td><td><a href="https://maps.google.com/?q={{ coords }}" target="_blank">Open</a></td></tr>
+</table>
+
+<p>This page shows the HK Housing Authority's stock of Public Rental units in one Estate. Data are
+<a href="https://data.gov.hk/en-datasets/provider/hk-housing" target="_blank">
+sourced here</a>. Click on a Block to drill down to Floors and Units.</p>
+
+<ul class="navlist">
+	<li><a href="prhdistricts.asp?sort={{ sort_param }}">Districts</a></li>
+	<li><a href="prhestates.asp?sort={{ sort_param }}&amp;dis={{ dis }}">Estates</a></li>
+</ul>
+<div class="clear"></div>
+
+<div class="widthAlert2"></div>
+<table class="numtable c2l c3l">
+	<tr>
+		<th class="colHide2"></th>
+		<th><a href="?e={{ estate_id }}&amp;sort={% if sort_param == 'en' %}end{% else %}en{% endif %}">Block</a></th>
+		<th><a href="?e={{ estate_id }}&amp;sort={% if sort_param == 'cn' %}cnd{% else %}cn{% endif %}">Chinese</a></th>
+		<th><a href="?e={{ estate_id }}&amp;sort={% if sort_param == 'cd' %}c{% else %}cd{% endif %}">Units</a></th>
+		<th>Units<br>with<br>elevator</th>
+		<th><a href="?e={{ estate_id }}&amp;sort={% if sort_param == 'totad' %}tota{% else %}totad{% endif %}">Total<br>internal<br>floor<br>area sq.m.</a></th>
+		<th><a href="?e={{ estate_id }}&amp;sort={% if sort_param == 'ad' %}a{% else %}ad{% endif %}">Average<br>internal<br>floor<br>area sq.m.</a></th>
+	</tr>
+	{% set ns = namespace(sumc=0, suma=0, sumelev=0) %}
+	{% for block in blocks %}
+		<tr>
+			<td class="colHide2">{{ loop.index }}</td>
+			<td><a href="prhfloors.asp?sort={{ sort_param }}&amp;b={{ block.id }}">{{ block.en }}</a></td>
+			<td><a href="prhfloors.asp?sort={{ sort_param }}&amp;b={{ block.id }}">{{ block.cn }}</a></td>
+			<td>{{ "{:,}".format(block.c|int) }}</td>
+			<td>{{ "{:,}".format(block.elev|int) }}</td>
+			<td>{{ "{:,}".format(block.tota|int) }}</td>
+			<td>{{ "{:.2f}".format(block.a|float) if block.c else '-' }}</td>
+		</tr>
+		{% set _ = ns.__setitem__('sumc', ns.sumc + block.c|int) %}
+		{% set _ = ns.__setitem__('suma', ns.suma + block.tota|int) %}
+		{% set _ = ns.__setitem__('sumelev', ns.sumelev + block.elev|int) %}
+	{% endfor %}
+	<tr class="total">
+		<td class="colHide2"></td>
+		<td>Total</td>
+		<td></td>
+		<td>{{ "{:,}".format(ns.sumc) }}</td>
+		<td>{{ "{:,}".format(ns.sumelev) }}</td>
+		<td>{{ "{:,}".format(ns.suma) }}</td>
+		<td>{{ "{:.2f}".format(ns.suma / ns.sumc) if ns.sumc else '-' }}</td>
+	</tr>
+</table>
 {% endblock %}

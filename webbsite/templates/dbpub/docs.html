@@ -1,6 +1,45 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Financial reports{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{# orgBar navigation would go here - skipping for now since it requires orgBar implementation #}
+
+{% if docs_data %}
+	<p>The results date is the date on which the results were published, as
+	stated in the annual directors' report or quarterly/interim report. The
+	full report is usually filed later than results. Click the report name
+	to open it, where linked.</p>
+
+	<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+
+	<table class="numtable fcl">
+		<tr>
+			<th><a href="?p={{ person_id }}&amp;sort={% if sort_param == 'typup' %}typdn{% else %}typup{% endif %}">Type</a></th>
+			<th class="colHide3">Size<br/>MB</th>
+			<th><a href="?p={{ person_id }}&amp;sort={% if sort_param == 'recdn' %}recup{% else %}recdn{% endif %}">Record date</a></th>
+			<th><a href="?p={{ person_id }}&amp;sort={% if sort_param == 'repup' %}repdn{% else %}repup{% endif %}">Results date</a></th>
+			<th><a href="?p={{ person_id }}&amp;sort={% if sort_param == 'spdup' %}spddn{% else %}spdup{% endif %}">Speed<br/>(days)</a></th>
+			<th class="colHide3">Report filed</th>
+		</tr>
+		{% for doc in docs_data %}
+			<tr>
+				<td>
+					{% if doc.url %}
+						<a target="_blank" href="{{ doc.url }}">{{ doc.doclong }}</a>
+					{% else %}
+						{{ doc.doclong }}
+					{% endif %}
+				</td>
+				<td class="colHide3">{{ "%.1f"|format(doc.fsize / 1024) if doc.fsize else '' }}</td>
+				<td>{{ doc.recorddate }}</td>
+				<td>{{ doc.reportdate }}</td>
+				<td>{{ doc.speed if doc.speed is not none else '' }}</td>
+				<td class="colHide3">{{ doc.repfiled|string|truncate(16, True, '') if doc.repfiled else '' }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% else %}
+	<p><b>No reports logged.</b></p>
+{% endif %}
 {% endblock %}

@@ -1,6 +1,150 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}SFC licensees per firm: {{ act_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>SFC licensees per firm: {{ act_name }}</h2>
+
+<ul class="navlist">
+	<li id="livebutton">League table</li>
+	<li><a href="SFCchanges.asp">Latest moves</a></li>
+	<li><a href="SFChistall.asp?a={{ act }}">Historic total</a></li>
+</ul>
+<div class="clear"></div>
+
+<p>In an activity at a firm, a licensee is either a Responsible Officer (<strong>RO</strong>) or
+a Representative (<strong>Rep</strong>).
+When Activity is set to "All", a person who holds both roles (in different
+activities) is treated as
+an RO. &quot;Reps v total&quot; is a measure of how bottom-heavy a firm is, because the
+ROs supervise the Reps. We query the SFC database and update the
+tables regularly. Licensees are not necessarily full-time employees and may be
+licensed to more than 1 firm. We do not track the SFC-registered
+Executive Officers of HKMA-regulated banks, because the HKMA and SFC do not
+publish any past positions of these people or their appointment dates in their
+current positions. So there's no level playing field between banks and
+SFC-licensed firms.</p>
+<p>Click on the last column to see the history of a firm.</p>
+
+<form method="get" action="SFClicount.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		Start date: <input type="date" name="db" id="db" value="{{ db }}">
+		End date: <input type="date" name="da" id="da" value="{{ da }}">
+	</div>
+	<div class="inputs">
+		Activity type:
+		<select name="a" onchange="this.form.submit()">
+			<option value="0" {% if act == 0 %}selected{% endif %}>All activities</option>
+			{# TODO: Populate from activity table #}
+		</select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<div class="widthAlert1"></div>
+<table class="numtable yscroll">
+	<thead>
+		<tr>
+			<th class="colHide1"></th>
+			<th></th>
+			<th class="center colHide1" colspan="3">{{ db }}</th>
+			<th class="center colHide3" colspan="3">{{ da }}</th>
+			<th class="center" colspan="3">Change</th>
+			<th class="center colHide2" colspan="2">Rep v total</th>
+			<th class="colHide1"></th>
+			<th class="colHide1"></th>
+		</tr>
+		<tr>
+			<th class="colHide1">Row</th>
+			<th class="left"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'namup' %}namdn{% else %}namup{% endif %}"><b>Name</b></a></th>
+			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'brodn' %}broup{% else %}brodn{% endif %}">RO</a></th>
+			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'brepdn' %}brepup{% else %}brepdn{% endif %}">Rep</a></th>
+			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'bcntdn' %}bcntup{% else %}bcntdn{% endif %}">Total</a></th>
+			<th class="colHide3"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'arodn' %}aroup{% else %}arodn{% endif %}">RO</a></th>
+			<th class="colHide3"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'arepdn' %}arepup{% else %}arepdn{% endif %}">Rep</a></th>
+			<th class="colHide3"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'acntdn' %}acntup{% else %}acntdn{% endif %}">Total</a></th>
+			<th><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'crodn' %}croup{% else %}crodn{% endif %}">RO</a></th>
+			<th><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'crepdn' %}crepup{% else %}crepdn{% endif %}">Rep</a></th>
+			<th><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'ccntdn' %}ccntup{% else %}ccntdn{% endif %}">Total</a></th>
+			<th class="colHide2"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'bratdn' %}bratup{% else %}bratdn{% endif %}">Start<br>%</a></th>
+			<th class="colHide2"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'aratdn' %}aratup{% else %}aratdn{% endif %}">End<br>%</a></th>
+			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'sddn' %}sdup{% else %}sddn{% endif %}">Licence<br>start</a></th>
+			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'eddn' %}edup{% else %}eddn{% endif %}">Licence<br>end</a></th>
+		</tr>
+	</thead>
+	{% set ns = namespace(numa=0, numb=0, sumaRO=0, sumarep=0, sumbRO=0, sumbrep=0) %}
+	{% for row in stats %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td class="left"><a href='SFClicensees.asp?p={{ row.orgid }}&amp;a={{ act }}&amp;h=Y&amp;sort=posdn&amp;d={{ da }}'>{{ row.name }}</a></td>
+			<td class="colHide1">{{ row.bro|int }}</td>
+			<td class="colHide1">{{ row.brep|int }}</td>
+			<td class="colHide1">{{ row.bcnt|int }}</td>
+			<td class="colHide3">{{ row.aro|int }}</td>
+			<td class="colHide3">{{ row.arep|int }}</td>
+			<td class="colHide3">{{ row.acnt|int }}</td>
+			<td>{{ row.cro|int }}</td>
+			<td>{{ row.crep|int }}</td>
+			<td>{{ row.ccnt|int }}</td>
+			<td class="colHide2">
+				<a href="SFChistfirm.asp?p={{ row.orgid }}&amp;a={{ act }}">
+					{% if row.brat is not none %}{{ "{:.2f}".format(row.brat * 100) }}{% else %}-{% endif %}
+				</a>
+			</td>
+			<td class="colHide2">
+				<a href="SFChistfirm.asp?p={{ row.orgid }}&amp;a={{ act }}">
+					{% if row.arat is not none %}{{ "{:.2f}".format(row.arat * 100) }}{% else %}-{% endif %}
+				</a>
+			</td>
+			<td class="colHide1 nowrap">{{ row.startdate or '' }}</td>
+			<td class="colHide1 nowrap">{{ row.enddate or '' }}</td>
+		</tr>
+		{# Update sums #}
+		{% if row.acnt|int > 0 %}
+			{% set _ = ns.__setitem__('numa', ns.numa + 1) %}
+			{% set _ = ns.__setitem__('sumaRO', ns.sumaRO + row.aro|int) %}
+			{% set _ = ns.__setitem__('sumarep', ns.sumarep + row.arep|int) %}
+		{% endif %}
+		{% if row.bcnt|int > 0 %}
+			{% set _ = ns.__setitem__('numb', ns.numb + 1) %}
+			{% set _ = ns.__setitem__('sumbRO', ns.sumbRO + row.bro|int) %}
+			{% set _ = ns.__setitem__('sumbrep', ns.sumbrep + row.brep|int) %}
+		{% endif %}
+	{% endfor %}
+	<tr class="total">
+		<td></td>
+		<td class="left">Average</td>
+		{% if ns.numb > 0 %}
+			<td class="colHide1">{{ "{:.2f}".format(ns.sumbRO / ns.numb) }}</td>
+			<td class="colHide1">{{ "{:.2f}".format(ns.sumbrep / ns.numb) }}</td>
+			<td class="colHide1">{{ "{:.2f}".format((ns.sumbRO + ns.sumbrep) / ns.numb) }}</td>
+		{% else %}
+			<td class="colHide1" colspan="3"></td>
+		{% endif %}
+		{% if ns.numa > 0 %}
+			<td class="colHide3">{{ "{:.2f}".format(ns.sumaRO / ns.numa) }}</td>
+			<td class="colHide3">{{ "{:.2f}".format(ns.sumarep / ns.numa) }}</td>
+			<td class="colHide3">{{ "{:.2f}".format((ns.sumaRO + ns.sumarep) / ns.numa) }}</td>
+		{% else %}
+			<td class="colHide3" colspan="3"></td>
+		{% endif %}
+		<td colspan="3"></td>
+		{% if ns.numb > 0 %}
+			<td class="colHide2">{{ "{:.2f}".format(100 * ns.sumbrep / (ns.sumbRO + ns.sumbrep)) }}</td>
+		{% else %}
+			<td class="colHide2"></td>
+		{% endif %}
+		{% if ns.numa > 0 %}
+			<td class="colHide2">{{ "{:.2f}".format(100 * ns.sumarep / (ns.sumaRO + ns.sumarep)) }}</td>
+		{% else %}
+			<td class="colHide2"></td>
+		{% endif %}
+		<td class="colHide1" colspan="2"></td>
+	</tr>
+</table>
 {% endblock %}

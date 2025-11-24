@@ -1,6 +1,49 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Buybacks since {{ lookback_start }} inclusive{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Buybacks since {{ lookback_start }} inclusive</h2>
+
+<ul class="navlist">
+	<li><a href="buybacksum.asp">Calendar</a></li>
+	<li class="livebutton">Lookback</li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="buybackstime.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	Last
+	<select name="hist" onchange="this.form.submit()">
+		<option value="10" {% if hist == 10 %}selected{% endif %}>10 days</option>
+		<option value="30" {% if hist == 30 %}selected{% endif %}>30 days</option>
+		<option value="60" {% if hist == 60 %}selected{% endif %}>60 days</option>
+		<option value="90" {% if hist == 90 %}selected{% endif %}>90 days</option>
+		<option value="180" {% if hist == 180 %}selected{% endif %}>180 days</option>
+		<option value="365" {% if hist == 365 %}selected{% endif %}>1 year</option>
+		<option value="730" {% if hist == 730 %}selected{% endif %}>2 years</option>
+		<option value="1826" {% if hist == 1826 %}selected{% endif %}>5 years</option>
+		<option value="3652" {% if hist == 3652 %}selected{% endif %}>10 years</option>
+	</select>
+</form>
+
+<p>Latest buyback found: {{ max_date }}</p>
+<p>Note: share repurchases on SEHK have been permitted since 1991-11-27. This table comprises on-market buybacks by HK-listed issuers whether executed on SEHK or on another exchange.</p>
+
+<table class="numtable c2l">
+	<tr>
+		<th></th>
+		<th><a href="?hist={{ hist }}&amp;sort={% if sort == 'namup' %}namdn{% else %}namup{% endif %}">Issue</a></th>
+		<th><a href="?hist={{ hist }}&amp;sort={% if sort == 'valdn' %}valup{% else %}valdn{% endif %}">Value</a></th>
+		<th><a href="?hist={{ hist }}&amp;sort={% if sort == 'curup' %}curdn{% else %}curup{% endif %}">Curr.</a></th>
+	</tr>
+	{% for item in time_series %}
+		<tr>
+			<td>{{ loop.index }}</td>
+			<td><a href='buybacks.asp?i={{ item["issueid"] }}'>{{ item["name"] }}</a></td>
+			<td>{{ "{:,.0f}".format(item["sumvalue"]|float) }}</td>
+			<td>{{ item["currency"] }}</td>
+		</tr>
+	{% endfor %}
+</table>
 {% endblock %}

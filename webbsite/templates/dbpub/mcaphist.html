@@ -1,6 +1,117 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}{{ title }} - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get" action="{{ url_for('dbpub_market_data.mcaphist') }}">
+	<div class="inputs">
+		Date:
+		<input type="date" name="d" value="{{ d }}" onchange="this.form.submit()">
+
+		Exchange:
+		<select name="e" onchange="this.form.submit()">
+			<option value="a" {% if e == 'a' %}selected{% endif %}>Main Board, GEM & Secondary</option>
+			<option value="m" {% if e == 'm' %}selected{% endif %}>Main Board</option>
+			<option value="g" {% if e == 'g' %}selected{% endif %}>GEM</option>
+			<option value="s" {% if e == 's' %}selected{% endif %}>Secondary-listed</option>
+			<option value="r" {% if e == 'r' %}selected{% endif %}>REITs</option>
+			<option value="c" {% if e == 'c' %}selected{% endif %}>CIS</option>
+		</select>
+
+		Type:
+		<select name="t" onchange="this.form.submit()">
+			<option value="s" {% if t == 's' %}selected{% endif %}>Shares/Units</option>
+			<option value="w" {% if t == 'w' %}selected{% endif %}>Warrants</option>
+			<option value="h" {% if t == 'h' %}selected{% endif %}>H-shares</option>
+		</select>
+
+		<input type="checkbox" name="p" id="p" value="1" {% if exclude_pending %}checked{% endif %} onchange="this.form.submit()">
+		<label for="p">Exclude pending shares</label>
+	</div>
+</form>
+
+<h3>Market values on {{ d }}</h3>
+
+{% if market_caps %}
+	{% for curr_group in market_caps %}
+		{% if curr_group.data %}
+			<h4>{{ curr_group.currency }}</h4>
+			<table class="numtable">
+				<tr>
+					<th class="left">
+						{% if sort == 'nameup' %}<strong>Company</strong>
+						{% elif sort == 'namedn' %}<strong>Company ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=nameup">Company</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'codeup' %}<strong>Code</strong>
+						{% elif sort == 'codedn' %}<strong>Code ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=codeup">Code</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'typeup' %}<strong>Type</strong>
+						{% elif sort == 'typedn' %}<strong>Type ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=typeup">Type</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'prcup' %}<strong>Price</strong>
+						{% elif sort == 'prcdn' %}<strong>Price ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=prcdn">Price</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'issup' %}<strong>Outstanding</strong>
+						{% elif sort == 'issdn' %}<strong>Outstanding ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=issdn">Outstanding</a>
+						{% endif %}
+					</th>
+					<th>
+						{% if sort == 'mcpup' %}<strong>Market Cap</strong>
+						{% elif sort == 'mcapdn' %}<strong>Market Cap ↓</strong>
+						{% else %}<a href="?d={{ d }}&e={{ e }}&t={{ t }}&{% if exclude_pending %}p=1&{% endif %}sort=mcapdn">Market Cap</a>
+						{% endif %}
+					</th>
+				</tr>
+
+				{% set total_mcap = namespace(value=0) %}
+				{% for row in curr_group.data %}
+				<tr>
+					<td class="left">
+						<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
+					</td>
+					<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+					<td>{{ row.typeshort }}</td>
+					<td class="right">{{ '{:.3f}'.format(row.closing) if row.closing else '-' }}</td>
+					<td class="right">{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '-' }}</td>
+					<td class="right">
+						{% if row.mcap %}
+							{{ '{:,.0f}'.format(row.mcap) }}
+							{% set total_mcap.value = total_mcap.value + row.mcap %}
+						{% else %}
+							-
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+
+				<tr class="total">
+					<td colspan="5" class="left"><strong>Total Market Cap:</strong></td>
+					<td class="right"><strong>{{ '{:,.0f}'.format(total_mcap.value) }}</strong></td>
+				</tr>
+			</table>
+
+			<p class="footnote">{{ curr_group.data|length }} securities.</p>
+		{% endif %}
+	{% endfor %}
+
+	<p><a href="{{ url_for('dbpub_market_data.mcap') }}?e={{ e }}&t={{ t }}">View current market caps</a></p>
+
+{% else %}
+	<p>No historical market cap data available for this date.</p>
+{% endif %}
+
 {% endblock %}

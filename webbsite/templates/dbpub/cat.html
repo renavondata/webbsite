@@ -1,6 +1,40 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}{{ cat_name }} - Renavon Hong Kong Database{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+<h2>Category: {{ cat_name }}</h2>
+
+{% if subcats %}
+<h3>Subcategories</h3>
+<ul>
+	{% for subcat in subcats %}
+	<li><a href="{{ url_for('dbpub_articles.cat', c=subcat.childid) }}">{{ subcat.childname }}</a></li>
+	{% endfor %}
+</ul>
+{% endif %}
+
+{% if members %}
+<h3>Member Organizations</h3>
+<table class="numtable">
+	<tr>
+		<th class="left">Organization</th>
+	</tr>
+	{% for member in members %}
+	<tr>
+		<td class="left">
+			<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=member.personid) }}">{{ member.name1 }}</a>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+
+<p class="footnote">{{ members|length }} organizations in this category.</p>
+{% endif %}
+
+{% if not subcats and not members %}
+<p>No subcategories or members in this category.</p>
+{% endif %}
+
+<p><a href="/dbpub/">Return to database home</a></p>
+
 {% endblock %}
