@@ -42,13 +42,13 @@ def buybacks():
         try:
             result = execute_query(
                 """
-                SELECT i.ID1 AS issueID, o.name1, o.personID, st.typeshort,
+                SELECT i.ID1 AS issueid, o.name1, o.personid, st.typeshort,
                        COALESCE(c.currency, 'HKD') AS currency
                 FROM enigma.stockListings sl
-                JOIN enigma.issue i ON sl.issueID = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.issue i ON sl.issueid = i.ID1
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.sectypes st ON i.typeID = st.typeID
-                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
                 WHERE sl.stockCode = %s
                   AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
                 ORDER BY sl.firstTradeDate DESC NULLS LAST
@@ -71,12 +71,12 @@ def buybacks():
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID, st.typeshort,
+                SELECT o.name1, o.personid, st.typeshort,
                        COALESCE(c.currency, 'HKD') AS currency
                 FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.sectypes st ON i.typeID = st.typeID
-                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
                 WHERE i.ID1 = %s
             """,
                 (issue_id,),
@@ -105,7 +105,7 @@ def buybacks():
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_pay"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) AS exists",
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_advisers"] = execute_query(
@@ -117,30 +117,30 @@ def buybacks():
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_sfc_licenses"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) AS exists",
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_documents"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) AS exists",
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_ess"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.ess WHERE orgid = %s) AS exists",
                 (org_id,),
             )[0]["exists"]
             nav_flags["has_stories"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) AS exists",
                 (org_id,),
             )[0]["exists"]
             # 9643=HKEX, regulated by SFC
             nav_flags["has_lir_team"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) AS exists",
                 (org_id,),
             )[0]["exists"] or (org_id == 9643)
 
             # Get CCASS participant ID if exists
             part_result = execute_query(
-                "SELECT partID FROM ccass.participants WHERE personID = %s LIMIT 1",
+                "SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1",
                 (org_id,),
             )
             nav_flags["ccass_part_id"] = (
@@ -157,7 +157,7 @@ def buybacks():
                 """
                 SELECT i.typeID, sl.stockExID, sl.delistDate
                 FROM enigma.issue i
-                LEFT JOIN enigma.stockListings sl ON i.ID1 = sl.issueID
+                LEFT JOIN enigma.stockListings sl ON i.ID1 = sl.issueid
                 WHERE i.ID1 = %s AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
                 ORDER BY sl.delistDate LIMIT 1
             """,
@@ -170,15 +170,15 @@ def buybacks():
 
             # stockBar navigation flags
             nav_flags["has_outstanding"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = %s) AS exists",
                 (issue_id,),
             )[0]["exists"]
             nav_flags["has_short"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = %s) AS exists",
                 (issue_id,),
             )[0]["exists"]
             nav_flags["has_sdi"] = execute_query(
-                "SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) AS exists",
+                "SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = %s) AS exists",
                 (issue_id,),
             )[0]["exists"]
 
@@ -201,7 +201,7 @@ def buybacks():
                        sl.stockId
                 FROM enigma.stockListings sl
                 JOIN enigma.listings l ON sl.stockExID = l.stockExID
-                WHERE sl.issueID = %s
+                WHERE sl.issueid = %s
                   AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
                 ORDER BY sl.firstTradeDate
             """,
@@ -312,13 +312,13 @@ def buybacks():
                 FROM (
                     SELECT {select_fields}
                     FROM {table}
-                    WHERE issueID = %s
+                    WHERE issueid = %s
                     GROUP BY {group_by}
                 ) bb
                 LEFT JOIN LATERAL (
                     SELECT outstanding, atDate
                     FROM enigma.issuedshares
-                    WHERE issueID = %s
+                    WHERE issueid = %s
                       AND atDate <= {date_condition}
                     ORDER BY atDate DESC
                     LIMIT 1
@@ -338,7 +338,7 @@ def buybacks():
                             THEN (SUM(value) / SUM(shares))::DOUBLE PRECISION
                             ELSE NULL END AS price
                 FROM {table}
-                WHERE issueID = %s
+                WHERE issueid = %s
                 GROUP BY currency
             """,
                 (issue_id,),
@@ -350,8 +350,8 @@ def buybacks():
                 f"""
                 SELECT (outstanding / {denom_initial})::DOUBLE PRECISION AS os, atDate AS osd
                 FROM enigma.issuedshares
-                WHERE issueID = %s
-                  AND atDate <= (SELECT MIN(effDate) FROM enigma.webbuybacks WHERE issueID = %s)
+                WHERE issueid = %s
+                  AND atDate <= (SELECT MIN(effDate) FROM enigma.webbuybacks WHERE issueid = %s)
                 ORDER BY atDate DESC
                 LIMIT 1
             """,
@@ -473,7 +473,7 @@ def buybacksum():
         # Query all buybacks in the period
         summaries = execute_query(
             f"""
-            SELECT b.issueID, sl.stockCode, CONCAT(o.name1, ':', st.typeShort) AS name,
+            SELECT b.issueid, sl.stockCode, CONCAT(o.name1, ':', st.typeShort) AS name,
                    b.currency, b.shares, b.value,
                    os.outstanding, os.osd,
                    CASE WHEN os.outstanding > 0
@@ -483,25 +483,25 @@ def buybacksum():
                         THEN b.value / b.shares
                         ELSE NULL END AS price
             FROM (
-                SELECT issueID, currency, SUM(shares) AS shares, SUM(value) AS value
+                SELECT issueid, currency, SUM(shares) AS shares, SUM(value) AS value
                 FROM {table}
                 WHERE effDate BETWEEN %s AND %s
                 GROUP BY issueID, currency
             ) b
-            JOIN enigma.issue i ON b.issueID = i.ID1
-            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.issue i ON b.issueid = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             LEFT JOIN LATERAL (
                 SELECT outstanding, atDate AS osd
                 FROM enigma.issuedshares
-                WHERE issueID = b.issueID AND atDate <= %s
+                WHERE issueid = b.issueid AND atDate <= %s
                 ORDER BY atDate DESC
                 LIMIT 1
             ) os ON TRUE
             LEFT JOIN LATERAL (
                 SELECT stockCode
                 FROM enigma.stockListings
-                WHERE issueID = b.issueID AND toDate IS NULL
+                WHERE issueid = b.issueid AND toDate IS NULL
                 ORDER BY fromDate DESC
                 LIMIT 1
             ) sl ON TRUE
@@ -565,11 +565,11 @@ def buybacks_time():
         # Query buybacks since lookback date
         time_series = execute_query(
             f"""
-            SELECT b.issueID, CONCAT(o.name1, ':', st.typeShort) AS name,
+            SELECT b.issueid, CONCAT(o.name1, ':', st.typeShort) AS name,
                    b.currency, SUM(b.value) AS sumValue
             FROM enigma.WebBuyBacks b
-            JOIN enigma.issue i ON b.issueID = i.ID1
-            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.issue i ON b.issueid = i.ID1
+            JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             WHERE b.effDate >= %s
             GROUP BY b.issueID, o.name1, st.typeShort, b.currency

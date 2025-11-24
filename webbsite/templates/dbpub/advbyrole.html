@@ -1,0 +1,88 @@
+{% extends "base_database.html" %}
+
+{% block title %}Total Returns: {{ role_name }} from {{ from_year }} until {{ to_year }}{% endblock %}
+
+{% block content %}
+<h2>Webb-site Total Returns: {{ role_name }} from {{ from_year }} until {{ to_year }}</h2>
+
+<ul class="navlist">
+	<li><a href="leagueNotesA.asp">Notes</a></li>
+	<li><a href="roles.asp">All league tables</a></li>
+</ul>
+<div class="clear"></div>
+
+{% if one_time %}
+<p>This is a one-time role. This league table shows the compound average annualised Webb-site Total Return over the performance period
+since the appointment date or the first day of trading thereafter, for appointments in the chosen period.</p>
+{% else %}
+<p>This is a continuing role. This league table shows the compound average annualised Webb-site Total Return over the performance period
+for those serving throughout or for part of the period, until their resignation date. Securities for which there is no Total Return
+are excluded from the calculations. An adviser in only one or two stocks may not be representative. There is no pre-selection as to
+which adviser gets which stock, so there is an element of luck.</p>
+{% endif %}
+
+<form method="get" action="advbyrole.asp">
+	<div class="inputs">
+		Role:
+		<select name="r" onchange="this.form.submit()">
+			{% for role in roles %}
+			<option value="{{ role['roleid'] }}" {% if role['roleid'] == r %}selected{% endif %}>
+				{{ role['rolelong'] }}
+			</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="inputs">
+		From year:
+		<select name="f" onchange="this.form.submit()">
+			{% for year in range(1993, now_year + 1) %}
+			<option value="{{ year }}" {% if year == from_year %}selected{% endif %}>{{ year }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="inputs">
+		To year:
+		<select name="t" onchange="this.form.submit()">
+			{% for year in range(1993, now_year + 1) %}
+			<option value="{{ year }}" {% if year == to_year %}selected{% endif %}>{{ year }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="inputs">
+		Performance period (years):
+		<input type="text" name="y" value="{{ years }}" size="4" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if results %}
+<table class="numtable">
+	<tr>
+		<th class="colHide1"></th>
+		<th class="left"><a href="?r={{ r }}&amp;f={{ from_year }}&amp;t={{ to_year }}&amp;y={{ years }}&amp;sort={% if sort == 'nameup' %}namedn{% else %}nameup{% endif %}">Adviser</a></th>
+		<th><a href="?r={{ r }}&amp;f={{ from_year }}&amp;t={{ to_year }}&amp;y={{ years }}&amp;sort={% if sort == 'cntdn' %}cntup{% else %}cntdn{% endif %}">Positions</a></th>
+		<th><a href="?r={{ r }}&amp;f={{ from_year }}&amp;t={{ to_year }}&amp;y={{ years }}&amp;sort={% if sort == 'cagretdn' %}cagretup{% else %}cagretdn{% endif %}">CAG<br>return<br>%pa</a></th>
+		<th><a href="?r={{ r }}&amp;f={{ from_year }}&amp;t={{ to_year }}&amp;y={{ years }}&amp;sort={% if sort == 'cagreldn' %}cagrelup{% else %}cagreldn{% endif %}">CAG<br>relative<br>return<br>%pa</a></th>
+	</tr>
+	{% for row in results %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td class="left"><a href="advisers.asp?p={{ row['personid'] }}">{{ row['name1'] }}</a></td>
+		<td>{{ row['cntpos'] }}</td>
+		<td>{{ "%.2f"|format(row['cagret'] * 100) if row['cagret'] is not none else '' }}</td>
+		<td>{{ "%.2f"|format(row['cagrel'] * 100) if row['cagrel'] is not none else '' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No results found for the selected criteria.</p>
+{% endif %}
+
+<p><strong>CAG return</strong> is the Compound Average Growth rate (annualised) of the Webb-site Total Return
+over the performance period. <strong>CAG relative return</strong> is the CAG return minus the CAG return of
+the Hang Seng Index Total Return Index over the same period.</p>
+
+{% endblock %}
