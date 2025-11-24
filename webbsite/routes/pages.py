@@ -224,3 +224,13 @@ def faq():
     Pure static content page, no database queries
     """
     return render_template("pages/faq.html")
+
+
+@bp.route("/sitemap.asp")
+def sitemap():
+    """
+    Site map - Overview of all available pages and data categories
+
+    Pure static content page, no database queries
+    """
+    return render_template("pages/sitemap.html")
