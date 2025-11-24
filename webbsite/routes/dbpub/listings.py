@@ -107,9 +107,9 @@ def listed():
             o.name1,
             o.personid,
             sl.firsttradedate,
-            enigma.totRet(sl.issueid, sl.firsttradedate, %s) - 1 AS totret,
-            enigma.CAGRet(sl.issueid, sl.firsttradedate, %s) - 1 AS cagret,
-            enigma.CAGRel(sl.issueid, sl.firsttradedate, %s) - 1 AS cagrel
+            enigma.totret(sl.issueid, sl.firsttradedate, %s) - 1 AS totret,
+            enigma.cagret(sl.issueid, sl.firsttradedate, %s) - 1 AS cagret,
+            enigma.cagrel(sl.issueid, sl.firsttradedate, %s) - 1 AS cagrel
         FROM enigma.stocklistings sl
         JOIN enigma.issue i ON sl.issueid = i.id1
         JOIN enigma.organisations o ON i.issuer = o.personid

@@ -2953,8 +2953,8 @@ def advbyrole():
             sql = f"""
                 SELECT o.personid, o.name1,
                        COUNT(a.company) AS cntPos,
-                       AVG(enigma.CAGretDays(i.ID1, a.addDate, {days})) - 1 AS CAGret,
-                       AVG(enigma.CAGrelDays(i.ID1, a.addDate, {days})) - 1 AS CAGrel
+                       AVG(enigma.cagretdays(i.ID1, a.addDate, {days})) - 1 AS CAGret,
+                       AVG(enigma.cagreldays(i.ID1, a.addDate, {days})) - 1 AS CAGrel
                 FROM enigma.adviserships a
                 JOIN enigma.issue i ON a.company = i.issuer
                 JOIN enigma.organisations o ON a.adviser = o.personid
@@ -3216,7 +3216,7 @@ def possum():
     ret_to_date = f"LEAST(COALESCE(d2.resDate, '{to_date}'), '{to_date}')"
 
     # Optional old name field
-    org_name_field = f"enigma.orgName(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
+    org_name_field = f"enigma.orgname(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
 
     # Main SQL query with window functions to consolidate consecutive directorships
     sql = f"""
@@ -3260,13 +3260,13 @@ def possum():
         o.name1,
         d1.apptDate as d1_apptdate,
         d2.resDate as d2_resdate,
-        enigma.MSdateAcc(d1.apptDate, d1.apptAcc) as app,
-        enigma.MSdateAcc(d2.resDate, d2.resAcc) as res,
+        enigma.msdateacc(d1.apptDate, d1.apptAcc) as app,
+        enigma.msdateacc(d2.resDate, d2.resAcc) as res,
         d1.company as orgid,
         hkl.issueID,
-        enigma.totRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
-        enigma.CAGRet(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
-        enigma.CAGRel(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagrel_value,
+        enigma.totret(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
+        enigma.cagret(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
+        enigma.cagrel(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagrel_value,
         enigma.service(d1.apptDate, d2.resDate, '{to_date}') as service_years
     FROM consolidated c
     JOIN enigma.directorships d1 ON c.first_pos = d1.id1
@@ -6772,7 +6772,7 @@ def ctr():
         if issue_id:
             sql = """
                 SELECT i.id1 as issueid, o.personid, o.name1,
-                       enigma.lastCode(i.id1) as lastCode,
+                       enigma.lastcode(i.id1) as lastCode,
                        st.typeShort,
                        CASE WHEN i.expmat IS NOT NULL THEN
                            TO_CHAR(i.expmat, 'YYYY-MM-DD')
@@ -7079,7 +7079,7 @@ def ctr():
                     SELECT MAX(exDate) AS maxDate
                     FROM enigma.adjustments
                     WHERE issueid = %s
-                    AND exDate <= enigma.firstQuoteDate(%s, %s)
+                    AND exDate <= enigma.firstquotedate(%s, %s)
                 """
                 result = execute_query(sql, (issue_id, issue_id, start_date_str))
                 last_ex_date = (
@@ -7942,7 +7942,7 @@ def orgdata():
     if person_id > 0 and org_data:
         ever_result = execute_query(
             """
-            SELECT enigma.everListCo(%s) as ever_listed
+            SELECT enigma.everlistco(%s) as ever_listed
         """,
             (person_id,),
         )
@@ -8202,7 +8202,7 @@ def pricescsv():
     - f: frequency (d=daily, w=weekly, m=monthly, y=yearly, default=daily)
     - wd: weekday for weekly aggregation (2-6, default=6 for Friday)
 
-    Tables used: ccass.quotes, ccass.calendar, enigma.getAdjust()
+    Tables used: ccass.quotes, ccass.calendar, enigma.getadjust()
     """
     issue_id = get_int("i", 0)
     freq = request.args.get("f", "d")
@@ -8220,7 +8220,7 @@ def pricescsv():
     # Get current adjustment factor
     with get_db() as conn:
         result = conn.execute(
-            "SELECT enigma.getAdjust(%s, CURRENT_DATE) as adj", (issue_id,)
+            "SELECT enigma.getadjust(%s, CURRENT_DATE) as adj", (issue_id,)
         ).fetchone()
         current_adj = result["adj"] if result else 1.0
 
@@ -8240,13 +8240,13 @@ def pricescsv():
                     q.vol,
                     q.turn,
                     CASE WHEN q.vol > 0 THEN q.turn / q.vol ELSE 0 END AS vwap,
-                    q.closing * (%s / enigma.getAdjust(%s, q.atDate)) AS adjClose,
-                    q.bid * (%s / enigma.getAdjust(%s, q.atDate)) AS adjBid,
-                    q.ask * (%s / enigma.getAdjust(%s, q.atDate)) AS adjAsk,
-                    q.low * (%s / enigma.getAdjust(%s, q.atDate)) AS adjLow,
-                    q.high * (%s / enigma.getAdjust(%s, q.atDate)) AS adjHigh,
-                    ROUND(q.vol / (%s / enigma.getAdjust(%s, q.atDate)), 0) AS adjVol,
-                    CASE WHEN q.vol > 0 THEN (q.turn * (%s / enigma.getAdjust(%s, q.atDate))) / q.vol ELSE 0 END AS adjVWAP
+                    q.closing * (%s / enigma.getadjust(%s, q.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getadjust(%s, q.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getadjust(%s, q.atDate)) AS adjAsk,
+                    q.low * (%s / enigma.getadjust(%s, q.atDate)) AS adjLow,
+                    q.high * (%s / enigma.getadjust(%s, q.atDate)) AS adjHigh,
+                    ROUND(q.vol / (%s / enigma.getadjust(%s, q.atDate)), 0) AS adjVol,
+                    CASE WHEN q.vol > 0 THEN (q.turn * (%s / enigma.getadjust(%s, q.atDate))) / q.vol ELSE 0 END AS adjVWAP
                 FROM ccass.quotes q
                 JOIN ccass.calendar c ON q.atDate = c.tradeDate
                 WHERE q.issueid = %s
@@ -8277,9 +8277,9 @@ def pricescsv():
                     SELECT
                         DATE_TRUNC('month', q.atDate)::date + INTERVAL '1 month' - INTERVAL '1 day' AS month_end,
                         MAX(q.atDate) AS atDate,
-                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
-                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
-                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getadjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getadjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getadjust(%s, q.atDate))) AS adjVol,
                         SUM(q.turn) AS turn,
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
@@ -8296,9 +8296,9 @@ def pricescsv():
                     q.bid,
                     q.ask,
                     ma.turn,
-                    q.closing * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjClose,
-                    q.bid * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjBid,
-                    q.ask * (%s / enigma.getAdjust(%s, ma.atDate)) AS adjAsk,
+                    q.closing * (%s / enigma.getadjust(%s, ma.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getadjust(%s, ma.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getadjust(%s, ma.atDate)) AS adjAsk,
                     ma.adjLow,
                     ma.adjHigh,
                     ma.adjVol,
@@ -8332,9 +8332,9 @@ def pricescsv():
                     SELECT
                         DATE_TRUNC('year', q.atDate)::date + INTERVAL '1 year' - INTERVAL '1 day' AS year_end,
                         MAX(q.atDate) AS atDate,
-                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
-                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
-                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getadjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getadjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getadjust(%s, q.atDate))) AS adjVol,
                         SUM(q.turn) AS turn,
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
@@ -8351,9 +8351,9 @@ def pricescsv():
                     q.bid,
                     q.ask,
                     ya.turn,
-                    q.closing * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjClose,
-                    q.bid * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjBid,
-                    q.ask * (%s / enigma.getAdjust(%s, ya.atDate)) AS adjAsk,
+                    q.closing * (%s / enigma.getadjust(%s, ya.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getadjust(%s, ya.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getadjust(%s, ya.atDate)) AS adjAsk,
                     ya.adjLow,
                     ya.adjHigh,
                     ya.adjVol,
@@ -8387,9 +8387,9 @@ def pricescsv():
                 WITH weekly_agg AS (
                     SELECT
                         MAX(q.atDate) AS atDate,
-                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getAdjust(%s, q.atDate)) END) AS adjLow,
-                        MAX(q.high * (%s / enigma.getAdjust(%s, q.atDate))) AS adjHigh,
-                        SUM(q.vol / (%s / enigma.getAdjust(%s, q.atDate))) AS adjVol,
+                        MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getadjust(%s, q.atDate)) END) AS adjLow,
+                        MAX(q.high * (%s / enigma.getadjust(%s, q.atDate))) AS adjHigh,
+                        SUM(q.vol / (%s / enigma.getadjust(%s, q.atDate))) AS adjVol,
                         SUM(q.turn) AS turn,
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
@@ -8407,9 +8407,9 @@ def pricescsv():
                     q.bid,
                     q.ask,
                     wa.turn,
-                    q.closing * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjClose,
-                    q.bid * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjBid,
-                    q.ask * (%s / enigma.getAdjust(%s, wa.atDate)) AS adjAsk,
+                    q.closing * (%s / enigma.getadjust(%s, wa.atDate)) AS adjClose,
+                    q.bid * (%s / enigma.getadjust(%s, wa.atDate)) AS adjBid,
+                    q.ask * (%s / enigma.getadjust(%s, wa.atDate)) AS adjAsk,
                     wa.adjLow,
                     wa.adjHigh,
                     wa.adjVol,
