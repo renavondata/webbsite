@@ -1,6 +1,50 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Overlaps with: {{ org_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{# orgBar navigation would go here #}
+
+<form method="get" action="overlap.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<input type="hidden" name="p" value="{{ person_id }}">
+	<div class="inputs">
+		<input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="Clear" onclick="document.getElementById('d').value='{{ d }}'">
+	</div>
+	<div class="clear"></div>
+</form>
+
+<p>This page lists the number of positions in each organisation held by
+persons with positions in the subject organisation on {{ d }}. Click on a name to
+produce a list of matching members.</p>
+
+{% if overlaps %}
+	<p>There are {{ overlaps|length }} overlapping organisations.</p>
+
+	<table class="txtable">
+		<tr>
+			<th></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=nam"><b>Organisation</b></a></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;sort=cnt"><b>Overlap</b></a></th>
+		</tr>
+		{% set ns = namespace(has_listed=False) %}
+		{% for overlap in overlaps %}
+			<tr>
+				<td>{% if overlap.stockexid %}*{% set ns.has_listed = True %}{% endif %}</td>
+				<td><a href='matches.asp?org1={{ person_id }}&amp;org2={{ overlap.orgid }}&amp;d={{ d }}'>{{ overlap.name1 }}</a></td>
+				<td class="right">{{ overlap.cd }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	{% if ns.has_listed %}
+		<p>*=currently HK primary-listed</p>
+	{% endif %}
+{% else %}
+	<p>No overlapping organisations found.</p>
+{% endif %}
 {% endblock %}
