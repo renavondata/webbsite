@@ -1,6 +1,77 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+
+{% block title %}Officers: {{ org_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{# officersBar navigation would go here - requires officersBar implementation #}
+
+{# Current/History navigation #}
+<ul class='navlist'>
+	<li{% if hide == 'Y' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;sort={{ sort }}&amp;hide=Y'>Current</a></li>
+	<li{% if hide != 'Y' %} class='livebutton'{% endif %}><a href='?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;sort={{ sort }}&amp;hide=N'>History</a></li>
+</ul>
+<div class='clear'></div>
+
+<form method="get" action="SFClicensees.asp">
+	<input type="hidden" name="p" value="{{ person_id }}">
+	<input type="hidden" name="s" value="{{ sort }}">
+	<div class="inputs">
+		Take me back: <input type="date" name="d" id="d" value="{{ d }}" onblur="this.form.submit()">
+	</div>
+	<div class="inputs">
+		Activity type:
+		<select name="a" onchange="this.form.submit()">
+			<option value="0" {% if act == 0 %}selected{% endif %}>All</option>
+			{# TODO: Populate from activity table #}
+		</select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+		<input type="submit" value="clear" onclick="document.getElementById('d').value='';">
+	</div>
+	<div class="clear"></div>
+</form>
+
+{% if licensees %}
+	<h3>SFC licensees</h3>
+	<p>RO=Responsible Officer, Rep=Representative</p>
+	<table class="opltable">
+		<tr>
+			<th class="colHide2"></th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'namup' %}namdn{% else %}namup{% endif %}">Name</a></th>
+			<th class="colHide3"><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'agedn' %}ageup{% else %}agedn{% endif %}">Age in<br>2025</a></th>
+			<th class="colHide3"><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'sexup' %}sexdn{% else %}sexup{% endif %}"><span style='font-size:large'>&#x26A5;</span></a></th>
+			<th class="colHide3">SFC ID</th>
+			<th><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'roldn' %}rolup{% else %}roldn{% endif %}">Role</a></th>
+			<th class="colHide3 nowrap"><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'appup' %}appdn{% else %}appup{% endif %}">From</a></th>
+			<th class="nowrap"><a href="?p={{ person_id }}&amp;d={{ d }}&amp;a={{ act }}&amp;hide={{ hide }}&amp;sort={% if sort == 'resup' %}resdn{% else %}resup{% endif %}">Until</a></th>
+		</tr>
+		{% set ns = namespace(last_person=None, cnt=1) %}
+		{% for lic in licensees %}
+			{% if lic['staffid'] != ns.last_person %}
+				<tr class="total">
+					<td class="colHide2 right">{{ ns.cnt }}</td>
+					<td><a href="sfclicrec.asp?p={{ lic['staffid'] }}">{{ lic['name'] }}</a></td>
+					<td class="colHide3">{{ 2025 - lic['yob']|int if lic['yob'] else '' }}</td>
+					<td class="colHide3">{{ lic['sex'] or '' }}</td>
+					<td class="colHide3"><a target="_blank" href="https://apps.sfc.hk/publicregWeb/indi/{{ lic['sfcid'] }}/licenceRecord">{{ lic['sfcid'] }}</a></td>
+					<td>{{ 'RO' if lic['role'] == 1 else 'Rep' }}</td>
+					<td class="colHide3 nowrap">{{ lic['startdate'] or '' }}</td>
+					<td class="nowrap">{{ lic['enddate'] or '' }}</td>
+				</tr>
+				{% set ns.cnt = ns.cnt + 1 %}
+			{% else %}
+				<tr>
+					<td class="colHide2"></td>
+					<td></td>
+					<td class="colHide3" colspan="3"></td>
+					<td>{{ 'RO' if lic['role'] == 1 else 'Rep' }}</td>
+					<td class="colHide3 nowrap">{{ lic['startdate'] or '' }}</td>
+					<td class="nowrap">{{ lic['enddate'] or '' }}</td>
+				</tr>
+			{% endif %}
+			{% set ns.last_person = lic['staffid'] %}
+		{% endfor %}
+	</table>
+{% endif %}
 {% endblock %}
