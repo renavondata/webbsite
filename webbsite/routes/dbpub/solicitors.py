@@ -204,12 +204,8 @@ def hk_sols_moves():
                        CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
                        CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pName,
                 o.name1 AS oName,
-                CONCAT(EXTRACT(YEAR FROM d.apptDate), '-',
-                       LPAD(EXTRACT(MONTH FROM d.apptDate), 2, '0'),
-                       CASE WHEN d.apptAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.apptDate), 2, '0')) END) AS appt,
-                CONCAT(EXTRACT(YEAR FROM d.resDate), '-',
-                       LPAD(EXTRACT(MONTH FROM d.resDate), 2, '0'),
-                       CASE WHEN d.resAcc = 2 THEN '' ELSE CONCAT('-', LPAD(EXTRACT(DAY FROM d.resDate), 2, '0')) END) AS res,
+                enigma.MSdateAcc(d.apptDate, d.apptAcc) AS appt,
+                enigma.MSdateAcc(d.resDate, d.resAcc) AS res,
                 lr.LStxt,
                 COALESCE(d.resDate, d.apptDate) AS relDate
             FROM enigma.directorships d
