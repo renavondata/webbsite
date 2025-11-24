@@ -2578,7 +2578,7 @@ def outstanding():
     if stock_code and not issue_id:
         result = execute_query(
             """
-            SELECT issueID FROM enigma.stockListings
+            SELECT issueid FROM enigma.stockListings
             WHERE stockCode = %s
             ORDER BY FirstTradeDate DESC LIMIT 1
         """,
@@ -2612,16 +2612,16 @@ def outstanding():
                 iss.outstanding,
                 (SELECT MAX(q.atDate)
                  FROM ccass.quotes q
-                 WHERE q.issueID = %s AND q.atDate <= iss.atDate) AS maxDate,
+                 WHERE q.issueid = %s AND q.atDate <= iss.atDate) AS maxDate,
                 (SELECT q.closing
                  FROM ccass.quotes q
-                 WHERE q.issueID = %s AND q.atDate <= iss.atDate
+                 WHERE q.issueid = %s AND q.atDate <= iss.atDate
                  ORDER BY q.atDate DESC LIMIT 1) AS closing,
                 (SELECT COALESCE(SUM(sharesPost - sharesPre), 0)
                  FROM enigma.splitpends
-                 WHERE issueID = %s AND effDate > iss.atDate) AS pendsh
+                 WHERE issueid = %s AND effDate > iss.atDate) AS pendsh
             FROM enigma.issuedshares iss
-            WHERE iss.issueID = %s
+            WHERE iss.issueid = %s
             ORDER BY iss.atDate DESC
         """,
             (issue_id, issue_id, issue_id, issue_id),
@@ -4965,10 +4965,10 @@ def qt():
             """
             SELECT 0 AS ID, 'Total' AS name, false AS inUse
             UNION
-            SELECT qc.ID, qc.name,
+            SELECT qc.id, qc.name,
                    CASE WHEN qt.capUnit IS NOT NULL THEN true ELSE false END AS inUse
             FROM enigma.qtcentres qc
-            LEFT JOIN enigma.qt qt ON qc.ID = qt.qtID AND qt.d = %s
+            LEFT JOIN enigma.qt qt ON qc.id = qt.qtID AND qt.d = %s
             ORDER BY ID <> 0, name
             """,
             (max_date,)
@@ -5738,10 +5738,10 @@ def prhdistricts():
             CONCAT(r.en, ' ', r.cn) AS region,
             SUM(CASE WHEN f.elevator THEN 1 ELSE 0 END) AS elev
         FROM enigma.prhflat f
-        JOIN enigma.prhblock b ON f.blockID = b.ID
-        JOIN enigma.prhestate e ON b.estateID = e.ID
-        JOIN enigma.hkdistrict d ON e.district = d.ID
-        JOIN enigma.hkregion r ON d.regionID = r.ID
+        JOIN enigma.prhblock b ON f.blockID = b.id
+        JOIN enigma.prhestate e ON b.estateID = e.id
+        JOIN enigma.hkdistrict d ON e.district = d.id
+        JOIN enigma.hkregion r ON d.regionID = r.id
         WHERE f.lastseen >= (SELECT DATE(MAX(lastSeen)) FROM enigma.prhflat)
         GROUP BY d.ID, d.en, d.cn, r.en, r.cn
         ORDER BY {order_by}
@@ -6336,7 +6336,7 @@ def str_route():
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.sectypes st ON i.typeid = st.typeid
-                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+                LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
                 WHERE i.id1 = %s
             """
             try:
@@ -6390,7 +6390,7 @@ def str_route():
                 FROM enigma.stocklistings sl
                 JOIN enigma.listings l ON sl.stockExID = l.stockExID
                 WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
-                  AND sl.issueID = %s
+                  AND sl.issueid = %s
                 ORDER BY sl.firstTradeDate
             """,
                 (i,),
@@ -6434,7 +6434,7 @@ def str_route():
         try:
             outstanding_result = execute_query(
                 """
-                SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+                SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = %s) as has_data
             """,
                 (i,),
             )
@@ -6448,7 +6448,7 @@ def str_route():
         try:
             short_result = execute_query(
                 """
-                SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+                SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = %s) as has_data
             """,
                 (i,),
             )
@@ -6466,7 +6466,7 @@ def str_route():
         try:
             sdi_result = execute_query(
                 """
-                SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+                SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = %s) as has_data
             """,
                 (i,),
             )
@@ -6606,7 +6606,7 @@ def str_route():
                 ROUND((vol / enigma.getadjust(%s, atDate))::numeric) AS adj_vol,
                 ROUND((closing * enigma.getadjust(%s, atDate))::numeric, 5) AS adj_close
             FROM ccass.quotes
-            WHERE issueID = %s
+            WHERE issueid = %s
             ORDER BY atDate
         """
 
@@ -6618,17 +6618,17 @@ def str_route():
                 shsInv,
                 CONCAT(p.name1, ', ', p.name2) AS person_name,
                 dir AS person_id,
-                s.ID AS sdi_id,
+                s.id AS sdi_id,
                 COALESCE(avPrice, hiPrice) AS price,
                 c.currency
             FROM enigma.sdi s
             JOIN enigma.sdievent ON s.id = sdiID
             JOIN enigma.people p ON dir = personid
-            JOIN enigma.currencies c ON curr = c.ID
+            JOIN enigma.currencies c ON curr = c.id
             WHERE serNoSuper IS NULL
               AND probReason IN(21,22,23,1101,1113,1201,1213,1302)
               AND (hiPrice IS NOT NULL OR avPrice IS NOT NULL)
-              AND issueID = %s
+              AND issueid = %s
             ORDER BY relDate
         """
 
@@ -6640,7 +6640,7 @@ def str_route():
                 value
             FROM enigma.capchanges
             WHERE capChangeType IN(1,6)
-              AND issueID = %s
+              AND issueid = %s
         """
 
         try:
@@ -6700,7 +6700,7 @@ def ctr():
             if d1:
                 # Look for listing existing on that date
                 sql = """
-                    SELECT issueID FROM enigma.stocklistings
+                    SELECT issueid FROM enigma.stocklistings
                     WHERE stockExID IN (1,20,22,23,38)
                     AND (firstTradeDate IS NULL OR firstTradeDate <= %s)
                     AND (deListDate IS NULL OR deListDate > %s)
@@ -6721,7 +6721,7 @@ def ctr():
                     result = execute_query(sql, (d1, int(stock_code)))
                     if result and result[0]["mindate"]:
                         sql = """
-                            SELECT issueID FROM enigma.stocklistings
+                            SELECT issueid FROM enigma.stocklistings
                             WHERE stockExID IN (1,20,22,23,38)
                             AND firstTradeDate = %s
                             AND stockCode = %s
@@ -6734,7 +6734,7 @@ def ctr():
             else:
                 # No date specified, look for current stock
                 sql = """
-                    SELECT issueID FROM enigma.stocklistings
+                    SELECT issueid FROM enigma.stocklistings
                     WHERE stockExID IN (1,20,22,23,38)
                     AND deListDate IS NULL
                     AND stockCode = %s
@@ -6753,7 +6753,7 @@ def ctr():
                     result = execute_query(sql, (int(stock_code),))
                     if result and result[0]["maxdate"]:
                         sql = """
-                            SELECT issueID FROM enigma.stocklistings
+                            SELECT issueid FROM enigma.stocklistings
                             WHERE stockExID IN (1,20,22,23,38)
                             AND deListDate = %s
                             AND stockCode = %s
@@ -6771,7 +6771,7 @@ def ctr():
         # Get issue details
         if issue_id:
             sql = """
-                SELECT i.id1 as issueID, o.personid, o.name1,
+                SELECT i.id1 as issueid, o.personid, o.name1,
                        enigma.lastCode(i.id1) as lastCode,
                        st.typeShort,
                        CASE WHEN i.expmat IS NOT NULL THEN
@@ -6835,7 +6835,7 @@ def ctr():
             FROM enigma.stocklistings sl
             JOIN enigma.listings l ON sl.stockExID = l.stockExID
             WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
-              AND sl.issueID = %s
+              AND sl.issueid = %s
             ORDER BY sl.firstTradeDate
         """,
             (first_issue_id,),
@@ -6872,7 +6872,7 @@ def ctr():
         # Check for outstanding shares data
         outstanding_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = %s) as has_data
         """,
             (first_issue_id,),
         )
@@ -6883,7 +6883,7 @@ def ctr():
         # Check for short selling data
         short_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = %s) as has_data
         """,
             (first_issue_id,),
         )
@@ -6900,7 +6900,7 @@ def ctr():
         # Check for SDI dealings
         sdi_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = %s) as has_data
         """,
             (first_issue_id,),
         )
@@ -7045,7 +7045,7 @@ def ctr():
             sql = """
                 SELECT MIN(atDate) AS d1
                 FROM ccass.quotes
-                WHERE issueID = %s
+                WHERE issueid = %s
                 AND atDate >= %s
             """
             result = execute_query(sql, (issue["issueID"], d1))
@@ -7059,7 +7059,7 @@ def ctr():
         sql = f"""
             SELECT DISTINCT atDate
             FROM ccass.quotes
-            WHERE issueID IN ({issue_list})
+            WHERE issueid IN ({issue_list})
             AND atDate >= %s
             ORDER BY atDate
         """
@@ -7078,7 +7078,7 @@ def ctr():
                 sql = """
                     SELECT MAX(exDate) AS maxDate
                     FROM enigma.adjustments
-                    WHERE issueID = %s
+                    WHERE issueid = %s
                     AND exDate <= enigma.firstQuoteDate(%s, %s)
                 """
                 result = execute_query(sql, (issue_id, issue_id, start_date_str))
@@ -7097,7 +7097,7 @@ def ctr():
                     sql = """
                         SELECT exDate, cumAdjust
                         FROM enigma.adjustments
-                        WHERE issueID = %s
+                        WHERE issueid = %s
                         ORDER BY exDate
                     """
                     adj_rows = execute_query(sql, (issue_id,))
@@ -7110,7 +7110,7 @@ def ctr():
                     sql = """
                         SELECT exDate, cumAdjust
                         FROM enigma.adjustments
-                        WHERE issueID = %s
+                        WHERE issueid = %s
                         AND exDate >= %s
                         ORDER BY exDate
                     """
@@ -7138,7 +7138,7 @@ def ctr():
                 sql = """
                     SELECT atDate, closing
                     FROM ccass.quotes
-                    WHERE issueID = %s
+                    WHERE issueid = %s
                     AND atDate >= %s
                     ORDER BY atDate
                 """
@@ -7610,8 +7610,8 @@ def orgdata():
             SELECT f.hostDom, d.A2, f.regID, f.regDate, f.cesDate,
                    d.friendly, o.crn as oldcrn
             FROM enigma.freg f
-            JOIN enigma.domiciles d ON f.hostDom = d.ID
-            LEFT JOIN enigma.oldcrf o ON f.ID = o.fregID
+            JOIN enigma.domiciles d ON f.hostDom = d.id
+            LEFT JOIN enigma.oldcrf o ON f.id = o.fregID
             WHERE f.orgid = %s
         """,
             (person_id,),
@@ -7698,7 +7698,7 @@ def orgdata():
                        ELSE TO_CHAR(c.dateChanged, 'YYYY-MM-DD')
                    END as chg
             FROM enigma.domChanges c
-            JOIN enigma.domiciles d ON c.oldDom = d.ID
+            JOIN enigma.domiciles d ON c.oldDom = d.id
             WHERE c.orgid = %s
             ORDER BY c.dateChanged DESC
         """,
@@ -7748,13 +7748,13 @@ def orgdata():
     if person_id > 0 and org_data:
         equity_types = execute_query(
             """
-            SELECT DISTINCT sl.issueID as i, st.typeLong,
+            SELECT DISTINCT sl.issueid as i, st.typeLong,
                    COALESCE(c.currency, 'HKD') as curr,
                    st.listord, st.typeShort, i.expmat
             FROM enigma.stocklistings sl
-            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.issue i ON sl.issueid = i.ID1
             JOIN enigma.sectypes st ON i.typeID = st.typeID
-            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
             WHERE i.typeID NOT IN (5, 40, 41, 46)
               AND sl.stockExID IN (1, 20, 22, 23, 38, 71)
               AND i.issuer = %s
@@ -7775,7 +7775,7 @@ def orgdata():
             FROM enigma.stocklistings sl
             JOIN enigma.listings l ON sl.stockExID = l.stockExID
             WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
-              AND sl.issueID = %s
+              AND sl.issueid = %s
             ORDER BY sl.firstTradeDate
         """,
             (issue_id,),
@@ -7802,7 +7802,7 @@ def orgdata():
         # Check for outstanding shares data
         outstanding_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = %s) as has_data
         """,
             (issue_id,),
         )
@@ -7813,7 +7813,7 @@ def orgdata():
         # Check for short selling data
         short_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = %s) as has_data
         """,
             (issue_id,),
         )
@@ -7830,7 +7830,7 @@ def orgdata():
         # Check for SDI dealings
         sdi_result = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueID = %s) as has_data
+            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = %s) as has_data
         """,
             (issue_id,),
         )
@@ -7883,7 +7883,7 @@ def orgdata():
         # Note: outstanding() function not available, using NULL for now
         debt_securities = execute_query(
             f"""
-            SELECT sl.issueID, sl.stockId, sl.stockCode,
+            SELECT sl.issueid, sl.stockId, sl.stockCode,
                    sl.firstTradeDate, sl.finalTradeDate, sl.delistDate,
                    CASE
                        WHEN i.expAcc = 0 THEN TO_CHAR(i.expmat, 'YYYY-MM-DD')
@@ -7894,9 +7894,9 @@ def orgdata():
                    c.currency,
                    NULL as os
             FROM enigma.stocklistings sl
-            JOIN enigma.issue i ON sl.issueID = i.ID1
+            JOIN enigma.issue i ON sl.issueid = i.ID1
             JOIN enigma.sectypes st ON i.typeID = st.typeID
-            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.ID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
             WHERE i.typeID IN (5, 40, 41, 46)
               AND i.issuer = %s
             ORDER BY {order_by}
@@ -7909,15 +7909,15 @@ def orgdata():
     if person_id > 0 and org_data:
         unlisted_securities = execute_query(
             """
-            SELECT i.ID1 as issueID, st.typeLong,
+            SELECT i.ID1 as issueid, st.typeLong,
                    EXISTS(
                        SELECT 1 FROM enigma.issuedshares
-                       WHERE issueID = i.ID1
+                       WHERE issueid = i.ID1
                    ) as has_outstanding
             FROM enigma.issue i
             JOIN enigma.secTypes st ON i.typeID = st.typeID
-            LEFT JOIN enigma.stocklistings sl ON i.ID1 = sl.issueID
-            WHERE sl.issueID IS NULL
+            LEFT JOIN enigma.stocklistings sl ON i.ID1 = sl.issueid
+            WHERE sl.issueid IS NULL
               AND i.typeID NOT IN (1, 2, 40, 41)
               AND i.issuer = %s
         """,
@@ -8249,7 +8249,7 @@ def pricescsv():
                     CASE WHEN q.vol > 0 THEN (q.turn * (%s / enigma.getAdjust(%s, q.atDate))) / q.vol ELSE 0 END AS adjVWAP
                 FROM ccass.quotes q
                 JOIN ccass.calendar c ON q.atDate = c.tradeDate
-                WHERE q.issueID = %s
+                WHERE q.issueid = %s
                 ORDER BY q.atDate DESC
             """
             params = (
@@ -8284,7 +8284,7 @@ def pricescsv():
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
                     FROM ccass.quotes q
-                    WHERE q.issueID = %s
+                    WHERE q.issueid = %s
                     GROUP BY DATE_TRUNC('month', q.atDate)
                 )
                 SELECT
@@ -8304,7 +8304,7 @@ def pricescsv():
                     ma.adjVol,
                     CASE WHEN ma.adjVol <> 0 THEN ma.turn / ma.adjVol ELSE 0 END AS adjVWAP
                 FROM monthly_agg ma
-                JOIN ccass.quotes q ON ma.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.quotes q ON ma.atDate = q.atDate AND q.issueid = %s
                 JOIN ccass.calendar c ON ma.atDate = c.tradeDate
                 ORDER BY ma.atDate DESC
             """
@@ -8339,7 +8339,7 @@ def pricescsv():
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
                     FROM ccass.quotes q
-                    WHERE q.issueID = %s
+                    WHERE q.issueid = %s
                     GROUP BY DATE_TRUNC('year', q.atDate)
                 )
                 SELECT
@@ -8359,7 +8359,7 @@ def pricescsv():
                     ya.adjVol,
                     CASE WHEN ya.adjVol <> 0 THEN ya.turn / ya.adjVol ELSE 0 END AS adjVWAP
                 FROM yearly_agg ya
-                JOIN ccass.quotes q ON ya.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.quotes q ON ya.atDate = q.atDate AND q.issueid = %s
                 JOIN ccass.calendar c ON ya.atDate = c.tradeDate
                 ORDER BY ya.atDate DESC
             """
@@ -8394,7 +8394,7 @@ def pricescsv():
                         SUM(CAST(q.susp AS INTEGER)) AS susp,
                         COUNT(*) AS days
                     FROM ccass.quotes q
-                    WHERE q.issueID = %s
+                    WHERE q.issueid = %s
                     GROUP BY EXTRACT(YEAR FROM q.atDate + INTERVAL '%s days'),
                              EXTRACT(WEEK FROM q.atDate + INTERVAL '%s days')
                 )
@@ -8415,7 +8415,7 @@ def pricescsv():
                     wa.adjVol,
                     CASE WHEN wa.adjVol <> 0 THEN wa.turn / wa.adjVol ELSE 0 END AS adjVWAP
                 FROM weekly_agg wa
-                JOIN ccass.quotes q ON wa.atDate = q.atDate AND q.issueID = %s
+                JOIN ccass.quotes q ON wa.atDate = q.atDate AND q.issueid = %s
                 JOIN ccass.calendar c ON wa.atDate = c.tradeDate
                 ORDER BY wa.atDate DESC
             """
@@ -8663,7 +8663,7 @@ def adviserships():
         SELECT
             company AS orgid,
             o.name1 AS org,
-            a.ID1 AS issueID,
+            a.ID1 AS issueid,
             addDate,
             remDate,
             i.name1 AS issue_name
@@ -8675,7 +8675,7 @@ def adviserships():
           AND adv.role = %s
           AND adv.adviser = %s
           AND a.ID1 IN (
-              SELECT DISTINCT issueID
+              SELECT DISTINCT issueid
               FROM enigma.stocklistings
               WHERE stockExID IN (1, 20, 23)
           )
@@ -8858,7 +8858,7 @@ def complain():
             """
             SELECT o.teamID, t.teamno
             FROM enigma.lirorgteam o
-            JOIN enigma.lirteams t ON o.teamID = t.ID
+            JOIN enigma.lirteams t ON o.teamID = t.id
             WHERE NOT o.dead AND o.orgid = %s
             """,
             (person_id,)
@@ -8876,8 +8876,8 @@ def complain():
                     r.title,
                     s.tel
                 FROM enigma.lirteamstaff ls
-                JOIN enigma.lirstaff s ON ls.staffid = s.ID
-                JOIN enigma.lirroles r ON ls.posID = r.ID
+                JOIN enigma.lirstaff s ON ls.staffid = s.id
+                JOIN enigma.lirroles r ON ls.posID = r.id
                 WHERE NOT ls.dead AND ls.teamID = %s
                 ORDER BY ls.posID DESC
                 """,
@@ -8906,7 +8906,7 @@ def complain():
                CASE WHEN o.firstseen = '2023-12-30' THEN NULL ELSE o.firstseen END AS firstseen,
                o.lastseen
         FROM enigma.lirorgteam o
-        JOIN enigma.lirteams t ON o.teamID = t.ID
+        JOIN enigma.lirteams t ON o.teamID = t.id
         WHERE o.dead AND o.orgid = %s
         ORDER BY o.lastseen DESC
         """,
@@ -8985,7 +8985,7 @@ def hpu():
             turn,
             CASE WHEN vol = 0 THEN 0 ELSE turn::numeric / vol END AS vwap
         FROM ccass.pquotes
-        WHERE issueID = %s
+        WHERE issueid = %s
         ORDER BY {order_by}
     """,
         (issue_id,),

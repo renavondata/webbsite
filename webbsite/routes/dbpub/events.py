@@ -109,7 +109,7 @@ def enigma_events():
                     e.fxdate
                 FROM enigma.events e
                 JOIN enigma.capchangetypes ct ON e.eventtype = ct.capchangetype
-                LEFT JOIN enigma.currencies c ON e.currid = c.ID
+                LEFT JOIN enigma.currencies c ON e.currid = c.id
                 WHERE e.issueid = %s
                 ORDER BY {{ob}}
             """.format(
