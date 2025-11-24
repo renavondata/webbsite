@@ -1,6 +1,12 @@
 {% extends "base_database.html" %}
 {% block title %}{{ title }}{% endblock %}
 
+{% block extra_head %}
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+{% endblock %}
+
 {% block content %}
 <h2>Economic Data Charts</h2>
 
@@ -29,6 +35,89 @@
 {% endif %}
 
 {% if table_data %}
+<!-- Interactive Chart -->
+<div id="chartContainer" style="height: 500px; min-width: 310px; margin-bottom: 20px;"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	// Prepare series data
+	var seriesData = [
+		{% for i, item in enumerate(items) %}
+		{
+			name: '{{ item.shortname or item.ddes }}',
+			data: {{ series_data[i] | tojson }},
+			tooltip: {
+				valueDecimals: {{ item.dp + dpinc if item.dp else 2 }}
+			}
+		}{% if not loop.last %},{% endif %}
+		{% endfor %}
+	];
+
+	// Create the chart
+	Highcharts.stockChart('chartContainer', {
+		rangeSelector: {
+			selected: 5,
+			buttons: [{
+				type: 'year',
+				count: 1,
+				text: '1y'
+			}, {
+				type: 'year',
+				count: 2,
+				text: '2y'
+			}, {
+				type: 'year',
+				count: 5,
+				text: '5y'
+			}, {
+				type: 'year',
+				count: 10,
+				text: '10y'
+			}, {
+				type: 'all',
+				text: 'All'
+			}]
+		},
+
+		title: {
+			text: '{{ title }}'
+		},
+
+		yAxis: {
+			title: {
+				text: '{{ units }}'
+			}
+		},
+
+		tooltip: {
+			pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+			split: true
+		},
+
+		legend: {
+			enabled: true
+		},
+
+		series: seriesData,
+
+		exporting: {
+			enabled: true,
+			buttons: {
+				contextButton: {
+					menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS']
+				}
+			}
+		},
+
+		credits: {
+			enabled: false
+		}
+	});
+});
+</script>
+
+<!-- Data Table -->
+<h4>Data Table</h4>
 <p class="widthAlert1">Some columns may be hidden on narrow displays.</p>
 <table class="numtable yscroll">
 	<tr>
@@ -69,7 +158,6 @@
 </p>
 {% endif %}
 
-<p class="footnote"><em>Note: Interactive charting with Highstock will be implemented in a future update. Currently showing tabular data.</em></p>
 {% else %}
 <p><b>No data available for this chart.</b></p>
 {% endif %}
