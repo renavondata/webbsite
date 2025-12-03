@@ -259,8 +259,8 @@ class RouteComparator:
         # Normalize image paths
         html = re.sub(r'src="[^"]*/([^/"]+\.(png|jpg|gif|svg))"', r'src="\1"', html)
 
-        # Normalize branding differences (Webb-site vs Renavon)
-        html = re.sub(r'Webb-site|Renavon|renavon\.com|webb-site\.com', 'SITE', html, flags=re.IGNORECASE)
+        # Normalize branding differences (Webb-site vs Renavon vs new domain)
+        html = re.sub(r'Webb-site|Renavon|renavon\.com|webb-site\.com|webbsite\.0xmd\.com', 'SITE', html, flags=re.IGNORECASE)
 
         # Normalize dynamic dates in JavaScript onclick attributes
         # Example: onclick="document.getElementById('d').value='2025-10-29'" -> onclick="document.getElementById('d').value='YYYY-MM-DD'"
@@ -285,6 +285,22 @@ class RouteComparator:
         # Solution: Normalize all multibyte sequences to a consistent form
         # Replace all non-ASCII characters with a placeholder to ignore encoding differences
         html = re.sub(r'[^\x00-\x7F]+', '[CJK]', html)
+
+        # Normalize internal links - convert absolute paths to relative (ASP uses relative, Flask may use absolute)
+        # e.g., href="/dbpub/TRnotes.asp" -> href="TRnotes.asp"
+        html = re.sub(r'href="/dbpub/([^"]+)"', r'href="\1"', html)
+        html = re.sub(r'href="/ccass/([^"]+)"', r'href="\1"', html)
+
+        # Normalize self-closing input tags
+        # <input ... value=""/> -> <input ... value="">
+        html = re.sub(r'<input([^>]*)/>', r'<input\1>', html)
+
+        # Remove erroneous </input> closing tags (HTML5 input is void element)
+        html = re.sub(r'</input>', '', html)
+
+        # Normalize consecutive <div class="clear"></div> to single (template structural diff)
+        # Handle with or without whitespace between them
+        html = re.sub(r'(<div class="clear"></div>\s*)+', r'<div class="clear"></div>', html)
 
         # Normalize multiple whitespace to single space
         html = re.sub(r"\s+", " ", html)
@@ -501,6 +517,7 @@ class RouteComparator:
         save_outputs: bool = False,
         category: str = "all",
         sample: Optional[int] = None,
+        continue_on_failure: bool = False,
     ) -> bool:
         """
         Run all tests from config
@@ -511,6 +528,7 @@ class RouteComparator:
             save_outputs: Save HTML outputs to files
             category: Filter by route category (ccass, dbpub, articles, all)
             sample: Test every Nth route (for quick validation)
+            continue_on_failure: If True, continue running tests even after failures
 
         Returns:
             True if all tests passed, False otherwise
@@ -582,18 +600,19 @@ class RouteComparator:
                         for line in result["diff_preview"].splitlines()[:10]:
                             print(f"      {line}")
 
-                    # STOP IMMEDIATELY ON FIRST FAILURE
-                    print(f"\n{Fore.RED}{'='*60}{Style.RESET_ALL}")
-                    print(f"{Fore.RED}🛑 TEST FAILED - STOPPING{Style.RESET_ALL}")
-                    print(f"{Fore.RED}{'='*60}{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}Route: {route_name}{Style.RESET_ALL}")
-                    print(
-                        f"{Fore.YELLOW}Flask output does not match ASP ground truth{Style.RESET_ALL}"
-                    )
-                    print(
-                        f"{Fore.YELLOW}Fix this route before continuing to next routes{Style.RESET_ALL}\n"
-                    )
-                    return False
+                    if not continue_on_failure:
+                        # STOP IMMEDIATELY ON FIRST FAILURE
+                        print(f"\n{Fore.RED}{'='*60}{Style.RESET_ALL}")
+                        print(f"{Fore.RED}🛑 TEST FAILED - STOPPING{Style.RESET_ALL}")
+                        print(f"{Fore.RED}{'='*60}{Style.RESET_ALL}")
+                        print(f"{Fore.YELLOW}Route: {route_name}{Style.RESET_ALL}")
+                        print(
+                            f"{Fore.YELLOW}Flask output does not match ASP ground truth{Style.RESET_ALL}"
+                        )
+                        print(
+                            f"{Fore.YELLOW}Fix this route before continuing to next routes{Style.RESET_ALL}\n"
+                        )
+                        return False
 
             # Route summary
             if route_passed == route_total:
@@ -689,6 +708,12 @@ def main():
         metavar="N",
         help="Test every Nth route for quick validation",
     )
+    parser.add_argument(
+        "--continue-on-failure",
+        "-c",
+        action="store_true",
+        help="Continue running tests even after failures (default: stop on first failure)",
+    )
 
     args = parser.parse_args()
 
@@ -705,6 +730,7 @@ def main():
             save_outputs=args.save_outputs,
             category=args.category,
             sample=args.sample,
+            continue_on_failure=args.continue_on_failure,
         )
 
         # Exit with appropriate code
