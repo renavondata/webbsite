@@ -29,12 +29,11 @@
 	<div class="clear"></div>
 </form>
 
-{% if directorships_by_rank|length == 0 %}
-	<p><b>Database not yet loaded. Awaiting PostgreSQL import.</b></p>
-	<p>This page will show directors and officers for {{ org_name }}, grouped by rank (Main Board, Supervisory Board, etc.).</p>
+{% if officers_by_rank|length == 0 %}
+	<p><b>No officers found for this organization.</b></p>
 {% else %}
-	{% for rank_name, directors in directorships_by_rank.items() %}
-	<h3>{{ rank_name }}</h3>
+	{% for rank_id, rank_data in officers_by_rank.items() %}
+	<h3>{{ rank_data.rankText }}</h3>
 	<table class="opltable">
 		<tr>
 			<th class="colHide1">Row</th>
@@ -43,13 +42,13 @@
 			<th class="colHide2"><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='appup' if sort!='appup' else 'appdn') }}">From</a></th>
 			<th><a href="{{ url_for('dbpub_corporate.officers', p=person_id, d=d, hide=hide, u=u, sort='resup' if sort!='resup' else 'resdn') }}">Until</a></th>
 		</tr>
-		{% for dir in directors %}
+		{% for dir in rank_data.officers %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
-			<td><a href="persondata.asp?p={{ dir.directorID }}">{{ dir.directorName }}</a></td>
+			<td><a href="persondata.asp?p={{ dir.director }}">{{ dir.PersonName }}</a></td>
 			<td><span class="info">{{ dir.posShort }}<span>{{ dir.posLong }}</span></span></td>
-			<td class="colHide2">{{ dir.apptDate }}</td>
-			<td>{{ dir.resDate }}</td>
+			<td class="colHide2">{{ dir.from_date }}</td>
+			<td>{{ dir.until }}</td>
 		</tr>
 		{% endfor %}
 	</table>

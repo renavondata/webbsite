@@ -2,7 +2,7 @@
 # Expanded from 24 to 64 routes covering high-priority pages
 
 # Base URLs
-asp_base: "https://webb-site.com"
+asp_base: "https://webbsite.0xmd.com"
 flask_base: "http://127.0.0.1:5000"
 
 # Fixed test date for consistent comparisons
