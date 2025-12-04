@@ -1,12 +1,52 @@
-{% extends "base_database.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webb-site Database: positions of {{ person_name }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
 
-{% block title %}Positions of {{ person_name }} - Renavon Hong Kong Database{% endblock %}
+<h2>{{ person_name }}</h2>
 
-{% block content %}
-<h2>Positions of {{ person_name }}</h2>
+{% if not is_org %}
+{# Person navigation bar #}
+<ul class="navlist">
+	<li><a href="../dbpub/natperson.asp?p={{ p }}">Key data</a></li>
+	<li class="livebutton">Positions</li>
+	<li><a href="../dbpub/offpay.asp?p={{ p }}">Pay</a></li>
+	<li><a href="../dbpub/sdidir.asp?p={{ p }}">Dealings</a></li>
+</ul>
+<div class="clear"></div>
+{% endif %}
 
-<!-- Filter controls -->
-<form method="get" action="{{ url_for('dbpub_corporate.positions') }}">
+<ul class="navlist">
+	<li class="livebutton">All ranks</li>
+	<li><a href="../dbpub/possum.asp?p={{ p }}">Main board summary</a></li>
+	<li><a target="_blank" href="{{ url_for('dbpub_statistics.faq_www') }}">FAQ</a></li>
+</ul>
+<div class="clear"></div>
+
+<ul class="navlist">
+{% if hide == 'Y' %}
+	<li class="livebutton">Current</li>
+	<li><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort=sort, hide='N') }}">History</a></li>
+{% else %}
+	<li><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort=sort, hide='Y') }}">Current</a></li>
+	<li class="livebutton">History</li>
+{% endif %}
+</ul>
+<div class="clear"></div>
+
+<div class="letterbox">Please note that due to the planned <a href="{{ url_for('articles.article', article_path='shutdown') }}">shutdown</a> of Webb-site.com,
+the directors, officers and advisers of HK-listed companies have ceased to be updated effective 2025-03-31. Appointments
+and resignations effective on or before that date were recorded, as were advisers recorded in annual reports
+filed on or before that date. A repository of our database and software <a href="{{ url_for('articles.article', article_path='repository') }}"><strong>is
+	now available</strong></a>.</div>
+
+<form method="get" action="positions.asp">
 	<input type="hidden" name="p" value="{{ p }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<div class="inputs">
@@ -16,48 +56,68 @@
 		end date: <input type="date" name="t" id="t" value="{{ to_date }}" onblur="this.form.submit()">
 	</div>
 	<div class="inputs">
-		<label><input type="checkbox" name="c" value="1" {% if c %}checked{% endif %} onchange="this.form.submit()"> include new appointments after start date</label>
+		<input type="checkbox" name="c" id="c" value="1" {% if c %}checked{% endif %} onchange="this.form.submit()"> include new appointments after start date
 	</div>
 	<div class="inputs">
-		<label><input type="checkbox" name="n" value="1" {% if n %}checked{% endif %} onchange="this.form.submit()"> show old organisation names</label>
+		<input type="checkbox" name="n" id="n" value="1" {% if n %}checked{% endif %} onchange="this.form.submit()"> show old organisation names
 	</div>
 	<div class="inputs">
 		<input type="submit" value="Go">
-		<input type="button" value="clear" onclick="document.getElementById('f').value='';document.getElementById('t').value='';this.form.submit();">
+		<input type="submit" value="clear" onclick="document.getElementById('f').value='';document.getElementById('t').value='';
+			document.getElementById('c').checked=false;document.getElementById('n').checked=false;">
 	</div>
 	<div class="clear"></div>
 </form>
-
-<!-- Toggle current/history -->
-<p>
-	{% if hide == 'Y' %}
-		<a href="{{ url_for('dbpub_corporate.positions', p=p, sort=sort, f=from_date, t=to_date, c=c, n=n, hide='N') }}">Show history</a>
-	{% else %}
-		<a href="{{ url_for('dbpub_corporate.positions', p=p, sort=sort, f=from_date, t=to_date, c=c, n=n, hide='Y') }}">Current only</a>
-	{% endif %}
-</p>
+<div style="font-weight:bold;"></div>
 
 {% if rank_data and rank_data|length > 0 %}
 	{% for rank in rank_data %}
 	<h3>{{ rank.rank_text }}</h3>
 	<table class="opltable">
 		<tr>
-			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='orgup' if sort != 'orgup' else 'orgdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Organisation</a></th>
-			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='posup' if sort != 'posup' else 'posdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Position</a></th>
-			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='appup' if sort != 'appup' else 'appdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">From</a></th>
-			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, sort='resup' if sort != 'resup' else 'resdn', hide=hide, f=from_date, t=to_date, c=c, n=n) }}">Until</a></th>
+			<th class="colHide1"></th>
+			<th></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='orgup' if sort != 'orgup' else 'orgdn') }}"><b>Organisation</b></a></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='posup' if sort != 'posup' else 'posdn') }}"><b>Position</b></a></th>
+			<th class="colHide2"><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='appup' if sort != 'appup' else 'appdn') }}"><b>From</b></a></th>
+			<th><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='resup' if sort != 'resup' else 'resdn') }}"><b>Until</b></a></th>
+			{% if rank.has_returns %}
+			<th class="right colHide1"><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='totdn') }}"><b>Total<br/>Return</b></a></th>
+			<th class="right colHide1"><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='cagretdn') }}"><b>CAGR<br>total<br>return</b></a></th>
+			<td class="right colHide3"><b><a href="{{ url_for('dbpub_corporate.positions', p=p, f=from_date, t=to_date, c=c, n=n, sort='cagreldn') }}"><b>CAGR<br>relative<br>return</b></a></b></td>
+			{% endif %}
 		</tr>
 		{% for position in rank.positions %}
-		<tr>
+		<tr class="total">
+			<td class="colHide1">{{ loop.index }}</td>
+			<td>{% if position.is_listed %}*{% endif %}</td>
 			<td><a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a></td>
-			<td title="{{ position.poslong }}">{{ position.posshort }}</td>
-			<td>{{ position.apptdate if position.apptdate else '' }}</td>
-			<td>{{ position.resdate if position.resdate else 'current' }}</td>
+			<td><a class="info" href="#">{{ position.posshort }}<span>{{ position.poslong }}</span></a></td>
+			<td class="colHide2 nowrap">{{ position.apptdate if position.apptdate else '' }}</td>
+			<td class="nowrap">{{ position.resdate if position.resdate else '' }}</td>
+			{% if rank.has_returns %}
+			<td class="right colHide1"></td>
+			<td class="right colHide1"></td>
+			<td class="right colHide3"></td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 	</table>
 	{% endfor %}
+	<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+	{% if any_returns %}
+	<p>Total returns are measured from the latest of the start date, the appointment date and 3-Jan-1994 until
+	the earliest of the end date, the resignation/removal date and the last trading date.
+	CAGR is the annualised return and is not shown for periods under 180 days.
+	Relative returns are to the <a href="{{ url_for('dbpub_statistics.orgdata', p=51819) }}">Tracker Fund
+	of HK</a> (2800), starting from the latest of 12-Nov-1999, the appointment date and the chosen start date.</p>
+	<p>* = is or was HK primary-listed</p>
+	{% endif %}
 {% else %}
-<p>None found.</p>
+	<p>None found.</p>
 {% endif %}
-{% endblock %}
+
+<div class="clear"></div>
+{% include 'includes/footer.html' %}
+</body>
+</html>

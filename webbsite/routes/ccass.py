@@ -438,10 +438,10 @@ def cholder():
     if not d:
         try:
             result = execute_query(
-                "SELECT value FROM enigma.log WHERE key='CCASSdateDone'"
+                "SELECT val FROM enigma.log WHERE name='CCASSdateDone'"
             )
-            if result and result[0]["value"]:
-                d = result[0]["value"]
+            if result and result[0]["val"]:
+                d = result[0]["val"]
             else:
                 d = "2025-10-17"  # Fallback
         except:
@@ -464,6 +464,7 @@ def cholder():
 
     # Get participant details
     participant_name = "No participant selected"
+    participant_name2 = None  # Chinese name
     participant_ccassid = None
     person_id = None
     is_org = False
@@ -472,17 +473,20 @@ def cholder():
         try:
             result = execute_query(
                 """
-                SELECT partName, personID, CCASSID
-                FROM ccass.participants
-                WHERE partID = %s
+                SELECT p.partName, p.personID, p.CCASSID,
+                       o.name1, o.cname
+                FROM ccass.participants p
+                LEFT JOIN enigma.organisations o ON p.personID = o.personID
+                WHERE p.partID = %s
             """,
                 (part,),
             )
             if result:
-                participant_name = result[0]["partname"]
+                # Use org name1 if available, otherwise partName
+                participant_name = result[0]["name1"] or result[0]["partname"]
+                participant_name2 = result[0]["cname"]  # Chinese name
                 person_id = result[0]["personid"]
                 participant_ccassid = result[0]["ccassid"]
-                # Check if organization (simplified - could query organisations table)
                 is_org = person_id is not None
         except Exception as ex:
             current_app.logger.error(f"Error getting participant: {ex}")
@@ -528,15 +532,15 @@ def cholder():
                           AND sl.delistdate IS NULL
                         ORDER BY sl.firsttradedate DESC
                         LIMIT 1) AS lastCode,
-                       CASE WHEN ph.holding > 0 AND os.shares > 0
-                            THEN ph.holding / os.shares
+                       CASE WHEN ph.holding > 0 AND os.outstanding > 0
+                            THEN CAST(ph.holding AS FLOAT) / os.outstanding
                             ELSE 0
                        END AS stake,
                        CASE WHEN q.closing > 0
                             THEN ph.holding * q.closing
                             ELSE 0
                        END AS valn,
-                       CASE WHEN q.susp OR sl2."2ndCtr"
+                       CASE WHEN q.susp = TRUE OR sl2."2ndCtr" = TRUE
                             THEN TRUE
                             ELSE FALSE
                        END AS susp
@@ -583,6 +587,7 @@ def cholder():
         "ccass/cholder.html",
         part=part,
         participant_name=participant_name,
+        participant_name2=participant_name2,
         participant_ccassid=participant_ccassid,
         person_id=person_id,
         is_org=is_org,
@@ -1522,25 +1527,63 @@ def cconchist():
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    # Get stock name and person
+    # Get stock name, person, and full title
     stock_name = "No stock specified"
     person_id = 0
+    title_n = ""
+    stock_listings = []
+    d = ""  # Date for CCASS navigation links
+
     if issue_id > 0:
         try:
+            # Get stock name with security type for title (same pattern as choldings)
             result = execute_query(
                 """
-                SELECT o.name1, o.personID
+                SELECT o.name1 || ':  ' || st.typeShort || ' ' ||
+                       COALESCE(c.currency, 'HKD') AS stockName,
+                       o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.sehkcurr = c.id
                 WHERE i.id1 = %s
             """,
                 (issue_id,),
             )
             if result:
-                stock_name = result[0]["name1"]
+                title_n = result[0]["stockname"]
+                stock_name = title_n
                 person_id = result[0]["personid"]
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock: {ex}")
+
+        # Get stock listings for orgBar
+        try:
+            stock_listings = execute_query(
+                """
+                SELECT l.shortname AS "listingName",
+                       LPAD(sl.stockCode::text, 5, '0') AS stockcode,
+                       sl.firstTradeDate, sl.finalTradeDate, sl.delistDate
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.issueID = %s
+                ORDER BY sl.firstTradeDate DESC
+            """,
+                (issue_id,),
+            )
+        except Exception as ex:
+            current_app.logger.error(f"Error fetching stock listings: {ex}")
+            stock_listings = []
+
+        # Get latest CCASS date for navigation links
+        try:
+            result = execute_query(
+                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
+            )
+            if result and result[0]["val"]:
+                d = result[0]["val"]
+        except Exception:
+            pass
 
     # Determine sort order
     sort_orders = {
@@ -1609,10 +1652,13 @@ def cconchist():
         issue_id=issue_id,
         stock_code=stock_code,
         stock_name=stock_name,
+        n=title_n,  # Full title with security description
         person_id=person_id,
         p=person_id,  # Template might expect 'p' for person_id
         history=history,
         sort=sort_param,
+        stock_listings=stock_listings,
+        d=d,  # For CCASS navigation links
     )
 
 
@@ -2711,25 +2757,60 @@ def brokhist():
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    # Get stock name
+    # Get stock name with security type and currency
     stock_name = "No stock specified"
     person_id = 0
+    stock_listings = []
+    d = ""  # Date for CCASS navigation links
+
     if issue_id > 0:
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID
+                SELECT o.name1 || ':  ' || st.typeShort || ' ' ||
+                       COALESCE(c.currency, 'HKD') AS stockName,
+                       o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.sehkcurr = c.id
                 WHERE i.id1 = %s
             """,
                 (issue_id,),
             )
             if result:
-                stock_name = result[0]["name1"]
+                stock_name = result[0]["stockname"]
                 person_id = result[0]["personid"]
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock: {ex}")
+
+        # Get stock listings for orgBar
+        try:
+            stock_listings = execute_query(
+                """
+                SELECT l.shortname AS "listingName",
+                       LPAD(sl.stockCode::text, 5, '0') AS stockcode,
+                       sl.firstTradeDate, sl.finalTradeDate, sl.delistDate
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.issueID = %s
+                ORDER BY sl.firstTradeDate DESC
+            """,
+                (issue_id,),
+            )
+        except Exception as ex:
+            current_app.logger.error(f"Error fetching stock listings: {ex}")
+            stock_listings = []
+
+        # Get latest CCASS date for navigation links
+        try:
+            result = execute_query(
+                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
+            )
+            if result and result[0]["val"]:
+                d = result[0]["val"]
+        except Exception:
+            pass
 
     # Query broker holdings history with issued shares
     history = []
@@ -2803,11 +2884,14 @@ def brokhist():
     return render_template(
         "ccass/brokhist.html",
         issue_id=issue_id,
+        i=issue_id,  # Template shorthand
         stock_code=stock_code,
         stock_name=stock_name,
         person_id=person_id,
         sort=sort,
         history=history,
+        stock_listings=stock_listings,
+        d=d,  # For CCASS navigation links
     )
 
 

@@ -114,9 +114,9 @@ routes:
   - name: "officers - directors and officers"
     path: "/dbpub/officers.asp"
     params:
-      - p: "341"  # CLP Holdings personID
+      - p: "1"  # personID that shows "No such organisation"
         d: "2024-10-01"
-      - p: "342"  # Wharf Holdings personID
+      - p: "100"  # Wong, Michael Yick Kam
         d: "2024-10-01"
 
   - name: "splits - stock splits and consolidations"
