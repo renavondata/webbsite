@@ -200,7 +200,7 @@ def officers():
     """
     person_id = request.args.get("p", type=int)
     d = request.args.get("d", str(date.today()))
-    hide = request.args.get("hide", "Y")
+    hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
     u = request.args.get("u", type=bool, default=False)
     sort_param = request.args.get("sort", "namup")
 
@@ -212,11 +212,16 @@ def officers():
         org_result = execute_query(
             "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
         )
-        org_name = org_result[0]["name1"] if org_result else "Unknown"
+        if org_result:
+            org_name = org_result[0]["name1"]
+        else:
+            org_name = "No such organisation"
+            person_id = 0  # ASP sets personID to 0 for non-existent orgs
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         current_app.logger.error(f"Error getting org name for officers.asp: {ex}")
-        org_name = "Unknown"
+        org_name = "No such organisation"
+        person_id = 0
 
     # Build date filter for enigma.directorships (right-open interval logic)
     # Note: Using from_date/until columns based on enigma schema
@@ -321,6 +326,7 @@ def officers():
         hide=hide,
         u=u,
         sort=sort_param,
+        today=str(date.today()),
     )
 
 
@@ -455,34 +461,37 @@ def positions():
     to_date = request.args.get("t", "")
     c = get_bool("c")  # include new appointments
     n = get_bool("n")  # show old org names
-    hide = request.args.get("hide", "Y")  # default to current only
+    hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
     sort_param = request.args.get("sort", "orgup")
     years = request.args.get("y", type=float, default=1.0)
     days = round(years * 365.25, 0)
 
     # Get person/org name
     try:
-        # Try organization first
-        org_result = execute_query(
-            "SELECT name1, cname, 'org' as type FROM enigma.organisations WHERE personid = %s",
+        # Try person first (positions is typically for people)
+        person_result = execute_query(
+            "SELECT name1, name2, cname FROM enigma.people WHERE personid = %s",
             (person_id,),
         )
-        if org_result:
-            person_name = org_result[0]["name1"]
-            if org_result[0].get("cname"):
-                person_name += " " + org_result[0]["cname"]
-            is_org = True
+        if person_result:
+            # Format: "name1, name2 cname" for people
+            person_name = person_result[0]["name1"]
+            if person_result[0].get("name2"):
+                person_name += ", " + person_result[0]["name2"]
+            if person_result[0].get("cname"):
+                person_name += " " + person_result[0]["cname"]
+            is_org = False
         else:
-            # Try person
-            person_result = execute_query(
-                "SELECT name1, name2, 'person' as type FROM enigma.people WHERE personid = %s",
+            # Try organization
+            org_result = execute_query(
+                "SELECT name1, cname FROM enigma.organisations WHERE personid = %s",
                 (person_id,),
             )
-            if person_result:
-                person_name = person_result[0]["name1"]
-                if person_result[0].get("name2"):
-                    person_name += " " + person_result[0]["name2"]
-                is_org = False
+            if org_result:
+                person_name = org_result[0]["name1"]
+                if org_result[0].get("cname"):
+                    person_name += " " + org_result[0]["cname"]
+                is_org = True
             else:
                 return "Person/Organization not found", 404
     except Exception as ex:

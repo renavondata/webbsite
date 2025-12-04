@@ -1,18 +1,107 @@
-{% extends "base_database.html" %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broker participants: {{ stock_name }}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% include 'includes/dbheader.html' %}
 
-{% block title %}Broker participants: {{ stock_name }}{% endblock %}
-
-{% block content %}
 {% if issue_id == 0 %}
 	<h2>Holdings of broker participants</h2>
 	<p><b>{{ stock_name }}</b></p>
 {% else %}
-	{# TODO: Implement orgBar and ccassholdbar navigation #}
 	<h2>{{ stock_name }}</h2>
-	<p>Stock code: {{ stock_code }}</p>
+
+	{# Organization navigation bar - conditional on stock_listings #}
+	{% if stock_listings %}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.officers', p=person_id) }}">Officers</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.overlap', p=person_id) }}">Overlaps</a></li>
+			<li><a href="{{ url_for('dbpub_corporate.advisers', p=person_id) }}">Advisers</a></li>
+			<li><a href="{{ url_for('dbpub_events.docs', p=person_id) }}">Financials</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% else %}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+
+	{# Stock listings table - conditional on stock_listings #}
+	{% if stock_listings %}
+		<table class="numtable" style="margin-top:5px">
+		<tr>
+		<th class="left">Exchange</th>
+		<th>Code</th>
+		<th>Listed</th>
+		<th>Last trade</th>
+		<th>Delisted</th>
+		<th></th>
+		</tr>
+		{% for listing in stock_listings %}
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">{{ listing.listingName }}</td>
+				<td style="text-align:left;vertical-align:middle">{{ listing.stockcode }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate.strftime('%Y-%m-%d') if listing.firsttradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate.strftime('%Y-%m-%d') if listing.finaltradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.delistdate.strftime('%Y-%m-%d') if listing.delistdate else '' }}</td>
+				<td>
+				{% if not listing.delistdate %}
+				{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+		<div class="clear"></div>
+
+		{# Stock-specific navigation #}
+		<ul class="navlist">
+			<li><a href="{{ url_for('dbpub_buybacks.buybacks', i=i) }}">Buybacks</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.outstanding', i=i) }}">Outstanding</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.str_route', i=i) }}">Total return</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.ctr', i1=i) }}">Compare returns</a></li>
+			<li><a href="{{ url_for('dbpub_statistics.hpu', i=i) }}">Prices</a></li>
+			<li><a href="{{ url_for('dbpub_events.events', i=i) }}">Events</a></li>
+		</ul>
+		<div class="clear"></div>
+	{% else %}
+		{# Empty navlist when no stock listings - matches ASP behavior #}
+		<ul class="navlist">
+
+		</ul>
+		<div class="clear"></div>
+	{% endif %}
+
+	{# CCASS first navigation bar #}
+	<ul class="navlist">
+		<li class="livebutton">Holdings</li>
+		<li><a href="{{ url_for('ccass.chldchg', sort='chngdn', i=i, d='') }}">Changes</a></li>
+		<li><a href="{{ url_for('ccass.bigchangesissue', i=i) }}">Big changes</a></li>
+		<li><a href="{{ url_for('ccass.cconchist', i=i) }}">Concentration</a></li>
+		<li><a href="{{ url_for('ccass.bigchanges', d='') }}">Big changes all stocks</a></li>
+		<li><a href="{{ url_for('ccass.cparticipants') }}">Participants</a></li>
+		<li><a target="_blank" href="{{ url_for('ccass.ccass_notes') }}">About CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
+
+	{# CCASS second navigation bar (history views) #}
+	<ul class="navlist">
+		<li><a href="{{ url_for('ccass.choldings', i=i) }}">Snapshot</a></li>
+		<li><a href="{{ url_for('ccass.custhist', i=i) }}">Custodians</a></li>
+		<li class="livebutton">Brokers</li>
+		<li><a href="{{ url_for('ccass.nciphist', i=i) }}">Investors</a></li>
+		<li><a href="{{ url_for('ccass.ctothist', i=i) }}">CCASS total</a></li>
+		<li><a href="{{ url_for('ccass.reghist', i=i) }}">Non-CCASS</a></li>
+	</ul>
+	<div class="clear"></div>
 {% endif %}
 
-<form method="get" action="brokhist.asp">
+<form method="get" action="{{ url_for('ccass.brokhist') }}">
 	<input type="hidden" name="sort" value="{{ sort }}">
 	<div class="inputs">
 		Stock code: <input type="text" name="sc" size="5" value="">
@@ -26,15 +115,14 @@
 	{% if not history %}
 		<p><b>No records for this issue.</b></p>
 	{% else %}
-		{# TODO: Implement mobile() function #}
 		<table class="numtable yscroll">
 		<tr>
 			<th class="colHide1">Row</th>
 			<th>
 				{% if sort == "dateup" %}
-					<a href="?i={{ issue_id }}&amp;sort=datedn">Holding<br>date</a>
+					<a href="{{ url_for('ccass.brokhist', i=issue_id, sort='datedn') }}">Holding<br>date</a>
 				{% else %}
-					<a href="?i={{ issue_id }}&amp;sort=dateup">Holding<br>date</a>
+					<a href="{{ url_for('ccass.brokhist', i=issue_id, sort='dateup') }}">Holding<br>date</a>
 				{% endif %}
 			</th>
 			<th>Holding</th>
@@ -46,7 +134,7 @@
 		{% for row in history %}
 			<tr>
 				<td class="colHide1">{{ loop.index }}</td>
-				<td><a href="chldchg.asp?i={{ issue_id }}&amp;d={{ row.at_date }}">{{ row.at_date }}</a></td>
+				<td><a href="{{ url_for('ccass.chldchg', i=issue_id, d=row.at_date) }}">{{ row.at_date }}</a></td>
 				<td>{{ "{:,.0f}".format(row.holding) }}</td>
 				<td class="colHide3">
 					{% if row.change is not none %}
@@ -67,4 +155,7 @@
 		</table>
 	{% endif %}
 {% endif %}
-{% endblock %}
+<div class="clear"></div>
+{% include 'includes/footer.html' %}
+</body>
+</html>
