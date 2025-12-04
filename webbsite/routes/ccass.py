@@ -139,6 +139,20 @@ def cconc():
 
             current_app.logger.warning(f"Could not get CCASSdateDone from log: {ex}")
             d = "2025-10-17"  # Fallback date
+    else:
+        # If date is specified but no data exists for that date,
+        # adjust to the last date with data (ASP behavior for holidays)
+        try:
+            result = execute_query(
+                """SELECT MAX(atDate) as lastDate FROM ccass.dailylog
+                   WHERE atDate <= %s""",
+                (d,),
+            )
+            if result and result[0]["lastdate"]:
+                d = str(result[0]["lastdate"])
+        except Exception as ex:
+            from flask import current_app
+            current_app.logger.warning(f"Could not adjust CCASS date: {ex}")
 
     # Determine sort order
     sort_orders = {

@@ -74,7 +74,7 @@
         <tr>
             <td>{{ event.stockCode }}</td>
             <td class="left">
-                <a href="{{ url_for('events.events', i=event.issueID) }}">
+                <a href="{{ url_for('dbpub_events.events', i=event.issueID) }}">
                     {{ event.name1 }}:{{ event.typeShort }}
                 </a>
             </td>

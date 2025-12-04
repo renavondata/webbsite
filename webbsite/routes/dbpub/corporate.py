@@ -273,7 +273,7 @@ def officers():
         FROM enigma.directorships d
         JOIN enigma.positions pos ON d.positionid = pos.positionid
         JOIN rank r ON pos.rank = r.rankID
-        LEFT JOIN enigma.people p ON d.director = p.personid AND p.isPerson = TRUE
+        LEFT JOIN enigma.people p ON d.director = p.personid
         LEFT JOIN enigma.organisations o ON d.director = o.personid
         WHERE d.company = %s
           AND {date_filter}
@@ -403,7 +403,7 @@ def splits():
                     "eventID": row["eventid"],
                     "change": row["change"],
                     "exDate": row["exdate"],
-                    "Name1": row["name1"],
+                    "name1": row["name1"],
                     "typeShort": row["typeshort"],
                     "issueID": row["issueid"],
                     "new": row["new"],
@@ -421,7 +421,7 @@ def splits():
     return render_template(
         "dbpub/splits.html",
         title=title,
-        enigma_events=events_list,
+        events=events_list,
         sort=sort_param,
         e=e,
         t=t,

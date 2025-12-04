@@ -114,11 +114,10 @@ routes:
   - name: "officers - directors and officers"
     path: "/dbpub/officers.asp"
     params:
-      - p: "1"  # HSBC personID
+      - p: "341"  # CLP Holdings personID
         d: "2024-10-01"
-      - p: "100"  # Example personID
+      - p: "342"  # Wharf Holdings personID
         d: "2024-10-01"
-        pos: "ED"
 
   - name: "splits - stock splits and consolidations"
     path: "/dbpub/splits.asp"
@@ -130,9 +129,9 @@ routes:
   - name: "positions - director positions"
     path: "/dbpub/positions.asp"
     params:
-      - p: "1"  # HSBC personID
+      - p: "100"  # Wong, Michael Yick Kam
         d: "2024-10-01"
-      - p: "100"  # Valid personID
+      - p: "200"  # Another valid personID
         d: "2024-10-01"
 
   # Note: prices.asp not deployed on live server - returns 404
