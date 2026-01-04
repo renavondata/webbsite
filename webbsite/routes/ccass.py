@@ -2534,93 +2534,226 @@ def nciphist():
 @bp.route("/portchg.asp")
 def portchg():
     """
-    Portfolio changes for a participant - simplified implementation
+    Portfolio changes for a participant - full implementation matching ASP
 
     Query params:
-    - part: partID
-    - d: date
+    - p: partID (participant ID)
+    - d1: start date
+    - d: end date
+    - z: show unchanged holdings (boolean)
+    - sort: sort order
 
-    Tables used: ccass.parthold
+    Tables used: ccass.parthold, ccass.participants, ccass.calendar, ccass.quotes
     """
     from flask import current_app
+    from datetime import datetime, date as dt_date, timedelta
+    from webbsite.asp_helpers import ms_date
 
-    part_id = get_int("part", 0)
-    d = request.args.get("d", "")
+    p = get_int("p", 1)
 
-    # Get latest CCASS date if none specified
-    if not d:
+    # Sorting
+    sort = get_str("sort", "valcdn")
+    sort_map = {
+        "codeup": "stockCode, stockName",
+        "codedn": "stockCode DESC, stockName",
+        "nameup": "stockName",
+        "namedn": "stockName DESC",
+        "holddn": "holding DESC, stockName",
+        "holdup": "holding, stockName",
+        "chngdn": "hldchg DESC, stockName",
+        "chngup": "hldchg, stockName",
+        "stakdn": "stake DESC, stockName",
+        "stakup": "stake, stockName",
+        "stkcdn": "stkchg DESC, stockName",
+        "stkcup": "stkchg, stockName",
+        "lastdn": "lastDate DESC, stockName",
+        "lastup": "lastDate, stockName",
+        "valcdn": "valchg DESC, stockName",
+        "valcup": "valchg, stockName"
+    }
+    o = sort_map.get(sort, "valchg DESC, stockName")
+    if sort not in sort_map:
+        sort = "valcdn"
+
+    z = get_bool("z")  # Show unchanged holdings
+
+    # Get participant info
+    name = "No participant selected"
+    person_id = None
+    is_org = False
+    if p > 0:
         try:
             result = execute_query(
-                "SELECT value FROM enigma.log WHERE key='CCASSdateDone'"
-            )
-            if result and result[0]["value"]:
-                d = result[0]["value"]
-            else:
-                d = "2025-10-17"
-        except:
-            d = "2025-10-17"
-
-    # Get participant name
-    participant_name = "No participant selected"
-    if part_id > 0:
-        try:
-            result = execute_query(
-                """
-                SELECT partName FROM ccass.participants WHERE partID = %s
-            """,
-                (part_id,),
+                "SELECT partName, personID FROM ccass.participants WHERE partID = %s",
+                (p,)
             )
             if result:
-                participant_name = result[0]["partname"]
+                name = result[0]["partname"]
+                person_id = result[0]["personid"]
+            else:
+                p = 1
+                person_id = 1453
         except Exception as ex:
             current_app.logger.error(f"Error getting participant: {ex}")
+            p = 1
 
-    # Query portfolio changes (simplified - shows holdings on date)
-    changes = []
-    if part_id > 0:
+    # Get person/org name if available
+    if person_id:
         try:
-            sql = """
-                SELECT ph.issueID, ph.holding,
-                       o.name1 || ':  ' || st.typeShort || ' ' || COALESCE(c.currency, 'HKD') AS stockName,
-                       (SELECT sl.stockCode
-                        FROM enigma.stocklistings sl
-                        WHERE sl.issueID = ph.issueID AND sl.delistdate IS NULL
-                        ORDER BY sl.firsttradedate DESC LIMIT 1) AS stockCode
-                FROM ccass.parthold ph
-                JOIN enigma.issue i ON ph.issueID = i.id1
+            org_check = execute_query(
+                "SELECT name1, FALSE as isperson FROM enigma.organisations WHERE personID = %s "
+                "UNION SELECT name1, TRUE as isperson FROM enigma.people WHERE personID = %s LIMIT 1",
+                (person_id, person_id)
+            )
+            if org_check:
+                name = org_check[0]["name1"]
+                is_org = not org_check[0]["isperson"]
+        except:
+            pass
+
+    # Get latest CCASS date
+    try:
+        ccass_done = execute_query("SELECT value FROM enigma.log WHERE key='CCASSdateDone'")
+        ccass_date = ccass_done[0]["value"] if ccass_done else str(dt_date.today() - timedelta(days=1))
+    except:
+        ccass_date = str(dt_date.today() - timedelta(days=1))
+
+    # Get date range
+    d2 = get_str("d", ccass_date)
+    d1 = get_str("d1", "")
+
+    # Validate and adjust dates
+    try:
+        d2_date = datetime.strptime(d2, "%Y-%m-%d").date()
+        min_date = dt_date(2007, 6, 27)
+        max_date = datetime.strptime(ccass_date, "%Y-%m-%d").date()
+        d2_date = max(min(d2_date, max_date), min_date)
+        d2 = d2_date.strftime("%Y-%m-%d")
+    except:
+        d2 = ccass_date
+
+    if not d1:
+        # Default to previous day
+        d1 = (datetime.strptime(d2, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+    else:
+        try:
+            d1_date = datetime.strptime(d1, "%Y-%m-%d").date()
+            min_date = dt_date(2007, 6, 27)
+            d1_date = max(min(d1_date, datetime.strptime(d2, "%Y-%m-%d").date() - timedelta(days=1)), min_date)
+            d1 = d1_date.strftime("%Y-%m-%d")
+        except:
+            d1 = (datetime.strptime(d2, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # Ensure d1 < d2
+    if d1 >= d2:
+        d1 = (datetime.strptime(d2, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # Find actual settlement date for d1
+    try:
+        settle = execute_query(
+            "SELECT MAX(settleDate) as d1 FROM ccass.calendar WHERE settleDate <= %s",
+            (d1,)
+        )
+        if settle and settle[0]["d1"]:
+            d1 = settle[0]["d1"].strftime("%Y-%m-%d")
+    except:
+        pass
+
+    # Query portfolio changes
+    # This is a PostgreSQL equivalent of the ccass.portchgext3 stored procedure
+    changes = []
+    if p > 0:
+        try:
+            # Build the HAVING or WHERE clause based on z flag
+            if z:
+                filter_clause = "WHERE end_holding <> 0"
+            else:
+                filter_clause = "HAVING (COALESCE(end_holding, 0) - COALESCE(start_holding, 0)) <> 0"
+
+            sql = f"""
+                WITH start_holdings AS (
+                    SELECT ph.issueID, ph.holding
+                    FROM ccass.parthold ph
+                    WHERE ph.partID = %s AND ph.atDate = %s
+                ),
+                end_holdings AS (
+                    SELECT ph.issueID, ph.holding
+                    FROM ccass.parthold ph
+                    WHERE ph.partID = %s AND ph.atDate = %s
+                ),
+                combined AS (
+                    SELECT COALESCE(s.issueID, e.issueID) as issueID,
+                           COALESCE(s.holding, 0) as start_holding,
+                           COALESCE(e.holding, 0) as end_holding
+                    FROM start_holdings s
+                    FULL OUTER JOIN end_holdings e ON s.issueID = e.issueID
+                )
+                SELECT c.issueID,
+                       c.end_holding as holding,
+                       c.end_holding - c.start_holding as hldchg,
+                       sl.stockCode,
+                       o.name1 as stockName,
+                       CASE WHEN i.outstanding > 0 THEN c.end_holding::float / i.outstanding ELSE NULL END as stake,
+                       CASE WHEN i.outstanding > 0 THEN (c.end_holding - c.start_holding)::float / i.outstanding ELSE NULL END as stkchg,
+                       q.close as price,
+                       CASE WHEN q.close IS NOT NULL THEN (c.end_holding - c.start_holding) * q.close ELSE NULL END as valchg,
+                       q.d as lastDate,
+                       CASE WHEN q.d < %s THEN TRUE ELSE FALSE END as susp
+                FROM combined c
+                JOIN enigma.issue i ON c.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
-                JOIN enigma.secTypes st ON i.typeID = st.typeID
-                WHERE ph.partID = %s AND ph.atDate = %s
-                  AND ph.holding > 0
-                ORDER BY ph.holding DESC
+                LEFT JOIN (
+                    SELECT DISTINCT ON (issueID) issueID, stockCode
+                    FROM enigma.stocklistings
+                    ORDER BY issueID, delistdate NULLS FIRST, firsttradedate DESC
+                ) sl ON c.issueID = sl.issueID
+                LEFT JOIN LATERAL (
+                    SELECT close, d FROM ccass.quotes
+                    WHERE issueID = c.issueID AND d <= %s
+                    ORDER BY d DESC LIMIT 1
+                ) q ON TRUE
+                {filter_clause}
+                ORDER BY {o}
             """
-            results = execute_query(sql, (part_id, d))
+
+            results = execute_query(sql, (p, d1, p, d2, d2, d2))
 
             for row in results:
-                changes.append(
-                    {
-                        "issueID": row["issueid"],
-                        "stockCode": row["stockcode"],
-                        "stockName": row["stockname"],
-                        "holding": row["holding"],
-                    }
-                )
-        except Exception as ex:
-            current_app.logger.error(f"Error querying portfolio: {ex}")
-            changes = []
+                stake = row.get("stake")
+                if stake is not None:
+                    stake = stake * 100
 
-    sort_param = request.args.get("sort", "valcdn")
+                stkchg = row.get("stkchg")
+                if stkchg is not None:
+                    stkchg = stkchg * 100
+
+                changes.append({
+                    "issueID": row["issueid"],
+                    "stockCode": row["stockcode"] or "",
+                    "stockName": row["stockname"] or "",
+                    "holding": row["holding"] or 0,
+                    "hldchg": row["hldchg"] or 0,
+                    "stake": stake,
+                    "stkchg": stkchg,
+                    "valchg": row.get("valchg"),
+                    "lastDate": row.get("lastdate"),
+                    "susp": row.get("susp", False)
+                })
+        except Exception as ex:
+            current_app.logger.error(f"Error querying portfolio changes: {ex}")
+            changes = []
 
     return render_template(
         "ccass/portchg.html",
         m="",  # Error message (empty if no error)
-        name=participant_name,
-        p=part_id,
-        d=d,
-        d1=d,  # Start date
-        d2=d,  # End date
-        sort=sort_param,
-        z=False,  # Show unchanged holdings checkbox
+        name=name,
+        person=person_id,
+        isOrg=is_org,
+        p=p,
+        d1=d1,
+        d2=d2,
+        sort=sort,
+        z=z,
         changes=changes,
     )
 
