@@ -5774,32 +5774,96 @@ def prhdistricts():
 
 @bp.route("/HKflights.asp")
 def hkflights():
-    """Hong Kong flight statistics (simplified)"""
-    from webbsite.asp_helpers import get_str, get_int
-    from datetime import datetime, timedelta
+    """Hong Kong flight statistics - full implementation matching ASP"""
+    from webbsite.asp_helpers import get_str, get_int, ms_date
+    from datetime import datetime, date as dt_date
+
+    # Get parameters
+    ad = get_str("ad", "a")  # a=arrivals, d=departures
+    if ad not in ("a", "d"):
+        ad = "a"
+    arrival = (ad == "a")
+
+    pc = get_str("pc", "p")  # p=passenger, c=cargo
+    if pc not in ("p", "c"):
+        pc = "p"
+    cargo = (pc == "c")
 
     d = get_str("d", "")
-    arr = get_int("arr", 1)  # 1 = arrivals, 0 = departures
+    if d:
+        try:
+            d = datetime.strptime(d, "%Y-%m-%d").date()
+        except:
+            d = dt_date.today()
+    else:
+        d = dt_date.today()
 
-    # Default to today if no date provided
-    if not d:
-        d = datetime.now().strftime("%Y-%m-%d")
+    # Clamp date range (2021-09-06 to today+14)
+    min_date = dt_date(2021, 9, 6)
+    max_date = dt_date.today() + timedelta(days=14)
+    d = max(min(d, max_date), min_date)
+    d_str = d.strftime("%Y-%m-%d")
 
-    # Query flights for the specified date
-    data = execute_query(
-        f"""
-        SELECT flightno, airline, sched, actual, terminal, gate, status
-        FROM enigma.flights
-        WHERE DATE(sched) = %s
-          AND arrival = %s
-          AND cargo = FALSE
-        ORDER BY sched
-        LIMIT 200
-    """,
-        (d, arr == 1),
+    # Sorting
+    sort = get_str("sort", "scup")
+    sort_map = {
+        "acdn": "actual DESC, flightNo, seq",
+        "acup": "actual, flightNo, seq",
+        "lateup": "late, flightNo, seq",
+        "latedn": "late DESC, flightNo, seq",
+        "alup": "airline, flightNo, seq",
+        "aldn": "airline DESC, flightNo DESC, seq",
+        "flup": "flightNo, actual, seq",
+        "fldn": "flightNo DESC, actual DESC, seq",
+        "iasc": "IATA, sched",
+        "iaac": "IATA, actual",
+        "apsc": "airport, sched",
+        "apac": "airport, actual",
+        "scdn": "sched DESC, flightNo, seq",
+        "gtup": "gate, sched, flightNo",
+        "stup": "stand, sched, flightNo",
+        "scup": "sched, flightNo, seq"
+    }
+    ob = sort_map.get(sort, "sched, flightNo, seq")
+    if sort not in sort_map:
+        sort = "scup"
+
+    # Build title
+    title = "HK Airport "
+    title += "cargo" if cargo else "passenger"
+    title += " arrivals" if arrival else " departures"
+    title += f" on {d_str}"
+
+    # Query flights with destinations/origins and airline info
+    sql = f"""
+        SELECT f.ID, TO_CHAR(sched, 'HH24:MI') as sched,
+               flightNo, al.enName as airline, seq, dest.IATA,
+               ap.enName as airport,
+               CASE WHEN cancelled THEN 'Cancelled'
+                    ELSE TO_CHAR(actual, 'MM-DD HH24:MI')
+               END as actual,
+               TO_CHAR(actual - sched, 'HH24:MI') as late,
+               terminal, aisle, gate, stand, baggage, hall
+        FROM enigma.flights f
+        JOIN enigma.destor dest ON f.ID = dest.flightID
+        LEFT JOIN enigma.airlines al ON f.airline = al.icao
+        LEFT JOIN enigma.airports ap ON dest.IATA = ap.IATA
+        WHERE cargo = %s AND arrival = %s AND DATE(sched) = %s
+        ORDER BY {ob}
+    """
+    data = execute_query(sql, (cargo, arrival, d_str))
+
+    return render_template(
+        "dbpub/hkflights.html",
+        title=title,
+        d=d_str,
+        ad=ad,
+        pc=pc,
+        sort=sort,
+        arrival=arrival,
+        cargo=cargo,
+        data=data
     )
-
-    return render_template("dbpub/hkflights.html", d=d, arr=arr, data=data)
 
 
 # HK flights cancellations
@@ -5807,32 +5871,85 @@ def hkflights():
 
 @bp.route("/HKflightscan.asp")
 def hkflightscan():
-    """Hong Kong flight cancellations (simplified)"""
-    from webbsite.asp_helpers import get_str, get_int
-    from datetime import datetime, timedelta
+    """Hong Kong flight cancellations - full implementation matching ASP"""
+    from webbsite.asp_helpers import get_str, get_int, ms_date
+    from datetime import datetime, date as dt_date
 
-    d = get_str("d", "")
-    arr = get_int("arr", 1)  # 1 = arrivals, 0 = departures
+    # Get parameters
+    ad = get_str("ad", "a")  # a=arrivals, d=departures
+    if ad not in ("a", "d"):
+        ad = "a"
+    arrival = (ad == "a")
 
-    # Default to today if no date provided
-    if not d:
-        d = datetime.now().strftime("%Y-%m-%d")
+    title = "HK Airport flight "
+    title += "arrivals" if arrival else "departures"
+    title += " and cancellations"
 
-    # Query cancelled flights for the specified date
-    data = execute_query(
-        f"""
-        SELECT flightno, airline, sched, terminal, status
-        FROM enigma.flights
-        WHERE DATE(sched) = %s
-          AND arrival = %s
-          AND cancelled = TRUE
-        ORDER BY sched
-        LIMIT 100
-    """,
-        (d, arr == 1),
+    # Sorting
+    sort = get_str("sort", "ddn")
+    sort_map = {
+        "pup": "p, d",
+        "pdn": "p DESC, d DESC",
+        "cup": "c, d",
+        "cdn": "c DESC, d DESC",
+        "tup": "t, d",
+        "tdn": "t DESC, d DESC",
+        "xpup": "xp, d",
+        "xpdn": "xp DESC, d DESC",
+        "xcup": "xc, d",
+        "xcdn": "xc DESC, d DESC",
+        "xtup": "xt, d",
+        "xtdn": "xt DESC, d DESC",
+        "npup": "np, d",
+        "npdn": "np DESC, d DESC",
+        "ncup": "nc, d",
+        "ncdn": "nc DESC, d DESC",
+        "ntup": "nt, d",
+        "ntdn": "nt DESC, d DESC",
+        "xpsup": "xps, d",
+        "xpsdn": "xps DESC, d DESC",
+        "xcsup": "xcs, d",
+        "xcsdn": "xcs DESC, d DESC",
+        "xtsup": "xts, d",
+        "xtsdn": "xts DESC, d DESC",
+        "dup": "d",
+        "ddn": "d DESC"
+    }
+    ob = sort_map.get(sort, "d DESC")
+    if sort not in sort_map:
+        sort = "ddn"
+
+    # Query aggregated daily statistics
+    sql = f"""
+        SELECT d, p, c, t, xp, xc, xt,
+               p - xp as np, c - xc as nc, t - xt as nt,
+               CASE WHEN p > 0 THEN 100.0 * xp / p ELSE NULL END as xps,
+               CASE WHEN c > 0 THEN 100.0 * xc / c ELSE NULL END as xcs,
+               CASE WHEN t > 0 THEN 100.0 * xt / t ELSE NULL END as xts
+        FROM (
+            SELECT d, t - c as p, c, t, xt - xc as xp, xc, xt
+            FROM (
+                SELECT DATE(sched) as d,
+                       SUM(CASE WHEN cargo THEN 1 ELSE 0 END) as c,
+                       COUNT(*) as t,
+                       SUM(CASE WHEN cargo AND cancelled THEN 1 ELSE 0 END) as xc,
+                       SUM(CASE WHEN cancelled THEN 1 ELSE 0 END) as xt
+                FROM enigma.flights
+                WHERE arrival = %s
+                GROUP BY DATE(sched)
+            ) t1
+        ) t2
+        ORDER BY {ob}
+    """
+    data = execute_query(sql, (arrival,))
+
+    return render_template(
+        "dbpub/hkflightscan.html",
+        title=title,
+        ad=ad,
+        sort=sort,
+        data=data
     )
-
-    return render_template("dbpub/hkflightscan.html", d=d, arr=arr, data=data)
 
 
 # Tenders
