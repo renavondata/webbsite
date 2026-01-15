@@ -434,6 +434,31 @@ def splits():
     )
 
 
+def group_positions_by_company(positions, sort_param):
+    """
+    Group consecutive positions at same company for display.
+    When sorted by organization, only show company name on first row.
+    """
+    grouped = []
+    last_company = None
+    row_num = 0
+
+    for pos in positions:
+        # Only group when sorted by organization (orgup/orgdn)
+        is_first_row = (pos.get('company') != last_company) or sort_param not in ('orgup', 'orgdn')
+        if is_first_row:
+            row_num += 1
+            last_company = pos.get('company')
+
+        grouped.append({
+            **pos,
+            'is_first_row': is_first_row,
+            'row_num': row_num if is_first_row else None
+        })
+
+    return grouped
+
+
 @bp.route("/positions.asp")
 def positions():
     """
@@ -553,33 +578,60 @@ def positions():
     rank_data = []
     any_returns = False
 
+    # Calculate date range parameters for return calculations
+    # ASP uses fromDate/toDate to bound the return calculation period
+    from_param = from_date if from_date else None
+    to_param = to_date if to_date else None
+
     for rank in ranks:
         rank_id = rank["rankid"]
         rank_text = rank["ranktext"]
 
-        # Build query for this rank
-        # Note: simplified version without full total return calculations
-        # Full implementation would need totRet, CAGret, CAGrel functions
+        # Build query for this rank with return calculations
+        # Use hklistedordsever view to get issueID for listed companies
         sql = f"""
             SELECT
                 company,
                 {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
                 o.name1,
+                h.issueid,
                 apptDate,
+                d.apptAcc,
                 resDate,
+                d.resAcc,
                 p.posShort,
                 p.posLong,
-                CASE WHEN i.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed
+                CASE WHEN h.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed,
+                -- Return calculations with date range bounds
+                enigma.totRet(
+                    h.issueid,
+                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(%s::date, '1994-01-03'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                ) as tot_ret,
+                enigma.CAGRet(
+                    h.issueid,
+                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(%s::date, '1994-01-03'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                ) as cagr_ret,
+                enigma.CAGRel(
+                    h.issueid,
+                    GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(%s::date, '1999-11-12'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                ) as cagr_rel
             FROM enigma.directorships d
             JOIN enigma.organisations o ON company = o.personid
             JOIN enigma.positions p ON d.positionid = p.positionid
-            LEFT JOIN enigma.listedcoshkever i ON company = i.issuer
+            LEFT JOIN enigma.hklistedordsever h ON company = h.issuer
             WHERE rank = %s AND director = %s {hide_str}
             ORDER BY {order_by}
         """
 
         try:
-            positions = execute_query(sql, (rank_id, person_id))
+            # Pass date range params for return calculations
+            positions = execute_query(
+                sql,
+                (from_param, to_param, from_param, to_param, from_param, to_param, rank_id, person_id)
+            )
 
             if positions:
                 # Check if any have returns (is_listed flag set)
@@ -587,10 +639,26 @@ def positions():
                 if has_returns:
                     any_returns = True
 
+                # Group positions by company for display
+                grouped_positions = group_positions_by_company(positions, sort_param)
+
+                # Calculate average returns for summary row
+                avg_cagr = None
+                avg_rel = None
+                if has_returns:
+                    cagr_values = [p.get("cagr_ret") for p in positions if p.get("cagr_ret") is not None]
+                    rel_values = [p.get("cagr_rel") for p in positions if p.get("cagr_rel") is not None]
+                    if cagr_values:
+                        avg_cagr = sum(cagr_values) / len(cagr_values)
+                    if rel_values:
+                        avg_rel = sum(rel_values) / len(rel_values)
+
                 rank_data.append({
                     "rank_text": rank_text,
-                    "positions": positions,
-                    "has_returns": has_returns
+                    "positions": grouped_positions,
+                    "has_returns": has_returns,
+                    "avg_cagr": avg_cagr,
+                    "avg_rel": avg_rel
                 })
         except Exception as ex:
             current_app.logger.error(f"Error getting positions for rank {rank_id}: {ex}")

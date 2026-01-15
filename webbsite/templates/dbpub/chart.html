@@ -42,10 +42,10 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Prepare series data
 	var seriesData = [
-		{% for i, item in enumerate(items) %}
+		{% for item in items %}
 		{
 			name: '{{ item.shortname or item.ddes }}',
-			data: {{ series_data[i] | tojson }},
+			data: {{ series_data[loop.index0] | tojson }},
 			tooltip: {
 				valueDecimals: {{ item.dp + dpinc if item.dp else 2 }}
 			}

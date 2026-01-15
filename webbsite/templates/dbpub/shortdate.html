@@ -8,9 +8,9 @@
 	<div class="inputs">
 		Date:
 		<select name="d" onchange="this.form.submit()">
-			{% for date in date_list %}
-			<option value="{{ date.strftime('%Y-%m-%d') }}" {% if date.strftime('%Y-%m-%d') == d %}selected{% endif %}>
-				{{ date.strftime('%Y-%m-%d') }}
+			{% for dt in date_list %}
+			<option value="{{ dt.atdate }}" {% if dt.atdate|string == d %}selected{% endif %}>
+				{{ dt.atdate }}
 			</option>
 			{% endfor %}
 		</select>
@@ -73,7 +73,7 @@
 	{% endfor %}
 </table>
 
-<p class="footnote">Short positions are disclosed to SFC when they exceed 0.02% of issued shares. Change is vs {{ prev_date.strftime('%Y-%m-%d') if prev_date else 'previous date' }}.</p>
+<p class="footnote">Short positions are disclosed to SFC when they exceed 0.02% of issued shares. Change is vs {{ prev_date if prev_date else 'previous date' }}.</p>
 
 <p><a href="{{ url_for('dbpub_short_selling.short_notes') }}">About short selling disclosure</a></p>
 

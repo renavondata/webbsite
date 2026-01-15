@@ -608,9 +608,30 @@ def sfc_licount():
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC licount: {ex}")
 
+    # Compute sums for averages (cleaner than Jinja2 namespace)
+    numa = numb = sumaRO = sumarep = sumbRO = sumbrep = 0
+    for row in stats:
+        acnt = int(row.get('acnt') or 0)
+        bcnt = int(row.get('bcnt') or 0)
+        if acnt > 0:
+            numa += 1
+            sumaRO += int(row.get('aro') or 0)
+            sumarep += int(row.get('arep') or 0)
+        if bcnt > 0:
+            numb += 1
+            sumbRO += int(row.get('bro') or 0)
+            sumbrep += int(row.get('brep') or 0)
+
+    sums = {
+        'numa': numa, 'numb': numb,
+        'sumaRO': sumaRO, 'sumarep': sumarep,
+        'sumbRO': sumbRO, 'sumbrep': sumbrep,
+    }
+
     return render_template(
         "dbpub/sfc_licount.html",
         stats=stats,
+        sums=sums,
         da=da,
         db=db,
         act=act,

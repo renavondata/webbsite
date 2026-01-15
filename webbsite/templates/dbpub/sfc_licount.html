@@ -77,7 +77,6 @@ SFC-licensed firms.</p>
 			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'eddn' %}edup{% else %}eddn{% endif %}">Licence<br>end</a></th>
 		</tr>
 	</thead>
-	{% set ns = namespace(numa=0, numb=0, sumaRO=0, sumarep=0, sumbRO=0, sumbrep=0) %}
 	{% for row in stats %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
@@ -104,43 +103,32 @@ SFC-licensed firms.</p>
 			<td class="colHide1 nowrap">{{ row.startdate or '' }}</td>
 			<td class="colHide1 nowrap">{{ row.enddate or '' }}</td>
 		</tr>
-		{# Update sums #}
-		{% if row.acnt|int > 0 %}
-			{% set _ = ns.__setitem__('numa', ns.numa + 1) %}
-			{% set _ = ns.__setitem__('sumaRO', ns.sumaRO + row.aro|int) %}
-			{% set _ = ns.__setitem__('sumarep', ns.sumarep + row.arep|int) %}
-		{% endif %}
-		{% if row.bcnt|int > 0 %}
-			{% set _ = ns.__setitem__('numb', ns.numb + 1) %}
-			{% set _ = ns.__setitem__('sumbRO', ns.sumbRO + row.bro|int) %}
-			{% set _ = ns.__setitem__('sumbrep', ns.sumbrep + row.brep|int) %}
-		{% endif %}
 	{% endfor %}
 	<tr class="total">
 		<td></td>
 		<td class="left">Average</td>
-		{% if ns.numb > 0 %}
-			<td class="colHide1">{{ "{:.2f}".format(ns.sumbRO / ns.numb) }}</td>
-			<td class="colHide1">{{ "{:.2f}".format(ns.sumbrep / ns.numb) }}</td>
-			<td class="colHide1">{{ "{:.2f}".format((ns.sumbRO + ns.sumbrep) / ns.numb) }}</td>
+		{% if sums.numb > 0 %}
+			<td class="colHide1">{{ "{:.2f}".format(sums.sumbRO / sums.numb) }}</td>
+			<td class="colHide1">{{ "{:.2f}".format(sums.sumbrep / sums.numb) }}</td>
+			<td class="colHide1">{{ "{:.2f}".format((sums.sumbRO + sums.sumbrep) / sums.numb) }}</td>
 		{% else %}
 			<td class="colHide1" colspan="3"></td>
 		{% endif %}
-		{% if ns.numa > 0 %}
-			<td class="colHide3">{{ "{:.2f}".format(ns.sumaRO / ns.numa) }}</td>
-			<td class="colHide3">{{ "{:.2f}".format(ns.sumarep / ns.numa) }}</td>
-			<td class="colHide3">{{ "{:.2f}".format((ns.sumaRO + ns.sumarep) / ns.numa) }}</td>
+		{% if sums.numa > 0 %}
+			<td class="colHide3">{{ "{:.2f}".format(sums.sumaRO / sums.numa) }}</td>
+			<td class="colHide3">{{ "{:.2f}".format(sums.sumarep / sums.numa) }}</td>
+			<td class="colHide3">{{ "{:.2f}".format((sums.sumaRO + sums.sumarep) / sums.numa) }}</td>
 		{% else %}
 			<td class="colHide3" colspan="3"></td>
 		{% endif %}
 		<td colspan="3"></td>
-		{% if ns.numb > 0 %}
-			<td class="colHide2">{{ "{:.2f}".format(100 * ns.sumbrep / (ns.sumbRO + ns.sumbrep)) }}</td>
+		{% if sums.numb > 0 %}
+			<td class="colHide2">{{ "{:.2f}".format(100 * sums.sumbrep / (sums.sumbRO + sums.sumbrep)) }}</td>
 		{% else %}
 			<td class="colHide2"></td>
 		{% endif %}
-		{% if ns.numa > 0 %}
-			<td class="colHide2">{{ "{:.2f}".format(100 * ns.sumarep / (ns.sumaRO + ns.sumarep)) }}</td>
+		{% if sums.numa > 0 %}
+			<td class="colHide2">{{ "{:.2f}".format(100 * sums.sumarep / (sums.sumaRO + sums.sumarep)) }}</td>
 		{% else %}
 			<td class="colHide2"></td>
 		{% endif %}

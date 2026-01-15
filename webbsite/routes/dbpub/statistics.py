@@ -4963,12 +4963,14 @@ def qt():
     if max_date:
         qtcs = execute_query(
             """
-            SELECT 0 AS ID, 'Total' AS name, false AS inUse
-            UNION
-            SELECT qc.id, qc.name,
-                   CASE WHEN qt.capUnit IS NOT NULL THEN true ELSE false END AS inUse
-            FROM enigma.qtcentres qc
-            LEFT JOIN enigma.qt qt ON qc.id = qt.qtID AND qt.d = %s
+            SELECT * FROM (
+                SELECT 0 AS ID, 'Total' AS name, false AS inUse
+                UNION
+                SELECT qc.id, qc.name,
+                       CASE WHEN qt.capUnit IS NOT NULL THEN true ELSE false END AS inUse
+                FROM enigma.qtcentres qc
+                LEFT JOIN enigma.qt qt ON qc.id = qt.qtID AND qt.d = %s
+            ) t
             ORDER BY ID <> 0, name
             """,
             (max_date,)
@@ -4976,10 +4978,12 @@ def qt():
     else:
         qtcs = execute_query(
             """
-            SELECT 0 AS ID, 'Total' AS name, false AS inUse
-            UNION
-            SELECT ID, name, false AS inUse
-            FROM enigma.qtcentres
+            SELECT * FROM (
+                SELECT 0 AS ID, 'Total' AS name, false AS inUse
+                UNION
+                SELECT ID, name, false AS inUse
+                FROM enigma.qtcentres
+            ) t
             ORDER BY ID <> 0, name
             """
         )
@@ -5735,7 +5739,7 @@ def prhdistricts():
             COUNT(*) AS c,
             SUM(f.area) AS tota,
             SUM(f.area) / COUNT(*) AS a,
-            CONCAT(r.en, ' ', r.cn) AS region,
+            r.en || ' ' || r.cn AS region,
             SUM(CASE WHEN f.elevator THEN 1 ELSE 0 END) AS elev
         FROM enigma.prhflat f
         JOIN enigma.prhblock b ON f.blockID = b.id
@@ -7541,9 +7545,12 @@ def jail():
     # Get list of jails for dropdown
     jails_list = execute_query(
         """
-        SELECT 0 as id, 'All institutions' as name
-        UNION
-        SELECT id, name FROM enigma.jails ORDER BY id <> 0, name
+        SELECT * FROM (
+            SELECT 0 as id, 'All institutions' as name
+            UNION
+            SELECT id, name FROM enigma.jails
+        ) t
+        ORDER BY id <> 0, name
     """
     )
 

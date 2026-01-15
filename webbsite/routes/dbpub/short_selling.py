@@ -270,10 +270,11 @@ def shortdate():
         # Query all short positions on the specified date
         shorts = execute_query(
             f"""
-            SELECT sl.stockCode, t1.issueid, t1.shares, t1.value,
-                   t1.stake, o.name1, st.typeShort, st.typeLong,
-                   COALESCE(t1.stake - t2.prevStake, 0) AS diff,
-                   t1.mcap, t1.os
+            SELECT sl.stockCode AS stockcode, i.issuer AS issuer, t1.shares AS shortpos, t1.value,
+                   t1.stake * 100 AS pct, o.name1 AS name, st.typeShort, st.typeLong,
+                   COALESCE(t1.shares - t2.prevShares, 0) AS change,
+                   COALESCE((t1.stake - t2.prevStake) * 100, 0) AS pctchange,
+                   t1.mcap, t1.os AS outstanding
             FROM (
                 SELECT s.issueid, s.shares, s.value,
                        os.outstanding AS os,
@@ -303,6 +304,7 @@ def shortdate():
             JOIN enigma.secTypes st ON i.typeID = st.typeID
             LEFT JOIN (
                 SELECT s2.issueid,
+                       s2.shares AS prevShares,
                        CASE WHEN os2.outstanding > 0
                             THEN s2.shares / os2.outstanding
                             ELSE 0 END AS prevStake

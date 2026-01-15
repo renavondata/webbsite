@@ -88,20 +88,33 @@ filed on or before that date. A repository of our database and software <a href=
 			{% endif %}
 		</tr>
 		{% for position in rank.positions %}
-		<tr class="total">
-			<td class="colHide1">{{ loop.index }}</td>
-			<td>{% if position.is_listed %}*{% endif %}</td>
-			<td><a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a></td>
+		<tr{% if position.is_first_row %} class="total"{% endif %}>
+			<td class="colHide1">{{ position.row_num if position.row_num else '' }}</td>
+			<td>{% if position.is_listed and position.is_first_row %}*{% endif %}</td>
+			<td>{% if position.is_first_row %}<a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a>{% endif %}</td>
 			<td><a class="info" href="#">{{ position.posshort }}<span>{{ position.poslong }}</span></a></td>
 			<td class="colHide2 nowrap">{{ position.apptdate if position.apptdate else '' }}</td>
 			<td class="nowrap">{{ position.resdate if position.resdate else '' }}</td>
 			{% if rank.has_returns %}
-			<td class="right colHide1"></td>
-			<td class="right colHide1"></td>
-			<td class="right colHide3"></td>
+			<td class="right colHide1">{% if position.tot_ret %}<a href="../dbpub/ctr.asp?i1={{ position.issueid }}&d1={{ position.apptdate }}">{{ "%.2f"|format((position.tot_ret - 1) * 100) }}%</a>{% endif %}</td>
+			<td class="right colHide1">{% if position.cagr_ret %}{{ "%.2f"|format((position.cagr_ret - 1) * 100) }}%{% endif %}</td>
+			<td class="right colHide3">{% if position.cagr_rel %}<a href="../dbpub/ctr.asp?rel=1&i1=5295&i2={{ position.issueid }}&d1={{ position.apptdate }}">{{ "%.2f"|format((position.cagr_rel - 1) * 100) }}%</a>{% endif %}</td>
 			{% endif %}
 		</tr>
 		{% endfor %}
+		{% if rank.has_returns and (rank.avg_cagr or rank.avg_rel) %}
+		<tr class="total">
+			<td class="colHide1"></td>
+			<td></td>
+			<td><b>Average</b></td>
+			<td></td>
+			<td class="colHide2"></td>
+			<td></td>
+			<td class="right colHide1"></td>
+			<td class="right colHide1">{% if rank.avg_cagr %}<b>{{ "%.2f"|format((rank.avg_cagr - 1) * 100) }}%</b>{% endif %}</td>
+			<td class="right colHide3">{% if rank.avg_rel %}<b>{{ "%.2f"|format((rank.avg_rel - 1) * 100) }}%</b>{% endif %}</td>
+		</tr>
+		{% endif %}
 	</table>
 	{% endfor %}
 	<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
