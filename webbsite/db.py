@@ -66,11 +66,9 @@ def execute_query(sql, params=None):
     """
     db = get_db()
 
-    # Log SQL in debug mode
+    # Log SQL in debug mode (params intentionally excluded to avoid logging sensitive data)
     if current_app.config.get("SQL_ECHO", False):
         logger.debug(f"SQL: {sql}")
-        if params:
-            logger.debug(f"Params: {params}")
 
     try:
         # Convert psycopg2-style positional params to SQLAlchemy named params
@@ -107,11 +105,9 @@ def execute_query(sql, params=None):
                 logger.debug("Query executed successfully (no results)")
             return []
     except Exception as e:
-        # Log the error with full SQL context
+        # Log the error (params intentionally excluded to avoid logging sensitive data)
         logger.error(f"SQL Error: {e}")
         logger.error(f"SQL Query: {sql}")
-        if params:
-            logger.error(f"SQL Params: {params}")
         logger.error("Full traceback:", exc_info=True)
 
         # Rollback on error
@@ -137,11 +133,9 @@ def execute_scalar(sql, params=None):
     """
     db = get_db()
 
-    # Log SQL in debug mode
+    # Log SQL in debug mode (params intentionally excluded to avoid logging sensitive data)
     if current_app.config.get("SQL_ECHO", False):
         logger.debug(f"SQL (scalar): {sql}")
-        if params:
-            logger.debug(f"Params: {params}")
 
     try:
         # Convert psycopg2-style positional params to SQLAlchemy named params
@@ -166,11 +160,9 @@ def execute_scalar(sql, params=None):
         row = result.fetchone()
         return row[0] if row else None
     except Exception as e:
-        # Log the error with full SQL context
+        # Log the error (params intentionally excluded to avoid logging sensitive data)
         logger.error(f"SQL Error (scalar): {e}")
         logger.error(f"SQL Query: {sql}")
-        if params:
-            logger.error(f"SQL Params: {params}")
         logger.error("Full traceback:", exc_info=True)
 
         # Rollback on error

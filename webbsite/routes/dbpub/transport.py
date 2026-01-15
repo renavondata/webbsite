@@ -9,7 +9,7 @@ import calendar
 import io
 import re
 from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str, ms_date, format_number, iif
+from webbsite.asp_helpers import get_int, get_bool, get_str, ms_date, iif
 
 bp = Blueprint("dbpub_transport", __name__)
 

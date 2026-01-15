@@ -1,7 +1,7 @@
 {% extends "base_database.html" %}
 {% block extra_head %}
-<script type="text/javascript" src="/static/js/highstock.js"></script>
-<script type="text/javascript" src="/static/js/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 {% endblock %}
 {% block title %}Renavon Hong Kong Total Return: {{ stock_name if stock_name else 'Unknown' }}{% endblock %}
 {% block content %}
