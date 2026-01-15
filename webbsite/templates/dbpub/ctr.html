@@ -1,7 +1,8 @@
 {% extends "base_database.html" %}
 
 {% block extra_head %}
-<script type="text/javascript" src="{{ url_for('static', filename='js/dygraph-combined.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/dygraphs@2/dist/dygraph.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dygraphs@2/dist/dygraph.min.css">
 {% endblock %}
 
 {% block title %}Compare Webb-site Total Returns{% endblock %}

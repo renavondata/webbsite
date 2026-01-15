@@ -6,6 +6,7 @@ Port of Classic ASP mailvote login system
 import hashlib
 import secrets
 import base64
+import bcrypt
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import session, request, redirect, url_for, current_app
@@ -17,41 +18,54 @@ TOKEN_EXPIRY_HOURS = 72  # Email verification token expiry
 
 
 def generate_salt():
-    """Generate a 16-byte random salt (stored as hex in DB)"""
+    """
+    Generate salt for password hashing.
+    Note: bcrypt generates its own salt internally, but we keep this
+    for compatibility with database schema that expects a salt column.
+    """
     return secrets.token_hex(16)
 
 
-def hash_password(password: str, salt: str) -> str:
+def hash_password(password: str, salt: str = None) -> str:
     """
-    Hash password using SHA-256 with salt
-    Matches MySQL: UNHEX(SHA2(CONCAT(password, salt), 256))
+    Hash password using bcrypt (secure password hashing).
 
     Args:
         password: Plain text password
-        salt: Hex string salt (lowercase)
+        salt: Ignored - bcrypt generates its own salt internally.
+              Parameter kept for API compatibility.
 
     Returns:
-        Hex string of hashed password
+        Bcrypt hash string (includes salt, can be stored directly)
     """
-    # Concatenate password with lowercase salt (matching ASP behavior)
-    to_hash = password + salt.lower()
-    return hashlib.sha256(to_hash.encode('utf-8')).hexdigest()
+    # bcrypt handles salt generation internally
+    password_bytes = password.encode('utf-8')
+    hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt(rounds=12))
+    return hashed.decode('utf-8')
 
 
-def verify_password(password: str, salt_hex: str, stored_hash_hex: str) -> bool:
+def verify_password(password: str, salt_hex: str, stored_hash: str) -> bool:
     """
-    Verify password against stored hash
+    Verify password against stored bcrypt hash.
 
     Args:
         password: Plain text password to verify
-        salt_hex: Hex string of salt from database
-        stored_hash_hex: Hex string of stored hash from database
+        salt_hex: Ignored - bcrypt hash contains the salt.
+                  Parameter kept for API compatibility.
+        stored_hash: Bcrypt hash string from database
 
     Returns:
         True if password matches
     """
-    computed_hash = hash_password(password, salt_hex)
-    return computed_hash.lower() == stored_hash_hex.lower()
+    try:
+        password_bytes = password.encode('utf-8')
+        # Handle both string and bytes hash
+        if isinstance(stored_hash, str):
+            stored_hash = stored_hash.encode('utf-8')
+        return bcrypt.checkpw(password_bytes, stored_hash)
+    except (ValueError, TypeError):
+        # Invalid hash format
+        return False
 
 
 def generate_token():
