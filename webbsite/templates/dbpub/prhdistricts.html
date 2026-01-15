@@ -1,9 +1,8 @@
-{% extends "base.html" %}
+{% extends "base_database.html" %}
 
 {% block title %}Housing Authority public rental housing by District{% endblock %}
 
 {% block content %}
-{% include 'header.html' %}
 
 <h2>Housing Authority public rental housing by District</h2>
 
@@ -86,5 +85,4 @@ and Units.</p>
     <p>No data found.</p>
 {% endif %}
 
-{% include 'footer.html' %}
 {% endblock %}

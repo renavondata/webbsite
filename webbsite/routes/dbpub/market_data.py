@@ -82,9 +82,11 @@ def chart():
     if quant and freq < 3 and daily:
         # Per-day calculation for monthly/quarterly quantity data
         if freq == 1:
-            denom = "/monthdays(d)"
+            # Number of days in the month containing date d
+            denom = "/EXTRACT(DAY FROM (DATE_TRUNC('month', d) + INTERVAL '1 month' - INTERVAL '1 day'))"
         else:
-            denom = "/quarterdays(d)"
+            # Number of days in the quarter (approximate as 90, or compute from quarter bounds)
+            denom = "/((DATE_TRUNC('quarter', d) + INTERVAL '3 months') - DATE_TRUNC('quarter', d))::int"
         dpinc = 2
 
     full_title = f"{chart_title} {freq_desc}, {units}"

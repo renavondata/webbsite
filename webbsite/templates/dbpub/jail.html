@@ -1,7 +1,442 @@
 {% extends "base_database.html" %}
-{% block title %}Directors who went to jail{% endblock %}
+{% block title %}People in {{ jail_name }}{% endblock %}
+
+{% block extra_head %}
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	{% if chart1_data %}
+	Highcharts.chart('jail', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in {{ jail_name }}',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'People',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0
+	        },
+	    },
+	    xAxis: {
+	    	categories: [{% for row in chart1_data %}'{{ row[0] }}'{% if not loop.last %},{% endif %}{% endfor %}]
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    	},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Convicted',
+	        color:"blue",
+	        type: 'column',
+	        data: [{% for row in chart1_data %}{{ row[1] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'Detainees',
+	        color:"red",
+	        type: 'column',
+	        data: [{% for row in chart1_data %}{{ row[3] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'On remand',
+	        color:"green",
+	        type: 'column',
+	        data: [{% for row in chart1_data %}{{ row[2] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    ]
+	});
+	{% endif %}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	{% if chart2_data %}
+	Highcharts.chart('jail2', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in {{ jail_name }} by share',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    xAxis: {
+	    	categories: [{% for row in chart2_data %}'{{ row[0] }}'{% if not loop.last %},{% endif %}{% endfor %}]
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'Share of people in custody',
+	            x:0,
+	        },
+	        labels:{
+	        	x:0,
+				format: '{value}%',
+	        },
+	        max:100,
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white',
+	        valueDecimals: 2,
+	        valueSuffix:'%',
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    	},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Convicted',
+	        color:"blue",
+	        type: 'column',
+	        data: [{% for row in chart2_data %}{{ row[1] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'Detainees',
+	        color:"red",
+	        type: 'column',
+	        data: [{% for row in chart2_data %}{{ row[3] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'On remand',
+	        color:"green",
+	        type: 'column',
+	        data: [{% for row in chart2_data %}{{ row[2] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    ]
+	});
+	{% endif %}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	{% if chart3_data %}
+	Highcharts.chart('jail3', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in {{ jail_name }} by origin',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'People',
+		        x:0,
+	        },
+	        labels:{
+	        	x:0
+	        },
+	    },
+	    xAxis: {
+	    	categories: [{% for row in chart3_data %}'{{ row[0] }}'{% if not loop.last %},{% endif %}{% endfor %}]
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white'
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    	},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Others',
+	        color:"blue",
+	        type: 'column',
+	        data: [{% for row in chart3_data %}{{ row[3] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'Mainland/Taiwan/Macao',
+	        color:"red",
+	        type: 'column',
+	        data: [{% for row in chart3_data %}{{ row[2] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'HK resident',
+	        color:"green",
+	        type: 'column',
+	        data: [{% for row in chart3_data %}{{ row[1] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    ]
+	});
+	{% endif %}
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	{% if chart4_data %}
+	Highcharts.chart('jail4', {
+	    chart: {
+	        type: 'column',
+	        borderWidth: 1,
+	        marginTop:70,
+	    },
+	    title: {
+	        text: 'People in {{ jail_name }} by origin by share',
+	        style: {
+	        	color:"black",
+	            fontSize:'1.4em'
+			}
+	    },
+	    xAxis: {
+	    	categories: [{% for row in chart4_data %}'{{ row[0] }}'{% if not loop.last %},{% endif %}{% endfor %}]
+	    },
+	    yAxis: {
+	        title: {
+	            text: 'Share of people in custody',
+	            x:0,
+	        },
+	        labels:{
+	        	x:0,
+				format: '{value}%',
+	        },
+	        max:100,
+	    },
+	    legend: {
+	    	enabled: true,
+	    	align: 'center',
+	    	verticalAlign: 'top',
+	    	x: 0,
+	    	y: 20,
+	        floating: true,
+	        borderColor: '#CCC',
+	        borderWidth: 0,
+	        shadow: false
+	    },
+	    tooltip: {
+	    	shared: true,
+	        headerFormat: '<b>{point.key}</b><br/>',
+	        xDateFormat: '%a, %e %b, %Y',
+	        backgroundColor: 'white',
+	        valueDecimals: 2,
+	        valueSuffix:'%',
+	    },
+	    plotOptions: {
+	        column: {
+	            stacking: 'normal',
+	        	dataLabels: {
+	            	enabled: false
+	            },
+	            grouping: false,
+		    	dataGrouping: {
+		    		approximation: 'average'
+		    	},
+	        }
+	    },
+	    series: [
+	    	{
+	        name: 'Others',
+	        color:"blue",
+	        type: 'column',
+	        data: [{% for row in chart4_data %}{{ row[3] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'Mainland/Taiwan/Macao',
+	        color:"red",
+	        type: 'column',
+	        data: [{% for row in chart4_data %}{{ row[2] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    	{
+	        name: 'HK resident',
+	        color:"green",
+	        type: 'column',
+	        data: [{% for row in chart4_data %}{{ row[1] }}{% if not loop.last %},{% endif %}{% endfor %}]
+	        },
+	    ]
+	});
+	{% endif %}
+});
+</script>
+{% endblock %}
+
 {% block content %}
-<h2>Directors who went to jail</h2>
-<p>Directors and officers of HK listed companies who have been sentenced to prison.</p>
-<p><em>Data not yet implemented - requires mapping of event types to jail sentences.</em></p>
+<h2>People in {{ jail_name }}</h2>
+<h3>Custody category: {{ type_txt }}</h3>
+<p>This page shows the number of people in custody in facilities managed by the
+<a href="https://www.csd.gov.hk" target="_blank">Hong Kong
+Correctional Services Department</a>, including prisons. People on remand are innocent until proven
+guilty and are awaiting trial. Detainees are held under the <a href="https://www.hklii.hk/eng/hk/legis/ord/115/" target="_blank">Immigration
+Ordinance</a>. Figures are annual from 31-Dec-2000 and quarterly from 30-Sep-2020 and will be updated when published online by CSD -
+we check daily. The breakdown of prisoners by place of origin is only available
+from 2016 onwards, as a sum across all institutions.</p>
+<form method="get" action="jail.asp">
+	<div class="inputs">Institution:
+		<select name='j' onchange="this.form.submit()">
+			{% for jail in jails_list %}
+			<option value='{{ jail.id }}' {% if jail.id == j %}selected{% endif %}>{{ jail.name }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="inputs"><input type="submit" value="Go"></div>
+	<div class="clear"></div>
+</form>
+<p>CSV downloads: <a href="CSV.asp?t=jails">Institutions</a>,&nbsp;
+<a href="CSV.asp?t=jailtypes">Institution-types</a>,&nbsp;
+<a href="CSV.asp?t=prisoners">People in custody</a></p>
+<p>To zoom in or out, use the range-selector buttons or the slider, or pinch the charts on a touch screen.
+Use the top-right hamburger menu to save or print.</p>
+
+{% if chart1_data %}
+<div id="jail" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>This chart shows the relative share of people convicted, on remand and detainees in {{ jail_name }}:</p>
+<div id="jail2" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+{% endif %}
+
+{% if chart3_data %}
+<p>This chart shows people in {{ jail_name }} by origin:</p>
+<div id="jail3" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+<p>This chart shows the relative share of people in {{ jail_name }} by origin:</p>
+<div id="jail4" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+{% endif %}
+
+{% if prisoners_by_type %}
+<h4>People in {{ jail_name }}</h4>
+<p class='widthAlert3'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+<table class="numtable center">
+	<tr>
+		<th class="left">Date</th>
+		<th>Convict</th>
+		<th>Remand</th>
+		<th>Detain</th>
+		<th>Total</th>
+		<th class="colHide3">Convict<br>%</th>
+		<th class="colHide3">Remand<br>%</th>
+		<th class="colHide3">Detain<br>%</th>
+	</tr>
+	{% for row in prisoners_by_type|reverse %}
+	<tr>
+		<td>{{ row.d }}</td>
+		<td>{{ '{:,}'.format(row.c|int) }}</td>
+		<td>{{ '{:,}'.format(row.r|int) }}</td>
+		<td>{{ '{:,}'.format(row.dt|int) }}</td>
+		<td>{{ '{:,}'.format(row.t|int) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.c_pct|float) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.r_pct|float) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.dt_pct|float) }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+{% if prisoners_breakdown %}
+<h4>People in {{ jail_name }} by origin</h4>
+<table class="numtable center">
+	<tr>
+		<th class="left">Date</th>
+		<th>HK<br>res.</th>
+		<th>CN/TW<br>/MO</th>
+		<th>Other</th>
+		<th>Total</th>
+		<th class="colHide3">HK<br>res. %</th>
+		<th class="colHide3">CN/TW<br>/MO%</th>
+		<th class="colHide3">Other<br>%</th>
+	</tr>
+	{% for row in prisoners_breakdown|reverse %}
+	<tr>
+		<td>{{ row.d }}</td>
+		<td>{{ '{:,}'.format(row.val1|int) }}</td>
+		<td>{{ '{:,}'.format(row.val2|int) }}</td>
+		<td>{{ '{:,}'.format(row.val3|int) }}</td>
+		<td>{{ '{:,}'.format(row.t|int) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.val1_pct|float) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.val2_pct|float) }}</td>
+		<td class="colHide3">{{ '{:.2f}'.format(row.val3_pct|float) }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endif %}
+
+<div class="clear"></div>
 {% endblock %}
