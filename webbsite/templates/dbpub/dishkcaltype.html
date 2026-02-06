@@ -35,7 +35,7 @@ incorporations and name-changes.</p>
     <div class="inputs"><b>Dissolution date</b>&nbsp;</div>
     <div class="inputs">
         Year: <select name="y">
-            {% for year in range(1917, 2026) %}
+            {% for year in range(1917, current_year + 1) %}
             <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>
@@ -56,7 +56,7 @@ incorporations and name-changes.</p>
         <b>Method</b>
         <select name="w">
             <option value="0" {% if w == 0 %}selected{% endif %}>Any method</option>
-            {% for method in dismodes %}
+            {% for method in enigma_dismodes %}
             <option value="{{ method.id }}" {% if method.id == w %}selected{% endif %}>{{ method.dismodetxt }}</option>
             {% endfor %}
         </select>
@@ -65,7 +65,7 @@ incorporations and name-changes.</p>
         <b>Type</b>
         <select name="t">
             <option value="0" {% if t == 0 %}selected{% endif %}>Any type</option>
-            {% for orgtype in orgtypes %}
+            {% for orgtype in enigma_orgtypes %}
             <option value="{{ orgtype.orgtype }}" {% if orgtype.orgtype == t %}selected{% endif %}>{{ orgtype.typename }}</option>
             {% endfor %}
         </select>

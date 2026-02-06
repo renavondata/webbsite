@@ -1,6 +1,63 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <input type="date" name="d" value="{{ d }}" onchange="this.form.submit()">
+    <select name="ad" onchange="this.form.submit()">
+        <option value="a" {% if ad == 'a' %}selected{% endif %}>Arrivals</option>
+        <option value="d" {% if ad == 'd' %}selected{% endif %}>Departures</option>
+    </select>
+    <select name="pc" onchange="this.form.submit()">
+        <option value="p" {% if pc == 'p' %}selected{% endif %}>Passenger</option>
+        <option value="c" {% if pc == 'c' %}selected{% endif %}>Cargo</option>
+    </select>
+</form>
+
+<p>
+    <a href="/dbpub/HKflightscan.asp?ad={{ ad }}">Cancellation statistics</a>
+</p>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort={% if sort == 'scup' %}scdn{% else %}scup{% endif %}">Sched</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort={% if sort == 'flup' %}fldn{% else %}flup{% endif %}">Flight</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort={% if sort == 'alup' %}aldn{% else %}alup{% endif %}">Airline</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort=iasc">IATA</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort=apsc">{% if arrival %}Origin{% else %}Dest{% endif %}</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort={% if sort == 'acup' %}acdn{% else %}acup{% endif %}">Actual</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort={% if sort == 'latedn' %}lateup{% else %}latedn{% endif %}">Late</a></th>
+        <th>T</th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort=gtup">Gate</a></th>
+        <th><a href="?d={{ d }}&ad={{ ad }}&pc={{ pc }}&sort=stup">Stand</a></th>
+        {% if arrival %}
+        <th>Belt</th>
+        <th>Hall</th>
+        {% endif %}
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.sched }}</td>
+        <td>{{ row.flightno }}</td>
+        <td>{{ row.airline or '' }}</td>
+        <td>{{ row.iata or '' }}</td>
+        <td>{{ row.airport or row.iata or '' }}</td>
+        <td>{{ row.actual or '' }}</td>
+        <td>{{ row.late or '' }}</td>
+        <td>{{ row.terminal or '' }}</td>
+        <td>{{ row.gate or '' }}</td>
+        <td>{{ row.stand or '' }}</td>
+        {% if arrival %}
+        <td>{{ row.baggage or '' }}</td>
+        <td>{{ row.hall or '' }}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ data|length }} flights</p>
+{% else %}
+<p>No flights found for this date.</p>
+{% endif %}
 {% endblock %}

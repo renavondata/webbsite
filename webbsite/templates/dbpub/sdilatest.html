@@ -9,39 +9,64 @@
 {% if sdi %}
 <table class="numtable">
 	<tr>
-		<th>Release Date</th>
-		<th>Settle Date</th>
-		<th class="left">
-			{% if sort == 'nameup' %}<strong>Company</strong>
-			{% elif sort == 'namedn' %}<strong>Company ↓</strong>
-			{% else %}<a href="?sort=nameup">Company</a>
+		<th>
+			{% if sort == 'reldup' %}<strong>Release</strong>
+			{% elif sort == 'relddn' %}<strong>Release &#8595;</strong>
+			{% else %}<a href="?sort=relddn">Release</a>
 			{% endif %}
 		</th>
-		<th class="left">Director</th>
-		<th>Reason</th>
+		<th>Settle</th>
+		<th>
+			{% if sort == 'codeup' %}<strong>Code</strong>
+			{% elif sort == 'codedn' %}<strong>Code &#8595;</strong>
+			{% else %}<a href="?sort=codeup">Code</a>
+			{% endif %}
+		</th>
+		<th class="left">
+			{% if sort == 'stokup' %}<strong>Stock</strong>
+			{% elif sort == 'stokdn' %}<strong>Stock &#8595;</strong>
+			{% else %}<a href="?sort=stokup">Stock</a>
+			{% endif %}
+		</th>
+		<th class="left">
+			{% if sort == 'nameup' %}<strong>Person</strong>
+			{% elif sort == 'namedn' %}<strong>Person &#8595;</strong>
+			{% else %}<a href="?sort=nameup">Person</a>
+			{% endif %}
+		</th>
+		<th>
+			{% if sort == 'rsnup' %}<strong>Reason</strong>
+			{% elif sort == 'rsndn' %}<strong>Reason &#8595;</strong>
+			{% else %}<a href="?sort=rsnup">Reason</a>
+			{% endif %}
+		</th>
 		<th>Shares</th>
 		<th>Curr</th>
 		<th>Price</th>
-		<th>Value</th>
+		<th>
+			{% if sort == 'lvalup' %}<strong>Value</strong>
+			{% elif sort == 'lvaldn' %}<strong>Value &#8595;</strong>
+			{% else %}<a href="?sort=lvaldn">Value</a>
+			{% endif %}
+		</th>
 	</tr>
 
 	{% for row in sdi %}
 	<tr>
 		<td>{{ row.reldate.strftime('%Y-%m-%d') if row.reldate else '-' }}</td>
 		<td>{{ row.settledate.strftime('%Y-%m-%d') if row.settledate else '-' }}</td>
+		<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+		<td class="left">{{ row.oname }}</td>
 		<td class="left">
-			<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
-		</td>
-		<td class="left">
-			{% if row.isperson %}
-				<a href="{{ url_for('dbpub_people.natperson', p=row.dir) }}">{{ row.pname }}</a>
+			{% if row.ptype == 'P' %}
+				<a href="{{ url_for('dbpub_people.natperson', p=row.holderid) }}">{{ row.name }}</a>
 			{% else %}
-				<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.dir) }}">{{ row.oname }}</a>
+				<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.holderid) }}">{{ row.name }}</a>
 			{% endif %}
 		</td>
-		<td>{{ row.reason }}</td>
-		<td class="right">{{ '{:,.0f}'.format(row.shares) if row.shares else '-' }}</td>
-		<td>{{ row.currid if row.currid else '-' }}</td>
+		<td>{{ row.rsnsht }}</td>
+		<td class="right">{{ '{:,.0f}'.format(row.shsinv) if row.shsinv else '-' }}</td>
+		<td>{{ row.currency if row.currency else '-' }}</td>
 		<td class="right">{{ '{:.3f}'.format(row.price) if row.price else '-' }}</td>
 		<td class="right">{{ '{:,.0f}'.format(row.value) if row.value else '-' }}</td>
 	</tr>

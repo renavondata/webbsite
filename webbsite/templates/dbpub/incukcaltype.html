@@ -1,24 +1,92 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+
+{% block title %}Entities formed in {{ dom_name }}
+{%- if d > 0 %} on {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}-{{ '%02d'|format(d) }}
+{%- elif m > 0 %} in {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}
+{%- else %} in {{ y }}
+{%- endif %}
+{%- if typename %}: {{ typename }}{% endif %}{% endblock %}
+
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
-    {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
+<h2>Entities formed in {{ dom_name }}
+{%- if d > 0 %} on {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}-{{ '%02d'|format(d) }}
+{%- elif m > 0 %} in {{ '%04d'|format(y) }}-{{ '%02d'|format(m) }}
+{%- else %} in {{ y }}
+{%- endif %}
+{%- if typename %}: {{ typename }}{% endif %}</h2>
+
+<p>This page shows the companies newly-incorporated in UK by year, month or date and by type,
+excluding some dissolved companies which the registry deleted before we could collect them.
+</p>
+
+<form method="get" action="incUKcaltype.asp">
+    <div class="inputs"><b>Incorporation date</b>&nbsp;</div>
+    <div class="inputs">
+        <select name='y'>
+            {% for year in range(1663, current_year + 1) %}
+            <option value='{{ year }}'{% if year == y %} selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        <select name='m'>
+            <option value='0'{% if m == 0 %} selected{% endif %}>Any month</option>
+            {% for month in range(1, 13) %}
+            <option value='{{ month }}'{% if month == m %} selected{% endif %}>{{ month }}</option>
+            {% endfor %}
+        </select>
+        <select name='d' onchange='this.form.submit()'>
+            <option value='0'{% if d == 0 %} selected{% endif %}>Any day</option>
+            {% for day in range(1, 32) %}
+            <option value='{{ day }}'{% if day == d %} selected{% endif %}>{{ day }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <b>Type</b>
+        <select name='t'>
+            <option value='0'{% if t == 0 %} selected{% endif %}>Any type</option>
+            {% for orgtype in orgtypes %}
+            <option value='{{ orgtype.orgtype }}'{% if orgtype.orgtype == t %} selected{% endif %}>{{ orgtype.typename }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="inputs">
+        <b>Place</b>
+        <select id='dom' name='dom' onchange=''>
+            {% for dd in uk_domiciles %}
+            <option value='{{ dd.id }}'{% if dd.id == dom %} selected{% endif %}>{{ dd.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Go">
+    </div>
+    <div class="clear"></div>
+    <input type="hidden" name="sort" value="{{ sort }}">
+</form>
+
+{% if not companies %}
+    <p>None found. Try widening your search.</p>
 {% else %}
-<p>No results found.</p>
+    <table class="txtable fcr">
+    <tr>
+        <th></th>
+        <th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=regup">Reg no.</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=regdn">&#9660;</a></th>
+        <th class="left"><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=namup">Name</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=namdn">&#9660;</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=incup">Incorporated</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=incdn">&#9660;</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=disdn">Dissolved</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=disup">&#9650;</a></th>
+        {% if t == 0 %}<th><a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=typup">Type</a> | <a href="?y={{ y }}&m={{ m }}&d={{ d }}&t={{ t }}&dom={{ dom }}&sort=typdn">&#9660;</a></th>{% endif %}
+    </tr>
+    {% for company in companies %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ company.incid or '&mdash;' }}&nbsp;</td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name1 }}</a></td>
+        <td class="nowrap">{{ company.incdate }}</td>
+        <td class="nowrap">{{ company.disdate or '&mdash;' }}</td>
+        {% if t == 0 %}<td>{{ company.typename }}</td>{% endif %}
+    </tr>
+    {% endfor %}
+    </table>
+    {% if count == 5000 %}
+        <p>Only the first 5000 records are shown. Try narrowing your search to a specific month or day.</p>
+    {% endif %}
 {% endif %}
 {% endblock %}

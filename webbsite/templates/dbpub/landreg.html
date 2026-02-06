@@ -29,15 +29,15 @@
         <th>Avg Price</th>
         <th>Total Consideration</th>
     </tr>
-    {% for row in data[-50:] %}
+    {% for row in data %}
     <tr>
         <td>{{ row.period }}</td>
-        <td>{{ "{:,}".format(row.units|int) if row.units else '' }}</td>
-        <td>{{ "{:,.0f}".format(row.avg_price) if row.avg_price else '' }}</td>
-        <td>{{ "{:,.0f}".format(row.consid) if row.consid else '' }}</td>
+        <td class="r">{{ "{:,}".format(row.units|int) if row.units else '' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.avg_price) if row.avg_price else '' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.consid) if row.consid else '' }}</td>
     </tr>
     {% endfor %}
 </table>
-<p>Showing last 50 of {{ data|length }} records</p>
+<p>{{ data|length }} records</p>
 {% endif %}
 {% endblock %}

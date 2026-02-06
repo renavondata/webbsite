@@ -1,22 +1,44 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% block title %}Non-HK companies in HK{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
+<h2>Non-HK companies in HK</h2>
+
+<p>This page shows the number of non-HK companies registered and dissolved/departed in HK per year.
+A company which ceases to be registered in HK may still carry on business
+elsewhere, or it may later dissolve.</p>
+<p>Note: data on deregistrations are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
+and name-changes, without stating domicile.</p>
+
+{% if years %}
+<table class="numtable center">
+    <tr>
+        <th>Year</th>
+        <th>Reg.</th>
+        <th>Dep./<br>Diss.</th>
+        <th>Net</th>
+        <th class="colHide3">Total<br>reg.</th>
+        <th class="colHide3">Total<br>dep./<br>diss.</th>
+        <th>Net alive</th>
+    </tr>
+    {% set ns = namespace(inc_tot=0, dis_tot=0) %}
+    {% for row in years %}
+    {% set ns.inc_tot = ns.inc_tot + row.reg %}
+    {% set ns.dis_tot = ns.dis_tot + row.ces %}
+    <tr>
+        <td>{{ row.year }}</td>
+        <td><a href="/dbpub/incFcal.asp?y={{ row.year }}">{{ '{:,}'.format(row.reg) }}</a></td>
+        <td><a href="/dbpub/disFcal.asp?y={{ row.year }}">{{ '{:,}'.format(row.ces) }}</a></td>
+        <td>{{ '{:,}'.format(row.reg - row.ces) }}</td>
+        <td class="colHide3">{{ '{:,}'.format(ns.inc_tot) }}</td>
+        <td class="colHide3">{{ '{:,}'.format(ns.dis_tot) }}</td>
+        <td>{{ '{:,}'.format(ns.inc_tot - ns.dis_tot) }}</td>
+    </tr>
     {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
 </table>
 {% else %}
 <p>No results found.</p>

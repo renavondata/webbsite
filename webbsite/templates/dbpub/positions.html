@@ -11,7 +11,19 @@
 
 <h2>{{ person_name }}</h2>
 
-{% if not is_org %}
+{% if is_org %}
+{# Organization navigation bar #}
+<ul class="navlist">
+	<li><a href='/dbpub/orgdata.asp?p={{ p }}'>Key Data</a></li>
+	<li class='livebutton'>Officers</li>
+	<li><a href='/dbpub/overlap.asp?p={{ p }}'>Overlaps</a></li>
+	<li><a href='/dbpub/pay.asp?p={{ p }}'>Pay</a></li>
+	<li><a href='/dbpub/advisers.asp?p={{ p }}'>Advisers</a></li>
+	<li><a href='/dbpub/docs.asp?p={{ p }}'>Financials</a></li>
+	<li><a href='/dbpub/complain.asp?p={{ p }}'>Complain</a></li>
+</ul>
+<div class="clear"></div>
+{% else %}
 {# Person navigation bar #}
 <ul class="navlist">
 	<li><a href="../dbpub/natperson.asp?p={{ p }}">Key data</a></li>

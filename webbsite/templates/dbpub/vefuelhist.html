@@ -1,7 +1,59 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get" action="/dbpub/vefuelhist.asp">
+	<div class="inputs">
+		Vehicle class:
+		<select name="vc" onchange="this.form.submit()">
+			{% for cls in classes %}
+			<option value="{{ cls.id }}" {% if cls.id == vc %}selected{% endif %}>{{ cls.des }}</option>
+			{% endfor %}
+		</select>
+		Stock:
+		<select name="t" onchange="this.form.submit()">
+			<option value="0" {% if t == 0 %}selected{% endif %}>Licensed</option>
+			<option value="1" {% if t == 1 %}selected{% endif %}>Registered</option>
+		</select>
+		Frequency:
+		<select name="f" onchange="this.form.submit()">
+			<option value="1" {% if f == 1 %}selected{% endif %}>Monthly</option>
+			<option value="2" {% if f == 2 %}selected{% endif %}>Yearly</option>
+		</select>
+		<label><input type="checkbox" name="simple" value="1" {% if simple %}checked{% endif %} onchange="this.form.submit()"> Simple</label>
+	</div>
+</form>
+
+{% if op and op_name %}
+<p>Operator: <a href="/dbpub/orgdata.asp?p={{ op }}">{{ op_name }}</a></p>
+{% endif %}
+
+{% if data %}
+{% if maxd %}<p>Data as at {{ maxd }}</p>{% endif %}
+
+<table class="numtable center yscroll">
+	<tr>
+		<th><a href="?vc={{ vc }}&t={{ t }}&f={{ f }}&{% if simple %}simple=1&{% endif %}sort={% if sort == 'datup' %}datdn{% else %}datup{% endif %}">{{ ftxt }}</a></th>
+		<th><a href="?vc={{ vc }}&t={{ t }}&f={{ f }}&{% if simple %}simple=1&{% endif %}sort={% if sort == 'totup' %}totdn{% else %}totup{% endif %}">Total</a></th>
+		{% for cat in cats %}
+		<th><a href="?vc={{ vc }}&t={{ t }}&f={{ f }}&{% if simple %}simple=1&{% endif %}sort=f{{ loop.index0 }}dn">{{ cat.name }}</a></th>
+		<th><a href="?vc={{ vc }}&t={{ t }}&f={{ f }}&{% if simple %}simple=1&{% endif %}sort=fs{{ loop.index0 }}dn">%</a></th>
+		{% endfor %}
+	</tr>
+	{% for row in data %}
+	<tr>
+		<td>{{ row.d }}</td>
+		<td>{{ '{:,}'.format(row.n|int) if row.n else 0 }}</td>
+		{% for cat in cats %}
+		<td>{{ '{:,}'.format(row['f' ~ loop.index0]|int) if row['f' ~ loop.index0] else 0 }}</td>
+		<td>{{ '%.1f'|format(row['fs' ~ loop.index0]|float) if row['fs' ~ loop.index0] else '0.0' }}%</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<p>No data found for this vehicle class and fuel type.</p>
+{% endif %}
+
 {% endblock %}

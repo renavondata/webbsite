@@ -1,32 +1,35 @@
 {% extends "base_database.html" %}
 
-{% block title %}People born in {{ y }}{% endblock %}
+{% block title %}Born in {{ '%02d'|format(m) if m else '' }} {{ y }}{% endblock %}
 
 {% block content %}
-<h2>People born in {{ y }}</h2>
-
-<form method="get" action="/dbpub/bornyear.asp">
-    Year: <input type="number" name="y" value="{{ y }}" min="1800" max="{{ current_year }}">
+<form method="get" action="/dbpub/bornyear.asp" style="margin-top:6px">
+    <h2>People born in&nbsp;
+    <input type="text" name="y" size="4" value="{{ y }}">
+    month <select name="m" onchange="this.form.submit()">
+        {% for i in range(1, 13) %}
+        <option value="{{ i }}" {{ 'selected' if m == i else '' }}>{{ i }}</option>
+        {% endfor %}
+    </select>
     <input type="hidden" name="sort" value="{{ sort }}">
-    <input type="submit" value="Go">
+    </h2>
 </form>
-
-<table class="numtable">
+<h3>Age in {{ current_year }}: {{ current_year - y }}</h3>
+<table class="txtable">
     <tr>
-        <th class="left"><a href="?y={{ y }}&sort=nameup">Name</a> | <a href="?y={{ y }}&sort=namedn">▼</a></th>
-        <th><a href="?y={{ y }}&sort=dayup">Birthday</a> | <a href="?y={{ y }}&sort=daydn">▼</a></th>
-        <th>Age</th>
-        <th>Date of death</th>
+        <th><a href="?y={{ y }}&m={{ m }}&sort=nameup">Name</a> | <a href="?y={{ y }}&m={{ m }}&sort=namedn">&#9660;</a></th>
+        <th class="right"><a href="?y={{ y }}&m={{ m }}&sort=bornup">Date of birth</a> | <a href="?y={{ y }}&m={{ m }}&sort=borndn">&#9660;</a></th>
+        <th class="right"><a href="?y={{ y }}&m={{ m }}&sort=deaddn">Date of death</a> | <a href="?y={{ y }}&m={{ m }}&sort=deadup">&#9650;</a></th>
     </tr>
     {% for person in people %}
     <tr>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ person.personid }}">{{ person.name }}</a></td>
-        <td>{% if person.mob and person.dob %}{{ person.mob }}/{{ person.dob }}{% endif %}</td>
-        <td>{{ current_year - y }}</td>
-        <td>{% if person.dod %}{{ person.dod }}{% endif %}</td>
+        <td><a href="/dbpub/positions.asp?p={{ person.personid }}">{{ person.name }}</a></td>
+        <td>{% if person.yob %}{{ person.yob }}{% endif %}{% if person.mob %}-{{ '%02d'|format(person.mob) }}{% endif %}{% if person.dob %}-{{ '%02d'|format(person.dob) }}{% endif %}</td>
+        <td>{% if person.yod %}{{ person.yod }}{% if person.mond %}-{{ '%02d'|format(person.mond) }}{% endif %}{% if person.dod %}-{{ '%02d'|format(person.dod) }}{% endif %}{% endif %}</td>
     </tr>
     {% endfor %}
 </table>
-
-<p>Total: {{ people|length }} people born in {{ y }}</p>
+<p>Note: the list may include dead people. If a person is known to be dead but
+we do not know when he/she died, then this is indicated by a (d) against their
+name.</p>
 {% endblock %}

@@ -27,29 +27,74 @@
     </tr>
     {% for member in staff %}
     <tr>
-        <td>{{ member.name }}</td>
+        <td><a href="/dbpub/lirstaffhist.asp?s={{ member.staffid }}">{{ member.name }}</a></td>
         <td>{{ member.title }}</td>
         <td>{{ (member.tel|string)[:4] }}-{{ (member.tel|string)[4:] if member.tel else '' }}</td>
-        <td>{{ member.firstseen or '' }}</td>
+        <td>{{ member.firstseen|default('', true) }}</td>
     </tr>
     {% endfor %}
 </table>
 {% endif %}
+{% if former_staff %}
+<h3>Former team members or positions</h3>
+<table class="txtable">
+    <tr>
+        <th>Name</th>
+        <th>Title</th>
+        <th>First Seen</th>
+        <th>Last Seen</th>
+    </tr>
+    {% for member in former_staff %}
+    <tr>
+        <td><a href="/dbpub/lirstaffhist.asp?s={{ member.staffid }}">{{ member.name }}</a></td>
+        <td>{{ member.title }}</td>
+        <td>{{ member.firstseen|default('', true) }}</td>
+        <td>{{ member.lastseen|default('', true) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+<p>HK-listed issuers are regulated by the monopoly for-profit Stock Exchange of Hong Kong Ltd (<strong>SEHK</strong>,
+wholly owned by Hong Kong Exchanges and Clearing Ltd, 0388.HK),
+under the supervision of the Securities and Futures Commission (<strong>SFC</strong>). The staff are divided into
+teams, with each issuer covered by 1 team at any point in time. Senior team members may serve on more than one team. If you suspect a breach of the
+Listing Rules, then please click on the company name to go to its complaint page, and file a complaint.</p>
 {% if issuers %}
 <h3>Issuers currently regulated by this team</h3>
 <table class="txtable yscroll">
     <tr>
         <th></th>
-        <th><a href="?t={{ t }}&sort=codup">Stock code</a> | <a href="?t={{ t }}&sort=coddn">▼</a></th>
-        <th><a href="?t={{ t }}&sort=namup">Issuer name</a> | <a href="?t={{ t }}&sort=namdn">▼</a></th>
+        <th><a href="?t={{ t }}&sort=codup">Stock code</a></th>
+        <th><a href="?t={{ t }}&sort=namup">Issuer name</a></th>
         <th>First seen</th>
     </tr>
     {% for issuer in issuers %}
     <tr>
         <td>{{ loop.index }}</td>
-        <td>{{ issuer.sc or '—' }}</td>
-        <td><a href="/dbpub/orgdata.asp?p={{ issuer.orgid }}">{{ issuer.name }}</a></td>
-        <td>{{ issuer.firstseen or '' }}</td>
+        <td>{{ issuer.sc or '' }}</td>
+        <td><a href="/dbpub/complain.asp?p={{ issuer.orgid }}">{{ issuer.name }}</a></td>
+        <td>{{ issuer.firstseen|default('', true) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% if former_issuers %}
+<h3>Issuers formerly regulated by this team</h3>
+<table class="txtable">
+    <tr>
+        <th></th>
+        <th><a href="?t={{ t }}&sort=codup">Stock code</a></th>
+        <th><a href="?t={{ t }}&sort=namup">Issuer name</a></th>
+        <th>First seen</th>
+        <th>Last seen</th>
+    </tr>
+    {% for issuer in former_issuers %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ issuer.sc or '' }}</td>
+        <td><a href="/dbpub/complain.asp?p={{ issuer.orgid }}">{{ issuer.name }}</a></td>
+        <td>{{ issuer.firstseen|default('', true) }}</td>
+        <td>{{ issuer.lastseen|default('', true) }}</td>
     </tr>
     {% endfor %}
 </table>

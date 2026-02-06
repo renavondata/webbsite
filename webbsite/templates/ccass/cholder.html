@@ -75,7 +75,7 @@
 			<td class="colHide1">{{ "{:,.0f}".format(holding.holding) }}</td>
 			<td class="colHide3">{{ "{:,.0f}".format(holding.valn) if holding.valn else '' }}</td>
 			<td>{% if holding.susp %}*{% endif %}</td>
-			<td><a href="{{ url_for('ccass.chldhist', i=holding.issueID, p=part) }}">{{ "%.2f"|format(holding.stake * 100) if holding.stake else '' }}</a></td>
+			<td><a href="{{ url_for('ccass.chistory', i=holding.issueID, part=part) }}">{{ "%.2f"|format(holding.stake * 100) if holding.stake else '' }}</a></td>
 			<td class="colHide2">{{ holding.atDate }}</td>
 		</tr>
 	{% endfor %}

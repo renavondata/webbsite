@@ -15,7 +15,7 @@
         <th>Cumulative</th>
         <th>% of Population</th>
     </tr>
-    {% for row in data[-30:] %}
+    {% for row in data|reverse %}
     <tr>
         <td>{{ row.d }}</td>
         <td>{{ "{:,}".format(row.sino|int) if row.sino else '0' }}</td>
@@ -25,7 +25,6 @@
     </tr>
     {% endfor %}
 </table>
-<p>Showing last 30 days of {{ data|length }} total records</p>
 {% else %}
 <p>No data available.</p>
 {% endif %}

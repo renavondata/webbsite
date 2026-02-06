@@ -36,6 +36,7 @@ def create_app(config_class=Config):
         if_null,
         sp_date,
         yn,
+        write_nav,
     )
 
     app.jinja_env.filters["sig"] = sig
@@ -58,6 +59,7 @@ def create_app(config_class=Config):
     app.jinja_env.globals["sig"] = sig
     app.jinja_env.globals["iif"] = iif
     app.jinja_env.globals["if_null"] = if_null
+    app.jinja_env.globals["write_nav"] = write_nav
 
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site

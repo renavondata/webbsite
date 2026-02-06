@@ -1,7 +1,144 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="vc" onchange="this.form.submit()">
+    {% for cls in classes %}
+        <option value="{{ cls.id }}" {% if cls.id == vc %}selected{% endif %}>{{ cls.des }}</option>
+    {% endfor %}
+    </select>
+    <select name="brand" onchange="this.form.submit()">
+    {% for br in brands %}
+        <option value="{{ br.id }}" {% if br.id == makeid %}selected{% endif %}>{{ br.make }}</option>
+    {% endfor %}
+    </select>
+    <select name="y" onchange="this.form.submit()">
+        <option value="0" {% if y == 0 %}selected{% endif %}>All years</option>
+        {% if maxd %}
+        {% for yr in range(maxd.year, 2015, -1) %}
+        <option value="{{ yr }}" {% if yr == y %}selected{% endif %}>{{ yr }}</option>
+        {% endfor %}
+        {% endif %}
+    </select>
+    {% if y > 0 %}
+    <select name="m" onchange="this.form.submit()">
+        <option value="0" {% if m == 0 %}selected{% endif %}>All months</option>
+        {% for mo in range(1, 13) %}
+        <option value="{{ mo }}" {% if mo == m %}selected{% endif %}>{{ mo }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+</form>
+
+<p>
+    <a href="/dbpub/veFR.asp?vc={{ vc }}&y={{ y }}&m={{ m }}&b=1">By brand &amp; fuel</a> |
+    <a href="/dbpub/veFR.asp?vc={{ vc }}&y={{ y }}&m={{ m }}&b=2">By brand &amp; body</a> |
+    <a href="/dbpub/vebrandhist.asp?vc={{ vc }}&brand={{ makeid }}&b=1">History by fuel</a> |
+    <a href="/dbpub/vebrandhist.asp?vc={{ vc }}&brand={{ makeid }}&b=2">History by body</a>
+</p>
+
+{% if found and fuels and bodies %}
+{# Summary table: body x fuel #}
+<h3>Summary by body type and fuel</h3>
+<table class="numtable">
+    <tr>
+        <th class="left">Body \ Fuel</th>
+        {% for fuel in fuels %}
+        <th>{{ fuel.name }}</th>
+        {% endfor %}
+        <th>Total</th>
+    </tr>
+    {% set ns = namespace(body_id=-1, row_total=0) %}
+    {% for row in summary_data %}
+        {% if row.bodyid != ns.body_id %}
+            {% if ns.body_id != -1 %}
+                <td class="r"><b>{{ "{:,}".format(ns.row_total) }}</b></td></tr>
+            {% endif %}
+            {% set ns.body_id = row.bodyid %}
+            {% set ns.row_total = 0 %}
+            {% set body_name = '' %}
+            {% for b in bodies %}{% if b.id == row.bodyid %}{% set body_name = b.name %}{% endif %}{% endfor %}
+    <tr>
+        <td>{{ body_name }}</td>
+        {% endif %}
+        <td class="r">{{ "{:,}".format(row.freg|int) if row.freg else '' }}</td>
+        {% set ns.row_total = ns.row_total + (row.freg|int if row.freg else 0) %}
+    {% endfor %}
+    {% if ns.body_id != -1 %}
+        <td class="r"><b>{{ "{:,}".format(ns.row_total) }}</b></td></tr>
+    {% endif %}
+    <tr class="total">
+        <td>All bodies</td>
+        {% for fuel in fuels %}
+        <td class="r"><b>{{ "{:,}".format(fuel.total|int) if fuel.total else '0' }}</b></td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(total|int) }}</b></td>
+    </tr>
+    {% if total > 0 %}
+    {% for b in bodies %}
+    <tr>
+        <td>{{ b.name }} %</td>
+        {% for fuel in fuels %}
+        {% set bfuel = 0 %}
+        {% for s in summary_data %}{% if s.bodyid == b.id and s.fuelid == fuel.id %}{% set bfuel = s.freg|int if s.freg else 0 %}{% endif %}{% endfor %}
+        <td class="r">{{ "%.2f"|format(bfuel * 100.0 / fuel.total) if fuel.total else '' }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+</table>
+
+{# Detailed table: body x status x fuel (pivoted) #}
+{% if data %}
+<h3>Detail by body type, status and fuel</h3>
+<table class="numtable">
+    <tr>
+        <th class="left">Body</th>
+        <th class="left">Status</th>
+        {% for fuel in fuels %}
+        <th>{{ fuel.name }}</th>
+        {% endfor %}
+        <th>All fuels</th>
+    </tr>
+    {% set ns2 = namespace(prev_body=-1) %}
+    {% for row in data %}
+    <tr>
+        {% set body_name = '' %}
+        {% for b in bodies %}{% if b.id == row.bodyid %}{% set body_name = b.name %}{% endif %}{% endfor %}
+        <td>{% if row.bodyid != ns2.prev_body %}{{ body_name }}{% endif %}</td>
+        <td>{{ row.sdes }}</td>
+        {% for fuel in fuels %}
+        <td class="r">{{ "{:,}".format(row.fuel_vals[fuel.id]|int) if row.fuel_vals.get(fuel.id) else '' }}</td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(row.total|int) }}</b></td>
+        {% set ns2.prev_body = row.bodyid %}
+    </tr>
+    {% endfor %}
+    <tr class="total">
+        <td>Total</td>
+        <td></td>
+        {% for fuel in fuels %}
+        <td class="r"><b>{{ "{:,}".format(fuel.total|int) if fuel.total else '0' }}</b></td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(total|int) }}</b></td>
+    </tr>
+</table>
+{% endif %}
+
+<p>{{ "{:,}".format(total|int) }} total first registrations</p>
+<h3>Notes</h3>
+<p>Registrations are classified by the Transport Department, up to 2018 into "Brand new" and "Others", and from 2019 onwards, using the following more detailed categories:</p>
+<table class="txtable">
+    <tr><th>Status</th><th>Description</th></tr>
+    <tr><td>A</td><td>Prior to importation into Hong Kong for sale, the vehicle has either never been registered outside Hong Kong, or was registered outside Hong Kong but in a manner that the vehicle was not permitted to be used on roads, with documentary proof.</td></tr>
+    <tr><td>B</td><td>Prior to importation into Hong Kong for sale, the vehicle has never been registered outside Hong Kong as declared by the vehicle importer.</td></tr>
+    <tr><td>C1</td><td>The vehicle has been registered outside Hong Kong prior to importation to Hong Kong for sale. The length of the period of such registration is shorter than 15 days as proved by supporting documents.</td></tr>
+    <tr><td>C2</td><td>The vehicle has been registered outside Hong Kong prior to importation to Hong Kong for sale, other than vehicles categorised as C1.</td></tr>
+    <tr><td>Others</td><td>The vehicle was imported by the registered owner into Hong Kong for own use, or was assembled in Hong Kong with specified additions to the imported chassis / cab and chassis, or was acquired through auction from the Hong Kong SAR Government.</td></tr>
+</table>
+{% else %}
+<p>No data available for this selection.</p>
+{% endif %}
 {% endblock %}

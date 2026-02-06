@@ -1,0 +1,67 @@
+{% extends "base_database.html" %}
+{% block title %}Webb-chips: current disclosed holdings{% endblock %}
+{% block content %}
+<h2>Webb-chips: current disclosed holdings</h2>
+<p>In the interest of disclosure and by popular request, these are the
+holdings of our founder David Webb of 5% or more in HK-listed stocks, based on the
+latest published statutory filing in each stock. With certain <em>de minimis</em>
+exceptions, substantial shareholders must disclose when their stake increases or
+decreases through a whole 1% boundary. We will endeavour to update this table whenever
+a filing is published, but the filings published by HKEX are authoritative and
+can be
+<a href="https://di.hkex.com.hk/di/NSSrchPerson.aspx?src=MAIN&amp;lang=EN" target="_blank">
+searched by shareholder name here</a>. Prices are not live; they are normally
+updated after the end of each market day.</p>
+<p>Mr Webb does of course have undisclosed holdings which are less than 5% of a
+stock, and
+may have previously-disclosed holdings which have fallen below 5%, either by
+disposal or dilution. Holdings are removed from this table when the last filing
+falls below the 5% disclosure threshold.</p>
+<p>Click on the stock code to see total return charts and other stock data. Click on
+the company name to see corporate data. Click on the date to see the raw filing.</p>
+<p><strong>Investment alert</strong>: Mr Webb does not give stock
+recommendations. If you receive any tips using his name on messaging apps, these
+are fake.</p>
+{% if not holdings %}
+	<p><b>None found.</b></p>
+{% else %}
+	<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+	<table class="numtable">
+		<tr>
+			<th class="colHide1">Row</th>
+			<th><a href="/dbpub/webbchips.asp?sort={{ 'codeup' if sort != 'codeup' else 'codedn' }}"><b>Stock<br>Code</b></a></th>
+			<th class="left"><a href="/dbpub/webbchips.asp?sort={{ 'nameup' if sort != 'nameup' else 'namedn' }}"><b>Issuer</b></a></th>
+			<th class="colHide2"><a href="/dbpub/webbchips.asp?sort={{ 'datedn' if sort != 'datedn' else 'dateup' }}"><b>Event<br>date</b></a></th>
+			<th class="colHide3">Shares<br>filed</th>
+			<th><a href="/dbpub/webbchips.asp?sort={{ 'stkdn' if sort != 'stkdn' else 'stkup' }}"><b>Stake<br>filed<br>%</b></a></th>
+			<th class="colHide3">Price</th>
+			<th class="colHide2"><a href="/dbpub/webbchips.asp?sort={{ 'qddn' if sort != 'qddn' else 'qdup' }}"><b>Price<br>date</b></a></th>
+			<th><a href="/dbpub/webbchips.asp?sort={{ 'mvdn' if sort != 'mvdn' else 'mvup' }}"><b>Market<br>value<br>HK$m</b></a></th>
+		</tr>
+	{% for h in holdings %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td><a href="/dbpub/str.asp?i={{ h.issueid }}">{{ h.sc }}</a></td>
+			<td class="left"><a href="/dbpub/orgdata.asp?p={{ h.issuer }}">{{ h.name }}</a></td>
+			<td class="colHide2">{% if h.filing %}<a target="_blank" href="https://di.hkex.com.hk/di/NSForm1.aspx?fn={{ h.filing }}">{{ h.atdate }}</a>{% else %}{{ h.atdate }}{% endif %}</td>
+			<td class="colHide3">{{ "{:,.0f}".format(h.shares) if h.shares else '' }}</td>
+			<td>{{ "%.2f"|format(h.stake) if h.stake else '' }}</td>
+			<td class="colHide3">{{ "%.3f"|format(h.price) if h.price else '' }}</td>
+			<td class="colHide2">{{ h.qdate if h.qdate else '' }}</td>
+			<td>{{ "%.1f"|format(h.value) if h.value else '' }}</td>
+		</tr>
+	{% endfor %}
+		<tr class="total">
+			<td class="colHide1"></td>
+			<td></td>
+			<td class="left">Total</td>
+			<td class="colHide2"></td>
+			<td class="colHide3"></td>
+			<td></td>
+			<td class="colHide3"></td>
+			<td class="colHide2"></td>
+			<td>{{ "%.1f"|format(cum_val) }}</td>
+		</tr>
+	</table>
+{% endif %}
+{% endblock %}

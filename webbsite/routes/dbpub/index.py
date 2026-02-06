@@ -14,6 +14,7 @@ bp = Blueprint("dbpub_index", __name__)
 
 
 @bp.route("/")
+@bp.route("/index.asp")
 def index():
     """Database homepage - port of dbpub/default.asp"""
     return render_template("dbpub/index.html")

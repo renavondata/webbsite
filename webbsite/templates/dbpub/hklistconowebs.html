@@ -1,24 +1,21 @@
 {% extends "base_database.html" %}
 
-{% block title %}HK-listed companies without websites{% endblock %}
+{% block title %}HK-listed companies without web sites{% endblock %}
 
 {% block content %}
-<h2>HK-listed companies without websites</h2>
+<h2>HK-listed companies without web sites</h2>
 
-<p>For HK-listed companies with web sites, <a href="/dbpub/hklistcowebs.asp">click here</a>.</p>
+<p>As far as we know, the following HK-listed companies have no web site. If you know of one, then please
+<a href="../contact/">tell us</a>! For a list of
+those who do have web sites, <a href="../dbpub/hklistcowebs.asp">click here</a>.</p>
 
-<table class="opltable yscroll">
-    <tr>
-        <th><a href="?sort=codup">Stock code</a> | <a href="?sort=coddn">▼</a></th>
-        <th><a href="?sort=namup">Name</a> | <a href="?sort=namdn">▼</a></th>
-    </tr>
+{% if companies %}
+<table class="txtable">
     {% for company in companies %}
-    <tr>
-        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.code or '—' }}</a></td>
-        <td><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
-    </tr>
+    <tr><td><a href='orgdata.asp?p={{ company.personid }}'>{{ company.name }}</a></td></tr>
     {% endfor %}
 </table>
-
-<p>Total: {{ companies|length }} companies without websites</p>
+{% else %}
+<p><b>None found.</b></p>
+{% endif %}
 {% endblock %}

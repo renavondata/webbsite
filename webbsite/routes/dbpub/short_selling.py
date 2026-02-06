@@ -32,8 +32,8 @@ def short():
                 FROM enigma.stockListings sl
                 JOIN enigma.issue i ON sl.issueid = i.ID1
                 JOIN enigma.organisations o ON i.issuer = o.personid
-                WHERE sl.stockCode = %s AND sl.toDate IS NULL
-                ORDER BY sl.fromDate DESC LIMIT 1
+                WHERE sl.stockCode = %s AND sl.delistdate IS NULL
+                ORDER BY sl.firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )
@@ -321,8 +321,8 @@ def shortdate():
             LEFT JOIN LATERAL (
                 SELECT stockCode
                 FROM enigma.stockListings
-                WHERE issueid = t1.issueid AND toDate IS NULL
-                ORDER BY fromDate DESC
+                WHERE issueid = t1.issueid AND delistdate IS NULL
+                ORDER BY firsttradedate DESC
                 LIMIT 1
             ) sl ON TRUE
             ORDER BY {ob}

@@ -1,29 +1,69 @@
 {% extends "base_database.html" %}
 
-{% block title %}Distribution of HK stocks by board lot{% endblock %}
+{% block title %}Distribution of stocks by board lot{% endblock %}
 
 {% block content %}
-<h2>Distribution of HK stocks by board lot size</h2>
+<h2>Distribution of HK stocks by board lot</h2>
 
-<p>This table shows how many listed securities have each board lot size.</p>
+<p>A board lot is the minimum tradable quantity of shares in a particular stock
+on SEHK. The HKEx monopoly charges a "scrip fee" of $1.50 per board lot on the net increase in a
+CCASS Participant's holdings between successive book closures for dividends or
+other distributions. HKEX also charges, to both buyer and seller, a minimum
+settlement fee of $2 on each trade of $100,000 or less and a "trading fee" of 0.00565%. When a buy order matches more
+than one sell order or vice versa, each match is a separate "trade". So on a
+single-lot trade, HKEX collects $4 plus 0.0113% trading fee, plus the $1.50
+scrip fee if the
+buyer keeps it till the next book closure.</p>
+<p>This table summarises the distribution of board lots for ordinary shares of
+all HK-listed companies quoted in HK$.
+To see a complete list of stocks sorted by board lot value,
+<a href="mcap.asp?sort=ltvup">click here</a>.</p>
 
-<table class="numtable">
+<table class="numtable yscroll">
     <tr>
-        <th>Board Lot</th>
-        <th>Count</th>
-        <th>Percentage</th>
+        <th>Board lot</th>
+        <th>No. of stocks</th>
+        <th class="colHide3">Combined market cap $m</th>
+        <th>Mean share price $</th>
+        <th>Mean lot value $</th>
+        <th class="colHide2">Number of lots</th>
+        <th>Mean market cap</th>
     </tr>
+    {% set ns = namespace(stock_sum=0, mcap_sum=0.0, share_sum=0, lot_sum=0.0) %}
     {% for lot in board_lots %}
+    {% set boardlot = lot.boardlot|int %}
+    {% set stocks = lot.stocks|int %}
+    {% set mcapm = lot.mcapm|float %}
+    {% set shares = lot.shares|float %}
+    {% set lots = (shares / boardlot) if boardlot > 0 else 0 %}
+    {% set mean_price = (mcapm / shares * 1000000) if shares > 0 else 0 %}
+    {% set lot_value = mean_price * boardlot %}
+    {% set ns.stock_sum = ns.stock_sum + stocks %}
+    {% set ns.mcap_sum = ns.mcap_sum + mcapm %}
+    {% set ns.share_sum = ns.share_sum + shares %}
+    {% set ns.lot_sum = ns.lot_sum + lots %}
     <tr>
-        <td>{{ lot.boardlot or 'N/A' }}</td>
-        <td>{{ lot.count }}</td>
-        <td>{{ '%.2f%%'|format((lot.count * 100.0 / total) if total > 0 else 0) }}</td>
+        <td>{{ '{:,.0f}'.format(boardlot) }}</td>
+        <td>{{ '{:,.0f}'.format(stocks) }}</td>
+        <td class="colHide3">{{ '{:,.0f}'.format(mcapm) }}</td>
+        <td>{{ '{:,.3f}'.format(mean_price) }}</td>
+        <td>{{ '{:,.0f}'.format(lot_value) }}</td>
+        <td class="colHide2">{{ '{:,.0f}'.format(lots) }}</td>
+        <td>{{ '{:,.0f}'.format(mcapm / stocks) if stocks > 0 else '0' }}</td>
     </tr>
     {% endfor %}
+    {% if ns.lot_sum > 0 and ns.stock_sum > 0 %}
     <tr class="total">
-        <td><strong>Total</strong></td>
-        <td><strong>{{ total }}</strong></td>
-        <td><strong>100.00%</strong></td>
+        <td>{{ '{:,.0f}'.format(ns.share_sum / ns.lot_sum) if ns.lot_sum > 0 else '' }}</td>
+        <td>{{ '{:,.0f}'.format(ns.stock_sum) }}</td>
+        <td class="colHide3">{{ '{:,.0f}'.format(ns.mcap_sum) }}</td>
+        <td>{{ '{:,.3f}'.format(ns.mcap_sum / ns.share_sum * 1000000) if ns.share_sum > 0 else '0' }}</td>
+        <td>{{ '{:,.0f}'.format(ns.mcap_sum / ns.lot_sum * 1000000) if ns.lot_sum > 0 else '0' }}</td>
+        <td class="colHide2">{{ '{:,.0f}'.format(ns.lot_sum) }}</td>
+        <td>{{ '{:,.0f}'.format(ns.mcap_sum / ns.stock_sum) }}</td>
     </tr>
+    {% endif %}
 </table>
+<p>Note: the mean (average) share price is weighted by the number of outstanding shares in each stock.
+ There are a total of {{ '{:,.0f}'.format(ns.share_sum / 1000000) }}m shares outstanding.</p>
 {% endblock %}

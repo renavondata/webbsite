@@ -31,7 +31,7 @@ incorporations and name-changes.</p>
     <div class="inputs"><b>Incorporation date</b>&nbsp;</div>
     <div class="inputs">
         Year: <select name="y">
-            {% for year in range(1865, 2026) %}
+            {% for year in range(1865, current_year + 1) %}
             <option value="{{ year }}" {% if year == y %}selected{% endif %}>{{ year }}</option>
             {% endfor %}
         </select>

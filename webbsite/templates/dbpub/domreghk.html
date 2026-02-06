@@ -1,24 +1,38 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
-    {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
+<h2>{{ title }}</h2>
+<p>This page ranks the domicile of overseas companies which are registered as having a place of business in HK and are not dissolved.
+All companies with a primary or secondary listing on the Stock Exchange of Hong Kong Ltd are required to be registered
+(because a share registration office constitutes a place of business), but most registered
+companies are not listed.</p>
+<p>Note: data on domicile are often unknown after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
+and name-changes, without stating domicile.</p>
+<table class="numtable">
+	<tr>
+		<th></th>
+		<th class="left"><a href='/dbpub/domregHK.asp?sort={% if sort == "domup" %}domdn{% else %}domup{% endif %}'><b>Domicile</b></a></th>
+		<th><a href='/dbpub/domregHK.asp?sort={% if sort == "cntdn" %}cntup{% else %}cntdn{% endif %}'><b>Companies</b></a></th>
+		<th><b>Share %</b></th>
+	</tr>
+	{% for row in domiciles %}
+		<tr>
+			<td>{{ loop.index }}</td>
+			<td class="left"><a href="incFcal.asp?dom={{ row.domicile }}">{{ row.friendly }}</a></td>
+			<td>{{ "{:,.0f}".format(row.domcnt) }}</td>
+			<td>{{ "{:.2f}".format(row.domcnt * 100 / total) if total else '0.00' }}</td>
+		</tr>
+	{% endfor %}
+	<tr>
+		<td></td>
+		<td class="left">Total companies</td>
+		<td>{{ "{:,.0f}".format(total) }}</td>
+		<td>100.00</td>
+	</tr>
 </table>
-{% else %}
-<p>No results found.</p>
-{% endif %}
 {% endblock %}

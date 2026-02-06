@@ -12,13 +12,44 @@
     </select>
 </form>
 
-{% if data %}
+{% if data and data[0].data %}
 <p>Data by value category. Latest data: {{ max_date }}</p>
-{% for cat_data in data[:5] %}
-<h3>{{ cat_data.category }}</h3>
-<p>Total transactions in this category: {{ "{:,}".format(cat_data.data|sum(attribute='units')|int) if cat_data.data else '0' }}</p>
-{% endfor %}
-<p>Showing 5 of {{ data|length }} categories</p>
+<table class="numtable">
+    <tr>
+        <th class="left">Period</th>
+        {% for cat_name in categories %}
+        <th>{{ cat_name }}</th>
+        {% endfor %}
+        <th>Total</th>
+    </tr>
+    {# Build a dict of period -> category values #}
+    {% set ns = namespace(periods=[]) %}
+    {% for row in data[0].data %}
+        {% set _ = ns.periods.append(row.period) %}
+    {% endfor %}
+    {% for period in ns.periods %}
+    <tr>
+        <td>{{ period }}</td>
+        {% set ns2 = namespace(row_total=0) %}
+        {% for cat_data in data %}
+            {% set val = 0 %}
+            {% for row in cat_data.data %}
+                {% if row.period == period %}
+                    {% set val = row.units|default(0)|int %}
+                {% endif %}
+            {% endfor %}
+            {% if selected_p and ns2.row_total != -1 %}
+                <td class="r">{{ val }}</td>
+            {% else %}
+                <td class="r">{{ "{:,}".format(val) if val else '' }}</td>
+            {% endif %}
+            {% set ns2.row_total = ns2.row_total + val %}
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(ns2.row_total) }}</b></td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ ns.periods|length }} periods, {{ categories|length }} categories</p>
 {% else %}
 <p>No data available.</p>
 {% endif %}

@@ -605,18 +605,18 @@ def positions():
                 -- Return calculations with date range bounds
                 enigma.totRet(
                     h.issueid,
-                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(%s::date, '1994-01-03'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
                 ) as tot_ret,
                 enigma.CAGRet(
                     h.issueid,
-                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(%s::date, '1994-01-03'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
                 ) as cagr_ret,
                 enigma.CAGRel(
                     h.issueid,
-                    GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(%s::date, '1999-11-12'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(%s::date, CURRENT_DATE))
+                    GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(CAST(%s AS date), '1999-11-12'::date)),
+                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
                 ) as cagr_rel
             FROM enigma.directorships d
             JOIN enigma.organisations o ON company = o.personid

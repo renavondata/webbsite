@@ -13,6 +13,16 @@ from webbsite.asp_helpers import get_int, get_bool, get_str
 bp = Blueprint("dbpub_incorporations", __name__)
 
 
+def _format_date_ymd(y, m, d):
+    """Format year/month/day into ISO date or partial date string (like ASP dateYMD)"""
+    result = str(y)
+    if m > 0:
+        result += f"-{m:02d}"
+        if d > 0:
+            result += f"-{d:02d}"
+    return result
+
+
 @bp.route("/domicile.asp")
 def domicile():
     """
@@ -524,9 +534,10 @@ def inchkcaltype():
         d=d,
         t=t,
         typename=typename,
-        enigma_orgtypes=orgtypes_list,
+        orgtypes=orgtypes_list,
         sort=sort_param,
         count=len(results),
+        current_year=date.today().year,
     )
 
 
@@ -708,6 +719,7 @@ def dishkcaltype():
         enigma_dismodes=dismodes_list,
         sort=sort_param,
         count=len(results),
+        current_year=date.today().year,
     )
 
 
@@ -744,10 +756,10 @@ def inchkmonth():
             UNION ALL
             SELECT (d + INTERVAL '1 month')::date
             FROM dates
-            WHERE d + INTERVAL '1 month' <= %s::date
+            WHERE d + INTERVAL '1 month' <= CAST(%s AS date)
         )
         SELECT
-            d,
+            TO_CHAR(d, 'YYYY-MM-DD') AS d,
             COALESCE(inc.cnt, 0) AS incorporated,
             COALESCE(dis.cnt, 0) AS dissolved
         FROM dates
@@ -757,7 +769,7 @@ def inchkmonth():
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
               AND incdate >= '1985-01-01'
-              AND incdate <= %s::date
+              AND incdate <= CAST(%s AS date)
     """
         + ("AND orgtype = %s" if t > 0 else "")
         + """
@@ -769,7 +781,7 @@ def inchkmonth():
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
               AND disdate >= '1985-01-01'
-              AND disdate <= %s::date
+              AND disdate <= CAST(%s AS date)
     """
         + ("AND orgtype = %s" if t > 0 else "")
         + """
@@ -831,10 +843,10 @@ def inchkmonth():
 
     return render_template(
         "dbpub/inchkmonth.html",
-        enigma_months=results,
+        months=results,
         t=t,
         typename=typename,
-        enigma_orgtypes=orgtypes_list,
+        orgtypes=orgtypes_list,
         inc_total=inc_total,
         dis_total=dis_total,
     )
@@ -876,7 +888,7 @@ def inchksurvive():
             UNION ALL
             SELECT y + 1
             FROM years
-            WHERE y + 1 <= EXTRACT(YEAR FROM %s::date)
+            WHERE y + 1 <= EXTRACT(YEAR FROM CAST(%s AS date))
         )
         SELECT
             y,
@@ -887,11 +899,11 @@ def inchksurvive():
             SELECT
                 EXTRACT(YEAR FROM incdate) AS incyear,
                 COUNT(*) AS cnt,
-                COUNT(*) FILTER (WHERE disdate IS NULL OR disdate > '2023-12-13') AS survive
+                COUNT(*) FILTER (WHERE disdate IS NULL OR disdate > CAST(%s AS date)) AS survive
             FROM enigma.organisations
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
-              AND incdate <= %s::date
+              AND incdate <= CAST(%s AS date)
     """
         + ("AND orgtype = %s" if t > 0 else "")
         + """
@@ -903,9 +915,9 @@ def inchksurvive():
 
     try:
         if t > 0:
-            params = (snapshot_date, snapshot_date, t)
+            params = (snapshot_date, snapshot_date, snapshot_date, t)
         else:
-            params = (snapshot_date, snapshot_date)
+            params = (snapshot_date, snapshot_date, snapshot_date)
 
         results = execute_query(sql, params)
 
@@ -929,7 +941,7 @@ def inchksurvive():
         d=snapshot_date.isoformat(),
         t=t,
         typename=typename,
-        enigma_orgtypes=orgtypes_list,
+        orgtypes=orgtypes_list,
     )
 
 
@@ -938,25 +950,44 @@ def inchksurvive():
 
 @bp.route("/regHKannual.asp")
 def reghkannual():
-    """Annual HK company registrations since 1865"""
+    """Non-HK companies registered in HK - annual registrations and dissolutions/departures.
+    Replicates the ASP page which queries the freg table for foreign company registrations
+    (regID starting with 'F' followed by digits) hosted in HK (hostDom=1)."""
     from webbsite.db import execute_query
     from flask import render_template
 
     sql = """
-        WITH RECURSIVE years AS (
-            SELECT 1865 AS y
+        WITH RECURSIVE dates(d) AS (
+            SELECT DATE '1946-01-01'
             UNION ALL
-            SELECT y + 1 FROM years WHERE y + 1 <= EXTRACT(YEAR FROM CURRENT_DATE)
+            SELECT (d + INTERVAL '1 year')::date
+            FROM dates
+            WHERE d + INTERVAL '1 year' <= (EXTRACT(YEAR FROM CURRENT_DATE)::text || '-01-01')::date
         )
-        SELECT y, COALESCE(cnt, 0) AS registrations
-        FROM years
+        SELECT
+            EXTRACT(YEAR FROM d)::int AS year,
+            COALESCE(regcnt, 0) AS reg,
+            COALESCE(cescnt, 0) AS ces
+        FROM dates
         LEFT JOIN (
-            SELECT EXTRACT(YEAR FROM incdate) AS year, COUNT(*) AS cnt
+            SELECT COUNT(*) AS regcnt, EXTRACT(YEAR FROM regdate)::int AS y
             FROM enigma.organisations
-            WHERE domicile = 1 AND incid ~ '^[0-9]'
-            GROUP BY year
-        ) t ON y = t.year
-        ORDER BY y DESC
+            JOIN enigma.freg ON personid = orgid
+            WHERE hostdom = 1 AND regid ~ '^F[0-9]'
+            GROUP BY y
+        ) reg ON EXTRACT(YEAR FROM d)::int = reg.y
+        LEFT JOIN (
+            SELECT COUNT(*) AS cescnt,
+                   EXTRACT(YEAR FROM LEAST(
+                       COALESCE(cesdate, disdate),
+                       COALESCE(disdate, cesdate)
+                   ))::int AS y
+            FROM enigma.organisations
+            JOIN enigma.freg ON personid = orgid
+            WHERE hostdom = 1 AND regid ~ '^F[0-9]'
+            GROUP BY y
+        ) ces ON EXTRACT(YEAR FROM d)::int = ces.y
+        ORDER BY d
     """
 
     try:
@@ -973,31 +1004,106 @@ def reghkannual():
 
 @bp.route("/incFcal.asp")
 def incfcal():
-    """Foreign companies registered in HK by year"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Foreign companies registered in HK by year - from freg table"""
+    current_year = date.today().year
 
-    y = get_int("y", 2024)
+    y = get_int("y", 0)
+    m = 0 if y == 0 else get_int("m", 0)
+    d = 0 if m == 0 else get_int("d", 0)
+    dom = get_int("dom", 0)
+    sort_param = get_str("sort", "namup")
 
-    sql = """
-        SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, d.domName
+    # ASP logic: if both dom and y are 0, default to current year
+    if dom == 0 and y == 0:
+        y = current_year
+
+    # Clamp y to valid range
+    if y != 0 and (y < 1946 or y > current_year):
+        y = current_year
+
+    # Build ORDER BY
+    sort_map = {
+        "namdn": "name DESC",
+        "renup": "regid",
+        "rendn": "regid DESC",
+        "regup": "regdate, name",
+        "regdn": "regdate DESC, name",
+        "cesdn": "cesdate DESC, name",
+        "cesup": "cesdate, name",
+        "disdn": "disdate DESC, name",
+        "disup": "disdate, name",
+        "domup": "friendly, name",
+        "domdn": "friendly DESC, name",
+    }
+    ob = sort_map.get(sort_param, "name")
+    if sort_param not in sort_map:
+        sort_param = "namup"
+
+    # Build date range
+    if y > 0:
+        start_m = m if m > 0 else 1
+        start_d = d if d > 0 else 1
+        end_m = m if m > 0 else 12
+        end_d = d if d > 0 else calendar.monthrange(y, end_m)[1]
+        date_from = f"{y:04d}-{start_m:02d}-{start_d:02d}"
+        date_to = f"{y:04d}-{end_m:02d}-{end_d:02d}"
+
+    # Build SQL matching ASP: freg table with hostDom=1
+    conditions = ["f.hostdom = 1"]
+    params = []
+
+    if y > 0:
+        conditions.append("f.regdate BETWEEN %s AND %s")
+        params.extend([date_from, date_to])
+
+    if dom > 0:
+        conditions.append("o.domicile = %s")
+        params.append(dom)
+
+    where_clause = " AND ".join(conditions)
+
+    sql = f"""
+        SELECT o.personid, o.name1 AS name, f.regdate, o.disdate, f.cesdate,
+               d.friendly, f.regid
         FROM enigma.organisations o
-        JOIN enigma.domiciles d ON o.domicile = d.id
-        WHERE o.domicile != 1
-          AND o.incid ~ '^[0-9]'
-          AND EXTRACT(YEAR FROM o.incdate) = %s
-        ORDER BY o.incdate DESC, o.name1
-        LIMIT 1000
+        JOIN enigma.freg f ON o.personid = f.orgid
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE {where_clause}
+        ORDER BY {ob}
+        LIMIT 2000
     """
 
     try:
-        results = execute_query(sql, (y,))
+        results = execute_query(sql, tuple(params))
     except Exception as ex:
         current_app.logger.error(f"Error in incFcal.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template("dbpub/incfcal.html", companies=results, y=y)
+    # Build title
+    date_str = _format_date_ymd(y, m, d)
+    if y > 0:
+        prefix = "on " if d > 0 else "in "
+        title = f"Foreign companies registered in HK {prefix}{date_str}"
+    else:
+        title = "Foreign companies registered in HK"
+
+    # Domicile list for dropdown
+    try:
+        dom_list = execute_query(
+            """SELECT DISTINCT o.domicile, d.friendly
+               FROM enigma.organisations o
+               JOIN enigma.freg f ON o.personid = f.orgid
+               JOIN enigma.domiciles d ON o.domicile = d.id
+               WHERE f.hostdom = 1
+               ORDER BY d.friendly"""
+        )
+    except Exception:
+        dom_list = []
+
+    return render_template("dbpub/incfcal.html",
+                           companies=results, y=y, m=m, d=d, dom=dom,
+                           sort=sort_param, title=title,
+                           current_year=current_year, dom_list=dom_list)
 
 
 # Foreign company dissolutions
@@ -1005,31 +1111,75 @@ def incfcal():
 
 @bp.route("/disFcal.asp")
 def disfcal():
-    """Foreign companies dissolved in HK by year"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from flask import render_template
+    """Foreign companies departed/dissolved in HK by year - uses LEAST(disDate, cesDate) as relDate"""
+    current_year = date.today().year
 
-    y = get_int("y", 2024)
+    y = get_int("y", current_year)
+    m = get_int("m", 0)
+    d = 0 if m == 0 else get_int("d", 0)
+    sort_param = get_str("sort", "namup")
 
-    sql = """
-        SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate, d.domName
-        FROM enigma.organisations o
-        JOIN enigma.domiciles d ON o.domicile = d.id
-        WHERE o.domicile != 1
-          AND o.incid ~ '^[0-9]'
-          AND EXTRACT(YEAR FROM o.disdate) = %s
-        ORDER BY o.disdate DESC, o.name1
-        LIMIT 1000
+    # Clamp y to valid range
+    if y < 1946 or y > current_year:
+        y = current_year
+
+    # Build ORDER BY (ASP disFcal uses regup/regdn for regDate, not regID)
+    sort_map = {
+        "namdn": "name DESC",
+        "regup": "regdate, name",
+        "regdn": "regdate DESC, name",
+        "cesdn": "cesdate DESC, name",
+        "cesup": "cesdate, name",
+        "disdn": "disdate DESC, name",
+        "disup": "disdate, name",
+        "domup": "friendly, name",
+        "domdn": "friendly DESC, name",
+    }
+    ob = sort_map.get(sort_param, "name")
+    if sort_param not in sort_map:
+        sort_param = "namup"
+
+    # Build date range
+    start_m = m if m > 0 else 1
+    start_d = d if d > 0 else 1
+    end_m = m if m > 0 else 12
+    end_d = d if d > 0 else calendar.monthrange(y, end_m)[1]
+    date_from = f"{y:04d}-{start_m:02d}-{start_d:02d}"
+    date_to = f"{y:04d}-{end_m:02d}-{end_d:02d}"
+
+    # ASP uses LEAST(IFNULL(disDate,cesDate),IFNULL(cesDate,disDate)) as relDate
+    # PostgreSQL equivalent: LEAST(COALESCE(disdate,cesdate), COALESCE(cesdate,disdate))
+    sql = f"""
+        SELECT personid, name, regdate, disdate, cesdate, reldate, friendly, regid
+        FROM (
+            SELECT o.personid, o.name1 AS name, f.regdate, o.disdate, f.cesdate,
+                   LEAST(COALESCE(o.disdate, f.cesdate), COALESCE(f.cesdate, o.disdate)) AS reldate,
+                   d.friendly, f.regid
+            FROM enigma.organisations o
+            JOIN enigma.freg f ON o.personid = f.orgid
+            LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+            WHERE f.hostdom = 1
+        ) t1
+        WHERE reldate BETWEEN %s AND %s
+        ORDER BY {ob}
+        LIMIT 2000
     """
 
     try:
-        results = execute_query(sql, (y,))
+        results = execute_query(sql, (date_from, date_to))
     except Exception as ex:
         current_app.logger.error(f"Error in disFcal.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template("dbpub/disfcal.html", companies=results, y=y)
+    # Build title
+    date_str = _format_date_ymd(y, m, d)
+    prefix = "on " if d > 0 else "in "
+    title = f"Non-HK companies departed/dissolved HK {prefix}{date_str}"
+
+    return render_template("dbpub/disfcal.html",
+                           companies=results, y=y, m=m, d=d,
+                           sort=sort_param, title=title,
+                           current_year=current_year)
 
 
 # HK company domicile and registration
@@ -1037,21 +1187,48 @@ def disfcal():
 
 @bp.route("/domregHK.asp")
 def domreghk():
-    """HK companies by domicile and registration status"""
+    """Domicile of HK-registered foreign companies.
+    Matches ASP: queries freg table with hostDom=1 and regID starting with F followed by digit.
+    Shows overseas companies registered with a place of business in HK that are not dissolved.
+    """
     from webbsite.db import execute_query
+    from webbsite.asp_helpers import get_str
     from flask import render_template
 
-    sql = """
-        SELECT
-            d.domname,
-            COUNT(*) AS total,
-            COUNT(*) FILTER (WHERE o.disdate IS NULL) AS alive,
-            COUNT(*) FILTER (WHERE o.disdate IS NOT NULL) AS dissolved
+    sort_param = get_str("sort", "cntdn")
+    order_by_map = {
+        "cntup": "domcnt, d.friendly",
+        "domup": "d.friendly",
+        "domdn": "d.friendly DESC",
+        "cntdn": "domcnt DESC, d.friendly",
+    }
+    order_by = order_by_map.get(sort_param, order_by_map["cntdn"])
+    if sort_param not in order_by_map:
+        sort_param = "cntdn"
+
+    # Total count for percentage calculation
+    total_row = execute_query("""
+        SELECT COUNT(o.domicile) AS total
         FROM enigma.organisations o
-        JOIN enigma.domiciles d ON o.domicile = d.id
-        WHERE o.incid ~ '^[0-9]'
-        GROUP BY d.id, d.domname
-        ORDER BY total DESC
+        JOIN enigma.freg f ON o.personid = f.orgid
+        WHERE o.disdate IS NULL
+          AND f.cesdate IS NULL
+          AND f.hostdom = 1
+          AND f.regid ~ '^F[0-9]'
+    """)
+    total = total_row[0]["total"] if total_row else 0
+
+    sql = f"""
+        SELECT o.domicile, d.friendly, COUNT(*) AS domcnt
+        FROM enigma.organisations o
+        JOIN enigma.freg f ON o.personid = f.orgid
+        LEFT JOIN enigma.domiciles d ON o.domicile = d.id
+        WHERE f.hostdom = 1
+          AND f.regid ~ '^F[0-9]'
+          AND o.disdate IS NULL
+          AND f.cesdate IS NULL
+        GROUP BY o.domicile, d.friendly
+        ORDER BY {order_by}
     """
 
     try:
@@ -1060,7 +1237,13 @@ def domreghk():
         current_app.logger.error(f"Error in domregHK.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template("dbpub/domreghk.html", enigma_domiciles=results)
+    return render_template(
+        "dbpub/domreghk.html",
+        domiciles=results,
+        total=total,
+        sort=sort_param,
+        title="Domicile of HK-registered foreign companies",
+    )
 
 
 # UK company incorporations by calendar type
@@ -1068,40 +1251,132 @@ def domreghk():
 
 @bp.route("/incUKcaltype.asp")
 def incukcaltype():
-    """UK companies incorporated by year"""
+    """UK companies incorporated by year, month, day, type and domicile"""
     from webbsite.asp_helpers import get_int, get_str
     from webbsite.db import execute_query
     from datetime import date
     from flask import render_template
 
+    # UK domicile codes: 116=England & Wales, 112=Scotland, 311=Northern Ireland
+    UK_DOMICILES = [
+        {"id": 116, "name": "England & Wales"},
+        {"id": 311, "name": "Northern Ireland"},
+        {"id": 112, "name": "Scotland"},
+    ]
+
+    # Get parameters
     y = get_int("y", date.today().year)
+    m = get_int("m", 0)
+    d = get_int("d", 0)
+    t = get_int("t", 0)
+    dom = get_int("dom", 116)  # default: England & Wales
     sort_param = get_str("sort", "namup")
 
+    # Validate year range
+    if y < 1663:
+        y = 1663
+    elif y > date.today().year:
+        y = date.today().year
+
+    # Build order by clause
     order_by_map = {
         "namup": "o.name1",
         "namdn": "o.name1 DESC",
+        "regup": "o.incid",
+        "regdn": "o.incid DESC",
         "incup": "o.incdate, o.name1",
         "incdn": "o.incdate DESC, o.name1",
+        "disup": "o.disdate, o.name1",
+        "disdn": "o.disdate DESC, o.name1",
+        "typup": "ot.typename, o.name1",
+        "typdn": "ot.typename DESC, o.name1",
     }
     order_by = order_by_map.get(sort_param, "o.name1")
 
-    sql = f"""
-        SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate
-        FROM enigma.organisations o
-        WHERE o.domicile = 2
-          AND EXTRACT(YEAR FROM o.incdate) = %s
-        ORDER BY {order_by}
-        LIMIT 5000
-    """
+    # Build date range
+    if m > 0:
+        month_start = date(y, m, 1)
+        if d > 0:
+            month_end = date(y, m, d)
+        else:
+            if m == 12:
+                month_end = date(y, 12, 31)
+            else:
+                month_end = date(y, m + 1, 1)
+                from datetime import timedelta
+                month_end = month_end - timedelta(days=1)
+    else:
+        month_start = date(y, 1, 1)
+        month_end = date(y, 12, 31)
+
+    # Build query based on type filter
+    if t == 0:
+        sql = f"""
+            SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate,
+                   o.orgtype, ot.typename
+            FROM enigma.organisations o
+            JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+            WHERE o.domicile = %s
+              AND o.incdate >= %s
+              AND o.incdate <= %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (dom, month_start, month_end)
+    else:
+        sql = f"""
+            SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate
+            FROM enigma.organisations o
+            WHERE o.domicile = %s
+              AND o.incdate >= %s
+              AND o.incdate <= %s
+              AND o.orgtype = %s
+            ORDER BY {order_by}
+            LIMIT 5000
+        """
+        params = (dom, month_start, month_end, t)
 
     try:
-        results = execute_query(sql, (y,))
+        results = execute_query(sql, params)
+
+        typename = None
+        if t > 0:
+            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
+            type_result = execute_query(type_sql, (t,))
+            if type_result:
+                typename = type_result[0]["typename"]
+
+        # UK-specific org types
+        types_sql = """
+            SELECT orgtype, typename
+            FROM enigma.orgtypes
+            WHERE orgtype IN (7,9,19,20,21,23,25,26,35,37,38,41)
+            ORDER BY typename
+        """
+        orgtypes_list = execute_query(types_sql)
     except Exception as ex:
         current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)
         results = []
+        typename = None
+        orgtypes_list = []
+
+    dom_name = next((dd["name"] for dd in UK_DOMICILES if dd["id"] == dom), "England & Wales")
 
     return render_template(
-        "dbpub/incukcaltype.html", companies=results, y=y, sort=sort_param
+        "dbpub/incukcaltype.html",
+        companies=results,
+        y=y,
+        m=m,
+        d=d,
+        t=t,
+        dom=dom,
+        dom_name=dom_name,
+        typename=typename,
+        orgtypes=orgtypes_list,
+        uk_domiciles=UK_DOMICILES,
+        sort=sort_param,
+        count=len(results),
+        current_year=date.today().year,
     )
 
 

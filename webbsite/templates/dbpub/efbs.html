@@ -19,13 +19,13 @@
 {% if data %}
 <table class="txtable">
     <tr><th>Date</th><th>Value (HK$ million)</th></tr>
-    {% for row in data[-50:] %}
+    {% for row in data %}
     <tr>
         <td>{{ row.atdate }}</td>
-        <td>{{ "{:,.2f}".format(row.acval) if row.acval else '0.00' }}</td>
+        <td class="r">{{ "{:,.2f}".format(row.acval) if row.acval else '0.00' }}</td>
     </tr>
     {% endfor %}
 </table>
-<p>Showing last 50 of {{ data|length }} records</p>
+<p>{{ data|length }} records</p>
 {% endif %}
 {% endblock %}

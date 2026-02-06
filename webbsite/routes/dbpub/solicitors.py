@@ -133,7 +133,7 @@ def hk_sol_firms():
             FROM enigma.lsposts lp
             JOIN enigma.lsorgs lo ON lp.lsorg = lo.lsid
             JOIN enigma.organisations o ON lo.personid = o.personid
-            WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
+            WHERE lp.firstSeen < CAST(%s AS date) + INTERVAL '1 day'
               AND (NOT lp.dead OR lp.lastSeen >= %s)
             GROUP BY lo.personid, o.name1
             ORDER BY {ob}
@@ -150,7 +150,7 @@ def hk_sol_firms():
                    SUM(CASE WHEN post = 3 THEN 1 ELSE 0 END) AS sol,
                    SUM(CASE WHEN post = 5 THEN 1 ELSE 0 END) AS prop
             FROM enigma.lsposts lp
-            WHERE lp.firstSeen < %s::date + INTERVAL '1 day'
+            WHERE lp.firstSeen < CAST(%s AS date) + INTERVAL '1 day'
               AND (NOT lp.dead OR lp.lastSeen >= %s)
               AND lp.post <> 4
         """,
@@ -207,6 +207,7 @@ def hk_sols_moves():
                 enigma.MSdateAcc(d.apptDate, d.apptAcc) AS appt,
                 enigma.MSdateAcc(d.resDate, d.resAcc) AS res,
                 lr.LStxt,
+                pn.lsrole AS LSrole,
                 COALESCE(d.resDate, d.apptDate) AS relDate
             FROM enigma.directorships d
             JOIN enigma.lsppl lp ON d.director = lp.personid
@@ -215,8 +216,28 @@ def hk_sols_moves():
             JOIN enigma.people p ON d.director = p.personid
             JOIN enigma.positions pn ON d.positionid = pn.positionid
             JOIN enigma.lsroles lr ON pn.lsrole = lr.id
-            WHERE d.resDate >= CURRENT_DATE - INTERVAL '30 days'
-               OR d.apptDate >= CURRENT_DATE - INTERVAL '30 days'
+            WHERE d.resDate >= (
+                      LEAST(CURRENT_DATE, COALESCE(
+                          (SELECT GREATEST(MAX(d2.resDate), MAX(d2.apptDate))
+                           FROM enigma.directorships d2
+                           JOIN enigma.lsppl lp2 ON d2.director = lp2.personid
+                           JOIN enigma.lsorgs lo2 ON d2.company = lo2.personid
+                           JOIN enigma.positions pn2 ON d2.positionid = pn2.positionid
+                           WHERE pn2.lsrole IS NOT NULL),
+                          CURRENT_DATE
+                      )) - INTERVAL '30 days'
+                  )
+               OR d.apptDate >= (
+                      LEAST(CURRENT_DATE, COALESCE(
+                          (SELECT GREATEST(MAX(d2.resDate), MAX(d2.apptDate))
+                           FROM enigma.directorships d2
+                           JOIN enigma.lsppl lp2 ON d2.director = lp2.personid
+                           JOIN enigma.lsorgs lo2 ON d2.company = lo2.personid
+                           JOIN enigma.positions pn2 ON d2.positionid = pn2.positionid
+                           WHERE pn2.lsrole IS NOT NULL),
+                          CURRENT_DATE
+                      )) - INTERVAL '30 days'
+                  )
             ORDER BY {ob}
         """
         )

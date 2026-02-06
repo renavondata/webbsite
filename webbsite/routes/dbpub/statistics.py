@@ -7,6 +7,7 @@ from datetime import date, timedelta
 import calendar
 import io
 import re
+from sqlalchemy import text
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
@@ -468,10 +469,10 @@ def matches():
         JOIN enigma.positions pns2 ON d2.positionid = pns2.positionid
         WHERE d1.company = %s
           AND d2.company = %s
-          AND (d1.resdate IS NULL OR d1.resdate > %s::date)
-          AND (d2.resdate IS NULL OR d2.resdate > %s::date)
-          AND (d1.apptdate IS NULL OR d1.apptdate <= %s::date)
-          AND (d2.apptdate IS NULL OR d2.apptdate <= %s::date)
+          AND (d1.resdate IS NULL OR d1.resdate > CAST(%s AS date))
+          AND (d2.resdate IS NULL OR d2.resdate > CAST(%s AS date))
+          AND (d1.apptdate IS NULL OR d1.apptdate <= CAST(%s AS date))
+          AND (d2.apptdate IS NULL OR d2.apptdate <= CAST(%s AS date))
         ORDER BY {ob}
     """,
         (org1, org2, d, d, d, d),
@@ -512,8 +513,9 @@ def namechange_hk():
     }
     ob = sort_mappings.get(sort_param, "name1")
 
-    # Query name changes for HK companies in last 30 days
+    # Query name changes for HK companies in last 30 days relative to latest data
     # domicile=1 is Hong Kong
+    # Use latest data date as reference instead of CURRENT_DATE to handle stale data
     changes_data = execute_query(
         f"""
         SELECT o.personid,
@@ -529,7 +531,12 @@ def namechange_hk():
           AND (nc.oldname IS NOT NULL OR nc.oldcname IS NOT NULL)
           AND ((nc.oldname <> o.name1 OR nc.oldname IS NULL)
                OR (nc.oldcname <> o.cname OR nc.oldcname IS NULL))
-          AND nc.datechanged >= (CURRENT_DATE - INTERVAL '30 days')
+          AND nc.datechanged >= (
+              LEAST(CURRENT_DATE, COALESCE(
+                  (SELECT MAX(datechanged) FROM enigma.namechanges WHERE datechanged < '9999-01-01'),
+                  CURRENT_DATE
+              )) - INTERVAL '30 days'
+          )
         ORDER BY {ob}
     """
     )
@@ -3762,14 +3769,16 @@ def yearend():
     order_by = order_by_map.get(sort_param, order_by_map["monup"])
 
     # Query year-end distribution
+    # ASP: LEFT JOIN (listedcoshk l JOIN orgdata o ON l.issuer=o.PersonID AND stockExID IN(...))
+    #      ON m.monthID=o.yearendMonth
     sql = f"""
         SELECT
             m.monthid,
             m.shortname,
-            COUNT(od.personid) as cnt
+            COUNT(yearends.personid) as cnt
         FROM enigma.months m
         LEFT JOIN (
-            SELECT DISTINCT lc.issuer, od.yearendmonth, od.personid
+            SELECT lc.issuer AS personid, od.yearendmonth
             FROM enigma.listedcoshk lc
             JOIN enigma.orgdata od ON lc.issuer = od.personid
             WHERE lc.stockexid {stockex_filter}
@@ -3794,7 +3803,7 @@ def yearend():
 
     return render_template(
         "dbpub/yearend.html",
-        enigma_months=results,
+        months=results,
         e=e,
         sort=sort_param,
         title=title,
@@ -3858,38 +3867,19 @@ def hklistcowebs():
 @bp.route("/hklistconowebs.asp")
 def hklistconowebs():
     """
-    HK-listed companies without websites
-    Query params: sort
+    HK-listed companies without web sites - Port of dbpub/hklistconowebs.asp
+    ASP query: SELECT a.personID,name from listedcosHKall a
+               LEFT JOIN (SELECT * FROM web WHERE NOT dead)t ON a.personID=t.personID
+               WHERE isNull(URL)
+    No sort parameter - ASP returns results in default order (by name)
     """
-    from webbsite.asp_helpers import get_str
-
-    sort_param = get_str("sort", "namup")
-    order_by_map = {
-        "codup": "code",
-        "coddn": "code DESC",
-        "namdn": "name DESC",
-        "namup": "name",
-    }
-    order_by = order_by_map.get(sort_param, order_by_map["namup"])
-
-    # Query companies WITHOUT websites
-    sql = f"""
-        SELECT
-            a.personid,
-            a.name,
-            (SELECT MIN(sl.stockcode)
-             FROM enigma.stocklistings sl
-             JOIN enigma.issue i ON sl.issueid = i.id1
-             WHERE i.issuer = a.personid
-               AND sl."2ndCtr" = FALSE
-               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
-            ) as code
+    # Match ASP query: LEFT JOIN non-dead web entries, keep rows where URL is NULL
+    sql = """
+        SELECT a.personid, a.name
         FROM enigma.listedcoshkall a
-        WHERE NOT EXISTS (
-            SELECT 1 FROM enigma.web w
-            WHERE w.personid = a.personid AND NOT w.dead
-        )
-        ORDER BY {order_by}
+        LEFT JOIN (SELECT * FROM enigma.web WHERE NOT dead) t ON a.personid = t.personid
+        WHERE t.url IS NULL
+        ORDER BY a.name
     """
 
     try:
@@ -3899,7 +3889,7 @@ def hklistconowebs():
         results = []
 
     return render_template(
-        "dbpub/hklistconowebs.html", companies=results, sort=sort_param
+        "dbpub/hklistconowebs.html", companies=results
     )
 
 
@@ -3913,60 +3903,168 @@ def league_dirs_hk():
     Shows people with most HK-listed enigma.directorships
     Query params: d (snapshot date), sort
     """
-    from datetime import date
-    from webbsite.asp_helpers import get_str
+    from datetime import date as date_type
+    from webbsite.asp_helpers import get_int, get_str, get_bool
 
-    # Get snapshot date
-    d_str = get_str("d", "")
-    if d_str:
+    today = date_type.today()
+    hide = get_str("h", "N")
+    if hide not in ("Y", "N"):
+        hide = "N"
+    min_pos = max(get_int("m", 3), 3)
+    from_date = get_str("f", "")
+    to_date = get_str("t", str(today))
+
+    try:
+        date_type.fromisoformat(to_date)
+    except (ValueError, TypeError):
+        to_date = str(today)
+    if from_date:
         try:
-            d = date.fromisoformat(d_str)
-        except ValueError:
-            d = date.today()
-    else:
-        d = date.today()
+            date_type.fromisoformat(from_date)
+        except (ValueError, TypeError):
+            from_date = ""
+    if from_date and from_date > to_date:
+        from_date, to_date = to_date, from_date
 
-    # Get sort parameter
-    sort_param = get_str("sort", "countdn")
-    order_by_map = {
-        "countdn": "dirs DESC, person",
-        "countup": "dirs, person",
-        "namedn": "person DESC",
-        "nameup": "person",
+    c = get_bool("c")
+
+    sort_keys = {i: get_str(f"s{i}", "") for i in range(1, 4)}
+    order_map = {
+        "cntdn": "cntpos DESC",
+        "cntup": "cntpos",
+        "nameup": "name",
+        "namedn": "name DESC",
+        "cagreldn": "cagrel DESC",
+        "cagrelup": "cagrel",
+        "agedn": "yob",
+        "ageup": "yob DESC",
+        "sexdn": "sex DESC",
+        "sexup": "sex",
     }
-    order_by = order_by_map.get(sort_param, order_by_map["countdn"])
+    if not sort_keys[1] or sort_keys[1] not in order_map:
+        sort_keys[1] = "cntdn"
+    if not sort_keys[2] or sort_keys[2] not in order_map:
+        sort_keys[2] = (
+            "cagreldn"
+            if sort_keys[1] not in ("cagreldn", "cagrelup")
+            else "nameup"
+        )
+    order_parts = [order_map[sort_keys[1]], order_map[sort_keys[2]]]
+    if sort_keys.get(3) and sort_keys[3] in order_map:
+        order_parts.append(order_map[sort_keys[3]])
+    order_by = ", ".join(order_parts)
 
-    # Query directors league table
+    # Date filter replicating ASP stored procedure logic
+    date_filter_parts = []
+    params = []
+    if from_date and not c:
+        date_filter_parts.append("(MIN(apptdate) <= %s OR MIN(apptdate) IS NULL)")
+        params.append(from_date)
+    else:
+        date_filter_parts.append("(MIN(apptdate) <= %s OR MIN(apptdate) IS NULL)")
+        params.append(to_date)
+    if hide == "Y":
+        date_filter_parts.append("(MAX(resdate) > %s OR MAX(resdate) IS NULL)")
+        params.append(to_date)
+    elif from_date:
+        date_filter_parts.append("(MAX(resdate) > %s OR MAX(resdate) IS NULL)")
+        params.append(from_date)
+    date_filter_sql = (
+        " AND ".join(date_filter_parts) if date_filter_parts else "TRUE"
+    )
+
+    # CAGR date expressions
+    cagr_params = []
+    if from_date:
+        cagr_from = "GREATEST(COALESCE(mt.apptdate, CAST(%s AS date)), CAST(%s AS date))"
+        cagr_params = [from_date, from_date]
+    else:
+        cagr_from = "mt.apptdate"
+    cagr_to_expr = "LEAST(COALESCE(mt.resdate, CAST(%s AS date)), CAST(%s AS date))"
+    cagr_params.extend([to_date, to_date])
+
+    # CTE query replicating the leagueDirsHK stored procedure:
+    # merges consecutive appointments, counts tenures, calculates CAGR
     sql = f"""
-        SELECT
-            p.personid,
-            CASE WHEN p.name2 IS NULL THEN p.name1
-                 ELSE p.name1 || ', ' || p.name2
-            END as person,
-            COUNT(DISTINCT d.company) as dirs,
-            STRING_AGG(DISTINCT o.name1, '; ' ORDER BY o.name1) as companies
-        FROM enigma.directorships d
-        JOIN enigma.people p ON d.director = p.personid
-        JOIN enigma.organisations o ON d.company = o.personid
-        JOIN enigma.positions pn ON d.positionid = pn.positionid
-        JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-        WHERE pn.rank = 1
-          AND (d.apptdate IS NULL OR d.apptdate <= %s)
-          AND (d.resdate IS NULL OR d.resdate > %s)
-        GROUP BY p.personid, person
-        HAVING COUNT(DISTINCT d.company) > 1
+        WITH ordered_dirs AS (
+            SELECT d.id1, d.company, d.director, d.apptdate, d.resdate,
+                   LAG(d.resdate) OVER (
+                       PARTITION BY d.company, d.director ORDER BY d.apptdate
+                   ) AS prev_resdate
+            FROM enigma.directorships d
+            JOIN enigma.positions p ON d.positionid = p.positionid
+            JOIN enigma.listedcoshkever lhk ON d.company = lhk.issuer
+            WHERE p.rank = 1
+        ),
+        tenure_groups AS (
+            SELECT *,
+                   SUM(CASE
+                       WHEN apptdate IS NULL OR prev_resdate IS NULL
+                            OR apptdate <> prev_resdate THEN 1
+                       ELSE 0
+                   END) OVER (
+                       PARTITION BY company, director ORDER BY apptdate
+                   ) AS tenure_group
+            FROM ordered_dirs
+        ),
+        merged_tenures AS (
+            SELECT company AS org, director AS dir,
+                   MIN(apptdate) AS apptdate, MAX(resdate) AS resdate
+            FROM tenure_groups
+            GROUP BY company, director, tenure_group
+            HAVING {date_filter_sql}
+        ),
+        dir_counts AS (
+            SELECT dir, COUNT(*) AS cntpos
+            FROM merged_tenures
+            GROUP BY dir
+            HAVING COUNT(*) >= %s
+        )
+        SELECT mt.dir, dc.cntpos,
+               p.name1 || COALESCE(', ' || p.name2, '')
+                       || COALESCE(' ' || p.cname, '') AS name,
+               p.yob, p.sex,
+               AVG(enigma.cagrel(hkl.issueid, {cagr_from}, {cagr_to_expr})) - 1 AS cagrel
+        FROM merged_tenures mt
+        JOIN dir_counts dc ON mt.dir = dc.dir
+        JOIN enigma.hklistedordsever hkl ON mt.org = hkl.issuer
+        JOIN enigma.people p ON mt.dir = p.personid
+        GROUP BY mt.dir, dc.cntpos, name, p.yob, p.sex
         ORDER BY {order_by}
     """
 
+    all_params = params + [min_pos] + cagr_params
     try:
-        results = execute_query(sql, (d, d))
+        results = execute_query(sql, tuple(all_params))
     except Exception as ex:
-        current_app.logger.error(f"Error in leagueDirsHK.asp: {ex}", exc_info=True)
+        current_app.logger.error(
+            f"Error in leagueDirsHK.asp: {ex}", exc_info=True
+        )
         results = []
 
     return render_template(
-        "dbpub/league_dirs_hk.html", directors=results, d=d, sort=sort_param
+        "dbpub/league_dirs_hk.html",
+        directors=results,
+        hide=hide,
+        min_pos=min_pos,
+        from_date=from_date,
+        to_date=to_date,
+        c=c,
+        sort_keys=sort_keys,
+        current_year=today.year,
     )
+
+
+@bp.route("/leagueNotesD.asp")
+def league_notes_d():
+    """Notes on director league tables - static explanatory page"""
+    return render_template("dbpub/league_notes_d.html")
+
+
+@bp.route("/leagueNotesA.asp")
+def league_notes_a():
+    """Notes on adviser league tables - static explanatory page"""
+    return render_template("dbpub/league_notes_a.html")
 
 
 # Birthdays by day of year
@@ -4042,43 +4140,59 @@ def bornday():
 @bp.route("/bornyear.asp")
 def bornyear():
     """
-    People born in a specific year
-    Query params: y (year), sort
+    People born in a specific year and month.
+    Matches ASP bornyear.asp which filters by YOB and MOB.
+    Query params: y (year, default 1949), m (month 1-12, default 1), sort
     """
     from datetime import date
     from webbsite.asp_helpers import get_int, get_str
 
-    # Get current year as default
-    y = get_int("y", date.today().year - 50)
+    now_year = date.today().year
+    y = get_int("y", 1949)
+    if y > now_year:
+        y = now_year
 
-    # Get sort parameter
+    # Month parameter: 1-12, default 1 (January). 0 means unknown month (MOB IS NULL).
+    m = get_int("m", 1)
+    if m < 0 or m > 12:
+        m = 1
+
+    # Get sort parameter - match ASP sort options
     sort_param = get_str("sort", "nameup")
     order_by_map = {
         "nameup": "name1, name2",
         "namedn": "name1 DESC, name2 DESC",
-        "dayup": "mob, dob, name1, name2",
-        "daydn": "mob DESC, dob DESC, name1, name2",
+        "bornup": "yob, mob, dob, name1, name2",
+        "borndn": "yob DESC, mob DESC, dob DESC, name1, name2",
+        "deadup": "yod, mond, dod, name1, name2",
+        "deaddn": "yod DESC, mond DESC, dod DESC, name1, name2",
     }
     order_by = order_by_map.get(sort_param, order_by_map["nameup"])
 
-    # Query people born in this year
+    # Build month filter: m=0 means unknown month (MOB IS NULL), else MOB=m
+    if m == 0:
+        month_filter = "mob IS NULL"
+        params = (y,)
+    else:
+        month_filter = "mob = %s"
+        params = (m, y)
+
+    # Query people born in this year/month - matches ASP:
+    # SELECT PersonID, fnameppl(name1,name2,cName) name, YOB, MOB, DOB, YOD, MonD, DOD
+    # FROM People WHERE MOB=m AND YOB=y
     sql = f"""
         SELECT
             personid,
-            CASE WHEN name2 IS NULL THEN name1
-                 ELSE name1 || ', ' || name2
-            END as name,
-            mob,
-            dob,
-            yod,
-            dod
+            name1 || COALESCE(', ' || name2, '') || COALESCE(' ' || cname, '') AS name,
+            yob, mob, dob,
+            yod, mond, dod
         FROM enigma.people
-        WHERE yob = %s
+        WHERE {month_filter} AND yob = %s
         ORDER BY {order_by}
     """
 
     try:
-        results = execute_query(sql, (y,))
+        results = execute_query(sql, params)
     except Exception as ex:
         current_app.logger.error(f"Error in bornyear.asp: {ex}", exc_info=True)
         results = []
@@ -4087,8 +4201,9 @@ def bornyear():
         "dbpub/bornyear.html",
         people=results,
         y=y,
+        m=m,
         sort=sort_param,
-        current_year=date.today().year,
+        current_year=now_year,
     )
 
 
@@ -4101,12 +4216,11 @@ def freecodesunder1000():
     Available stock codes under 1000
     Shows which 3-digit codes are currently unused
     """
-    # Query to get all used codes under 1000
+    # Use the StockCodes1000 view which filters to currently listed stocks only
     sql = """
-        SELECT DISTINCT stockcode
-        FROM enigma.stocklistings
-        WHERE stockcode < 1000
-        ORDER BY stockcode
+        SELECT stockcode::int AS stockcode
+        FROM enigma.stockcodes1000
+        ORDER BY stockcode::int
     """
 
     try:
@@ -4146,44 +4260,64 @@ def tr_notes():
 @bp.route("/rightsoo.asp")
 def rightsoo():
     """
-    Rights issues and open offers listing
-    Query params: sort
+    Rights issues and open offers listing.
+    Matches ASP: eventType IN (2,8) with cancelDate, listing date, and market filters.
+    Query params: sort, t (r=rights, o=open offer, b=both), e (m=Main, g=GEM, b=both)
     """
-    from webbsite.asp_helpers import get_str
+    sort_param = get_str("sort", "annddn")
+    t = get_str("t", "b")
+    e = get_str("e", "b")
 
-    sort_param = get_str("sort", "datedn")
+    # Sort mapping matching ASP exactly
     order_by_map = {
-        "datedn": "eventdate DESC, o.name1",
-        "dateup": "eventdate, o.name1",
-        "namedn": "o.name1 DESC, eventdate DESC",
-        "nameup": "o.name1, eventdate DESC",
-        "codedn": "sc DESC, eventdate DESC",
-        "codeup": "sc, eventdate DESC",
+        "anndup": "e.announced, e.exdate",
+        "stckup": "o.name1, e.announced DESC",
+        "stckdn": "o.name1 DESC, e.announced DESC",
+        "exdtdn": "e.exdate DESC, e.announced DESC",
+        "exdtup": "e.exdate, e.announced",
+        "paydtdn": "e.acceptdate DESC, e.announced DESC",
+        "paydtup": "e.acceptdate, e.announced",
+        "adjudn": "e.adjust DESC, e.announced DESC",
+        "adjuup": "e.adjust, e.announced DESC",
+        "ratiup": "ratio, e.announced DESC",
+        "ratidn": "ratio DESC, e.announced DESC",
+        "codeup": "sl.stockcode, e.exdate DESC",
+        "codedn": "sl.stockcode DESC, e.exdate DESC",
+        "annddn": "e.announced DESC, e.exdate DESC, o.name1",
     }
-    order_by = order_by_map.get(sort_param, order_by_map["datedn"])
+    order_by = order_by_map.get(sort_param, order_by_map["annddn"])
+    if sort_param not in order_by_map:
+        sort_param = "annddn"
 
-    # Query rights issues and open offers
+    # Event type filter: 2=Rights issue shares, 8=Open offer shares
+    type_filter_map = {"r": "= 2", "o": "= 8"}
+    type_sql = type_filter_map.get(t, "IN (2, 8)")
+    if t not in ("r", "o"):
+        t = "b"
+
+    # Market filter: 1=Main Board, 20=GEM
+    market_filter_map = {"m": "= 1", "g": "= 20"}
+    market_sql = market_filter_map.get(e, "IN (1, 20)")
+    if e not in ("m", "g"):
+        e = "b"
+
     sql = f"""
-        SELECT
-            e.eventid,
-            e.eventdate,
-            e.eventtypeid,
-            et.eventtype,
-            o.personid,
-            o.name1,
-            i.id1 as issueid,
-            (SELECT MIN(sl.stockcode)
-             FROM enigma.stocklistings sl
-             WHERE sl.issueid = i.id1
-               AND sl."2ndCtr" = FALSE
-            ) as sc
+        SELECT e.eventid, ct.change, e.announced, e.exdate, o.name1,
+               st.typeshort, e.issueid,
+               CASE WHEN e.old <> 0 THEN e.new::numeric / e.old ELSE NULL END AS ratio,
+               e.adjust, e.acceptdate, sl.stockcode
         FROM enigma.events e
-        JOIN enigma.eventtypes et ON e.eventtypeid = et.eventtypeid
         JOIN enigma.issue i ON e.issueid = i.id1
         JOIN enigma.organisations o ON i.issuer = o.personid
-        WHERE e.eventtypeid IN (8, 9)  -- 8=rights enigma.issue, 9=open offer
+        JOIN enigma.capchangetypes ct ON e.eventtype = ct.capchangetype
+        JOIN enigma.sectypes st ON i.typeid = st.typeid
+        JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+        WHERE e.canceldate IS NULL
+          AND sl.stockexid {market_sql}
+          AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= e.announced)
+          AND (sl.delistdate IS NULL OR sl.delistdate > e.announced)
+          AND e.eventtype {type_sql}
         ORDER BY {order_by}
-        LIMIT 500
     """
 
     try:
@@ -4193,7 +4327,7 @@ def rightsoo():
         results = []
 
     return render_template(
-        "dbpub/rightsoo.html", enigma_events=results, sort=sort_param
+        "dbpub/rightsoo.html", events=results, sort=sort_param, t=t, e=e
     )
 
 
@@ -4204,23 +4338,34 @@ def rightsoo():
 def hk_stocks_by_board_lot():
     """
     Distribution of HK stocks by board lot size
+    Replicates MySQL view hkstocksbyboardlot which aggregates from hkmarketcapperstock.
+    The boardlot column is in enigma.hkexdata, not enigma.issue.
+    Filters to ordinary shares of HK-listed companies quoted in HK$ only
+    (matching currentlistedshareshk view logic).
     """
     sql = """
         SELECT
-            i.boardlot,
-            COUNT(*) as count
-        FROM enigma.issue i
-        JOIN enigma.listedcoshk lc ON i.issuer = lc.issuer
+            h.boardlot,
+            COUNT(h.stockcode) AS stocks,
+            SUM(h.nomprice * COALESCE(il.outstanding, 0)) / 1000000.0 AS mcapm,
+            SUM(COALESCE(il.outstanding, 0)) AS shares
+        FROM enigma.hkexdata h
+        JOIN enigma.issue i ON h.issueid = i.id1
         JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
-        WHERE sl."2ndCtr" = FALSE
+        LEFT JOIN enigma.issuedlatest il ON h.issueid = il.issueid
+        WHERE sl.stockexid IN (1, 20, 22)
+          AND i.typeid NOT IN (1, 2, 5, 40, 41, 46)
+          AND (i.sehkcurr IS NULL OR i.sehkcurr = 0)
+          AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= CURRENT_DATE)
           AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
-        GROUP BY i.boardlot
-        ORDER BY i.boardlot
+          AND h.boardlot IS NOT NULL
+        GROUP BY h.boardlot
+        ORDER BY h.boardlot
     """
 
     try:
         results = execute_query(sql)
-        total = sum(row["count"] for row in results)
+        total = sum(row["stocks"] for row in results)
     except Exception as ex:
         current_app.logger.error(
             f"Error in HKstocksByBoardLot.asp: {ex}", exc_info=True
@@ -4405,8 +4550,8 @@ def reportspeed():
     sort_param = get_str("sort", "speedup")
 
     order_by_map = {
-        "speedup": "days_to_report",
-        "speeddn": "days_to_report DESC",
+        "speedup": "yearendmonth, o.name1",
+        "speeddn": "yearendmonth DESC, o.name1",
         "nameup": "o.name1",
         "namedn": "o.name1 DESC",
         "codeup": "code",
@@ -4414,8 +4559,7 @@ def reportspeed():
     }
     order_by = order_by_map.get(sort_param, order_by_map["speedup"])
 
-    # Query reporting speed
-    # This is a simplified version - full version would need year-end calculation
+    # Query reporting speed - lists companies with year-end month info
     sql = f"""
         SELECT
             o.personid,
@@ -4433,7 +4577,6 @@ def reportspeed():
         JOIN enigma.listedcoshk lc ON o.personid = lc.issuer
         WHERE od.yearendmonth IS NOT NULL
         ORDER BY {order_by}
-        LIMIT 500
     """
 
     try:
@@ -4499,44 +4642,87 @@ def auditorchanges():
 
 @bp.route("/hksols.asp")
 def hksols():
-    """List of HK solicitors"""
-    from webbsite.asp_helpers import get_str
+    """List of HK solicitors in HK law firms - uses Law Society tables"""
+    from webbsite.asp_helpers import get_str, get_int
     from webbsite.db import execute_query
     from flask import render_template
 
-    sort_param = get_str("sort", "namup")
+    sort_param = get_str("sort", "admup")
+    p = get_int("p", 0)  # Role filter: 0=All, 1-5=specific lsroles
 
     order_by_map = {
-        "namup": "name",
-        "namdn": "name DESC",
-        "admup": "adm",
-        "admdn": "adm DESC",
+        "humup": "pname, oname",
+        "humdn": "pname DESC, oname",
+        "orgup": "oname, lstxt, pname",
+        "orgdn": "oname, admhk, pname",
+        "admup": "admhk, pname, oname",
+        "admdn": "admhk DESC, pname, oname",
+        "ageup": "age, pname, oname",
+        "agedn": "age DESC, pname, oname",
+        "rolup": "lstxt, pname, oname",
+        "roldn": "lstxt DESC, oname, pname",
     }
-    order_by = order_by_map.get(sort_param, "name")
+    order_by = order_by_map.get(sort_param, "admhk, pname, oname")
+
+    role_filter = ""
+    params = []
+    if p and 1 <= p <= 5:
+        role_filter = " AND ps.post = %s"
+        params.append(p)
+
+    # Get role name for title
+    title = "All solicitors"
+    if p and 1 <= p <= 5:
+        try:
+            role_result = execute_query(
+                "SELECT lstxt FROM enigma.lsroles WHERE id = %s", (p,)
+            )
+            if role_result:
+                title = role_result[0]["lstxt"] + "s"
+        except:
+            pass
+
+    # Get available roles for dropdown
+    try:
+        roles = execute_query(
+            "SELECT id, lstxt FROM enigma.lsroles WHERE id <> 4 ORDER BY id"
+        )
+    except:
+        roles = []
 
     sql = f"""
-        SELECT
-            d.director AS personid,
-            CASE WHEN p.name2 IS NULL THEN p.name1
-                 ELSE p.name1 || ', ' || p.name2
-            END AS name,
-            MIN(d.apptdate) AS adm
-        FROM enigma.directorships d
-        JOIN enigma.people p ON d.director = p.personid
-        WHERE d.positionid IN (394, 395)
-          AND d.resdate IS NULL
-        GROUP BY d.director, p.name1, p.name2
+        SELECT enigma.msdateacc(lp.admhk, 2) AS admhk,
+               o.personid AS orgid, o.name1 AS oname,
+               p.personid AS pid,
+               CASE WHEN p.name2 IS NULL THEN p.name1
+                    ELSE p.name1 || ', ' || p.name2
+               END AS pname,
+               lr.lstxt,
+               EXTRACT(YEAR FROM CURRENT_DATE)::int - p.yob AS age
+        FROM enigma.lsposts ps
+        JOIN enigma.lsppl lp ON ps.lsppl = lp.lsid
+        JOIN enigma.lsorgs lo ON ps.lsorg = lo.lsid
+        JOIN enigma.lsroles lr ON ps.post = lr.id
+        JOIN enigma.organisations o ON lo.personid = o.personid
+        JOIN enigma.people p ON lp.personid = p.personid
+        WHERE NOT ps.dead{role_filter}
         ORDER BY {order_by}
-        LIMIT 5000
     """
 
     try:
-        results = execute_query(sql)
+        results = execute_query(sql, tuple(params) if params else None)
     except Exception as ex:
         current_app.logger.error(f"Error in hksols.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template("dbpub/hksols.html", solicitors=results, sort=sort_param)
+    return render_template(
+        "dbpub/hksols.html",
+        solicitors=results,
+        sort=sort_param,
+        p=p,
+        title=title + " in HK law firms",
+        roles=roles,
+    )
 
 
 # HK solicitor firms
@@ -4544,35 +4730,29 @@ def hksols():
 
 @bp.route("/hksolfirms.asp")
 def hksolfirms():
-    """List of HK solicitor firms"""
+    """List of HK solicitor firms - uses Law Society tables"""
     from webbsite.asp_helpers import get_str
     from webbsite.db import execute_query
     from flask import render_template
 
-    sort_param = get_str("sort", "namup")
+    sort_param = get_str("sort", "cntdn")
 
     order_by_map = {
         "namup": "o.name1",
         "namdn": "o.name1 DESC",
-        "cntdn": "sol_count DESC",
-        "cntup": "sol_count",
+        "cntdn": "cnt DESC, o.name1",
+        "cntup": "cnt, o.name1",
     }
-    order_by = order_by_map.get(sort_param, "o.name1")
+    order_by = order_by_map.get(sort_param, "cnt DESC, o.name1")
 
-    # This is a simplified version - full version would need lsemps table
     sql = f"""
-        SELECT
-            d.company AS personid,
-            o.name1,
-            COUNT(DISTINCT d.director) AS sol_count
-        FROM enigma.directorships d
-        JOIN enigma.organisations o ON d.company = o.personid
-        WHERE d.positionid IN (394, 395)
-          AND d.resdate IS NULL
-        GROUP BY d.company, o.name1
-        HAVING COUNT(DISTINCT d.director) > 0
+        SELECT o.name1, o.personid, COUNT(*) AS cnt
+        FROM enigma.lsposts ps
+        JOIN enigma.lsorgs lo ON ps.lsorg = lo.lsid
+        JOIN enigma.organisations o ON lo.personid = o.personid
+        WHERE NOT ps.dead
+        GROUP BY o.personid, o.name1
         ORDER BY {order_by}
-        LIMIT 1000
     """
 
     try:
@@ -4717,7 +4897,7 @@ def hksolsadmos():
     try:
         results = execute_query(
             f"""
-            SELECT d.domid,
+            SELECT d.id AS domid,
                    d.friendly AS jur,
                    COUNT(*) AS cnt,
                    SUM(CASE WHEN a.adm < p.admhk THEN 1 ELSE 0 END) AS bef,
@@ -4728,7 +4908,7 @@ def hksolsadmos():
             JOIN enigma.lsdoms ld ON a.lsdom = ld.lsdom
             JOIN enigma.domiciles d ON ld.domid = d.id
             WHERE NOT p.dead
-            GROUP BY d.domid, d.friendly
+            GROUP BY d.id, d.friendly
             ORDER BY {ob}
         """
         )
@@ -4839,23 +5019,29 @@ def hksolsdom():
 
 @bp.route("/hksolemps.asp")
 def hksolemps():
-    """HK solicitors by employer"""
+    """Non-law firm employers of HK solicitors - uses lsjobs/lsemps tables"""
+    from webbsite.asp_helpers import get_str
     from webbsite.db import execute_query
     from flask import render_template
 
-    # Simplified - would need lsemps table for full implementation
-    sql = """
-        SELECT
-            d.company AS personid,
-            o.name1 AS employer,
-            COUNT(DISTINCT d.director) AS sol_count
-        FROM enigma.directorships d
-        JOIN enigma.organisations o ON d.company = o.personid
-        WHERE d.positionid IN (394, 395)
-          AND d.resdate IS NULL
-        GROUP BY d.company, o.name1
-        ORDER BY sol_count DESC
-        LIMIT 500
+    sort_param = get_str("sort", "cntdn")
+
+    order_by_map = {
+        "orgup": "o.name1",
+        "orgdn": "o.name1 DESC",
+        "cntup": "cnt, o.name1",
+        "cntdn": "cnt DESC, o.name1",
+    }
+    order_by = order_by_map.get(sort_param, "cnt DESC, o.name1")
+
+    sql = f"""
+        SELECT o.name1, o.personid, COUNT(*) AS cnt
+        FROM enigma.lsjobs j
+        JOIN enigma.lsemps e ON j.empid = e.id
+        JOIN enigma.organisations o ON e.personid = o.personid
+        WHERE NOT j.dead
+        GROUP BY e.personid, o.personid, o.name1
+        ORDER BY {order_by}
     """
 
     try:
@@ -4864,7 +5050,7 @@ def hksolemps():
         current_app.logger.error(f"Error in hksolemps.asp: {ex}", exc_info=True)
         results = []
 
-    return render_template("dbpub/hksolemps.html", employers=results)
+    return render_template("dbpub/hksolemps.html", employers=results, sort=sort_param)
 
 
 # Company index by letter
@@ -5800,7 +5986,12 @@ def hkflights():
         except:
             d = dt_date.today()
     else:
-        d = dt_date.today()
+        # Default to latest date with flight data, or today if no data
+        max_data_date = execute_query("SELECT MAX(DATE(sched)) AS maxd FROM enigma.flights")
+        if max_data_date and max_data_date[0]["maxd"]:
+            d = max_data_date[0]["maxd"]
+        else:
+            d = dt_date.today()
 
     # Clamp date range (2021-09-06 to today+14)
     min_date = dt_date(2021, 9, 6)
@@ -6199,33 +6390,48 @@ def inedhkdstncos():
         snapshot_date = date.today()
 
     # Query distribution of INEDs
+    # Replicates MySQL stored procedure HKinedDistnCos
+    # positions.status=3 means INED (numeric, not string 'INED')
+    # Uses date-aware listed company filtering (not the current-state listedcoshk view)
     sql = """
-        WITH board_data AS (
-            SELECT
-                d.company,
-                COUNT(DISTINCT d.director) FILTER (WHERE pos.status = 'INED') AS ineds
-            FROM enigma.directorships d
-            JOIN enigma.positions pos ON d.positionid = pos.positionid
-            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-            WHERE pos.rank = 1
-              AND (d.resdate IS NULL OR d.resdate > %s)
-              AND d.apptdate <= %s
-            GROUP BY d.company
-        )
-        SELECT
-            ineds AS num_seats,
-            COUNT(*) AS num_cos
-        FROM board_data
-        GROUP BY ineds
-        ORDER BY ineds DESC
+        SELECT numseats AS num_seats, COUNT(issuer) AS num_cos FROM (
+            SELECT COUNT(director) AS numseats, issuer FROM (
+                SELECT DISTINCT issuer
+                FROM enigma.issue
+                JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+                WHERE stockexid IN (1, 20)
+                  AND typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                  AND (delistdate IS NULL OR delistdate > %s)
+            ) AS listed_cos
+            JOIN enigma.directorships ON listed_cos.issuer = directorships.company
+            JOIN enigma.people ON directorships.director = people.personid
+            JOIN enigma.positions ON directorships.positionid = positions.positionid
+            WHERE positions.rank = 1
+              AND positions.status = 3
+              AND (apptdate IS NULL OR apptdate <= %s)
+              AND (resdate IS NULL OR resdate > %s)
+            GROUP BY issuer
+        ) AS ined_counts
+        GROUP BY numseats
+        ORDER BY numseats DESC
     """
 
     try:
-        results = execute_query(sql, (snapshot_date, snapshot_date))
+        results = execute_query(sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
 
-        # Get total listed company count
-        count_sql = "SELECT COUNT(*) AS cnt FROM enigma.listedcoshk"
-        count_result = execute_query(count_sql)
+        # Get total listed company count at the snapshot date
+        # Matches listcoCntAtDate() function logic
+        count_sql = """
+            SELECT COUNT(DISTINCT issuer) AS cnt
+            FROM enigma.issue
+            JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+            WHERE stockexid IN (1, 20)
+              AND typeid NOT IN (1, 2, 40, 41, 46)
+              AND (firsttradedate IS NULL OR firsttradedate <= %s)
+              AND (delistdate IS NULL OR delistdate > %s)
+        """
+        count_result = execute_query(count_sql, (snapshot_date, snapshot_date))
         total_cos = count_result[0]["cnt"] if count_result else 0
     except Exception as ex:
         current_app.logger.error(f"Error in INEDHKDistnCos.asp: {ex}", exc_info=True)
@@ -6258,33 +6464,37 @@ def inedhkdstnpeople():
         snapshot_date = date.today()
 
     # Query distribution of INED seats per person
+    # Replicates MySQL stored procedure HKinedDistnPpl
+    # positions.status=3 means INED (numeric, not string 'INED')
+    # Uses date-aware listed company filtering
     sql = """
-        WITH person_data AS (
-            SELECT
-                d.director,
-                p.sex,
-                COUNT(DISTINCT d.company) AS num_seats
-            FROM enigma.directorships d
-            JOIN enigma.people p ON d.director = p.personid
-            JOIN enigma.positions pos ON d.positionid = pos.positionid
-            JOIN enigma.listedcoshk lc ON d.company = lc.issuer
-            WHERE pos.rank = 1
-              AND pos.status = 'INED'
-              AND (d.resdate IS NULL OR d.resdate > %s)
-              AND d.apptdate <= %s
-            GROUP BY d.director, p.sex
-        )
-        SELECT
-            num_seats,
-            COUNT(*) AS num_people,
-            COUNT(*) FILTER (WHERE sex = 'F') AS female
-        FROM person_data
-        GROUP BY num_seats
-        ORDER BY num_seats DESC
+        SELECT numseats AS num_seats, COUNT(director) AS num_people,
+               SUM(CASE WHEN sex = 'F' THEN 1 ELSE 0 END) AS female
+        FROM (
+            SELECT director, COUNT(issuer) AS numseats, sex FROM (
+                SELECT DISTINCT issuer
+                FROM enigma.issue
+                JOIN enigma.stocklistings ON issue.id1 = stocklistings.issueid
+                WHERE stockexid IN (1, 20)
+                  AND typeid NOT IN (1, 2, 40, 41, 46)
+                  AND (firsttradedate IS NULL OR firsttradedate <= %s)
+                  AND (delistdate IS NULL OR delistdate > %s)
+            ) AS listed_cos
+            JOIN enigma.directorships ON listed_cos.issuer = directorships.company
+            JOIN enigma.people ON directorships.director = people.personid
+            JOIN enigma.positions ON directorships.positionid = positions.positionid
+            WHERE positions.rank = 1
+              AND positions.status = 3
+              AND (apptdate IS NULL OR apptdate <= %s)
+              AND (resdate IS NULL OR resdate > %s)
+            GROUP BY director, sex
+        ) AS person_seats
+        GROUP BY numseats
+        ORDER BY numseats DESC
     """
 
     try:
-        results = execute_query(sql, (snapshot_date, snapshot_date))
+        results = execute_query(sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
     except Exception as ex:
         current_app.logger.error(f"Error in INEDHKDistnPeople.asp: {ex}", exc_info=True)
         results = []
@@ -6324,9 +6534,11 @@ def lirteams():
         teamno = 0
 
     if teamno > 0:
-        # Get team staff
+        # Get current team staff
         staff_sql = """
-            SELECT ls.staffid, ls.firstseen,
+            SELECT ls.staffid,
+                   CASE WHEN ls.firstseen = '2023-12-30' THEN NULL
+                        ELSE ls.firstseen END AS firstseen,
                    CASE WHEN s.n2 IS NULL THEN s.n1
                         ELSE s.n1 || ', ' || s.n2
                    END AS name,
@@ -6339,12 +6551,31 @@ def lirteams():
             ORDER BY r.id DESC
         """
 
+        # Get former team staff
+        former_staff_sql = """
+            SELECT ls.staffid,
+                   CASE WHEN ls.firstseen = '2023-12-30' THEN NULL
+                        ELSE ls.firstseen END AS firstseen,
+                   ls.lastseen,
+                   CASE WHEN s.n2 IS NULL THEN s.n1
+                        ELSE s.n1 || ', ' || s.n2
+                   END AS name,
+                   r.title
+            FROM enigma.lirteamstaff ls
+            JOIN enigma.lirstaff s ON ls.staffid = s.id
+            JOIN enigma.lirroles r ON ls.posid = r.id
+            WHERE ls.teamid = %s
+              AND ls.dead
+            ORDER BY r.id DESC, ls.lastseen DESC
+        """
+
         # Get current issuers
         issuers_sql = f"""
             SELECT
                 t.orgid,
                 o.name1 AS name,
-                t.firstseen,
+                CASE WHEN t.firstseen = '2023-12-30' THEN NULL
+                     ELSE t.firstseen END AS firstseen,
                 (SELECT MIN(sl.stockcode)
                  FROM enigma.stocklistings sl
                  JOIN enigma.issue i ON sl.issueid = i.id1
@@ -6359,16 +6590,43 @@ def lirteams():
             ORDER BY {order_by}
         """
 
+        # Get former issuers
+        former_issuers_sql = f"""
+            SELECT
+                t.orgid,
+                o.name1 AS name,
+                CASE WHEN t.firstseen = '2023-12-30' THEN NULL
+                     ELSE t.firstseen END AS firstseen,
+                t.lastseen,
+                (SELECT MIN(sl.stockcode)
+                 FROM enigma.stocklistings sl
+                 JOIN enigma.issue i ON sl.issueid = i.id1
+                 WHERE i.issuer = t.orgid
+                   AND NOT sl."2ndCtr"
+                ) AS sc
+            FROM enigma.lirorgteam t
+            JOIN enigma.organisations o ON t.orgid = o.personid
+            WHERE t.teamid = %s
+              AND t.dead
+            ORDER BY {order_by}
+        """
+
         try:
             staff = execute_query(staff_sql, (t,))
+            former_staff = execute_query(former_staff_sql, (t,))
             issuers = execute_query(issuers_sql, (t,))
+            former_issuers = execute_query(former_issuers_sql, (t,))
         except Exception as ex:
             current_app.logger.error(f"Error in lirteams.asp: {ex}", exc_info=True)
             staff = []
+            former_staff = []
             issuers = []
+            former_issuers = []
     else:
         staff = []
+        former_staff = []
         issuers = []
+        former_issuers = []
 
     # Get all teams for dropdown
     teams_sql = """
@@ -6388,7 +6646,9 @@ def lirteams():
         t=t,
         teamno=teamno,
         staff=staff,
+        former_staff=former_staff,
         issuers=issuers,
+        former_issuers=former_issuers,
         teams=teams,
         sort=sort_param,
     )
@@ -7340,7 +7600,7 @@ def hkpax():
 
     t = get_int("t", 0)  # passenger type
     p = get_int("p", 0)  # port
-    f = get_int("f", 4)  # frequency (default to annual)
+    f = get_int("f", 0)  # frequency (default to daily, matching ASP)
 
     # Validate frequency parameter
     if f < 0 or f > 4:
@@ -8244,7 +8504,7 @@ def orgdata():
                 holdings_data = execute_query(
                     f"""
                     SELECT personid, issue, holdingdate, shares, stake, friendly, a2,
-                           name, orgtype, sectype, typeshort, typelong, issuer, stakecomp,
+                           name, orgtype, sectype, typeshort, issuer, stakecomp,
                            CASE
                                WHEN incacc = 3 THEN 'U'
                                WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
@@ -8344,9 +8604,9 @@ def pricescsv():
     # Get current adjustment factor
     with get_db() as conn:
         result = conn.execute(
-            "SELECT enigma.getadjust(%s, CURRENT_DATE) as adj", (issue_id,)
+            text("SELECT enigma.getadjust(:p1, CURRENT_DATE) as adj"), {"p1": issue_id}
         ).fetchone()
-        current_adj = result["adj"] if result else 1.0
+        current_adj = result._mapping["adj"] if result else 1.0
 
         # Build query based on frequency
         if freq == "d":
@@ -8369,7 +8629,7 @@ def pricescsv():
                     q.ask * (%s / enigma.getadjust(%s, q.atDate)) AS adjAsk,
                     q.low * (%s / enigma.getadjust(%s, q.atDate)) AS adjLow,
                     q.high * (%s / enigma.getadjust(%s, q.atDate)) AS adjHigh,
-                    ROUND(q.vol / (%s / enigma.getadjust(%s, q.atDate)), 0) AS adjVol,
+                    ROUND((q.vol / (%s / enigma.getadjust(%s, q.atDate)))::numeric, 0) AS adjVol,
                     CASE WHEN q.vol > 0 THEN (q.turn * (%s / enigma.getadjust(%s, q.atDate))) / q.vol ELSE 0 END AS adjVWAP
                 FROM ccass.quotes q
                 JOIN ccass.calendar c ON q.atDate = c.tradeDate
@@ -8563,7 +8823,7 @@ def pricescsv():
             )
 
         # Execute query and get results
-        results = conn.execute(query, params).fetchall()
+        results = execute_query(query, params)
 
         # Build CSV output
         if not results:
@@ -8789,12 +9049,10 @@ def adviserships():
             o.name1 AS org,
             a.ID1 AS issueid,
             addDate,
-            remDate,
-            i.name1 AS issue_name
+            remDate
         FROM enigma.adviserships adv
         JOIN enigma.organisations o ON adv.company = o.personid
         JOIN enigma.issue a ON adv.company = a.issuer
-        JOIN enigma.issue i ON a.ID1 = i.ID1
         WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
           AND adv.role = %s
           AND adv.adviser = %s
@@ -9122,4 +9380,60 @@ def hpu():
         stock_name=stock_name,
         quotes=quotes,
         sort=sort_param,
+    )
+
+
+@bp.route("/webbchips.asp")
+def webbchips():
+    """Webb-chips: current disclosed holdings of David Webb"""
+    sort_param = get_str("sort", "mvdn")
+    order_by_map = {
+        "datedn": "w.atdate DESC, o.name1",
+        "dateup": "w.atdate, o.name1",
+        "namedn": "o.name1 DESC",
+        "nameup": "o.name1",
+        "codeup": "sc",
+        "codedn": "sc DESC",
+        "stkup": "w.stake, o.name1",
+        "stkdn": "w.stake DESC, o.name1 DESC",
+        "qddn": "qdate DESC, value DESC",
+        "qdup": "qdate, value DESC",
+        "mvup": "value, o.name1",
+        "mvdn": "value DESC, o.name1",
+    }
+    order_by = order_by_map.get(sort_param, order_by_map["mvdn"])
+
+    sql = f"""
+        SELECT
+            enigma.lastcode(i.id1) AS sc,
+            i.id1 AS issueid,
+            i.issuer,
+            enigma.outstanding(i.id1, CURRENT_DATE) AS os,
+            o.name1 AS name,
+            w.shares,
+            w.atdate,
+            w.stake,
+            ROUND(enigma.lastquote(i.id1, CURRENT_DATE)::numeric, 3) AS price,
+            ROUND(enigma.lastquote(i.id1, CURRENT_DATE)::numeric * w.shares / 1000000, 1) AS value,
+            enigma.lastquotedate(i.id1, CURRENT_DATE) AS qdate,
+            w.filing
+        FROM enigma.webbhold w
+        JOIN enigma.issue i ON w.issueid = i.id1
+        JOIN enigma.organisations o ON i.issuer = o.personid
+        ORDER BY {order_by}
+    """
+
+    try:
+        results = execute_query(sql)
+    except Exception as ex:
+        current_app.logger.error(f"Error in webbchips.asp: {ex}", exc_info=True)
+        results = []
+
+    cum_val = sum(float(r["value"] or 0) for r in results)
+
+    return render_template(
+        "dbpub/webbchips.html",
+        holdings=results,
+        sort=sort_param,
+        cum_val=cum_val,
     )

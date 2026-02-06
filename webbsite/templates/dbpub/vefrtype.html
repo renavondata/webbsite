@@ -1,7 +1,59 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="y" onchange="this.form.submit()">
+        <option value="0" {% if y == 0 %}selected{% endif %}>All years</option>
+        {% if maxd %}
+        {% for yr in range(maxd.year, 2012, -1) %}
+        <option value="{{ yr }}" {% if yr == y %}selected{% endif %}>{{ yr }}</option>
+        {% endfor %}
+        {% endif %}
+    </select>
+    {% if y > 0 %}
+    <select name="m" onchange="this.form.submit()">
+        <option value="0" {% if m == 0 %}selected{% endif %}>All months</option>
+        {% for mo in range(1, 13) %}
+        <option value="{{ mo }}" {% if mo == m %}selected{% endif %}>{{ mo }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+    <label><input type="checkbox" name="simple" value="1" {% if simple %}checked{% endif %} onchange="this.form.submit()"> Simple view</label>
+</form>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'desdn' %}desup{% else %}desdn{% endif %}">Type</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'FRdn' %}FRup{% else %}FRdn{% endif %}">First Reg.</a></th>
+        <th>%</th>
+        <th><a href="?y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'licdn' %}licup{% else %}licdn{% endif %}">Licensed</a></th>
+        <th><a href="?y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'regdn' %}regup{% else %}regdn{% endif %}">Registered</a></th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td><a href="/dbpub/veFRtypehist.asp?vc={{ row.id }}{% if simple %}&simple=1{% endif %}">{{ row.des }}</a></td>
+        <td class="r">{{ "{:,}".format(row.fr|int) if row.fr else '0' }}</td>
+        <td class="r">{% if total %}{{ "{:.1f}".format(row.fr / total * 100) }}%{% endif %}</td>
+        <td class="r">{{ "{:,}".format(row.totlic|int) if row.totlic else '' }}</td>
+        <td class="r">{{ "{:,}".format(row.totreg|int) if row.totreg else '' }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td><b>Total</b></td>
+        <td class="r"><b>{{ "{:,}".format(total|int) if total else '0' }}</b></td>
+        <td class="r"><b>100%</b></td>
+        <td class="r"><b>{{ "{:,}".format(sum_lic|int) if sum_lic else '' }}</b></td>
+        <td class="r"><b>{{ "{:,}".format(sum_reg|int) if sum_reg else '' }}</b></td>
+    </tr>
+</table>
+{% if operators %}
+<p>Operators: {% for op in operators %}<a href="/dbpub/orgdata.asp?p={{ op.orgid }}">{{ op.tdabbrev }}</a> {% endfor %}</p>
+{% endif %}
+<p>{{ data|length }} types</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

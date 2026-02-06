@@ -1,9 +1,8 @@
-{% extends "base.html" %}
+{% extends "base_database.html" %}
 
 {% block title %}Adviserships of {{ org_name }}{% endblock %}
 
 {% block content %}
-{% include 'header.html' %}
 
 <h2>{{ org_name }}</h2>
 
@@ -132,5 +131,4 @@
     <p>None found.</p>
 {% endif %}
 
-{% include 'footer.html' %}
 {% endblock %}

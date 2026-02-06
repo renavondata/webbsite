@@ -1,7 +1,62 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="t" onchange="this.form.submit()">
+        <option value="0" {% if t == 0 %}selected{% endif %}>Licensed</option>
+        <option value="1" {% if t == 1 %}selected{% endif %}>Registered</option>
+    </select>
+    <select name="y" onchange="this.form.submit()">
+        {% if mind and maxd %}
+        {% for yr in range(maxd.year, mind.year - 1, -1) %}
+        <option value="{{ yr }}" {% if yr == y %}selected{% endif %}>{{ yr }}</option>
+        {% endfor %}
+        {% endif %}
+    </select>
+    <select name="m" onchange="this.form.submit()">
+        {% for mo in range(1, 13) %}
+        <option value="{{ mo }}" {% if mo == m %}selected{% endif %}>{{ mo }}</option>
+        {% endfor %}
+    </select>
+    <label><input type="checkbox" name="simple" value="1" {% if simple %}checked{% endif %} onchange="this.form.submit()"> Simple view</label>
+</form>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?t={{ t }}&y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'desdn' %}desup{% else %}desdn{% endif %}">Type</a></th>
+        {% for cat in cats %}
+        <th><a href="?t={{ t }}&y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'f' ~ loop.index0 ~ 'dn' %}f{{ loop.index0 }}up{% else %}f{{ loop.index0 }}dn{% endif %}">{{ cat.name }}</a></th>
+        <th><a href="?t={{ t }}&y={{ y }}&m={{ m }}{% if simple %}&simple=1{% endif %}&sort={% if sort == 'fs' ~ loop.index0 ~ 'dn' %}fs{{ loop.index0 }}up{% else %}fs{{ loop.index0 }}dn{% endif %}">%</a></th>
+        {% endfor %}
+        <th>Total</th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td><a href="/dbpub/vefuelhist.asp?vc={{ row.vc }}&t={{ t }}{% if simple %}&simple=1{% endif %}">{{ row.des }}</a></td>
+        {% for cat in cats %}
+        <td class="r">{{ "{:,}".format(row['f' ~ loop.index0]|int) if row['f' ~ loop.index0] else '' }}</td>
+        <td class="r">{% if row['fs' ~ loop.index0] %}{{ "{:.1f}".format(row['fs' ~ loop.index0]|float) }}%{% endif %}</td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(row.n|int) if row.n else '0' }}</b></td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td><b>Total</b></td>
+        {% for cat in cats %}
+        <td class="r"><b>{{ "{:,}".format(cat.total|int) if cat.total else '0' }}</b></td>
+        <td class="r"><b>{% if cat.share %}{{ "{:.1f}".format(cat.share|float) }}%{% endif %}</b></td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(total|int) if total else '0' }}</b></td>
+    </tr>
+</table>
+{% if operators %}
+<p>Operators: {% for op in operators %}<a href="/dbpub/orgdata.asp?p={{ op.orgid }}">{{ op.tdabbrev }}</a> {% endfor %}</p>
+{% endif %}
+<p>{{ data|length }} types</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}
