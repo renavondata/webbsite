@@ -603,7 +603,7 @@ def vefrtypehist():
         # Use first child if needed
         if vc < 13:
             first_child = execute_query(
-                f"SELECT DISTINCT ID FROM enigma.vehicleclass "
+                f"SELECT DISTINCT ID, des FROM enigma.vehicleclass "
                 f"JOIN enigma.tdreglic ON vc=ID WHERE parent={vc} ORDER BY des LIMIT 1"
             )
             if first_child:
@@ -1192,7 +1192,7 @@ def vedet():
         total = sum(f["total"] or 0 for f in fuels)
 
         # Get detailed data with body/status/fuel breakdown
-        data = execute_query(
+        raw_data = execute_query(
             f"""
             SELECT bt.bodyID, st.FRstatID, ft.fuelID, COALESCE(freg, 0) as freg, sdes
             FROM (SELECT DISTINCT fuelID FROM enigma.vehiclefr WHERE {vsql}) ft
@@ -1208,6 +1208,28 @@ def vedet():
             ORDER BY bt.bodyID, sdes, ft.fuelID
             """
         )
+
+        # Pivot: group by (body, status) with fuel values as columns
+        fuel_ids = [f["id"] for f in fuels]
+        data = []
+        current_key = None
+        current_row = None
+        for row in raw_data:
+            key = (row["bodyid"], row["frstatid"])
+            if key != current_key:
+                if current_row:
+                    data.append(current_row)
+                current_row = {
+                    "bodyid": row["bodyid"],
+                    "sdes": row["sdes"],
+                    "fuel_vals": {fid: 0 for fid in fuel_ids},
+                    "total": 0,
+                }
+                current_key = key
+            current_row["fuel_vals"][row["fuelid"]] = row["freg"] or 0
+            current_row["total"] = current_row["total"] + (row["freg"] or 0)
+        if current_row:
+            data.append(current_row)
 
         # Get summary data (body x fuel)
         summary_data = execute_query(
@@ -1517,7 +1539,7 @@ def vefuelhist():
     else:
         if vc < 13:
             first_child = execute_query(
-                f"SELECT DISTINCT ID FROM enigma.vehicleclass "
+                f"SELECT DISTINCT ID, des FROM enigma.vehicleclass "
                 f"JOIN enigma.vehiclefuel ON vc=ID WHERE parent={vc} ORDER BY des LIMIT 1"
             )
             if first_child:

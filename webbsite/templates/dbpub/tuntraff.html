@@ -1,7 +1,54 @@
 {% extends "base_database.html" %}
-{% block title %}Tunnel and bridge traffic {{ y }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Tunnel and bridge traffic {{ y }}</h2>
-<p>Traffic statistics for Hong Kong's major tunnels and bridges.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="t" onchange="this.form.submit()">
+    {% for tun in tunnels %}
+        <option value="{{ tun.id }}" {% if tun.id == t %}selected{% endif %}>{{ tun.name }}</option>
+    {% endfor %}
+    </select>
+    <select name="vc" onchange="this.form.submit()">
+        <option value="0" {% if vc == 0 %}selected{% endif %}>All vehicles</option>
+    {% for v in vehicle_classes %}
+        <option value="{{ v.id }}" {% if v.id == vc %}selected{% endif %}>{{ v.des }}</option>
+    {% endfor %}
+    </select>
+    <select name="f" onchange="this.form.submit()">
+        <option value="1" {% if f == 1 %}selected{% endif %}>Monthly</option>
+        <option value="2" {% if f == 2 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+{% if notes %}<p>{{ notes }}</p>{% endif %}
+{% if opdate %}<p>Opened: {{ opdate }}</p>{% endif %}
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?t={{ t }}&vc={{ vc }}&f={{ f }}&sort={% if sort == 'datdn' %}datup{% else %}datdn{% endif %}">{{ ftxt }}</a></th>
+        <th><a href="?t={{ t }}&vc={{ vc }}&f={{ f }}&sort={% if sort == 'defdn' %}defup{% else %}defdn{% endif %}">{{ defdir }}</a></th>
+        <th><a href="?t={{ t }}&vc={{ vc }}&f={{ f }}&sort={% if sort == 'altdn' %}altup{% else %}altdn{% endif %}">{{ altdir }}</a></th>
+        <th>Total</th>
+        <th><a href="?t={{ t }}&vc={{ vc }}&f={{ f }}&sort={% if sort == 'defadn' %}defaup{% else %}defadn{% endif %}">{{ defdir }} avg/day</a></th>
+        <th><a href="?t={{ t }}&vc={{ vc }}&f={{ f }}&sort={% if sort == 'altadn' %}altaup{% else %}altadn{% endif %}">{{ altdir }} avg/day</a></th>
+        <th>Total avg/day</th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        <td class="r">{{ "{:,}".format(row.defc|int) if row.defc else '0' }}</td>
+        <td class="r">{{ "{:,}".format(row.altc|int) if row.altc else '0' }}</td>
+        <td class="r">{{ "{:,}".format((row.defc|int + row.altc|int)) }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.defa) if row.defa else '0' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.alta) if row.alta else '0' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.defa + row.alta) if row.defa and row.alta else '0' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ data|length }} records</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

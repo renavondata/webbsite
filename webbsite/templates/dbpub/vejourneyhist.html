@@ -1,7 +1,52 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="vc" onchange="this.form.submit()">
+    {% for cls in classes %}
+        <option value="{{ cls.id }}" {% if cls.id == vc %}selected{% endif %}>{{ cls.des }}</option>
+    {% endfor %}
+    </select>
+    <select name="f" onchange="this.form.submit()">
+        <option value="1" {% if f == 1 %}selected{% endif %}>Monthly</option>
+        <option value="2" {% if f == 2 %}selected{% endif %}>Annual</option>
+    </select>
+    <label><input type="checkbox" name="simple" value="1" {% if simple %}checked{% endif %} onchange="this.form.submit()"> Simple view</label>
+</form>
+
+{% if op and op_name %}
+<p>Operator: <a href="/dbpub/orgdata.asp?p={{ op }}">{{ op_name }}</a></p>
+{% endif %}
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th>{{ ftxt }}</th>
+        <th>Journeys</th>
+        <th>Per day</th>
+        <th>Licensed</th>
+        <th>Capacity</th>
+        <th>Km (000)</th>
+        <th>Km/car/day</th>
+        <th>J/car/day</th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.j) if row.j else '0' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.pd|float) if row.pd else '' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.totlic|float) if row.totlic else '' }}</td>
+        <td class="r">{{ "{:,.0f}".format(row.paxcap|float) if row.paxcap else '' }}</td>
+        <td class="r">{% if row.km %}{{ "{:,.0f}".format(row.km / 1000) }}{% endif %}</td>
+        <td class="r">{{ "{:,.1f}".format(row.kcd|float) if row.kcd else '' }}</td>
+        <td class="r">{{ "{:,.1f}".format(row.jcd|float) if row.jcd else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ data|length }} periods</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

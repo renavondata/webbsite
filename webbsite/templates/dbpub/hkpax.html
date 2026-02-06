@@ -1,7 +1,47 @@
 {% extends "base_database.html" %}
-{% block title %}HK passenger statistics {{ y }}{% endblock %}
+{% block title %}HK passenger statistics: {{ px_name }}{% endblock %}
 {% block content %}
-<h2>HK passenger statistics {{ y }}</h2>
-<p>Airport and border crossing passenger statistics.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>HK passenger statistics: {{ px_name }}, {{ port_name }}</h2>
+
+<form method="get">
+    <select name="t" onchange="this.form.submit()">
+    {% for pt in pxtypes %}
+        <option value="{{ pt.id }}" {% if pt.id == t %}selected{% endif %}>{{ pt.name }}</option>
+    {% endfor %}
+    </select>
+    <select name="p" onchange="this.form.submit()">
+    {% for port in ports %}
+        <option value="{{ port.id }}" {% if port.id == p %}selected{% endif %}>{{ port.name }}</option>
+    {% endfor %}
+    </select>
+    <select name="f" onchange="this.form.submit()">
+        <option value="0" {% if f == 0 %}selected{% endif %}>Daily</option>
+        <option value="1" {% if f == 1 %}selected{% endif %}>Weekly (Sun-Sat)</option>
+        <option value="2" {% if f == 2 %}selected{% endif %}>Weekly (Mon-Sun)</option>
+        <option value="3" {% if f == 3 %}selected{% endif %}>Monthly</option>
+        <option value="4" {% if f == 4 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+{% if pax_data %}
+<table class="numtable">
+    <tr>
+        <th>Period</th>
+        <th>Arrivals</th>
+        <th>Departures</th>
+        <th>Net</th>
+    </tr>
+    {% for row in pax_data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        <td class="r">{{ "{:,}".format(row.arrivals|int) if row.arrivals else '0' }}</td>
+        <td class="r">{{ "{:,}".format(row.departures|int) if row.departures else '0' }}</td>
+        <td class="r">{{ "{:,}".format(row.net|int) if row.net else '0' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ pax_data|length }} periods</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

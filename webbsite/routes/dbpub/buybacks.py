@@ -501,8 +501,8 @@ def buybacksum():
             LEFT JOIN LATERAL (
                 SELECT stockCode
                 FROM enigma.stockListings
-                WHERE issueid = b.issueid AND toDate IS NULL
-                ORDER BY fromDate DESC
+                WHERE issueid = b.issueid AND delistdate IS NULL
+                ORDER BY firsttradedate DESC
                 LIMIT 1
             ) sl ON TRUE
             ORDER BY {ob}

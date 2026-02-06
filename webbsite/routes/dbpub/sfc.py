@@ -367,8 +367,21 @@ def sfc_changes():
     from flask import current_app
     from datetime import timedelta
 
-    d = request.args.get("d", str(date.today()))
+    d = request.args.get("d", "")
     sort_param = request.args.get("sort", "orgup")
+
+    # Default to latest data date if no date specified
+    if not d:
+        try:
+            max_result = execute_query(
+                "SELECT GREATEST(MAX(apptDate), MAX(resDate)) AS maxd FROM enigma.directorships WHERE positionid IN (394, 395)"
+            )
+            if max_result and max_result[0]["maxd"]:
+                d = str(max_result[0]["maxd"])
+            else:
+                d = str(date.today())
+        except:
+            d = str(date.today())
 
     # Calculate start date (14 days before end date)
     try:
@@ -413,9 +426,9 @@ def sfc_changes():
             (start_date, start_date, start_date, d, start_date, d),
         )
 
-        # Add role text
+        # Add role text (lowercase key to match Jinja2 template expectations)
         for change in changes:
-            change["posText"] = "Rep" if change["positionid"] == 394 else "RO"
+            change["postext"] = "Rep" if change["positionid"] == 394 else "RO"
 
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC changes: {ex}")

@@ -1,7 +1,64 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="vc" onchange="this.form.submit()">
+    {% for cls in classes %}
+        <option value="{{ cls.id }}" {% if cls.id == vc %}selected{% endif %}>{{ cls.des }}</option>
+    {% endfor %}
+    </select>
+    <select name="y" onchange="this.form.submit()">
+        <option value="0" {% if y == 0 %}selected{% endif %}>All years</option>
+        {% if mind and maxd %}
+        {% for yr in range(maxd.year, mind.year - 1, -1) %}
+        <option value="{{ yr }}" {% if yr == y %}selected{% endif %}>{{ yr }}</option>
+        {% endfor %}
+        {% endif %}
+    </select>
+    {% if y > 0 %}
+    <select name="m" onchange="this.form.submit()">
+        <option value="0" {% if m == 0 %}selected{% endif %}>All months</option>
+        {% for mo in range(1, 13) %}
+        <option value="{{ mo }}" {% if mo == m %}selected{% endif %}>{{ mo }}</option>
+        {% endfor %}
+    </select>
+    {% endif %}
+    <select name="b" onchange="this.form.submit()">
+        <option value="1" {% if b == 1 %}selected{% endif %}>By fuel</option>
+        <option value="2" {% if b == 2 %}selected{% endif %}>By body</option>
+    </select>
+</form>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?vc={{ vc }}&y={{ y }}&m={{ m }}&b={{ b }}&sort={% if sort == 'makdn' %}makup{% else %}makdn{% endif %}">Brand</a></th>
+        {% for cat in cats %}
+        <th><a href="?vc={{ vc }}&y={{ y }}&m={{ m }}&b={{ b }}&sort={% if sort == 'f' ~ loop.index0 ~ 'dn' %}f{{ loop.index0 }}up{% else %}f{{ loop.index0 }}dn{% endif %}">{{ cat.name }}</a></th>
+        {% endfor %}
+        <th><a href="?vc={{ vc }}&y={{ y }}&m={{ m }}&b={{ b }}&sort={% if sort == 'totdn' %}totup{% else %}totdn{% endif %}">Total</a></th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td><a href="?vc={{ vc }}&y={{ y }}&m={{ m }}&b={{ b }}&brand={{ row.makeid }}">{{ row.make }}</a></td>
+        {% for cat in cats %}
+        <td class="r">{{ "{:,}".format(row['f' ~ loop.index0]|int) if row['f' ~ loop.index0] else '' }}</td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(row.n|int) if row.n else '0' }}</b></td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td><b>Total</b></td>
+        {% for cat in cats %}
+        <td class="r"><b>{{ "{:,}".format(cat.total|int) if cat.total else '0' }}</b></td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(total|int) if total else '0' }}</b></td>
+    </tr>
+</table>
+<p>{{ data|length }} brands</p>
+{% else %}
+<p>No data available for this selection.</p>
+{% endif %}
 {% endblock %}

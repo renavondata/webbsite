@@ -1,30 +1,41 @@
 {% extends "base_database.html" %}
 
-{% block title %}Rights issues and open offers{% endblock %}
+{% block title %}Rights issues and open offers of shares{% endblock %}
 
 {% block content %}
-<h2>Rights issues and open offers</h2>
-
-<p>This page shows rights issues and open offers announced by HK-listed companies.</p>
-
-<table class="numtable yscroll">
-    <tr>
-        <th><a href="?sort=codeup">Code</a> | <a href="?sort=codedn">▼</a></th>
-        <th class="left"><a href="?sort=nameup">Company</a> | <a href="?sort=namedn">▼</a></th>
-        <th><a href="?sort=datedn">Date</a> | <a href="?sort=dateup">▲</a></th>
-        <th>Type</th>
-    </tr>
-    {% for event in events %}
-    <tr>
-        <td><a href="/dbpub/orgdata.asp?p={{ event.personid }}">{{ event.sc or '—' }}</a></td>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ event.personid }}">{{ event.name1 }}</a></td>
-        <td>{{ event.eventdate }}</td>
-        <td>{{ event.eventtype }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-{% if not events %}
-<p>No rights issues or open offers found.</p>
-{% endif %}
+{% set base = "/dbpub/rightsoo.asp" %}
+{% set url = base ~ "?e=" ~ e ~ "&amp;t=" ~ t %}
+<h2>Rights issues and open offers of shares</h2>
+{{ write_nav(e, "m,g,b", "Main Board,GEM,Both", base ~ "?sort=" ~ sort ~ "&amp;t=" ~ t ~ "&amp;e=")|safe }}
+{{ write_nav(t, "r,o,b", "Rights issues,Open offers,Both", base ~ "?sort=" ~ sort ~ "&amp;e=" ~ e ~ "&amp;t=")|safe }}
+	<p><b>Please
+	<a href="/contact">report</a> errors or missing data. </b>The adjustment
+	factor for prices prior to rights issues and open offers is the Theoretical
+	Ex-Entitlements Price (TEEP) divided by the closing price on the last day of
+	trading before the ex-entitlements date, or 1 if lower.</p>
+	{{ mobile(1)|safe }}
+	<table class="numtable yscroll">
+	<tr>
+		<th><a href='{{ url }}&amp;sort={% if sort == "codeup" %}codedn{% else %}codeup{% endif %}'><b>Stock<br/>code</b></a></th>
+		<th class="left"><a href='{{ url }}&amp;sort={% if sort == "stckup" %}stckdn{% else %}stckup{% endif %}'><b>Stock</b></a></th>
+		<th class="left">Type</th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "ratiup" %}ratidn{% else %}ratiup{% endif %}'><b>Offer<br/>ratio</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "adjudn" %}adjuup{% else %}adjudn{% endif %}'><b>Adj.<br/>factor</b></a></th>
+		<th class="colHide2"><a href='{{ url }}&amp;sort={% if sort == "annddn" %}anndup{% else %}annddn{% endif %}'><b>Announced</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "exdtdn" %}exdtup{% else %}exdtdn{% endif %}'><b>ex-Date</b></a></th>
+		<th class="colHide2"><a href='{{ url }}&amp;sort={% if sort == "paydtdn" %}paydtup{% else %}paydtdn{% endif %}'><b>Payment<br/>date</b></a></th>
+	</tr>
+	{% for row in events %}
+		<tr>
+			<td>{{ row.stockcode }}</td>
+			<td class="left"><a href="events.asp?i={{ row.issueid }}">{{ row.name1 }}:{{ row.typeshort }}</a></td>
+			<td class="left"><a href="eventdets.asp?e={{ row.eventid }}">{{ row.change[:1] if row.change else '' }}</a></td>
+			<td>{{ "{:.4f}".format(row.ratio) if row.ratio is not none else '' }}</td>
+			<td>{{ "{:.4f}".format(row.adjust) if row.adjust is not none else '' }}</td>
+			<td class="colHide2">{{ row.announced|ms_date if row.announced else '' }}</td>
+			<td>{{ row.exdate|ms_date if row.exdate else '' }}</td>
+			<td class="colHide2">{{ row.acceptdate|ms_date if row.acceptdate else '' }}</td>
+		</tr>
+	{% endfor %}
+	</table>
 {% endblock %}

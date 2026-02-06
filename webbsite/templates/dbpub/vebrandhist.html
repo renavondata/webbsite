@@ -1,7 +1,65 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="vc" onchange="this.form.submit()">
+    {% for cls in classes %}
+        <option value="{{ cls.id }}" {% if cls.id == vc %}selected{% endif %}>{{ cls.des }}</option>
+    {% endfor %}
+    </select>
+    <select name="brand" onchange="this.form.submit()">
+    {% for br in brands %}
+        <option value="{{ br.id }}" {% if br.id == makeid %}selected{% endif %}>{{ br.make }}</option>
+    {% endfor %}
+    </select>
+    <select name="b" onchange="this.form.submit()">
+        <option value="1" {% if b == 1 %}selected{% endif %}>By fuel</option>
+        <option value="2" {% if b == 2 %}selected{% endif %}>By body</option>
+    </select>
+    <select name="f" onchange="this.form.submit()">
+        <option value="1" {% if f == 1 %}selected{% endif %}>Monthly</option>
+        <option value="2" {% if f == 2 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+<p>
+    <a href="/dbpub/vedet.asp?vc={{ vc }}&brand={{ makeid }}">Detail</a> |
+    <a href="/dbpub/veFR.asp?vc={{ vc }}&b={{ b }}">All brands</a>
+</p>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?vc={{ vc }}&brand={{ makeid }}&b={{ b }}&f={{ f }}&sort={% if sort == 'datdn' %}datup{% else %}datdn{% endif %}">{{ ftxt }}</a></th>
+        {% for cat in cats %}
+        <th><a href="?vc={{ vc }}&brand={{ makeid }}&b={{ b }}&f={{ f }}&sort={% if sort == 'f' ~ loop.index0 ~ 'dn' %}f{{ loop.index0 }}up{% else %}f{{ loop.index0 }}dn{% endif %}">{{ cat.name }}</a></th>
+        <th><a href="?vc={{ vc }}&brand={{ makeid }}&b={{ b }}&f={{ f }}&sort={% if sort == 'fs' ~ loop.index0 ~ 'dn' %}fs{{ loop.index0 }}up{% else %}fs{{ loop.index0 }}dn{% endif %}">%</a></th>
+        {% endfor %}
+        <th><a href="?vc={{ vc }}&brand={{ makeid }}&b={{ b }}&f={{ f }}&sort={% if sort == 'totdn' %}totup{% else %}totdn{% endif %}">Total</a></th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        {% for cat in cats %}
+        <td class="r">{{ "{:,}".format(row['f' ~ loop.index0]|int) if row['f' ~ loop.index0] else '' }}</td>
+        <td class="r">{% if row['fs' ~ loop.index0] %}{{ "{:.1f}".format(row['fs' ~ loop.index0] * 100) }}%{% endif %}</td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(row.n|int) if row.n else '0' }}</b></td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td><b>Total</b></td>
+        {% for cat in cats %}
+        <td class="r"><b>{{ "{:,}".format(cat.total|int) if cat.total else '0' }}</b></td>
+        <td class="r"><b>{% if total %}{{ "{:.1f}".format(cat.total / total * 100) }}%{% endif %}</b></td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(total|int) if total else '0' }}</b></td>
+    </tr>
+</table>
+<p>{{ data|length }} periods</p>
+{% else %}
+<p>No data available for this selection.</p>
+{% endif %}
 {% endblock %}

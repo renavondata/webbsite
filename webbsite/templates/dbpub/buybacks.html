@@ -97,7 +97,7 @@
 			<li><a href="{{ url_for('dbpub_statistics.str_route', i=issue_id) }}">Total return</a></li>
 			<li><a href="{{ url_for('dbpub_statistics.ctr', i1=issue_id) }}">Compare returns</a></li>
 			<li><a href="{{ url_for('dbpub_statistics.hpu', i=issue_id) }}">Prices</a></li>
-			<li><a href="{{ url_for('events.events', i=issue_id) }}">Events</a></li>
+			<li><a href="{{ url_for('dbpub_events.events', i=issue_id) }}">Events</a></li>
 		{% endif %}
 		{% if nav_flags.get('has_sdi') %}
 			<li><a href="{{ url_for('dbpub_sdi.sdiissue', i=issue_id) }}">Dealings</a></li>

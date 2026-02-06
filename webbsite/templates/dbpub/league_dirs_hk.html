@@ -1,41 +1,65 @@
 {% extends "base_database.html" %}
 
-{% block title %}Renavon Hong Kong League Table of HK-listed directorships{% endblock %}
+{% block title %}HK listed directorships per person{% endblock %}
 
 {% block content %}
-<h2>Renavon Hong Kong League Table of HK-listed directorships</h2>
-
-<p>This table shows people with directorships at multiple HK-listed companies.
-The number of directorships includes all positions on the board (executive, non-executive, independent).</p>
-
+<h2>Webb-site League Table of directors</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/leagueNotesD.asp">Notes</a></li>
+</ul>
+<div class="clear"></div>
+<p>This table shows a list of people who hold or held at least 3 directorships of
+companies with a primary listing in HK, with their average annualised Webb-site
+Total Returns relative to the Tracker Fund of HK. Hit the &quot;Notes&quot; button for more. For a table showing INED positions only,
+<a href="/dbpub/dirsHKPerPerson.asp">click here</a>. <strong>Warning: this page is
+computation-heavy, be patient</strong>.</p>
 <form method="get" action="/dbpub/leagueDirsHK.asp">
-    <input type="hidden" name="sort" value="{{ sort }}">
     <div class="inputs">
-        Snapshot date: <input type="date" name="d" id="d" value="{{ d }}">
+        <input type="radio" name="h" value="Y" {{ 'checked' if hide == 'Y' else '' }}> Current positions<br>
     </div>
     <div class="inputs">
+        <input type="radio" name="h" value="N" {{ 'checked' if hide == 'N' else '' }}> Current &amp; past positions
+    </div>
+    <div class="clear"></div>
+    <div class="inputs">Minimum positions: <input type="text" size="2" name="m" value="{{ min_pos }}"></div>
+    <div class="clear"></div>
+    <div class="inputs">
+        start date: <input type="date" name="f" id="f" value="{{ from_date }}">
+    </div>
+    <div class="inputs">
+        end date: <input type="date" name="t" id="t" value="{{ to_date }}">
+    </div>
+    <div class="inputs">
+        <input type="checkbox" name="c" id="c" value="1" {{ 'checked' if c else '' }}> include new appointments after start date
+    </div>
+    <div class="clear"></div>
+    <div class="inputs">
         <input type="submit" value="Go">
-        <input type="button" value="Clear" onclick="document.getElementById('d').value='';this.form.submit()">
+        <input type="submit" value="clear" onclick="document.getElementById('f').value='';document.getElementById('t').value='';document.getElementById('c').checked=false;">
     </div>
     <div class="clear"></div>
 </form>
-
 <table class="numtable yscroll">
     <tr>
-        <th></th>
-        <th class="left"><a href="?d={{ d }}&sort=nameup">Director</a> | <a href="?d={{ d }}&sort=namedn">▼</a></th>
-        <th><a href="?d={{ d }}&sort=countdn">No. of<br>companies</a> | <a href="?d={{ d }}&sort=countup">▲</a></th>
+        <th class="colHide2">Row</th>
+        <th>No.<br>of<br>seats</th>
+        <th class="left">Name</th>
+        <th>CAGR<br>relative<br>return</th>
+        <th class="colHide3">Age in<br>{{ current_year }}</th>
+        <th style="font-size:large">&#x26A5;</th>
     </tr>
-    {% for director in directors %}
+    {% for d in directors %}
     <tr>
-        <td>{{ loop.index }}</td>
-        <td class="left"><a href="/dbpub/orgdata.asp?p={{ director.personid }}">{{ director.person }}</a></td>
-        <td>{{ director.dirs }}</td>
+        <td class="colHide2">{{ loop.index }}</td>
+        <td>{{ d.cntpos }}</td>
+        <td class="left"><a href="/dbpub/possum.asp?p={{ d.dir }}&f={{ from_date }}&t={{ to_date }}&s=cagreldn">{{ d.name }}</a></td>
+        <td>{% if d.cagrel is not none %}{{ "%.2f%%"|format(d.cagrel * 100) }}{% endif %}</td>
+        <td class="colHide3">{% if d.yob %}{{ current_year - d.yob }}{% endif %}</td>
+        <td>{{ d.sex if d.sex else '' }}</td>
     </tr>
     {% endfor %}
 </table>
-
 {% if not directors %}
-<p>No directors with multiple directorships found.</p>
+<p>No directors found matching criteria.</p>
 {% endif %}
 {% endblock %}

@@ -442,9 +442,9 @@ def mcap():
     try:
         for curr_idx in range(3):
             if curr_idx == 0:
-                curr_filter = "(sl.SEHKcurr IS NULL OR sl.SEHKcurr = 0)"
+                curr_filter = "(i.SEHKcurr IS NULL OR i.SEHKcurr = 0)"
             else:
-                curr_filter = f"sl.SEHKcurr = {curr_idx}"
+                curr_filter = f"i.SEHKcurr = {curr_idx}"
 
             # Query market caps for this currency
             curr_data = execute_query(
@@ -475,7 +475,7 @@ def mcap():
                 ) os ON TRUE
                 WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= CURRENT_DATE)
                   AND (sl.DelistDate IS NULL OR sl.DelistDate > CURRENT_DATE)
-                  AND NOT sl.`2ndCtr`
+                  AND NOT sl."2ndCtr"
                   AND sl.StockExID {e_str}
                   AND i.typeID {t_str}
                   AND {curr_filter}
@@ -588,16 +588,16 @@ def mcaphist():
         # Get currencies in use on this date
         currencies_list = execute_query(
             f"""
-            SELECT DISTINCT sl.SEHKcurr, c.currency
+            SELECT DISTINCT i.SEHKcurr, c.currency
             FROM enigma.stockListings sl
             JOIN enigma.issue i ON sl.issueid = i.ID1
-            JOIN enigma.currencies c ON sl.SEHKcurr = c.id
+            JOIN enigma.currencies c ON i.SEHKcurr = c.id
             WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
               AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
               AND sl.StockExID {e_str}
               AND i.typeID {t_str}
-              AND NOT sl.`2ndCtr`
-            ORDER BY sl.SEHKcurr
+              AND NOT sl."2ndCtr"
+            ORDER BY i.SEHKcurr
         """,
             (d, d),
         )
@@ -607,14 +607,14 @@ def mcaphist():
             currency = curr_row["currency"]
 
             if sehk_curr == 0:
-                curr_filter = "(sl.SEHKcurr = 0 OR sl.SEHKcurr IS NULL)"
+                curr_filter = "(i.SEHKcurr = 0 OR i.SEHKcurr IS NULL)"
             else:
-                curr_filter = f"sl.SEHKcurr = {sehk_curr}"
+                curr_filter = f"i.SEHKcurr = {sehk_curr}"
 
             # Complex query for historical market caps
             curr_data = execute_query(
                 f"""
-                SELECT t2.sc, t2.i, t2.typeShort, t2.p, t2.closing, t2.td,
+                SELECT t2.sc, t2.i, st.typeShort, t2.p, t2.closing, t2.td,
                        t2.os,
                        COALESCE(t2.closing * t2.os / 1000000.0, 0) AS mcap,
                        COALESCE(t2.os + t2.pendsh, 0) AS totsh,
@@ -625,8 +625,8 @@ def mcaphist():
                 FROM (
                     SELECT t1.sc, t1.i, t1.typeID, t1.p, t1.td,
                            COALESCE(os.outstanding, 0) AS os,
-                           COALESCE(pend.pending, 0) AS pendsh,
-                           COALESCE(bl.boardlot, 0) AS lot,
+                           0 AS pendsh,
+                           COALESCE(hx.boardlot, 0) AS lot,
                            COALESCE(q.closing, 0) AS closing
                     FROM (
                         SELECT sl.stockCode AS sc,
@@ -642,7 +642,7 @@ def mcaphist():
                         JOIN enigma.issue i ON sl.issueid = i.ID1
                         WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
                           AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
-                          AND NOT sl.`2ndCtr`
+                          AND NOT sl."2ndCtr"
                           AND {curr_filter}
                           AND sl.StockExID {e_str}
                           AND i.typeID {t_str}
@@ -654,18 +654,7 @@ def mcaphist():
                         ORDER BY atDate DESC
                         LIMIT 1
                     ) os ON TRUE
-                    LEFT JOIN LATERAL (
-                        SELECT SUM(sharesPost - sharesPre) AS pending
-                        FROM enigma.splitpends
-                        WHERE issueid = t1.i AND effDate > t1.td
-                    ) pend ON TRUE
-                    LEFT JOIN LATERAL (
-                        SELECT boardlot
-                        FROM enigma.boardlotchanges
-                        WHERE issueid = t1.i AND effDate <= t1.td
-                        ORDER BY effDate DESC
-                        LIMIT 1
-                    ) bl ON TRUE
+                    LEFT JOIN enigma.hkexdata hx ON t1.i = hx.issueid
                     LEFT JOIN ccass.quotes q ON t1.i = q.issueid AND t1.td = q.atDate
                 ) t2
                 JOIN enigma.organisations o ON t2.p = o.personid
@@ -692,6 +681,12 @@ def mcaphist():
         exclude_pending=exclude_pending,
         sort=sort_param,
     )
+
+
+@bp.route("/mcaphistnotes.asp")
+def mcaphistnotes():
+    """Notes on historic market capitalisations - static explanatory page"""
+    return render_template("dbpub/mcaphistnotes.html")
 
 
 # SDI (Significant Dealer Information) routes

@@ -519,6 +519,9 @@ def cholder():
     holding_filter = "" if z else "AND ph.holding <> 0"
 
     # Query holdings
+    # The parthold table only records CHANGES - not every day's holdings.
+    # We need the latest holding for each issue where atDate <= d
+    # (using DISTINCT ON to get the most recent record per issue).
     holdings = []
     if part > 0:
         try:
@@ -532,35 +535,47 @@ def cholder():
                           AND sl.delistdate IS NULL
                         ORDER BY sl.firsttradedate DESC
                         LIMIT 1) AS lastCode,
-                       CASE WHEN ph.holding > 0 AND os.outstanding > 0
+                       CASE WHEN ph.holding > 0 AND COALESCE(os.outstanding, 0) > 0
                             THEN CAST(ph.holding AS FLOAT) / os.outstanding
                             ELSE 0
                        END AS stake,
-                       CASE WHEN q.closing > 0
+                       CASE WHEN COALESCE(q.closing, 0) > 0
                             THEN ph.holding * q.closing
                             ELSE 0
                        END AS valn,
-                       CASE WHEN q.susp = TRUE OR sl2."2ndCtr" = TRUE
+                       CASE WHEN COALESCE(q.susp, FALSE) = TRUE OR COALESCE(sl2."2ndCtr", FALSE) = TRUE
                             THEN TRUE
                             ELSE FALSE
                        END AS susp
-                FROM ccass.parthold ph
+                FROM (
+                    SELECT DISTINCT ON (issueid) issueid, holding, atdate, partid
+                    FROM ccass.parthold
+                    WHERE partid = %s AND atdate <= %s
+                    ORDER BY issueid, atdate DESC
+                ) ph
                 JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
                 LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
-                    AND ph.atDate = os.atDate
+                    AND os.atDate = (
+                        SELECT MAX(os2.atDate)
+                        FROM enigma.issuedshares os2
+                        WHERE os2.issueID = ph.issueID AND os2.atDate <= %s
+                    )
                 LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
-                    AND ph.atDate = q.atDate
+                    AND q.atDate = (
+                        SELECT MAX(q2.atDate)
+                        FROM ccass.quotes q2
+                        WHERE q2.issueID = ph.issueID AND q2.atDate <= %s
+                    )
                 LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
-                    AND ph.atDate >= sl2.firsttradedate
-                    AND (sl2.delistdate IS NULL OR ph.atDate < sl2.delistdate)
-                WHERE ph.partID = %s
-                  AND ph.atDate = %s
+                    AND %s >= sl2.firsttradedate
+                    AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
+                WHERE TRUE
                   {holding_filter}
                 ORDER BY {ob}
             """
-            results = execute_query(sql, (part, d))
+            results = execute_query(sql, (part, d, d, d, d, d))
 
             for row in results:
                 holdings.append(
@@ -1489,7 +1504,8 @@ def chistory():
 @bp.route("/CCASSnotes.asp")
 def ccass_notes():
     """CCASS system notes and explanations"""
-    return render_template("ccass/ccass_notes.html")
+    return render_template("ccass/ccass_notes.html",
+                           title="About the Webb-site CCASS Analysis System")
 
 
 @bp.route("/cconchist.asp")

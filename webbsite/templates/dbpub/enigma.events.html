@@ -6,7 +6,7 @@
 <h2>Events of an issue</h2>
 
 {% if stock_name %}
-<h3><a href="{{ url_for('dbpub_corporate.orgdata', p=person_id) }}">{{ stock_name }}</a></h3>
+<h3><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">{{ stock_name }}</a></h3>
 {% else %}
 <p><b>Stock not found. </b></p>
 {% endif %}

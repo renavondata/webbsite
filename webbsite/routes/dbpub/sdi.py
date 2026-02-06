@@ -39,28 +39,29 @@ def sdilatest():
 
     try:
         # Complex query to get latest 200 SDI filings
+        # Note: shsInv and posType are in sdievent, not sdi table
         sdi = execute_query(
             f"""
             SELECT t2.id, t2.filing, t2.relDate, t2.issueid,
                    (SELECT sl.stockCode FROM enigma.stockListings sl
-                    WHERE sl.issueid = t2.issueid AND sl.toDate IS NULL
-                    ORDER BY sl.fromDate DESC LIMIT 1) AS stockCode,
-                   t2.posType, r.rsnSht, r.rsnLng, t2.dir,
-                   t2.shsInv, t2.longShs1, t2.longShs2, t2.shortShs1, t2.shortShs2,
-                   t2.price, t2.avCon, t2.currency,
+                    WHERE sl.issueid = t2.issueid AND sl.delistdate IS NULL
+                    ORDER BY sl.firsttradedate DESC LIMIT 1) AS stockCode,
+                   se.posType, r.rsnSht, r.rsnLng, t2.dir,
+                   se.shsInv, t2.longShs1, t2.longShs2, t2.shortShs1, t2.shortShs2,
+                   t2.price, t2.avCon, c.currency,
                    t2.longStk2, t2.shortStk2, t2.lngStkChg, t2.shtStkChg,
                    COALESCE(org.name1, CONCAT(pp.name1,
                             CASE WHEN pp.name2 IS NOT NULL THEN ', ' || pp.name2 ELSE '' END)) AS name,
                    CASE WHEN org.name1 IS NULL THEN 'P' ELSE 'O' END AS pType,
                    p.personid AS holderID,
-                   COALESCE(t2.price, t2.avCon) * t2.shsInv AS value,
+                   COALESCE(t2.price, t2.avCon) * se.shsInv AS value,
                    CONCAT(o.name1, ':', st.typeShort) AS oName,
                    c3.settleDate
             FROM (
                 SELECT s.id, s.curr, s.filing, s.relDate, s.issueid, s.dir,
                        s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
                        COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon,
-                       s.longStk2, s.shortStk2, s.shsInv,
+                       s.longStk2, s.shortStk2,
                        s.longStk2 - s.longStk1 AS lngStkChg,
                        s.shortStk2 - COALESCE(s.shortStk1, 0) AS shtStkChg
                 FROM enigma.sdi s
@@ -124,8 +125,8 @@ def sdiissue():
                 JOIN enigma.issue i ON sl.issueid = i.ID1
                 JOIN enigma.organisations o ON i.issuer = o.personid
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
-                WHERE sl.stockCode = %s AND sl.toDate IS NULL
-                ORDER BY sl.fromDate DESC LIMIT 1
+                WHERE sl.stockCode = %s AND sl.delistdate IS NULL
+                ORDER BY sl.firsttradedate DESC LIMIT 1
             """,
                 (stock_code,),
             )

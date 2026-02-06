@@ -1,7 +1,109 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+{% set url = "/dbpub/veJourneys.asp?y=" ~ y ~ "&amp;m=" ~ m ~ "&amp;simple=" ~ simple %}
+<ul class="navlist">
+	<li><a href="veFR.asp?vc=1">Brands</a></li>
+	<li><a href="vedet.asp?vc=1&amp;brand=0">Brand details</a></li>
+	<li><a href="vebrandhist.asp?vc=1&amp;brand=0">Brand history</a></li>
+	<li><a href="veFRtype.asp">Types</a></li>
+	<li><a href="veFRtypehist.asp?vc=1">Type history</a></li>
+	<li><a href="vefuel.asp">Fuels</a></li>
+	<li><a href="vefuelhist.asp?vc=1">Fuel history</a></li>
+	<li><a href="veengine.asp">Cars: engine size</a></li>
+	<li><a href="tuntraff.asp">Tunnels</a></li>
+	<li class="livebutton">Journeys</li>
+	<li><a href="veJourneyhist.asp">Journey history</a></li>
+</ul>
+<div class="clear"></div>
+<p>This page shows the number of passenger journeys and distance covered by vehicle class, from Jan-2013 onwards, using data from the Transport Department.
+Choose simple or detailed view. For trains, cars are passenger carriages but car kilometres are train kilometres. So you
+need to multiply km/car/day by the number of cars per train. Red Minibus journeys are based on surveys, not regular
+returns. MTR fleet data exclude cross-border trains. For periods longer than 1 month, we show the monthly average
+capacity and vehicles. Click on the vehicle class to see the history. The latest available month is {{ maxd.strftime('%Y-%m') if maxd else 'N/A' }}.</p>
+<form method="get" action="veJourneys.asp">
+	<input type="hidden" name="sort" value="{{ sort }}">
+	<div class="inputs">
+		Year <select name="y" onchange="this.form.submit()">
+			<option value="0"{% if y == 0 %} selected{% endif %}>All</option>
+			{% if maxd %}
+			{% for yr in range(2013, maxd.year + 1) %}
+			<option value="{{ yr }}"{% if yr == y %} selected{% endif %}>{{ yr }}</option>
+			{% endfor %}
+			{% endif %}
+		</select>
+		Month <select name="m" onchange="this.form.submit()">
+			<option value="0"{% if m == 0 %}selected{% endif %}>All</option>
+			{% for mo in range(1, 13) %}
+			<option value="{{ mo }}"{% if mo == m %} selected{% endif %}>{{ mo }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="inputs">
+		Breakdown <select name="simple" onchange="this.form.submit()">
+			<option value="True"{% if simple %} selected{% endif %}>Simple</option>
+			<option value="False"{% if not simple %} selected{% endif %}>Detailed</option>
+		</select>
+	</div>
+	<div class="inputs">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait">  Rotate?</span></p>
+<table class="numtable c2l">
+	<tr>
+		<th class="colHide1"></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "desup" %}desdn{% else %}desup{% endif %}'><b>Vehicle class</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "jdn" %}jup{% else %}jdn{% endif %}'><b>Journeys</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "jdn" %}jup{% else %}jdn{% endif %}'><b>Per day</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "licdn" %}licup{% else %}licdn{% endif %}'><b>Licensed vehicles</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "capdn" %}capup{% else %}capdn{% endif %}'><b>Vehicle capacity</b></a></th>
+		<th><a href='{{ url }}&amp;sort={% if sort == "kmdn" %}kmup{% else %}kmdn{% endif %}'><b>Car Km</b></a></th>
+		<th class="colHide2"><a href='{{ url }}&amp;sort={% if sort == "kcddn" %}kcdup{% else %}kcddn{% endif %}'><b>Km/<br>car/<br>day</b></a></th>
+		<th class="colHide2"><a href='{{ url }}&amp;sort={% if sort == "jcddn" %}jcdup{% else %}jcddn{% endif %}'><b>Journeys/<br>car/<br>day</b></a></th>
+	</tr>
+	{% for row in data %}
+		<tr>
+			<td class="colHide1">{{ loop.index }}</td>
+			<td><a href="veJourneyhist.asp?vc={{ row.id }}&amp;simple={{ simple }}">{{ row.des }}</a></td>
+			<td>{{ "{:,.0f}".format(row.j) if row.j else '0' }}</td>
+			<td>{{ "{:,.0f}".format(row.pd|float) if row.pd else '0' }}</td>
+			<td>{{ "{:,.0f}".format(row.totlic|float) if row.totlic else '0' }}</td>
+			<td>{{ "{:,.0f}".format(row.paxcap|float) if row.paxcap else '0' }}</td>
+			<td>{{ "{:,.0f}".format(row.km) if row.km else '0' }}</td>
+			<td class="colHide2">{{ "{:,.1f}".format(row.kcd|float) if row.kcd else '0.0' }}</td>
+			<td class="colHide2">{{ "{:,.1f}".format(row.jcd|float) if row.jcd else '0.0' }}</td>
+		</tr>
+	{% endfor %}
+	<tr class="total">
+		<td class="colHide1"></td>
+		<td>All classes</td>
+		{% set ns = namespace(j_sum=0, pd_sum=0, totlic_sum=0, paxcap_sum=0, km_sum=0) %}
+		{% for row in data %}
+			{% set ns.j_sum = ns.j_sum + (row.j|default(0)|int) %}
+			{% set ns.pd_sum = ns.pd_sum + (row.pd|default(0)|float) %}
+			{% set ns.totlic_sum = ns.totlic_sum + (row.totlic|default(0)|float) %}
+			{% set ns.paxcap_sum = ns.paxcap_sum + (row.paxcap|default(0)|float) %}
+			{% set ns.km_sum = ns.km_sum + (row.km|default(0)|int) %}
+		{% endfor %}
+		<td>{{ "{:,.0f}".format(ns.j_sum) }}</td>
+		<td>{{ "{:,.0f}".format(ns.pd_sum) }}</td>
+		<td>{{ "{:,.0f}".format(ns.totlic_sum) }}</td>
+		<td>{{ "{:,.0f}".format(ns.paxcap_sum) }}</td>
+		<td>{{ "{:,.0f}".format(ns.km_sum) }}</td>
+	</tr>
+</table>
+{% if not simple and operators %}
+	<h3>Operators</h3>
+	<table class="opltable">
+	{% for op in operators %}
+		<tr>
+			<td>{{ op.tdabbrev }}</td>
+			<td><a href="orgdata.asp?p={{ op.orgid }}">{{ op.n }}</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
 {% endblock %}

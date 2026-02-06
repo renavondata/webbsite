@@ -1,24 +1,83 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query Result') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>Results displayed below.</p>
-{% if results or years or companies or domiciles or solicitors or firms or employers %}
-<table class="txtable yscroll">
-  <tr>
-    {% for key in (results[0].keys() if results else years[0].keys() if years else companies[0].keys() if companies else domiciles[0].keys() if domiciles else solicitors[0].keys() if solicitors else firms[0].keys() if firms else employers[0].keys() if employers else []) %}
-    <th>{{ key }}</th>
-    {% endfor %}
-  </tr>
-  {% for row in (results or years or companies or domiciles or solicitors or firms or employers or []) %}
-  <tr>
-    {% for value in row.values() %}
-    <td>{{ value }}</td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
+<h2>{{ title }}</h2>
+<p>This page shows the foreign companies with a place of business in HK by year
+of registration, since records begin in 1946.
+A change in registration requirements took effect on 31-Aug-1984; it is possible
+that there were other foreign companies with a place of business in HK before
+that which were not registered with the Companies Registry.</p>
+<p>Note: data on deregistrations are not reliable after 16-Nov-2020, when we
+started our last complete scan of the registry. On 22-Nov-2020, the registry
+implemented a new captcha system, preventing further data collection. The
+limited data available on
+<a href="https://data.gov.hk/en-datasets/provider/hk-cr?order=name&amp;file-content=no" target="_blank">
+data.gov.hk</a> (comprising delayed weekly updates) only cover new registrations
+and name-changes, without stating domicile.</p>
+<form method="get" action="incFcal.asp">
+	<div class="inputs">Registration date&nbsp;</div>
+	<div class="inputs">
+		<select name='y' onchange='this.form.submit()'>
+		<option value='0'{% if y == 0 %} selected{% endif %}>Any year</option>
+		{% for yr in range(1946, current_year + 1) %}
+		<option value='{{ yr }}'{% if yr == y %} selected{% endif %}>{{ yr }}</option>
+		{% endfor %}
+		</select>
+		<select name='m' onchange='this.form.submit()'>
+		<option value='0'{% if m == 0 %} selected{% endif %}>Any month</option>
+		{% for mo in range(1, 13) %}
+		<option value='{{ mo }}'{% if mo == m %} selected{% endif %}>{{ mo }}</option>
+		{% endfor %}
+		</select>
+		<select name='d' onchange='this.form.submit()'>
+		<option value='0'{% if d == 0 %} selected{% endif %}>Any day</option>
+		{% for dy in range(1, 32) %}
+		<option value='{{ dy }}'{% if dy == d %} selected{% endif %}>{{ dy }}</option>
+		{% endfor %}
+		</select>
+	</div>
+	<div class="inputs">
+		{% if dom_list %}
+		Domicile <select name='dom' onchange="this.form.submit()">
+		<option value='0'{% if dom == 0 %} selected{% endif %}>All</option>
+		{% for dl in dom_list %}
+		<option value='{{ dl.domicile }}'{% if dl.domicile == dom %} selected{% endif %}>{{ dl.friendly }}</option>
+		{% endfor %}
+		</select>
+		{% endif %}
+	</div>
+	<div class="inputs"><input type="submit" value="Go"></div>
+	<div class="clear"></div>
+	<input type="hidden" name="sort" value="{{ sort }}">
+</form>
+{% if not companies %}
+	<p>None found.</p>
 {% else %}
-<p>No results found.</p>
+<p class='widthAlert1'>Some data are hidden to fit your display.<span class='portrait'> Rotate?</span></p>
+	<table class="txtable fcr">
+	<tr>
+		<th class="colHide1"></th>
+		<th class="colHide1"><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=renup'><b>Reg no.</b></a></th>
+		<th><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=namdn'><b>Name</b></a></th>
+		<th><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=regup'><b>Registered</b></a></th>
+		<th class="colHide3"><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=cesdn'><b>Left HK</b></a></th>
+		<th class="colHide2"><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=disdn'><b>Dissolved</b></a></th>
+		{% if dom == 0 %}<th><a href='/dbpub/incFcal.asp?y={{ y }}&amp;m={{ m }}&amp;d={{ d }}&amp;dom={{ dom }}&amp;sort=domup'><b>Domicile</b></a></th>{% endif %}
+	</tr>
+	{% for row in companies %}
+		<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td class="colHide1">{{ row.regid }}&nbsp;</td>
+		<td><a href="orgdata.asp?p={{ row.personid }}">{{ row.name }}</a></td>
+		<td class="nowrap">{{ row.regdate if row.regdate else '' }}</td>
+		<td class="colHide3 nowrap">{{ row.cesdate if row.cesdate else '' }}</td>
+		<td class="colHide2 nowrap">{{ row.disdate if row.disdate else '' }}</td>
+		{% if dom == 0 %}<td>{{ row.friendly }}</td>{% endif %}
+		</tr>
+	{% endfor %}
+	</table>
+	{% if companies|length >= 2000 %}
+		<p>Only the first 2000 records are shown. Try narrowing your search to a specific month or day.</p>
+	{% endif %}
 {% endif %}
 {% endblock %}

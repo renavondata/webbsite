@@ -1,6 +1,52 @@
 {% extends "base_database.html" %}
-{% block title %}{{ title|default('Database Query') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>{{ title|default('Query Results') }}</h2>
-<p>This page is under construction. Data will be available when the appropriate database tables are populated.</p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="ad" onchange="this.form.submit()">
+        <option value="a" {% if ad == 'a' %}selected{% endif %}>Arrivals</option>
+        <option value="d" {% if ad == 'd' %}selected{% endif %}>Departures</option>
+    </select>
+</form>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'ddn' %}dup{% else %}ddn{% endif %}">Date</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'pdn' %}pup{% else %}pdn{% endif %}">Pax</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'cdn' %}cup{% else %}cdn{% endif %}">Cargo</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'tdn' %}tup{% else %}tdn{% endif %}">Total</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xpdn' %}xpup{% else %}xpdn{% endif %}">Pax X</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xcdn' %}xcup{% else %}xcdn{% endif %}">Cargo X</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xtdn' %}xtup{% else %}xtdn{% endif %}">Total X</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'npdn' %}npup{% else %}npdn{% endif %}">Net Pax</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'ncdn' %}ncup{% else %}ncdn{% endif %}">Net Cargo</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'ntdn' %}ntup{% else %}ntdn{% endif %}">Net Total</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xpsdn' %}xpsup{% else %}xpsdn{% endif %}">Pax X%</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xcsdn' %}xcsup{% else %}xcsdn{% endif %}">Cargo X%</a></th>
+        <th><a href="?ad={{ ad }}&sort={% if sort == 'xtsdn' %}xtsup{% else %}xtsdn{% endif %}">Total X%</a></th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td><a href="/dbpub/HKflights.asp?d={{ row.d }}&ad={{ ad }}">{{ row.d }}</a></td>
+        <td class="r">{{ row.p|int }}</td>
+        <td class="r">{{ row.c|int }}</td>
+        <td class="r">{{ row.t|int }}</td>
+        <td class="r">{{ row.xp|int }}</td>
+        <td class="r">{{ row.xc|int }}</td>
+        <td class="r">{{ row.xt|int }}</td>
+        <td class="r">{{ row.np|int }}</td>
+        <td class="r">{{ row.nc|int }}</td>
+        <td class="r">{{ row.nt|int }}</td>
+        <td class="r">{% if row.xps is not none %}{{ "{:.1f}".format(row.xps) }}%{% endif %}</td>
+        <td class="r">{% if row.xcs is not none %}{{ "{:.1f}".format(row.xcs) }}%{% endif %}</td>
+        <td class="r">{% if row.xts is not none %}{{ "{:.1f}".format(row.xts) }}%{% endif %}</td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ data|length }} days</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}

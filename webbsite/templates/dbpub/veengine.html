@@ -1,7 +1,42 @@
 {% extends "base_database.html" %}
-{% block title %}Vehicle data{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block content %}
-<h2>Vehicle data</h2>
-<p>Vehicle registration and statistics data.</p>
-<p><em>Data not yet implemented - requires transport schema tables.</em></p>
+<h2>{{ title }}</h2>
+
+<form method="get">
+    <select name="t" onchange="this.form.submit()">
+        <option value="0" {% if t == 0 %}selected{% endif %}>First registrations</option>
+        <option value="1" {% if t == 1 %}selected{% endif %}>Total registered</option>
+    </select>
+    <select name="f" onchange="this.form.submit()">
+        <option value="1" {% if f == 1 %}selected{% endif %}>Monthly</option>
+        <option value="2" {% if f == 2 %}selected{% endif %}>Annual</option>
+    </select>
+</form>
+
+{% if data %}
+<table class="numtable">
+    <tr>
+        <th><a href="?t={{ t }}&f={{ f }}&sort={% if sort == 'datdn' %}datup{% else %}datdn{% endif %}">{{ ftxt }}</a></th>
+        {% for cat in cats %}
+        <th><a href="?t={{ t }}&f={{ f }}&sort={% if sort == 'f' ~ loop.index0 ~ 'dn' %}f{{ loop.index0 }}up{% else %}f{{ loop.index0 }}dn{% endif %}">{{ cat.name }}</a></th>
+        <th><a href="?t={{ t }}&f={{ f }}&sort={% if sort == 'fs' ~ loop.index0 ~ 'dn' %}fs{{ loop.index0 }}up{% else %}fs{{ loop.index0 }}dn{% endif %}">%</a></th>
+        {% endfor %}
+        <th><a href="?t={{ t }}&f={{ f }}&sort={% if sort == 'totdn' %}totup{% else %}totdn{% endif %}">Total</a></th>
+    </tr>
+    {% for row in data %}
+    <tr>
+        <td>{{ row.d }}</td>
+        {% for cat in cats %}
+        <td class="r">{{ "{:,}".format(row['f' ~ loop.index0]|int) if row['f' ~ loop.index0] else '' }}</td>
+        <td class="r">{% if row['fs' ~ loop.index0] %}{{ "{:.1f}".format(row['fs' ~ loop.index0]|float) }}%{% endif %}</td>
+        {% endfor %}
+        <td class="r"><b>{{ "{:,}".format(row.n|int) if row.n else '0' }}</b></td>
+    </tr>
+    {% endfor %}
+</table>
+<p>{{ data|length }} periods</p>
+{% else %}
+<p>No data available.</p>
+{% endif %}
 {% endblock %}
