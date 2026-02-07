@@ -27,6 +27,7 @@ class Config:
 
     # App settings
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
+    TEMPLATES_AUTO_RELOAD = True
 
     # SQL Logging - logs all SQL queries when enabled (development only)
     SQL_ECHO = os.environ.get("SQL_ECHO", "False").lower() == "true"

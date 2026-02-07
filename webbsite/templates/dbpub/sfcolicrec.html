@@ -3,7 +3,7 @@
 {% block title %}SFC licences of {{ org_name }}{% endblock %}
 
 {% block content %}
-{% include 'header.html' %}
+{% include 'includes/dbheader.html' %}
 
 <h2>{{ org_name }}</h2>
 
@@ -63,5 +63,4 @@
     <p>None found.</p>
 {% endif %}
 
-{% include 'footer.html' %}
 {% endblock %}

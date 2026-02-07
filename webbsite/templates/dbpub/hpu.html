@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Parallel trading: {{ stock_name }}{% endblock %}
+{% block title %}Prices and Webb-site Total Returns{% endblock %}
 
 {% block content %}
-{% include 'header.html' %}
+{% include 'includes/dbheader.html' %}
 
-{% if issue_id > 0 %}
+{% if not_found is defined and not_found %}
+	<h2>Historic prices</h2>
+	<p><b>Stock not found. </b></p>
+
+<form method="get" action="/dbpub/hpu.asp">
+	<input type="hidden" name="sort" value="datedn">
+	<div class="inputs">
+		Stock code: <input type="text" name="sc" size="5" value="">
+		<input type="submit" value="Go">
+	</div>
+	<div class="clear"></div>
+</form>
+{% elif issue_id > 0 %}
     <h2>{{ stock_name }}</h2>
 
     {# Simplified navigation - in production would include full prices bar #}
@@ -79,5 +91,4 @@
     {% endif %}
 {% endif %}
 
-{% include 'footer.html' %}
 {% endblock %}
