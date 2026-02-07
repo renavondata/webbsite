@@ -450,7 +450,6 @@ def crawl_section(label: str, routes_no_params: list, routes_with_params: list,
             else:
                 print(f"  FAILED: {route}")
                 results["failed"].append(route)
-            time.sleep(1)
 
     # Param routes
     if routes_with_params:
@@ -474,7 +473,6 @@ def crawl_section(label: str, routes_no_params: list, routes_with_params: list,
             else:
                 print(f"  FAILED: {route}?{urlencode(params)}")
                 results["failed"].append(f"{route}?{urlencode(params)}")
-            time.sleep(1)
 
 
 def crawl_routes():
