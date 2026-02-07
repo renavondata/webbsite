@@ -3,7 +3,7 @@
 {% block title %}Raw ESS filings{% endblock %}
 
 {% block content %}
-{% include 'header.html' %}
+{% include 'includes/dbheader.html' %}
 
 {% if person_id > 0 %}
     {# Organization navigation bar would go here - simplified for now #}
@@ -101,5 +101,4 @@
     {% endif %}
 {% endif %}
 
-{% include 'footer.html' %}
 {% endblock %}

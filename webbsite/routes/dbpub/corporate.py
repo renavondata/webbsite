@@ -697,7 +697,7 @@ def holders():
     sort_param = request.args.get("s1", "stakdn")
 
     if not person_id:
-        return "PersonID required", 400
+        return "<html><head></head><body></body></html>"
 
     # Get all qualifying issues for this person/company
     # Exclude warrants (1,2), rights (40,41), structured products (46)
@@ -1130,7 +1130,7 @@ def holdings():
     sort_param = request.args.get("sort", "namup")
 
     if not person_id:
-        return "PersonID required", 400
+        return "<html><head></head><body></body></html>"
 
     # Sort order mapping
     sort_mappings = {

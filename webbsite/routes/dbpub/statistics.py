@@ -416,29 +416,25 @@ def matches():
     d = get_str("d", str(date.today()))
     sort_param = request.args.get("sort", "name")
 
-    if not org1 or not org2:
-        return "Both organization IDs required", 400
+    # Get organization names (use placeholder if missing)
+    org1_name = "No organisation was specified"
+    org2_name = "No organisation was specified"
 
-    # Get organization names
-    org1_result = execute_query(
-        """
-        SELECT name1 FROM enigma.organisations WHERE personid = %s
-    """,
-        (org1,),
-    )
+    if org1:
+        org1_result = execute_query(
+            "SELECT name1 FROM enigma.organisations WHERE personid = %s",
+            (org1,),
+        )
+        if org1_result:
+            org1_name = org1_result[0]["name1"]
 
-    org2_result = execute_query(
-        """
-        SELECT name1 FROM enigma.organisations WHERE personid = %s
-    """,
-        (org2,),
-    )
-
-    if not org1_result or not org2_result:
-        return "Organizations not found", 404
-
-    org1_name = org1_result[0]["name1"]
-    org2_name = org2_result[0]["name1"]
+    if org2:
+        org2_result = execute_query(
+            "SELECT name1 FROM enigma.organisations WHERE personid = %s",
+            (org2,),
+        )
+        if org2_result:
+            org2_name = org2_result[0]["name1"]
 
     # Sort order mapping
     sort_mappings = {
@@ -450,33 +446,35 @@ def matches():
     }
     ob = sort_mappings.get(sort_param, "name")
 
-    # Query overlapping directors
-    matches_data = execute_query(
-        f"""
-        SELECT
-            d1.director AS personid,
-            p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '') AS name,
-            pns1.posshort AS pos1,
-            pns1.poslong AS pos1long,
-            pns2.posshort AS pos2,
-            pns2.poslong AS pos2long,
-            TO_CHAR(d1.apptdate, 'YYYY-MM-DD') AS app1,
-            TO_CHAR(d2.apptdate, 'YYYY-MM-DD') AS app2
-        FROM enigma.directorships d1
-        JOIN enigma.directorships d2 ON d1.director = d2.director
-        JOIN enigma.people p ON d1.director = p.personid
-        JOIN enigma.positions pns1 ON d1.positionid = pns1.positionid
-        JOIN enigma.positions pns2 ON d2.positionid = pns2.positionid
-        WHERE d1.company = %s
-          AND d2.company = %s
-          AND (d1.resdate IS NULL OR d1.resdate > CAST(%s AS date))
-          AND (d2.resdate IS NULL OR d2.resdate > CAST(%s AS date))
-          AND (d1.apptdate IS NULL OR d1.apptdate <= CAST(%s AS date))
-          AND (d2.apptdate IS NULL OR d2.apptdate <= CAST(%s AS date))
-        ORDER BY {ob}
-    """,
-        (org1, org2, d, d, d, d),
-    )
+    # Query overlapping directors (only if both org IDs provided)
+    matches_data = []
+    if org1 and org2:
+        matches_data = execute_query(
+            f"""
+            SELECT
+                d1.director AS personid,
+                p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '') AS name,
+                pns1.posshort AS pos1,
+                pns1.poslong AS pos1long,
+                pns2.posshort AS pos2,
+                pns2.poslong AS pos2long,
+                TO_CHAR(d1.apptdate, 'YYYY-MM-DD') AS app1,
+                TO_CHAR(d2.apptdate, 'YYYY-MM-DD') AS app2
+            FROM enigma.directorships d1
+            JOIN enigma.directorships d2 ON d1.director = d2.director
+            JOIN enigma.people p ON d1.director = p.personid
+            JOIN enigma.positions pns1 ON d1.positionid = pns1.positionid
+            JOIN enigma.positions pns2 ON d2.positionid = pns2.positionid
+            WHERE d1.company = %s
+              AND d2.company = %s
+              AND (d1.resdate IS NULL OR d1.resdate > CAST(%s AS date))
+              AND (d2.resdate IS NULL OR d2.resdate > CAST(%s AS date))
+              AND (d1.apptdate IS NULL OR d1.apptdate <= CAST(%s AS date))
+              AND (d2.apptdate IS NULL OR d2.apptdate <= CAST(%s AS date))
+            ORDER BY {ob}
+        """,
+            (org1, org2, d, d, d, d),
+        )
 
     return render_template(
         "dbpub/matches.html",
@@ -3161,140 +3159,145 @@ def possum():
     c = get_bool("c")  # include appointments after start date
     n = get_bool("n")  # show old names
 
-    if not person_id:
-        return render_template("error.html", message="PersonID required"), 400
+    is_org = False
+    name = "No person was specified"
 
-    # Get person/org info
-    person_info = execute_query(
-        """
-        SELECT p.name1, p.name2, p.cName,
-               CASE WHEN EXISTS(SELECT 1 FROM enigma.organisations WHERE personid = %s)
-               THEN TRUE ELSE FALSE END as is_org
-        FROM enigma.people p
-        WHERE p.personid = %s
-        UNION
-        SELECT o.name1, NULL, NULL, TRUE as is_org
-        FROM enigma.organisations o
-        WHERE o.personid = %s
-        LIMIT 1
-        """,
-        (person_id, person_id, person_id)
-    )
+    if person_id:
+        # Get person/org info
+        person_info = execute_query(
+            """
+            SELECT p.name1, p.name2, p.cName,
+                   CASE WHEN EXISTS(SELECT 1 FROM enigma.organisations WHERE personid = %s)
+                   THEN TRUE ELSE FALSE END as is_org
+            FROM enigma.people p
+            WHERE p.personid = %s
+            UNION
+            SELECT o.name1, NULL, NULL, TRUE as is_org
+            FROM enigma.organisations o
+            WHERE o.personid = %s
+            LIMIT 1
+            """,
+            (person_id, person_id, person_id)
+        )
 
-    if not person_info:
-        return render_template("error.html", message="Person not found"), 404
+        if not person_info:
+            return render_template("error.html", message="Person not found"), 404
 
-    is_org = person_info[0]["is_org"]
-    name = person_info[0]["name1"]
-    if person_info[0].get("name2"):
-        name = f"{person_info[0]['name1']}, {person_info[0]['name2']}"
+        is_org = person_info[0]["is_org"]
+        name = person_info[0]["name1"]
+        if person_info[0].get("name2"):
+            name = f"{person_info[0]['name1']}, {person_info[0]['name2']}"
 
-    # Build date filter conditions for WHERE clause
-    hide_str = ""
-    if from_date and not c:
-        hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{from_date}')"
-    elif to_date:
-        hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{to_date}')"
-
-    if hide == "Y":
-        hide_str += f" AND (d.resDate IS NULL OR d.resDate > '{to_date}')"
-
-    # Determine sort order
-    sort_map = {
-        "orgup": "name1, d1_apptdate",
-        "orgdn": "name1 DESC, d1_apptdate",
-        "appup": "d1_apptdate, name1",
-        "appdn": "d1_apptdate DESC, name1",
-        "resup": "d2_resdate, name1",
-        "resdn": "d2_resdate DESC, name1",
-        "serup": "service_years, name1",
-        "serdn": "service_years DESC, name1",
-        "totup": "totret_value, name1",
-        "totdn": "totret_value DESC, name1",
-        "cagretup": "cagret_value, name1",
-        "cagretdn": "cagret_value DESC, name1",
-        "cagrelup": "cagrel_value, name1",
-        "cagreldn": "cagrel_value DESC, name1",
-    }
-    order_by = sort_map.get(sort_param, "name1, d1_apptdate")
-
-    # Calculate date range for total returns
-    ret_from_date = f"GREATEST(COALESCE(d1.apptDate, '{from_date or to_date}'), '{from_date}')" if from_date else "d1.apptDate"
-    ret_to_date = f"LEAST(COALESCE(d2.resDate, '{to_date}'), '{to_date}')"
-
-    # Optional old name field
-    org_name_field = f"enigma.orgname(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
-
-    # Main SQL query with window functions to consolidate consecutive directorships
-    sql = f"""
-    WITH consecutive_directorships AS (
-        -- Identify consecutive directorships using window functions
-        SELECT
-            d.id1,
-            d.director,
-            d.company,
-            d.apptDate,
-            d.resDate,
-            d.apptAcc,
-            d.resAcc,
-            -- Create groups: new group when previous resignation != current appointment
-            SUM(CASE
-                WHEN LAG(d.resDate) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) = d.apptDate
-                THEN 0
-                ELSE 1
-            END) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) as group_id
-        FROM enigma.directorships d
-        JOIN enigma.positions p ON d.positionid = p.positionid
-        WHERE d.director = %s
-          AND p.rank = 1
-        {hide_str}
-    ),
-    consolidated AS (
-        -- Consolidate consecutive directorships into single rows
-        SELECT
-            MIN(id1) as first_pos,
-            MAX(id1) as last_pos,
-            company,
-            MIN(apptDate) as apptDate,
-            MAX(resDate) as resDate,
-            MIN(apptAcc) as apptAcc,
-            MAX(resAcc) as resAcc
-        FROM consecutive_directorships
-        GROUP BY company, group_id
-    )
-    SELECT
-        {org_name_field}
-        o.name1,
-        d1.apptDate as d1_apptdate,
-        d2.resDate as d2_resdate,
-        enigma.msdateacc(d1.apptDate, d1.apptAcc) as app,
-        enigma.msdateacc(d2.resDate, d2.resAcc) as res,
-        d1.company as orgid,
-        hkl.issueID,
-        enigma.totret(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
-        enigma.cagret(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
-        enigma.cagrel(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagrel_value,
-        enigma.service(d1.apptDate, d2.resDate, '{to_date}') as service_years
-    FROM consolidated c
-    JOIN enigma.directorships d1 ON c.first_pos = d1.id1
-    JOIN enigma.directorships d2 ON c.last_pos = d2.id1
-    JOIN enigma.organisations o ON d1.company = o.personid
-    LEFT JOIN enigma.hklistedordsever hkl ON d1.company = hkl.issuer
-    ORDER BY {order_by}
-    """
-
-    positions = execute_query(sql, (person_id,))
-
-    # Calculate averages for footer (only for listed companies with returns)
-    has_ret = any(row.get("totret_value") for row in positions)
+    positions = []
+    has_ret = False
     avg_cagret = None
     avg_cagrel = None
 
-    if has_ret:
-        cagret_values = [row["cagret_value"] - 1 for row in positions if row.get("cagret_value")]
-        cagrel_values = [row["cagrel_value"] - 1 for row in positions if row.get("cagrel_value")]
-        avg_cagret = sum(cagret_values) / len(cagret_values) if cagret_values else None
-        avg_cagrel = sum(cagrel_values) / len(cagrel_values) if cagrel_values else None
+    if person_id:
+        # Build date filter conditions for WHERE clause
+        hide_str = ""
+        if from_date and not c:
+            hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{from_date}')"
+        elif to_date:
+            hide_str = f" AND (d.apptDate IS NULL OR d.apptDate <= '{to_date}')"
+
+        if hide == "Y":
+            hide_str += f" AND (d.resDate IS NULL OR d.resDate > '{to_date}')"
+
+        # Determine sort order
+        sort_map = {
+            "orgup": "name1, d1_apptdate",
+            "orgdn": "name1 DESC, d1_apptdate",
+            "appup": "d1_apptdate, name1",
+            "appdn": "d1_apptdate DESC, name1",
+            "resup": "d2_resdate, name1",
+            "resdn": "d2_resdate DESC, name1",
+            "serup": "service_years, name1",
+            "serdn": "service_years DESC, name1",
+            "totup": "totret_value, name1",
+            "totdn": "totret_value DESC, name1",
+            "cagretup": "cagret_value, name1",
+            "cagretdn": "cagret_value DESC, name1",
+            "cagrelup": "cagrel_value, name1",
+            "cagreldn": "cagrel_value DESC, name1",
+        }
+        order_by = sort_map.get(sort_param, "name1, d1_apptdate")
+
+        # Calculate date range for total returns
+        ret_from_date = f"GREATEST(COALESCE(d1.apptDate, '{from_date or to_date}'), '{from_date}')" if from_date else "d1.apptDate"
+        ret_to_date = f"LEAST(COALESCE(d2.resDate, '{to_date}'), '{to_date}')"
+
+        # Optional old name field
+        org_name_field = f"enigma.orgname(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
+
+        # Main SQL query with window functions to consolidate consecutive directorships
+        sql = f"""
+        WITH consecutive_directorships AS (
+            -- Identify consecutive directorships using window functions
+            SELECT
+                d.id1,
+                d.director,
+                d.company,
+                d.apptDate,
+                d.resDate,
+                d.apptAcc,
+                d.resAcc,
+                -- Create groups: new group when previous resignation != current appointment
+                SUM(CASE
+                    WHEN LAG(d.resDate) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) = d.apptDate
+                    THEN 0
+                    ELSE 1
+                END) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) as group_id
+            FROM enigma.directorships d
+            JOIN enigma.positions p ON d.positionid = p.positionid
+            WHERE d.director = %s
+              AND p.rank = 1
+            {hide_str}
+        ),
+        consolidated AS (
+            -- Consolidate consecutive directorships into single rows
+            SELECT
+                MIN(id1) as first_pos,
+                MAX(id1) as last_pos,
+                company,
+                MIN(apptDate) as apptDate,
+                MAX(resDate) as resDate,
+                MIN(apptAcc) as apptAcc,
+                MAX(resAcc) as resAcc
+            FROM consecutive_directorships
+            GROUP BY company, group_id
+        )
+        SELECT
+            {org_name_field}
+            o.name1,
+            d1.apptDate as d1_apptdate,
+            d2.resDate as d2_resdate,
+            enigma.msdateacc(d1.apptDate, d1.apptAcc) as app,
+            enigma.msdateacc(d2.resDate, d2.resAcc) as res,
+            d1.company as orgid,
+            hkl.issueID,
+            enigma.totret(hkl.issueID, {ret_from_date}, {ret_to_date}) as totret_value,
+            enigma.cagret(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagret_value,
+            enigma.cagrel(hkl.issueID, {ret_from_date}, {ret_to_date}) as cagrel_value,
+            enigma.service(d1.apptDate, d2.resDate, '{to_date}') as service_years
+        FROM consolidated c
+        JOIN enigma.directorships d1 ON c.first_pos = d1.id1
+        JOIN enigma.directorships d2 ON c.last_pos = d2.id1
+        JOIN enigma.organisations o ON d1.company = o.personid
+        LEFT JOIN enigma.hklistedordsever hkl ON d1.company = hkl.issuer
+        ORDER BY {order_by}
+        """
+
+        positions = execute_query(sql, (person_id,))
+
+        # Calculate averages for footer (only for listed companies with returns)
+        has_ret = any(row.get("totret_value") for row in positions)
+
+        if has_ret:
+            cagret_values = [row["cagret_value"] - 1 for row in positions if row.get("cagret_value")]
+            cagrel_values = [row["cagrel_value"] - 1 for row in positions if row.get("cagrel_value")]
+            avg_cagret = sum(cagret_values) / len(cagret_values) if cagret_values else None
+            avg_cagrel = sum(cagrel_values) / len(cagrel_values) if cagrel_values else None
 
     return render_template(
         "dbpub/possum.html",
@@ -5073,10 +5076,18 @@ def indexhk():
     """
     p = request.args.get("p", "")
 
-    if not p:
-        abort(400, "Missing parameter 'p'")
-
     title = f"Reports on companies: names starting with: {p}"
+    listed_companies = []
+    delisted_companies = []
+
+    if not p:
+        return render_template(
+            "dbpub/indexhk.html",
+            title=title,
+            p=p,
+            listed_companies=listed_companies,
+            delisted_companies=delisted_companies,
+        )
 
     # Build WHERE clause based on parameter
     if p == "0":
@@ -9100,80 +9111,81 @@ def essraw():
     person_id = get_int("p", 0)
     sort_param = request.args.get("sort", "phaup")
 
-    if not person_id:
-        return render_template("error.html", message="Missing organization ID"), 400
-
-    # Get organization name
-    org_name = execute_query(
-        "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
-    )
-    if not org_name:
-        return render_template("error.html", message="Organization not found"), 404
-    org_name = org_name[0]["name1"]
-
-    # Determine sort order
-    sort_map = {
-        "amtup": "amt, eName, phase",
-        "amtdn": "amt DESC, eName, phase",
-        "hdsup": "heads, eName, phase",
-        "hdsdn": "heads DESC, eName",
-        "namup": "eName",
-        "namdn": "eName DESC",
-        "avgup": "amt/NULLIF(heads,0), eName",
-        "avgdn": "amt/NULLIF(heads,0) DESC, eName",
-        "phaup": "phase, eName",
-        "phadn": "phase, amt DESC",
-    }
-    order_by = sort_map.get(sort_param, "phase, eName")
-
-    # Query ESS filings
-    filings = execute_query(
-        f"""
-        SELECT
-            eName,
-            cName,
-            phase,
-            amt,
-            heads,
-            CASE WHEN heads = 0 THEN NULL ELSE amt::numeric / heads END AS avg
-        FROM enigma.ess
-        WHERE orgid = %s
-        ORDER BY {order_by}
-    """,
-        (person_id,),
-    )
-
-    # Query totals by phase
+    org_name = ""
+    filings = []
     phase_totals = []
-    if filings:
-        phase_totals = execute_query(
-            """
+    grand_total = None
+
+    if person_id:
+        # Get organization name
+        org_result = execute_query(
+            "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
+        )
+        if not org_result:
+            return render_template("error.html", message="Organization not found"), 404
+        org_name = org_result[0]["name1"]
+
+        # Determine sort order
+        sort_map = {
+            "amtup": "amt, eName, phase",
+            "amtdn": "amt DESC, eName, phase",
+            "hdsup": "heads, eName, phase",
+            "hdsdn": "heads DESC, eName",
+            "namup": "eName",
+            "namdn": "eName DESC",
+            "avgup": "amt/NULLIF(heads,0), eName",
+            "avgdn": "amt/NULLIF(heads,0) DESC, eName",
+            "phaup": "phase, eName",
+            "phadn": "phase, amt DESC",
+        }
+        order_by = sort_map.get(sort_param, "phase, eName")
+
+        # Query ESS filings
+        filings = execute_query(
+            f"""
             SELECT
+                eName,
+                cName,
                 phase,
-                SUM(amt) AS amt,
-                SUM(heads) AS hds,
-                CASE WHEN SUM(heads) = 0 THEN NULL
-                     ELSE SUM(amt)::numeric / SUM(heads)
-                END AS avg
+                amt,
+                heads,
+                CASE WHEN heads = 0 THEN NULL ELSE amt::numeric / heads END AS avg
             FROM enigma.ess
             WHERE orgid = %s
-            GROUP BY phase
-            ORDER BY phase
+            ORDER BY {order_by}
         """,
             (person_id,),
         )
 
-    # Calculate grand totals if multiple phases
-    grand_total = None
-    if len(phase_totals) > 1:
-        total_amt = sum(p["amt"] for p in phase_totals)
-        total_hds = sum(p["hds"] for p in phase_totals)
-        grand_total = {
-            "amt": total_amt,
-            "hds": total_hds
-            / 2,  # Divide by 2 as per ASP logic (same person counted twice)
-            "avg": total_amt / total_hds if total_hds > 0 else None,
-        }
+        # Query totals by phase
+        if filings:
+            phase_totals = execute_query(
+                """
+                SELECT
+                    phase,
+                    SUM(amt) AS amt,
+                    SUM(heads) AS hds,
+                    CASE WHEN SUM(heads) = 0 THEN NULL
+                         ELSE SUM(amt)::numeric / SUM(heads)
+                    END AS avg
+                FROM enigma.ess
+                WHERE orgid = %s
+                GROUP BY phase
+                ORDER BY phase
+            """,
+                (person_id,),
+            )
+
+        # Calculate grand totals if multiple phases
+        if len(phase_totals) > 1:
+            total_amt = sum(p["amt"] for p in phase_totals)
+            total_hds = sum(p["hds"] for p in phase_totals)
+            grand_total = {
+                "amt": total_amt,
+                "hds": total_hds
+                / 2,  # Divide by 2 as per ASP logic (same person counted twice)
+                "avg": total_amt / total_hds if total_hds > 0 else None,
+            }
 
     return render_template(
         "dbpub/essraw.html",
@@ -9199,101 +9211,104 @@ def complain():
     """
     person_id = get_int("p", 0)
 
-    if not person_id:
-        return render_template("error.html", message="Missing organization ID"), 400
-
-    # Get organization name
-    org_result = execute_query(
-        "SELECT name1 FROM enigma.organisations WHERE personid = %s",
-        (person_id,)
-    )
-
-    if not org_result:
-        return render_template("error.html", message="Organization not found"), 404
-
-    org_name = org_result[0]["name1"]
-
-    # Get stock code (last 5 digits of ordCodeLast)
-    stock_code_result = execute_query(
-        """
-        SELECT LPAD(CAST(
-            (SELECT sl.stockCode
-             FROM enigma.issue i
-             JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
-             WHERE i.issuer = %s
-               AND sl.stockexid IN (1, 20)
-               AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
-             ORDER BY sl.firsttradedate DESC
-             LIMIT 1) AS VARCHAR), 5, '0') AS stock_code
-        """,
-        (person_id,)
-    )
-    stock_code = stock_code_result[0]["stock_code"] if stock_code_result and stock_code_result[0]["stock_code"] else "00000"
-
-    # Check if HKEX (special case)
-    is_hkex = (person_id == 9643)
-
-    # Get current SEHK listing team
+    org_name = "No organisation was specified"
+    stock_code = "00000"
+    is_hkex = False
     current_team = None
-    if not is_hkex:
-        current_team_result = execute_query(
-            """
-            SELECT o.teamID, t.teamno
-            FROM enigma.lirorgteam o
-            JOIN enigma.lirteams t ON o.teamID = t.id
-            WHERE NOT o.dead AND o.orgid = %s
-            """,
+    former_teams = []
+
+    if person_id:
+        # Get organization name
+        org_result = execute_query(
+            "SELECT name1 FROM enigma.organisations WHERE personid = %s",
             (person_id,)
         )
 
-        if current_team_result:
-            team_id = current_team_result[0]["teamid"]
-            team_no = current_team_result[0]["teamno"]
+        if not org_result:
+            return render_template("error.html", message="Organization not found"), 404
 
-            # Get team staff
-            staff_result = execute_query(
+        org_name = org_result[0]["name1"]
+
+        # Get stock code (last 5 digits of ordCodeLast)
+        stock_code_result = execute_query(
+            """
+            SELECT LPAD(CAST(
+                (SELECT sl.stockCode
+                 FROM enigma.issue i
+                 JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+                 WHERE i.issuer = %s
+                   AND sl.stockexid IN (1, 20)
+                   AND (sl.delistdate IS NULL OR sl.delistdate > CURRENT_DATE)
+                 ORDER BY sl.firsttradedate DESC
+                 LIMIT 1) AS VARCHAR), 5, '0') AS stock_code
+            """,
+            (person_id,)
+        )
+        stock_code = stock_code_result[0]["stock_code"] if stock_code_result and stock_code_result[0]["stock_code"] else "00000"
+
+        # Check if HKEX (special case)
+        is_hkex = (person_id == 9643)
+
+        # Get current SEHK listing team
+        if not is_hkex:
+            current_team_result = execute_query(
                 """
-                SELECT
-                    CONCAT(s.n1, ' ', COALESCE(s.n2, ''), ' ', COALESCE(s.cn, '')) AS name,
-                    r.title,
-                    s.tel
-                FROM enigma.lirteamstaff ls
-                JOIN enigma.lirstaff s ON ls.staffid = s.id
-                JOIN enigma.lirroles r ON ls.posID = r.id
-                WHERE NOT ls.dead AND ls.teamID = %s
-                ORDER BY ls.posID DESC
+                SELECT o.teamID, t.teamno
+                FROM enigma.lirorgteam o
+                JOIN enigma.lirteams t ON o.teamID = t.id
+                WHERE NOT o.dead AND o.orgid = %s
                 """,
-                (team_id,)
+                (person_id,)
             )
 
-            # Format phone numbers
-            for staff in staff_result:
-                if staff["tel"]:
-                    tel = str(staff["tel"])
-                    if len(tel) == 8:
-                        staff["tel_formatted"] = f"{tel[:4]}-{tel[4:]}"
-                    else:
-                        staff["tel_formatted"] = tel
+            if current_team_result:
+                team_id = current_team_result[0]["teamid"]
+                team_no = current_team_result[0]["teamno"]
 
-            current_team = {
-                "team_id": team_id,
-                "team_no": team_no,
-                "staff": staff_result
-            }
+                # Get team staff
+                staff_result = execute_query(
+                    """
+                    SELECT
+                        CONCAT(s.n1, ' ', COALESCE(s.n2, ''), ' ', COALESCE(s.cn, '')) AS name,
+                        r.title,
+                        s.tel
+                    FROM enigma.lirteamstaff ls
+                    JOIN enigma.lirstaff s ON ls.staffid = s.id
+                    JOIN enigma.lirroles r ON ls.posID = r.id
+                    WHERE NOT ls.dead AND ls.teamID = %s
+                    ORDER BY ls.posID DESC
+                    """,
+                    (team_id,)
+                )
 
-    # Get former SEHK listing teams
-    former_teams = execute_query(
-        """
-        SELECT o.teamID, t.teamno,
-               CASE WHEN o.firstseen = '2023-12-30' THEN NULL ELSE o.firstseen END AS firstseen,
-               o.lastseen
-        FROM enigma.lirorgteam o
-        JOIN enigma.lirteams t ON o.teamID = t.id
-        WHERE o.dead AND o.orgid = %s
-        ORDER BY o.lastseen DESC
-        """,
-        (person_id,)
-    )
+                # Format phone numbers
+                for staff in staff_result:
+                    if staff["tel"]:
+                        tel = str(staff["tel"])
+                        if len(tel) == 8:
+                            staff["tel_formatted"] = f"{tel[:4]}-{tel[4:]}"
+                        else:
+                            staff["tel_formatted"] = tel
+
+                current_team = {
+                    "team_id": team_id,
+                    "team_no": team_no,
+                    "staff": staff_result
+                }
+
+        # Get former SEHK listing teams
+        former_teams = execute_query(
+            """
+            SELECT o.teamID, t.teamno,
+                   CASE WHEN o.firstseen = '2023-12-30' THEN NULL ELSE o.firstseen END AS firstseen,
+                   o.lastseen
+            FROM enigma.lirorgteam o
+            JOIN enigma.lirteams t ON o.teamID = t.id
+            WHERE o.dead AND o.orgid = %s
+            ORDER BY o.lastseen DESC
+            """,
+            (person_id,)
+        )
 
     return render_template(
         "dbpub/complain.html",
@@ -9321,8 +9336,20 @@ def hpu():
     issue_id = get_int("i", 0)
     sort_param = request.args.get("sort", "datedn")
 
+    stock_name = ""
+    person_id = 0
+    quotes = []
+
     if not issue_id:
-        return render_template("error.html", message="Missing issue ID"), 400
+        return render_template(
+            "dbpub/hpu.html",
+            issue_id=0,
+            person_id=0,
+            stock_name="",
+            quotes=[],
+            sort=sort_param,
+            not_found=True,
+        )
 
     # Get stock info
     stock_info = execute_query(
@@ -9338,7 +9365,15 @@ def hpu():
     )
 
     if not stock_info:
-        return render_template("error.html", message="Stock not found"), 404
+        return render_template(
+            "dbpub/hpu.html",
+            issue_id=issue_id,
+            person_id=0,
+            stock_name="",
+            quotes=[],
+            sort=sort_param,
+            not_found=True,
+        )
 
     stock_name = stock_info[0]["name1"]
     person_id = stock_info[0]["personid"]
