@@ -2,7 +2,7 @@ services:
   - type: web
     name: webbsite
     runtime: python
-    plan: starter
+    plan: standard
     healthCheckPath: /health
     buildCommand: uv sync --frozen && uv cache prune --ci
     startCommand: uv run gunicorn -c gunicorn.conf.py app:app

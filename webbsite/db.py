@@ -5,7 +5,6 @@ Using SQLAlchemy for robust connection pooling and management
 """
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.pool import NullPool
 from flask import current_app, g
 import logging
 
@@ -37,7 +36,7 @@ def get_db():
             # This allows unqualified table references (e.g., "stories") to work
             # Matches MySQL behavior where USE database switches context
             conn.execute(text("SET search_path TO enigma, ccass, public"))
-            conn.execute(text("SET statement_timeout = '15s'"))
+            conn.execute(text("SET statement_timeout = '8s'"))
 
             # Commit the SET commands
             conn.commit()
@@ -124,7 +123,7 @@ def execute_query(sql, params=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError(f"Query exceeded 15s time limit") from e
+            raise QueryTimeoutError(f"Query exceeded 8s time limit") from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
@@ -183,7 +182,7 @@ def execute_scalar(sql, params=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError(f"Query exceeded 15s time limit") from e
+            raise QueryTimeoutError(f"Query exceeded 8s time limit") from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
@@ -231,8 +230,8 @@ def init_engine(app):
         )
         logger.info(
             f"SQLAlchemy database engine initialized with pool_pre_ping "
-            f"(pool_size={app.config.get('DB_POOL_MIN_CONN', 5)}, "
-            f"max_overflow={app.config.get('DB_POOL_MAX_CONN', 20) - app.config.get('DB_POOL_MIN_CONN', 5)})"
+            f"(pool_size={app.config.get('DB_POOL_MIN_CONN', 2)}, "
+            f"max_overflow={app.config.get('DB_POOL_MAX_CONN', 8) - app.config.get('DB_POOL_MIN_CONN', 2)})"
         )
     except Exception as e:
         logger.error(f"Failed to initialize database engine: {e}", exc_info=True)
