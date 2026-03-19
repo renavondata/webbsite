@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 _engine = None
 
 
+class QueryTimeoutError(Exception):
+    """Raised when a database query exceeds the statement_timeout limit."""
+    pass
+
+
 def get_db():
     """Get database connection from pool and store in Flask g context"""
     if "db" not in g:
@@ -32,8 +37,9 @@ def get_db():
             # This allows unqualified table references (e.g., "stories") to work
             # Matches MySQL behavior where USE database switches context
             conn.execute(text("SET search_path TO enigma, ccass, public"))
+            conn.execute(text("SET statement_timeout = '15s'"))
 
-            # Commit the SET command
+            # Commit the SET commands
             conn.commit()
 
             g.db = conn
@@ -116,6 +122,10 @@ def execute_query(sql, params=None):
         except:
             pass
 
+        # Detect statement_timeout cancellation
+        if "canceling statement due to statement timeout" in str(e):
+            raise QueryTimeoutError(f"Query exceeded 15s time limit") from e
+
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
             raise
@@ -171,6 +181,10 @@ def execute_scalar(sql, params=None):
         except:
             pass
 
+        # Detect statement_timeout cancellation
+        if "canceling statement due to statement timeout" in str(e):
+            raise QueryTimeoutError(f"Query exceeded 15s time limit") from e
+
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
             raise
@@ -196,9 +210,11 @@ def init_engine(app):
             # This prevents SSL errors from stale connections
             pool_pre_ping=True,
             # Pool size configuration
-            pool_size=app.config.get("DB_POOL_MIN_CONN", 5),
-            max_overflow=app.config.get("DB_POOL_MAX_CONN", 20)
-            - app.config.get("DB_POOL_MIN_CONN", 5),
+            pool_size=app.config.get("DB_POOL_MIN_CONN", 2),
+            max_overflow=app.config.get("DB_POOL_MAX_CONN", 8)
+            - app.config.get("DB_POOL_MIN_CONN", 2),
+            # Fail fast when pool is exhausted instead of hanging
+            pool_timeout=10,
             # Connection timeout
             connect_args={
                 "connect_timeout": app.config.get("DB_CONNECT_TIMEOUT", 30),

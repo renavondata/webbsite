@@ -3,9 +3,12 @@ Webb-site Flask Application Factory
 Direct port from Classic ASP to Flask/Jinja
 """
 
-from flask import Flask, render_template, redirect
-from datetime import datetime
+from flask import Flask, render_template, redirect, request, g
+import time
+import logging
 from .config import Config
+
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_class=Config):
@@ -111,7 +114,28 @@ def create_app(config_class=Config):
     def health():
         return {"status": "ok"}, 200
 
+    # Slow request logging
+    @app.before_request
+    def _start_timer():
+        g._request_start = time.monotonic()
+
+    @app.after_request
+    def _log_slow_requests(response):
+        elapsed = time.monotonic() - getattr(g, "_request_start", time.monotonic())
+        if elapsed > 5:
+            logger.warning(
+                "SLOW REQUEST: %.1fs %s %s (status %s)",
+                elapsed, request.method, request.path, response.status_code,
+            )
+        return response
+
     # Custom error handlers
+    from webbsite.db import QueryTimeoutError
+
+    @app.errorhandler(QueryTimeoutError)
+    def query_timeout(e):
+        return render_template("errors/timeout.html"), 504
+
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template("errors/404.html"), 404

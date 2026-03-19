@@ -18,8 +18,8 @@ class Config:
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
     # Database Connection Pool Settings
-    DB_POOL_MIN_CONN = int(os.environ.get("DB_POOL_MIN_CONN", "5"))
-    DB_POOL_MAX_CONN = int(os.environ.get("DB_POOL_MAX_CONN", "20"))
+    DB_POOL_MIN_CONN = int(os.environ.get("DB_POOL_MIN_CONN", "2"))
+    DB_POOL_MAX_CONN = int(os.environ.get("DB_POOL_MAX_CONN", "8"))
     DB_CONNECT_TIMEOUT = int(os.environ.get("DB_CONNECT_TIMEOUT", "30"))
 
     # Flask
