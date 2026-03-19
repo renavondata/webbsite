@@ -567,102 +567,93 @@ def positions():
         if hide == "Y":
             hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
 
-    # Get rank categories
-    try:
-        ranks = execute_query("SELECT rankID, RankText FROM enigma.rank ORDER BY rankID")
-    except Exception as ex:
-        current_app.logger.error(f"Error getting ranks: {ex}")
-        ranks = []
-
-    # Build results by rank
+    # Build results by rank — single query joining rank table
     rank_data = []
     any_returns = False
 
     # Calculate date range parameters for return calculations
-    # ASP uses fromDate/toDate to bound the return calculation period
     from_param = from_date if from_date else None
     to_param = to_date if to_date else None
 
-    for rank in ranks:
-        rank_id = rank["rankid"]
-        rank_text = rank["ranktext"]
-
-        # Build query for this rank with return calculations
-        # Use hklistedordsever view to get issueID for listed companies
-        sql = f"""
-            SELECT
-                company,
-                {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
-                o.name1,
+    # Single query for all ranks (eliminates N+1 loop)
+    sql = f"""
+        SELECT
+            r.rankID,
+            r.RankText,
+            company,
+            {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
+            o.name1,
+            h.issueid,
+            apptDate,
+            d.apptAcc,
+            resDate,
+            d.resAcc,
+            p.posShort,
+            p.posLong,
+            CASE WHEN h.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed,
+            enigma.totRet(
                 h.issueid,
-                apptDate,
-                d.apptAcc,
-                resDate,
-                d.resAcc,
-                p.posShort,
-                p.posLong,
-                CASE WHEN h.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed,
-                -- Return calculations with date range bounds
-                enigma.totRet(
-                    h.issueid,
-                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-                ) as tot_ret,
-                enigma.CAGRet(
-                    h.issueid,
-                    GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-                ) as cagr_ret,
-                enigma.CAGRel(
-                    h.issueid,
-                    GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(CAST(%s AS date), '1999-11-12'::date)),
-                    LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-                ) as cagr_rel
-            FROM enigma.directorships d
-            JOIN enigma.organisations o ON company = o.personid
-            JOIN enigma.positions p ON d.positionid = p.positionid
-            LEFT JOIN enigma.hklistedordsever h ON company = h.issuer
-            WHERE rank = %s AND director = %s {hide_str}
-            ORDER BY {order_by}
-        """
+                GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
+                LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
+            ) as tot_ret,
+            enigma.CAGRet(
+                h.issueid,
+                GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
+                LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
+            ) as cagr_ret,
+            enigma.CAGRel(
+                h.issueid,
+                GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(CAST(%s AS date), '1999-11-12'::date)),
+                LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
+            ) as cagr_rel
+        FROM enigma.directorships d
+        JOIN enigma.organisations o ON company = o.personid
+        JOIN enigma.positions p ON d.positionid = p.positionid
+        JOIN enigma.rank r ON p.rank = r.rankID
+        LEFT JOIN enigma.hklistedordsever h ON company = h.issuer
+        WHERE director = %s {hide_str}
+        ORDER BY r.rankID, {order_by}
+    """
 
-        try:
-            # Pass date range params for return calculations
-            positions = execute_query(
-                sql,
-                (from_param, to_param, from_param, to_param, from_param, to_param, rank_id, person_id)
-            )
+    try:
+        all_positions = execute_query(
+            sql,
+            (from_param, to_param, from_param, to_param, from_param, to_param, person_id)
+        )
 
-            if positions:
-                # Check if any have returns (is_listed flag set)
-                has_returns = any(pos.get("is_listed") == 1 for pos in positions)
-                if has_returns:
-                    any_returns = True
+        # Group results by rank in Python
+        from itertools import groupby
+        from operator import itemgetter
 
-                # Group positions by company for display
-                grouped_positions = group_positions_by_company(positions, sort_param)
+        for rank_id, rank_group in groupby(all_positions, key=itemgetter("rankid")):
+            positions_list = list(rank_group)
+            rank_text = positions_list[0]["ranktext"]
 
-                # Calculate average returns for summary row
-                avg_cagr = None
-                avg_rel = None
-                if has_returns:
-                    cagr_values = [p.get("cagr_ret") for p in positions if p.get("cagr_ret") is not None]
-                    rel_values = [p.get("cagr_rel") for p in positions if p.get("cagr_rel") is not None]
-                    if cagr_values:
-                        avg_cagr = sum(cagr_values) / len(cagr_values)
-                    if rel_values:
-                        avg_rel = sum(rel_values) / len(rel_values)
+            has_returns = any(pos.get("is_listed") == 1 for pos in positions_list)
+            if has_returns:
+                any_returns = True
 
-                rank_data.append({
-                    "rank_text": rank_text,
-                    "positions": grouped_positions,
-                    "has_returns": has_returns,
-                    "avg_cagr": avg_cagr,
-                    "avg_rel": avg_rel
-                })
-        except Exception as ex:
-            current_app.logger.error(f"Error getting positions for rank {rank_id}: {ex}")
-            continue
+            grouped_positions = group_positions_by_company(positions_list, sort_param)
+
+            avg_cagr = None
+            avg_rel = None
+            if has_returns:
+                cagr_values = [p.get("cagr_ret") for p in positions_list if p.get("cagr_ret") is not None]
+                rel_values = [p.get("cagr_rel") for p in positions_list if p.get("cagr_rel") is not None]
+                if cagr_values:
+                    avg_cagr = sum(cagr_values) / len(cagr_values)
+                if rel_values:
+                    avg_rel = sum(rel_values) / len(rel_values)
+
+            rank_data.append({
+                "rank_text": rank_text,
+                "positions": grouped_positions,
+                "has_returns": has_returns,
+                "avg_cagr": avg_cagr,
+                "avg_rel": avg_rel,
+            })
+    except Exception as ex:
+        current_app.logger.error(f"Error getting positions: {ex}")
 
     return render_template(
         "dbpub/positions.html",
@@ -819,7 +810,7 @@ def holders():
 
 
 def _build_holders_tree(
-    issue_id, parent_idx, level, ob, tree, seen_holders, is_condensed
+    issue_id, parent_idx, level, ob, tree, seen_holders, is_condensed, max_depth=10
 ):
     """
     Recursive function to build ownership tree
@@ -832,6 +823,7 @@ def _build_holders_tree(
         tree: List to append results to
         seen_holders: Dict mapping personID -> first occurrence index (for cross-holding detection)
         is_condensed: If True, hide 100%-owned intermediates
+        max_depth: Maximum recursion depth (prevents runaway on deep ownership chains)
 
     Algorithm mirrors the ASP holdersGen() subroutine:
     - Get all holders of this issue
@@ -840,6 +832,10 @@ def _build_holders_tree(
       - If not seen and not listed company, recursively get their issues and holders
       - Mark as visible if: stake != 100%, cross-holding, listed company, or multiple issues
     """
+    if level >= max_depth:
+        if parent_idx >= 0:
+            tree[parent_idx]["visible"] = True
+        return
     # Get holders of this issue
     holders = execute_query(
         f"""
@@ -935,6 +931,7 @@ def _build_holders_tree(
                                 tree,
                                 seen_holders,
                                 is_condensed,
+                                max_depth,
                             )
                             # If more than one issue, make this holder visible
                             if i > 0:
@@ -1193,7 +1190,7 @@ def holdings():
         )
 
 
-def _build_holdings_tree(person_id, level, ob, tree, org_tracker):
+def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
     """
     Recursive function to build holdings tree
 
@@ -1203,7 +1200,11 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker):
         ob: ORDER BY clause
         tree: List to append results to
         org_tracker: Dict mapping personID -> first occurrence index (for cross-holding detection)
+        max_depth: Maximum recursion depth (prevents runaway on deep ownership chains)
     """
+    if level >= max_depth:
+        return
+
     holdings = execute_query(
         f"""
         SELECT *,
@@ -1253,7 +1254,7 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker):
             )
 
             # Recursively get holdings of this issuer
-            _build_holdings_tree(issuer_id, level + 1, ob, tree, org_tracker)
+            _build_holdings_tree(issuer_id, level + 1, ob, tree, org_tracker, max_depth)
 
 
 # NOTE: /prices.asp is implemented in quotes.py blueprint, not here

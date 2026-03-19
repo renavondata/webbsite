@@ -11,10 +11,11 @@ bind = f"0.0.0.0:{os.environ.get('PORT', '10000')}"
 backlog = 2048
 
 # Worker processes
-workers = int(os.environ.get("GUNICORN_WORKERS", "4"))
-worker_class = "sync"
+workers = int(os.environ.get("GUNICORN_WORKERS", "2"))
+worker_class = "gthread"
+threads = 4  # 2 workers × 4 threads = 8 concurrent request slots
 worker_connections = 1000
-timeout = 120  # Increased from default 30s for slow DB queries
+timeout = 30  # Kill stuck workers fast; DB has its own 15s statement_timeout
 keepalive = 5
 
 # Restart workers after this many requests (helps prevent memory leaks)
@@ -55,7 +56,7 @@ def on_reload(server):
 
 def when_ready(server):
     """Called just after the server is started."""
-    server.log.info(f"Gunicorn server ready. Workers: {workers}, Timeout: {timeout}s")
+    server.log.info(f"Gunicorn server ready. Workers: {workers}, Threads: {threads}, Timeout: {timeout}s")
 
 
 def post_fork(server, worker):

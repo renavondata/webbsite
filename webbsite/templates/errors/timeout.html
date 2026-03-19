@@ -1,0 +1,22 @@
+{% extends "base_reports.html" %}
+
+{% block title %}Query Timeout - Renavon Hong Kong Database{% endblock %}
+
+{% block content %}
+<div class="mainbody">
+
+<h2>Query Timeout (504)</h2>
+
+<p>Sorry, this query took too long to complete and was cancelled.</p>
+
+<h3>What can you do?</h3>
+
+<ul>
+<li><strong>Try again</strong> - temporary database load may have slowed things down</li>
+<li><strong>Simplify your query</strong> - try narrower date ranges or fewer filters</li>
+<li><a href="javascript:history.back()"><strong>Go back</strong></a> to the previous page</li>
+<li><a href="/dbpub/"><strong>Return to the Database Homepage</strong></a></li>
+</ul>
+
+</div>
+{% endblock %}

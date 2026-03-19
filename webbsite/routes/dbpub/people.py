@@ -173,44 +173,23 @@ def natperson():
         """
         holdings_list = [dict(row) for row in execute_query(holdings_sql, (person_id,))]
 
-        # Check for humanBar navigation tabs (matching ASP humanBar function)
-        has_positions = bool(
-            execute_query(
-                "SELECT 1 FROM enigma.directorships WHERE director = %s LIMIT 1",
-                (person_id,),
-            )
-        )
-        has_pay = bool(
-            execute_query(
-                "SELECT 1 FROM enigma.directorships d JOIN enigma.documents a ON d.company = a.orgid WHERE a.doctypeid = 0 AND d.director = %s LIMIT 1",
-                (person_id,),
-            )
-        )
-        has_sdi = bool(
-            execute_query(
-                "SELECT 1 FROM enigma.sdi WHERE dir = %s LIMIT 1", (person_id,)
-            )
-        )
-
-        # Check for CCASS participant ID
-        ccass_part_sql = (
-            "SELECT partid FROM ccass.participants WHERE personid = %s LIMIT 1"
-        )
-        ccass_result = execute_query(ccass_part_sql, (person_id,))
-        ccass_part_id = ccass_result[0]["partid"] if ccass_result else None
-
-        has_stories = bool(
-            execute_query(
-                "SELECT 1 FROM enigma.personstories WHERE personid = %s LIMIT 1",
-                (person_id,),
-            )
-        )
-
-        # Get relatives data
-        has_relatives_sql = (
-            "SELECT 1 FROM enigma.relatives WHERE rel1 = %s OR rel2 = %s LIMIT 1"
-        )
-        has_relatives = bool(execute_query(has_relatives_sql, (person_id, person_id)))
+        # Check for humanBar navigation tabs in a single query
+        nav_sql = """
+            SELECT
+                EXISTS(SELECT 1 FROM enigma.directorships WHERE director = %s) AS has_positions,
+                EXISTS(SELECT 1 FROM enigma.directorships d JOIN enigma.documents a ON d.company = a.orgid WHERE a.doctypeid = 0 AND d.director = %s) AS has_pay,
+                EXISTS(SELECT 1 FROM enigma.sdi WHERE dir = %s) AS has_sdi,
+                (SELECT partid FROM ccass.participants WHERE personid = %s LIMIT 1) AS ccass_part_id,
+                EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) AS has_stories,
+                EXISTS(SELECT 1 FROM enigma.relatives WHERE rel1 = %s OR rel2 = %s) AS has_relatives
+        """
+        nav_row = execute_query(nav_sql, (person_id, person_id, person_id, person_id, person_id, person_id, person_id))[0]
+        has_positions = nav_row["has_positions"]
+        has_pay = nav_row["has_pay"]
+        has_sdi = nav_row["has_sdi"]
+        ccass_part_id = nav_row["ccass_part_id"]
+        has_stories = nav_row["has_stories"]
+        has_relatives = nav_row["has_relatives"]
 
         ascendants = []
         descendants = []
