@@ -3,7 +3,8 @@ Webb-site Flask Application Factory
 Direct port from Classic ASP to Flask/Jinja
 """
 
-from flask import Flask, render_template, redirect, request, g
+from flask import Flask, render_template, redirect, request, g, Response
+from flask_compress import Compress
 import time
 import logging
 from .config import Config
@@ -14,6 +15,11 @@ logger = logging.getLogger(__name__)
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Enable gzip/brotli compression
+    app.config["COMPRESS_MIN_SIZE"] = 500
+    app.config["COMPRESS_LEVEL"] = 6
+    Compress(app)
 
     # Initialize database
     from webbsite import db
@@ -114,6 +120,43 @@ def create_app(config_class=Config):
     def health():
         return {"status": "ok"}, 200
 
+    @app.route("/robots.txt")
+    def robots_txt():
+        lines = [
+            # Block AI scrapers entirely
+            "User-agent: GPTBot",
+            "Disallow: /",
+            "",
+            "User-agent: CCBot",
+            "Disallow: /",
+            "",
+            "User-agent: ClaudeBot",
+            "Disallow: /",
+            "",
+            "User-agent: Bytespider",
+            "Disallow: /",
+            "",
+            "User-agent: PetalBot",
+            "Disallow: /",
+            "",
+            "User-agent: Amazonbot",
+            "Disallow: /",
+            "",
+            # All other bots: allow main pages, block expensive routes
+            "User-agent: *",
+            "Disallow: /CSV.asp",
+            "Disallow: /dbpub/CSV.asp",
+            "Disallow: /dbpub/pricesCSV.asp",
+            "Disallow: /dbpub/govacCSV.asp",
+            "Disallow: /dbeditor/",
+            "Disallow: /webbmail/",
+            "Disallow: /pollman/",
+            "Disallow: /mailman/",
+            "Crawl-delay: 10",
+            "",
+        ]
+        return Response("\n".join(lines), mimetype="text/plain")
+
     # Slow request logging
     @app.before_request
     def _start_timer():
@@ -127,6 +170,21 @@ def create_app(config_class=Config):
                 "SLOW REQUEST: %.1fs %s %s (status %s)",
                 elapsed, request.method, request.path, response.status_code,
             )
+        return response
+
+    @app.after_request
+    def _set_cache_headers(response):
+        if response.status_code >= 400:
+            return response
+        path = request.path
+        if path.startswith("/static/"):
+            response.headers["Cache-Control"] = "public, max-age=86400"
+        elif path.endswith("CSV.asp"):
+            response.headers.setdefault("Cache-Control", "public, max-age=86400")
+        elif path == "/health":
+            response.headers.setdefault("Cache-Control", "no-store")
+        elif path.endswith(".asp") or path.endswith("/"):
+            response.headers.setdefault("Cache-Control", "public, max-age=3600")
         return response
 
     # Custom error handlers

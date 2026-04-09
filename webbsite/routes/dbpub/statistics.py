@@ -2665,21 +2665,21 @@ def csv():
 
     # Whitelist of allowed tables and queries
     valid_exports = {
-        "airlines": "SELECT * FROM enigma.airlines",
-        "airports": "SELECT * FROM enigma.airports",
-        "destor": "SELECT * FROM enigma.destor",
-        "flights": "SELECT * FROM enigma.flights",
-        "hkpx": "SELECT * FROM enigma.hkpx",
-        "hkpxtypes": "SELECT * FROM enigma.hkpxtypes",
-        "hkports": "SELECT * FROM enigma.hkports",
-        "qt": "SELECT * FROM enigma.qt",
-        "qtcentres": "SELECT * FROM enigma.qtcentres",
-        "vax": "SELECT * FROM enigma.vax",
-        "vaxcohorts": "SELECT id, minage, popn, mpopn, fpopn FROM enigma.vaxcohorts",
-        "jails": "SELECT * FROM enigma.jails",
-        "jailtypes": "SELECT * FROM enigma.jailtypes",
-        "prisoners": "SELECT * FROM enigma.prisoners",
-        "prisorigin": "SELECT * FROM enigma.prisorigin",
+        "airlines": "SELECT * FROM enigma.airlines LIMIT 50000",
+        "airports": "SELECT * FROM enigma.airports LIMIT 50000",
+        "destor": "SELECT * FROM enigma.destor LIMIT 50000",
+        "flights": "SELECT * FROM enigma.flights LIMIT 50000",
+        "hkpx": "SELECT * FROM enigma.hkpx LIMIT 50000",
+        "hkpxtypes": "SELECT * FROM enigma.hkpxtypes LIMIT 50000",
+        "hkports": "SELECT * FROM enigma.hkports LIMIT 50000",
+        "qt": "SELECT * FROM enigma.qt LIMIT 50000",
+        "qtcentres": "SELECT * FROM enigma.qtcentres LIMIT 50000",
+        "vax": "SELECT * FROM enigma.vax LIMIT 50000",
+        "vaxcohorts": "SELECT id, minage, popn, mpopn, fpopn FROM enigma.vaxcohorts LIMIT 50000",
+        "jails": "SELECT * FROM enigma.jails LIMIT 50000",
+        "jailtypes": "SELECT * FROM enigma.jailtypes LIMIT 50000",
+        "prisoners": "SELECT * FROM enigma.prisoners LIMIT 50000",
+        "prisorigin": "SELECT * FROM enigma.prisorigin LIMIT 50000",
     }
 
     if table not in valid_exports:

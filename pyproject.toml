@@ -10,6 +10,7 @@ dependencies = [
     "python-dotenv",
     "colorama>=0.4.6",
     "bcrypt>=4.0.0",
+    "flask-compress>=1.17",
 ]
 
 [dependency-groups]
