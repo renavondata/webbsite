@@ -179,12 +179,15 @@ def create_app(config_class=Config):
         path = request.path
         if path.startswith("/static/"):
             response.headers["Cache-Control"] = "public, max-age=86400"
+            response.headers["CDN-Cache-Control"] = "max-age=604800"
         elif path.endswith("CSV.asp"):
             response.headers.setdefault("Cache-Control", "public, max-age=86400")
+            response.headers["CDN-Cache-Control"] = "max-age=86400"
         elif path == "/health":
             response.headers.setdefault("Cache-Control", "no-store")
         elif path.endswith(".asp") or path.endswith("/"):
             response.headers.setdefault("Cache-Control", "public, max-age=3600")
+            response.headers["CDN-Cache-Control"] = "max-age=3600"
         return response
 
     # Custom error handlers
