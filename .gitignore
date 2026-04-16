@@ -55,4 +55,4 @@ logs/
 # Archive data - store locally only, too large for GitHub
 archive/
 scripts/
-docs/
+docs/.mcp.json
