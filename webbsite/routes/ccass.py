@@ -3,12 +3,52 @@ CCASS routes - Webb-site CCASS Analysis System
 Direct port from ccass/*.asp files
 """
 
-from flask import Blueprint, render_template, request
-from datetime import datetime
+from flask import Blueprint, render_template, request, Response
+from datetime import datetime, date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date
 
 bp = Blueprint("ccass", __name__)
+
+# CCASS history bounds — see CLAUDE.md. Anything outside is guaranteed to
+# return no rows but still costs a full SQL round-trip + error rendering.
+CCASS_HISTORY_START = date(2007, 6, 26)
+# Largest plausible issueID; current issue table is well under this.
+MAX_ISSUE_ID = 10_000_000
+
+
+def _bad_request(msg: str) -> Response:
+    return Response(f"Bad request: {msg}\n", status=400, mimetype="text/plain")
+
+
+def _validate_ccass_query():
+    """Pre-flight validation for deep CCASS pages with ?d=&i=&sort= patterns.
+
+    Returns a small Response on validation failure (cheap to serve, even at
+    spike volume) or None to continue. Catches the bulk of scraper traffic
+    that fuzzes random dates/IDs.
+    """
+    issue_id = request.args.get("i")
+    if issue_id is not None and issue_id != "":
+        try:
+            iid = int(issue_id)
+        except ValueError:
+            return _bad_request("invalid i")
+        if iid < 0 or iid > MAX_ISSUE_ID:
+            return _bad_request("i out of range")
+
+    for key in ("d", "d1"):
+        raw = request.args.get(key)
+        if not raw:
+            continue
+        try:
+            parsed = datetime.strptime(raw, "%Y-%m-%d").date()
+        except ValueError:
+            return _bad_request(f"invalid {key}")
+        # Allow a small future window for timezone edge cases
+        if parsed < CCASS_HISTORY_START or parsed > date.today():
+            return _bad_request(f"{key} outside CCASS history")
+    return None
 
 
 @bp.route("/bigchanges.asp")
@@ -628,6 +668,9 @@ def choldings():
 
     Tables used: ccass.holdings, participants, issue, dailylog, issuedshares
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     issue_id = get_int("i", 0)
     stock_code = get_str("sc", "")
     d = request.args.get("d", "")
@@ -1131,6 +1174,9 @@ def chistory():
     import json
     from datetime import datetime
 
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     issue_id = get_int("i", 0)
     stock_code = get_str("sc", "")
     part_id = get_int("part", 0)
@@ -2563,6 +2609,10 @@ def portchg():
     """
     from flask import current_app
     from datetime import datetime, date as dt_date, timedelta
+
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from webbsite.asp_helpers import ms_date
 
     p = get_int("p", 1)
@@ -3050,6 +3100,10 @@ def chldchg():
     Shows ownership changes for a stock between two dates"""
     from flask import current_app
     from datetime import date, timedelta
+
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
 
     # Get parameters
     issue_id = get_int("i", 0)

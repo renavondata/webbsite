@@ -11,6 +11,15 @@ from .config import Config
 
 logger = logging.getLogger(__name__)
 
+# Aggressive SEO/AI crawlers blocked at the origin (mirror of Cloudflare WAF rule).
+# Defense-in-depth in case direct *.onrender.com URL is hit.
+BLOCKED_BOT_UA_SUBSTRINGS = (
+    "semrushbot", "ahrefsbot", "mj12bot", "dotbot", "petalbot",
+    "yandexbot", "baiduspider", "bytespider", "gptbot", "claudebot",
+    "ccbot", "amazonbot", "applebot", "facebookexternalhit",
+    "meta-externalagent", "perplexitybot", "diffbot", "blexbot",
+)
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -123,27 +132,19 @@ def create_app(config_class=Config):
     @app.route("/robots.txt")
     def robots_txt():
         lines = [
-            # Block AI scrapers entirely
-            "User-agent: GPTBot",
-            "Disallow: /",
-            "",
-            "User-agent: CCBot",
-            "Disallow: /",
-            "",
-            "User-agent: ClaudeBot",
-            "Disallow: /",
-            "",
-            "User-agent: Bytespider",
-            "Disallow: /",
-            "",
-            "User-agent: PetalBot",
-            "Disallow: /",
-            "",
-            "User-agent: Amazonbot",
-            "Disallow: /",
-            "",
-            # All other bots: allow main pages, block expensive routes
             "User-agent: *",
+            # Per-day CCASS deep-link history pages are infinite combinations
+            # of ?d=&i= and explode bandwidth for zero crawl value
+            "Disallow: /ccass/chldchg.asp",
+            "Disallow: /ccass/choldings.asp",
+            "Disallow: /ccass/chistory.asp",
+            "Disallow: /ccass/chldchght.asp",
+            "Disallow: /ccass/portchg.asp",
+            "Disallow: /ccass/cconchist.asp",
+            "Disallow: /ccass/ctothist.asp",
+            "Disallow: /ccass/nciphist.asp",
+            "Disallow: /ccass/brokhist.asp",
+            "Disallow: /ccass/ipstakes.asp",
             "Disallow: /CSV.asp",
             "Disallow: /dbpub/CSV.asp",
             "Disallow: /dbpub/pricesCSV.asp",
@@ -156,6 +157,13 @@ def create_app(config_class=Config):
             "",
         ]
         return Response("\n".join(lines), mimetype="text/plain")
+
+    # Block aggressive crawlers at the origin (defense-in-depth; CF WAF is primary)
+    @app.before_request
+    def _block_bots():
+        ua = request.headers.get("User-Agent", "").lower()
+        if ua and any(s in ua for s in BLOCKED_BOT_UA_SUBSTRINGS):
+            return Response("Forbidden\n", status=403, mimetype="text/plain")
 
     # Slow request logging
     @app.before_request
