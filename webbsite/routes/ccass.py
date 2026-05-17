@@ -3257,14 +3257,9 @@ def chldchg():
 
     except Exception as e:
         current_app.logger.error(f"Error getting date range for chldchg: {e}")
-        return render_template(
-            "ccass/chldchg.html",
-            issue_id=issue_id,
-            stock_code=stock_code,
-            stock_name=stock_name,
-            person_id=person_id,
-            error=str(e),
-        )
+        # Delegate to global 500 handler (small page) instead of re-rendering
+        # the heavy chldchg.html shell with an error banner.
+        raise
 
     # Get holding changes data - convert hldchgext2 stored procedure to inline SQL
     try:

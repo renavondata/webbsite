@@ -194,8 +194,25 @@ def create_app(config_class=Config):
         elif path == "/health":
             response.headers.setdefault("Cache-Control", "no-store")
         elif path.endswith(".asp") or path.endswith("/"):
-            response.headers.setdefault("Cache-Control", "public, max-age=3600")
-            response.headers["CDN-Cache-Control"] = "max-age=3600"
+            # Historical CCASS data never changes — give it a long TTL so the
+            # edge cache absorbs repeat scraper/visitor hits to the same date.
+            # "Historical" = ?d= more than 30 days in the past.
+            d_param = request.args.get("d", "")
+            is_historical = False
+            if d_param and len(d_param) == 10:
+                try:
+                    from datetime import datetime, date as _date, timedelta
+                    parsed = datetime.strptime(d_param, "%Y-%m-%d").date()
+                    if parsed < _date.today() - timedelta(days=30):
+                        is_historical = True
+                except ValueError:
+                    pass
+            if is_historical:
+                response.headers.setdefault("Cache-Control", "public, max-age=86400")
+                response.headers["CDN-Cache-Control"] = "max-age=2592000"
+            else:
+                response.headers.setdefault("Cache-Control", "public, max-age=3600")
+                response.headers["CDN-Cache-Control"] = "max-age=3600"
         return response
 
     # Custom error handlers
