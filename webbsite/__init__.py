@@ -185,34 +185,64 @@ def create_app(config_class=Config):
         if response.status_code >= 400:
             return response
         path = request.path
+
+        # Static assets: 1 day browser, 30 days edge
         if path.startswith("/static/"):
-            response.headers["Cache-Control"] = "public, max-age=86400"
-            response.headers["CDN-Cache-Control"] = "max-age=604800"
-        elif path.endswith("CSV.asp"):
+            response.headers["Cache-Control"] = "public, max-age=86400, immutable"
+            response.headers["CDN-Cache-Control"] = "max-age=2592000"
+            return response
+
+        # Health endpoint: never cache
+        if path == "/health":
+            response.headers.setdefault("Cache-Control", "no-store")
+            return response
+
+        # CSV exports: 1 day browser, 1 day edge
+        if path.endswith("CSV.asp"):
             response.headers.setdefault("Cache-Control", "public, max-age=86400")
             response.headers["CDN-Cache-Control"] = "max-age=86400"
-        elif path == "/health":
-            response.headers.setdefault("Cache-Control", "no-store")
-        elif path.endswith(".asp") or path.endswith("/"):
-            # Historical CCASS data never changes — give it a long TTL so the
-            # edge cache absorbs repeat scraper/visitor hits to the same date.
-            # "Historical" = ?d= more than 30 days in the past.
+            return response
+
+        # Articles never change once published: 7 day browser, 1 year edge
+        if path.startswith("/articles/"):
+            response.headers.setdefault("Cache-Control", "public, max-age=604800")
+            response.headers["CDN-Cache-Control"] = "max-age=31536000"
+            return response
+
+        # Static info pages (FAQ, status, etc.): 1 day browser, 7 days edge
+        if path.startswith("/pages/"):
+            response.headers.setdefault("Cache-Control", "public, max-age=86400")
+            response.headers["CDN-Cache-Control"] = "max-age=604800"
+            return response
+
+        # Data pages with ?d= = historical date snapshot
+        # CCASS history starts 2007-06-26; data for any past date is immutable.
+        # Recent dates (last 7 days) may still be revised, so cap their TTL.
+        if path.endswith(".asp") or path.endswith("/"):
             d_param = request.args.get("d", "")
-            is_historical = False
+            ttl_browser = 3600
+            ttl_edge = 3600
             if d_param and len(d_param) == 10:
                 try:
                     from datetime import datetime, date as _date, timedelta
                     parsed = datetime.strptime(d_param, "%Y-%m-%d").date()
-                    if parsed < _date.today() - timedelta(days=30):
-                        is_historical = True
+                    age = (_date.today() - parsed).days
+                    if age > 365:
+                        # >1 year old: definitely immutable
+                        ttl_browser = 604800       # 7 days
+                        ttl_edge = 31536000        # 1 year
+                    elif age > 30:
+                        # 30 days – 1 year: stable
+                        ttl_browser = 86400        # 1 day
+                        ttl_edge = 2592000         # 30 days
+                    elif age > 7:
+                        # 7–30 days: very unlikely to change
+                        ttl_browser = 14400        # 4 hours
+                        ttl_edge = 604800          # 7 days
                 except ValueError:
                     pass
-            if is_historical:
-                response.headers.setdefault("Cache-Control", "public, max-age=86400")
-                response.headers["CDN-Cache-Control"] = "max-age=2592000"
-            else:
-                response.headers.setdefault("Cache-Control", "public, max-age=3600")
-                response.headers["CDN-Cache-Control"] = "max-age=3600"
+            response.headers.setdefault("Cache-Control", f"public, max-age={ttl_browser}")
+            response.headers["CDN-Cache-Control"] = f"max-age={ttl_edge}"
         return response
 
     # Custom error handlers
