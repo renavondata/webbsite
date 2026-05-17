@@ -2083,10 +2083,10 @@ def ncipchg():
     if not d2:
         try:
             result = execute_query(
-                "SELECT value FROM enigma.log WHERE key='CCASSdateDone'"
+                "SELECT val FROM enigma.log WHERE name='CCASSdateDone'"
             )
-            if result and result[0]["value"]:
-                d2 = result[0]["value"]
+            if result and result[0]["val"]:
+                d2 = result[0]["val"]
             else:
                 d2 = "2025-10-17"
         except:
@@ -2679,8 +2679,8 @@ def portchg():
 
     # Get latest CCASS date
     try:
-        ccass_done = execute_query("SELECT value FROM enigma.log WHERE key='CCASSdateDone'")
-        ccass_date = ccass_done[0]["value"] if ccass_done else str(dt_date.today() - timedelta(days=1))
+        ccass_done = execute_query("SELECT val FROM enigma.log WHERE name='CCASSdateDone'")
+        ccass_date = ccass_done[0]["val"] if ccass_done else str(dt_date.today() - timedelta(days=1))
     except:
         ccass_date = str(dt_date.today() - timedelta(days=1))
 
