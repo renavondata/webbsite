@@ -8845,6 +8845,186 @@ def orgdata():
     )
 
 
+def _period_quote_query(issue_id, freq, wd, current_adj, order_by):
+    """Build the (query, params) for daily/weekly/monthly/yearly adjusted quotes.
+
+    Shared by hpw.asp (HTML) and pricesCSV.asp logic. Replicates the original
+    ccass.weekq/monthq/yearq/dailyq stored procs inline (those weren't migrated
+    to PG); adjusted prices use enigma.getadjust(). `order_by` is a pre-validated
+    ORDER BY fragment over the output aliases. Columns (in order): atdate,
+    settledate, susp, days, closing, bid, ask, turn, adjclose, adjbid, adjask,
+    adjlow, adjhigh, adjvol, adjvwap.
+    """
+    a, i = current_adj, issue_id
+    if freq == "m":
+        grp = "DATE_TRUNC('month', q.atDate)"
+        extra_params = ()
+    elif freq == "y":
+        grp = "DATE_TRUNC('year', q.atDate)"
+        extra_params = ()
+    else:  # weekly, ending on weekday wd
+        off = 7 - wd
+        grp = ("EXTRACT(YEAR FROM q.atDate + INTERVAL '%s days'), "
+               "EXTRACT(WEEK FROM q.atDate + INTERVAL '%s days')")
+        extra_params = (off, off)
+
+    query = f"""
+        WITH agg AS (
+            SELECT MAX(q.atDate) AS atdate,
+                   MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getadjust(%s, q.atDate)) END) AS adjlow,
+                   MAX(q.high * (%s / enigma.getadjust(%s, q.atDate))) AS adjhigh,
+                   SUM(q.vol / (%s / enigma.getadjust(%s, q.atDate))) AS adjvol,
+                   SUM(q.turn) AS turn,
+                   SUM(CAST(q.susp AS INTEGER)) AS susp,
+                   COUNT(*) AS days
+            FROM ccass.quotes q
+            WHERE q.issueid = %s
+            GROUP BY {grp}
+        )
+        SELECT agg.atdate, c.settleDate AS settledate, agg.susp, agg.days,
+               q.closing, q.bid, q.ask, agg.turn,
+               q.closing * (%s / enigma.getadjust(%s, agg.atdate)) AS adjclose,
+               q.bid * (%s / enigma.getadjust(%s, agg.atdate)) AS adjbid,
+               q.ask * (%s / enigma.getadjust(%s, agg.atdate)) AS adjask,
+               agg.adjlow, agg.adjhigh, agg.adjvol,
+               CASE WHEN agg.adjvol <> 0 THEN agg.turn / agg.adjvol ELSE 0 END AS adjvwap
+        FROM agg
+        JOIN ccass.quotes q ON agg.atdate = q.atDate AND q.issueid = %s
+        JOIN ccass.calendar c ON agg.atdate = c.tradeDate
+        ORDER BY {order_by}
+    """
+    params = (
+        a, i, a, i, a, i, i, *extra_params,
+        a, i, a, i, a, i, i,
+    )
+    return query, params
+
+
+_HPW_SORT = {
+    "acup": "adjclose, atdate", "acdn": "adjclose DESC, atdate",
+    "dateup": "atdate", "datedn": "atdate DESC",
+    "turndn": "turn DESC, atdate", "turnup": "turn, atdate",
+    "voldn": "adjvol DESC, atdate DESC", "volup": "adjvol, atdate",
+    "vwdn": "adjvwap DESC, atdate DESC", "vwup": "adjvwap, atdate",
+}
+
+
+@bp.route("/hpw.asp")
+def hpw():
+    """Historic prices (weekly/monthly/yearly) with Webb-site Total Returns -
+    port of hpw.asp. Aggregation inlined via _period_quote_query."""
+    i = get_int("i", 0)
+    sc = get_int("sc", 0)
+    if sc > 0:
+        r = execute_query(
+            """SELECT iss.id1 FROM enigma.stocklistings sl
+               JOIN enigma.issue iss ON sl.issueid = iss.id1
+               WHERE sl.stockcode = %s
+               ORDER BY (sl.delistdate IS NULL) DESC, sl.delistdate DESC NULLS LAST LIMIT 1""",
+            (sc,),
+        )
+        if r:
+            i = r[0]["id1"]
+
+    name, p = "", 0
+    if i > 0:
+        nm = execute_query(
+            """SELECT o.name1, o.personid FROM enigma.issue iss
+               JOIN enigma.organisations o ON iss.issuer = o.personid
+               WHERE iss.id1 = %s""",
+            (i,),
+        )
+        if nm:
+            name, p = nm[0]["name1"], nm[0]["personid"]
+        else:
+            name, i = "No such stock", 0
+
+    f = get_str("f", "w")
+    if f not in ("w", "m", "y"):
+        f = "w"
+    wd = get_int("wd", 6)
+    if wd < 2 or wd > 6:
+        wd = 6
+    sort = get_str("sort", "datedn")
+    if sort not in _HPW_SORT:
+        sort = "datedn"
+
+    rows = []
+    if i > 0:
+        current_adj = execute_scalar(
+            "SELECT enigma.getadjust(%s, CURRENT_DATE)", (i,)
+        ) or 1.0
+        query, params = _period_quote_query(i, f, wd, current_adj, _HPW_SORT[sort])
+        rows = execute_query(query, params, timeout_s=25)
+        ac = [row["adjclose"] for row in rows]
+        sd = [row["settledate"] for row in rows]
+        epoch = date(2007, 6, 25)
+        for x, row in enumerate(rows):
+            row["tr"] = None
+            row["d1"] = None  # period-start settle date, for the CCASS-movement link
+            if sort == "datedn":
+                if x < len(rows) - 1 and ac[x] and ac[x + 1]:
+                    row["tr"] = ac[x] / ac[x + 1] - 1
+                row["d1"] = sd[x + 1] if x < len(rows) - 1 else epoch
+            elif sort == "dateup":
+                if x > 0 and ac[x] and ac[x - 1]:
+                    row["tr"] = ac[x] / ac[x - 1] - 1
+                row["d1"] = sd[x - 1] if x > 0 else epoch
+
+    return render_template(
+        "dbpub/hpw.html", i=i, name=name, p=p, f=f, wd=wd, sort=sort, rows=rows,
+        epoch26=date(2007, 6, 25),
+    )
+
+
+def _resolve_stock(i, sc):
+    """Resolve (issueID, stock name, issuer personID) from i or stock code sc."""
+    if sc > 0:
+        r = execute_query(
+            """SELECT iss.id1 FROM enigma.stocklistings sl
+               JOIN enigma.issue iss ON sl.issueid = iss.id1
+               WHERE sl.stockcode = %s
+               ORDER BY (sl.delistdate IS NULL) DESC, sl.delistdate DESC NULLS LAST LIMIT 1""",
+            (sc,),
+        )
+        if r:
+            i = r[0]["id1"]
+    if i > 0:
+        nm = execute_query(
+            """SELECT o.name1, o.personid FROM enigma.issue iss
+               JOIN enigma.organisations o ON iss.issuer = o.personid WHERE iss.id1 = %s""",
+            (i,),
+        )
+        if nm:
+            return i, nm[0]["name1"], nm[0]["personid"]
+        return 0, "No such stock", 0
+    return i, "", 0
+
+
+@bp.route("/hpup.asp")
+def hpup():
+    """Parallel-trading counter quotes - port of hpup.asp."""
+    i, name, p = _resolve_stock(get_int("i", 0), get_int("sc", 0))
+    sort = get_str("sort", "datedn")
+    order_map = {
+        "turndn": "turn DESC, atdate", "turnup": "turn, atdate",
+        "dateup": "atdate", "datedn": "atdate DESC",
+    }
+    if sort not in order_map:
+        sort = "datedn"
+    rows = []
+    if i > 0:
+        rows = execute_query(
+            f"""
+            SELECT atdate, susp, closing, bid, ask, high, low, vol, turn,
+                   CASE WHEN vol = 0 THEN 0 ELSE turn / vol END AS vwap
+            FROM ccass.pquotes WHERE issueid = %s ORDER BY {order_map[sort]}
+            """,
+            (i,),
+        )
+    return render_template("dbpub/hpup.html", i=i, name=name, p=p, sort=sort, rows=rows)
+
+
 @bp.route("/pricesCSV.asp")
 def pricescsv():
     """

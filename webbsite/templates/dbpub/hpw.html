@@ -1,0 +1,87 @@
+{% extends "base_database.html" %}
+
+{% block title %}Prices and Webb-site Total Returns: {{ name }}{% endblock %}
+{% block description %}Historic {{ {'w':'weekly','m':'monthly','y':'yearly'}[f] }} prices, volumes and Webb-site Total Returns for {{ name }}.{% endblock %}
+
+{% block content %}
+{% if i == 0 %}
+<h2>Historic prices</h2>
+<p><b>{{ name }}</b></p>
+{% else %}
+<h2>{{ name }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/orgdata.asp?p={{ p }}">Key data</a></li>
+    <li{% if f == 'w' %} class="livebutton"{% endif %}><a href="/dbpub/hpw.asp?i={{ i }}&f=w&sort={{ sort }}">Weekly</a></li>
+    <li{% if f == 'm' %} class="livebutton"{% endif %}><a href="/dbpub/hpw.asp?i={{ i }}&f=m&sort={{ sort }}">Monthly</a></li>
+    <li{% if f == 'y' %} class="livebutton"{% endif %}><a href="/dbpub/hpw.asp?i={{ i }}&f=y&sort={{ sort }}">Yearly</a></li>
+</ul>
+<div class="clear"></div>
+{% endif %}
+
+<form method="get" action="/dbpub/hpw.asp">
+    <input type="hidden" name="i" value="{{ i }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="hidden" name="f" value="{{ f }}">
+    <div class="inputs">Stock code: <input type="text" name="sc" size="5" value=""></div>
+    {% if f == 'w' %}
+    <div class="inputs">Weekly on
+        <select name="wd">
+            {% for d, lbl in [(2,'Monday'),(3,'Tuesday'),(4,'Wednesday'),(5,'Thursday'),(6,'Friday')] %}
+            <option value="{{ d }}"{% if d == wd %} selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="inputs"><input type="submit" value="Go"></div>
+    <div class="clear"></div>
+</form>
+
+{% if i > 0 %}
+<h3>Historic prices</h3>
+{% if not rows %}
+<p><b>None found.</b></p>
+{% else %}
+<p>S is the number of days suspended in the period; D is trading days in the period. Adj are adjusted
+prices/volume used in <em>Webb-site Total Returns</em>. VWAP is Volume-Weighted Average Price. When
+sorted by date, period total returns are shown.</p>
+<p><a href="/dbpub/pricesCSV.asp?i={{ i }}&f={{ f }}&wd={{ wd }}">Download CSV</a> (beta)</p>
+<table class="numtable yscroll">
+    <tr>
+        <th><a href="?i={{ i }}&f={{ f }}&sort=datedn">Trade date</a> | <a href="?i={{ i }}&f={{ f }}&sort=dateup">▲</a></th>
+        <th>S</th><th>D</th>
+        <th class="colHide1">Close</th><th class="colHide1">Bid</th><th class="colHide1">Ask</th>
+        <th><a href="?i={{ i }}&f={{ f }}&sort=turndn">Turnover $</a> | <a href="?i={{ i }}&f={{ f }}&sort=turnup">▲</a></th>
+        <th><a href="?i={{ i }}&f={{ f }}&sort=acdn">Adj<br>Close</a> | <a href="?i={{ i }}&f={{ f }}&sort=acup">▲</a></th>
+        <th class="colHide1">Adj<br>Bid</th><th class="colHide1">Adj<br>Ask</th>
+        <th class="colHide3">Adj<br>Low</th><th class="colHide3">Adj<br>High</th>
+        <th class="colHide3"><a href="?i={{ i }}&f={{ f }}&sort=voldn">Adj<br>Volume</a> | <a href="?i={{ i }}&f={{ f }}&sort=volup">▲</a></th>
+        <th class="colHide3"><a href="?i={{ i }}&f={{ f }}&sort=vwdn">Adj<br>VWAP</a> | <a href="?i={{ i }}&f={{ f }}&sort=vwup">▲</a></th>
+        <th>Total<br>Return</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+        <td>
+        {% if r.d1 and r.atdate and r.atdate >= epoch26 %}
+            <a href="/ccass/chldchg.asp?d={{ r.settledate|ms_date }}&d1={{ r.d1|ms_date }}&i={{ i }}">{{ r.atdate|ms_date }}</a>
+        {% else %}{{ r.atdate|ms_date }}{% endif %}
+        </td>
+        <td>{{ r.susp }}</td>
+        <td>{{ r.days }}</td>
+        <td class="colHide1">{{ r.closing|sig }}</td>
+        <td class="colHide1">{{ r.bid|sig }}</td>
+        <td class="colHide1">{{ r.ask|sig }}</td>
+        <td>{{ "{:,.0f}".format(r.turn) if r.turn is not none else '' }}</td>
+        <td>{{ r.adjclose|sig }}</td>
+        <td class="colHide1">{{ r.adjbid|sig }}</td>
+        <td class="colHide1">{{ r.adjask|sig }}</td>
+        <td class="colHide3">{{ r.adjlow|sig }}</td>
+        <td class="colHide3">{{ r.adjhigh|sig }}</td>
+        <td class="colHide3">{{ "{:,.0f}".format(r.adjvol) if r.adjvol is not none else '' }}</td>
+        <td class="colHide3">{{ '-' if not r.adjvol else r.adjvwap|sig2 }}</td>
+        <td>{{ "{:.1%}".format(r.tr) if r.tr is not none else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endif %}
+{% endblock %}

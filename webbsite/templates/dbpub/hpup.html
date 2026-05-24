@@ -1,0 +1,43 @@
+{% extends "base_database.html" %}
+
+{% block title %}Parallel trading: {{ name }}{% endblock %}
+{% block description %}Parallel-trading counter prices and volumes for {{ name }}.{% endblock %}
+
+{% block content %}
+{% if i == 0 %}
+<p><b>{{ name }}</b></p>
+{% else %}
+<h2>{{ name }}</h2>
+<ul class="navlist"><li><a href="/dbpub/orgdata.asp?p={{ p }}">Key data</a></li></ul>
+<div class="clear"></div>
+<p>Note: these figures are from the counter used for &quot;parallel trading&quot; of shares
+represented by old certificates, in parallel with trading on the main counter after a split,
+consolidation or change of board-lot size. S=1 if suspended.</p>
+{% if not rows %}
+<p><b>None found.</b></p>
+{% else %}
+<table class="numtable yscroll">
+    <tr>
+        <th><a href="?i={{ i }}&sort=datedn">Trade date</a> | <a href="?i={{ i }}&sort=dateup">▲</a></th>
+        <th>S</th><th>Close</th><th>Bid</th><th>Ask</th><th>Low</th><th>High</th><th>Volume</th>
+        <th><a href="?i={{ i }}&sort=turndn">Turnover $</a> | <a href="?i={{ i }}&sort=turnup">▲</a></th>
+        <th>VWAP</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+        <td style="text-align:right">{{ r.atdate|ms_date }}</td>
+        <td>{{ 1 if r.susp else 0 }}</td>
+        <td>{{ r.closing|sig }}</td>
+        <td>{{ r.bid|sig }}</td>
+        <td>{{ r.ask|sig }}</td>
+        <td>{{ r.low|sig }}</td>
+        <td>{{ r.high|sig }}</td>
+        <td>{{ "{:,.0f}".format(r.vol) if r.vol is not none else '' }}</td>
+        <td>{{ "{:,.0f}".format(r.turn) if r.turn is not none else '' }}</td>
+        <td>{{ '-' if not r.vwap else r.vwap|sig2 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endif %}
+{% endblock %}
