@@ -8,7 +8,7 @@ import calendar
 import io
 import re
 from sqlalchemy import text
-from webbsite.db import execute_query, get_db
+from webbsite.db import execute_query, execute_scalar, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
 bp = Blueprint("dbpub_statistics", __name__)
