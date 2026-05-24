@@ -61,10 +61,15 @@ def close_db(e=None):
             logger.debug("Database connection returned to pool")
 
 
-def execute_query(sql, params=None):
+def execute_query(sql, params=None, timeout_s=None):
     """
     Execute SQL query and return results as list of dicts
     Similar to ASP: rs.Open sql, con
+
+    timeout_s: optional per-query statement_timeout override (seconds). Used by a
+        few deterministic, edge-cached analytical reports whose cold run can
+        exceed the 8s default (e.g. leagueDirsHK). Reset to 8s afterwards so the
+        pooled connection never leaks a long timeout to the next request.
 
     Raises:
         Exception: Any database error (logged with full details)
@@ -76,6 +81,8 @@ def execute_query(sql, params=None):
         logger.debug(f"SQL: {sql}")
 
     try:
+        if timeout_s is not None:
+            db.execute(text(f"SET statement_timeout = '{int(timeout_s)}s'"))
         # Convert psycopg2-style positional params to SQLAlchemy named params
         if params is None:
             params = {}
@@ -130,6 +137,13 @@ def execute_query(sql, params=None):
             raise
         # In production, raise a more generic error
         raise Exception(f"Database query failed: {str(e)}")
+    finally:
+        # Restore the default timeout on this pooled connection.
+        if timeout_s is not None:
+            try:
+                db.execute(text("SET statement_timeout = '8s'"))
+            except Exception:
+                pass
 
 
 def execute_scalar(sql, params=None):

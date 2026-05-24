@@ -4039,7 +4039,11 @@ def league_dirs_hk():
     """
 
     all_params = params + [min_pos] + cagr_params
-    results = execute_query(sql, tuple(all_params))
+    # Deterministic over the frozen data and edge-cached, but the cold run does
+    # ~23k enigma.cagrel() total-return calls over the large quotes/events tables
+    # and can exceed the 8s default (≈5s warm). Allow more headroom (< gunicorn's
+    # 30s) so a cold first hit completes; thereafter Cloudflare serves it.
+    results = execute_query(sql, tuple(all_params), timeout_s=25)
 
     return render_template(
         "dbpub/league_dirs_hk.html",
@@ -5066,7 +5070,12 @@ def indexhk():
 
     Tables used: enigma.listedcoshk, listedcoshkever, enigma.organisations, personstories
     """
-    p = request.args.get("p", "")
+    # Single index letter ("A"-"Z") or "0" for numeric starts. Restrict to one
+    # alphanumeric char: it is interpolated into a LIKE below, so this also
+    # closes the SQL-injection vector.
+    p = request.args.get("p", "")[:1]
+    if p and not p.isalnum():
+        p = ""
 
     title = f"Reports on companies: names starting with: {p}"
     listed_companies = []
@@ -5081,13 +5090,15 @@ def indexhk():
             delisted_companies=delisted_companies,
         )
 
-    # Build WHERE clause based on parameter
+    # Build WHERE clause based on parameter. Qualify name1 with the organisations
+    # alias: the listedcoshk/listedcoshkever views also expose name1, so an
+    # unqualified reference is ambiguous.
     if p == "0":
         # Numeric starts
-        where_clause = "LEFT(name1,1) >= '0' AND LEFT(name1,1) <= '9'"
+        where_clause = "LEFT(o.name1,1) >= '0' AND LEFT(o.name1,1) <= '9'"
     else:
         # Letter starts
-        where_clause = f"name1 LIKE '{p}%'"
+        where_clause = f"o.name1 LIKE '{p}%'"
 
     try:
         # HK-listed companies with articles
