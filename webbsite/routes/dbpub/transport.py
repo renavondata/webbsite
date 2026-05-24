@@ -1724,3 +1724,102 @@ def hkpax_google():
         title=title, t=t, p=p, pxtypes=pxtypes, ports=ports,
         arrived=arrived, departed=departed, net=net,
     )
+
+
+@bp.route("/hkflighthist.asp")
+def hkflighthist():
+    """HK Airport movement history for a flight number - port of HKflighthist.asp."""
+    sort = get_str("sort", "scdn")
+    fn = get_str("fn", "")[:7]
+    al = get_str("al", "")[:3]
+
+    als = execute_query(
+        "SELECT DISTINCT airline, enname FROM enigma.flights "
+        "JOIN enigma.airlines ON airline = icao ORDER BY enname"
+    )
+
+    icao, ftype = "", ""
+    if fn == "" and al == "":
+        al = "CPA"
+    if fn:
+        r = execute_query(
+            "SELECT airline, cargo FROM enigma.flights WHERE flightno = %s LIMIT 1", (fn,)
+        )
+        if not r:
+            fn = ""
+            if al == "":
+                al = "CPA"
+        else:
+            icao = r[0]["airline"]
+            ftype = "cargo" if r[0]["cargo"] else "passenger"
+    if al and al != icao:
+        r = execute_query(
+            "SELECT DISTINCT flightno, cargo FROM enigma.flights WHERE airline = %s "
+            "ORDER BY flightno LIMIT 1", (al,)
+        )
+        if not r:
+            icao = al = "CPA"
+            r = execute_query(
+                "SELECT DISTINCT flightno, cargo FROM enigma.flights WHERE airline = %s "
+                "ORDER BY flightno LIMIT 1", (al,)
+            )
+        else:
+            icao = al
+        if r:
+            fn = r[0]["flightno"]
+            ftype = "cargo" if r[0]["cargo"] else "passenger"
+    pc = "c" if ftype == "cargo" else "p"
+
+    fns = execute_query(
+        "SELECT DISTINCT flightno FROM enigma.flights WHERE airline = %s ORDER BY flightno",
+        (icao,),
+    )
+    aln = execute_query("SELECT enname FROM enigma.airlines WHERE icao = %s", (icao,))
+    al_name = aln[0]["enname"] if aln else icao
+
+    order_map = {
+        "acdn": "f.actual DESC, f.flightno, d.seq",
+        "acup": "f.actual, f.flightno, d.seq",
+        "lateup": "late_iv, f.flightno, d.seq",
+        "latedn": "late_iv DESC, f.flightno, d.seq",
+        "scup": "f.sched, d.seq",
+        "scdn": "f.sched DESC, d.seq",
+    }
+    if sort not in order_map:
+        sort = "scdn"
+    title = f"HK Airport movements for flight {fn}"
+
+    rows = []
+    if fn:
+        rows = execute_query(
+            f"""
+            SELECT f.id,
+                   to_char(f.sched, 'YY-MM-DD HH24:MI') AS sched,
+                   CASE WHEN f.cancelled THEN 'Cancelled'
+                        ELSE to_char(f.actual, 'MM-DD HH24:MI') END AS actual,
+                   (f.actual - f.sched) AS late_iv,
+                   d.seq, d.iata, ap.enname AS airport,
+                   CASE WHEN f.arrival THEN 'A' ELSE 'D' END AS ad
+            FROM enigma.flights f
+            JOIN enigma.destor d ON f.id = d.flightid
+            LEFT JOIN enigma.airports ap ON d.iata = ap.iata
+            WHERE f.flightno = %s
+            ORDER BY {order_map[sort]}
+            """,
+            (fn,),
+        )
+        for r in rows:
+            iv = r["late_iv"]
+            if iv is None:
+                r["late"] = ""
+            else:
+                secs = int(iv.total_seconds())
+                sign = "-" if secs < 0 else ""
+                secs = abs(secs)
+                r["late"] = f"{sign}{secs // 3600:02d}:{(secs % 3600) // 60:02d}"
+
+    return render_template(
+        "dbpub/hkflighthist.html",
+        title=title, fn=fn, icao=icao, al_name=al_name, ftype=ftype, pc=pc,
+        sort=sort, als=als, fns=fns, rows=rows,
+    )

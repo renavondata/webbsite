@@ -1,0 +1,74 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}History of scheduled vs actual times for a Hong Kong airport flight number.{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/HKflights.asp?pc={{ pc }}">Daily flights</a></li>
+    <li><a href="/dbpub/HKflightscan.asp">Cancellations</a></li>
+</ul>
+<div class="clear"></div>
+
+<table class="txtable">
+    <tr><td>Airline ICAO code</td><td>{{ icao }}</td></tr>
+    <tr><td>Airline</td><td>{{ al_name }}</td></tr>
+    <tr><td>Flight type</td><td>{{ ftype }}</td></tr>
+</table>
+<div class="clear"></div>
+
+<p>Warning: these data are not live. Check the
+<a href="https://www.hongkongairport.com/en/flights/arrivals/passenger.page" target="_blank" rel="noopener">boards</a>
+at HK Airport for today's flights, or with your airline. Our history starts 6-Sep-2021. Data extend 14
+days forward, but the airport doesn't normally load them that early. A=arrival, D=departure.</p>
+
+<form method="get" action="/dbpub/hkflighthist.asp">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">Pick an airline:
+        <select name="al">
+            {% for a in als %}<option value="{{ a.airline }}"{% if a.airline == icao %} selected{% endif %}>{{ a.enname }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="inputs">Pick a flight:
+        <select name="fn">
+            {% for f in fns %}<option value="{{ f.flightno }}"{% if f.flightno == fn %} selected{% endif %}>{{ f.flightno }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="inputs"><input type="submit" value="Go"></div>
+    <div class="clear"></div>
+</form>
+
+{% if not rows %}
+<p><b>None found.</b></p>
+{% else %}
+<table class="txtable">
+    <tr>
+        <th>Row</th><th>A/<br>D</th>
+        <th><a href="?fn={{ fn }}&sort=scdn">Sched<br>YY-MM-DD</a> | <a href="?fn={{ fn }}&sort=scup">▲</a></th>
+        <th><a href="?fn={{ fn }}&sort=acdn">Actual<br>MM-DD</a> | <a href="?fn={{ fn }}&sort=acup">▲</a></th>
+        <th class="right"><a href="?fn={{ fn }}&sort=latedn">Early<br>/late</a> | <a href="?fn={{ fn }}&sort=lateup">▲</a></th>
+        <th>IATA</th>
+        <th class="colHide3">Airport</th>
+    </tr>
+    {% set ns = namespace(last=None, count=0) %}
+    {% for r in rows %}
+    <tr>
+        {% if ns.last != r.sched %}
+            {% set ns.count = ns.count + 1 %}
+            {% set ns.last = r.sched %}
+            <td>{{ ns.count }}</td>
+            <td>{{ r.ad }}</td>
+            <td>{{ r.sched }}</td>
+            <td>{{ r.actual }}</td>
+            <td class="right">{{ r.late }}</td>
+        {% else %}
+            <td colspan="5"></td>
+        {% endif %}
+        <td>{{ r.iata }}</td>
+        <td class="colHide3">{{ r.airport }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
