@@ -8913,31 +8913,7 @@ _HPW_SORT = {
 def hpw():
     """Historic prices (weekly/monthly/yearly) with Webb-site Total Returns -
     port of hpw.asp. Aggregation inlined via _period_quote_query."""
-    i = get_int("i", 0)
-    sc = get_int("sc", 0)
-    if sc > 0:
-        r = execute_query(
-            """SELECT iss.id1 FROM enigma.stocklistings sl
-               JOIN enigma.issue iss ON sl.issueid = iss.id1
-               WHERE sl.stockcode = %s
-               ORDER BY (sl.delistdate IS NULL) DESC, sl.delistdate DESC NULLS LAST LIMIT 1""",
-            (sc,),
-        )
-        if r:
-            i = r[0]["id1"]
-
-    name, p = "", 0
-    if i > 0:
-        nm = execute_query(
-            """SELECT o.name1, o.personid FROM enigma.issue iss
-               JOIN enigma.organisations o ON iss.issuer = o.personid
-               WHERE iss.id1 = %s""",
-            (i,),
-        )
-        if nm:
-            name, p = nm[0]["name1"], nm[0]["personid"]
-        else:
-            name, i = "No such stock", 0
+    i, name, p = _resolve_stock(get_int("i", 0), get_int("sc", 0))
 
     f = get_str("f", "w")
     if f not in ("w", "m", "y"):
@@ -8978,14 +8954,15 @@ def hpw():
 
 
 def _resolve_stock(i, sc):
-    """Resolve (issueID, stock name, issuer personID) from i or stock code sc."""
+    """Resolve (issueID, stock name, issuer personID) from i or stock code sc.
+    stockcode is a zero-padded varchar ('0005'), so normalise with LPAD."""
     if sc > 0:
         r = execute_query(
             """SELECT iss.id1 FROM enigma.stocklistings sl
                JOIN enigma.issue iss ON sl.issueid = iss.id1
-               WHERE sl.stockcode = %s
+               WHERE LPAD(sl.stockcode, 8, '0') = LPAD(%s, 8, '0')
                ORDER BY (sl.delistdate IS NULL) DESC, sl.delistdate DESC NULLS LAST LIMIT 1""",
-            (sc,),
+            (str(sc),),
         )
         if r:
             i = r[0]["id1"]
