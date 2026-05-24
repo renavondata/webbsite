@@ -6848,7 +6848,7 @@ def lirstaff():
         if staff and staff[-1]["staffid"] == row["staffid"]:
             staff[-1]["teams"].append({"teamid": row["teamid"], "teamno": row["teamno"]})
         else:
-            tel = row["tel"] or ""
+            tel = "" if row["tel"] is None else str(row["tel"])
             staff.append({
                 "staffid": row["staffid"], "name": row["name"], "title": row["title"],
                 "tel": (tel[:4] + "-" + tel[4:]) if len(tel) == 8 else tel,
