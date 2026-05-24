@@ -9002,6 +9002,93 @@ def hpup():
     return render_template("dbpub/hpup.html", i=i, name=name, p=p, sort=sort, rows=rows)
 
 
+@bp.route("/offsum.asp")
+def offsum():
+    """Main-board officer summary for an org at a snapshot date - port of offsum.asp.
+
+    The MySQL offsum() proc (not migrated) merges each director's consecutive
+    main-board tenures, then reports appt/res (accuracy-adjusted via
+    enigma.msdateacc) and service years (enigma.service) as of date d. Replicated
+    here with window functions (same tenure-merge as leagueDirsHK).
+    """
+    p = get_int("p", 0)
+    sort = get_str("sort", "")
+    hide = get_str("hide", "N")
+    if hide not in ("Y", "N"):
+        hide = "N"
+    u = get_bool("u")
+    d = get_str("d", "") or date.today().isoformat()
+    try:
+        date.fromisoformat(d)
+    except (ValueError, TypeError):
+        d = date.today().isoformat()
+
+    nm = execute_query("SELECT name1, COALESCE(orgtype, 0) AS orgtype FROM enigma.organisations WHERE personid = %s", (p,))
+    name = nm[0]["name1"] if nm else ""
+    orgtype = nm[0]["orgtype"] if nm else 0
+    if not sort:
+        sort = "appup" if orgtype == 14 else "namup"
+
+    order_map = {
+        "namup": "name, app_date", "namdn": "name DESC, app_date",
+        "appup": "app_date, name", "appdn": "app_date DESC, name",
+        "resup": "res_date, name", "resdn": "res_date DESC, name",
+        "agedn": "yob, name, app_date", "ageup": "yob DESC, app_date",
+        "serdn": "service DESC, name", "serup": "service, name",
+        "sexup": "sex, name, app_date", "sexdn": "sex DESC, name, app_date",
+    }
+    if sort not in order_map:
+        sort = "namup"
+
+    hide_sql = ""
+    if hide == "Y":
+        hide_sql += " AND (m.res_date IS NULL OR m.res_date > %s OR m.res_acc = 3)"
+    if u:
+        hide_sql += " AND (m.res_acc IS NULL OR m.res_acc <> 3)"
+    sql = f"""
+        WITH ordered AS (
+            SELECT d.id1, d.director, d.apptdate, d.apptacc, d.resdate, d.resacc,
+                   LAG(d.resdate) OVER (PARTITION BY d.director ORDER BY d.apptdate) AS prev_res
+            FROM enigma.directorships d
+            JOIN enigma.positions ps ON d.positionid = ps.positionid
+            WHERE d.company = %s AND ps.rank = 1
+        ),
+        grp AS (
+            SELECT *,
+                   SUM(CASE WHEN apptdate IS NULL OR prev_res IS NULL OR apptdate <> prev_res
+                            THEN 1 ELSE 0 END)
+                   OVER (PARTITION BY director ORDER BY apptdate) AS tg
+            FROM ordered
+        ),
+        m AS (
+            SELECT director,
+                   MIN(apptdate) AS app_date,
+                   (array_agg(apptacc ORDER BY apptdate))[1] AS app_acc,
+                   MAX(resdate) AS res_date,
+                   (array_agg(resacc ORDER BY apptdate DESC))[1] AS res_acc
+            FROM grp GROUP BY director, tg
+        )
+        SELECT (pe.name1 || COALESCE(', ' || pe.name2, '') || COALESCE(' ' || pe.cname, '')) AS name,
+               enigma.msdateacc(m.app_date, m.app_acc) AS app,
+               enigma.msdateacc(m.res_date, m.res_acc) AS res,
+               m.app_date, m.res_date, pe.yob, pe.sex, m.director AS dirid,
+               enigma.service(m.app_date, m.res_date, %s) AS service
+        FROM m JOIN enigma.people pe ON m.director = pe.personid
+        WHERE (m.app_date IS NULL OR m.app_date <= %s){hide_sql}
+        ORDER BY {order_map[sort]}
+    """
+    # %s order in SQL text: company(p), service-date, appt<=date, then hide-date
+    sql_params = [p, d, d]
+    if hide == "Y":
+        sql_params.append(d)
+    rows = execute_query(sql, tuple(sql_params), timeout_s=25)
+    now_year = int(d[:4])
+    return render_template(
+        "dbpub/offsum.html", name=name, p=p, d=d, sort=sort, hide=hide, u=u,
+        rows=rows, now_year=now_year,
+    )
+
+
 @bp.route("/pricesCSV.asp")
 def pricescsv():
     """

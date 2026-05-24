@@ -1,0 +1,63 @@
+{% extends "base_database.html" %}
+
+{% block title %}Main board summary: {{ name }}{% endblock %}
+{% block description %}Main-board directors of {{ name }} at a snapshot date, with appointment, resignation and service years.{% endblock %}
+
+{% block content %}
+<h2>{{ name }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/orgdata.asp?p={{ p }}">Key data</a></li>
+    <li><a href="/dbpub/officers.asp?p={{ p }}">Officers</a></li>
+    <li class="livebutton">Board summary</li>
+</ul>
+{{ write_nav(hide, "Y,N", "Current,History", "/dbpub/offsum.asp?p=" ~ p ~ "&d=" ~ d ~ "&u=" ~ (1 if u else 0) ~ "&sort=" ~ sort ~ "&hide=")|safe }}
+<div class="clear"></div>
+
+<form method="get" action="/dbpub/offsum.asp">
+    <input type="hidden" name="p" value="{{ p }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs">Snapshot date: <input type="date" name="d" value="{{ d }}"></div>
+    <div class="inputs"><input type="checkbox" name="u" value="1"{% if u %} checked{% endif %}> exclude unknown removal dates</div>
+    <div class="inputs"><input type="submit" value="Go"></div>
+    <div class="clear"></div>
+</form>
+
+{% if rows %}
+<h3>Main board summary at {{ d }}</h3>
+<table class="opltable fcr">
+    <tr>
+        <th class="colHide2"></th>
+        <th><a href="?p={{ p }}&d={{ d }}&sort=namup">Name</a> | <a href="?p={{ p }}&d={{ d }}&sort=namdn">▼</a></th>
+        <th><a href="?p={{ p }}&d={{ d }}&sort=sexup">&#x26A5;</a></th>
+        <th class="right"><a href="?p={{ p }}&d={{ d }}&sort=agedn">Age in {{ now_year }}</a> | <a href="?p={{ p }}&d={{ d }}&sort=ageup">▲</a></th>
+        <th class="colHide3"><a href="?p={{ p }}&d={{ d }}&sort=appup">From</a> | <a href="?p={{ p }}&d={{ d }}&sort=appdn">▼</a></th>
+        <th><a href="?p={{ p }}&d={{ d }}&sort=resup">Until</a> | <a href="?p={{ p }}&d={{ d }}&sort=resdn">▼</a></th>
+        <th class="right"><a href="?p={{ p }}&d={{ d }}&sort=serdn">Service years</a> | <a href="?p={{ p }}&d={{ d }}&sort=serup">▲</a></th>
+    </tr>
+    {% set ns = namespace(last=0, cnt=0) %}
+    {% for r in rows %}
+    {% if r.dirid != ns.last %}
+        {% set ns.cnt = ns.cnt + 1 %}
+        <tr class="total">
+            <td class="colHide2">{{ ns.cnt }}</td>
+            <td><a href="/dbpub/positions.asp?p={{ r.dirid }}">{{ r.name }}</a></td>
+            <td>{{ r.sex or '' }}</td>
+            <td class="right">{{ (now_year - r.yob) if r.yob else '' }}</td>
+            <td class="colHide3">{{ r.app or '' }}</td>
+            <td>{{ r.res or '' }}</td>
+            <td class="right">{{ "%.2f"|format(r.service) if r.service is not none else '-' }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td class="colHide2"></td>
+            <td colspan="3"></td>
+            <td class="colHide3">{{ r.app or '' }}</td>
+            <td>{{ r.res or '' }}</td>
+            <td class="right">{{ "%.2f"|format(r.service) if r.service is not none else '-' }}</td>
+        </tr>
+    {% endif %}
+    {% set ns.last = r.dirid %}
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
