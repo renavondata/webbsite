@@ -19,8 +19,8 @@
 			<form class="box4a" method="get" action="https://www.google.com/search">
 				<input type="hidden" name="ie" value="UTF-8">
 				<input type="hidden" name="oe" value="UTF-8">
-				<input type="hidden" name="domains" value="renavon.com">
-				<input type="hidden" name="sitesearch" value="renavon.com">
+				<input type="hidden" name="domains" value="{{ config.SEARCH_DOMAIN }}">
+				<input type="hidden" name="sitesearch" value="{{ config.SEARCH_DOMAIN }}">
 				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Renavon Hong Kong" onclick="value=''">
 				<input type="submit" class="btnFont" name="btnG" value="search">
 			</form>

@@ -46,6 +46,34 @@ sudo -u postgres vacuumdb -d enigma --analyze-only -j4
 systemctl reload webbsite
 ```
 
+## Performance / Postgres tuning
+The tuning in step 4 below is applied via `ALTER SYSTEM` (persisted to
+`postgresql.auto.conf`). **`shared_buffers` only takes effect after a full
+Postgres restart** — a reload is not enough — so confirm the live value rather
+than trusting the config:
+```bash
+sudo -u postgres psql -tAc "SHOW shared_buffers;"          # expect 2GB, not 128MB
+sudo -u postgres psql -tAc "SELECT name, pending_restart FROM pg_settings WHERE pending_restart;"
+# if shared_buffers is still the 128MB default, it never restarted:
+sudo -u postgres psql -tAc "ALTER SYSTEM SET shared_buffers = '2GB';"
+sudo -u postgres psql -tAc "ALTER SYSTEM SET effective_cache_size = '6GB';"
+systemctl restart postgresql && systemctl restart webbsite
+```
+The data is static, so this is a one-time correction. `vmtouch /var/lib/postgresql/17/main`
+shows how much of the DB is resident; the CCASS working set should stay warm.
+
+## Move to a dedicated domain (when decided)
+The app is domain-agnostic: canonical/OG URLs, the XML sitemap, and the Google
+site-search box all derive from `CANONICAL_HOST` (and `SEARCH_DOMAIN`), which
+default to `webbsite.renavon.com`. Moving domains needs **no code change**:
+1. Stand up the new Cloudflare zone; point the host at the origin IP (proxied).
+2. Set `CANONICAL_HOST=<new-host>` (and optionally `SEARCH_DOMAIN`) in
+   `/etc/webbsite/env`; `systemctl restart webbsite`.
+3. Add a **301** from `webbsite.renavon.com` → the new host (Cloudflare rule on
+   the old zone) to preserve link equity.
+4. Purge the Cloudflare cache on both zones; resubmit `https://<new-host>/sitemap.xml`
+   to Google/Bing Search Console.
+
 ## Bootstrap (one-time, performed 2026-05) — summary
 1. `doctl compute droplet create webbsite-web --region sfo3 --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <default-sfo3> --ssh-keys <steel>`.
 2. Add PGDG + Caddy apt repos; `apt install postgresql-17 caddy vmtouch ufw`; install `uv` to `/usr/local/bin`.

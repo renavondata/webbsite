@@ -20,6 +20,26 @@ BLOCKED_BOT_UA_SUBSTRINGS = (
     "meta-externalagent", "perplexitybot", "diffbot", "blexbot",
 )
 
+# Interactive/account features deferred for the read-only archive (see CLAUDE.md).
+# Every path under these prefixes returns 410 Gone rather than a 500.
+DEFERRED_FEATURE_PREFIXES = (
+    "/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor",
+)
+
+# Paths kept out of search indexes. Single source of truth shared by robots.txt
+# and the XML sitemap (the sitemap must never list a Disallowed path). Entries
+# ending in "/" are directory prefixes; the rest are exact paths. Per-day CCASS
+# deep-link history pages are infinite ?d=&i= combinations with zero crawl value;
+# CSV exports are large; the trailing-slash entries are deferred features.
+ROBOTS_DISALLOW = (
+    "/ccass/chldchg.asp", "/ccass/choldings.asp", "/ccass/chistory.asp",
+    "/ccass/chldchght.asp", "/ccass/portchg.asp", "/ccass/cconchist.asp",
+    "/ccass/ctothist.asp", "/ccass/nciphist.asp", "/ccass/brokhist.asp",
+    "/ccass/ipstakes.asp",
+    "/CSV.asp", "/dbpub/CSV.asp", "/dbpub/pricesCSV.asp", "/dbpub/govacCSV.asp",
+    "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/",
+)
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -93,6 +113,7 @@ def create_app(config_class=Config):
         contact,
         dbeditor,
         pages,
+        sitemap,
     )
     from webbsite.routes import dbpub
 
@@ -108,6 +129,9 @@ def create_app(config_class=Config):
 
     # Static content pages
     app.register_blueprint(pages.bp, url_prefix="/pages")
+
+    # XML sitemap (sitemap index + child sitemaps) for crawler discovery
+    app.register_blueprint(sitemap.bp)
 
     # User features
     app.register_blueprint(webbmail.bp, url_prefix="/webbmail")
@@ -131,31 +155,16 @@ def create_app(config_class=Config):
 
     @app.route("/robots.txt")
     def robots_txt():
-        lines = [
-            "User-agent: *",
-            # Per-day CCASS deep-link history pages are infinite combinations
-            # of ?d=&i= and explode bandwidth for zero crawl value
-            "Disallow: /ccass/chldchg.asp",
-            "Disallow: /ccass/choldings.asp",
-            "Disallow: /ccass/chistory.asp",
-            "Disallow: /ccass/chldchght.asp",
-            "Disallow: /ccass/portchg.asp",
-            "Disallow: /ccass/cconchist.asp",
-            "Disallow: /ccass/ctothist.asp",
-            "Disallow: /ccass/nciphist.asp",
-            "Disallow: /ccass/brokhist.asp",
-            "Disallow: /ccass/ipstakes.asp",
-            "Disallow: /CSV.asp",
-            "Disallow: /dbpub/CSV.asp",
-            "Disallow: /dbpub/pricesCSV.asp",
-            "Disallow: /dbpub/govacCSV.asp",
-            "Disallow: /dbeditor/",
-            "Disallow: /webbmail/",
-            "Disallow: /pollman/",
-            "Disallow: /mailman/",
-            "Crawl-delay: 10",
-            "",
-        ]
+        lines = (
+            ["User-agent: *"]
+            + [f"Disallow: {d}" for d in ROBOTS_DISALLOW]
+            + [
+                "Crawl-delay: 10",
+                "",
+                f"Sitemap: https://{app.config['CANONICAL_HOST']}/sitemap.xml",
+                "",
+            ]
+        )
         return Response("\n".join(lines), mimetype="text/plain")
 
     # Block aggressive crawlers at the origin (defense-in-depth; CF WAF is primary)
@@ -164,6 +173,18 @@ def create_app(config_class=Config):
         ua = request.headers.get("User-Agent", "").lower()
         if ua and any(s in ua for s in BLOCKED_BOT_UA_SUBSTRINGS):
             return Response("Forbidden\n", status=403, mimetype="text/plain")
+
+    # Interactive/account features (webbmail, voting, polls, mailing lists, the
+    # editor) depend on auth/write paths that don't apply to a read-only archive;
+    # they were intentionally never implemented. Return a clean 410 Gone instead
+    # of leaking a 500 from a half-wired handler. (These prefixes are also
+    # Disallowed in robots.txt.)
+    @app.before_request
+    def _deferred_features_gone():
+        path = request.path
+        for pre in DEFERRED_FEATURE_PREFIXES:
+            if path == pre or path.startswith(pre + "/"):
+                return render_template("unavailable.html"), 410
 
     # Slow request logging
     @app.before_request

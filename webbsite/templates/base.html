@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Renavon Hong Kong Database{% endblock %}</title>
+<meta name="description" content="{% block description %}35 years of Hong Kong financial-market data — listed companies, directors, shareholders, CCASS holdings and corporate filings. A free, open archive of the late David Webb's Webb-site.com, released under CC-BY 4.0.{% endblock %}">
+{# Self-canonical (full path + query) so distinct pages stay distinct; one host, set via CANONICAL_HOST. #}
+{%- set _qs = request.query_string.decode() %}
+<link rel="canonical" href="https://{{ config.CANONICAL_HOST }}{{ request.path }}{% if _qs %}?{{ _qs }}{% endif %}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Renavon Hong Kong Database">
+<meta property="og:title" content="{% block og_title %}{{ self.title() }}{% endblock %}">
+<meta property="og:description" content="{% block og_description %}{{ self.description() }}{% endblock %}">
+<meta property="og:url" content="https://{{ config.CANONICAL_HOST }}{{ request.path }}{% if _qs %}?{{ _qs }}{% endif %}">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 <script>

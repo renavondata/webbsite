@@ -3750,16 +3750,19 @@ def yearend():
     e = get_str("e", "a")
     sort_param = get_str("sort", "monup")
 
-    # Build title and exchange filter
+    # Build title and exchange filter. The enigma.listedcoshk view exposes only
+    # `personid` and bakes in stockExID IN (1,20,23), so it cannot separate Main
+    # from GEM; query the base tables (stocklistings + issue) instead, mirroring
+    # the verified pattern in incorporations.domicile().
     if e == "g":
-        stockex_filter = "= 20"
+        ex_str = "20"
         title = "GEM"
     elif e == "m":
-        stockex_filter = "= 1"
+        ex_str = "1"
         title = "Main Board"
     else:
         e = "a"
-        stockex_filter = "IN (1, 20)"
+        ex_str = "1, 20"
         title = "Main Board and GEM"
 
     # Build sort
@@ -3781,28 +3784,27 @@ def yearend():
             COUNT(yearends.personid) as cnt
         FROM enigma.months m
         LEFT JOIN (
-            SELECT lc.issuer AS personid, od.yearendmonth
-            FROM enigma.listedcoshk lc
-            JOIN enigma.orgdata od ON lc.issuer = od.personid
-            WHERE lc.stockexid {stockex_filter}
+            SELECT DISTINCT i.issuer AS personid, od.yearendmonth
+            FROM enigma.stocklistings sl
+            JOIN enigma.issue i ON sl.issueid = i.id1
+            JOIN enigma.orgdata od ON i.issuer = od.personid
+            WHERE sl.stockexid IN ({ex_str})
+              AND i.typeid NOT IN (1, 2, 40, 41, 46)
         ) AS yearends ON m.monthid = yearends.yearendmonth
         GROUP BY m.monthid, m.shortname
         ORDER BY {order_by}
     """
 
-    try:
-        results = execute_query(sql)
-        total = execute_query(
-            f"""
-            SELECT COUNT(DISTINCT lc.issuer)
-            FROM enigma.listedcoshk lc
-            WHERE lc.stockexid {stockex_filter}
-        """
-        )[0]["count"]
-    except Exception as ex:
-        current_app.logger.error(f"Error in yearend.asp: {ex}", exc_info=True)
-        results = []
-        total = 1  # Avoid division by zero
+    results = execute_query(sql)
+    total = execute_query(
+        f"""
+        SELECT COUNT(DISTINCT i.issuer) AS total
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        WHERE sl.stockexid IN ({ex_str})
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
+    """
+    )[0]["total"]
 
     return render_template(
         "dbpub/yearend.html",
@@ -3996,7 +3998,7 @@ def league_dirs_hk():
                    ) AS prev_resdate
             FROM enigma.directorships d
             JOIN enigma.positions p ON d.positionid = p.positionid
-            JOIN enigma.listedcoshkever lhk ON d.company = lhk.issuer
+            JOIN enigma.listedcoshkever lhk ON d.company = lhk.personid
             WHERE p.rank = 1
         ),
         tenure_groups AS (
@@ -4037,13 +4039,7 @@ def league_dirs_hk():
     """
 
     all_params = params + [min_pos] + cagr_params
-    try:
-        results = execute_query(sql, tuple(all_params))
-    except Exception as ex:
-        current_app.logger.error(
-            f"Error in leagueDirsHK.asp: {ex}", exc_info=True
-        )
-        results = []
+    results = execute_query(sql, tuple(all_params))
 
     return render_template(
         "dbpub/league_dirs_hk.html",
@@ -4577,16 +4573,12 @@ def reportspeed():
             ) as code
         FROM enigma.organisations o
         JOIN enigma.orgdata od ON o.personid = od.personid
-        JOIN enigma.listedcoshk lc ON o.personid = lc.issuer
+        JOIN enigma.listedcoshk lc ON o.personid = lc.personid
         WHERE od.yearendmonth IS NOT NULL
         ORDER BY {order_by}
     """
 
-    try:
-        results = execute_query(sql)
-    except Exception as ex:
-        current_app.logger.error(f"Error in reportspeed.asp: {ex}", exc_info=True)
-        results = []
+    results = execute_query(sql)
 
     return render_template(
         "dbpub/reportspeed.html", companies=results, y=y, sort=sort_param
@@ -5100,10 +5092,10 @@ def indexhk():
     try:
         # HK-listed companies with articles
         listed_query = f"""
-            SELECT DISTINCT lc.issuer, o.name1 AS name
+            SELECT DISTINCT lc.personid AS issuer, o.name1 AS name
             FROM enigma.listedcoshk lc
-            JOIN enigma.organisations o ON lc.issuer = o.personid
-            JOIN enigma.personstories ps ON lc.issuer = ps.personid
+            JOIN enigma.organisations o ON lc.personid = o.personid
+            JOIN enigma.personstories ps ON lc.personid = ps.personid
             WHERE {where_clause}
             ORDER BY name
         """
@@ -5111,18 +5103,20 @@ def indexhk():
 
         # HK-delisted companies (no personstories join - shows all, not just with articles)
         delisted_query = f"""
-            SELECT DISTINCT lce.issuer, o.name1 AS name
+            SELECT DISTINCT lce.personid AS issuer, o.name1 AS name
             FROM enigma.listedcoshkever lce
-            JOIN enigma.organisations o ON lce.issuer = o.personid
-            WHERE lce.issuer NOT IN (SELECT issuer FROM enigma.listedcoshk)
+            JOIN enigma.organisations o ON lce.personid = o.personid
+            WHERE lce.personid NOT IN (SELECT personid FROM enigma.listedcoshk)
               AND {where_clause}
             ORDER BY name
         """
         delisted_companies = execute_query(delisted_query)
 
     except Exception as e:
-        current_app.logger.error(f"Error in indexhk for p={p}: {e}")
-        abort(500)
+        # Surface DB errors loudly (global 500/timeout handlers render the page)
+        # rather than masking them as an empty result set.
+        current_app.logger.error(f"Error in indexhk for p={p}: {e}", exc_info=True)
+        raise
 
     return render_template(
         "dbpub/indexhk.html",

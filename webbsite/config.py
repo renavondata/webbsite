@@ -25,6 +25,13 @@ class Config:
     # Flask
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
 
+    # Public-facing host. Used for canonical/OG URLs, the sitemap, and the Google
+    # site-search box. Domain-agnostic by default; to move to a dedicated domain,
+    # set CANONICAL_HOST (and optionally SEARCH_DOMAIN) in the environment and add
+    # a 301 from the old host — no code change needed.
+    CANONICAL_HOST = os.environ.get("CANONICAL_HOST", "webbsite.renavon.com")
+    SEARCH_DOMAIN = os.environ.get("SEARCH_DOMAIN", CANONICAL_HOST)
+
     # App settings
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
     TEMPLATES_AUTO_RELOAD = True
