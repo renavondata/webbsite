@@ -1674,3 +1674,53 @@ def vefuelhist():
         op_name=op_name,
         maxd=maxd
     )
+
+
+@bp.route("/hkpaxGoogle.asp")
+def hkpax_google():
+    """HK airport passenger traffic chart - port of hkpaxGoogle.asp (Google
+    Charts reimplemented with Highcharts)."""
+    from datetime import datetime, timezone
+
+    t = get_int("t", 0)  # passenger type (0 = all)
+    p = get_int("p", 0)  # port (0 = all)
+
+    pxtypes = [{"id": 0, "name": "All passengers"}] + execute_query(
+        "SELECT id, name FROM enigma.hkpxtypes ORDER BY id"
+    )
+    ports = [{"id": 0, "name": "All ports"}] + execute_query(
+        "SELECT id, name FROM enigma.hkports ORDER BY name"
+    )
+    px_name = next((r["name"] for r in pxtypes if r["id"] == t), "All passengers")
+    port_name = next((r["name"] for r in ports if r["id"] == p), "All ports")
+    title = f"Passenger traffic: {px_name}, {port_name}"
+
+    where, params = "", []
+    if t > 0:
+        where += " AND pxtype = %s"
+        params.append(t)
+    if p > 0:
+        where += " AND port = %s"
+        params.append(p)
+    rows = execute_query(
+        f"""
+        SELECT d, SUM(arrivals) AS arrive, SUM(departures) AS depart
+        FROM enigma.hkpx WHERE 1=1 {where} GROUP BY d ORDER BY d
+        """,
+        tuple(params),
+    )
+
+    arrived, departed, net = [], [], []
+    for r in rows:
+        d = r["d"]
+        ts = int(datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() * 1000)
+        a, dep = int(r["arrive"] or 0), int(r["depart"] or 0)
+        arrived.append([ts, a])
+        departed.append([ts, -dep])
+        net.append([ts, a - dep])
+
+    return render_template(
+        "dbpub/hkpaxgoogle.html",
+        title=title, t=t, p=p, pxtypes=pxtypes, ports=ports,
+        arrived=arrived, departed=departed, net=net,
+    )

@@ -10,8 +10,9 @@ from webbsite.asp_helpers import get_int
 bp = Blueprint("prices", __name__)
 
 
+@bp.route("/prices.asp")
 def prices():
-    """Display stock price chart - port of prices.asp"""
+    """Display economic-data chart - port of prices.asp"""
     # Get data item ID
     i = get_int("i", 1)
 

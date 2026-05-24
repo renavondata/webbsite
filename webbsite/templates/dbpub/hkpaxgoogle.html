@@ -1,0 +1,52 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}Hong Kong airport/control-point passenger arrivals and departures over time.{% endblock %}
+
+{% block extra_head %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form method="get" action="/dbpub/hkpaxGoogle.asp">
+    Passengers:
+    <select name="t">
+        {% for x in pxtypes %}<option value="{{ x.id }}"{% if x.id == t %} selected{% endif %}>{{ x.name }}</option>{% endfor %}
+    </select>
+    Control point:
+    <select name="p">
+        {% for x in ports %}<option value="{{ x.id }}"{% if x.id == p %} selected{% endif %}>{{ x.name }}</option>{% endfor %}
+    </select>
+    <input type="submit" value="Go">
+</form>
+
+<div id="chart1" style="height:420px;margin-top:12px"></div>
+<div id="chart2" style="height:320px;margin-top:12px"></div>
+
+<script>
+Highcharts.chart('chart1', {
+    chart: {type: 'column'},
+    title: {text: {{ title|tojson }}},
+    xAxis: {type: 'datetime'},
+    yAxis: {title: {text: 'Passengers'}},
+    plotOptions: {column: {stacking: 'normal'}},
+    series: [
+        {name: 'Arrived', data: {{ arrived|tojson }}},
+        {name: 'Departed', data: {{ departed|tojson }}}
+    ],
+    credits: {enabled: false}
+});
+Highcharts.chart('chart2', {
+    chart: {type: 'column'},
+    title: {text: {{ (title ~ ' — net in/(out)')|tojson }}},
+    xAxis: {type: 'datetime'},
+    yAxis: {title: {text: 'Net passengers'}},
+    legend: {enabled: false},
+    series: [{name: 'Net change', data: {{ net|tojson }}}],
+    credits: {enabled: false}
+});
+</script>
+{% endblock %}
