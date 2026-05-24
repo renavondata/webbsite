@@ -9089,6 +9089,85 @@ def offsum():
     )
 
 
+@bp.route("/offpay.asp")
+def offpay():
+    """Officer pay across firms/years, optionally currency-converted - port of offpay.asp."""
+    p = get_int("p", 0)
+    c = get_int("c", 0)  # display currency id
+    o = get_int("o", 2)  # 1 = original currency, 2 = convert to c
+    sort = get_str("sort", "yrdn")
+    if sort not in ("nam", "yrdn"):
+        sort = "yrdn"
+
+    currs = execute_query(
+        """SELECT DISTINCT p.curr1 AS id, c.currency FROM enigma.currpair p
+           JOIN enigma.currencies c ON p.curr1 = c.id
+           UNION SELECT 18, 'MOP' UNION SELECT 0, 'HKD' ORDER BY currency"""
+    )
+    nm = execute_query(
+        "SELECT (name1 || COALESCE(', ' || name2, '') || COALESCE(' ' || cname, '')) AS name "
+        "FROM enigma.people WHERE personid = %s", (p,)
+    )
+    name = nm[0]["name"] if nm else ""
+
+    ob = ("name, currency, p.d DESC" if sort == "nam"
+          else "EXTRACT(YEAR FROM p.d) DESC, currency, p.d DESC, name")
+
+    posshort_sub = f"""
+        (SELECT d2.posshort FROM enigma.directorships dd
+         JOIN enigma.positions d2 ON dd.positionid = d2.positionid
+         WHERE dd.director = {p} AND dd.company = p.orgid AND d2.rank = p.prank
+           AND (dd.apptdate IS NULL OR dd.apptdate <= p.d)
+         ORDER BY dd.apptdate DESC LIMIT 1) AS posshort"""
+
+    if o == 1:
+        sql = f"""
+            SELECT p.orgid, o.name1 AS name, {posshort_sub}, p.prank, p.d, p.currid, c.currency,
+                   p.fees, p.salary, p.bonus, p.retire, p.share, p.total
+            FROM enigma.pay p
+            JOIN enigma.organisations o ON p.orgid = o.personid
+            JOIN enigma.currencies c ON p.currid = c.id
+            JOIN enigma.documents doc ON p.orgid = doc.orgid AND p.d = doc.recorddate
+            WHERE doc.pay AND p.pplid = {p}
+            ORDER BY {ob}
+        """
+    else:
+        sql = f"""
+            SELECT p.orgid, o.name1 AS name, {posshort_sub}, p.prank, p.d, {c} AS currid, c.currency,
+                   f.f * p.fees AS fees, f.f * p.salary AS salary, f.f * p.bonus AS bonus,
+                   f.f * p.retire AS retire, f.f * p.share AS share, f.f * p.total AS total
+            FROM enigma.pay p
+            JOIN enigma.organisations o ON p.orgid = o.personid
+            JOIN enigma.currencies c ON {c} = c.id
+            JOIN enigma.documents doc ON p.orgid = doc.orgid AND p.d = doc.recorddate AND doc.doctypeid = 0
+            JOIN enigma.payfx f ON p.d = f.d AND p.currid = f.repcurr AND f.dispcurr = {c}
+            WHERE doc.pay AND p.pplid = {p}
+            ORDER BY {ob}
+        """
+    rows = execute_query(sql) if p > 0 else []
+
+    # Group by (year-or-name, currency) with running subtotals.
+    groups = []
+    cur = None
+    cols = ["fees", "salary", "bonus", "retire", "share", "total"]
+    for r in rows:
+        gval = r["d"].year if sort == "yrdn" else r["name"]
+        key = (gval, r["currency"])
+        if cur is None or cur["key"] != key:
+            cur = {"key": key, "val": gval, "curr": r["currency"], "rows": [],
+                   "tot": {k: 0 for k in cols}}
+            groups.append(cur)
+        cur["rows"].append(r)
+        for k in cols:
+            if r[k] is not None:
+                cur["tot"][k] += int(r[k])
+
+    return render_template(
+        "dbpub/offpay.html", name=name, p=p, c=c, o=o, sort=sort,
+        currs=currs, groups=groups,
+    )
+
+
 @bp.route("/pricesCSV.asp")
 def pricescsv():
     """

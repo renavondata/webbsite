@@ -1,0 +1,76 @@
+{% extends "base_database.html" %}
+
+{% block title %}Officer pay: {{ name }}{% endblock %}
+{% block description %}Director/officer remuneration for {{ name }} across companies and years, with optional currency conversion.{% endblock %}
+
+{% block content %}
+{% if p > 0 %}
+<h2>{{ name }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/natperson.asp?p={{ p }}">Profile</a></li>
+    <li><a href="/dbpub/positions.asp?p={{ p }}">Positions</a></li>
+    <li class="livebutton">Pay</li>
+</ul>
+<div class="clear"></div>
+
+<form method="get" action="/dbpub/offpay.asp">
+    <input type="hidden" name="p" value="{{ p }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <div class="inputs"><input type="radio" name="o" value="1"{% if o == 1 %} checked{% endif %}> Show original currency</div>
+    <div class="inputs"><input type="radio" name="o" value="2"{% if o == 2 %} checked{% endif %}> Convert all records at financial year-end to:
+        <select name="c">
+            {% for cu in currs %}<option value="{{ cu.id }}"{% if cu.id == c %} selected{% endif %}>{{ cu.currency }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="inputs"><input type="submit" value="Go"></div>
+    <div class="clear"></div>
+</form>
+
+<h3>Pay records</h3>
+{% if not groups %}
+<p><b>No records found.</b></p>
+{% else %}
+<p>Click on the date to see all the pay of the organisation for that year.</p>
+<table class="numtable">
+    <tr>
+        {% if sort != 'nam' %}<th class="left"><a href="?p={{ p }}&o={{ o }}&c={{ c }}&sort=nam">Organisation</a></th>{% endif %}
+        <th class="left">Last<br>position</th>
+        <th><a href="?p={{ p }}&o={{ o }}&c={{ c }}&sort=yrdn">Year-end</a></th>
+        <th class="colHide3">Fees</th>
+        <th class="colHide3">Salary &amp;<br>benefits</th>
+        <th class="colHide3">Bonus</th>
+        <th class="colHide3">Retire</th>
+        <th class="colHide3">Share-<br>based</th>
+        <th>Total</th>
+    </tr>
+    {% for g in groups %}
+    <tr><td class="left" colspan="9"><h4>{{ g.val }} {{ g.curr }}'000</h4></td></tr>
+    {% for r in g.rows %}
+    <tr>
+        {% if sort != 'nam' %}<td class="left">{{ r.name }}</td>{% endif %}
+        <td class="left">{{ r.posshort or '' }}</td>
+        <td><a href="/dbpub/pay.asp?p={{ r.orgid }}&d={{ r.d|ms_date }}">{{ r.d|ms_date }}</a></td>
+        {% for k in ['fees','salary','bonus','retire','share'] %}
+        <td class="colHide3">{{ "{:,.0f}".format(r[k]) if r[k] is not none else '' }}</td>
+        {% endfor %}
+        <td>{{ "{:,.0f}".format(r.total) if r.total is not none else '' }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total">
+        <td class="left" colspan="{{ 2 if sort == 'nam' else 3 }}">Total</td>
+        {% for k in ['fees','salary','bonus','retire','share','total'] %}
+        <td{% if k != 'total' %} class="colHide3"{% endif %}>{{ "{:,.0f}".format(g.tot[k]) }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<h3>Notes</h3>
+<ol>
+    <li>These data are incomplete; they were entered and checked by volunteers.</li>
+    <li>If a director sits on the boards of both a listed company and its listed subsidiary, the parent
+    records normally include the pay at the subsidiary, so subtract that when looking at annual totals.</li>
+</ol>
+{% endif %}
+{% endblock %}
