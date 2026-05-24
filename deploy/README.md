@@ -5,8 +5,9 @@ on a single DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + 
 systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, not hand-edits.
 
 ## Topology
-- **Droplet:** `webbsite-web`, `s-4vcpu-8gb`, region `sfo3`, VPC `default-sfo3` (co-located with
-  `crhkguru-web` + `clickhouse`). Public IP `134.199.208.228`, private `10.124.0.4`.
+- **Droplet:** `webbsite-web`, `s-4vcpu-8gb`, region `sfo3`, VPC `default-sfo3`. The origin IP and
+  other host-identifying details are **not** committed to this public repo (the origin sits behind
+  Cloudflare + UFW); they live in the operator's private notes.
 - **App:** gunicorn (`gunicorn.conf.py`: gthread, 3×8) on `127.0.0.1:8000`, `User=webbsite`,
   checkout at `/srv/webbsite`, env in `/etc/webbsite/env`.
 - **DB:** self-hosted PostgreSQL 17, localhost-only, role `webbsite`, database `enigma`
@@ -36,8 +37,8 @@ curl -fsS https://webbsite.renavon.com/health  # same via Caddy + Cloudflare
 ```
 
 ## Rebuild the data (rare)
-The archive is static, so there is no scheduled import. To reload from a dump (e.g. the canonical
-Google Drive archive, or a fresh `pg_dump` of the old Render DB while it still exists):
+The archive is static, so there is no scheduled import. To reload, restore the `pg_dump` archive
+held in Cloudflare R2 (or rebuild from the canonical Google Drive release):
 ```bash
 # directory-format parallel restore as postgres, objects owned by webbsite
 sudo -u postgres pg_restore -d enigma -j4 --no-owner --role=webbsite --clean --if-exists <dumpdir>
@@ -61,9 +62,9 @@ systemctl reload webbsite
 9. `tailscale up --ssh --hostname=webbsite-web`; verify tailnet SSH.
 10. UFW: default deny in; allow on `tailscale0`; allow `443/tcp` from Cloudflare IPv4+IPv6 ranges;
     `enable`. (No public 22/80.)
-11. Cut over: point Cloudflare `webbsite.renavon.com` at `134.199.208.228` (proxied); purge cache.
-12. Decommission Render (web service `srv-d3p2o6s9c44c738krsv0` + db `webbsite-db`) after a soak;
-    remove the temporary droplet IP from any allowlist.
+11. Cut over: point Cloudflare `webbsite.renavon.com` at the droplet IP (proxied); purge cache.
+12. Decommissioned Render (web service + Postgres deleted) after archiving a final `pg_dump` to R2,
+    and removed the temporary droplet IP from Render's allowlist.
 
 ## Day-to-day
 | Command | Purpose |

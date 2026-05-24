@@ -8,64 +8,49 @@ The Webb-site codebase is a multi-tier financial data platform that scrapes, pro
 
 1. **VB.NET scraping modules** - Automated data collection from various HK sources (HKEX, SFC, Companies Registry, etc.)
 2. **MySQL databases** - Core data storage across multiple schemas (enigma, ccass, private, iplog, mailvote)
-3. **Classic ASP web interface** - Public-facing query and reporting system (BEING MIGRATED TO FLASK)
+3. **Classic ASP web interface** - the original public query/reporting system (now reimplemented as Flask — see Hosting & Architecture)
 4. **Access frontend** - Database editing system for manual data management
 
-## Modernization in Progress (Oct 2025)
+## Hosting & Architecture
 
-**URGENT:** The original Webb-site.com dedicated server shuts down **October 31, 2025**. An emergency migration is underway to preserve public access to 35 years of Hong Kong financial data.
+The Classic ASP site has been reimplemented as **Flask + Jinja2** (Python 3.13) and is served as a
+**static, read-only archive** of 35 years of Hong Kong financial data. The data no longer updates:
+Webb-site's founder, the late **David Webb**, released the full dataset under CC-BY 4.0, and the
+original dedicated server and its VB.NET scrapers were retired in late 2025 (data ends 2025-10-10).
+The VB.NET / MySQL / Access tiers documented below are retained as historical reference for the
+original system and for anyone wishing to revive collection independently.
 
-### New Technology Stack
+### Deployment (self-hosted DigitalOcean droplet)
 
-**Frontend Migration (Priority 1 - Oct 31 deadline):**
-- Classic ASP → **Flask + Jinja2 + HTMX** (Python 3.11+)
-- MySQL replica → **PostgreSQL on Render.com** (managed cloud database)
-- Dedicated server → **Render.com Web Service** (cloud platform)
+The public site was migrated off Render.com to a self-hosted DigitalOcean droplet in May 2026 (a
+managed cloud Postgres is poor value for a database that never changes). Stack:
 
-**Backend (Deferred - continues operating):**
-- VB.NET scrapers continue running on Windows backend
-- Weekly database dumps uploaded to Google Drive
-- Automated import to Render PostgreSQL
+- **App:** gunicorn (`gunicorn.conf.py`, gthread workers) under systemd, bound to `127.0.0.1:8000`.
+- **Database:** self-hosted **PostgreSQL 17**, localhost-only, schemas `enigma` + `ccass`. The DB is a
+  *derived artifact* — restorable from a `pg_dump` archive (kept in Cloudflare R2) and ultimately from
+  the canonical Google Drive release — so it has no replication or scheduled refresh.
+- **TLS/edge:** **Caddy** terminates TLS on `:443` and reverse-proxies to gunicorn; **Cloudflare**
+  fronts the site. The app emits `CDN-Cache-Control` with an aggressive, data-age TTL ladder
+  (`webbsite/__init__.py`); since the data is static, edge cache hit rates are high.
+- **Hardening:** UFW denies inbound except `:443` from Cloudflare IP ranges (the origin is not exposed
+  directly); SSH is over Tailscale only.
+- **Deploy:** `git pull` + `uv sync --frozen` + `systemctl restart webbsite`. Infra-as-code (systemd
+  unit, Caddyfile, bootstrap/ops runbook) lives in `deploy/` — see `deploy/README.md`.
 
-### Current Migration Status (Oct 28, 2025)
+> This is a **public repository.** Operational secrets and host-identifying details (origin IP, host
+> identifiers, DB passwords, API tokens) are intentionally **not** committed here; they live in the
+> operator's private notes. Keep it that way when editing.
 
-**✅ PRODUCTION DEPLOYED - Mission Accomplished! 🎉**
-- **Site live on Render.com** with continuous deployment (7 days ahead of Oct 31 deadline)
-- **284 routes created** (up from 192 initial estimate)
-- **147 routes fully working** with SQL implementation (635% above MVP target of 20!)
-- PostgreSQL database operational in production (pro-4gb plan, 80GB disk)
-- Templates and CSS extracted from legacy ASP
-- ASP helper functions ported to Python (asp_helpers.py)
-- **CI/CD active:** GitHub master branch auto-deploys to Render.com
-- **Code reorganized (Oct 28):** dbpub routes split into 15 maintainable sub-modules
+### Status
 
-**⚠️ In Progress:**
-- ~50 active stub routes (lower priority specialty pages, CSV exports, charts)
-- holders.asp recursive ownership trees (template complete, SQL implementation pending)
-- Performance optimization and caching
-- Automated database imports from Google Drive
+- The public site is live and reimplemented in Flask. ASP→Flask fidelity was verified against an
+  archived crawl of the original site (`tests/compare_asp_flask.py` vs `tests/ground_truth/asp_cache/`):
+  the crawled route set (254 routes) matches the archived ASP 1:1.
+- **Deferred / not implemented:** authenticated features (webbmail, vote, pollman, mailman), the
+  database-editing interface (dbeditor), and some specialty routes — these depend on auth/write paths
+  that don't apply to a read-only public archive.
 
-**❌ Deferred (Post-Launch):**
-- Authentication system (webbmail, vote, pollman, mailman - 34 routes)
-- Database editing interface (dbeditor - 53 routes)
-- Specialty routes (qt.asp, HKflights.asp, etc.)
-- User personalization features
-- **Note:** 87 total routes intentionally deferred for post-launch implementation
-
-**Working Routes (147 routes across core functionality):**
-- Core search: searchorgs.asp, searchpeople.asp, natperson.asp
-- Stock data: prices.asp, quotes.asp, events.asp, listed.asp, delisted.asp, code.asp, ctr.asp, str.asp
-- Company data: orgdata.asp, advisers.asp, officers.asp, splits.asp, positions.asp, govac.asp
-- Articles: All article routes (index, individual articles) + FAQ and static pages
-- **CCASS (18/19 routes - 95% complete):** bigchanges.asp, bigchangesissue.asp, bigchangespart.asp, cconc.asp, cconchist.asp, cparticipants.asp, ipstakes.asp, choldings.asp, ctothist.asp, nciphist.asp, cholder.asp, brokhist.asp, holdings.asp, plus session management routes
-- **Incorporation/Dissolution Stats (14 routes):** incHKannual, incHKmonth, incHKcaltype, disHKcaltype, incHKsurvive, regHKannual, disFcal, incFcal, incUKcaltype, oldestHKcos, domregHK, etc.
-- **Buybacks (3 routes):** buybacks.asp, buybackstime.asp, buybacksum.asp
-- Directors & Statistics: boardcomp.asp, dirsHKPerPerson.asp, auditorchanges.asp, etc.
-- SFC & Solicitors: All 10 routes working (SFC licensees, solicitor data, law firms)
-- Transport: 11/12 routes working (vehicle registrations, traffic, parking, etc.)
-- 80+ additional statistical and analysis routes
-
-See `docs/modernization-roadmap.md` for complete migration plan.
+See `docs/modernization-roadmap.md` for the original migration plan and `deploy/README.md` for hosting.
 
 ## License and Attribution
 
