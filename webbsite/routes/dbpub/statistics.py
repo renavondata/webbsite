@@ -575,7 +575,7 @@ def namechange_hk_listed():
                o.cname
         FROM enigma.namechanges nc
         JOIN enigma.organisations o ON nc.personid = o.personid
-        JOIN enigma.listedcoshkever l ON nc.personid = l.issuer
+        JOIN enigma.listedcoshkever l ON nc.personid = l.personid
         WHERE (nc.oldname IS NOT NULL OR nc.oldcname IS NOT NULL)
           AND ((nc.oldname <> o.name1 OR nc.oldname IS NULL)
                OR (nc.oldcname <> o.cname OR nc.oldcname IS NULL))
@@ -3393,7 +3393,7 @@ def latest_dirs_hk():
             posLong,
             YOB
         FROM enigma.directorships d
-        JOIN enigma.listedcoshkever ON company = issuer
+        JOIN enigma.listedcoshkever ON d.company = listedcoshkever.personid
         JOIN enigma.people p ON director = p.personid
         JOIN enigma.organisations o ON company = o.personid
         JOIN enigma.positions pn ON d.positionid = pn.positionid

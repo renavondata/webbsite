@@ -57,9 +57,11 @@ def domicile():
     # Get total count for percentage calculation
     total = execute_query(
         f"""
-        SELECT COUNT(*) AS total
-        FROM enigma.listedcoshk
-        WHERE stockexid IN ({ex_str})
+        SELECT COUNT(DISTINCT i.issuer) AS total
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        WHERE sl.stockexid IN ({ex_str})
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
     """
     )[0]["total"]
 
@@ -68,11 +70,13 @@ def domicile():
         f"""
         SELECT d.id,
                d.fullname AS domname,
-               COUNT(l.issuer) AS cnt
-        FROM enigma.listedcoshk l
-        JOIN enigma.organisations o ON l.issuer = o.personid
+               COUNT(DISTINCT i.issuer) AS cnt
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        JOIN enigma.organisations o ON i.issuer = o.personid
         JOIN enigma.domiciles d ON o.domicile = d.id
-        WHERE l.stockexid IN ({ex_str})
+        WHERE sl.stockexid IN ({ex_str})
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
         GROUP BY d.id, d.fullname
         ORDER BY {ob}
     """
@@ -171,10 +175,13 @@ def domicilecos():
                       AND (sl2.delistdate IS NULL OR sl2.delistdate > CURRENT_DATE)
                     ORDER BY sl2.stockcode
                     LIMIT 1), '') AS sc
-        FROM enigma.listedcoshk l
+        FROM (SELECT DISTINCT i.issuer
+              FROM enigma.stocklistings sl
+              JOIN enigma.issue i ON sl.issueid = i.id1
+              WHERE sl.stockexid IN ({ex_str})
+                AND i.typeid NOT IN (1, 2, 40, 41, 46)) l
         JOIN enigma.organisations o ON l.issuer = o.personid
-        WHERE l.stockexid IN ({ex_str})
-          AND o.domicile = %s
+        WHERE o.domicile = %s
         ORDER BY {ob}
     """,
         (dom,),
