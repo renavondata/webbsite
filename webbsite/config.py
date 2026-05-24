@@ -32,6 +32,15 @@ class Config:
     CANONICAL_HOST = os.environ.get("CANONICAL_HOST", "webbsite.renavon.com")
     SEARCH_DOMAIN = os.environ.get("SEARCH_DOMAIN", CANONICAL_HOST)
 
+    # The bulk HKID index (HKIDindex120215.asp) is SUSPENDED by default, matching
+    # David Webb's 2013 decision (Privacy Commissioner concerns). The data still
+    # exists (enigma.people.hkid / .hkidsource, from already-public documents) and
+    # the route is fully implemented behind this flag. To re-publish the index —
+    # the operator's call — set PUBLISH_HKID_INDEX=true in the environment. Person
+    # pages (natperson) never print the number regardless; they only link to the
+    # public source.
+    PUBLISH_HKID_INDEX = os.environ.get("PUBLISH_HKID_INDEX", "false").lower() == "true"
+
     # App settings
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
     TEMPLATES_AUTO_RELOAD = True

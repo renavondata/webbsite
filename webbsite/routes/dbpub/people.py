@@ -495,3 +495,104 @@ def _build_descendants_tree(person_id, max_gen, level=0, seen=None):
     except Exception as ex:
         current_app.logger.error(f"Error building descendants tree: {ex}")
         return []
+
+
+def _purl(s):
+    """Port of natarts.asp pURL(): resolve a story URL to an absolute path."""
+    s = s or ""
+    if s.startswith("http"):
+        return s
+    if s.startswith("../"):
+        return "/" + s[3:]
+    return "/articles/" + s
+
+
+def _targ(s):
+    """Port of natarts.asp targ(): link target attribute."""
+    s = s or ""
+    if not s.startswith("http"):
+        return "_self"
+    return "_self" if s[-4:] in (".asx", ".ram", ".asf") else "_blank"
+
+
+@bp.route("/natarts.asp")
+def natarts():
+    """Articles tagged with a person or organisation - port of natarts.asp."""
+    from collections import defaultdict
+
+    p = get_int("p", 0)
+
+    name_rows = execute_query(
+        """
+        SELECT COALESCE(o.name1,
+                        pe.name1 || COALESCE(', ' || pe.name2, '') || COALESCE(' ' || pe.cname, '')
+               ) AS name
+        FROM enigma.persons ps
+        LEFT JOIN enigma.organisations o ON ps.personid = o.personid
+        LEFT JOIN enigma.people pe ON ps.personid = pe.personid
+        WHERE ps.personid = %s
+        """,
+        (p,),
+    )
+    name = name_rows[0]["name"] if name_rows and name_rows[0]["name"] else "Not found"
+
+    articles = execute_query(
+        """
+        SELECT s.title, ps.storyid, s.storydate, s.url, s.summary,
+               s.sourceid, src.sourcename, s.url2, s.url2text, sn.storyid AS snid
+        FROM enigma.personstories ps
+        JOIN enigma.stories s ON ps.storyid = s.storyid
+        LEFT JOIN enigma.sources src ON s.sourceid = src.sourceid
+        LEFT JOIN enigma.sfcnews sn ON ps.storyid = sn.storyid
+        WHERE ps.personid = %s AND s.pubdate <= NOW()
+        ORDER BY s.storydate DESC
+        """,
+        (p,),
+    )
+
+    # Compute link/target per article (faithful to pURL/targ + SFC-news handling)
+    for a in articles:
+        if a["snid"]:
+            a["link"] = f"/dbpub/artlinks.asp?s={a['storyid']}"
+        else:
+            a["link"] = _purl(a["url"])
+        a["target"] = _targ(a["link"])
+        if a["url2text"]:
+            a["link2"] = _purl(a["url2"])
+            a["target2"] = _targ(a["link2"])
+
+    # Batch the per-story tag sub-lists (orgs / people / topics) to avoid N+1.
+    story_ids = [a["storyid"] for a in articles]
+    orgs, ppl, topics = defaultdict(list), defaultdict(list), defaultdict(list)
+    if story_ids:
+        ph = ",".join(["%s"] * len(story_ids))
+        for r in execute_query(
+            f"""SELECT ps.storyid, o.name1 AS name, ps.personid
+                FROM enigma.personstories ps JOIN enigma.organisations o ON ps.personid = o.personid
+                WHERE ps.storyid IN ({ph}) ORDER BY o.name1""",
+            tuple(story_ids),
+        ):
+            orgs[r["storyid"]].append(r)
+        for r in execute_query(
+            f"""SELECT ps.storyid,
+                       (pe.name1 || COALESCE(', ' || pe.name2, '') || COALESCE(' ' || pe.cname, '')) AS name,
+                       ps.personid
+                FROM enigma.personstories ps JOIN enigma.people pe ON ps.personid = pe.personid
+                WHERE ps.storyid IN ({ph}) AND ps.personid <> %s ORDER BY name""",
+            tuple(story_ids) + (p,),
+        ):
+            ppl[r["storyid"]].append(r)
+        for r in execute_query(
+            f"""SELECT st.storyid, c.name, st.catid
+                FROM enigma.storytags st JOIN enigma.categories c ON st.catid = c.id
+                WHERE st.storyid IN ({ph}) ORDER BY c.name""",
+            tuple(story_ids),
+        ):
+            topics[r["storyid"]].append(r)
+
+    for a in articles:
+        a["orgs"] = orgs.get(a["storyid"], [])
+        a["people"] = ppl.get(a["storyid"], [])
+        a["topics"] = topics.get(a["storyid"], [])
+
+    return render_template("dbpub/natarts.html", name=name, p=p, articles=articles)

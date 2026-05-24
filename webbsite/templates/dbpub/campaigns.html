@@ -1,0 +1,21 @@
+{% extends "base_database.html" %}
+
+{% block title %}Political campaigns{% endblock %}
+{% block description %}Hong Kong political campaigns and their candidates, with links to donations received.{% endblock %}
+
+{% block content %}
+<h2>Political campaigns</h2>
+
+<table class="opltable">
+    <tr>
+        <th><a href="?sort=campup">Campaign</a> | <a href="?sort=campdn">▼</a></th>
+        <th class="left"><a href="?sort=nameup">Candidate</a> | <a href="?sort=namedn">▼</a></th>
+    </tr>
+    {% for c in campaigns %}
+    <tr>
+        <td style="padding-right:10px"><a href="/dbpub/donations.asp?camp={{ c.campid }}{% if hide %}&hide={{ hide }}{% endif %}">{{ c.camptext }}</a></td>
+        <td class="left"><a href="/dbpub/natperson.asp?p={{ c.recipient }}">{{ c.name1 }}{% if c.name2 %}, {{ c.name2 }}{% endif %}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

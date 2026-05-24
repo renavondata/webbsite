@@ -1,0 +1,32 @@
+{% extends "base_database.html" %}
+
+{% block title %}Donations to campaign: {{ camp_text }}{% endblock %}
+{% block description %}Recorded donations to the Hong Kong political campaign: {{ camp_text }}.{% endblock %}
+
+{% block content %}
+<h2>Donations to campaign: {{ camp_text }}</h2>
+
+<p>Note: this list is incomplete. Where we can identify the parent entity of wholly-owned
+corporate donors, then donations have been attributed to the parent.</p>
+
+<table class="opltable">
+    <tr>
+        <th class="left"><a href="?camp={{ camp }}&sort1=nameup">Name</a> | <a href="?camp={{ camp }}&sort1=namedn">▼</a></th>
+        <th>Currency</th>
+        <th><a href="?camp={{ camp }}&sort1=amntdn">Amount</a> | <a href="?camp={{ camp }}&sort1=amntup">▲</a></th>
+    </tr>
+    {% for d in donations %}
+    <tr>
+        <td class="left" style="padding-right:10px">
+            {% if d.persontype == 'O' %}
+            <a href="/dbpub/orgdata.asp?p={{ d.personid }}">{{ d.name }}</a>
+            {% else %}
+            <a href="/dbpub/natperson.asp?p={{ d.personid }}">{{ d.name }}</a>
+            {% endif %}
+        </td>
+        <td>{{ d.currency }}</td>
+        <td>{{ "{:,.0f}".format(d.donamnt) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

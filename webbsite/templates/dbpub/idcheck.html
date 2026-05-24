@@ -1,0 +1,20 @@
+{% extends "base_database.html" %}
+
+{% block title %}Hong Kong Identity Card check digit generator{% endblock %}
+{% block description %}Generate the check digit for a Hong Kong Identity Card number. We do not store the number submitted.{% endblock %}
+
+{% block content %}
+<h2>Hong Kong Identity Card check digit generator</h2>
+<p>Enter ID (without the check digit)</p>
+<form method="get" action="/dbpub/idcheck.asp">
+<input type="text" name="ID" value="{{ id }}"/>
+<input type="submit" value="Submit"/>
+</form>
+<p><b>{{ hint }}</b></p>
+<p>Note: we will not store the ID number submitted. For more on HKID cards, and
+our call for transparency, <a href="/articles/identity.asp">click here</a>.</p>
+<p>
+<a href="https://en.wikipedia.org/wiki/Hong_Kong_identity_card" target="_blank" rel="noopener">Known</a>
+single-letter prefixes are ABCDEFGHJKLMNPRSTVWYZ and double-letter prefixes
+are WX, XA, XB, XC, XD, XE, XG and XH.</p>
+{% endblock %}

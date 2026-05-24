@@ -1,0 +1,32 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}History of a Stock Exchange of Hong Kong Listing-division staff member: teams and titles over time.{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<p>HK-listed issuers are regulated by the monopoly for-profit Stock Exchange of Hong Kong Ltd
+(<strong>SEHK</strong>), under the supervision of the Securities and Futures Commission
+(<strong>SFC</strong>). We began monitoring the teams on 2023-12-30. This page shows the history of a
+member since then, with promotions and team-changes.</p>
+
+<table class="txtable fcr c2r">
+    <tr>
+        <th></th>
+        <th><a href="?s={{ s }}&sort=teamup">Team</a> | <a href="?s={{ s }}&sort=teamdn">▼</a></th>
+        <th><a href="?s={{ s }}&sort=titup">Title</a> | <a href="?s={{ s }}&sort=titdn">▼</a></th>
+        <th><a href="?s={{ s }}&sort=fsnup">First Seen</a> | <a href="?s={{ s }}&sort=fsndn">▼</a></th>
+        <th>Last Seen</th>
+    </tr>
+    {% for r in rows %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ r.teamno }}</td>
+        <td>{{ r.title }}</td>
+        <td>{{ r.firstseen | ms_date if r.firstseen else '' }}</td>
+        <td>{{ r.lastseen | ms_date if r.dead else '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

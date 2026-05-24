@@ -1,0 +1,41 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}Hong Kong listed companies whose financial year ends in the selected month.{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{{ write_nav(e, "m,g,a", "Main Board,GEM,All HK", "/dbpub/yearendcos.asp?m=" ~ m ~ "&sort=" ~ sort ~ "&e=")|safe }}
+<ul class="navlist"><li><a href="/dbpub/yearend.asp">Summary</a></li></ul>
+<div class="clear"></div>
+
+<form method="get" action="/dbpub/yearendcos.asp">
+    <input type="hidden" name="e" value="{{ e }}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    Month:
+    <select name="m">
+        {% for mi in range(1, 13) %}
+        <option value="{{ mi }}"{% if mi == m %} selected{% endif %}>{{ mi }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Go">
+</form>
+
+<p>Note: the table includes only companies with a primary listing in HK.</p>
+
+<table class="numtable">
+    <tr>
+        <th>Row</th>
+        <th><a href="?e={{ e }}&m={{ m }}&sort=scup">Stock<br>code</a> | <a href="?e={{ e }}&m={{ m }}&sort=scdn">▼</a></th>
+        <th class="left"><a href="?e={{ e }}&m={{ m }}&sort=nameup">Company</a> | <a href="?e={{ e }}&m={{ m }}&sort=namedn">▼</a></th>
+    </tr>
+    {% for c in companies %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ c.sc or '' }}</td>
+        <td class="left"><a href="/dbpub/orgdata.asp?p={{ c.personid }}">{{ c.name }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -14,6 +14,96 @@ from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 bp = Blueprint("dbpub_statistics", __name__)
 
 
+def _hkid_check_digit(id_no_cd):
+    """HK Identity Card check digit for an ID *without* its check digit.
+
+    Port of the original VBScript (idcheck.asp / the checkdigit() proc): weighted
+    sum mod 11. Note VBScript Int() floors toward -infinity, so its
+    `cd - 11*Int(cd/11)` is exactly Python's floor-based `% 11`. Returns a str
+    '0'-'9' or 'A', or None if the input isn't a valid 7/8-char ID.
+    """
+    s = (id_no_cd or "").strip().upper()
+    n = s[-6:]
+    if len(s) < 7 or len(s) > 8 or not n.isdigit():
+        return None
+    cd = 0
+    if len(s) == 8:
+        cd = 9 * (ord(s[0]) - 58)
+    cd += (
+        8 * (ord(s[-7]) - 64)
+        + 7 * int(n[0]) + 6 * int(n[1]) + 5 * int(n[2])
+        + 4 * int(n[3]) + 3 * int(n[4]) + 2 * int(n[5])
+    )
+    cd = (11 - cd) % 11
+    return "A" if cd == 10 else str(cd)
+
+
+@bp.route("/idcheck.asp")
+def idcheck():
+    """Hong Kong Identity Card check-digit generator - port of idcheck.asp.
+    Pure client-input calculation (no DB)."""
+    raw = get_str("ID", "").strip().upper()
+    cd = _hkid_check_digit(raw)
+    if cd is not None:
+        hint = "The check digit is: " + cd
+    else:
+        hint = ""
+        if len(raw) < 7 or len(raw) > 8:
+            hint = "The ID must be 7 or 8 characters. "
+        if not raw[-6:].isdigit():
+            hint += "The last 6 characters must be digits 0-9. "
+    return render_template("dbpub/idcheck.html", id=raw, hint=hint)
+
+
+@bp.route("/HKIDindex120215.asp")
+def hkidindex_full():
+    """The pre-2013 HK Identity Card index — SUSPENDED by default.
+
+    David Webb took the public bulk HKID index offline in 2013 (Privacy
+    Commissioner concerns); we honour that. The underlying data still exists
+    (enigma.people.hkid / .hkidsource, drawn from already-public documents) and
+    the full page is implemented below, but it only renders when the operator
+    opts in via PUBLISH_HKID_INDEX=true (see config.py). Otherwise it shows the
+    same suspension notice as HKIDindex.asp. Re-publishing IDs is a deliberate
+    operator decision — do not enable casually.
+    """
+    if not current_app.config.get("PUBLISH_HKID_INDEX"):
+        return render_template("dbpub/hkidindex.html")  # suspension notice
+
+    sort = get_str("sort", "hkidup")
+    order_map = {
+        "hkidup": "hkid",
+        "hkiddn": "hkid DESC",
+        "nameup": "name1, name2",
+        "namedn": "name1 DESC, name2 DESC",
+    }
+    if sort not in order_map:
+        sort = "hkidup"
+    rows = execute_query(
+        f"""
+        SELECT personid, name1, name2, hkid, hkidsource
+        FROM enigma.people
+        WHERE hkidsource IS NOT NULL
+        ORDER BY {order_map[sort]}
+        """
+    )
+    for r in rows:
+        r["cd"] = _hkid_check_digit(r["hkid"]) or ""
+    total = len(rows)
+    prefixes = execute_query(
+        """
+        SELECT LEFT(hkid, LENGTH(hkid) - 6) AS prefix, COUNT(personid) AS count
+        FROM enigma.people
+        WHERE hkidsource IS NOT NULL
+        GROUP BY prefix ORDER BY prefix
+        """
+    )
+    return render_template(
+        "dbpub/hkidindex_full.html",
+        people=rows, prefixes=prefixes, total=total, sort=sort,
+    )
+
+
 @bp.route("/enigma.orgdata.asp")
 def enigma_orgdata():
     """
@@ -3816,6 +3906,55 @@ def yearend():
     )
 
 
+@bp.route("/yearendcos.asp")
+def yearendcos():
+    """Companies with a given financial year-end month - port of yearendcos.asp.
+
+    The original used the listedcoshkall view + stockExID filter, but that view
+    exposes only personid (no stockExID), so query the base tables for the
+    Main/GEM split, mirroring yearend()/incorporations.domicile().
+    """
+    import calendar as _cal
+
+    e = get_str("e", "a")
+    m = get_int("m", 12)
+    if m < 1 or m > 12:
+        m = 12
+    sort = get_str("sort", "nameup")
+    if e == "g":
+        ex_str, title_ex = "20", "GEM"
+    elif e == "m":
+        ex_str, title_ex = "1", "Main Board"
+    else:
+        e, ex_str, title_ex = "a", "1, 20", "Main Board and GEM"
+    order_map = {"scup": "sc", "scdn": "sc DESC", "namedn": "name DESC", "nameup": "name"}
+    if sort not in order_map:
+        sort = "nameup"
+    title = f"{title_ex} companies with {_cal.month_name[m]} year-end"
+
+    companies = execute_query(
+        f"""
+        SELECT DISTINCT o.name1 AS name, i.issuer AS personid,
+               (SELECT MIN(sl2.stockcode)
+                FROM enigma.stocklistings sl2
+                JOIN enigma.issue i2 ON sl2.issueid = i2.id1
+                WHERE i2.issuer = i.issuer AND sl2."2ndCtr" = FALSE
+                  AND (sl2.delistdate IS NULL OR sl2.delistdate > CURRENT_DATE)) AS sc
+        FROM enigma.stocklistings sl
+        JOIN enigma.issue i ON sl.issueid = i.id1
+        JOIN enigma.organisations o ON i.issuer = o.personid
+        JOIN enigma.orgdata od ON i.issuer = od.personid
+        WHERE od.yearendmonth = %s AND sl.stockexid IN ({ex_str})
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
+        ORDER BY {order_map[sort]}
+        """,
+        (m,),
+    )
+    return render_template(
+        "dbpub/yearendcos.html", companies=companies, e=e, m=m, sort=sort, title=title
+    )
+
+
 # Companies with websites
 
 
@@ -6667,6 +6806,121 @@ def lirteams():
         former_issuers=former_issuers,
         teams=teams,
         sort=sort_param,
+    )
+
+
+# SEHK Listing-division regulatory staff (lirstaff.asp / lirstaffhist.asp).
+# fnameppl() isn't in PG, so format the name inline.
+_LIR_NAME = "(s.n1 || COALESCE(', ' || s.n2, '') || COALESCE(' ' || s.cn, ''))"
+
+
+@bp.route("/lirstaff.asp")
+def lirstaff():
+    """SEHK listed-issuer regulatory staff - port of lirstaff.asp."""
+    sort = get_str("sort", "titdn")
+    order_map = {
+        "namup": "name, teamno",
+        "namdn": "name DESC, teamno",
+        "titup": "posid, name, teamno",
+        "telup": "tel",
+        "teldn": "tel DESC",
+        "titdn": "posid DESC, teamno, name",
+    }
+    if sort not in order_map:
+        sort = "titdn"
+
+    rows = execute_query(
+        f"""
+        SELECT ls.teamid, ls.staffid, t.teamno, {_LIR_NAME} AS name,
+               s.tel, r.title, ls.posid
+        FROM enigma.lirteamstaff ls
+        JOIN enigma.lirteams t ON ls.teamid = t.id
+        JOIN enigma.lirstaff s ON ls.staffid = s.id
+        JOIN enigma.lirroles r ON ls.posid = r.id
+        WHERE NOT ls.dead
+        ORDER BY {order_map[sort]}
+        """
+    )
+    # Collapse consecutive rows for the same staff member, collecting their teams
+    # (faithful to the original's consecutive-grouping).
+    staff = []
+    for row in rows:
+        if staff and staff[-1]["staffid"] == row["staffid"]:
+            staff[-1]["teams"].append({"teamid": row["teamid"], "teamno": row["teamno"]})
+        else:
+            tel = row["tel"] or ""
+            staff.append({
+                "staffid": row["staffid"], "name": row["name"], "title": row["title"],
+                "tel": (tel[:4] + "-" + tel[4:]) if len(tel) == 8 else tel,
+                "teams": [{"teamid": row["teamid"], "teamno": row["teamno"]}],
+            })
+
+    # Former members: staff with no live (non-dead) team rows.
+    former_order = {
+        "namup": "name", "namdn": "name DESC",
+        "titup": "posid, name", "titdn": "posid DESC, name",
+    }.get(sort, "name")
+    former = execute_query(
+        f"""
+        SELECT t.id, t.name, t.posid, r.title, t.seen
+        FROM (
+            SELECT l.id,
+                   (l.n1 || COALESCE(', ' || l.n2, '') || COALESCE(' ' || l.cn, '')) AS name,
+                   SUM(CASE WHEN NOT s.dead THEN 1 ELSE 0 END) AS c,
+                   MAX(s.posid) AS posid, MAX(s.lastseen) AS seen
+            FROM enigma.lirstaff l
+            JOIN enigma.lirteamstaff s ON l.id = s.staffid
+            GROUP BY l.id, name
+        ) t
+        JOIN enigma.lirroles r ON t.posid = r.id
+        WHERE t.c = 0
+        ORDER BY {former_order}
+        """
+    )
+    return render_template(
+        "dbpub/lirstaff.html", staff=staff, former=former, sort=sort
+    )
+
+
+@bp.route("/lirstaffhist.asp")
+def lirstaffhist():
+    """History of one SEHK Listing-division staff member - port of lirstaffhist.asp."""
+    s = get_int("s", 0)
+    sort = get_str("sort", "fsnup")
+    name_rows = execute_query(
+        "SELECT (n1 || COALESCE(', ' || n2, '') || COALESCE(' ' || cn, '')) AS name "
+        "FROM enigma.lirstaff WHERE id = %s",
+        (s,),
+    )
+    if not name_rows:
+        return render_template(
+            "dbpub/lirstaffhist.html", rows=[], name="Staff member not found.",
+            title="History of SEHK Listing staff member", sort=sort, s=0,
+        )
+    name = name_rows[0]["name"]
+    order_map = {
+        "teamup": "teamno, posid", "teamdn": "teamno DESC, posid",
+        "titup": "posid, teamno", "titdn": "posid DESC, teamno",
+        "fsndn": "firstseen DESC, teamno, posid DESC", "fsnup": "firstseen, teamno, posid",
+    }
+    if sort not in order_map:
+        sort = "fsnup"
+    rows = execute_query(
+        f"""
+        SELECT t.teamno, r.title,
+               CASE WHEN s.firstseen = DATE '2023-12-30' THEN NULL ELSE s.firstseen END AS firstseen,
+               s.lastseen, s.posid, s.dead
+        FROM enigma.lirteamstaff s
+        JOIN enigma.lirteams t ON s.teamid = t.id
+        JOIN enigma.lirroles r ON s.posid = r.id
+        WHERE s.staffid = %s
+        ORDER BY {order_map[sort]}
+        """,
+        (s,),
+    )
+    return render_template(
+        "dbpub/lirstaffhist.html", rows=rows, name=name,
+        title=f"History of SEHK Listing staff member: {name}", sort=sort, s=s,
     )
 
 

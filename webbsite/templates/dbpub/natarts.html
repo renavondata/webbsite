@@ -1,0 +1,53 @@
+{% extends "base_database.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+{% block description %}Articles and reports tagged with {{ name }} in the Webb-site archive.{% endblock %}
+
+{% block content %}
+<h2>{{ name }}</h2>
+<ul class="navlist">
+    <li><a href="/dbpub/natperson.asp?p={{ p }}">Profile</a></li>
+    <li><a href="/dbpub/positions.asp?p={{ p }}">Positions</a></li>
+    <li class="livebutton">Articles</li>
+</ul>
+<div class="clear"></div>
+
+{% if not articles %}
+<p>No articles found.</p>
+{% else %}
+{% for a in articles %}
+<div class="artsum">
+    {% if a.sourceid == 1 %}
+        <a target="{{ a.target }}" href="{{ a.link }}"><b>{{ a.title }}</b></a>
+        {% if a.url2text %}|&nbsp;<a target="{{ a.target2 }}" href="{{ a.link2 }}"><b>{{ a.url2text }}</b></a>{% endif %}
+        <br>
+        {{ a.summary | safe }}&nbsp;({{ a.storydate | force_date }})
+    {% else %}
+        <a target="{{ a.target }}" href="{{ a.link }}">{{ a.title }}</a>
+        {% if a.url2text %}|&nbsp;<a target="{{ a.target2 }}" href="{{ a.link2 }}">{{ a.url2text }}</a>{% endif %}
+        <br>
+        <span style="color:gray">{% if a.sourcename %}{{ a.sourcename }}, {% endif %}{{ a.storydate | force_date }}</span>
+        {% if a.summary %}<br>{{ a.summary | safe }}{% endif %}
+    {% endif %}
+    <ul class="navlist">
+        {% if a.orgs %}
+        <li><a href="/dbpub/artlinks.asp?s={{ a.storyid }}">Orgs</a>
+            <ul>{% for o in a.orgs %}<li><a href="/dbpub/articles.asp?p={{ o.personid }}">{{ o.name }}</a></li>{% endfor %}</ul>
+        </li>
+        {% endif %}
+        {% if a.people %}
+        <li><a href="/dbpub/artlinks.asp?s={{ a.storyid }}">People</a>
+            <ul>{% for pe in a.people %}<li><a href="/dbpub/natarts.asp?p={{ pe.personid }}">{{ pe.name }}</a></li>{% endfor %}</ul>
+        </li>
+        {% endif %}
+        {% if a.topics %}
+        <li><a href="/dbpub/artlinks.asp?s={{ a.storyid }}">Topics</a>
+            <ul>{% for tp in a.topics %}<li><a href="/dbpub/subject.asp?c={{ tp.catid }}">{{ tp.name }}</a></li>{% endfor %}</ul>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="clear"></div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

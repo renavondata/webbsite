@@ -1,0 +1,54 @@
+{% extends "base_database.html" %}
+
+{% block title %}SEHK listed issuer regulatory staff{% endblock %}
+{% block description %}Staff of the Stock Exchange of Hong Kong's Listing division who regulate HK-listed issuers, by team.{% endblock %}
+
+{% block content %}
+<h2>SEHK listed issuer regulatory staff</h2>
+
+<p>HK-listed issuers are regulated by the monopoly for-profit Stock Exchange of Hong Kong Ltd
+(<strong>SEHK</strong>, wholly owned by Hong Kong Exchanges and Clearing Ltd, 0388.HK), under the
+supervision of the Securities and Futures Commission (<strong>SFC</strong>). The staff are divided into
+teams, with each issuer covered by 1 team at any point in time. Senior team members may serve on more
+than one team. Click on the team numbers to see the issuers they cover. Click on the staff name to see
+their history.</p>
+
+<table class="txtable">
+    <tr>
+        <th></th>
+        <th><a href="?sort=namup">Staff name</a> | <a href="?sort=namdn">▼</a></th>
+        <th><a href="?sort=titup">Title</a> | <a href="?sort=titdn">▼</a></th>
+        <th>Teams</th>
+        <th><a href="?sort=telup">Tel</a> | <a href="?sort=teldn">▼</a></th>
+    </tr>
+    {% for m in staff %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td><a href="/dbpub/lirstaffhist.asp?s={{ m.staffid }}">{{ m.name }}</a></td>
+        <td>{{ m.title }}</td>
+        <td>
+            {% for tm in m.teams %}<a href="/dbpub/lirteams.asp?t={{ tm.teamid }}">{{ tm.teamno }}</a>&nbsp;{% endfor %}
+        </td>
+        <td>{{ m.tel }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Former team members</h3>
+<table class="txtable">
+    <tr>
+        <th></th>
+        <th><a href="?sort=namup">Staff name</a> | <a href="?sort=namdn">▼</a></th>
+        <th><a href="?sort=titup">Title</a> | <a href="?sort=titdn">▼</a></th>
+        <th>Last seen</th>
+    </tr>
+    {% for m in former %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ m.name }}</td>
+        <td>{{ m.title }}</td>
+        <td>{{ m.seen | ms_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

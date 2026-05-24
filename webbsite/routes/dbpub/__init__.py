@@ -44,6 +44,7 @@ from . import (
     articles,
     events,
     statistics,
+    campaigns,
 )
 
 
@@ -68,3 +69,4 @@ def register_blueprints(app):
     app.register_blueprint(articles.bp, url_prefix=url_prefix)
     app.register_blueprint(events.bp, url_prefix=url_prefix)
     app.register_blueprint(statistics.bp, url_prefix=url_prefix)
+    app.register_blueprint(campaigns.bp, url_prefix=url_prefix)

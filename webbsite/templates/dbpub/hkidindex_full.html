@@ -1,0 +1,39 @@
+{% extends "base_database.html" %}
+
+{% block title %}The HKID index{% endblock %}
+{% block description %}Index of Hong Kong Identity Card numbers sourced from publicly accessible documents.{% endblock %}
+
+{% block content %}
+<h2>The HKID index</h2>
+<p>This index lists names, HKIDs and a link to a relevant publicly-accessible document in each case
+(US SEC filings, Government Gazette notices, ICAC notices, listed-company sites, etc.). ID numbers are
+identifiers, not secrets &mdash; they tell you virtually nothing about a person, but they let us be sure
+<em>which</em> person is meant. Click the HKID to open the source document; click the name to see
+their known positions. Click headings to sort.</p>
+<p>Number of people in the HKID index: {{ total }}</p>
+
+<table class="opltable">
+    <tr>
+        <th><a href="?sort=hkidup">HKID</a> | <a href="?sort=hkiddn">▼</a></th>
+        <th class="left"><a href="?sort=nameup">Name</a> | <a href="?sort=namedn">▼</a></th>
+    </tr>
+    {% for p in people %}
+    <tr>
+        <td><a href="{{ p.hkidsource }}" target="_blank" rel="noopener">{{ p.hkid }}({{ p.cd }})</a></td>
+        <td class="left"><a href="/dbpub/positions.asp?p={{ p.personid }}">{{ p.name1 }}{% if p.name2 %}, {{ p.name2 }}{% endif %}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h4>Distribution of prefixes</h4>
+<table class="numtable fcl">
+    <tr><th>Prefix</th><th>Number</th><th>Share %</th></tr>
+    {% for pr in prefixes %}
+    <tr>
+        <td>{{ pr.prefix }}</td>
+        <td>{{ pr.count }}</td>
+        <td>{{ "{:,.2f}".format(pr.count * 100 / total) if total else '0.00' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
