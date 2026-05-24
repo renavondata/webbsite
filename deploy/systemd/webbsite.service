@@ -1,0 +1,38 @@
+# Captured from the live droplet webbsite-web. Source of truth — keep in sync with the box.
+# Serves the frozen Webb-site archive (gunicorn) on 127.0.0.1:8000; Caddy fronts it on :443.
+[Unit]
+Description=Webb-site Flask
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=webbsite
+Group=webbsite
+WorkingDirectory=/srv/webbsite
+EnvironmentFile=/etc/webbsite/env
+Environment=HOME=/srv/webbsite
+ExecStart=/usr/local/bin/uv run --frozen gunicorn -c gunicorn.conf.py --bind 127.0.0.1:8000 app:app
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+ReadWritePaths=/srv/webbsite
+ProtectHostname=yes
+ProtectClock=yes
+
+[Install]
+WantedBy=multi-user.target

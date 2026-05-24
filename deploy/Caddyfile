@@ -1,0 +1,16 @@
+# Captured from the live droplet webbsite-web (/etc/caddy/Caddyfile). Source of truth.
+# Terminates TLS on :443 and reverse-proxies to gunicorn on 127.0.0.1:8000.
+# Uses `tls internal` (Caddy self-signed CA): the renavon.com Cloudflare zone runs SSL mode
+# "Full" (not strict), so CF encrypts to the origin without validating the cert — consistent
+# with the other renavon subdomains. UFW restricts :443 to Cloudflare IP ranges, so the origin
+# is not directly reachable. If the zone is ever switched to "Full (strict)", replace
+# `tls internal` with a Cloudflare Origin CA cert (tls /etc/caddy/origin.crt /etc/caddy/origin.key).
+{
+	admin off
+}
+
+webbsite.renavon.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8000
+	tls internal
+}
