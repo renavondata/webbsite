@@ -4209,7 +4209,7 @@ def league_dirs_hk():
     # ~23k enigma.cagrel() total-return calls over the large quotes/events tables
     # and can exceed the 8s default (≈5s warm). Allow more headroom (< gunicorn's
     # 30s) so a cold first hit completes; thereafter Cloudflare serves it.
-    results = execute_query(sql, tuple(all_params), timeout_s=25)
+    results = execute_query(sql, tuple(all_params), timeout_s=50)
 
     return render_template(
         "dbpub/league_dirs_hk.html",

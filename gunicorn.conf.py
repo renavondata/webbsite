@@ -14,7 +14,9 @@ workers = int(os.environ.get("GUNICORN_WORKERS", "3"))
 worker_class = "gthread"
 threads = 8  # 3 workers × 8 threads = 24 concurrent request slots
 worker_connections = 1000
-timeout = 30  # Kill stuck workers fast; DB has its own 8s statement_timeout
+timeout = 60  # Most queries are fast (8s DB statement_timeout); a few heavy,
+              # deterministic, edge-cached analytical pages (e.g. leagueDirsHK's
+              # ~23k cagrel() calls) need a cold-compute headroom under 60s.
 graceful_timeout = 15  # Give workers 15s to finish in-flight requests during restart
 keepalive = 5
 
