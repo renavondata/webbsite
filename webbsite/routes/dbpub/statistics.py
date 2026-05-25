@@ -2026,13 +2026,24 @@ def prh_units():
 
 @bp.route("/govac.asp")
 def govac():
-    """Government accounts explorer - hierarchical budget data with drill-down"""
-    from webbsite.asp_helpers import get_int, get_bool, col_sum, join_row
+    """Government accounts explorer (actuals) - hierarchical budget data with drill-down."""
+    return _gov_explorer(get_int("i", 1251), get_int("t", 0), get_bool("g"), "act", "govac.asp")
 
-    # Parameters
-    i = get_int("i", 1251)  # govitem ID, default to Consolidated Accounts
-    t = get_int("t", 0)  # tree view (alternate classification)
-    g = get_bool("g")  # show as % of GDP
+
+@bp.route("/govest.asp")
+def govest():
+    """Government revenue/expenditure ESTIMATES explorer - port of govest.asp.
+    Identical to govac() but sums the est (estimate) column; drill-downs stay on govest."""
+    return _gov_explorer(get_int("i", 1251), get_int("t", 0), get_bool("g"), "est", "govest.asp")
+
+
+def _gov_explorer(i, t, g, value_col, self_route):
+    """Shared hierarchical government-accounts explorer for govac.asp / govest.asp.
+
+    i=govitem ID (default Consolidated Accounts), t=tree, g=as % of GDP.
+    value_col 'act' (govac) or 'est' (govest); self_route is the drill-down target.
+    """
+    from webbsite.asp_helpers import col_sum, join_row
 
     # Get current item details
     item_query = """
@@ -2156,7 +2167,7 @@ def govac():
 
         # Get sum for this item (recursive for heads)
         # Use the PARENT's neg value, not recalculate per item
-        item_data = get_govac_sum(item_id, is_head, periods, where_clause, t, neg)
+        item_data = get_govac_sum(item_id, is_head, periods, where_clause, t, neg, value_col)
 
         for period_idx, period in enumerate(periods):
             if period in item_data:
@@ -2164,7 +2175,7 @@ def govac():
 
     # Check for discrepancies and add "Others" row if needed
     use_others = False
-    direct_values = get_govac_sum(i, False, periods, where_clause, t, neg)
+    direct_values = get_govac_sum(i, False, periods, where_clause, t, neg, value_col)
 
     for period_idx, period in enumerate(periods):
         total = sum(results[period_idx])
@@ -2236,6 +2247,7 @@ def govac():
         i=i,
         t=t,
         g=g,
+        self_route=self_route,
         title=title,
         breadcrumbs=breadcrumbs,
         graph_title=graph_title,
@@ -2254,18 +2266,19 @@ def govac():
     )
 
 
-def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
+def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg, value_col="act"):
     """
     Recursively sum government account values for an item across periods.
-    Returns dict: {period: value}
+    Returns dict: {period: value}. value_col selects 'act' (actuals, govac.asp)
+    or 'est' (estimates, govest.asp); it is a controlled literal, not user input.
     """
     result = {period: 0 for period in periods}
 
     if is_head:
         # Sum all non-head children
         non_head_query = (
-            """
-            SELECT d::text as d, SUM(act * CASE WHEN g.rev THEN 1 ELSE -1 END) as act
+            f"""
+            SELECT d::text as d, SUM({value_col} * CASE WHEN g.rev THEN 1 ELSE -1 END) as act
             FROM enigma.govac
             JOIN enigma.govitems g ON govitem = g.id
             LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
@@ -2302,7 +2315,7 @@ def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
 
         for child in head_children:
             child_data = get_govac_sum(
-                child["id"], True, periods, where_clause, tree_id, neg
+                child["id"], True, periods, where_clause, tree_id, neg, value_col
             )
             for period in periods:
                 result[period] += child_data.get(period, 0)
@@ -2310,8 +2323,8 @@ def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
         # Also check for direct values on this head item
         # Note: Do NOT apply where_clause filter here (no transfer/reimb check)
         # This matches ASP line 42 which only checks "WHERE govitem=..."
-        direct_query = """
-            SELECT d::text as d, act * CASE WHEN rev THEN 1 ELSE -1 END as act
+        direct_query = f"""
+            SELECT d::text as d, {value_col} * CASE WHEN rev THEN 1 ELSE -1 END as act
             FROM enigma.govac
             JOIN enigma.govitems ON govitem = id
             WHERE govitem = %s
@@ -2327,8 +2340,8 @@ def get_govac_sum(item_id, is_head, periods, where_clause, tree_id, neg):
     else:
         # Not a head - get direct values only
         direct_query = (
-            """
-            SELECT d::text as d, act * CASE WHEN g.rev THEN 1 ELSE -1 END as act
+            f"""
+            SELECT d::text as d, {value_col} * CASE WHEN g.rev THEN 1 ELSE -1 END as act
             FROM enigma.govac
             JOIN enigma.govitems g ON govitem = g.id
             """

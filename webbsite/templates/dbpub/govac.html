@@ -21,7 +21,7 @@
 </ul>
 <div class="clear"></div>
 
-<form method="get" action="/dbpub/govac.asp">
+<form method="get" action="/dbpub/{{ self_route }}">
     <input type="hidden" name="t" value="{{ t }}">
     <input type="checkbox" name="g" id="g" value="1"{% if g %} checked{% endif %} onchange="this.form.submit()">
     <label for="g">Show as % of Gross Domestic Product</label>
@@ -58,7 +58,7 @@ Tap the legend to toggle items in and out of the chart.</p>
         <tr>
             <td class="left">
             {% if links and items[item_idx].id != i %}
-                <a href="/dbpub/govac.asp?t={{ t }}&amp;g={{ g|int }}&amp;i={{ items[item_idx].id }}">{{ items[item_idx].txt }}</a>
+                <a href="/dbpub/{{ self_route }}?t={{ t }}&amp;g={{ g|int }}&amp;i={{ items[item_idx].id }}">{{ items[item_idx].txt }}</a>
             {% else %}
                 {{ items[item_idx].txt }}
             {% endif %}
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     valueDecimals: 3,
                     valueSuffix: '%',
                     {% endif %}
-                    pointFormat: '<a href="/dbpub/govac.asp?t={{ t }}&g={{ g|int }}&i={{ items[item_idx].id }}">{series.name} {point.y}</a>',
+                    pointFormat: '<a href="/dbpub/{{ self_route }}?t={{ t }}&g={{ g|int }}&i={{ items[item_idx].id }}">{series.name} {point.y}</a>',
                 },
                 data: [{% for period_idx in range(num_periods) %}{{ results[period_idx][item_idx] }}{% if not loop.last %},{% endif %}{% endfor %}]
             }{% if not loop.last %},{% endif %}
