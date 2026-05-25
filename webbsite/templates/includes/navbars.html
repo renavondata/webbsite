@@ -49,7 +49,10 @@
 				<td style="vertical-align:middle">&nbsp;{{ delist_date.strftime('%Y-%m-%d') if delist_date else '' }}</td>
 				<td>
 				{% if stock_id %}
-					{% set cat = '1' if delist_date and delist_date <= now else '0' %}
+					{# Frozen archive: any delist_date is in the past, so a set delist_date
+					   means delisted (category 1). Avoids depending on `now`, which an
+					   imported macro doesn't receive from the page context. #}
+					{% set cat = '1' if delist_date else '0' %}
 					<ul class="navlist"><li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId={{ stock_id }}&category={{ cat }}">Docs</a></li></ul>
 				{% endif %}
 				</td>
