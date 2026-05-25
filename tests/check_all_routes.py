@@ -80,6 +80,15 @@ EXTRA_URLS = [
     ("/dbpub/offpay.asp?p=11600", 200),
     ("/dbpub/govest.asp?i=1251", 200),
     ("/dbpub/HKIDindex120215.asp", 200),  # suspension notice (publish gated off)
+    # Routes whose broken queries were fixed (were silent-empty/500 before).
+    ("/ccass/portchg.asp?p=7&d1=2024-06-03&d=2024-06-14", 200),
+    ("/dbpub/buybacks.asp?i=1088&f=m", 200),
+    ("/dbpub/buybacks.asp?i=1088&f=y", 200),
+    ("/dbpub/overlap.asp?p=382", 200),
+    ("/dbpub/pay.asp?p=382", 200),
+    ("/dbpub/events.asp?i=1088", 200),
+    ("/dbpub/matches.asp?org1=382&org2=382", 200),
+    ("/dbpub/enigma.positions.asp?p=105", 200),  # 301 -> positions.asp (requests follows)
 ]
 
 # Silent-failure guards: (path, params, must_match_regex, must_not_contain).
@@ -195,6 +204,22 @@ def main():
     else:
         failures.append(f"RECONCILE offsum: current={curc} all={allc}")
         print(f"  FAIL  reconcile offsum current={curc} all={allc}")
+
+    # Previously silent-empty (broken-query) routes must now render data rows.
+    for label, url, minrows in [
+        ("events i=1088", url_for("/dbpub/events.asp", {"i": "1088"}), 10),
+        ("buybacks i=1088 f=m", url_for("/dbpub/buybacks.asp", {"i": "1088", "f": "m"}), 10),
+        ("buybacks i=1088 f=y", url_for("/dbpub/buybacks.asp", {"i": "1088", "f": "y"}), 5),
+        ("portchg p=7", url_for("/ccass/portchg.asp",
+                                {"p": "7", "d1": "2024-06-03", "d": "2024-06-14"}), 10),
+        ("pay p=382", url_for("/dbpub/pay.asp", {"p": "382"}), 5),
+    ]:
+        nrows = _count(url, r"<tr")
+        if nrows >= minrows:
+            print(f"  ok    data rows {label} ({nrows})")
+        else:
+            failures.append(f"DATA {label}: only {nrows} <tr> rows (< {minrows})")
+            print(f"  FAIL  data rows {label} ({nrows} < {minrows})")
 
     # 3) coverage report (informational): parameterless GET rules with no fixture
     try:
