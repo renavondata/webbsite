@@ -1315,10 +1315,10 @@ def chistory():
                             SELECT holding, q.atDate,
                                    enigma.splitAdj(%s, q.atDate) AS scripAdj,
                                    closing, tradeDate,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 4
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 5
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
                             FROM ccass.quotes q
@@ -1354,10 +1354,10 @@ def chistory():
                                    enigma.splitAdj(%s, c.tradeDate) AS priceAdj,
                                    enigma.splitAdj(%s, c.settleDate) AS holdAdj,
                                    closing, tradeDate,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 4
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 5
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
                             FROM ccass.quotes q
@@ -2374,10 +2374,10 @@ def nciphist():
                             SELECT NCIPhldg AS holding, NCIPcnt AS holders, q.atDate,
                                    enigma.splitAdj(%s, q.atDate) AS scripAdj,
                                    closing, tradeDate,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 4
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 5
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
                             FROM ccass.quotes q
@@ -2408,10 +2408,10 @@ def nciphist():
                                    enigma.splitAdj(%s, c.tradeDate) AS priceAdj,
                                    enigma.splitAdj(%s, c.settleDate) AS holdAdj,
                                    closing, tradeDate,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 4
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjSplit,
-                                   COALESCE((SELECT adjust FROM enigma.events
+                                   COALESCE((SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                                              WHERE issueID = %s AND eventType = 5
                                                AND cancelDate IS NULL AND exDate = c.settleDate), 1) AS adjBonus
                             FROM ccass.quotes q
@@ -3278,7 +3278,7 @@ def chldchg():
         sa_result = execute_query(
             """
             SELECT COALESCE(
-                (SELECT adjust FROM enigma.events
+                (SELECT EXP(SUM(LN(adjust))) FROM enigma.events
                  WHERE issueID = %s AND eventType = 4 AND exDate = %s
                    AND cancelDate IS NULL),
                 1.0) AS sa
