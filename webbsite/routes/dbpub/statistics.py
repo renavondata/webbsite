@@ -1217,7 +1217,7 @@ def pay():
         # Check if we have a pay record for this date
         doc_result = execute_query(
             """
-            SELECT d.url, d.paypage
+            SELECT r.url, d.paypage
             FROM enigma.documents d
             JOIN enigma.repfilings r ON d.repid = r.id
             WHERE d.orgid = %s
