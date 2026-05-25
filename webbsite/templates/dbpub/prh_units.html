@@ -40,7 +40,7 @@ sourced here</a>. Click on the menu to go back up.</p>
 			<td>{{ "{:.2f}".format(flat.area|float) }}</td>
 			<td>{{ 'Y' if flat.elevator else 'N' }}</td>
 		</tr>
-		{% set _ = ns.__setitem__('suma', ns.suma + flat.area|float) %}
+		{% set ns.suma = ns.suma + flat.area|float %}
 	{% endfor %}
 	<tr class="total">
 		<td></td>

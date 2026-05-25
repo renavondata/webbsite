@@ -43,9 +43,9 @@ sourced here</a>. Click on a Block to drill down to Floors and Units.</p>
 			<td>{{ "{:,}".format(block.tota|int) }}</td>
 			<td>{{ "{:.2f}".format(block.a|float) if block.c else '-' }}</td>
 		</tr>
-		{% set _ = ns.__setitem__('sumc', ns.sumc + block.c|int) %}
-		{% set _ = ns.__setitem__('suma', ns.suma + block.tota|int) %}
-		{% set _ = ns.__setitem__('sumelev', ns.sumelev + block.elev|int) %}
+		{% set ns.sumc = ns.sumc + block.c|int %}
+		{% set ns.suma = ns.suma + block.tota|int %}
+		{% set ns.sumelev = ns.sumelev + block.elev|int %}
 	{% endfor %}
 	<tr class="total">
 		<td class="colHide2"></td>

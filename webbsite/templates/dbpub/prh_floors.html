@@ -43,9 +43,9 @@ sourced here</a>. Click on a floor to see the flats.</p>
 			<td>{{ "{:,}".format(floor.tota|int) }}</td>
 			<td>{{ "{:.2f}".format(floor.a|float) if floor.c else '-' }}</td>
 		</tr>
-		{% set _ = ns.__setitem__('sumc', ns.sumc + floor.c|int) %}
-		{% set _ = ns.__setitem__('suma', ns.suma + floor.tota|int) %}
-		{% set _ = ns.__setitem__('sumelev', ns.sumelev + floor.elev|int) %}
+		{% set ns.sumc = ns.sumc + floor.c|int %}
+		{% set ns.suma = ns.suma + floor.tota|int %}
+		{% set ns.sumelev = ns.sumelev + floor.elev|int %}
 	{% endfor %}
 	<tr class="total">
 		<td class="colHide2"></td>

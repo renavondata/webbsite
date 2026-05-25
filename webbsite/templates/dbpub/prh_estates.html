@@ -42,9 +42,9 @@ sourced here</a>. Click on an Estate to drill down to Blocks, Floors and Units.<
 			<td>{{ "{:.2f}".format(estate.a|float) if estate.c else '-' }}</td>
 			<td><a href="https://maps.google.com/?q={{ estate.latitude }},{{ estate.longitude }}" target="_blank">Open</a></td>
 		</tr>
-		{% set _ = ns.__setitem__('sumc', ns.sumc + estate.c|int) %}
-		{% set _ = ns.__setitem__('suma', ns.suma + estate.tota|int) %}
-		{% set _ = ns.__setitem__('sumelev', ns.sumelev + estate.elev|int) %}
+		{% set ns.sumc = ns.sumc + estate.c|int %}
+		{% set ns.suma = ns.suma + estate.tota|int %}
+		{% set ns.sumelev = ns.sumelev + estate.elev|int %}
 	{% endfor %}
 	<tr class="total">
 		<td class="colHide2"></td>
