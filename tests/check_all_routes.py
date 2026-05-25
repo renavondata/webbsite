@@ -41,14 +41,13 @@ import crawl_asp as ca  # noqa: E402
 # Deferred interactive features: every path under these must be 410 Gone.
 DEFERRED_PREFIXES = ("/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor")
 
-# Routes present in crawl_asp.py's aspirational list but never ported to Flask
-# (documented gap, not a regression): the stock price-history / quotes pages.
-# (prices.asp *does* exist in the codebase but is an economic-data chart keyed by
-# a dataitem id, deliberately unregistered — a separate feature, not these.)
-# Reported informationally so the gate stays green for the deployed surface.
-KNOWN_MISSING = ("/dbpub/prices.asp", "/dbpub/quotes.asp", "/dbpub/pricesCSV.asp")
+# quotes.asp is a phantom in crawl_asp.py's list (no such ASP page ever existed;
+# the real quote pages are hpw.asp/hpup.asp/pricesCSV.asp, all implemented). Kept
+# here so its fixtures are excluded rather than failing.
+KNOWN_MISSING = ("/dbpub/quotes.asp",)
 
-# App-level / infra routes not in the crawl lists.
+# App-level / infra routes + the newly-ported dbpub pages (with representative
+# params), and the deferred features that must be 410.
 EXTRA_URLS = [
     ("/", 200),
     ("/health", 200),
@@ -62,16 +61,45 @@ EXTRA_URLS = [
     ("/vote/poll.asp", 410),
     ("/pollman/default.asp", 410),
     ("/dbeditor/org.asp", 410),
+    ("/dbpub/cgrate.asp", 410),       # login-only rating write endpoint -> 410
+    # Newly-ported pages.
+    ("/dbpub/default.asp", 200),
+    ("/dbpub/campaigns.asp", 200),
+    ("/dbpub/donations.asp?camp=1", 200),
+    ("/dbpub/idcheck.asp?ID=C668668", 200),
+    ("/dbpub/yearendcos.asp?e=a&m=12", 200),
+    ("/dbpub/lirstaff.asp", 200),
+    ("/dbpub/lirstaffhist.asp?s=1", 200),
+    ("/dbpub/natarts.asp?p=382", 200),
+    ("/dbpub/hkpaxGoogle.asp", 200),
+    ("/dbpub/hkflighthist.asp?al=CPA", 200),
+    ("/dbpub/prices.asp?i=1", 200),
+    ("/dbpub/hpw.asp?i=1088&f=m", 200),
+    ("/dbpub/hpup.asp?i=1088", 200),
+    ("/dbpub/offsum.asp?p=382", 200),
+    ("/dbpub/offpay.asp?p=11600", 200),
+    ("/dbpub/govest.asp?i=1251", 200),
+    ("/dbpub/HKIDindex120215.asp", 200),  # suspension notice (publish gated off)
 ]
 
 # Silent-failure guards: (path, params, must_match_regex, must_not_contain).
-# Targeted at the four routes fixed for the listedcoshk/.issuer view bug, which
-# previously rendered an empty 200. Each asserts the page actually has data.
+# Catch pages that 200 but render no data (the listedcoshk/.issuer failure mode),
+# extended to the newly-ported pages.
 CONTENT_CHECKS = [
     ("/dbpub/yearend.asp", {"e": "a"}, r"<td[^>]*>\s*[1-9][\d,]*\s*</td>", None),
     ("/dbpub/reportspeed.asp", {"y": "2023"}, r"orgdata\.asp\?p=\d+", None),
     ("/dbpub/leagueDirsHK.asp", {}, None, "No directors"),
     ("/dbpub/indexhk.asp", {"p": "A"}, r"articles\.asp\?p=\d+", None),
+    ("/dbpub/campaigns.asp", {}, r"donations\.asp\?camp=\d+", None),
+    ("/dbpub/donations.asp", {"camp": "1"}, r"(orgdata|natperson)\.asp\?p=\d+", None),
+    ("/dbpub/idcheck.asp", {"ID": "C668668"}, r"check digit is:\s*9", None),
+    ("/dbpub/yearendcos.asp", {"e": "a", "m": "12"}, r"orgdata\.asp\?p=\d+", None),
+    ("/dbpub/lirstaff.asp", {}, r"lirstaffhist\.asp\?s=\d+", None),
+    ("/dbpub/natarts.asp", {"p": "382"}, r"artsum", None),
+    ("/dbpub/hpw.asp", {"i": "1088", "f": "m"}, r"Adj.{0,12}Close", None),
+    ("/dbpub/offsum.asp", {"p": "382"}, r"positions\.asp\?p=\d+", None),
+    ("/dbpub/offpay.asp", {"p": "11600"}, r"pay\.asp\?p=\d+", None),
+    ("/dbpub/govest.asp", {"i": "1251"}, r"chart1", None),
 ]
 
 
@@ -141,6 +169,32 @@ def main():
             print(f"  FAIL  {label}  (empty marker '{must_not}')")
         else:
             print(f"  ok    {label}")
+
+    # 2.5) reconciliations vs verified siblings (correctness, not just liveness)
+    print("-" * 60)
+
+    def _count(url, pat):
+        code, body = probe(url)
+        return len(re.findall(pat, body, re.M)) if code == 200 else -1
+
+    # hpw monthly period rows must equal pricesCSV monthly rows (same data, two
+    # independent code paths). hpw table = 1 header <tr> + N data rows.
+    hpw_tr = _count(url_for("/dbpub/hpw.asp", {"i": "1088", "f": "m"}), r"<tr")
+    csv_n = _count(url_for("/dbpub/pricesCSV.asp", {"i": "1088", "f": "m"}), r"^\d{4}-")
+    if csv_n > 0 and hpw_tr - 1 == csv_n:
+        print(f"  ok    reconcile hpw == pricesCSV periods ({csv_n})")
+    else:
+        failures.append(f"RECONCILE hpw vs pricesCSV: {hpw_tr - 1} vs {csv_n}")
+        print(f"  FAIL  reconcile hpw({hpw_tr - 1}) != pricesCSV({csv_n})")
+
+    # offsum: current (hide=Y) must be a non-empty subset of full history.
+    allc = _count(url_for("/dbpub/offsum.asp", {"p": "382"}), r"positions\.asp")
+    curc = _count(url_for("/dbpub/offsum.asp", {"p": "382", "hide": "Y"}), r"positions\.asp")
+    if 0 < curc <= allc:
+        print(f"  ok    reconcile offsum current({curc}) <= all({allc})")
+    else:
+        failures.append(f"RECONCILE offsum: current={curc} all={allc}")
+        print(f"  FAIL  reconcile offsum current={curc} all={allc}")
 
     # 3) coverage report (informational): parameterless GET rules with no fixture
     try:
