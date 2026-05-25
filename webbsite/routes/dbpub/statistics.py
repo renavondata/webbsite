@@ -2642,9 +2642,10 @@ def overlap():
             ) t
             JOIN enigma.organisations o ON t.company = o.personid
             LEFT JOIN LATERAL (
-                SELECT stockexid
+                SELECT sl.stockexid
                 FROM enigma.stocklistings sl
-                WHERE sl.issuer = o.personid
+                JOIN enigma.issue iss ON sl.issueid = iss.id1
+                WHERE iss.issuer = o.personid
                   AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
                   AND (sl.delistdate IS NULL OR sl.delistdate > %s)
                 LIMIT 1

@@ -2730,22 +2730,27 @@ def portchg():
     changes = []
     if p > 0:
         try:
-            # Build the HAVING or WHERE clause based on z flag
+            # parthold records only changes, so each holding is the most recent
+            # row on/before the date (as-of), like cholder.asp. Filter to the
+            # issues of interest in `combined` BEFORE the per-row outstanding()/
+            # quote lookups (z=show all current holdings; else only net changes).
             if z:
-                filter_clause = "WHERE end_holding <> 0"
+                combined_filter = "WHERE COALESCE(e.holding, 0) <> 0"
             else:
-                filter_clause = "HAVING (COALESCE(end_holding, 0) - COALESCE(start_holding, 0)) <> 0"
+                combined_filter = "WHERE COALESCE(s.holding, 0) <> COALESCE(e.holding, 0)"
 
             sql = f"""
                 WITH start_holdings AS (
-                    SELECT ph.issueID, ph.holding
+                    SELECT DISTINCT ON (ph.issueID) ph.issueID, ph.holding
                     FROM ccass.parthold ph
-                    WHERE ph.partID = %s AND ph.atDate = %s
+                    WHERE ph.partID = %s AND ph.atDate <= %s
+                    ORDER BY ph.issueID, ph.atDate DESC
                 ),
                 end_holdings AS (
-                    SELECT ph.issueID, ph.holding
+                    SELECT DISTINCT ON (ph.issueID) ph.issueID, ph.holding
                     FROM ccass.parthold ph
-                    WHERE ph.partID = %s AND ph.atDate = %s
+                    WHERE ph.partID = %s AND ph.atDate <= %s
+                    ORDER BY ph.issueID, ph.atDate DESC
                 ),
                 combined AS (
                     SELECT COALESCE(s.issueID, e.issueID) as issueID,
@@ -2753,6 +2758,7 @@ def portchg():
                            COALESCE(e.holding, 0) as end_holding
                     FROM start_holdings s
                     FULL OUTER JOIN end_holdings e ON s.issueID = e.issueID
+                    {combined_filter}
                 )
                 SELECT c.issueID,
                        c.end_holding as holding,
@@ -2781,13 +2787,12 @@ def portchg():
                     WHERE issueID = c.issueID AND atdate <= %s
                     ORDER BY atdate DESC LIMIT 1
                 ) q ON TRUE
-                {filter_clause}
                 ORDER BY {o}
             """
 
             # params follow %s text order: start partID, start date, end partID,
             # end date, susp-cmp, outstanding LATERAL, quote LATERAL (last four = d2)
-            results = execute_query(sql, (p, d1, p, d2, d2, d2, d2))
+            results = execute_query(sql, (p, d1, p, d2, d2, d2, d2), timeout_s=25)
 
             for row in results:
                 stake = row.get("stake")
