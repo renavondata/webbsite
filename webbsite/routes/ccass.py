@@ -2759,8 +2759,8 @@ def portchg():
                        c.end_holding - c.start_holding as hldchg,
                        sl.stockCode,
                        o.name1 as stockName,
-                       CASE WHEN i.outstanding > 0 THEN c.end_holding::float / i.outstanding ELSE NULL END as stake,
-                       CASE WHEN i.outstanding > 0 THEN (c.end_holding - c.start_holding)::float / i.outstanding ELSE NULL END as stkchg,
+                       CASE WHEN os.os > 0 THEN c.end_holding::float / os.os ELSE NULL END as stake,
+                       CASE WHEN os.os > 0 THEN (c.end_holding - c.start_holding)::float / os.os ELSE NULL END as stkchg,
                        q.close as price,
                        CASE WHEN q.close IS NOT NULL THEN (c.end_holding - c.start_holding) * q.close ELSE NULL END as valchg,
                        q.d as lastDate,
@@ -2768,21 +2768,26 @@ def portchg():
                 FROM combined c
                 JOIN enigma.issue i ON c.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                LEFT JOIN LATERAL (
+                    SELECT enigma.outstanding(c.issueID, %s) AS os
+                ) os ON TRUE
                 LEFT JOIN (
                     SELECT DISTINCT ON (issueID) issueID, stockCode
                     FROM enigma.stocklistings
                     ORDER BY issueID, delistdate NULLS FIRST, firsttradedate DESC
                 ) sl ON c.issueID = sl.issueID
                 LEFT JOIN LATERAL (
-                    SELECT close, d FROM ccass.quotes
-                    WHERE issueID = c.issueID AND d <= %s
-                    ORDER BY d DESC LIMIT 1
+                    SELECT closing AS close, atdate AS d FROM ccass.quotes
+                    WHERE issueID = c.issueID AND atdate <= %s
+                    ORDER BY atdate DESC LIMIT 1
                 ) q ON TRUE
                 {filter_clause}
                 ORDER BY {o}
             """
 
-            results = execute_query(sql, (p, d1, p, d2, d2, d2))
+            # params follow %s text order: start partID, start date, end partID,
+            # end date, susp-cmp, outstanding LATERAL, quote LATERAL (last four = d2)
+            results = execute_query(sql, (p, d1, p, d2, d2, d2, d2))
 
             for row in results:
                 stake = row.get("stake")

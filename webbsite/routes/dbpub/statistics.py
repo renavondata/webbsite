@@ -321,22 +321,22 @@ def enigma_positions():
 
     # Determine sort order
     sort_orders = {
-        "orgup": "name1, from_date",
-        "orgdn": "name1 DESC, from_date",
+        "orgup": "name1, apptdate",
+        "orgdn": "name1 DESC, apptdate",
         "posup": "posShort, name1",
         "posdn": "posShort DESC, name1",
-        "appup": "from_date, name1",
-        "appdn": "from_date DESC, name1",
-        "resup": "until, name1",
-        "resdn": "until DESC, name1",
+        "appup": "apptdate, name1",
+        "appdn": "apptdate DESC, name1",
+        "resup": "resdate, name1",
+        "resdn": "resdate DESC, name1",
     }
-    ob = sort_orders.get(sort_param, "name1, from_date")
+    ob = sort_orders.get(sort_param, "name1, apptdate")
     if sort_param not in sort_orders:
         sort_param = "orgup"
 
-    # Date filter for current vs history
+    # Date filter for current vs history (directorships cols are apptdate/resdate)
     if hide == "Y":
-        date_filter = "(until IS NULL OR until > CURRENT_DATE)"
+        date_filter = "(resdate IS NULL OR resdate > CURRENT_DATE)"
     else:
         date_filter = "TRUE"
 
@@ -1272,8 +1272,8 @@ def pay():
                  WHERE d.director = pay.pplid
                    AND d.company = %s
                    AND pos.rank = pay.prank
-                   AND (d.from IS NULL OR d.from <= pay.d)
-                 ORDER BY d.from DESC
+                   AND (d.apptdate IS NULL OR d.apptdate <= pay.d)
+                 ORDER BY d.apptdate DESC
                  LIMIT 1) AS posshort,
                 pay.fees,
                 pay.salary,
@@ -2635,10 +2635,10 @@ def overlap():
                 JOIN enigma.directorships d2 ON d1.director = d2.director
                 WHERE d2.company <> %s
                   AND d1.company = %s
-                  AND (d1.until IS NULL OR d1.until > %s)
-                  AND (d2.until IS NULL OR d2.until > %s)
-                  AND (d1.from IS NULL OR d1.from <= %s)
-                  AND (d2.from IS NULL OR d2.from <= %s)
+                  AND (d1.resdate IS NULL OR d1.resdate > %s)
+                  AND (d2.resdate IS NULL OR d2.resdate > %s)
+                  AND (d1.apptdate IS NULL OR d1.apptdate <= %s)
+                  AND (d2.apptdate IS NULL OR d2.apptdate <= %s)
             ) t
             JOIN enigma.organisations o ON t.company = o.personid
             LEFT JOIN LATERAL (

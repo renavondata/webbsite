@@ -297,6 +297,16 @@ def buybacks():
             else:  # yearly
                 date_condition = "MAKE_DATE(bb.y, 1, 1)"
 
+            # The settlement-calendar join only applies to daily rows: bb.effDate
+            # exists only when freq='d' (monthly/yearly aggregates select y/m). For
+            # m/y, skip the join and return a NULL settle date.
+            if freq == "d":
+                cal_join = "LEFT JOIN ccass.calendar c ON bb.effDate = c.tradeDate"
+                settle_col = "c.settleDate"
+            else:
+                cal_join = ""
+                settle_col = "NULL AS settleDate"
+
             # Get buybacks with outstanding shares calculation
             buybacks_data = execute_query(
                 f"""
@@ -308,7 +318,7 @@ def buybacks():
                        CASE WHEN bb.shares > 0
                             THEN bb.value / bb.shares
                             ELSE NULL END AS price,
-                       c.settleDate
+                       {settle_col}
                 FROM (
                     SELECT {select_fields}
                     FROM {table}
@@ -323,7 +333,7 @@ def buybacks():
                     ORDER BY atDate DESC
                     LIMIT 1
                 ) os ON TRUE
-                LEFT JOIN ccass.calendar c ON bb.effDate = c.tradeDate
+                {cal_join}
                 ORDER BY {ob}
             """,
                 (issue_id, issue_id),
