@@ -416,8 +416,8 @@ def enigma_positions():
                 LEFT JOIN enigma.issue i ON d.company = i.issuer
                 WHERE pos.rank = %s
                   AND d.director = %s
-                  AND {{date_filter}}
-                ORDER BY {{ob}}
+                  AND {date_filter}
+                ORDER BY {ob}
             """.format(
                     date_filter=date_filter, ob=ob
                 ),

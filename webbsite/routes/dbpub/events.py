@@ -111,7 +111,7 @@ def enigma_events():
                 JOIN enigma.capchangetypes ct ON e.eventtype = ct.capchangetype
                 LEFT JOIN enigma.currencies c ON e.currid = c.id
                 WHERE e.issueid = %s
-                ORDER BY {{ob}}
+                ORDER BY {ob}
             """.format(
                     ob=ob
                 ),
