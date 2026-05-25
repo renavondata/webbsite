@@ -1,0 +1,29 @@
+{# Shared humanBar navigation for person-level pages. Expects context:
+   person_id, nav_flags (has_positions, has_pay, has_sdi, ccass_part_id,
+   has_stories) and `person_live` (keydata|positions|pay|dealings|ccass|reports,
+   or '' for none). Mirrors the humanBar in natperson.html. #}
+<ul class="navlist">
+	{% if person_live == 'keydata' %}<li class="livebutton">Key data</li>
+	{% else %}<li><a href="{{ url_for('dbpub_people.natperson', p=person_id) }}">Key data</a></li>{% endif %}
+	{% if nav_flags.get('has_positions') %}
+		{% if person_live == 'positions' %}<li class="livebutton">Positions</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.enigma_positions', p=person_id) }}">Positions</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('has_pay') %}
+		{% if person_live == 'pay' %}<li class="livebutton">Pay</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.pay', p=person_id) }}">Pay</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('has_sdi') %}
+		{% if person_live == 'dealings' %}<li class="livebutton">Dealings</li>
+		{% else %}<li><a href="{{ url_for('dbpub_sdi.sdidir', p=person_id) }}">Dealings</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('ccass_part_id') %}
+		{% if person_live == 'ccass' %}<li class="livebutton">CCASS holdings</li>
+		{% else %}<li><a href="{{ url_for('ccass.cholder', part=nav_flags['ccass_part_id']) }}">CCASS holdings</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('has_stories') %}
+		{% if person_live == 'reports' %}<li class="livebutton">Webb-site Reports</li>
+		{% else %}<li><a href="{{ url_for('dbpub_people.natarts', p=person_id) }}">Webb-site Reports</a></li>{% endif %}
+	{% endif %}
+</ul>
+<div class="clear"></div>

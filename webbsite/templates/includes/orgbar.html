@@ -1,0 +1,42 @@
+{# Shared orgBar navigation for an organisation. Expects: ob_name, ob_org_id,
+   ob_flags (has_directorships, has_pay, has_advisers, has_adviserships,
+   has_sfc_licenses, ccass_part_id, has_documents, has_ess, has_stories,
+   has_lir_team). All items are links (no live button). Mirrors ASP orgBar. #}
+{% if ob_name and ob_org_id %}
+<h2>{{ ob_name }}</h2>
+<ul class="navlist">
+	<li><a href="{{ url_for('dbpub_statistics.orgdata', p=ob_org_id) }}">Key Data</a></li>
+	{% if ob_flags.get('has_directorships') %}
+		<li><a href="{{ url_for('dbpub_corporate.officers', p=ob_org_id) }}">Officers</a></li>
+		<li><a href="{{ url_for('dbpub_statistics.overlap', p=ob_org_id) }}">Overlaps</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_pay') %}
+		<li><a href="{{ url_for('dbpub_statistics.pay', p=ob_org_id) }}">Pay</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_advisers') %}
+		<li><a href="{{ url_for('dbpub_corporate.advisers', p=ob_org_id) }}">Advisers</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_adviserships') %}
+		<li><a href="{{ url_for('dbpub_statistics.adviserships', p=ob_org_id) }}">Adviserships</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_sfc_licenses') %}
+		<li><a href="{{ url_for('dbpub_sfc.sfcolicrec', p=ob_org_id) }}">SFC licenses</a></li>
+	{% endif %}
+	{% if ob_flags.get('ccass_part_id') %}
+		<li><a href="{{ url_for('ccass.cholder', part=ob_flags['ccass_part_id']) }}">CCASS holdings</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_documents') %}
+		<li><a href="{{ url_for('dbpub_events.docs', p=ob_org_id) }}">Financials</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_ess') %}
+		<li><a href="{{ url_for('dbpub_statistics.essraw', p=ob_org_id) }}">ESS</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_stories') %}
+		<li><a href="{{ url_for('dbpub_articles.articles', p=ob_org_id) }}">Webb-site Reports</a></li>
+	{% endif %}
+	{% if ob_flags.get('has_lir_team') %}
+		<li><a href="{{ url_for('dbpub_statistics.complain', p=ob_org_id) }}">Complain</a></li>
+	{% endif %}
+</ul>
+<div class="clear"></div>
+{% endif %}

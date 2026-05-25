@@ -1,6 +1,86 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Renavon Hong Kong Database: dealings by {{ person_name }} in {{ stock_name }}{% endblock %}
+
+{% macro sl(label, defsort, altsort) %}
+	{%- if sort == defsort %}<a href="{{ url_for('dbpub_sdi.sdidirco', p=person_id, i=issue_id, sort=altsort) }}"><strong>{{ label|safe }} &#8595;</strong></a>
+	{%- elif sort == altsort %}<a href="{{ url_for('dbpub_sdi.sdidirco', p=person_id, i=issue_id, sort=defsort) }}"><strong>{{ label|safe }} &#8593;</strong></a>
+	{%- else %}<a href="{{ url_for('dbpub_sdi.sdidirco', p=person_id, i=issue_id, sort=defsort) }}">{{ label|safe }}</a>{% endif %}
+{%- endmacro %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if is_org %}
+	{% with ob_name=person_name, ob_org_id=person_id, ob_flags=filer_flags %}{% include 'includes/orgbar.html' %}{% endwith %}
+{% else %}
+	<h2>{{ person_name or 'No human was specified' }}</h2>
+	{% if person_id %}{% with nav_flags=person_flags, person_live='dealings' %}{% include 'includes/humanbar.html' %}{% endwith %}{% endif %}
+{% endif %}
+<ul class="navlist"><li><a target="_blank" href="{{ url_for('dbpub_sdi.sdi_notes') }}">Notes</a></li></ul>
+<div class="clear"></div>
+<h3>Dealings in <a href="{{ url_for('dbpub_sdi.sdiissue', i=issue_id) }}">{{ stock_name }}</a></h3>
+{% set stock_live = '' %}
+{% include 'includes/stockbar.html' %}
+
+{% if sdi %}
+<p>Click the date to see more details. L=Long, S=Short. Click the on-exchange price to see the CCASS
+movements on the settlement date corresponding to the relevant event, for trades after 22-Jun-2007.</p>
+<p class="widthAlert1">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+<table class="numtable">
+	<tr>
+		<th class="colHide1"></th>
+		<th class="nowrap">{{ sl('Relevant<br>date<br>Y-M-D', 'relddn', 'reldup') }}</th>
+		<th class="left colHide3">{{ sl('Probable<br>reason', 'rsnup', 'rsndn') }}</th>
+		<th class="colHide3">L<br>/<br>S</th>
+		<th>Shares<br>involved</th>
+		<th class="left colHide1"><span class="info">Capacity<span>Capacity of the shares involved</span></span></th>
+		<th class="colHide1">Interest<br>in shares</th>
+		<th class="colHide1">{{ sl('Curr', 'pricup', 'pricdn') }}</th>
+		<th>{{ sl('OnEx<br>Price', 'pricup', 'pricdn') }}</th>
+		<th>OffEx<br>Price</th>
+		<th class="colHide3">{{ sl('Value', 'lvaldn', 'lvalup') }}</th>
+		<th class="colHide3">Stake<br>%</th>
+		<th class="colHide3">Stake<br>&#x0394; %</th>
+	</tr>
+	{% for row in sdi %}
+		{% if row.postype == 1 %}
+			{% set ls = 'L' %}
+			{% set holding = row.longshs2 %}
+			{% set stake = row.longstk2 %}
+			{% set stkchg = row.lngstkchg %}
+			{% set reduce = row.longshs1 is not none and row.longshs2 is not none and row.longshs2 < row.longshs1 and row.rsnsht != 'Acquire' %}
+			{% set shsinv = (-row.shsinv if (reduce and row.shsinv is not none) else row.shsinv) %}
+			{% set value = (-row.value if (reduce and row.value is not none) else row.value) %}
+		{% else %}
+			{% set ls = 'S' %}
+			{% set holding = (-row.shortshs2 if row.shortshs2 is not none else none) %}
+			{% set stake = (-row.shortstk2 if row.shortstk2 is not none else none) %}
+			{% set stkchg = (-row.shtstkchg if row.shtstkchg is not none else none) %}
+			{% set incr = row.shortshs1 is none or (row.shortshs2 is not none and row.shortshs2 > row.shortshs1) %}
+			{% set shsinv = (-row.shsinv if (incr and row.shsinv is not none) else row.shsinv) %}
+		{% endif %}
+	<tr>
+		<td class="colHide1">{{ loop.index }}</td>
+		<td class="nowrap"><a href="{{ url_for('dbpub_sdi.sdicap', r=row.id) }}">{{ row.reldate.strftime('%Y-%m-%d') if row.reldate else '' }}</a></td>
+		<td class="left colHide3">{% if row.rsnlng %}<span class="info">{{ row.rsnsht }}<span>{{ row.rsnlng }}</span></span>{% else %}{{ row.rsnsht }}{% endif %}</td>
+		<td class="colHide3">{{ ls }}</td>
+		<td>{% if shsinv is not none %}{{ '{:,.0f}'.format(shsinv) }}{% else %}&nbsp;{% endif %}</td>
+		<td class="left colHide1">{% if row.caplong %}<span class="info">{{ row.capshort or '' }}<span>{{ row.caplong }}</span></span>{% else %}{{ row.capshort or '' }}{% endif %}</td>
+		<td class="colHide1">{% if holding is not none %}{{ '{:,.0f}'.format(holding) }}{% else %}&nbsp;{% endif %}</td>
+		{% if ls == 'L' %}
+			<td class="colHide1">{{ row.currency or '' }}</td>
+			<td>{% if row.price is not none and row.reldate and row.reldate.strftime('%Y-%m-%d') > '2007-06-22' and row.settledate %}<a href="{{ url_for('ccass.chldchg', i=issue_id, d=row.settledate.strftime('%Y-%m-%d')) }}">{{ '{:,.3f}'.format(row.price) }}</a>{% elif row.price is not none %}{{ '{:,.3f}'.format(row.price) }}{% endif %}</td>
+			<td>{{ '{:,.3f}'.format(row.avcon) if row.avcon is not none else '' }}</td>
+			<td class="colHide3">{{ '{:,.0f}'.format(value) if value is not none else '' }}</td>
+		{% else %}
+			<td class="colHide1"><span style="background-color:gray">&nbsp;</span></td>
+			<td colspan="2"><span style="background-color:gray">&nbsp;</span></td>
+			<td class="colHide3"><span style="background-color:gray">&nbsp;</span></td>
+		{% endif %}
+		<td class="colHide3">{% if stake is not none %}{{ '{:,.2f}'.format(stake) }}{% else %}&nbsp;{% endif %}</td>
+		<td class="colHide3">{% if stkchg is not none %}{{ '{:,.2f}'.format(stkchg) }}{% else %}&nbsp;{% endif %}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% elif person_id and issue_id %}
+<p><b>None found.</b></p>
+{% endif %}
 {% endblock %}

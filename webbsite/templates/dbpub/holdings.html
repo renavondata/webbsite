@@ -1,6 +1,97 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Renavon Hong Kong Database: holdings of {{ person_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if is_org %}
+	{% with ob_name=person_name, ob_org_id=person_id, ob_flags=filer_flags %}{% include 'includes/orgbar.html' %}{% endwith %}
+{% else %}
+	<h2>{{ person_name }}</h2>
+	{% with nav_flags=person_flags, person_live='' %}{% include 'includes/humanbar.html' %}{% endwith %}
+{% endif %}
+<div class="clear"></div>
+
+<h3 id="D0">Holdings</h3>
+<p>Note: holdings may be incomplete and/or outdated. Holdings in listed companies are not shown as the
+filings are currently too difficult to automate and the holdings change too rapidly.</p>
+
+<ul class="navlist">
+	{% if expand == 'n' %}
+		<li class="livebutton">Simple</li>
+		<li><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort=sort_param, x='y') }}">Expanded</a></li>
+	{% else %}
+		<li><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort=sort_param, x='n') }}">Simple</a></li>
+		<li class="livebutton">Expanded</li>
+	{% endif %}
+</ul>
+<div class="clear"></div>
+
+{% if expand == 'y' %}
+	{# Expanded mode - recursive ownership tree #}
+	{% if holdings_tree %}
+		<div style="float:left;width:40px;">&nbsp;</div>
+		<div style="float:left;width:80px;"><b>Held at</b></div>
+		<div style="text-align:right;float:left;width:65px;padding-right:5px">
+			<a href="{{ url_for('dbpub_corporate.holdings', p=person_id, x='y', sort='stakup' if sort_param == 'stakdn' else 'stakdn') }}"><b>Stake</b></a>
+		</div>
+		<div>
+			<a href="{{ url_for('dbpub_corporate.holdings', p=person_id, x='y', sort='namedn' if sort_param == 'namup' else 'namup') }}"><b>Issue</b></a>
+		</div>
+		<div class="clear"></div>
+		<p>
+		{% for item in holdings_tree %}
+			{% set h = item.holding %}
+			{% set indent = item.level * 60 %}
+			{% set name_str = h.name %}
+			{% if h.typeshort != 'O' %}{% set name_str = name_str ~ ':' ~ h.typeshort %}{% endif %}
+			{% if h.orgtype == 22 %}{% set name_str = '<b>' ~ name_str ~ '</b>' %}{% endif %}
+			<div style="float:left;width:40px;">
+				{% if not item.is_cross_holding %}<a name="D{{ loop.index }}"></a>{{ loop.index }}{% endif %}&nbsp;
+			</div>
+			<div style="float:left;min-width:80px">{{ h.holdingdate if h.holdingdate else '&nbsp;'|safe }}</div>
+			<div style="text-align:right;float:left;width:{{ indent + 65 }}px;padding-right:5px">
+				{% if h.stakecomp %}{{ "{:.2%}".format(h.stakecomp) }}{% else %}&nbsp;{% endif %}
+			</div>
+			<div style="float:left">
+				<a href="{{ url_for('dbpub_statistics.orgdata', p=h.issuer) }}">{{ name_str|safe }}</a>
+				&nbsp;(<span class="info">{{ h.a2 }}<span>{{ h.friendly }}<br/>Incorporated: {{ h.inc }}</span></span>)
+				{% if item.is_cross_holding %}&nbsp;see <a href="#D{{ item.first_occurrence_idx + 1 }}">line {{ item.first_occurrence_idx + 1 }}</a>{% endif %}
+			</div>
+			<div class="clear"></div>
+		{% endfor %}
+		</p>
+	{% else %}
+		<p><b>No holdings found.</b></p>
+	{% endif %}
+{% else %}
+	{# Simple mode - flat table #}
+	{% if holdings_data %}
+		<p class="widthAlert3">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+		<table class="txtable">
+			<tr>
+				<th><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort='namedn' if sort_param == 'namup' else 'namup') }}"><b>Issuer</b></a></th>
+				<th class="colHide3"><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort='domidn' if sort_param == 'domiup' else 'domiup') }}"><b>&#x1f310;</b></a></th>
+				<th class="colHide3"><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort='incddn' if sort_param == 'incdup' else 'incdup') }}"><b>Formed</b></a></th>
+				<th class="colHide3">Issue</th>
+				<th class="colHide3">Shares</th>
+				<th class="right"><a href="{{ url_for('dbpub_corporate.holdings', p=person_id, sort='stakdn' if sort_param == 'stakup' else 'stakup') }}"><b>Stake</b></a></th>
+				<th class="colHide3">Holding date</th>
+			</tr>
+			{% for h in holdings_data %}
+				{% set name_str = h.name %}
+				{% if h.orgtype == 22 %}{% set name_str = '<b>' ~ name_str ~ '</b>' %}{% endif %}
+				<tr>
+					<td><a href="{{ url_for('dbpub_statistics.orgdata', p=h.issuer) }}">{{ name_str|safe }}</a></td>
+					<td class="colHide3"><span class="info">{{ h.a2 }}<span>{{ h.friendly }}</span></span></td>
+					<td class="colHide3">{{ h.inc }}</td>
+					<td class="colHide3">{{ h.sectype }}</td>
+					<td class="colHide3 right">{% if h.shares %}{{ "{:,}".format(h.shares|int) }}{% else %}&nbsp;{% endif %}</td>
+					<td class="right">{% if h.stakecomp %}{{ "{:.2%}".format(h.stakecomp) }}{% else %}&nbsp;{% endif %}</td>
+					<td class="colHide3">{{ h.holdingdate if h.holdingdate else '&nbsp;'|safe }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p><b>No holdings found.</b></p>
+	{% endif %}
+{% endif %}
 {% endblock %}

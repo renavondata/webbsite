@@ -9,6 +9,8 @@ import io
 import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.routes.dbpub._navctx import stock_nav
+from webbsite.diskcache import load_json, save_json
 
 bp = Blueprint("dbpub_short_selling", __name__)
 
@@ -21,17 +23,14 @@ def short():
     issue_id = get_int("i", 0)
     stock_code = request.args.get("sc", "")
 
-    # Get stock info from stock code if provided
-    stock_name = ""
-    org_id = 0
+    # Convert stock code to issueID if needed
     if stock_code and not issue_id:
         try:
             result = execute_query(
                 """
-                SELECT i.ID1 AS issueid, o.name1, o.personid
+                SELECT i.ID1 AS issueid
                 FROM enigma.stockListings sl
                 JOIN enigma.issue i ON sl.issueid = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personid
                 WHERE sl.stockCode = %s AND sl.delistdate IS NULL
                 ORDER BY sl.firsttradedate DESC LIMIT 1
             """,
@@ -39,28 +38,11 @@ def short():
             )
             if result:
                 issue_id = result[0]["issueid"]
-                stock_name = result[0]["name1"]
-                org_id = result[0]["personid"]
         except Exception as e:
             current_app.logger.error(f"Error looking up stock code: {e}")
 
-    # Get stock info if we have issueID
-    if issue_id and not stock_name:
-        try:
-            result = execute_query(
-                """
-                SELECT o.name1, o.personid
-                FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personid
-                WHERE i.ID1 = %s
-            """,
-                (issue_id,),
-            )
-            if result:
-                stock_name = result[0]["name1"]
-                org_id = result[0]["personid"]
-        except Exception as e:
-            current_app.logger.error(f"Error getting stock info: {e}")
+    # Build orgBar + stockBar navigation context
+    nav = stock_nav(issue_id)
 
     shorts = []
     if issue_id:
@@ -116,9 +98,8 @@ def short():
     return render_template(
         "dbpub/short.html",
         issue_id=issue_id,
-        stock_name=stock_name,
-        org_id=org_id,
         shorts=shorts,
+        **nav,
     )
 
 
@@ -127,74 +108,59 @@ def shortsum():
     """Short selling weekly summary - aggregate across all stocks"""
     from flask import current_app
 
-    summaries = []
-    try:
-        # Aggregate short positions by week with market cap calculation
-        summaries = execute_query(
-            """
-            SELECT s.atDate,
-                   EXTRACT(EPOCH FROM s.atDate)::BIGINT * 1000 AS timestamp,
-                   COUNT(*) AS cnt,
-                   SUM(s.value) / 1000000000.0 AS sumVal,
-                   SUM(
-                       COALESCE(
-                           (SELECT os.outstanding
-                            FROM enigma.issuedshares os
-                            WHERE os.issueid = s.issueid
-                              AND os.atDate <= s.atDate
-                            ORDER BY os.atDate DESC
-                            LIMIT 1), 0) *
-                       COALESCE(
-                           (SELECT q.closing
-                            FROM ccass.quotes q
-                            WHERE q.issueid = s.issueid
-                              AND q.atDate <= s.atDate
-                            ORDER BY q.atDate DESC
-                            LIMIT 1), 0)
-                   ) / 1000000000.0 AS sumCap,
-                   CASE WHEN SUM(
-                            COALESCE(
-                                (SELECT os.outstanding
-                                 FROM enigma.issuedshares os
-                                 WHERE os.issueid = s.issueid
-                                   AND os.atDate <= s.atDate
-                                 ORDER BY os.atDate DESC
-                                 LIMIT 1), 0) *
-                            COALESCE(
-                                (SELECT q.closing
-                                 FROM ccass.quotes q
-                                 WHERE q.issueid = s.issueid
-                                   AND q.atDate <= s.atDate
-                                 ORDER BY q.atDate DESC
-                                 LIMIT 1), 0)
-                        ) > 0
-                        THEN SUM(s.value) / SUM(
-                            COALESCE(
-                                (SELECT os.outstanding
-                                 FROM enigma.issuedshares os
-                                 WHERE os.issueid = s.issueid
-                                   AND os.atDate <= s.atDate
-                                 ORDER BY os.atDate DESC
-                                 LIMIT 1), 0) *
-                            COALESCE(
-                                (SELECT q.closing
-                                 FROM ccass.quotes q
-                                 WHERE q.issueid = s.issueid
-                                   AND q.atDate <= s.atDate
-                                 ORDER BY q.atDate DESC
-                                 LIMIT 1), 0)
-                        )
-                        ELSE 0
-                   END AS stake
-            FROM enigma.sfcshort s
-            GROUP BY s.atDate
-            ORDER BY s.atDate DESC
-        """
-        )
-
-    except Exception as e:
-        current_app.logger.error(f"Error querying short summary: {e}")
-        summaries = []
+    # The market-wide weekly summary is constant over the frozen dataset, so
+    # compute it once and serve from disk. The aggregate is heavy: each
+    # sfcshort row needs an as-of outstanding-shares and closing-price lookup.
+    # Doing those as repeated correlated subqueries inside the aggregate timed
+    # out at 8s; instead resolve each row's market cap ONCE via LATERAL joins
+    # (the pattern shortdate uses), then GROUP BY date.
+    summaries = load_json("shortsum")
+    if summaries is None:
+        try:
+            raw = execute_query(
+                """
+                SELECT t.atDate,
+                       EXTRACT(EPOCH FROM t.atDate)::BIGINT * 1000 AS timestamp,
+                       COUNT(*) AS cnt,
+                       SUM(t.value) / 1000000000.0 AS sumVal,
+                       SUM(t.mcap) / 1000000000.0 AS sumCap,
+                       CASE WHEN SUM(t.mcap) > 0
+                            THEN SUM(t.value) / SUM(t.mcap) ELSE 0 END AS stake
+                FROM (
+                    SELECT s.atDate, s.value,
+                           COALESCE(os.outstanding, 0) * COALESCE(q.closing, 0) AS mcap
+                    FROM enigma.sfcshort s
+                    LEFT JOIN LATERAL (
+                        SELECT outstanding FROM enigma.issuedshares
+                        WHERE issueid = s.issueid AND atDate <= s.atDate
+                        ORDER BY atDate DESC LIMIT 1
+                    ) os ON TRUE
+                    LEFT JOIN LATERAL (
+                        SELECT closing FROM ccass.quotes
+                        WHERE issueid = s.issueid AND atDate <= s.atDate
+                        ORDER BY atDate DESC LIMIT 1
+                    ) q ON TRUE
+                ) t
+                GROUP BY t.atDate
+                ORDER BY t.atDate DESC
+            """,
+                timeout_s=30,
+            )
+            summaries = [
+                {
+                    "datestr": r["atdate"].strftime("%Y-%m-%d") if r["atdate"] else "",
+                    "timestamp": int(r["timestamp"]) if r["timestamp"] is not None else 0,
+                    "cnt": int(r["cnt"]) if r["cnt"] is not None else 0,
+                    "sumval": float(r["sumval"]) if r["sumval"] is not None else 0.0,
+                    "sumcap": float(r["sumcap"]) if r["sumcap"] is not None else 0.0,
+                    "stake": float(r["stake"]) if r["stake"] is not None else 0.0,
+                }
+                for r in raw
+            ]
+            save_json("shortsum", summaries)
+        except Exception as e:
+            current_app.logger.error(f"Error querying short summary: {e}")
+            summaries = []
 
     return render_template("dbpub/shortsum.html", summaries=summaries)
 

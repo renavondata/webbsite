@@ -1,0 +1,77 @@
+{# Shared HKlistings table + stockBar button row (the ASP stockBar proper — no
+   orgBar; pages render orgbar.html / humanbar.html for their header). Expects
+   context: issue_id, nav_flags, listings_data, sec_type, stock_ex_id,
+   delist_date, now, and `stock_live` (which stockBar button to highlight:
+   buybacks|outstanding|short|ccass|totret|compret|prices|events|dealings,
+   or '' for none). #}
+{% if listings_data %}
+	<table class="numtable" style="margin-top:5px">
+		<tr>
+			<th class="left">Exchange</th>
+			<th>Code</th>
+			<th>Listed</th>
+			<th>Last trade</th>
+			<th>Delisted</th>
+			<th></th>
+		</tr>
+		{% for listing in listings_data %}
+			<tr>
+				<td class="left" style="width:75px;vertical-align:middle">{{ listing.exchange_name }}</td>
+				<td style="text-align:left;vertical-align:middle">{{ listing.stockcode_formatted }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.firsttradedate.strftime('%Y-%m-%d') if listing.firsttradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.finaltradedate.strftime('%Y-%m-%d') if listing.finaltradedate else '' }}</td>
+				<td style="vertical-align:middle">&nbsp;{{ listing.delistdate.strftime('%Y-%m-%d') if listing.delistdate else '' }}</td>
+				<td>
+					{% if listing.stockid %}
+						{% set cat = '1' if listing.delistdate else '0' %}
+						<ul class="navlist"><li><a target="_blank" href="https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN&market=SEHK&stockId={{ listing.stockid }}&category={{ cat }}">Docs</a></li></ul>
+					{% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<div class="clear"></div>
+{% endif %}
+
+<ul class="navlist">
+	{% if stock_live == 'buybacks' %}<li class="livebutton">Buybacks</li>
+	{% else %}<li><a href="{{ url_for('dbpub_buybacks.buybacks', i=issue_id) }}">Buybacks</a></li>{% endif %}
+	{% if nav_flags.get('has_outstanding') %}
+		{% if stock_live == 'outstanding' %}<li class="livebutton">Outstanding</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.outstanding', i=issue_id) }}">Outstanding</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('has_short') %}
+		{% if stock_live == 'short' %}<li class="livebutton">Short</li>
+		{% else %}<li><a href="{{ url_for('dbpub_short_selling.short', i=issue_id) }}">Short</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('ccass_on') %}
+		{% if stock_live == 'ccass' %}<li class="livebutton">CCASS</li>
+		{% else %}<li><a href="{{ url_for('ccass.choldings', i=issue_id) }}">CCASS</a></li>{% endif %}
+	{% endif %}
+	{% if listings_data %}
+		{% if stock_live == 'totret' %}<li class="livebutton">Total return</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.str_route', i=issue_id) }}">Total return</a></li>{% endif %}
+		{% if stock_live == 'compret' %}<li class="livebutton">Compare returns</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.ctr', i1=issue_id) }}">Compare returns</a></li>{% endif %}
+		{% if stock_live == 'prices' %}<li class="livebutton">Prices</li>
+		{% else %}<li><a href="{{ url_for('dbpub_statistics.hpu', i=issue_id) }}">Prices</a></li>{% endif %}
+		{% if stock_live == 'events' %}<li class="livebutton">Events</li>
+		{% else %}<li><a href="{{ url_for('dbpub_events.events', i=issue_id) }}">Events</a></li>{% endif %}
+	{% endif %}
+	{% if nav_flags.get('has_sdi') %}
+		{% if stock_live == 'dealings' %}<li class="livebutton">Dealings</li>
+		{% else %}<li><a href="{{ url_for('dbpub_sdi.sdiissue', i=issue_id) }}">Dealings</a></li>{% endif %}
+	{% endif %}
+	{% if listings_data and (not delist_date or delist_date > now) %}
+		{% if sec_type not in [46, 40, 41] and stock_ex_id not in [23, 38] %}
+			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Equities/Equities-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+		{% elif stock_ex_id == 38 %}
+			<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Exchange-Traded-Products/Exchange-Traded-Products-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+		{% elif stock_ex_id == 23 %}
+			<li><a target="_blank" href="https://www.hkex.com.hk/Market-Data/Securities-Prices/Real-Estate-Investment-Trusts/Real-Estate-Investment-Trusts-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+		{% else %}
+			<li><a target="_blank" href="http://www.hkex.com.hk/Market-Data/Securities-Prices/Debt-Securities/Debt-Securities-Quote?sym={{ listings_data[0].stockcode }}">Quote</a></li>
+		{% endif %}
+	{% endif %}
+</ul>
+<div class="clear"></div>

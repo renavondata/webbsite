@@ -1,6 +1,89 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block extra_head %}
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+{% endblock %}
+{% block title %}Short positions: {{ stock_name }}{% endblock %}
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if issue_id == 0 %}
+	<h2>Short positions</h2>
+	<p><b>{{ stock_name or 'Stock not found' }}</b></p>
+{% else %}
+	{% with ob_name=stock_name, ob_org_id=org_id, ob_flags=nav_flags %}{% include 'includes/orgbar.html' %}{% endwith %}
+	{% set stock_live = 'short' %}
+	{% include 'includes/stockbar.html' %}
+	<ul class="navlist">
+		<li><a href="{{ url_for('dbpub_short_selling.short_notes') }}">Notes</a></li>
+		<li><a href="{{ url_for('dbpub_short_selling.shortdate') }}">All reported stocks</a></li>
+	</ul>
+	<div class="clear"></div>
+	<h2>Short positions</h2>
+{% endif %}
+
+<form method="get" action="{{ url_for('dbpub_short_selling.short') }}">
+	<div class="inputs">Stock code: <input type="text" name="sc" size="5" value=""> <input type="submit" value="Go"></div>
+	<div class="clear"></div>
+</form>
+
+{% if issue_id and shorts %}
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	Highcharts.setOptions({ global: {useUTC: false}, lang: {thousandsSep: ','} });
+	Highcharts.stockChart('chart1', {
+		chart: { backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "black", height: 500 },
+		rangeSelector: { selected: 8 },
+		title: { text: '<b>Weekly short positions in {{ stock_name|replace("'", "\\'") }}</b>', style: { fontSize: '1em' } },
+		yAxis: [{
+			title: { text: '% of market cap' },
+			labels: { format: '{value:.1f}%' },
+			height: '60%', lineWidth: 1, min: 0
+		}, {
+			title: { text: 'Short positions HK$m' },
+			top: '65%', height: '35%', offset: 0, lineWidth: 1
+		}],
+		series: [{
+			type: 'line', name: 'stake',
+			data: [
+				{% for r in shorts|reverse %}[{{ r.timestamp|int }}, {{ '%.3f'|format((r.stake or 0) * 100) }}]{{ ',' if not loop.last else '' }}{% endfor %}
+			],
+			tooltip: { valueDecimals: 3, valueSuffix: '%' }
+		}, {
+			type: 'column', name: 'short position', color: 'grey', yAxis: 1,
+			data: [
+				{% for r in shorts|reverse %}[{{ r.timestamp|int }}, {{ '%.2f'|format((r.shares or 0) * (r.price or 0) / 1000000) }}]{{ ',' if not loop.last else '' }}{% endfor %}
+			],
+			tooltip: { valueDecimals: 2, valuePrefix: '$', valueSuffix: 'm' }
+		}]
+	});
+});
+</script>
+<div id="chart1" style="width:95%;height:500px;margin-left:0"></div>
+<div class="clear"></div>
+
+<p class="widthAlert2">Some data are hidden to fit your display.<span class="portrait"> Rotate?</span></p>
+<table class="numtable center fcl">
+	<tr>
+		<th class="nowrap">Date</th>
+		<th class="colHide2">Short<br>shares</th>
+		<th>Change</th>
+		<th>Price<br>HK$</th>
+		<th class="colHide3">Short<br>value<br>HK$m</th>
+		<th class="colHide2">Out-<br>standing</th>
+		<th>Short<br>stake<br>%</th>
+	</tr>
+	{% for row in shorts %}
+	<tr>
+		<td class="nowrap">{{ row.atdate.strftime('%Y-%m-%d') if row.atdate else '' }}</td>
+		<td class="colHide2">{{ '{:,.0f}'.format(row.shares) if row.shares is not none else '' }}</td>
+		<td>{% if not loop.last and row.shares is not none and shorts[loop.index].shares is not none %}{{ '{:,.0f}'.format(row.shares - shorts[loop.index].shares) }}{% endif %}</td>
+		<td>{{ '{:,.3f}'.format(row.price) if row.price else '' }}</td>
+		<td class="colHide3">{% if row.shares is not none and row.price %}{{ '{:,.2f}'.format(row.shares * row.price / 1000000) }}{% endif %}</td>
+		<td class="colHide2">{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '' }}</td>
+		<td>{{ '{:,.3f}'.format(row.stake * 100) if row.stake is not none else '' }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% elif issue_id %}
+<p><b>No short position records found for this stock</b></p>
+{% endif %}
 {% endblock %}

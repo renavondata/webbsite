@@ -1,6 +1,200 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Renavon Hong Kong Database: filing by {{ person_name }} in {{ stock_name }}{% endblock %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if sdi_id == 0 %}
+	<h2>No filing was specified</h2>
+{% elif not filing_data %}
+	<h2>No such filing</h2>
+{% else %}
+	{% if is_org %}
+		{% with ob_name=person_name, ob_org_id=person_id, ob_flags=filer_flags %}{% include 'includes/orgbar.html' %}{% endwith %}
+	{% else %}
+		<h2>{{ person_name }}</h2>
+		{% with nav_flags=person_flags, person_live='' %}{% include 'includes/humanbar.html' %}{% endwith %}
+	{% endif %}
+	<ul class="navlist"><li><a target="_blank" href="{{ url_for('dbpub_sdi.sdi_notes') }}">Notes</a></li></ul>
+	<div class="clear"></div>
+	<h3>Filing in <a href="{{ url_for('dbpub_sdi.sdidirco', p=person_id, i=issue_id) }}">{{ stock_name }}</a></h3>
+	{% set stock_live = '' %}
+	{% include 'includes/stockbar.html' %}
+
+	{# ---- Filing data ---- #}
+	<h4>Filing data</h4>
+	<table class="txtable">
+		<tr><td>Date of relevant event:</td><td>{{ filing_data.reldate.strftime('%Y-%m-%d') if filing_data.reldate else '' }}</td></tr>
+		{% if filing_data.awdate %}<tr><td>Awareness date (if later):</td><td>{{ filing_data.awdate.strftime('%Y-%m-%d') }}</td></tr>{% endif %}
+		<tr><td>Filing date:</td><td>{{ filing_data.signdate.strftime('%Y-%m-%d') if filing_data.signdate else '' }}</td></tr>
+		{% set fn = filing_data.filing or filing_data.serno %}
+		{% if fn %}<tr><td>Original filing:</td><td><a target="_blank" href="https://di.hkex.com.hk/di/NSForm3A.aspx?fn={{ fn }}">Click here</a></td></tr>{% endif %}
+		{% if filing_data.shsout is not none %}<tr><td>Shares in issue as filed:</td><td>{{ '{:,.0f}'.format(filing_data.shsout) }}</td></tr>{% endif %}
+	</table>
+
+	{# ---- Long / Short event blocks ---- #}
+	{% set ns = namespace(long=none, short=none) %}
+	{% for e in events %}{% if e.postype == 1 %}{% set ns.long = e %}{% else %}{% set ns.short = e %}{% endif %}{% endfor %}
+
+	{% for e in events %}
+		<h4>{{ 'Long event' if e.postype == 1 else 'Short event' }}</h4>
+		<table class="txtable">
+			{% if e.rsnlng1 %}<tr><td>Stated disclosure reason:</td><td>{{ e.rsnlng1 }}</td></tr>{% endif %}
+			{% if e.rsnlng2 and e.rsnlng2 != e.rsnlng1 %}<tr><td>Probable disclosure reason:</td><td>{{ e.rsnlng2 }}</td></tr>{% endif %}
+			{% if e.capbef %}<tr><td>Capacity before:</td><td>{{ e.capbef }}</td></tr>{% endif %}
+			{% if e.capaft %}<tr><td>Capacity after:</td><td>{{ e.capaft }}</td></tr>{% endif %}
+			{% if e.shsinv is not none %}<tr><td>Shares involved:</td><td>{{ '{:,.0f}'.format(e.shsinv) }}</td></tr>{% endif %}
+			{% if e.postype == 1 %}
+				{% if filing_data.currency %}<tr><td>Currency:</td><td>{{ filing_data.currency }}</td></tr>{% endif %}
+				{% if filing_data.hiprice is not none %}<tr><td>Highest on-exchange price:</td><td>{{ '{:,.3f}'.format(filing_data.hiprice) }}</td></tr>{% endif %}
+				{% if filing_data.avprice is not none %}<tr><td>Average on-exchange price:</td><td>{{ '{:,.3f}'.format(filing_data.avprice) }}</td></tr>{% endif %}
+				{% if filing_data.avcon is not none %}<tr><td>Average off-exchange consideration:</td><td>{{ '{:,.3f}'.format(filing_data.avcon) }}</td></tr>{% endif %}
+				{% set unitprice = filing_data.avprice if filing_data.avprice is not none else (filing_data.hiprice if filing_data.hiprice is not none else filing_data.avcon) %}
+				{% if unitprice is not none and e.shsinv is not none %}
+					{% set consid = unitprice * e.shsinv %}
+					<tr><td>Implied total value:</td><td>{{ '{:,.0f}'.format(consid) }}</td></tr>
+				{% endif %}
+				{% if filing_data.settledate and (filing_data.avprice is not none or filing_data.hiprice is not none) %}
+					<tr><td>On-exchange settlement date:</td><td>{{ filing_data.settledate.strftime('%Y-%m-%d') }}</td></tr>
+					{% if filing_data.reldate and filing_data.reldate.strftime('%Y-%m-%d') > '2007-06-22' %}
+						<tr><td>CCASS changes on settlement date:</td><td><a href="{{ url_for('ccass.chldchg', i=issue_id, d=filing_data.settledate.strftime('%Y-%m-%d')) }}">Click here</a></td></tr>
+					{% endif %}
+				{% endif %}
+			{% endif %}
+		</table>
+	{% endfor %}
+
+	{# ---- Long event price vs market ---- #}
+	{% if ns.long and filing_data.high is not none and (filing_data.avprice is not none or filing_data.hiprice is not none) %}
+		{% set vwap = (filing_data.turn / filing_data.vol) if (filing_data.vol and filing_data.vol > 0) else none %}
+		{% set unitprice = filing_data.avprice if filing_data.avprice is not none else filing_data.hiprice %}
+		{% set consid = (unitprice * ns.long.shsinv) if (unitprice is not none and ns.long.shsinv is not none) else none %}
+		<table class="numtable">
+			<tr><th></th><th>Filer</th><th>Market</th><th>Prem/(disc)<br>or share</th></tr>
+			<tr>
+				<td class="left">Highest price</td>
+				<td>{{ '{:,.3f}'.format(filing_data.hiprice) if filing_data.hiprice is not none else '-' }}</td>
+				<td>{{ '{:,.3f}'.format(filing_data.high) if filing_data.high is not none else '-' }}</td>
+				<td>{% if filing_data.hiprice is not none and filing_data.high %}{{ '{:.0%}'.format(filing_data.hiprice / filing_data.high - 1) }}{% else %}-{% endif %}</td>
+			</tr>
+			<tr>
+				<td class="left">Average price</td>
+				<td>{{ '{:,.3f}'.format(filing_data.avprice) if filing_data.avprice is not none else '-' }}</td>
+				<td>{{ '{:,.3f}'.format(vwap) if vwap is not none else '-' }}</td>
+				<td>{% if filing_data.avprice is not none and vwap %}{{ '{:.0%}'.format(filing_data.avprice / vwap - 1) }}{% else %}-{% endif %}</td>
+			</tr>
+			<tr>
+				<td class="left">Volume</td>
+				<td>{{ '{:,.0f}'.format(ns.long.shsinv) if ns.long.shsinv is not none else '-' }}</td>
+				<td>{{ '{:,.0f}'.format(filing_data.vol) if filing_data.vol is not none else '-' }}</td>
+				<td>{% if ns.long.shsinv is not none and filing_data.vol %}{{ '{:.2%}'.format(ns.long.shsinv / filing_data.vol) }}{% else %}-{% endif %}</td>
+			</tr>
+			<tr>
+				<td class="left">Turnover</td>
+				<td>{{ '{:,.0f}'.format(consid) if consid is not none else '-' }}</td>
+				<td>{{ '{:,.0f}'.format(filing_data.turn) if filing_data.turn is not none else '-' }}</td>
+				<td>{% if consid is not none and filing_data.turn %}{{ '{:.0%}'.format(consid / filing_data.turn) }}{% else %}-{% endif %}</td>
+			</tr>
+		</table>
+	{% endif %}
+
+	{# ---- Positions before and after: shares ---- #}
+	{% set ls1 = filing_data.longshs1 if filing_data.longshs1 is not none else 0 %}
+	{% set ls2 = filing_data.longshs2 if filing_data.longshs2 is not none else 0 %}
+	{% set ss1 = filing_data.shortshs1 %}
+	{% set ss2 = filing_data.shortshs2 if filing_data.shortshs2 is not none else 0 %}
+	{% set show_short = ss1 is not none %}
+	{% set ss1n = ss1 if ss1 is not none else 0 %}
+	{% set longchg = ls2 - ls1 %}
+	{% set shortchg = ss1n - ss2 %}
+	<h4>Positions before and after the event</h4>
+	<table class="numtable">
+		<tr><th></th><th colspan="3" style="text-align:center">Interest in shares</th></tr>
+		<tr><th class="left">Position</th><th>Before</th><th>After</th><th class="colHide3">Change</th></tr>
+		<tr>
+			<td class="left">Long</td>
+			<td>{{ '{:,.0f}'.format(ls1) }}</td><td>{{ '{:,.0f}'.format(ls2) }}</td>
+			<td class="colHide3">{{ '{:,.0f}'.format(longchg) }}</td>
+		</tr>
+		{% if show_short %}
+		<tr>
+			<td class="left">Short</td>
+			<td>{{ '{:,.0f}'.format(-ss1n) }}</td><td>{{ '{:,.0f}'.format(-ss2) }}</td>
+			<td class="colHide3">{{ '{:,.0f}'.format(shortchg) }}</td>
+		</tr>
+		<tr>
+			<td class="left">Net</td>
+			<td>{{ '{:,.0f}'.format(ls1 - ss1n) }}</td><td>{{ '{:,.0f}'.format(ls2 - ss2) }}</td>
+			<td class="colHide3">{{ '{:,.0f}'.format(longchg + shortchg) }}</td>
+		</tr>
+		{% endif %}
+	</table>
+
+	{# ---- Positions before and after: percent of issued ---- #}
+	{% set lk1 = (filing_data.longstk1 if filing_data.longstk1 is not none else 0) / 100 %}
+	{% set lk2 = (filing_data.longstk2 if filing_data.longstk2 is not none else 0) / 100 %}
+	{% set sk1 = (filing_data.shortstk1 if filing_data.shortstk1 is not none else 0) / 100 %}
+	{% set sk2 = (filing_data.shortstk2 if filing_data.shortstk2 is not none else 0) / 100 %}
+	{% set lkchg = lk2 - lk1 %}
+	{% set skchg = sk1 - sk2 %}
+	<table class="numtable">
+		<tr><th></th><th colspan="3" style="text-align:center">Percent of issued</th></tr>
+		<tr><th class="left">Position</th><th>Before</th><th>After</th><th class="colHide3">Change</th></tr>
+		<tr>
+			<td class="left">Long</td>
+			<td>{{ '{:.2%}'.format(lk1) }}</td><td>{{ '{:.2%}'.format(lk2) }}</td>
+			<td class="colHide3">{{ '{:.2%}'.format(lkchg) }}</td>
+		</tr>
+		{% if show_short %}
+		<tr>
+			<td class="left">Short</td>
+			<td>{{ '{:.2%}'.format(-sk1) }}</td><td>{{ '{:.2%}'.format(-sk2) }}</td>
+			<td class="colHide3">{{ '{:.2%}'.format(skchg) }}</td>
+		</tr>
+		<tr>
+			<td class="left">Net</td>
+			<td>{{ '{:.2%}'.format(lk1 - sk1) }}</td><td>{{ '{:.2%}'.format(lk2 - sk2) }}</td>
+			<td class="colHide3">{{ '{:.2%}'.format(lkchg + skchg) }}</td>
+		</tr>
+		{% endif %}
+	</table>
+
+	{# ---- Capacity of interests after the event ---- #}
+	{% if capacities %}
+		{% set shsout = filing_data.shsout %}
+		<h4>Capacity of interests after the event</h4>
+		<table class="numtable">
+			<tr><th class="left">Capacity</th><th class="colHide3">Long</th><th class="colHide3">Short</th><th>Net</th></tr>
+			{% for capid, items in capacities|groupby('capid') %}
+				{% set g = namespace(long=0, short=0, label='') %}
+				{% for it in items %}
+					{% if it.postype == 1 %}{% set g.long = it.shares or 0 %}{% else %}{% set g.short = it.shares or 0 %}{% endif %}
+					{% set g.label = it.caplong %}
+				{% endfor %}
+				<tr>
+					<td class="left">{{ g.label }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(g.long) }}</td>
+					<td class="colHide3">{{ '{:,.0f}'.format(-g.short) }}</td>
+					<td>{{ '{:,.0f}'.format(g.long - g.short) }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+		{% if shsout %}
+		<table class="numtable">
+			<tr><th class="left">Capacity</th><th>Long</th><th>Short</th><th>Net</th></tr>
+			{% for capid, items in capacities|groupby('capid') %}
+				{% set g = namespace(long=0, short=0, label='') %}
+				{% for it in items %}
+					{% if it.postype == 1 %}{% set g.long = it.shares or 0 %}{% else %}{% set g.short = it.shares or 0 %}{% endif %}
+					{% set g.label = it.caplong %}
+				{% endfor %}
+				<tr>
+					<td class="left">{{ g.label }}</td>
+					<td>{{ '{:.2%}'.format(g.long / shsout) }}</td>
+					<td>{{ '{:.2%}'.format(-g.short / shsout) }}</td>
+					<td>{{ '{:.2%}'.format((g.long - g.short) / shsout) }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+		{% endif %}
+	{% endif %}
+{% endif %}
 {% endblock %}

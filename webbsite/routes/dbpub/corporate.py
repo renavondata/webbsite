@@ -9,6 +9,7 @@ import io
 import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
 bp = Blueprint("dbpub_corporate", __name__)
 
@@ -1124,6 +1125,8 @@ def holdings():
     """
     person_id = get_int("p", 0)
     expand = request.args.get("x", "n")
+    if expand != "y":
+        expand = "n"
     sort_param = request.args.get("sort", "namup")
 
     if not person_id:
@@ -1142,37 +1145,39 @@ def holdings():
     }
     ob = sort_mappings.get(sort_param, "name")
 
+    # Person/org header navigation
+    pnav = person_nav(person_id)
+    is_org = pnav["is_org"]
+    person_name = pnav["person_name"]
+    person_flags = pnav["nav_flags"]
+    filer_flags = org_nav(person_id)["nav_flags"] if is_org else {}
+
+    holdings_data = []
+    holdings_tree = []
     if expand == "y":
-        # Expanded mode - recursive tree
-        holdings_tree = []
         org_tracker = {person_id: 0}  # Track organizations to detect cross-holdings
         _build_holdings_tree(person_id, 0, ob, holdings_tree, org_tracker)
-
-        return render_template(
-            "dbpub/holdings.html",
-            person_id=person_id,
-            holdings_tree=holdings_tree,
-            expand=expand,
-            sort_param=sort_param,
-        )
     else:
-        # Simple mode - flat table
         holdings_data = execute_query(
             f"""
             SELECT personid, issue, holdingdate, shares, stake, friendly, a2,
                    name, orgtype, sectype, typeshort, issuer,
                    CASE
-                       WHEN shares IS NOT NULL THEN
-                           shares / NULLIF(
+                       WHEN shares IS NULL THEN stake
+                       ELSE shares / NULLIF(
                                (SELECT outstanding
                                 FROM enigma.issuedshares
                                 WHERE issueid = issue
                                   AND atdate <= CURRENT_DATE
                                 ORDER BY atdate DESC
                                 LIMIT 1), 0)
-                       ELSE stake
                    END AS stakecomp,
-                   incdate, incacc
+                   CASE
+                       WHEN incacc = 3 THEN 'U'
+                       WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
+                       WHEN incacc IN (2, 5) THEN TO_CHAR(incdate, 'YYYY-MM')
+                       ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
+                   END AS inc
             FROM enigma.webholdings3
             WHERE personid = %s
               AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
@@ -1181,13 +1186,18 @@ def holdings():
             (person_id,),
         )
 
-        return render_template(
-            "dbpub/holdings.html",
-            person_id=person_id,
-            holdings_data=holdings_data,
-            expand=expand,
-            sort_param=sort_param,
-        )
+    return render_template(
+        "dbpub/holdings.html",
+        person_id=person_id,
+        person_name=person_name,
+        is_org=is_org,
+        person_flags=person_flags,
+        filer_flags=filer_flags,
+        holdings_data=holdings_data,
+        holdings_tree=holdings_tree,
+        expand=expand,
+        sort_param=sort_param,
+    )
 
 
 def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
@@ -1209,16 +1219,21 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
         f"""
         SELECT *,
                CASE
-                   WHEN shares IS NOT NULL THEN
-                       shares / NULLIF(
+                   WHEN shares IS NULL THEN stake
+                   ELSE shares / NULLIF(
                            (SELECT outstanding
                             FROM enigma.issuedshares
                             WHERE issueid = issue
                               AND atdate <= CURRENT_DATE
                             ORDER BY atdate DESC
                             LIMIT 1), 0)
-                   ELSE stake
-               END AS stakecomp
+               END AS stakecomp,
+               CASE
+                   WHEN incacc = 3 THEN 'U'
+                   WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
+                   WHEN incacc IN (2, 5) THEN TO_CHAR(incdate, 'YYYY-MM')
+                   ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
+               END AS inc
         FROM enigma.webholdings3
         WHERE personid = %s
           AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))

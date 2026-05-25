@@ -1,6 +1,42 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database{% endblock %}
+{% block title %}Renavon Hong Kong Database: dealings by {{ person_name }}{% endblock %}
+
+{% macro sl(label, defsort, altsort) %}
+	{%- if sort == defsort %}<a href="{{ url_for('dbpub_sdi.sdidir', p=person_id, sort=altsort) }}"><strong>{{ label|safe }} &#8595;</strong></a>
+	{%- elif sort == altsort %}<a href="{{ url_for('dbpub_sdi.sdidir', p=person_id, sort=defsort) }}"><strong>{{ label|safe }} &#8593;</strong></a>
+	{%- else %}<a href="{{ url_for('dbpub_sdi.sdidir', p=person_id, sort=defsort) }}">{{ label|safe }}</a>{% endif %}
+{%- endmacro %}
+
 {% block content %}
-<h2>Database Query Results</h2>
-<p><em>Template placeholder - data display to be implemented.</em></p>
+{% if person_id == 0 %}
+	<h2>No human was specified</h2>
+{% else %}
+	<h2>{{ person_name }}</h2>
+	{% include 'includes/humanbar.html' %}
+	<ul class="navlist"><li><a target="_blank" href="{{ url_for('dbpub_sdi.sdi_notes') }}">Notes</a></li></ul>
+	<div class="clear"></div>
+
+	{% if sdi %}
+	<table class="numtable">
+		<tr>
+			<th class="colHide3"></th>
+			<th class="left">{{ sl('Stock', 'stkup', 'stkdn') }}</th>
+			<th>{{ sl('Last filing', 'ldatup', 'ldatdn') }}</th>
+			<th>Long<br>shares</th>
+			<th>{{ sl('Stake<br>%', 'stakdn', 'stakup') }}</th>
+		</tr>
+		{% for row in sdi %}
+		<tr>
+			<td class="colHide3">{{ loop.index }}</td>
+			<td class="left"><a href="{{ url_for('dbpub_sdi.sdidirco', p=person_id, i=row.issueid) }}">{{ row.stock }}</a></td>
+			<td>{{ row.maxdate.strftime('%Y-%m-%d') if row.maxdate else '' }}</td>
+			<td>{{ '{:,.0f}'.format(row.longshs2) if row.longshs2 is not none else '&nbsp;'|safe }}</td>
+			<td>{{ '{:,.2f}'.format(row.longstk2) if row.longstk2 is not none else '&nbsp;'|safe }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+	<p><b>None found.</b></p>
+	{% endif %}
+{% endif %}
 {% endblock %}

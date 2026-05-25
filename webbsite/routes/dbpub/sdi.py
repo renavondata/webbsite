@@ -9,6 +9,7 @@ import io
 import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.routes.dbpub._navctx import stock_nav, person_nav
 
 bp = Blueprint("dbpub_sdi", __name__)
 
@@ -113,18 +114,14 @@ def sdiissue():
     }
     ob = sort_map.get(sort_param, "relDate DESC, posType")
 
-    # Get stock info and convert stock code to issueID if needed
-    stock_name = ""
-    org_id = 0
+    # Convert stock code to issueID if needed
     if stock_code and not issue_id:
         try:
             result = execute_query(
                 """
-                SELECT i.ID1 AS issueid, o.name1, o.personid, st.typeShort
+                SELECT i.ID1 AS issueid
                 FROM enigma.stockListings sl
                 JOIN enigma.issue i ON sl.issueid = i.ID1
-                JOIN enigma.organisations o ON i.issuer = o.personid
-                JOIN enigma.secTypes st ON i.typeID = st.typeID
                 WHERE sl.stockCode = %s AND sl.delistdate IS NULL
                 ORDER BY sl.firsttradedate DESC LIMIT 1
             """,
@@ -132,29 +129,11 @@ def sdiissue():
             )
             if result:
                 issue_id = result[0]["issueid"]
-                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
-                org_id = result[0]["personid"]
         except Exception as e:
             current_app.logger.error(f"Error looking up stock code: {e}")
 
-    # Get stock info if we have issueID
-    if issue_id and not stock_name:
-        try:
-            result = execute_query(
-                """
-                SELECT o.name1, o.personid, st.typeShort
-                FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personid
-                JOIN enigma.secTypes st ON i.typeID = st.typeID
-                WHERE i.ID1 = %s
-            """,
-                (issue_id,),
-            )
-            if result:
-                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
-                org_id = result[0]["personid"]
-        except Exception as e:
-            current_app.logger.error(f"Error getting stock info: {e}")
+    # Build orgBar + stockBar navigation context
+    nav = stock_nav(issue_id)
 
     sdi = []
     if issue_id:
@@ -200,10 +179,9 @@ def sdiissue():
     return render_template(
         "dbpub/sdiissue.html",
         issue_id=issue_id,
-        stock_name=stock_name,
-        org_id=org_id,
         sdi=sdi,
         sort=sort_param,
+        **nav,
     )
 
 
@@ -226,25 +204,8 @@ def sdidir():
     }
     ob = sort_map.get(sort_param, "stock")
 
-    # Get person name
-    person_name = ""
-    if person_id:
-        try:
-            result = execute_query(
-                """
-                SELECT COALESCE(o.name1, CONCAT(p.name1,
-                                CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name
-                FROM enigma.persons ps
-                LEFT JOIN enigma.organisations o ON ps.personid = o.personid
-                LEFT JOIN enigma.people p ON ps.personid = p.personid
-                WHERE ps.personid = %s
-            """,
-                (person_id,),
-            )
-            if result:
-                person_name = result[0]["name"]
-        except Exception as e:
-            current_app.logger.error(f"Error getting person name: {e}")
+    # Build humanBar navigation context
+    nav = person_nav(person_id)
 
     sdi = []
     if person_id:
@@ -278,9 +239,10 @@ def sdidir():
     return render_template(
         "dbpub/sdidir.html",
         person_id=person_id,
-        person_name=person_name,
         sdi=sdi,
         sort=sort_param,
+        person_live='dealings',
+        **nav,
     )
 
 
@@ -306,49 +268,13 @@ def sdidirco():
     }
     ob = sort_map.get(sort_param, "relDate DESC, posType")
 
-    # Get person name and org status
-    person_name = ""
-    is_org = False
-    if person_id:
-        try:
-            result = execute_query(
-                """
-                SELECT COALESCE(o.name1, CONCAT(p.name1,
-                                CASE WHEN p.name2 IS NOT NULL THEN ', ' || p.name2 ELSE '' END)) AS name,
-                       CASE WHEN o.name1 IS NOT NULL THEN TRUE ELSE FALSE END AS is_org
-                FROM enigma.persons ps
-                LEFT JOIN enigma.organisations o ON ps.personid = o.personid
-                LEFT JOIN enigma.people p ON ps.personid = p.personid
-                WHERE ps.personid = %s
-            """,
-                (person_id,),
-            )
-            if result:
-                person_name = result[0]["name"]
-                is_org = result[0]["is_org"]
-        except Exception as e:
-            current_app.logger.error(f"Error getting person name: {e}")
-
-    # Get stock info
-    stock_name = ""
-    org_id = 0
-    if issue_id:
-        try:
-            result = execute_query(
-                """
-                SELECT o.name1, o.personid, st.typeShort
-                FROM enigma.issue i
-                JOIN enigma.organisations o ON i.issuer = o.personid
-                JOIN enigma.secTypes st ON i.typeID = st.typeID
-                WHERE i.ID1 = %s
-            """,
-                (issue_id,),
-            )
-            if result:
-                stock_name = f"{result[0]['name1']}:{result[0]['typeshort']}"
-                org_id = result[0]["personid"]
-        except Exception as e:
-            current_app.logger.error(f"Error getting stock info: {e}")
+    # Build filer (person/org) and stock navigation context
+    pnav = person_nav(person_id)
+    person_name = pnav["person_name"]
+    is_org = pnav["is_org"]
+    person_flags = pnav["nav_flags"]
+    filer_flags = org_nav(person_id)["nav_flags"] if is_org else {}
+    snav = stock_nav(issue_id)
 
     sdi = []
     if person_id and issue_id:
@@ -394,11 +320,12 @@ def sdidirco():
         person_id=person_id,
         person_name=person_name,
         is_org=is_org,
+        person_flags=person_flags,
+        filer_flags=filer_flags,
         issue_id=issue_id,
-        stock_name=stock_name,
-        org_id=org_id,
         sdi=sdi,
         sort=sort_param,
+        **snav,
     )
 
 
@@ -419,6 +346,9 @@ def sdicap():
     filing_data = None
     events = []
     capacities = []
+    person_flags = {}
+    filer_flags = {}
+    snav = {}
 
     if sdi_id:
         try:
@@ -447,27 +377,18 @@ def sdicap():
 
             if result and result[0]:
                 filing_data = result[0]
-                person_name = filing_data["name"]
-                is_org = filing_data["isorg"]
                 person_id = filing_data["dir"]
                 issue_id = filing_data["issueid"]
 
-                # Get stock info
-                stock_result = execute_query(
-                    """
-                    SELECT o.name1, o.personid, st.typeShort
-                    FROM enigma.issue i
-                    JOIN enigma.organisations o ON i.issuer = o.personid
-                    JOIN enigma.secTypes st ON i.typeID = st.typeID
-                    WHERE i.ID1 = %s
-                """,
-                    (issue_id,),
-                )
-                if stock_result:
-                    stock_name = (
-                        f"{stock_result[0]['name1']}:{stock_result[0]['typeshort']}"
-                    )
-                    org_id = stock_result[0]["personid"]
+                # Filer (person/org) and stock navigation context
+                pnav = person_nav(person_id)
+                person_name = pnav["person_name"] or filing_data["name"]
+                is_org = pnav["is_org"]
+                person_flags = pnav["nav_flags"]
+                filer_flags = org_nav(person_id)["nav_flags"] if is_org else {}
+                snav = stock_nav(issue_id)
+                stock_name = snav["stock_name"]
+                org_id = snav["org_id"]
 
                 # Get event details (long and short events)
                 events = execute_query(
@@ -507,12 +428,13 @@ def sdicap():
         person_id=person_id,
         person_name=person_name,
         is_org=is_org,
+        person_flags=person_flags,
+        filer_flags=filer_flags,
         issue_id=issue_id,
-        stock_name=stock_name,
-        org_id=org_id,
         filing_data=filing_data,
         events=events,
         capacities=capacities,
+        **snav,
     )
 
 

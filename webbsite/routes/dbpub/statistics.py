@@ -8877,7 +8877,10 @@ def orgdata():
             holdings_sort = holdings_sort_mappings.get(s2, "name")
 
             if expand == "y":
-                # Expanded mode - build recursive tree
+                # Expanded mode - build recursive tree (helper lives in corporate;
+                # deferred import avoids a circular import at module load).
+                from webbsite.routes.dbpub.corporate import _build_holdings_tree
+
                 org_tracker = {person_id: 0}
                 _build_holdings_tree(
                     person_id, 0, holdings_sort, holdings_tree, org_tracker
