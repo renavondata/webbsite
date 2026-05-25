@@ -3156,7 +3156,7 @@ def advbyrole():
                   AND a.role = %s
                   AND a.adddate > %s
                   AND a.adddate <= %s
-                GROUP BY a.adviser
+                GROUP BY o.personid, o.name1
                 ORDER BY {ob}
             """
             results = execute_query(sql, (from_date, r, from_date, to_date))
@@ -3180,7 +3180,7 @@ def advbyrole():
                   AND a.role = %s
                   AND (a.adddate IS NULL OR a.adddate <= %s)
                   AND (a.remdate IS NULL OR a.remdate > %s)
-                GROUP BY a.adviser
+                GROUP BY o.personid, o.name1
                 ORDER BY {ob}
             """
             results = execute_query(
