@@ -312,6 +312,14 @@ def enigma_positions():
     Note: Simplified version for MVP - total returns calculations omitted
           (requires totRet, CAGret, CAGrel functions not yet ported)
     """
+    # Spurious migration-artifact route (there is no original enigma.positions.asp);
+    # the real, fully-featured page is positions.asp. Redirect there, preserving
+    # the query string, rather than render this duplicate's mismatched output.
+    from flask import redirect
+
+    _qs = request.query_string.decode()
+    return redirect("/dbpub/positions.asp" + (("?" + _qs) if _qs else ""), code=301)
+
     person_id = get_int("p", 0)
     sort_param = request.args.get("sort", "orgup")
     hide = request.args.get("hide", "Y")
