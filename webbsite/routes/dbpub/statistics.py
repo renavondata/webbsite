@@ -1714,7 +1714,7 @@ def prh_estates():
             COUNT(*) as c,
             SUM(f.area) as tota,
             CASE WHEN COUNT(*) > 0 THEN SUM(f.area) / COUNT(*) ELSE 0 END as a,
-            SUM(f.elevator) as elev,
+            SUM(f.elevator::int) as elev,
             e.latitude,
             e.longitude
         FROM enigma.prhflat f
@@ -1808,7 +1808,7 @@ def prh_blocks():
             COUNT(*) as c,
             SUM(f.area) as tota,
             CASE WHEN COUNT(*) > 0 THEN SUM(f.area) / COUNT(*) ELSE 0 END as a,
-            SUM(f.elevator) as elev
+            SUM(f.elevator::int) as elev
         FROM enigma.prhflat f
         JOIN enigma.prhblock b ON f.blockid = b.id
         WHERE b.estateid = %s
@@ -1901,7 +1901,7 @@ def prh_floors():
             COUNT(*) as c,
             SUM(area) as tota,
             CASE WHEN COUNT(*) > 0 THEN SUM(area) / COUNT(*) ELSE 0 END as a,
-            SUM(elevator) as elev
+            SUM(elevator::int) as elev
         FROM enigma.prhflat
         WHERE blockid = %s
           AND lastseen >= (SELECT DATE(MAX(lastseen)) FROM enigma.prhflat)
@@ -2734,14 +2734,15 @@ def outstanding():
                  FROM ccass.quotes q
                  WHERE q.issueid = %s AND q.atDate <= iss.atDate
                  ORDER BY q.atDate DESC LIMIT 1) AS closing,
-                (SELECT COALESCE(SUM(sharesPost - sharesPre), 0)
-                 FROM enigma.splitpends
-                 WHERE issueid = %s AND effDate > iss.atDate) AS pendsh
+                -- enigma.splitpends (pending, not-yet-effective splits) is a
+                -- master-only working table, never part of the public archive,
+                -- so there are no pending splits here: pendsh is always 0.
+                0 AS pendsh
             FROM enigma.issuedshares iss
             WHERE iss.issueid = %s
             ORDER BY iss.atDate DESC
         """,
-            (issue_id, issue_id, issue_id, issue_id),
+            (issue_id, issue_id, issue_id),
         )
 
     return render_template(
@@ -2944,7 +2945,7 @@ def advltsnap():
             FROM enigma.adviserships a
             JOIN enigma.organisations o ON a.adviser = o.personid
             WHERE a.company IN (
-                SELECT DISTINCT s.issuer
+                SELECT DISTINCT i.issuer
                 FROM enigma.stocklistings s
                 JOIN enigma.issue i ON s.issueid = i.id1
                 WHERE i.typeid IN (0,6,7,10,42)
@@ -9963,7 +9964,7 @@ def hpu():
     stock_info = execute_query(
         """
         SELECT
-            i.name1,
+            o.name1,
             o.personid
         FROM enigma.issue i
         JOIN enigma.organisations o ON i.issuer = o.personid

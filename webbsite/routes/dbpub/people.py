@@ -202,46 +202,39 @@ def natperson():
             # Build descendants tree
             descendants = _build_descendants_tree(person_id, max_gen)
 
-            # Get non-lineal relatives (siblings, cousins, etc.)
-            # Try to use webRels3 stored procedure, fallback to direct query
-            try:
-                nonlineal_sql = "SELECT * FROM enigma.webRels3(%s)"
-                nonlineal_relatives = [
-                    dict(row) for row in execute_query(nonlineal_sql, (person_id,))
-                ]
-            except:
-                # Procedure doesn't exist, query directly
-                # This finds siblings and other relatives where relid != 0 (0 = parent/child)
-                nonlineal_sql = """
-                    SELECT
-                        CASE WHEN r.rel1 = %s THEN r.rel2 ELSE r.rel1 END as relid,
-                        CASE
-                            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                            ELSE p.name1
-                        END as relative,
-                        rt.rellabel as rel,
-                        p.yob, p.mob, p.dob,
-                        p.yod, p.mond, p.dod
-                    FROM enigma.relatives r
-                    JOIN enigma.relationships rt ON r.relid = rt.id
-                    JOIN enigma.people p ON (CASE WHEN r.rel1 = %s THEN r.rel2 ELSE r.rel1 END) = p.personid
-                    WHERE (r.rel1 = %s OR r.rel2 = %s)
-                      AND r.relid != 0
-                    ORDER BY p.yob, p.mob, p.name1, p.name2
-                """
-                nonlineal_rows = execute_query(
-                    nonlineal_sql, (person_id, person_id, person_id, person_id)
+            # Non-lineal relatives (siblings, cousins, etc.) where relid != 0
+            # (0 = parent/child). Original used a webRels3 proc not present in PG;
+            # query the base tables directly. relationships.relation is the label.
+            nonlineal_sql = """
+                SELECT
+                    CASE WHEN r.rel1 = %s THEN r.rel2 ELSE r.rel1 END as relid,
+                    CASE
+                        WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
+                        ELSE p.name1
+                    END as relative,
+                    rt.relation as rel,
+                    p.yob, p.mob, p.dob,
+                    p.yod, p.mond, p.dod
+                FROM enigma.relatives r
+                JOIN enigma.relationships rt ON r.relid = rt.id
+                JOIN enigma.people p ON (CASE WHEN r.rel1 = %s THEN r.rel2 ELSE r.rel1 END) = p.personid
+                WHERE (r.rel1 = %s OR r.rel2 = %s)
+                  AND r.relid != 0
+                ORDER BY p.yob, p.mob, p.name1, p.name2
+            """
+            nonlineal_rows = execute_query(
+                nonlineal_sql, (person_id, person_id, person_id, person_id)
+            )
+            nonlineal_relatives = []
+            for row in nonlineal_rows:
+                row_dict = dict(row)
+                row_dict["born"] = _format_partial_date(
+                    row["yob"], row["mob"], row["dob"]
                 )
-                nonlineal_relatives = []
-                for row in nonlineal_rows:
-                    row_dict = dict(row)
-                    row_dict["born"] = _format_partial_date(
-                        row["yob"], row["mob"], row["dob"]
-                    )
-                    row_dict["died"] = _format_partial_date(
-                        row["yod"], row["mond"], row["dod"]
-                    )
-                    nonlineal_relatives.append(row_dict)
+                row_dict["died"] = _format_partial_date(
+                    row["yod"], row["mond"], row["dod"]
+                )
+                nonlineal_relatives.append(row_dict)
 
     except Exception as ex:
         current_app.logger.error(
