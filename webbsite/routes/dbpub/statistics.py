@@ -11,6 +11,73 @@ from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
 
+import json
+import os
+import tempfile
+from pathlib import Path
+
+# Webb-site is a frozen archive; the last trading date in the dataset.
+# Any "to" date >= this is equivalent to "current" (no quotes exist after it),
+# so the default leagueDirsHK table is constant and safe to cache to disk.
+DATA_END = date(2025, 10, 10)
+
+
+def _league_cache_path():
+    """On-disk path for the cached default leagueDirsHK result.
+
+    Persists across app restarts (so the heavy ~23k cagrel() compute runs at
+    most once per dataset). Overridable via LEAGUE_CACHE_DIR; defaults to
+    ~/.cache/webbsite (the service user's HOME, which it owns and can write).
+    """
+    base = os.environ.get("LEAGUE_CACHE_DIR") or os.path.join(
+        os.path.expanduser("~"), ".cache", "webbsite"
+    )
+    return os.path.join(base, "leaguedirshk_default.json")
+
+
+def _load_league_cache():
+    try:
+        with open(_league_cache_path(), encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def _save_league_cache(rows):
+    """Best-effort atomic write; a failure just means the next hit recomputes."""
+    try:
+        path = _league_cache_path()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path))
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(rows, f)
+        os.replace(tmp, path)
+    except OSError:
+        pass
+
+
+# (field, reverse) for each leagueDirsHK sort key — mirrors order_map's SQL so
+# the cached path sorts in Python identically (PG ASC=NULLS LAST, DESC=FIRST).
+_LEAGUE_SORT = {
+    "cntdn": ("cntpos", True), "cntup": ("cntpos", False),
+    "nameup": ("name", False), "namedn": ("name", True),
+    "cagreldn": ("cagrel", True), "cagrelup": ("cagrel", False),
+    "agedn": ("yob", False), "ageup": ("yob", True),
+    "sexdn": ("sex", True), "sexup": ("sex", False),
+}
+
+
+def _sort_league_rows(rows, sort_keys):
+    """Apply the requested sort keys (least-significant first, stable)."""
+    out = list(rows)
+    for i in (3, 2, 1):
+        spec = _LEAGUE_SORT.get(sort_keys.get(i))
+        if not spec:
+            continue
+        field, rev = spec
+        out.sort(key=lambda r, f=field: (r.get(f) is None, r.get(f)), reverse=rev)
+    return out
+
 bp = Blueprint("dbpub_statistics", __name__)
 
 
@@ -4205,11 +4272,31 @@ def league_dirs_hk():
     """
 
     all_params = params + [min_pos] + cagr_params
-    # Deterministic over the frozen data and edge-cached, but the cold run does
-    # ~23k enigma.cagrel() total-return calls over the large quotes/events tables
-    # and can exceed the 8s default (≈5s warm). Allow more headroom (< gunicorn's
-    # 30s) so a cold first hit completes; thereafter Cloudflare serves it.
-    results = execute_query(sql, tuple(all_params), timeout_s=50)
+
+    # The cold run does ~23k enigma.cagrel() total-return calls over the large
+    # quotes/events tables (≈5s warm, but tens of seconds cold/contended). Over
+    # the frozen dataset the *default* table (no from-date, current to-date,
+    # min 3 positions, not hidden) is constant, so compute it at most once and
+    # serve from an on-disk cache thereafter; sort the small result in Python.
+    is_default = (
+        not from_date
+        and not c
+        and min_pos == 3
+        and hide == "N"
+        and date.fromisoformat(to_date) >= DATA_END
+    )
+    if is_default:
+        results = _load_league_cache()
+        if results is None:
+            results = execute_query(sql, tuple(all_params), timeout_s=50)
+            for r in results:
+                if r.get("cagrel") is not None:
+                    r["cagrel"] = float(r["cagrel"])
+            _save_league_cache(results)
+        results = _sort_league_rows(results, sort_keys)
+    else:
+        # Rare custom-range/hidden variants: compute live (DB sorts).
+        results = execute_query(sql, tuple(all_params), timeout_s=50)
 
     return render_template(
         "dbpub/league_dirs_hk.html",
