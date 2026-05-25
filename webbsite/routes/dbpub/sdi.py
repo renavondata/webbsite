@@ -9,7 +9,7 @@ import io
 import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
-from webbsite.routes.dbpub._navctx import stock_nav, person_nav
+from webbsite.routes.dbpub._navctx import stock_nav, person_nav, org_nav
 
 bp = Blueprint("dbpub_sdi", __name__)
 
