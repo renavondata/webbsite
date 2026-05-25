@@ -170,8 +170,8 @@ def sdiissue():
                        t1.personID, c3.settleDate,
                        COALESCE(t1.price, t1.avCon) * t1.shsInv AS value
                 FROM (
-                    SELECT s.id, s.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
-                           s.shsInv, s.longShs1, s.longShs2, s.longStk2,
+                    SELECT s.id, se.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
+                           se.shsInv, s.longShs1, s.longShs2, s.longStk2,
                            s.shortShs1, s.shortShs2, s.shortStk2,
                            COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon, c.currency,
                            s.longStk2 - s.longStk1 AS lngStkChg,
@@ -364,9 +364,9 @@ def sdidirco():
                        t1.capShort, t1.capLong, c3.settleDate,
                        COALESCE(t1.price, t1.avCon) * t1.shsInv AS value
                 FROM (
-                    SELECT s.id, s.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
-                           s.shsInv, s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
-                           COALESCE(s.capAfter, s.capBefore) AS capID,
+                    SELECT s.id, se.posType, r.rsnSht, r.rsnLng, s.filing, s.relDate,
+                           se.shsInv, s.longShs1, s.longShs2, s.shortShs1, s.shortShs2,
+                           COALESCE(se.capAfter, se.capBefore) AS capID,
                            COALESCE(s.avPrice, s.hiPrice) AS price, s.avCon, c.currency,
                            s.longStk2, s.longStk2 - s.longStk1 AS lngStkChg,
                            s.shortStk2, s.shortStk2 - COALESCE(s.shortStk1, 0) AS shtStkChg,
@@ -375,7 +375,7 @@ def sdidirco():
                     JOIN enigma.sdievent se ON s.id = se.sdiID
                     JOIN enigma.sdireason r ON se.probReason = r.id
                     LEFT JOIN enigma.currencies c ON s.curr = c.id
-                    LEFT JOIN enigma.capacity cap ON COALESCE(s.capAfter, s.capBefore) = cap.id
+                    LEFT JOIN enigma.capacity cap ON COALESCE(se.capAfter, se.capBefore) = cap.id
                     WHERE s.serNoSuper IS NULL
                       AND s.issueid = %s
                       AND s.dir = %s

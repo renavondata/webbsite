@@ -266,6 +266,14 @@ def create_app(config_class=Config):
             response.headers["CDN-Cache-Control"] = f"max-age={ttl_edge}"
         return response
 
+    # Make today's date available to every template (the shared navbars.html
+    # stockbar/hklistings macro compares delist dates against `now`; without this
+    # any caller that doesn't pass `now` 500s on a delisted listing).
+    @app.context_processor
+    def _inject_now():
+        from datetime import date as _date
+        return {"now": _date.today()}
+
     # Custom error handlers
     from webbsite.db import QueryTimeoutError
 

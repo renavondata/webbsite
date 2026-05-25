@@ -2006,17 +2006,15 @@ def custhist():
                     intermedHldg AS holding,
                     intermedcnt AS holders,
                     atDate,
-                    (SELECT MAX(i.atDate)
+                    (SELECT i.outstanding
                      FROM enigma.issuedshares i
-                     WHERE i.atDate <= d.atDate AND i.issueID = %s) AS maxDate,
-                    (SELECT outstanding
-                     FROM enigma.issuedshares
-                     WHERE issueid = %s AND atDate = maxDate) AS shares
+                     WHERE i.issueID = %s AND i.atDate <= d.atDate
+                     ORDER BY i.atDate DESC LIMIT 1) AS shares
                 FROM ccass.dailylog d
                 WHERE issueid = %s
                 ORDER BY atDate DESC
             """
-            results = execute_query(sql, (issue_id, issue_id, issue_id))
+            results = execute_query(sql, (issue_id, issue_id))
 
             prev_holding = None
             for row in results:
@@ -2161,12 +2159,12 @@ def ncipchg():
                 COALESCE(n2.holding, 0) AS holding,
                 COALESCE(n2.holding, 0) - COALESCE(n1.holding, 0) AS hldchg,
                 COALESCE(n2.holders, 0) - COALESCE(n1.holders, 0) AS cntchg,
-                CASE WHEN os.shares > 0
-                     THEN COALESCE(n2.holding, 0)::NUMERIC / os.shares
+                CASE WHEN os.outstanding > 0
+                     THEN COALESCE(n2.holding, 0)::NUMERIC / os.outstanding
                      ELSE 0
                 END AS stake,
-                CASE WHEN os.shares > 0
-                     THEN (COALESCE(n2.holding, 0) - COALESCE(n1.holding, 0))::NUMERIC / os.shares
+                CASE WHEN os.outstanding > 0
+                     THEN (COALESCE(n2.holding, 0) - COALESCE(n1.holding, 0))::NUMERIC / os.outstanding
                      ELSE 0
                 END AS stkchg,
                 (COALESCE(n2.holding, 0) - COALESCE(n1.holding, 0)) * COALESCE(q.closing, 0) AS valchg,
@@ -2186,8 +2184,11 @@ def ncipchg():
             JOIN enigma.issue i ON COALESCE(n2.issueID, n1.issueID) = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
-            LEFT JOIN enigma.issuedshares os ON COALESCE(n2.issueID, n1.issueID) = os.issueID
-                AND os.atDate = %s
+            LEFT JOIN LATERAL (
+                SELECT i2.outstanding FROM enigma.issuedshares i2
+                WHERE i2.issueID = COALESCE(n2.issueID, n1.issueID) AND i2.atDate <= %s
+                ORDER BY i2.atDate DESC LIMIT 1
+            ) os ON TRUE
             LEFT JOIN ccass.quotes q ON COALESCE(n2.issueID, n1.issueID) = q.issueID
                 AND q.atDate = %s
             LEFT JOIN enigma.stocklistings sl2 ON COALESCE(n2.issueID, n1.issueID) = sl2.issueID

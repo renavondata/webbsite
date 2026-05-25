@@ -57,7 +57,7 @@ def hk_sols():
             f"""
             SELECT
                 CONCAT(EXTRACT(YEAR FROM p.admHK), '-',
-                       LPAD(EXTRACT(MONTH FROM p.admHK), 2, '0')) AS admHK,
+                       LPAD(EXTRACT(MONTH FROM p.admHK)::int::text, 2, '0')) AS admHK,
                 o.personid AS orgID, o.name1 AS oName,
                 ppl.personid AS pID,
                 CONCAT(COALESCE(ppl.name1,''),

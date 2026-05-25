@@ -2946,7 +2946,7 @@ def advltsnap():
             WHERE a.company IN (
                 SELECT DISTINCT s.issuer
                 FROM enigma.stocklistings s
-                JOIN enigma.issue i ON s.issueid = i.id
+                JOIN enigma.issue i ON s.issueid = i.id1
                 WHERE i.typeid IN (0,6,7,10,42)
                   AND s.stockexid IN (1,20,23)
                   AND (s.firsttradedate IS NULL OR s.firsttradedate <= %s)
@@ -3016,9 +3016,12 @@ def advbyrole():
     years = get_dbl("y", 1.0)
     sort_param = get_str("sort", "cntdn")
 
-    # Validate and adjust years
+    # Validate and adjust years (clamp both, else last_trading can build an
+    # invalid date like "-1-12-31")
     if from_year < 1993 or from_year > now_year:
         from_year = now_year - 1
+    if to_year < 1993 or to_year > now_year:
+        to_year = now_year
     if to_year < from_year:
         from_year, to_year = to_year, from_year
 
@@ -3029,6 +3032,7 @@ def advbyrole():
     def last_trading(year):
         """Find last trading date on or before Dec 31 of given year"""
         # For now, just use Dec 31 - in production would check specialdays table
+        year = max(1993, min(year, now_year))  # never produce an out-of-range date
         return f"{year}-12-31"
 
     from_date = last_trading(from_year - 1)
@@ -3224,7 +3228,6 @@ def cosperdomhk():
             FROM enigma.organisations o
             JOIN enigma.freg f ON o.personid = f.orgid
             WHERE f.hostdom = 1
-              AND o.cesdate IS NULL
               AND o.disdate IS NULL
               AND o.domicile = %s
             ORDER BY {ob}
@@ -3344,27 +3347,28 @@ def possum():
 
         # Main SQL query with window functions to consolidate consecutive directorships
         sql = f"""
-        WITH consecutive_directorships AS (
-            -- Identify consecutive directorships using window functions
+        WITH ordered_dirs AS (
+            -- First pass: capture the previous resignation date (LAG). Done in its
+            -- own CTE because a window function cannot be nested inside another.
             SELECT
-                d.id1,
-                d.director,
-                d.company,
-                d.apptDate,
-                d.resDate,
-                d.apptAcc,
-                d.resAcc,
-                -- Create groups: new group when previous resignation != current appointment
-                SUM(CASE
-                    WHEN LAG(d.resDate) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) = d.apptDate
-                    THEN 0
-                    ELSE 1
-                END) OVER (PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1) as group_id
+                d.id1, d.director, d.company, d.apptDate, d.resDate, d.apptAcc, d.resAcc,
+                LAG(d.resDate) OVER (
+                    PARTITION BY d.company ORDER BY COALESCE(d.apptDate, '1000-01-01'), d.id1
+                ) AS prev_res
             FROM enigma.directorships d
             JOIN enigma.positions p ON d.positionid = p.positionid
             WHERE d.director = %s
               AND p.rank = 1
             {hide_str}
+        ),
+        consecutive_directorships AS (
+            -- Second pass: running group id (new group when prev resignation != appt)
+            SELECT
+                id1, director, company, apptDate, resDate, apptAcc, resAcc,
+                SUM(CASE WHEN prev_res = apptDate THEN 0 ELSE 1 END) OVER (
+                    PARTITION BY company ORDER BY COALESCE(apptDate, '1000-01-01'), id1
+                ) AS group_id
+            FROM ordered_dirs
         ),
         consolidated AS (
             -- Consolidate consecutive directorships into single rows
@@ -4001,7 +4005,7 @@ def hklistcowebs():
     sql = f"""
         SELECT
             a.personid,
-            a.name,
+            a.name1 AS name,
             w.url,
             (SELECT MIN(sl.stockcode)
              FROM enigma.stocklistings sl
@@ -4041,11 +4045,11 @@ def hklistconowebs():
     """
     # Match ASP query: LEFT JOIN non-dead web entries, keep rows where URL is NULL
     sql = """
-        SELECT a.personid, a.name
+        SELECT a.personid, a.name1 AS name
         FROM enigma.listedcoshkall a
         LEFT JOIN (SELECT * FROM enigma.web WHERE NOT dead) t ON a.personid = t.personid
         WHERE t.url IS NULL
-        ORDER BY a.name
+        ORDER BY a.name1
     """
 
     try:
