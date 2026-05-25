@@ -134,8 +134,8 @@ and name-changes, without stating domicile.</p>
     {% for row in table_data %}
     <tr>
         <td>{{ row['year'] }}</td>
-        <td><a href="{{ url_for('dbpub.enigma_incFcal', y=row['year']) }}">{{ "{:,}".format(row['reg']) }}</a></td>
-        <td><a href="{{ url_for('dbpub.enigma_disFcal', y=row['year']) }}">{{ "{:,}".format(row['ces']) }}</a></td>
+        <td><a href="{{ url_for('dbpub_incorporations.incfcal', y=row['year']) }}">{{ "{:,}".format(row['reg']) }}</a></td>
+        <td><a href="{{ url_for('dbpub_incorporations.disfcal', y=row['year']) }}">{{ "{:,}".format(row['ces']) }}</a></td>
         <td>{{ "{:,}".format(row['net']) }}</td>
         <td class="colHide3">{{ "{:,}".format(row['reg_tot']) }}</td>
         <td class="colHide3">{{ "{:,}".format(row['ces_tot']) }}</td>

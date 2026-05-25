@@ -31,7 +31,7 @@ limited data available on
 data.gov.hk</a> (comprising delayed weekly updates) only cover new
 incorporations and name-changes.</p>
 
-<form method="get" action="{{ url_for('dbpub.enigma_oldestHKcos') }}">
+<form method="get" action="{{ url_for('dbpub_incorporations.oldest_hk_cos') }}">
     <select name="t" onchange="this.form.submit()">
         <option value="0" {% if t == 0 %}selected{% endif %}>All types</option>
         {% for ot in org_types %}
@@ -52,30 +52,30 @@ incorporations and name-changes.</p>
         <tr>
             <th></th>
             <th class="colHide2">
-                <a href="{{ url_for('dbpub.enigma_oldestHKcos', t=t, a=a, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.oldest_hk_cos', t=t, a=a, sort='regup' if sort_param != 'regup' else 'regdn') }}">
                     Reg no.
                 </a>
             </th>
             <th class="left">
-                <a href="{{ url_for('dbpub.enigma_oldestHKcos', t=t, a=a, sort='namup' if sort_param != 'namup' else 'namdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.oldest_hk_cos', t=t, a=a, sort='namup' if sort_param != 'namup' else 'namdn') }}">
                     Name
                 </a>
             </th>
             <th>
-                <a href="{{ url_for('dbpub.enigma_oldestHKcos', t=t, a=a, sort='incup' if sort_param != 'incup' else 'incdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.oldest_hk_cos', t=t, a=a, sort='incup' if sort_param != 'incup' else 'incdn') }}">
                     Inc.
                 </a>
             </th>
             {% if not a %}
                 <th class="colHide3">
-                    <a href="{{ url_for('dbpub.enigma_oldestHKcos', t=t, a=a, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
+                    <a href="{{ url_for('dbpub_incorporations.oldest_hk_cos', t=t, a=a, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
                         Dissolved
                     </a>
                 </th>
             {% endif %}
             {% if t == 0 %}
                 <th class="colHide3">
-                    <a href="{{ url_for('dbpub.enigma_oldestHKcos', t=t, a=a, sort='typup' if sort_param != 'typup' else 'typdn') }}">
+                    <a href="{{ url_for('dbpub_incorporations.oldest_hk_cos', t=t, a=a, sort='typup' if sort_param != 'typup' else 'typdn') }}">
                         Type
                     </a>
                 </th>

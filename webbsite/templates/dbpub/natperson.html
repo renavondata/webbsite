@@ -44,7 +44,7 @@
         <li><a href="{{ url_for('ccass.cholder', part=ccass_part_id) }}">CCASS holdings</a></li>
         {% endif %}
         {% if has_stories %}
-        <li><a href="{{ url_for('dbpub.natarts', p=person_id) }}">Webb-site Reports</a></li>
+        <li><a href="{{ url_for('dbpub_people.natarts', p=person_id) }}">Webb-site Reports</a></li>
         {% endif %}
     </ul>
     <div class="clear"></div>

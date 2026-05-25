@@ -102,7 +102,7 @@ function drawChart() {
 
 <h2>{{ title }}</h2>
 <ul class="navlist">
-    <li><a href="{{ url_for('dbpub.enigma_incHKannual', t=t) }}">Yearly</a></li>
+    <li><a href="{{ url_for('dbpub_incorporations.inc_hk_annual', t=t) }}">Yearly</a></li>
     <li class="livebutton">Monthly</li>
 </ul>
 <div class="clear"></div>
@@ -129,7 +129,7 @@ limited data available on
 data.gov.hk</a> (comprising delayed weekly updates) only cover new
 incorporations and name-changes.</p>
 
-<form method="get" action="{{ url_for('dbpub.enigma_incHKmonth') }}">
+<form method="get" action="{{ url_for('dbpub_incorporations.inchkmonth') }}">
     <div class="inputs">
         Company type:
         <select name="t" onchange="this.form.submit()">
@@ -165,8 +165,8 @@ incorporations and name-changes.</p>
     {% for row in table_data %}
     <tr>
         <td>{{ row['month_str'] }}</td>
-        <td><a href="{{ url_for('dbpub.enigma_incHKcaltype', y=row['year'], m=row['month'], t=t) }}">{{ "{:,}".format(row['inc']) }}</a></td>
-        <td><a href="{{ url_for('dbpub.enigma_disHKcaltype', y=row['year'], m=row['month'], t=t) }}">{{ "{:,}".format(row['dis']) }}</a></td>
+        <td><a href="{{ url_for('dbpub_incorporations.inchkcaltype', y=row['year'], m=row['month'], t=t) }}">{{ "{:,}".format(row['inc']) }}</a></td>
+        <td><a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=row['year'], m=row['month'], t=t) }}">{{ "{:,}".format(row['dis']) }}</a></td>
         <td>{{ "{:,}".format(row['net']) }}</td>
         <td class="colHide3">{{ "{:,}".format(row['inc_tot']) }}</td>
         <td class="colHide3">{{ "{:,}".format(row['dis_tot']) }}</td>

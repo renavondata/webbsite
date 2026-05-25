@@ -13,7 +13,7 @@
 
 <p>This page shows the companies newly-incorporated in UK by year, month or date and by type, excluding some dissolved companies which the registry deleted before we could collect them.</p>
 
-<form method="get" action="{{ url_for('dbpub.enigma_incUKcaltype') }}">
+<form method="get" action="{{ url_for('dbpub_incorporations.incukcaltype') }}">
     <div class="inputs"><b>Incorporation date</b>&nbsp;</div>
     <div class="inputs">
         <select name="y" onchange="this.form.submit()">
@@ -65,28 +65,28 @@
         <tr>
             <th class="colHide1"></th>
             <th class="colHide1">
-                <a href="{{ url_for('dbpub.enigma_incUKcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.incukcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='regup' if sort_param != 'regup' else 'regdn') }}">
                     Reg no.
                 </a>
             </th>
             <th class="left">
-                <a href="{{ url_for('dbpub.enigma_incUKcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='namup' if sort_param != 'namup' else 'namdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.incukcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='namup' if sort_param != 'namup' else 'namdn') }}">
                     Name
                 </a>
             </th>
             <th class="colHide3">
-                <a href="{{ url_for('dbpub.enigma_incUKcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='incup' if sort_param != 'incup' else 'incdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.incukcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='incup' if sort_param != 'incup' else 'incdn') }}">
                     Incorp-<br>orated
                 </a>
             </th>
             <th class="colHide3">
-                <a href="{{ url_for('dbpub.enigma_incUKcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
+                <a href="{{ url_for('dbpub_incorporations.incukcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
                     Dissolved
                 </a>
             </th>
             {% if t == 0 %}
                 <th class="colHide2">
-                    <a href="{{ url_for('dbpub.enigma_incUKcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='typup' if sort_param != 'typup' else 'typdn') }}">
+                    <a href="{{ url_for('dbpub_incorporations.incukcaltype', y=y, m=m, d=d, t=t, dom=dom, sort='typup' if sort_param != 'typup' else 'typdn') }}">
                         Type
                     </a>
                 </th>

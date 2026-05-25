@@ -23,7 +23,7 @@ limited data available on
 data.gov.hk</a> (comprising delayed weekly updates) only cover new
 incorporations and name-changes.</p>
 
-<form method="get" action="{{ url_for('dbpub.enigma_disHKcaltype') }}">
+<form method="get" action="{{ url_for('dbpub_incorporations.dishkcaltype') }}">
     <div class="inputs"><b>Dissolution date</b>&nbsp;</div>
     <div class="inputs">
         <select name="y" onchange="this.form.submit()">
@@ -67,28 +67,28 @@ incorporations and name-changes.</p>
         <tr>
             <th class="colHide1"></th>
             <th class="colHide2">
-                <a href="{{ url_for('dbpub.enigma_disHKcaltype', y=y, m=m, d=d, t=t, sort='regup' if sort_param != 'regup' else 'regdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=y, m=m, d=d, t=t, sort='regup' if sort_param != 'regup' else 'regdn') }}">
                     Reg no.
                 </a>
             </th>
             <th class="left">
-                <a href="{{ url_for('dbpub.enigma_disHKcaltype', y=y, m=m, d=d, t=t, sort='namup' if sort_param != 'namup' else 'namdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=y, m=m, d=d, t=t, sort='namup' if sort_param != 'namup' else 'namdn') }}">
                     Name
                 </a>
             </th>
             <th>
-                <a href="{{ url_for('dbpub.enigma_disHKcaltype', y=y, m=m, d=d, t=t, sort='incup' if sort_param != 'incup' else 'incdn') }}">
+                <a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=y, m=m, d=d, t=t, sort='incup' if sort_param != 'incup' else 'incdn') }}">
                     Incorp-<br>orated
                 </a>
             </th>
             <th class="colHide2">
-                <a href="{{ url_for('dbpub.enigma_disHKcaltype', y=y, m=m, d=d, t=t, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
+                <a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=y, m=m, d=d, t=t, sort='disdn' if sort_param != 'disdn' else 'disup') }}">
                     Dissolved
                 </a>
             </th>
             {% if show_type_column %}
                 <th class="colHide1">
-                    <a href="{{ url_for('dbpub.enigma_disHKcaltype', y=y, m=m, d=d, t=t, sort='typup' if sort_param != 'typup' else 'typdn') }}">
+                    <a href="{{ url_for('dbpub_incorporations.dishkcaltype', y=y, m=m, d=d, t=t, sort='typup' if sort_param != 'typup' else 'typdn') }}">
                         Type
                     </a>
                 </th>

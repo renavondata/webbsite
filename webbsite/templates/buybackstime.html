@@ -17,7 +17,7 @@
 </ul>
 <div class="clear"></div>
 
-<form method="get" action="{{ url_for('dbpub_buybacks.buybackstime') }}">
+<form method="get" action="{{ url_for('dbpub_buybacks.buybacks_time') }}">
     <input type="hidden" name="sort" value="{{ sort_param }}">
     <div class="inputs">
         Last
@@ -41,13 +41,13 @@ on SEHK or on another exchange.</p>
     <tr>
         <th></th>
         <th>
-            <a href="{{ url_for('dbpub_buybacks.buybackstime', hist=hist, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacks_time', hist=hist, sort=('namup' if sort_param == 'namdn' else 'namdn')) }}">Issue</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub_buybacks.buybackstime', hist=hist, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacks_time', hist=hist, sort=('valup' if sort_param == 'valdn' else 'valdn')) }}">Value</a>
         </th>
         <th>
-            <a href="{{ url_for('dbpub_buybacks.buybackstime', hist=hist, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
+            <a href="{{ url_for('dbpub_buybacks.buybacks_time', hist=hist, sort=('curup' if sort_param == 'curdn' else 'curdn')) }}">Curr.</a>
         </th>
     </tr>
     {% for row in buybacks %}
