@@ -94,10 +94,12 @@ def stock_nav(issue_id):
 
     try:
         r = execute_query(
-            """SELECT o.name1, o.personid, st.typeShort, i.currency
+            """SELECT o.name1, o.personid, st.typeShort,
+                      COALESCE(c.currency, 'HKD') AS currency
                FROM enigma.issue i
                JOIN enigma.organisations o ON i.issuer = o.personid
                JOIN enigma.secTypes st ON i.typeID = st.typeID
+               LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
                WHERE i.ID1 = %s""",
             (issue_id,),
         )
