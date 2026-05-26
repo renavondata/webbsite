@@ -21,6 +21,20 @@ import html
 CANONICAL_DROP_PARAMS = frozenset({"sort", "so", "s2", "hide", "h", "x", "n", "m", "f"})
 
 
+_TS_NONWORD = re.compile(r"\W+", re.UNICODE)
+
+
+def ts_words(text: str) -> list[str]:
+    """Split user text into safe to_tsquery lexemes.
+
+    Keeps only Unicode word characters (letters/digits/_, including CJK), so
+    tsquery operator/punctuation characters in user input (& | ! ( ) : * < > '
+    ") can neither break to_tsquery parsing nor inject. Empty tokens are dropped.
+    Callers assemble these into a tsquery with their own (trusted) operators.
+    """
+    return [w for w in (_TS_NONWORD.sub("", part) for part in text.split()) if w]
+
+
 def canonical_query() -> str:
     """Query string for rel=canonical, with presentation-only params removed."""
     kept = [

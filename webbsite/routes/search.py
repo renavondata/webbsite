@@ -4,7 +4,7 @@ Search routes - Direct port from searchorgs.asp and searchpeople.asp
 
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
-from webbsite.asp_helpers import rem_space, get_str, get_bool, apos
+from webbsite.asp_helpers import rem_space, get_str, get_bool, apos, ts_words
 
 bp = Blueprint("search", __name__)
 
@@ -42,17 +42,16 @@ def search_orgs():
     old_results = []
 
     if n:
-        # Build WHERE clause based on search type
+        # Build WHERE clause based on search type. Full-text uses plainto_tsquery
+        # (bound param), which parses arbitrary user text into an AND query and
+        # can't be broken by tsquery operator/punctuation chars.
         if st == "a":
-            # Full-text search - PostgreSQL syntax
-            # Convert space-separated terms to term1 & term2 format for tsquery
-            terms = " & ".join(n.split())
-            match_clause = (
-                f"to_tsvector('simple', name1) @@ to_tsquery('simple', '{apos(terms)}')"
-            )
+            match_clause = "to_tsvector('simple', name1) @@ plainto_tsquery('simple', %s)"
+            org_params = (n,)
         else:
             # Left match (starts with) - use LOWER() + LIKE for case-insensitive with pattern index
             match_clause = f"LOWER(name1) LIKE LOWER('{apos(n)}%')"
+            org_params = None
 
         # Search current names
         # Use CTE to force pattern index usage, then inline everListCo() logic
@@ -77,11 +76,11 @@ def search_orgs():
             ORDER BY {ob}
             LIMIT {limit}
         """
-        current_results = execute_query(sql)
+        current_results = execute_query(sql, org_params)
 
         # Search old names
         if st == "a":
-            old_match_clause = f"to_tsvector('simple', oldName) @@ to_tsquery('simple', '{apos(terms)}')"
+            old_match_clause = "to_tsvector('simple', oldName) @@ plainto_tsquery('simple', %s)"
         else:
             old_match_clause = f"LOWER(oldName) LIKE LOWER('{apos(n)}%')"
 
@@ -107,7 +106,7 @@ def search_orgs():
             ORDER BY {ob}
             LIMIT {limit}
         """
-        old_results = execute_query(sql)
+        old_results = execute_query(sql, org_params)
 
     return render_template(
         "searchorgs.html",
@@ -163,48 +162,62 @@ def search_people():
                 where_current += f" AND dn2 = '{apos(n2)}'"
                 where_alias += f" AND a.dn2 = '{apos(n2)}'"
         else:
-            # Full-text search mode
+            # Full-text search mode. User words are reduced to safe tsquery
+            # lexemes (ts_words); the &/|/() operators below are ours, so the
+            # assembled tsquery is always valid and is passed as a bound param.
+            fname_words = ts_words(n1) if n1 else []
+            forename_words = ts_words(n2) if n2 else []
+
             # Build family name search term
-            fname = ""
-            if n1:
-                fname = " & ".join(f'"{word}"' for word in n1.split())
+            fname = " & ".join(f'"{w}"' for w in fname_words)
 
             # Build given names search term (with multi-word logic)
             forename = ""
-            if n2:
-                words = n2.split()
-                if len(words) == 1:
-                    forename = f'"{words[0]}"'
-                elif len(words) > 1:
-                    # Build list of terms to avoid leading & operator
-                    forename_parts = []
-                    # Add all words except last two as required
-                    for word in words[:-2]:
-                        forename_parts.append(f'"{word}"')
-                    # Last two words: search both separate and combined
-                    # e.g., "Xiao Ping" searches for (("Xiao" & "Ping") | "XiaoPing")
-                    forename_parts.append(
-                        f'(("{words[-2]}" & "{words[-1]}") | "{words[-2] + words[-1]}")'
-                    )
-                    forename = " & ".join(forename_parts)
+            if len(forename_words) == 1:
+                forename = f'"{forename_words[0]}"'
+            elif len(forename_words) > 1:
+                # Build list of terms to avoid leading & operator
+                forename_parts = [f'"{w}"' for w in forename_words[:-2]]
+                # Last two words: search both separate and combined
+                # e.g., "Xiao Ping" searches for (("Xiao" & "Ping") | "XiaoPing")
+                forename_parts.append(
+                    f'(("{forename_words[-2]}" & "{forename_words[-1]}") '
+                    f'| "{forename_words[-2] + forename_words[-1]}")'
+                )
+                forename = " & ".join(forename_parts)
 
+            # Collect tsquery values in placeholder order (shared by both the
+            # current-names and alias queries, which mirror each other).
+            ts_params = []
             if d:
                 # Match family and given names separately
                 where_current = "1=1"
                 where_alias = "1=1"
-                if n1:
-                    where_current += f" AND to_tsvector('simple', dn1) @@ to_tsquery('simple', '{apos(fname)}')"
-                    where_alias += f" AND to_tsvector('simple', a.dn1) @@ to_tsquery('simple', '{apos(fname)}')"
-                if n2:
-                    where_current += f" AND to_tsvector('simple', dn2) @@ to_tsquery('simple', '{apos(forename)}')"
-                    where_alias += f" AND to_tsvector('simple', a.dn2) @@ to_tsquery('simple', '{apos(forename)}')"
+                if fname:
+                    where_current += " AND to_tsvector('simple', dn1) @@ to_tsquery('simple', %s)"
+                    where_alias += " AND to_tsvector('simple', a.dn1) @@ to_tsquery('simple', %s)"
+                    ts_params.append(fname)
+                if forename:
+                    where_current += " AND to_tsvector('simple', dn2) @@ to_tsquery('simple', %s)"
+                    where_alias += " AND to_tsvector('simple', a.dn2) @@ to_tsquery('simple', %s)"
+                    ts_params.append(forename)
             else:
                 # Match across both fields
                 combined = fname
                 if forename:
                     combined = combined + " & " + forename if combined else forename
-                where_current = f"to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
-                where_alias = f"to_tsvector('simple', COALESCE(a.dn1, '') || ' ' || COALESCE(a.dn2, '')) @@ to_tsquery('simple', '{apos(combined)}')"
+                if combined:
+                    where_current = "to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', %s)"
+                    where_alias = "to_tsvector('simple', COALESCE(a.dn1, '') || ' ' || COALESCE(a.dn2, '')) @@ to_tsquery('simple', %s)"
+                    ts_params.append(combined)
+                else:
+                    # User input sanitised to nothing -> no full-text match.
+                    where_current = "1=0"
+                    where_alias = "1=0"
+
+        # In exact mode the where clauses carry no placeholders; pass None so
+        # psycopg2 doesn't treat any literal % as a format spec.
+        people_params = tuple(ts_params) or None if not e else None
 
         # Query current names
         sql = f"""
@@ -215,7 +228,7 @@ def search_people():
             ORDER BY name1, name2
             LIMIT 500
         """
-        current_results = execute_query(sql)
+        current_results = execute_query(sql, people_params)
 
         # Format birth dates for display
         for row in current_results:
@@ -242,7 +255,7 @@ def search_people():
             ORDER BY a.n1, a.n2
             LIMIT 500
         """
-        alias_results = execute_query(sql)
+        alias_results = execute_query(sql, people_params)
 
         # Format birth dates for alias results
         for row in alias_results:

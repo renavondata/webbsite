@@ -2579,21 +2579,17 @@ def govac_search():
     if n:
         # Build search query based on search type
         if st == "a":
-            # Full-text search using PostgreSQL to_tsquery
-            # Convert space-separated terms to '&' (AND) query
-            terms = n.split()
-            if terms:
-                # Create tsquery format: term1 & term2 & term3
-                tsquery = " & ".join(terms)
-
+            # Full-text search. plainto_tsquery parses arbitrary user text into
+            # an AND query (bound param), so punctuation/operators can't break it.
+            if n.split():
                 sql = """
                     SELECT id, txt, parentid
                     FROM enigma.govitems
-                    WHERE to_tsvector('simple', txt) @@ to_tsquery('simple', %s)
+                    WHERE to_tsvector('simple', txt) @@ plainto_tsquery('simple', %s)
                     ORDER BY txt
                     LIMIT %s
                 """
-                results = execute_query(sql, (tsquery, limit))
+                results = execute_query(sql, (n, limit))
         else:
             # Left match using LIKE
             sql = """
@@ -5859,10 +5855,10 @@ def searchess():
     if n:
         # Build WHERE clause based on search type
         if st == "a":
-            # Full-text search - convert space-separated words to AND query
-            search_terms = " & ".join(n.split())
-            where_clause = "to_tsvector('simple', ename) @@ to_tsquery('simple', %s)"
-            params = (search_terms,)
+            # Full-text search. plainto_tsquery parses arbitrary user text into
+            # an AND query (bound param), so punctuation/operators can't break it.
+            where_clause = "to_tsvector('simple', ename) @@ plainto_tsquery('simple', %s)"
+            params = (n,)
         else:  # st == 'l' for left match
             where_clause = "ename LIKE %s"
             params = (n + "%",)
