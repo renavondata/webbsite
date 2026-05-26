@@ -44,7 +44,7 @@ def enigma_events():
                 (stock_code,),
             )
             if result and len(result) > 0:
-                issue_id = result[0][0]
+                issue_id = result[0]["issueid"]
         except Exception as ex:
             current_app.logger.error(
                 f"Error looking up stock code for enigma.events: {ex}"
@@ -65,8 +65,8 @@ def enigma_events():
                 (issue_id,),
             )
             if result and len(result) > 0:
-                stock_name = result[0][0]
-                person_id = result[0][1]
+                stock_name = result[0]["name1"]
+                person_id = result[0]["personid"]
         except Exception as ex:
             current_app.logger.error(
                 f"Error getting stock name for enigma.events: {ex}"
