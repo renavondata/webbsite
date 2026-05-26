@@ -236,30 +236,21 @@ def create_app(config_class=Config):
             response.headers["CDN-Cache-Control"] = "max-age=604800"
             return response
 
-        # Data pages with ?d= = historical date snapshot
-        # CCASS history starts 2007-06-26; data for any past date is immutable.
-        # Recent dates (last 7 days) may still be revised, so cap their TTL.
+        # Data pages (.asp or directory index). The archive is frozen (data ends
+        # 2025-10-10), so every page is immutable. Cache hard at the edge so
+        # crawlers/users hit warm Cloudflare instead of a ~1s origin render on
+        # every unique ?p=<id>; a ?d= older than a year gets an even longer TTL.
         if path.endswith(".asp") or path.endswith("/"):
             d_param = request.args.get("d", "")
-            ttl_browser = 3600
-            ttl_edge = 3600
+            ttl_browser = 86400      # 1 day
+            ttl_edge = 2592000       # 30 days
             if d_param and len(d_param) == 10:
                 try:
-                    from datetime import datetime, date as _date, timedelta
+                    from datetime import datetime, date as _date
                     parsed = datetime.strptime(d_param, "%Y-%m-%d").date()
-                    age = (_date.today() - parsed).days
-                    if age > 365:
-                        # >1 year old: definitely immutable
+                    if (_date.today() - parsed).days > 365:
                         ttl_browser = 604800       # 7 days
                         ttl_edge = 31536000        # 1 year
-                    elif age > 30:
-                        # 30 days – 1 year: stable
-                        ttl_browser = 86400        # 1 day
-                        ttl_edge = 2592000         # 30 days
-                    elif age > 7:
-                        # 7–30 days: very unlikely to change
-                        ttl_browser = 14400        # 4 hours
-                        ttl_edge = 604800          # 7 days
                 except ValueError:
                     pass
             response.headers.setdefault("Cache-Control", f"public, max-age={ttl_browser}")
@@ -273,6 +264,10 @@ def create_app(config_class=Config):
     def _inject_now():
         from datetime import date as _date
         return {"now": _date.today()}
+
+    # Expose canonical_query() to templates (base.html builds rel=canonical from it).
+    from webbsite.asp_helpers import canonical_query
+    app.jinja_env.globals["canonical_query"] = canonical_query
 
     # Custom error handlers
     from webbsite.db import QueryTimeoutError

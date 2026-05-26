@@ -28,6 +28,7 @@ bp = Blueprint("sitemap", __name__)
 
 _URLS_PER_SITEMAP = 50000  # sitemaps.org protocol cap
 _cache: dict[str, list[str]] = {}  # data is static -> memoise per worker
+DATA_FREEZE = "2025-10-10"  # data collection ended here; every page's <lastmod>
 
 
 def _host() -> str:
@@ -70,10 +71,56 @@ def _company_paths() -> list[str]:
     return [f"/dbpub/orgdata.asp?p={r['personid']}" for r in rows]
 
 
-# child-sitemap registry: name -> callable returning an ordered list of paths
+def _sfc_firm_paths() -> list[str]:
+    """SFClicensees.asp?p=<orgid> — every firm that has SFC licence records."""
+    rows = execute_query(
+        "SELECT DISTINCT orgid FROM enigma.olicrec ORDER BY orgid"
+    )
+    return [f"/dbpub/SFClicensees.asp?p={r['orgid']}" for r in rows]
+
+
+def _sfc_person_paths() -> list[str]:
+    """sfclicrec.asp?p=<staffid> — every SFC-licensed individual."""
+    rows = execute_query(
+        "SELECT DISTINCT staffid FROM enigma.licrec ORDER BY staffid"
+    )
+    return [f"/dbpub/sfclicrec.asp?p={r['staffid']}" for r in rows]
+
+
+def _natperson_paths() -> list[str]:
+    """natperson.asp?p=<personid>, scoped to HK-relevant natural persons.
+
+    Officers of HK-ever-listed companies (reusing the same listedcoshkever filter
+    as _company_paths) plus SFC licensees. The people joins guarantee each id is a
+    natural person, not a corporate director, and exclude the ~19.5M global
+    Companies House persons that have no HK connection.
+    """
+    rows = execute_query(
+        """
+        SELECT personid FROM (
+            SELECT DISTINCT d.director AS personid
+            FROM enigma.directorships d
+            JOIN enigma.people pe         ON pe.personid = d.director
+            JOIN enigma.listedcoshkever l ON l.personid = d.company
+            UNION
+            SELECT DISTINCT lr.staffid
+            FROM enigma.licrec lr
+            JOIN enigma.people pe ON pe.personid = lr.staffid
+        ) t
+        ORDER BY personid
+        """
+    )
+    return [f"/dbpub/natperson.asp?p={r['personid']}" for r in rows]
+
+
+# child-sitemap registry: name -> callable returning an ordered list of paths.
+# Names are hyphen-free so the /sitemap-<name>-<int:page>.xml route stays unambiguous.
 _SOURCES = {
     "pages": _static_page_paths,
     "companies": _company_paths,
+    "sfcfirms": _sfc_firm_paths,
+    "sfcpersons": _sfc_person_paths,
+    "people": _natperson_paths,
 }
 
 
@@ -121,7 +168,8 @@ def sitemap_child(name: str, page: int) -> Response:
     host = _host()
     chunk = paths[start:start + _URLS_PER_SITEMAP]
     items = "".join(
-        f"<url><loc>https://{host}{escape(p)}</loc></url>" for p in chunk
+        f"<url><loc>https://{host}{escape(p)}</loc><lastmod>{DATA_FREEZE}</lastmod></url>"
+        for p in chunk
     )
     return _xml_response(
         f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{items}</urlset>'
