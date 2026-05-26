@@ -81,8 +81,11 @@ def _sfc_firm_paths() -> list[str]:
 
 def _sfc_person_paths() -> list[str]:
     """sfclicrec.asp?p=<staffid> — every SFC-licensed individual."""
+    # ~130k rows / ~4s: over the default 8s? No, but raise headroom anyway. This
+    # runs once per worker (memoised below) on a frozen dataset, not per request.
     rows = execute_query(
-        "SELECT DISTINCT staffid FROM enigma.licrec ORDER BY staffid"
+        "SELECT DISTINCT staffid FROM enigma.licrec ORDER BY staffid",
+        timeout_s=30,
     )
     return [f"/dbpub/sfclicrec.asp?p={r['staffid']}" for r in rows]
 
@@ -108,7 +111,11 @@ def _natperson_paths() -> list[str]:
             JOIN enigma.people pe ON pe.personid = lr.staffid
         ) t
         ORDER BY personid
-        """
+        """,
+        # ~193k rows / ~13s on the box — over the default 8s statement_timeout.
+        # Runs once per worker (memoised below) for this frozen dataset, well
+        # under the 60s gunicorn worker timeout, not on every request.
+        timeout_s=45,
     )
     return [f"/dbpub/natperson.asp?p={r['personid']}" for r in rows]
 
