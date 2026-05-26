@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{% block title %}Renavon Hong Kong Database{% endblock %}</title>
 <meta name="description" content="{% block description %}35 years of Hong Kong financial-market data — listed companies, directors, shareholders, CCASS holdings and corporate filings. A free, open archive of the late David Webb's Webb-site.com, released under CC-BY 4.0.{% endblock %}">
-{# Self-canonical (full path + query) so distinct pages stay distinct; one host, set via CANONICAL_HOST. #}
-{%- set _qs = request.query_string.decode() %}
+{# Canonical: full path + content query, with presentation-only params (sort/hide/view)
+   dropped so facet variants consolidate onto one indexed URL. One host, via CANONICAL_HOST. #}
+{%- set _qs = canonical_query() %}
 <link rel="canonical" href="https://{{ config.CANONICAL_HOST }}{{ request.path }}{% if _qs %}?{{ _qs }}{% endif %}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Renavon Hong Kong Database">

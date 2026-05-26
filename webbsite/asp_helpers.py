@@ -4,9 +4,31 @@ Direct ports to maintain compatibility with ASP logic
 """
 
 from datetime import datetime, date
+from urllib.parse import urlencode
 from flask import request
 import re
 import html
+
+
+# ===== CANONICAL URL =====
+
+# Presentation-only query params: they change how a page is sorted/expanded, not
+# which underlying record it shows. Stripping them from rel=canonical consolidates
+# the sort/hide/view variants of a page onto one canonical URL (the form seeded in
+# the sitemap), instead of letting each facet combination be its own indexed page.
+# Denylist (not allowlist): unknown params are kept, so genuine content params
+# (p, d, a, i, part, ...) still keep distinct pages distinct.
+CANONICAL_DROP_PARAMS = frozenset({"sort", "so", "s2", "hide", "h", "x", "n", "m", "f"})
+
+
+def canonical_query() -> str:
+    """Query string for rel=canonical, with presentation-only params removed."""
+    kept = [
+        (k, v)
+        for k, v in request.args.items(multi=True)
+        if k.lower() not in CANONICAL_DROP_PARAMS
+    ]
+    return urlencode(kept)
 
 
 # ===== REQUEST PARAMETER HELPERS =====
