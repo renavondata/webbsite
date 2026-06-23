@@ -1,0 +1,39 @@
+{#
+  Renavon cross-sell — a CONTEXTUAL bridge from the (frozen) Webb-site archive to
+  Renavon's live, maintained datasets.
+
+  Context for editors:
+  - Webb-site is the late David Webb's data, released CC-BY 4.0 and served here as
+    a free, read-only archive FROZEN at 2025-10-10.
+  - Renavon maintains its OWN live pipelines for the same public sources (SFC,
+    HKEX, Companies Registry). So this is an honest "the archive is frozen; here's
+    the live version" pointer — NOT a resell of the CC-BY archive.
+  - Keep the tone understated out of respect for the archive.
+
+  This replaces the earlier hardcoded, generic, untracked banner that pointed at
+  /packages/hk-companies (a de-listed package during the CRHK rebuild → 0 convs).
+  Click-through is captured explicitly because PostHog autocapture is off site-wide.
+
+  To extend (A2): add elif branches mapping more page families to LIVE datasets
+  (e.g. SDI → hkex_disclosures, org/person → hkex_directors / crhk_companies once
+  re-listed). Only point at datasets that are visible:true on renavon.com.
+#}
+{%- set _path = request.path | lower -%}
+{%- if 'sfc' in _path -%}
+  {%- set _url = 'https://renavon.com/data/sfc/sfc_licences' -%}
+  {%- set _what = 'directory of SFC-licensed firms and representatives' -%}
+  {%- set _cta = 'see the live data on Renavon' -%}
+  {%- set _ds = 'sfc_licences' -%}
+{%- else -%}
+  {%- set _url = 'https://renavon.com/datasets' -%}
+  {%- set _what = 'set of Hong Kong financial datasets' -%}
+  {%- set _cta = 'explore the live data on Renavon' -%}
+  {%- set _ds = 'catalog' -%}
+{%- endif -%}
+<div id="renavon-banner" style="background:#1a1a2e;border-bottom:2px solid #0891b2;padding:8px 16px;text-align:center;font-family:Arial,sans-serif;font-size:13px;">
+    <span style="color:#e2e8f0;">This is a free archive, frozen at 10&nbsp;Oct&nbsp;2025. For a live, maintained {{ _what }} &mdash; bulk CSV/Excel and API &mdash;</span>
+    <a href="{{ _url }}?utm_source=webbsite&amp;utm_medium=cta&amp;utm_campaign=bridge&amp;ref=webbsite&amp;ref_path={{ request.path | urlencode }}"
+       target="_blank" rel="noopener"
+       onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'{{ _ds }}',source_path:'{{ request.path }}'})}"
+       style="color:#22d3ee;text-decoration:underline;font-weight:bold;margin-left:6px;">{{ _cta }} &rarr;</a>
+</div>
