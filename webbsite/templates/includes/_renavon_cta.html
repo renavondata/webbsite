@@ -43,6 +43,6 @@
     <span style="color:#e2e8f0;">This is a free archive, frozen at 10&nbsp;Oct&nbsp;2025. For a live, maintained {{ _what }} &mdash; bulk CSV/Excel and API &mdash;</span>
     <a href="{{ _url }}?utm_source=webbsite&amp;utm_medium=cta&amp;utm_campaign=bridge&amp;ref=webbsite&amp;ref_path={{ request.path | urlencode }}"
        target="_blank" rel="noopener"
-       onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'{{ _ds }}',source_path:'{{ request.path }}'})}"
+       onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:{{ _ds | tojson }},source_path:{{ request.path | tojson }}})}"
        style="color:#22d3ee;text-decoration:underline;font-weight:bold;margin-left:6px;">{{ _cta }} &rarr;</a>
 </div>
