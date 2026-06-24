@@ -26,15 +26,40 @@ deploy/
 ```
 
 ## Deploy a code change
+
+**Deployment is automatic — pushing to `master` *is* the deploy.** `webbsite-web` runs
+`site-deploy@webbsite.timer` (the shared `site-deploy` toolkit at `/srv/site-deploy`): every ~2 min
+it polls `origin/master`, and when it advances, fast-forwards → `uv sync --frozen` → reloads the
+service → purges the Cloudflare edge cache. A merged PR is live within ~2 minutes. Watch it:
 ```bash
-ssh webbsite-web   # over Tailscale
-sudo -u webbsite git -C /srv/webbsite pull --ff-only
-sudo -u webbsite env HOME=/srv/webbsite /usr/local/bin/uv sync --frozen
-systemctl restart webbsite
-sleep 2
-curl -fsS http://127.0.0.1:8000/health        # {"status":"ok"}
-curl -fsS https://webbsite.renavon.com/health  # same via Caddy + Cloudflare
+journalctl -u site-deploy@webbsite -f   # "deployed <sha> (reload)" then "cf-purge: ok (zone …)"
 ```
+
+### Edge-cache purge (required, or HTML changes stay invisible)
+The auto-deploy purges Cloudflare via `site-deploy/bin/cf-purge.sh`, which needs two keys in
+`/etc/webbsite/env`:
+```
+CF_ZONE_ID=c754c09daa8fb9cce8e4977d44cbd246   # renavon.com (in the datagurullc CF account)
+CF_CACHE_PURGE_TOKEN=<single-zone Cache-Purge API token>
+```
+Without them `cf-purge.sh` is a silent no-op and pages (`cdn-cache-control: max-age=2592000`, 30d)
+keep serving stale HTML — so a sitewide change (e.g. the base-template cross-sell banner) stays
+invisible to cached visitors. Mint a least-privilege **Cache Purge** token scoped to the single
+renavon.com zone via the `cloudflare-api` recipe (renavon.com is reached through the datagurullc
+legacy key+email; never wire that global key into the box).
+
+### Manual deploy (fallback — timer down, or to force a deploy)
+Tailscale SSH lands as `g` (sudo), so privileged steps need `sudo`:
+```bash
+ssh webbsite-web
+sudo -u webbsite git -C /srv/webbsite pull --ff-only
+sudo -u webbsite sh -c 'cd /srv/webbsite && env HOME=/srv/webbsite /usr/local/bin/uv sync --frozen'
+sudo systemctl restart webbsite
+sleep 2
+curl -fsS http://127.0.0.1:8000/health         # {"status":"ok"}
+curl -fsS https://webbsite.renavon.com/health  # via Caddy + Cloudflare
+```
+The edge purge is automatic on the next timer deploy; `site-deploy/bin/cf-purge.sh` is the tool if you need to force one.
 
 ## Rebuild the data (rare)
 The archive is static, so there is no scheduled import. To reload, restore the `pg_dump` archive
