@@ -346,11 +346,10 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run tests
         run: |
-          pip install -r requirements.txt
-          pip install -r tests/requirements-test.txt
-          python app.py &
+          uv sync --frozen
+          uv run python app.py &
           sleep 5
-          python tests/test_routes.py
+          uv run python tests/test_routes.py
 ```
 
 ## Before Oct 31 Shutdown
@@ -558,4 +557,5 @@ Compared to serial execution:
 
 ## Questions?
 
-See `docs/modernization-roadmap.md` for the overall migration plan.
+See `deploy/README.md` for the current hosting setup, and the top-level `CLAUDE.md`
+for architecture and the data-revival plan.

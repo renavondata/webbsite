@@ -1,14 +1,3 @@
-# Large SQL data dumps in dated folders
-CCASS schema/ccassData-2025-10-11- 600.sql
-enigmaData-2025-10-11- 000.sql
-
-# Access database files (binary, large)
-*.accdb
-*.mdb
-
-# Word documents (we have markdown versions)
-*.docx
-
 # Claude Code directory
 .claude/
 
@@ -40,8 +29,9 @@ instance/
 .env
 .env.local
 
-# uv
+# uv / virtualenv
 .uv/
+.venv/
 
 # testing
 tests/outputs
@@ -54,5 +44,4 @@ logs/
 
 # Archive data - store locally only, too large for GitHub
 archive/
-scripts/
 docs/.mcp.json
