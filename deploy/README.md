@@ -71,6 +71,12 @@ sudo -u postgres vacuumdb -d enigma --analyze-only -j4
 systemctl reload webbsite
 ```
 
+**Fidelity baseline (ASP→Flask parity):** the only surviving crawl of the original ASP site
+(`tests/ground_truth/asp_cache/`, 254 routes — webb-site.com is gone and it is not regenerable) is
+archived alongside the pg_dump at `r2:hkdata/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst`.
+It is git-ignored, not committed. Restore it under `tests/ground_truth/` to re-run
+`tests/compare_asp_flask.py`.
+
 ## Performance / Postgres tuning
 The tuning in step 4 below is applied via `ALTER SYSTEM` (persisted to
 `postgresql.auto.conf`). **`shared_buffers` only takes effect after a full

@@ -2,7 +2,7 @@
 
 ## Data Attribution
 
-**This database contains data originally compiled by [Webb-site.com](https://webb-site.com), founded and operated by David M. Webb MBE since 1998.**
+**This database contains data originally compiled by [Webb-site.com](https://webb-site.com), founded and operated by the late David M. Webb MBE, who ran it from 1998.**
 
 David Webb generously released the Webb-site database schemas and scrapers as open source in October 2025 under the Creative Commons CC-BY 4.0 license. We gratefully acknowledge his 35-year contribution to transparency in Hong Kong's financial markets.
 
@@ -39,31 +39,35 @@ Where this site references Webb-site articles, links direct to [Archive.org](htt
 
 ## System Components
 
-1. **Data scrapers** - Automated collectors from HKEX, SFC, Companies Registry, Law Society, etc.
-2. **PostgreSQL database** - Core data storage with 35 years of financial records
-3. **Flask web interface** - Public-facing query and reporting system
-4. **Legacy VB.NET scrapers** - Original data collection modules (being modernized)
+1. **PostgreSQL database** - Core data storage: 35 years of Hong Kong financial records
+   (schemas `enigma` + `ccass`)
+2. **Flask web interface** - Public-facing query and reporting system, a faithful port of the
+   original Classic ASP site
+3. **Data pipelines** - Collection is being revived as
+   [renavon-monorepo](https://github.com/renavondata/renavon-monorepo) Scrapy pipelines that feed
+   fresh data back into this database (the original VB.NET scrapers are retired — see the
+   *Historical system* note in `CLAUDE.md`)
 
 ## Technology Stack
 
-**Current Production** (as of October 2025):
-- **Frontend**: Flask + Jinja2 + HTMX (Python 3.11+)
-- **Database**: PostgreSQL 16 on Render.com (managed cloud database)
-- **Hosting**: Render.com Web Service (cloud platform)
-- **Backend scrapers**: VB.NET modules (continue operating on Windows backend)
+**Current production:**
+- **App**: Flask + Jinja2 (Python 3.13, managed with `uv`), served by gunicorn under systemd
+- **Database**: self-hosted PostgreSQL 17 (localhost-only) on a DigitalOcean droplet
+- **Edge/TLS**: Caddy terminates TLS; Cloudflare fronts the site with an aggressive edge cache
 
-**Legacy Components** (being phased out):
-- Classic ASP web pages
-- MySQL 8.0.37 databases
-- Windows Server 2016 IIS hosting
+See `deploy/README.md` for the full hosting topology and `CLAUDE.md` for architecture.
+
+**Historical system** (retired late 2025, preserved in David Webb's Google Drive release and in
+this repo's git history): Classic ASP web pages, MySQL 8.0 databases, and the VB.NET scrapers that
+collected the data on Windows.
 
 ## Quick Start
 
 ### For Users
 
-**Live Site**: [Browse the database](https://renavon.com) (replace with actual URL when deployed)
+**Live site**: <https://webbsite.renavon.com>
 
-**Data Access**:
+**Data access**:
 - Search companies and individuals
 - Track CCASS beneficial ownership changes
 - View corporate actions and stock prices
@@ -72,51 +76,34 @@ Where this site references Webb-site articles, links direct to [Archive.org](htt
 ### For Developers
 
 **Prerequisites:**
-- PostgreSQL 14+ (or MySQL 8.0.37+ for legacy setup)
-- Python 3.11+
-- For legacy scrapers: Visual Studio 2022, Windows 10+
+- Python 3.13 and [`uv`](https://docs.astral.sh/uv/)
+- PostgreSQL 14+ with the `enigma`/`ccass` schemas loaded
 
-**Local Development:**
+**Local development:**
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/webbsite.git
+git clone https://github.com/renavondata/webbsite.git
 cd webbsite
 
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Configure database connection
-export DATABASE_URL="postgresql://user:pass@localhost:5432/enigma_pg"
-
-# Run Flask development server
-flask run
+uv sync                                   # install dependencies from the lockfile
+export DATABASE_URL="postgresql://postgres:@localhost:5432/enigma_pg"
+uv run flask run                          # dev server on http://127.0.0.1:5000
 ```
 
-**Database Setup:**
-1. Install PostgreSQL (or MySQL for legacy compatibility)
-2. Restore schemas from database dump files
-3. Configure connection strings in `.env` file
-
-**See detailed setup instructions in the repository documentation**
+The database is a *derived artifact*: restore it from the `pg_dump` archive in Cloudflare R2, or
+rebuild from the canonical Google Drive release — `deploy/README.md` has the commands.
 
 ## Documentation
 
-Comprehensive documentation is available in this repository:
+- **[CLAUDE.md](CLAUDE.md)** - architecture, the enigma/ccass data model, and the data-revival plan
+- **[deploy/README.md](deploy/README.md)** - hosting topology, deploy flow, data rebuild
+- **[docs/database/enigma-schema.md](docs/database/enigma-schema.md)** - core schema (companies,
+  persons, events; 35 years)
+- **[docs/database/ccass-schema.md](docs/database/ccass-schema.md)** - CCASS holdings and
+  beneficial-ownership tracking
 
-### Database
-- CCASS Schema documentation - Beneficial ownership tracking
-- Enigma Schema documentation - Core company and person data
-- Database setup guides
-
-### Scrapers
-- Scraper overview and architecture
-- VB.NET compilation guide
-- Scheduling and dependencies
-
-### Web Interface
-- Flask application structure
-- ASP compatibility helpers
-- Authentication system (for future features)
+Original scrapers, schema dumps, and the Classic ASP source are preserved in David Webb's canonical
+**Google Drive release** (CC-BY 4.0) and in this repo's git history; ongoing data collection is
+tracked in the [renavon-monorepo](https://github.com/renavondata/renavon-monorepo) revival roadmap.
 
 ## Data & Licensing
 
