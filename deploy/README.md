@@ -134,3 +134,12 @@ default to `webbsite.renavon.com`. Moving domains needs **no code change**:
 | `sudo -u postgres psql enigma` | DB shell |
 | `ufw status verbose` | Firewall rules |
 | `vmtouch /var/lib/postgresql/17/main` | Page-cache residency of the DB |
+
+### Deploy-contract gotcha: preload_app vs `systemctl reload` (2026-07-16 incident)
+Gunicorn does **not** reload application code on SIGHUP when `preload_app = True` —
+workers are recycled from the stale master image while Jinja reads new templates
+from disk. A deploy whose templates call newly-added Python (a Jinja global,
+filter, or context key) then 500s until a full `systemctl restart`. This took
+orgdata.asp down on 2026-07-16 (#20 reverted it). `gunicorn.conf.py` therefore
+pins `preload_app = False`; if preload is ever re-enabled, the site-deploy step
+for this site must switch from `reload` to `restart` first.

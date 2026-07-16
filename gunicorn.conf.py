@@ -42,10 +42,17 @@ group = None
 tmp_upload_dir = None
 worker_tmp_dir = "/dev/shm"  # RAM-backed heartbeat; prevents false worker kills on overlay FS
 
-# Preload app in master process: workers inherit compiled bytecode via fork (near-instant
-# restarts instead of re-importing 25K+ lines on 0.5 CPU). post_fork disposes inherited
-# DB connections so each worker creates its own fresh pool.
-preload_app = True
+# preload_app MUST stay False: the auto-deploy (site-deploy timer) applies code
+# changes with `systemctl reload` = SIGHUP, and gunicorn does NOT reload
+# application code on HUP when the app is preloaded — recycled workers fork
+# from the stale master image while Jinja reads the NEW templates from disk.
+# That skew 500'd every orgdata.asp request on 2026-07-16 (template called a
+# Jinja global the old code had never registered; fixed by revert #20). The
+# preload was a Render-era optimization (fast forks on 0.5 CPU); on the droplet
+# the per-worker re-import cost is fine, and HUP now reloads config + code +
+# templates atomically. If preload is ever re-enabled, the deploy contract must
+# change to `systemctl restart` first.
+preload_app = False
 
 
 def on_starting(server):
@@ -66,10 +73,11 @@ def when_ready(server):
 def post_fork(server, worker):
     """Dispose inherited DB connections after fork.
 
-    With preload_app=True, the master creates the SQLAlchemy engine during app
-    loading.  After fork, children must NOT share the parent's socket connections.
-    engine.dispose() closes all pooled connections; new ones are created on demand
-    in each worker with their own SSL state.
+    Defensive holdover from the preload_app=True era (a master-created
+    SQLAlchemy engine must not share sockets across forks). With preload off
+    the engine is created per-worker and this is a guarded no-op — kept
+    because it is harmless and load-bearing again the moment anyone
+    re-enables preload.
     """
     try:
         from webbsite.db import _engine
