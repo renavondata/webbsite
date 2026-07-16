@@ -93,6 +93,12 @@
 				<td>
 					{% set domid = org.domid %}
 					{% if domid == 1 %}
+						{# The ref value below is interpolated into an inline onclick handler,
+						   where Jinja autoescape does NOT protect against injection. It is safe
+						   only because crhk_company_url() returned non-None, i.e. its [0-9Ff]-only
+						   allowlist matched org.incid. Never emit this onclick for a value the
+						   helper rejected, and never loosen that regex — either reintroduces XSS.
+						   Same invariant applies to the oldcrn / foreign-reg onclicks below. #}
 						{% set crhk_url = crhk_company_url(org.incid) %}
 						{% if crhk_url %}
 							<a target="_blank" rel="noopener" href="{{ crhk_url }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'orgdata',ref:'{{ org.incid }}'})}">{{ org.incid }}</a>

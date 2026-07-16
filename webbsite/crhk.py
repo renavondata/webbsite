@@ -5,6 +5,15 @@ either the post-2023 8-digit Business Registration Number (BRN) or the pre-2023
 7-digit CR number. This module holds the single pure function that turns a raw
 registry identifier into the canonical crhk.guru URL, or ``None`` when no valid
 deep link exists (so callers never emit a guaranteed-404 link).
+
+Security invariant: templates render the raw identifier inside an inline
+``onclick`` handler (``posthog.capture(..., {ref: '<the number>'})``). Jinja
+autoescape does NOT sanitize inside inline event handlers, so that value is
+injection-safe only because the allowlist regexes below match ``[0-9Ff]``
+characters only, and callers render the anchor solely when this function
+returns non-None. Loosening a regex to admit any other character (or emitting
+the onclick for a value this function rejected) would silently reintroduce an
+XSS vector. Keep the regexes strict.
 """
 
 import re
