@@ -77,14 +77,7 @@ incorporations and name-changes.</p>
     {% for company in companies %}
     <tr>
         <td>{{ loop.index }}</td>
-        <td>
-            {%- set crhk_inc_url = crhk_company_url(company.incid) if company.incid else None -%}
-            {%- if crhk_inc_url -%}
-                <a target="_blank" rel="noopener" href="{{ crhk_inc_url }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'inchkcaltype',ref:'{{ company.incid }}'})}">{{ company.incid }}</a>
-            {%- else -%}
-                {{ company.incid or '—' }}
-            {%- endif -%}
-            &nbsp;</td>
+        <td>{{ company.incid or '—' }}&nbsp;</td>
         <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name1 }}{% if company.cname %}<br>{{ company.cname }}{% endif %}</a></td>
         <td class="nowrap">{{ company.incdate }}</td>
         <td class="nowrap">{{ company.disdate or '—' }}</td>

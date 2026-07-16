@@ -19,14 +19,7 @@ some entities have an earlier, unincorporated existence.</p>
     {% for company in companies %}
     <tr>
         <td class="left"><a href="/dbpub/orgdata.asp?p={{ company.personid }}">{{ company.name }}</a></td>
-        <td>
-            {%- set crhk_inc_url = crhk_company_url(company.incid) if company.incid else None -%}
-            {%- if crhk_inc_url -%}
-                <a target="_blank" rel="noopener" href="{{ crhk_inc_url }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'oldest_hk_cos',ref:'{{ company.incid }}'})}">{{ company.incid }}</a>
-            {%- else -%}
-                {{ company.incid }}
-            {%- endif -%}
-        </td>
+        <td>{{ company.incid }}</td>
         <td>{{ company.incdate }}</td>
         <td>{% if company.disdate %}{{ company.disdate }}{% endif %}</td>
         <td>{{ company.typename }}</td>
