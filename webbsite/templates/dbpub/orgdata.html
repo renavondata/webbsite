@@ -93,7 +93,19 @@
 				<td>
 					{% set domid = org.domid %}
 					{% if domid == 1 %}
-						<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do">{{ org.incid }}</a>
+						{# The ref value below is interpolated into an inline onclick handler,
+						   where Jinja autoescape does NOT protect against injection. It is safe
+						   only because crhk_company_url() returned non-None, i.e. its [0-9Ff]-only
+						   allowlist matched org.incid. Never emit this onclick for a value the
+						   helper rejected, and never loosen that regex — either reintroduces XSS.
+						   Same invariant applies to the oldcrn / foreign-reg onclicks below. #}
+						{% set crhk_url = crhk_company_url(org.incid) %}
+						{% if crhk_url %}
+							<a target="_blank" rel="noopener" href="{{ crhk_url }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'orgdata',ref:'{{ org.incid }}'})}">{{ org.incid }}</a>
+							<a target="_blank" rel="noopener" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do" style="font-size:smaller;">(official registry)</a>
+						{% else %}
+							<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do">{{ org.incid }}</a>
+						{% endif %}
 					{% elif domid in [2, 112, 116, 311] %}
 						{% if org.ukuri %}
 							<a target="_blank" href="http://data.companieshouse.gov.uk/doc/company/{{ org.incid }}.html">{{ org.incid }}</a>
@@ -123,7 +135,14 @@
 			</tr>
 		{% endif %}
 		{% if org.oldcrn %}
-			<tr><td>HK company No. until 2023-12-27:</td><td>{{ org.oldcrn }}</td></tr>
+			<tr><td>HK company No. until 2023-12-27:</td><td>
+				{% set crhk_oldcrn_url = crhk_company_url(org.oldcrn) %}
+				{% if crhk_oldcrn_url %}
+					<a target="_blank" rel="noopener" href="{{ crhk_oldcrn_url }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'orgdata',ref:'{{ org.oldcrn }}'})}">{{ org.oldcrn }}</a>
+				{% else %}
+					{{ org.oldcrn }}
+				{% endif %}
+			</td></tr>
 		{% endif %}
 		{% if org.sfcid %}
 			<tr>
@@ -202,10 +221,12 @@
 					<td>{{ reg.friendly }}</td>
 					<td>
 						{% if reg.hostdom == 1 %}
-							{% if reg.oldcrn and reg.oldcrn != reg.regid %}
-								<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do"><span class="info">{{ reg.regid }}<span>Until 2023-12-27: {{ reg.oldcrn }}</span></span></a>
+							{% set crhk_reg_url = crhk_company_url(reg.regid) %}
+							{% set reg_href = crhk_reg_url or 'https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do' %}
+							{% if crhk_reg_url %}
+								<a target="_blank" rel="noopener" href="{{ reg_href }}" onclick="if(window.posthog){posthog.capture('crhk_outlink_click',{source:'orgdata',ref:'{{ reg.regid }}'})}">{% if reg.oldcrn and reg.oldcrn != reg.regid %}<span class="info">{{ reg.regid }}<span>Until 2023-12-27: {{ reg.oldcrn }}</span></span>{% else %}{{ reg.regid }}{% endif %}</a>
 							{% else %}
-								<a target="_blank" href="https://www.e-services.cr.gov.hk/ICRIS3EP/system/home.do">{{ reg.regid }}</a>
+								<a target="_blank" href="{{ reg_href }}">{% if reg.oldcrn and reg.oldcrn != reg.regid %}<span class="info">{{ reg.regid }}<span>Until 2023-12-27: {{ reg.oldcrn }}</span></span>{% else %}{{ reg.regid }}{% endif %}</a>
 							{% endif %}
 						{% elif reg.hostdom == 2 %}
 							<a target="_blank" href="https://beta.companieshouse.gov.uk/company/{{ reg.regid }}">{{ reg.regid }}</a>
