@@ -10,7 +10,6 @@ import re
 from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
-from webbsite.crhk import crhk_company_url
 
 import json
 import os
@@ -8840,17 +8839,6 @@ def orgdata():
                 and dom_id in [2, 112, 116, 311],
             }
 
-    # crhk.guru registry-profile deep link for the contextual cross-link banner
-    # (webbsite/templates/includes/_renavon_cta.html). HK-domicile companies only
-    # (domid == 1); prefer the current incorporation number, fall back to the
-    # pre-2023 CR number. crhk_company_url() returns None for anything outside its
-    # strict [0-9Ff] allowlist, so the banner never emits a guaranteed-404 link.
-    crhk_url = None
-    if org_data and org_data.get("domid") == 1:
-        crhk_url = crhk_company_url(org_data.get("incid")) or crhk_company_url(
-            org_data.get("oldcrn")
-        )
-
     # Holdings section - show what this organization holds in other companies
     holdings_data = []
     holdings_tree = []
@@ -8949,7 +8937,6 @@ def orgdata():
         old_sfc_ids=old_sfc_ids,
         ever_listed=ever_listed,
         registry_links=registry_links,
-        crhk_url=crhk_url,
         websites=websites,
         nav_has_directorships=nav_has_directorships,
         nav_has_pay=nav_has_pay,
