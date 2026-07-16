@@ -17,8 +17,24 @@
   Page → dataset mapping is by blueprint (robust) with a path fallback for the
   org/people pages served out of the grab-bag dbpub_statistics blueprint. Only
   point at datasets that are visible:true on renavon.com — all targets below are
-  verified live (HTTP 200). CRHK company/director targets wait on the rebuild.
+  verified live (HTTP 200).
+
+  Highest-priority branch: a view that resolved a specific HK company to its
+  crhk.guru registry profile passes a `crhk_url` template variable (e.g.
+  orgdata.asp for domid==1). When present, the banner points at that per-company
+  profile instead of the generic dataset targets. crhk_url is None unless the
+  view built it via crhk_company_url() (strict [0-9Ff] allowlist), so nothing
+  untrusted reaches the href here.
 #}
+{%- if crhk_url is defined and crhk_url -%}
+<div id="renavon-banner" style="background:#1a1a2e;border-bottom:2px solid #0891b2;padding:8px 16px;text-align:center;font-family:Arial,sans-serif;font-size:13px;">
+    <span style="color:#e2e8f0;">Full Companies Registry profile for this company &mdash; free on CRHK&nbsp;Guru</span>
+    <a href="{{ crhk_url }}?utm_source=webbsite&amp;utm_medium=cta&amp;utm_campaign=bridge&amp;ref=webbsite&amp;ref_path={{ request.path | urlencode }}"
+       target="_blank" rel="noopener"
+       onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'crhkguru_company',source_path:location.pathname})}"
+       style="color:#22d3ee;text-decoration:underline;font-weight:bold;margin-left:6px;">view on CRHK&nbsp;Guru &rarr;</a>
+</div>
+{%- else -%}
 {%- set _bp = request.blueprint or '' -%}
 {%- set _path = request.path | lower -%}
 {%- if _bp == 'dbpub_sfc' or 'sfc' in _path -%}
@@ -46,3 +62,4 @@
        onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'{{ _ds }}',source_path:location.pathname})}"
        style="color:#22d3ee;text-decoration:underline;font-weight:bold;margin-left:6px;">{{ _cta }} &rarr;</a>
 </div>
+{%- endif -%}
