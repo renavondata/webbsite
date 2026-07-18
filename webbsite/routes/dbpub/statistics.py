@@ -10,29 +10,30 @@ import re
 from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+from webbsite import watermarks
 
 import json
 import os
 import tempfile
 from pathlib import Path
 
-# Webb-site is a frozen archive; the last trading date in the dataset.
-# Any "to" date >= this is equivalent to "current" (no quotes exist after it),
-# so the default leagueDirsHK table is constant and safe to cache to disk.
-DATA_END = date(2025, 10, 10)
+def _league_cache_dir():
+    return os.environ.get("LEAGUE_CACHE_DIR") or os.path.join(
+        os.path.expanduser("~"), ".cache", "webbsite"
+    )
 
 
 def _league_cache_path():
-    """On-disk path for the cached default leagueDirsHK result.
+    """On-disk path for the cached default leagueDirsHK result, KEYED BY the current
+    data watermark.
 
-    Persists across app restarts (so the heavy ~23k cagrel() compute runs at
-    most once per dataset). Overridable via LEAGUE_CACHE_DIR; defaults to
-    ~/.cache/webbsite (the service user's HOME, which it owns and can write).
+    The default table (no from-date, current to-date, min 3 positions, not hidden)
+    is constant *for a given dataset*, so it is computed at most once and served from
+    disk. Keying the filename by the quotes watermark means a daily refresh naturally
+    invalidates it — the first hit after new data recomputes once, and stale files
+    are swept in :func:`_save_league_cache`. Overridable via LEAGUE_CACHE_DIR.
     """
-    base = os.environ.get("LEAGUE_CACHE_DIR") or os.path.join(
-        os.path.expanduser("~"), ".cache", "webbsite"
-    )
-    return os.path.join(base, "leaguedirshk_default.json")
+    return os.path.join(_league_cache_dir(), f"leaguedirshk_default_{watermarks.quotes_end()}.json")
 
 
 def _load_league_cache():
@@ -44,7 +45,8 @@ def _load_league_cache():
 
 
 def _save_league_cache(rows):
-    """Best-effort atomic write; a failure just means the next hit recomputes."""
+    """Best-effort atomic write; a failure just means the next hit recomputes.
+    Also sweeps older watermark-keyed cache files so they don't accumulate."""
     try:
         path = _league_cache_path()
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -52,6 +54,10 @@ def _save_league_cache(rows):
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(rows, f)
         os.replace(tmp, path)
+        keep = os.path.basename(path)
+        for old in Path(_league_cache_dir()).glob("leaguedirshk_default_*.json"):
+            if old.name != keep:
+                old.unlink(missing_ok=True)
     except OSError:
         pass
 
@@ -4279,7 +4285,7 @@ def league_dirs_hk():
         and not c
         and min_pos == 3
         and hide == "N"
-        and date.fromisoformat(to_date) >= DATA_END
+        and date.fromisoformat(to_date) >= watermarks.data_end()
     )
     if is_default:
         results = _load_league_cache()

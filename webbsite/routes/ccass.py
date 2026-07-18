@@ -7,6 +7,7 @@ from flask import Blueprint, render_template, request, Response
 from datetime import datetime, date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date
+from webbsite import watermarks
 
 bp = Blueprint("ccass", __name__)
 
@@ -63,19 +64,7 @@ def bigchanges():
 
     # Get latest CCASS date if none specified
     if not d:
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d = result[0]["val"]
-            else:
-                d = "2025-10-17"  # Fallback if log entry doesn't exist
-        except Exception as ex:
-            from flask import current_app
-
-            current_app.logger.warning(f"Could not get CCASSdateDone from log: {ex}")
-            d = "2025-10-17"  # Fallback date
+        d = watermarks.ccass_done()
 
     # Get max settlement date <= requested date
     try:
@@ -166,19 +155,7 @@ def cconc():
 
     # Get latest CCASS date if none specified
     if not d:
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d = result[0]["val"]
-            else:
-                d = "2025-10-17"  # Fallback if log entry doesn't exist
-        except Exception as ex:
-            from flask import current_app
-
-            current_app.logger.warning(f"Could not get CCASSdateDone from log: {ex}")
-            d = "2025-10-17"  # Fallback date
+        d = watermarks.ccass_done()
     else:
         # If date is specified but no data exists for that date,
         # adjust to the last date with data (ASP behavior for holidays)
@@ -280,19 +257,20 @@ def ipstakes():
     sort_param = request.args.get("sort", "ipsdn")
     d = request.args.get("d", "")
 
-    # Get latest CCASS date if not specified
+    # Get latest CCASS date if not specified (the live MAX tracks the daily refresh;
+    # the watermark is the fallback when the query fails or dailylog is empty).
     if not d:
         try:
             result = execute_query("SELECT MAX(atDate) as max_date FROM ccass.dailylog")
             if result and result[0]['max_date']:
                 d = ms_date(result[0]['max_date'])
             else:
-                d = "2025-10-17"  # Fallback
+                d = watermarks.ccass_done()
         except Exception as ex:
             from flask import current_app
 
             current_app.logger.error(f"Error getting latest CCASS date: {ex}")
-            d = "2025-10-17"
+            d = watermarks.ccass_done()
 
     # Get max settlement date <= requested date
     try:
@@ -476,16 +454,7 @@ def cholder():
 
     # Get latest CCASS date if none specified
     if not d:
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name='CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d = result[0]["val"]
-            else:
-                d = "2025-10-17"  # Fallback
-        except:
-            d = "2025-10-17"
+        d = watermarks.ccass_done()
 
     # Get max settlement date <= requested date
     try:
@@ -678,7 +647,7 @@ def choldings():
     sort_param = request.args.get("sort", "holddn")
 
     if not d:
-        d = "2025-10-17"  # Placeholder
+        d = watermarks.ccass_done()
 
     # Determine sort order
     sort_orders = {
@@ -1638,14 +1607,7 @@ def cconchist():
             stock_listings = []
 
         # Get latest CCASS date for navigation links
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d = result[0]["val"]
-        except Exception:
-            pass
+        d = watermarks.ccass_done()
 
     # Determine sort order
     sort_orders = {
@@ -2079,16 +2041,7 @@ def ncipchg():
 
     # Get latest CCASS date if none specified
     if not d2:
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name='CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d2 = result[0]["val"]
-            else:
-                d2 = "2025-10-17"
-        except:
-            d2 = "2025-10-17"
+        d2 = watermarks.ccass_done()
 
     # Default d1 to day before d2 if not specified
     if not d1:
@@ -2679,11 +2632,7 @@ def portchg():
             pass
 
     # Get latest CCASS date
-    try:
-        ccass_done = execute_query("SELECT val FROM enigma.log WHERE name='CCASSdateDone'")
-        ccass_date = ccass_done[0]["val"] if ccass_done else str(dt_date.today() - timedelta(days=1))
-    except:
-        ccass_date = str(dt_date.today() - timedelta(days=1))
+    ccass_date = watermarks.ccass_done()
 
     # Get date range
     d2 = get_str("d", ccass_date)
@@ -3013,14 +2962,7 @@ def brokhist():
             stock_listings = []
 
         # Get latest CCASS date for navigation links
-        try:
-            result = execute_query(
-                "SELECT val FROM enigma.log WHERE name = 'CCASSdateDone'"
-            )
-            if result and result[0]["val"]:
-                d = result[0]["val"]
-        except Exception:
-            pass
+        d = watermarks.ccass_done()
 
     # Query broker holdings history with issued shares
     history = []
