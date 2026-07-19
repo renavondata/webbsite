@@ -1,7 +1,8 @@
 # Deploy artefacts (droplet `webbsite-web`)
 
-Hosts the **frozen** Webb-site archive (the late David Webb's CC-BY data, data stops 2025-10-10)
-on a single DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + gunicorn under
+Hosts the Webb-site archive (the late David Webb's CC-BY data; frozen baseline 2025-10-10,
+**refreshed daily** from renavon pipelines — see "Daily data refresh" below) on a single
+DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + gunicorn under
 systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, not hand-edits.
 
 ## Topology
@@ -20,8 +21,10 @@ systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, 
 ## Layout
 ```
 deploy/
-  systemd/webbsite.service   # gunicorn unit (captured from the box)
-  Caddyfile                  # /etc/caddy/Caddyfile (captured from the box)
+  systemd/webbsite.service           # gunicorn unit (captured from the box)
+  systemd/webbsite-refresh.service   # daily R2 -> Postgres loader (oneshot)
+  systemd/webbsite-refresh.timer     # fires the loader 02:45 + 06:45 UTC
+  Caddyfile                          # /etc/caddy/Caddyfile (captured from the box)
   README.md
 ```
 
@@ -61,8 +64,91 @@ curl -fsS https://webbsite.renavon.com/health  # via Caddy + Cloudflare
 ```
 The edge purge is automatic on the next timer deploy; `site-deploy/bin/cf-purge.sh` is the tool if you need to force one.
 
+## Daily data refresh (R2 → Postgres)
+
+The frozen 2025-10-10 baseline is **refreshed daily** by a pull-based loader (ADR
+`docs/architecture/decisions/001-pull-based-postgres-refresh.md`): the renavon
+`renavon-webbsite-refresh` cron publishes 8 Parquet exports + `_manifest.json` to
+`r2://hkdata/webbsite-refresh/` at 22:00 UTC Mon–Fri; `webbsite-refresh.timer` fires
+`scripts/refresh/refresh.py` at 02:45/06:45 UTC, which stages, validates, and upserts into
+`ccass.{holdings,parthold,dailylog,bigchanges,quotes,pquotes,unquotes,calendar}` +
+`enigma.issuedshares` in ONE transaction, then advances the `enigma.log` watermarks
+(`MBquotesDate`/`GEMquotesDate` = quotes max; `CCASSdateDone` = min(ccass, quotes)) that
+`webbsite/watermarks.py` serves to the app. No cache purge — mutable pages sit on the
+1h/4h TTL ladder and self-heal within ≤4h.
+
+**The `webbsite_refresh` role** (loader's only credential — no DELETE/TRUNCATE/DDL):
+```sql
+CREATE ROLE webbsite_refresh LOGIN PASSWORD '<generate>';
+GRANT CONNECT, TEMPORARY ON DATABASE enigma TO webbsite_refresh;
+GRANT USAGE ON SCHEMA ccass, enigma TO webbsite_refresh;
+GRANT SELECT, INSERT, UPDATE ON
+    ccass.holdings, ccass.parthold, ccass.dailylog, ccass.bigchanges,
+    ccass.quotes, ccass.pquotes, ccass.unquotes, ccass.calendar,
+    enigma.issuedshares TO webbsite_refresh;
+GRANT SELECT ON enigma.issue TO webbsite_refresh;
+GRANT SELECT, UPDATE (val) ON enigma.log TO webbsite_refresh;
+GRANT MAINTAIN ON  -- PG17: ANALYZE after load
+    ccass.holdings, ccass.parthold, ccass.dailylog, ccass.bigchanges,
+    ccass.quotes, ccass.pquotes, ccass.unquotes, ccass.calendar,
+    enigma.issuedshares TO webbsite_refresh;
+```
+After creating it, **verify the negative**: `DELETE FROM ccass.quotes` as
+`webbsite_refresh` must fail with `permission denied`.
+
+**Pre-flight** (once): the three log keys must already exist — the loader only
+UPDATEs them (`SELECT name, val FROM enigma.log WHERE name IN
+('CCASSdateDone','MBquotesDate','GEMquotesDate')` must return 3 rows) — and pick a
+`REFRESH_USERID` that doesn't collide with historical curators (`SELECT DISTINCT
+userid FROM enigma.issuedshares ORDER BY 1` — any unused positive integer).
+
+**`/etc/webbsite/refresh-env`** (root:root 0600 — systemd injects it before
+dropping privileges):
+```
+DATABASE_URL=postgresql://webbsite_refresh:<pw>@localhost:5432/enigma
+R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=...    # Object-Read-only R2 API token scoped to the hkdata bucket
+R2_SECRET_ACCESS_KEY=...
+R2_BUCKET=hkdata
+R2_PREFIX=webbsite-refresh
+REFRESH_USERID=<chosen above>
+HC_URL=https://hc-ping.com/<uuid>   # optional healthchecks.io check (daily, grace 6h)
+```
+The R2 token must be **Object Read only**, scoped to the `hkdata` bucket (Cloudflare
+dashboard → R2 → Manage API Tokens). Never reuse a write-capable key here.
+
+**Install / enable:**
+```bash
+sudo cp /srv/webbsite/deploy/systemd/webbsite-refresh.{service,timer} /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now webbsite-refresh.timer
+```
+
+**First supervised run:** `sudo systemctl start webbsite-refresh` after a manual
+`--dry-run` as the service user:
+```bash
+sudo -u webbsite sh -c 'cd /srv/webbsite && set -a && . /etc/webbsite/refresh-env && set +a && env HOME=/srv/webbsite /usr/local/bin/uv run --script scripts/refresh/refresh.py --dry-run'
+```
+(Root can read the env file; the one-liner is for the supervised bootstrap only.)
+
+**Monitoring:** the loader pings `HC_URL` on success **only while fresh**
+(`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and
+`/fail` otherwise — so a silently-wedged upstream trips the healthcheck even
+though the loader itself exits 0. Exit codes: 0 loaded/up-to-date, 1 validation
+(nothing committed), 2 infrastructure.
+
+**Corrections / rollback:** renavon re-exports and the loader re-applies
+(idempotent upserts). Row *retraction* is admin-only SQL by design — the loader
+role cannot DELETE. Pages self-heal within the ≤4h edge TTL; no purge needed.
+
+**Local validation:** see `tests/refresh/` (schema fixture + feed generator +
+the negative flags) — the full ladder ran green 2026-07-19: dry-run, real load,
+idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-freeze`/missing-log-key
+each exit 1 with nothing committed, role-parity denials, and a real 3.9M-row
+feed load in 43s.
+
 ## Rebuild the data (rare)
-The archive is static, so there is no scheduled import. To reload, restore the `pg_dump` archive
+To reload the **frozen baseline**, restore the `pg_dump` archive
 held in Cloudflare R2 (or rebuild from the canonical Google Drive release):
 ```bash
 # directory-format parallel restore as postgres, objects owned by webbsite
