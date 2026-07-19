@@ -5,11 +5,48 @@ Direct port from Classic ASP to Flask/Jinja
 
 from flask import Flask, render_template, redirect, request, g, Response
 from flask_compress import Compress
+from datetime import datetime, date as _date
 import time
 import logging
 from .config import Config
 
 logger = logging.getLogger(__name__)
+
+# Edge/browser cache TTL ladder for data pages (seconds). The archive is refreshed
+# daily now (webbsite/watermarks.py + deploy/README "Daily data refresh"), so a page
+# that pins its upper bound to an OLD date is effectively immutable and caches long,
+# while a "latest" view (no end-date, or a recent one) caches briefly so a refresh
+# shows up within hours WITHOUT the loader ever purging Cloudflare.
+_TTL_LATEST = (3600, 14400)      # 1h browser / 4h edge  — latest views / recent dates
+_TTL_SETTLED = (86400, 2592000)  # 1d / 30d              — snapshots older than ~2 weeks
+_TTL_DEEP = (604800, 31536000)   # 7d / 1y               — snapshots older than a year
+
+
+def _asof_from_args(args):
+    """The as-of date a data page pins its UPPER bound to, or None for a "latest"
+    view. ``d2`` (range end) then ``d`` (snapshot) pin the page; ``d1`` alone (open
+    range) means "to latest" and stays fresh. Malformed/absent -> None (fresh)."""
+    for p in ("d2", "d"):
+        v = args.get(p, "")
+        if len(v) == 10:
+            try:
+                return datetime.strptime(v, "%Y-%m-%d").date()
+            except ValueError:
+                pass
+    return None
+
+
+def _data_page_ttls(args):
+    """(browser_ttl, edge_ttl) for a data page, by the age of the date it pins."""
+    asof = _asof_from_args(args)
+    if asof is None:
+        return _TTL_LATEST
+    age = (_date.today() - asof).days
+    if age > 365:
+        return _TTL_DEEP
+    if age > 14:
+        return _TTL_SETTLED
+    return _TTL_LATEST
 
 # Aggressive SEO/AI crawlers blocked at the origin (mirror of Cloudflare WAF rule).
 # Defense-in-depth in case direct *.onrender.com URL is hit.
@@ -223,10 +260,15 @@ def create_app(config_class=Config):
             response.headers.setdefault("Cache-Control", "no-store")
             return response
 
-        # CSV exports: 1 day browser, 1 day edge
+        # CSV exports. A CSV that pins an old end-date is settled history (1d/1d);
+        # a "latest" CSV (no end-date, or a recent one) tracks the daily refresh (1h/4h).
         if path.endswith("CSV.asp"):
-            response.headers.setdefault("Cache-Control", "public, max-age=86400")
-            response.headers["CDN-Cache-Control"] = "max-age=86400"
+            if _asof_from_args(request.args) and _data_page_ttls(request.args) != _TTL_LATEST:
+                response.headers.setdefault("Cache-Control", "public, max-age=86400")
+                response.headers["CDN-Cache-Control"] = "max-age=86400"
+            else:
+                response.headers.setdefault("Cache-Control", "public, max-age=3600")
+                response.headers["CDN-Cache-Control"] = "max-age=14400"
             return response
 
         # Articles never change once published: 7 day browser, 1 year edge
@@ -241,23 +283,14 @@ def create_app(config_class=Config):
             response.headers["CDN-Cache-Control"] = "max-age=604800"
             return response
 
-        # Data pages (.asp or directory index). The archive is frozen (data ends
-        # 2025-10-10), so every page is immutable. Cache hard at the edge so
-        # crawlers/users hit warm Cloudflare instead of a ~1s origin render on
-        # every unique ?p=<id>; a ?d= older than a year gets an even longer TTL.
+        # Data pages (.asp or directory index). The archive is refreshed daily, so a
+        # page's TTL follows the age of the date it pins: a "latest" view (no end-date
+        # or a recent one) caches only ~4h at the edge so a refresh shows up quickly
+        # without a purge, while a page pinned to old history caches 30d/1y. A
+        # high-cardinality crawler page with no ?d= (orgdata.asp?p=…) renders refreshed
+        # data, so the shorter latest-tier TTL is correct.
         if path.endswith(".asp") or path.endswith("/"):
-            d_param = request.args.get("d", "")
-            ttl_browser = 86400      # 1 day
-            ttl_edge = 2592000       # 30 days
-            if d_param and len(d_param) == 10:
-                try:
-                    from datetime import datetime, date as _date
-                    parsed = datetime.strptime(d_param, "%Y-%m-%d").date()
-                    if (_date.today() - parsed).days > 365:
-                        ttl_browser = 604800       # 7 days
-                        ttl_edge = 31536000        # 1 year
-                except ValueError:
-                    pass
+            ttl_browser, ttl_edge = _data_page_ttls(request.args)
             response.headers.setdefault("Cache-Control", f"public, max-age={ttl_browser}")
             response.headers["CDN-Cache-Control"] = f"max-age={ttl_edge}"
         return response
@@ -269,6 +302,16 @@ def create_app(config_class=Config):
     def _inject_now():
         from datetime import date as _date
         return {"now": _date.today()}
+
+    # Expose the live data watermarks to every template (the CTA banner says how
+    # current the archive is). Best-effort — never break rendering on a DB hiccup.
+    @app.context_processor
+    def _inject_data_asof():
+        from webbsite import watermarks
+        try:
+            return {"data_asof": watermarks.quotes_end(), "ccass_asof": watermarks.ccass_done()}
+        except Exception:
+            return {"data_asof": None, "ccass_asof": None}
 
     # Expose canonical_query() to templates (base.html builds rel=canonical from it).
     from webbsite.asp_helpers import canonical_query

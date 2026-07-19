@@ -9,6 +9,7 @@ import io
 import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite import watermarks
 
 bp = Blueprint("dbpub_market_data", __name__)
 
@@ -217,16 +218,8 @@ def alltotrets():
         pcsig,
     )
 
-    # Get max quote dates from log table
-    max_dates = execute_query(
-        """
-        SELECT val FROM enigma.log
-        WHERE name IN ('MBquotesDate', 'GEMquotesDate')
-        ORDER BY val
-        LIMIT 1
-    """
-    )
-    max_date = max_dates[0]["val"] if max_dates else str(date.today())
+    # Max quote date = min(MBquotesDate, GEMquotesDate) — follows the daily refresh.
+    max_date = watermarks.quotes_end()
 
     # Parse parameters with validation
     inc_ipo = get_bool("i")

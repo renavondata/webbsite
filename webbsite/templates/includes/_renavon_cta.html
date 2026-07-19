@@ -1,13 +1,16 @@
 {#
-  Renavon cross-sell — a CONTEXTUAL bridge from the (frozen) Webb-site archive to
-  Renavon's live, maintained datasets.
+  Renavon cross-sell — a CONTEXTUAL bridge from the Webb-site archive to Renavon's
+  live, maintained datasets.
 
   Context for editors:
   - Webb-site is the late David Webb's data, released CC-BY 4.0 and served here as
-    a free, read-only archive FROZEN at 2025-10-10.
+    a free, read-only archive. Collection was revived in 2026 (renavon pipelines
+    reverse-feed fresh rows), so the archive is refreshed daily — the banner shows
+    how current it is via {{ data_asof }} (the live quotes watermark).
   - Renavon maintains its OWN live pipelines for the same public sources (SFC,
-    HKEX, Companies Registry). So this is an honest "the archive is frozen; here's
-    the live version" pointer — NOT a resell of the CC-BY archive.
+    HKEX, Companies Registry) with richer tooling (bulk CSV/Excel, API). So this is
+    an honest "here's the same data with live tooling" pointer — NOT a resell of
+    the CC-BY archive.
   - Keep the tone understated out of respect for the archive.
 
   This replaces the earlier hardcoded, generic, untracked banner that pointed at
@@ -56,7 +59,7 @@
 {%- endif -%}
 {%- set _cta = 'explore the live data on Renavon' if _ds == 'catalog' else 'see the live data on Renavon' -%}
 <div id="renavon-banner" style="background:#1a1a2e;border-bottom:2px solid #0891b2;padding:8px 16px;text-align:center;font-family:Arial,sans-serif;font-size:13px;">
-    <span style="color:#e2e8f0;">This is a free archive, frozen at 10&nbsp;Oct&nbsp;2025. For a live, maintained {{ _what }} &mdash; bulk CSV/Excel and API &mdash;</span>
+    <span style="color:#e2e8f0;">This is a free archive of Webb-site data{% if data_asof %}, current to {{ data_asof }}{% endif %}. For a live, maintained {{ _what }} &mdash; bulk CSV/Excel and API &mdash;</span>
     <a href="{{ _url }}?utm_source=webbsite&amp;utm_medium=cta&amp;utm_campaign=bridge&amp;ref=webbsite&amp;ref_path={{ request.path | urlencode }}"
        target="_blank" rel="noopener"
        onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'{{ _ds }}',source_path:location.pathname})}"

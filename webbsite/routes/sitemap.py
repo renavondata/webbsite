@@ -23,12 +23,12 @@ from flask import Blueprint, Response, abort, current_app
 
 from webbsite import ROBOTS_DISALLOW
 from webbsite.db import execute_query
+from webbsite import watermarks
 
 bp = Blueprint("sitemap", __name__)
 
 _URLS_PER_SITEMAP = 50000  # sitemaps.org protocol cap
-_cache: dict[str, list[str]] = {}  # data is static -> memoise per worker
-DATA_FREEZE = "2025-10-10"  # data collection ended here; every page's <lastmod>
+_cache: dict[str, list[str]] = {}  # URL lists are structural -> memoise per worker
 
 
 def _host() -> str:
@@ -173,9 +173,10 @@ def sitemap_child(name: str, page: int) -> Response:
     if start >= len(paths) and not (page == 0 and not paths):
         abort(404)
     host = _host()
+    lastmod = watermarks.quotes_end()  # follows the daily refresh (evaluated per request)
     chunk = paths[start:start + _URLS_PER_SITEMAP]
     items = "".join(
-        f"<url><loc>https://{host}{escape(p)}</loc><lastmod>{DATA_FREEZE}</lastmod></url>"
+        f"<url><loc>https://{host}{escape(p)}</loc><lastmod>{lastmod}</lastmod></url>"
         for p in chunk
     )
     return _xml_response(
