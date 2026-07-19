@@ -1,0 +1,39 @@
+# Daily R2 -> Postgres refresh loader (ADR 001). Pulled by webbsite-refresh.timer;
+# runs scripts/refresh/refresh.py under the restricted webbsite_refresh DB role.
+# Source of truth — keep in sync with the box (like webbsite.service).
+[Unit]
+Description=Webb-site data refresh (R2 -> Postgres)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=webbsite
+Group=webbsite
+WorkingDirectory=/srv/webbsite
+# Secrets stay root:root 0600 — systemd injects the EnvironmentFile before
+# dropping privileges, so the webbsite user never needs read access to it.
+EnvironmentFile=/etc/webbsite/refresh-env
+Environment=HOME=/srv/webbsite
+ExecStart=/usr/local/bin/uv run --script scripts/refresh/refresh.py
+TimeoutStartSec=45min
+StandardOutput=journal
+StandardError=journal
+
+# Sandbox mirrors webbsite.service; ReadWritePaths for the uv script cache
+# (under HOME) + parquet tmpdir (PrivateTmp).
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+ReadWritePaths=/srv/webbsite
+ProtectHostname=yes
+ProtectClock=yes

@@ -1,0 +1,18 @@
+# Fires the daily R2 -> Postgres refresh (webbsite-refresh.service).
+#
+# Two firings: the renavon-webbsite-refresh cron (render.yaml in the renavon
+# monorepo) publishes the feed at 22:00 UTC Mon-Fri (~30-45 min run), so 02:45
+# UTC comfortably follows it; 06:45 is the retry pass — the loader no-ops
+# ("up to date") when the first firing already loaded, and self-heals when the
+# upstream cron ran late or the first firing hit a transient failure.
+[Unit]
+Description=Daily Webb-site data refresh timer
+
+[Timer]
+OnCalendar=*-*-* 02:45:00 UTC
+OnCalendar=*-*-* 06:45:00 UTC
+RandomizedDelaySec=600
+Persistent=true
+
+[Install]
+WantedBy=timers.target
