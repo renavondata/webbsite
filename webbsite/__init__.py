@@ -136,6 +136,11 @@ def create_app(config_class=Config):
     app.jinja_env.globals["if_null"] = if_null
     app.jinja_env.globals["write_nav"] = write_nav
 
+    # Deep links from HK registry numbers to crhk.guru company pages.
+    from webbsite.crhk import crhk_company_url
+
+    app.jinja_env.globals["crhk_company_url"] = crhk_company_url
+
     # Register blueprints with URL prefixes matching original ASP structure
     # URLs include .asp extension for exact match with original site
     from webbsite.routes import (
