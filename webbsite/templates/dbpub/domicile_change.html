@@ -53,7 +53,7 @@ and adviserships from the previously listed company.</p>
     </tr>
     {% for row in changes_data %}
     <tr>
-        <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.name1 }}</a></td>
+        <td><a href='{{ url_for('dbpub_statistics.orgdata', p=row.orgid) }}'>{{ row.name1 }}</a></td>
         <td class="colHide3">{{ row.newdom }}</td>
         <td>{{ row.olddom }}</td>
         <td class="nowrap">

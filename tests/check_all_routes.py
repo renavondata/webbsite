@@ -89,6 +89,7 @@ EXTRA_URLS = [
     ("/dbpub/events.asp?i=1088", 200),
     ("/dbpub/matches.asp?org1=382&org2=382", 200),
     ("/dbpub/enigma.positions.asp?p=105", 200),  # 301 -> positions.asp (requests follows)
+    ("/dbpub/enigma.orgdata.asp?p=382", 200),  # 301 -> orgdata.asp (requests follows)
 ]
 
 # Silent-failure guards: (path, params, must_match_regex, must_not_contain).
@@ -109,6 +110,9 @@ CONTENT_CHECKS = [
     ("/dbpub/offsum.asp", {"p": "382"}, r"positions\.asp\?p=\d+", None),
     ("/dbpub/offpay.asp", {"p": "11600"}, r"pay\.asp\?p=\d+", None),
     ("/dbpub/govest.asp", {"i": "1251"}, r"chart1", None),
+    # Regression guard for the enigma.orgdata.asp stub bug: orgdata.asp must show
+    # the company (HSBC for p=382) and never the stub's "coming soon" placeholder.
+    ("/dbpub/orgdata.asp", {"p": "382"}, r"HSBC", "Holders information coming soon"),
 ]
 
 

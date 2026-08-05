@@ -22,7 +22,7 @@
 	{% for member in members %}
 	<tr>
 		<td class="left">
-			<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=member.personid) }}">{{ member.name1 }}</a>
+			<a href="{{ url_for('dbpub_statistics.orgdata', p=member.personid) }}">{{ member.name1 }}</a>
 		</td>
 	</tr>
 	{% endfor %}

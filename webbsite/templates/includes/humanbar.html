@@ -7,7 +7,7 @@
 	{% else %}<li><a href="{{ url_for('dbpub_people.natperson', p=person_id) }}">Key data</a></li>{% endif %}
 	{% if nav_flags.get('has_positions') %}
 		{% if person_live == 'positions' %}<li class="livebutton">Positions</li>
-		{% else %}<li><a href="{{ url_for('dbpub_statistics.enigma_positions', p=person_id) }}">Positions</a></li>{% endif %}
+		{% else %}<li><a href="{{ url_for('dbpub_corporate.positions', p=person_id) }}">Positions</a></li>{% endif %}
 	{% endif %}
 	{% if nav_flags.get('has_pay') %}
 		{% if person_live == 'pay' %}<li class="livebutton">Pay</li>

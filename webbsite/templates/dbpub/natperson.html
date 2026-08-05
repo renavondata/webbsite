@@ -32,7 +32,7 @@
     <ul class="navlist">
         <li class="livebutton"><a href="{{ url_for('dbpub_people.natperson', p=person_id) }}">Key data</a></li>
         {% if has_positions %}
-        <li><a href="{{ url_for('dbpub_statistics.enigma_positions', p=person_id) }}">Positions</a></li>
+        <li><a href="{{ url_for('dbpub_corporate.positions', p=person_id) }}">Positions</a></li>
         {% endif %}
         {% if has_pay %}
         <li><a href="{{ url_for('dbpub_statistics.pay', p=person_id) }}">Pay</a></li>

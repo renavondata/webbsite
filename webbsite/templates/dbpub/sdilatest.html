@@ -61,7 +61,7 @@
 			{% if row.ptype == 'P' %}
 				<a href="{{ url_for('dbpub_people.natperson', p=row.holderid) }}">{{ row.name }}</a>
 			{% else %}
-				<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.holderid) }}">{{ row.name }}</a>
+				<a href="{{ url_for('dbpub_statistics.orgdata', p=row.holderid) }}">{{ row.name }}</a>
 			{% endif %}
 		</td>
 		<td>{{ row.rsnsht }}</td>

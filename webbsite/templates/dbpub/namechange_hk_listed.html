@@ -41,7 +41,7 @@
         {% set old_name = row.oldname ~ "<br>" ~ row.oldcname %}
     {% endif %}
     <tr>
-        <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.personid) }}'>{{ cur_name|safe }}</a></td>
+        <td><a href='{{ url_for('dbpub_statistics.orgdata', p=row.personid) }}'>{{ cur_name|safe }}</a></td>
         <td>{{ old_name|safe }}</td>
         <td>{{ row.datechanged.strftime('%Y-%m-%d') if row.datechanged else '' }}</td>
     </tr>

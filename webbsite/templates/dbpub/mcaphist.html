@@ -81,7 +81,7 @@
 				{% for row in curr_group.data %}
 				<tr>
 					<td class="left">
-						<a href="{{ url_for('dbpub_statistics.enigma_orgdata', p=row.issuer) }}">{{ row.name }}</a>
+						<a href="{{ url_for('dbpub_statistics.orgdata', p=row.issuer) }}">{{ row.name }}</a>
 					</td>
 					<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
 					<td>{{ row.typeshort }}</td>

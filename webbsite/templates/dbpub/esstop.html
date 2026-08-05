@@ -192,7 +192,7 @@ whether a claim was made and approved in each phase.</p>
             <td>{{ loop.index }}</td>
             <td>
                 {% if row.orgid %}
-                    <a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.name }}</a>
+                    <a href='{{ url_for('dbpub_statistics.orgdata', p=row.orgid) }}'>{{ row.name }}</a>
                 {% else %}
                     {{ row.name }}
                 {% endif %}

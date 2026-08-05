@@ -61,8 +61,8 @@ the top 5,000 claimants by value, <a href="{{ url_for('dbpub_statistics.esstop')
             <tr>
                 <td class="colHide2">{{ loop.index }}</td>
                 {% if row.orgid %}
-                    <td><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.ename }}</a></td>
-                    <td class="colHide3 left"><a href='{{ url_for('dbpub_statistics.enigma_orgdata', p=row.orgid) }}'>{{ row.cname or '' }}</a></td>
+                    <td><a href='{{ url_for('dbpub_statistics.orgdata', p=row.orgid) }}'>{{ row.ename }}</a></td>
+                    <td class="colHide3 left"><a href='{{ url_for('dbpub_statistics.orgdata', p=row.orgid) }}'>{{ row.cname or '' }}</a></td>
                 {% else %}
                     <td>{{ row.ename }}</td>
                     <td class="colHide3 left">{{ row.cname or '' }}</td>
