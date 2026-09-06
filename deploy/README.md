@@ -1,5 +1,16 @@
 # Deploy artefacts (droplet `webbsite-web`)
 
+> **Deploy knobs now live in `deploy/site.toml`, not only in `/etc/webbsite/env`.**
+> `site-deploy`'s poller reads that file every tick, and it wins over the
+> environment. Secrets stay in `/etc/webbsite/env`. Two invariants are recorded
+> there because they are not independent: the reload verb is `reload` (SIGHUP),
+> which needs `ExecReload` in the unit *and* `preload_app = False` in
+> `gunicorn.conf.py` — change one and you must change all three.
+>
+> The poller also now probes `/health` after the reload and refuses to purge
+> Cloudflare unless it answers, so a deploy that breaks the app leaves the edge
+> serving the cached old site instead of a cold broken one.
+
 Hosts the Webb-site archive (the late David Webb's CC-BY data; frozen baseline 2025-10-10,
 **refreshed daily** from renavon pipelines — see "Daily data refresh" below) on a single
 DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + gunicorn under

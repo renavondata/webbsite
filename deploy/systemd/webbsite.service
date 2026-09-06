@@ -1,5 +1,13 @@
-# Captured from the live droplet webbsite-web. Source of truth — keep in sync with the box.
-# Serves the frozen Webb-site archive (gunicorn) on 127.0.0.1:8000; Caddy fronts it on :443.
+# Mirrors the unit on webbsite-web. Serves the frozen Webb-site archive
+# (gunicorn) on 127.0.0.1:8000; Caddy fronts it on :443.
+#
+# This file called itself "source of truth — keep in sync with the box" and had
+# already drifted from it on two lines by 2026-09-06: the box carried
+# `--no-dev` and an ExecReload that were never committed back. A mirror kept in
+# sync by hand is a mirror that drifts, and nothing detected it for months.
+# `deploy/site.toml` plus a converge step is the fix; until that lands, this
+# file is a *mirror*, not an authority, and `systemctl cat webbsite.service` on
+# the box is what settles a disagreement.
 [Unit]
 Description=Webb-site Flask
 After=network-online.target postgresql.service
@@ -12,7 +20,15 @@ Group=webbsite
 WorkingDirectory=/srv/webbsite
 EnvironmentFile=/etc/webbsite/env
 Environment=HOME=/srv/webbsite
-ExecStart=/usr/local/bin/uv run --frozen gunicorn -c gunicorn.conf.py --bind 127.0.0.1:8000 app:app
+ExecStart=/usr/local/bin/uv run --frozen --no-dev gunicorn -c gunicorn.conf.py --bind 127.0.0.1:8000 app:app
+# Load-bearing, and it was missing here. The deploy contract is `systemctl
+# reload` (site-deploy's DEPLOY_RELOAD=reload, set in /etc/webbsite/env), and
+# on a unit with no ExecReload systemd answers "Job type reload is not
+# applicable" — auto-deploy.sh would exit 1 on every single deploy. It works
+# only because the box has this line. Pairs with gunicorn.conf.py's
+# `preload_app = False`: SIGHUP reloads code+templates only when not preloaded
+# (the 2026-07-16 outage). Change either one and you must change both.
+ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=2
 StandardOutput=journal
