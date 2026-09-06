@@ -1,0 +1,49 @@
+# How webbsite deploys. Read by site-deploy's auto-deploy.sh on every tick.
+#
+# This file exists so the knobs that decide deploy behaviour are reviewable in a
+# pull request. They used to live only in /etc/webbsite/env on the droplet,
+# where nothing diffs them and nothing notices drift — which is how the
+# committed unit in deploy/systemd/ ended up missing an ExecReload the box had
+# been relying on for months.
+#
+# Secrets are NOT here and must not be: CF_CACHE_PURGE_TOKEN, DATABASE_URL and
+# SECRET_KEY stay in /etc/webbsite/env, which is not in git.
+
+[deploy]
+# SIGHUP, not a restart. This is load-bearing in both directions:
+#   * deploy/systemd/webbsite.service must keep ExecReload=/bin/kill -HUP $MAINPID
+#     — `systemctl reload` on a unit without it fails outright.
+#   * gunicorn.conf.py must keep preload_app = False — gunicorn does not reload
+#     application code on HUP when preloaded, so recycled workers fork from the
+#     stale master image while Jinja reads the NEW templates from disk. That skew
+#     500'd every orgdata.asp request on 2026-07-16.
+# Change any one of these three and you must change all three.
+reload = "reload"
+
+# Matches the live unit's ExecStart. --no-dev keeps test/lint deps off the box.
+uv_args = "--frozen --no-dev"
+
+# gunicorn binds 127.0.0.1:8000; Caddy fronts it on :443.
+port = 8000
+
+# Probed after the reload and BEFORE the Cloudflare purge. Purging first would
+# refill the edge from a cold or broken origin; failing here leaves the edge
+# serving the cached old site, which is the better failure.
+health_path = "/health"
+
+# A 200 from a half-booted worker is not health. /health returns {"status":"ok"}
+# (webbsite/__init__.py:194), so require the body, not just the status code.
+#
+# Match the VALUE, not the whole object: the live response is compact
+# ({"status":"ok"}, no space after the colon) and a Flask/jsonify change could
+# alter the separators without changing the meaning. Checked against production
+# rather than assumed — the spaced version would have failed every deploy.
+health_match = '"ok"'
+
+# HTML carries a 30-day CDN-Cache-Control, so a code deploy is invisible without
+# the purge (deploy/README.md). The daily R2 -> Postgres refresh deliberately
+# does NOT purge — its TTL ladder self-heals within 4h.
+cf_zone_id = "c754c09daa8fb9cce8e4977d44cbd246"
+
+# No build_service: webbsite is Postgres-backed and has no snapshot builder.
+# No Tailwind either — there is no static/src.css, so the CSS step auto-skips.
