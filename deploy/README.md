@@ -123,7 +123,7 @@ R2_SECRET_ACCESS_KEY=...
 R2_BUCKET=hkdata
 R2_PREFIX=webbsite-refresh
 REFRESH_USERID=<chosen above>
-HC_URL=https://hc-ping.com/<uuid>   # optional healthchecks.io check (daily, grace 6h)
+HC_URL=https://hc.gfrm.in/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
 ```
 The R2 token must be **Object Read only**, scoped to the `hkdata` bucket (Cloudflare
 dashboard → R2 → Manage API Tokens). Never reuse a write-capable key here.
@@ -142,7 +142,13 @@ sudo -u webbsite sh -c 'cd /srv/webbsite && set -a && . /etc/webbsite/refresh-en
 ```
 (Root can read the env file; the one-liner is for the supervised bootstrap only.)
 
-**Monitoring:** the loader pings `HC_URL` on success **only while fresh**
+**Monitoring:** `HC_URL` is code-optional and operationally required. `ping_healthcheck`
+returns early when it is unset, so an unset value is a loader that runs every day
+reporting to nobody — which is what it did from go-live on 2026-07-19 until it was
+noticed on 2026-09-16 while investigating an unrelated outage. A missing dead-man
+does not fail; it just never speaks, and nothing distinguishes that from health.
+
+The loader pings `HC_URL` on success **only while fresh**
 (`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and
 `/fail` otherwise — so a silently-wedged upstream trips the healthcheck even
 though the loader itself exits 0. Exit codes: 0 loaded/up-to-date, 1 validation
@@ -221,6 +227,74 @@ default to `webbsite.renavon.com`. Moving domains needs **no code change**:
 11. Cut over: point Cloudflare `webbsite.renavon.com` at the droplet IP (proxied); purge cache.
 12. Decommissioned Render (web service + Postgres deleted) after archiving a final `pg_dump` to R2,
     and removed the temporary droplet IP from Render's allowlist.
+
+## When the site is down (Cloudflare 521)
+
+A 521 means Cloudflare reached the origin and got nothing. **The app is usually
+fine — check the proxy first.**
+
+**Do not trust the front page.** `/` is a 302 to `/dbpub/` and Cloudflare keeps
+serving that from cache long after the origin dies, so the site can look alive
+while every real page 521s. Probe `/health` instead: it is `no-store`, so it
+always comes from the origin.
+
+```bash
+curl -sI https://webbsite.renavon.com/health | head -1   # origin, through the edge
+ssh <box> 'curl -s localhost:8000/health'                # the app itself
+ssh <box> 'systemctl status caddy webbsite postgresql'
+```
+
+If the app answers on localhost and the edge does not, it is Caddy or the network.
+
+### 2026-09-11: Caddy OOM-killed, down five days
+
+A distributed scraper walked `/dbpub/*` with randomised IDs, spoofed Chrome
+user-agents and residential proxies. Every URL was unique, so ~99.8% missed the
+edge cache and hit the origin. The app kept up — 200s in 90–340 ms — but
+concurrency exceeded its 24 request slots, connections piled into gunicorn's
+then-2048-deep accept queue, and Caddy held a live proxy request for each one
+until it reached 4.7 GB RSS on an 8 GB box with no swap. The global OOM killer
+chose it. The distro unit had no `Restart=`, so it never came back, and nothing
+probed the site from outside. Cloudflare served 13.6M requests to a dead origin
+over the following 71 hours.
+
+Fixed by `deploy/systemd/caddy.service.d/override.conf` (restart policy + memory
+cap), `dial_timeout` in the Caddyfile, a shallower gunicorn backlog, swap, and a
+Cloudflare rule blocking the scraper's forged bare-host `Referer` on `/dbpub/`
+as well as `/ccass/`. The *reason* it went unnoticed for five days is tracked
+separately — see "Monitoring" above and renavon-monorepo#1612.
+
+## Converge: how `deploy/` reaches the box
+
+`deploy/` used to be documentation — nothing installed it, and the "source of
+truth" headers were a claim. Since 2026-09 `deploy/converge.sh` installs the
+tracked units and the Caddyfile on every deploy tick, armed by `converge = true`
+in `deploy/site.toml`. Edit a unit here, push, and the box has it within ~2
+minutes; hand-edit the box and it is reverted just as fast.
+
+```bash
+# What would change, without changing it (safe anywhere, needs no root):
+CONVERGE_DRY_RUN=1 REPO_DIR=$PWD bash deploy/converge.sh
+```
+
+It needs one sudoers grant, installed once:
+
+```bash
+echo 'webbsite ALL=(root) NOPASSWD: /srv/webbsite/deploy/converge.sh' \
+  | sudo tee /etc/sudoers.d/webbsite-converge
+sudo chmod 0440 /etc/sudoers.d/webbsite-converge
+sudo visudo -c
+```
+
+Without it every deploy fails at the converge step with `sudo: a password is
+required` and **does not reload** — the old code keeps serving, the edge is not
+purged, and `systemctl --failed` shows it. That is the intended failure: a box
+whose config did not apply must not take the new code.
+
+**What that grant means.** A systemd unit's `ExecStart` runs as root, so on this
+box **merge access to this repo is root access**. The repo is public to read;
+merge is not, and that is the boundary. Never widen the grant beyond that one
+path, and never hand it to anything less trusted than a merge.
 
 ## Day-to-day
 | Command | Purpose |
