@@ -145,8 +145,11 @@ sudo -u webbsite sh -c 'cd /srv/webbsite && set -a && . /etc/webbsite/refresh-en
 **Monitoring:** `HC_URL` is code-optional and operationally required. `ping_healthcheck`
 returns early when it is unset, so an unset value is a loader that runs every day
 reporting to nobody — which is what it did from go-live on 2026-07-19 until it was
-noticed on 2026-09-16 while investigating an unrelated outage. A missing dead-man
-does not fail; it just never speaks, and nothing distinguishes that from health.
+noticed and set on 2026-09-16 while investigating an unrelated outage (the
+`webbsite-refresh` check on hc.gfrm.in, tag `dataguru`, grace 6h). A missing
+dead-man does not fail; it just never speaks, and nothing distinguishes that from
+health — check `hc.gfrm.in`'s `dataguru-checks-armed` sweep, not just this file, if
+you're auditing whether monitoring actually exists.
 
 The loader pings `HC_URL` on success **only while fresh**
 (`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and
