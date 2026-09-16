@@ -131,6 +131,20 @@ if [ "$changed_units" = 1 ]; then
     systemctl daemon-reload || { log "daemon-reload failed"; rc=1; }
 fi
 
+# Every timer this repo declares is enabled and running. Installing a unit file
+# does nothing by itself; a timer that is merely present fires never, which is
+# indistinguishable from a job that is fine. Idempotent, silent when already so.
+# Deliberate downtime is `systemctl mask <timer>`, which this respects.
+while read -r src dst; do
+    [ -z "$src" ] && continue
+    case "$dst" in *.timer) ;; *) continue ;; esac
+    t=$(basename "$dst")
+    if [ "$(systemctl is-enabled "$t" 2>/dev/null)" = masked ]; then continue; fi
+    if ! systemctl is-enabled --quiet "$t" 2>/dev/null || ! systemctl is-active --quiet "$t" 2>/dev/null; then
+        systemctl enable --now --quiet "$t" && log "enabled $t" || { log "could not enable $t"; rc=1; }
+    fi
+done <<< "$(echo "$MAP" | sed '/^[[:space:]]*$/d')"
+
 # Caddy must be enabled and running. `enable` is idempotent and costs nothing;
 # its absence is not what made the 2026-09-11 kill permanent, but the absence of
 # any assertion that caddy is UP is. A unit sitting in `failed` stays there
