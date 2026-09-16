@@ -45,3 +45,6 @@ logs/
 # Archive data - store locally only, too large for GitHub
 archive/
 docs/.mcp.json
+
+# deploy/ manifests are tracked declarations, not scratch text
+!deploy/*.txt
