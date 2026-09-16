@@ -39,8 +39,10 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
   on the droplet.** See `deploy/README.md` and ADR 002.
 - **Monitoring:** the daily refresh loader pings a dead-man check when `HC_URL` is set; an external
   uptime probe is pending (renavon-monorepo#1612). `/health` is liveness, `/health?deep=1` is
-  readiness (touches Postgres + the refresh watermark). A Caddy OOM kill went unnoticed for five
-  days in Sept 2026 — see "When the site is down" in `deploy/README.md`.
+  readiness (touches Postgres + the refresh watermark). Errors go to Sentry when `SENTRY_DSN` is
+  set (app + loader); every response carries an `X-Request-Id` minted by Caddy and echoed through
+  the access logs. A Caddy OOM kill went unnoticed for five days in Sept 2026 — see "When the site
+  is down" in `deploy/README.md`.
 
 > This is a **public repository.** Operational secrets and host-identifying details (origin IP, host
 > identifiers, DB passwords, API tokens) are intentionally **not** committed here; they live in the

@@ -14,7 +14,12 @@ logger = logging.getLogger(__name__)
 _engine = None
 
 
-class QueryTimeoutError(Exception):
+class DatabaseError(Exception):
+    """Any failure inside execute_query/execute_scalar. Always raised `from` the
+    DBAPI exception, so the original class and message survive in __cause__."""
+
+
+class QueryTimeoutError(DatabaseError):
     """Raised when a database query exceeds the statement_timeout limit."""
     pass
 
@@ -28,19 +33,12 @@ def get_db():
                     "Database engine not initialized. Call init_app() first."
                 )
 
-            # Get connection from pool
-            # pool_pre_ping=True automatically validates connections before use
+            # Get connection from pool. search_path and the 8s statement_timeout
+            # are session defaults set at connect time (init_engine's
+            # connect_args["options"]), so a pooled connection already carries
+            # them; issuing them here again cost three round-trips per request.
+            # pool_pre_ping=True validates the connection before handing it over.
             conn = _engine.connect()
-
-            # Set search_path to include enigma and ccass schemas
-            # This allows unqualified table references (e.g., "stories") to work
-            # Matches MySQL behavior where USE database switches context
-            conn.execute(text("SET search_path TO enigma, ccass, public"))
-            conn.execute(text("SET statement_timeout = '8s'"))
-
-            # Commit the SET commands
-            conn.commit()
-
             g.db = conn
 
             if current_app.config.get("DEBUG"):
@@ -135,8 +133,12 @@ def execute_query(sql, params=None, timeout_s=None):
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
             raise
-        # In production, raise a more generic error
-        raise Exception(f"Database query failed: {str(e)}")
+        # Chain, never erase: routes catch broadly and render an empty page, so
+        # the ERROR log lines above (and Sentry, which ingests them) are the only
+        # place the real failure survives. `from e` keeps the DBAPI class in the
+        # traceback; DatabaseError lets a caller distinguish "the database
+        # failed" from any other exception.
+        raise DatabaseError(f"Database query failed: {e}") from e
     finally:
         # Restore the default timeout on this pooled connection.
         if timeout_s is not None:
@@ -201,8 +203,12 @@ def execute_scalar(sql, params=None):
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
             raise
-        # In production, raise a more generic error
-        raise Exception(f"Database query failed: {str(e)}")
+        # Chain, never erase: routes catch broadly and render an empty page, so
+        # the ERROR log lines above (and Sentry, which ingests them) are the only
+        # place the real failure survives. `from e` keeps the DBAPI class in the
+        # traceback; DatabaseError lets a caller distinguish "the database
+        # failed" from any other exception.
+        raise DatabaseError(f"Database query failed: {e}") from e
 
 
 def init_engine(app):
@@ -231,6 +237,14 @@ def init_engine(app):
             # Connection timeout
             connect_args={
                 "connect_timeout": app.config.get("DB_CONNECT_TIMEOUT", 30),
+                # Session defaults applied by the server at connect time, once
+                # per pooled connection rather than once per request:
+                #   search_path -- unqualified table names resolve like the
+                #     original MySQL `USE` did;
+                #   statement_timeout -- the 8s ceiling every page query gets
+                #     (execute_query's timeout_s overrides it per query and
+                #     restores it in its finally).
+                "options": "-c search_path=enigma,ccass,public -c statement_timeout=8s",
                 # TCP keepalives to detect dead connections
                 "keepalives": 1,
                 "keepalives_idle": 30,

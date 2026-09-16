@@ -10,7 +10,8 @@ import re
 from webbsite.db import execute_query, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str
 from webbsite.routes.dbpub._navctx import stock_nav
-from webbsite.diskcache import load_json, save_json
+from webbsite.diskcache import load_json_keyed, save_json_keyed
+from webbsite import watermarks
 
 bp = Blueprint("dbpub_short_selling", __name__)
 
@@ -108,13 +109,17 @@ def shortsum():
     """Short selling weekly summary - aggregate across all stocks"""
     from flask import current_app
 
-    # The market-wide weekly summary is constant over the frozen dataset, so
-    # compute it once and serve from disk. The aggregate is heavy: each
-    # sfcshort row needs an as-of outstanding-shares and closing-price lookup.
-    # Doing those as repeated correlated subqueries inside the aggregate timed
-    # out at 8s; instead resolve each row's market cap ONCE via LATERAL joins
-    # (the pattern shortdate uses), then GROUP BY date.
-    summaries = load_json("shortsum")
+    # The market-wide weekly summary is constant for a given dataset, so
+    # compute it once per data watermark and serve from disk. It joins
+    # ccass.quotes and enigma.issuedshares, both of which the daily loader
+    # refreshes, so the cache key MUST carry the watermark: an unkeyed entry
+    # served the first post-deploy result forever (2026-07 .. 2026-09). The
+    # aggregate is heavy: each sfcshort row needs an as-of outstanding-shares
+    # and closing-price lookup. Doing those as repeated correlated subqueries
+    # inside the aggregate timed out at 8s; instead resolve each row's market
+    # cap ONCE via LATERAL joins (the pattern shortdate uses), then GROUP BY date.
+    cache_key = watermarks.quotes_end()
+    summaries = load_json_keyed("shortsum", cache_key)
     if summaries is None:
         try:
             raw = execute_query(
@@ -157,7 +162,7 @@ def shortsum():
                 }
                 for r in raw
             ]
-            save_json("shortsum", summaries)
+            save_json_keyed("shortsum", cache_key, summaries)
         except Exception as e:
             current_app.logger.error(f"Error querying short summary: {e}")
             summaries = []

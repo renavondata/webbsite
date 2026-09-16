@@ -8,7 +8,7 @@ import calendar
 import io
 import re
 from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.asp_helpers import get_int, get_bool, get_str, decimals_to_float
 from webbsite.routes.dbpub._navctx import stock_nav, person_nav, org_nav
 
 bp = Blueprint("dbpub_sdi", __name__)
@@ -376,7 +376,9 @@ def sdicap():
             )
 
             if result and result[0]:
-                filing_data = result[0]
+                # NUMERIC and DOUBLE PRECISION columns mix in this row and the
+                # template divides them (avprice / vwap); float everything once.
+                filing_data = decimals_to_float(result[0])
                 person_id = filing_data["dir"]
                 issue_id = filing_data["issueid"]
 
@@ -406,6 +408,7 @@ def sdicap():
                 """,
                     (sdi_id,),
                 )
+                events = decimals_to_float(events)
 
                 # Get capacity breakdown after the event
                 capacities = execute_query(
@@ -418,6 +421,7 @@ def sdicap():
                 """,
                     (sdi_id,),
                 )
+                capacities = decimals_to_float(capacities)
 
         except Exception as e:
             current_app.logger.error(f"Error querying SDI filing details: {e}")

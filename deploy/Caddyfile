@@ -8,16 +8,43 @@
 # is not directly reachable. If the zone is ever switched to "Full (strict)", replace
 # `tls internal` with a Cloudflare Origin CA cert (tls /etc/caddy/origin.crt /etc/caddy/origin.key).
 {
-	admin off
+	# Not `admin off`. The admin endpoint is what `systemctl reload caddy` talks
+	# to; with it disabled the reload fails and the only way to apply a new
+	# Caddyfile is a full restart, which drops every in-flight TLS connection.
+	# Loopback only, so nothing but this box can reach it. (Same reasoning as
+	# the renavon fleet's base Caddyfile.) Also exposes /metrics for a future
+	# scraper.
+	admin localhost:2019
 }
 
 webbsite.renavon.com {
 	# gzip only. Cloudflare offers the origin `Accept-Encoding: gzip, br` and never
 	# zstd (verified against the request headers in the 2026-09-11 journal), so a
-	# zstd encoder was configuration that could never fire.
+	# zstd encoder was configuration that could never fire. This is the ONLY
+	# compressor: the app's Flask-Compress was removed in 2026-09 so a worker
+	# thread no longer spends CPU on level-6 gzip that the proxy does anyway.
 	encode gzip
 
+	# Origin-side access log. During the 2026-09-11 flood the only record of
+	# what hit the box was Cloudflare's dashboard, after the fact. JSON so it
+	# can be grepped/jq'd; Caddy rolls it itself (5 x 100 MB), no logrotate.
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 100mb
+			roll_keep 5
+		}
+		format json
+	}
+
 	reverse_proxy 127.0.0.1:8000 {
+		# One id per request, minted here and echoed by the app in its response
+		# and access log, so a journal line, this log, a Sentry event and a
+		# user's report can be joined on it. Cloudflare's own CF-Ray is kept
+		# too (header_up passes all headers by default).
+		header_up X-Request-Id {http.request.uuid}
+		# The real client, not Cloudflare's edge; the app and its logs read this.
+		header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
+
 		transport http {
 			# Shed, don't queue. When gunicorn's accept queue is full the kernel
 			# DROPS SYNs rather than refusing them, so an unbounded dial waits

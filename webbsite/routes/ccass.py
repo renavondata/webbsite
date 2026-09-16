@@ -4,6 +4,7 @@ Direct port from ccass/*.asp files
 """
 
 from flask import Blueprint, render_template, request, Response
+import re
 from datetime import datetime, date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date
@@ -16,6 +17,10 @@ bp = Blueprint("ccass", __name__)
 CCASS_HISTORY_START = date(2007, 6, 26)
 # Largest plausible issueID; current issue table is well under this.
 MAX_ISSUE_ID = 10_000_000
+# Largest plausible CCASS partID (the table is in the low thousands).
+MAX_PART_ID = 1_000_000
+# A CCASS participant ID as HKEX prints it: one letter + five digits.
+_CCASS_ID_RE = re.compile(r"^[A-Za-z]\d{5}$")
 
 
 def _bad_request(msg: str) -> Response:
@@ -23,11 +28,14 @@ def _bad_request(msg: str) -> Response:
 
 
 def _validate_ccass_query():
-    """Pre-flight validation for deep CCASS pages with ?d=&i=&sort= patterns.
+    """Pre-flight validation for deep CCASS pages with ?d=&i=&part=&sort= patterns.
 
     Returns a small Response on validation failure (cheap to serve, even at
     spike volume) or None to continue. Catches the bulk of scraper traffic
-    that fuzzes random dates/IDs.
+    that fuzzes random dates/IDs before it costs a query.
+
+    Every /ccass/ route that reads i, part, d, d1 or d2 calls this first. It
+    used to guard 4 of 19; the flood of 2026-09-11 walked the other 15.
     """
     issue_id = request.args.get("i")
     if issue_id is not None and issue_id != "":
@@ -38,7 +46,18 @@ def _validate_ccass_query():
         if iid < 0 or iid > MAX_ISSUE_ID:
             return _bad_request("i out of range")
 
-    for key in ("d", "d1"):
+    # part is a partID (int) or, on bigchangespart, a CCASS ID like "A00001".
+    part = request.args.get("part")
+    if part:
+        if not _CCASS_ID_RE.match(part):
+            try:
+                pid = int(part)
+            except ValueError:
+                return _bad_request("invalid part")
+            if pid < 0 or pid > MAX_PART_ID:
+                return _bad_request("part out of range")
+
+    for key in ("d", "d1", "d2"):
         raw = request.args.get(key)
         if not raw:
             continue
@@ -55,6 +74,9 @@ def _validate_ccass_query():
 @bp.route("/bigchanges.asp")
 def bigchanges():
     """Top CCASS changes - port of bigchanges.asp"""
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     sort_param = request.args.get("sort", "chgdn")
     etf = get_bool("etf")  # Whether to include unit ETFs, default no
     d = request.args.get("d", "")  # Date parameter
@@ -146,6 +168,9 @@ def cconc():
 
     Tables used: ccass.dailylog, issue, organisations, issuedshares, sectypes
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     sort_param = request.args.get("sort", "cp5dn")
     etf = get_bool("etf")  # Whether to include unit ETFs, default no
     d = request.args.get("d", "")
@@ -254,6 +279,9 @@ def ipstakes():
 
     Tables used: ccass.dailylog, ccass.quotes, issue, organisations, issuedshares, sectypes
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     sort_param = request.args.get("sort", "ipsdn")
     d = request.args.get("d", "")
 
@@ -387,6 +415,9 @@ def cparticipants():
 
     Tables used: ccass.participants
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     sort_param = request.args.get("sort", "nameup")
 
     # Determine sort order
@@ -445,6 +476,9 @@ def cholder():
 
     Tables used: ccass.parthold, participants, issue, organisations, stocklistings
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     part = get_int("part", 0)
@@ -868,6 +902,9 @@ def bigchangesissue():
 
     Tables used: ccass.bigchanges, ccass.participants
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     issue_id = request.args.get("i", type=int, default=0)
     stock_code = request.args.get("sc", "")
     sort_param = request.args.get("sort", "datedn")
@@ -1010,6 +1047,9 @@ def bigchangespart():
 
     Tables used: ccass.bigchanges, ccass.participants, issue, organisations
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     part_param = request.args.get("part", "")
     sort_param = request.args.get("sort", "datedn")
 
@@ -1536,6 +1576,9 @@ def cconchist():
 
     Tables used: ccass.dailylog, enigma.issuedshares
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     issue_id = get_int("i", 0)
@@ -1700,6 +1743,9 @@ def ctothist():
 
     Tables used: ccass.dailylog, enigma.issuedshares, issue, organisations
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app, session
 
     issue_id = get_int("i", 0)
@@ -1917,6 +1963,9 @@ def custhist():
 
     Tables used: ccass.dailylog
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     issue_id = get_int("i", 0)
@@ -2032,6 +2081,9 @@ def ncipchg():
 
     Tables used: ccass.dailylog, ccass.quotes, enigma.issue, enigma.organisations
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     d1 = request.args.get("d1", "")
@@ -2199,6 +2251,9 @@ def nciphist():
 
     Tables used: ccass.quotes, ccass.calendar, ccass.dailylog, enigma.events
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app, session
     import json
 
@@ -2796,6 +2851,9 @@ def reghist():
 
     Tables used: ccass.parthold
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     issue_id = get_int("i", 0)
@@ -2894,6 +2952,9 @@ def brokhist():
 
     Tables used: ccass.dailylog, enigma.issuedshares
     """
+    guard = _validate_ccass_query()
+    if guard is not None:
+        return guard
     from flask import current_app
 
     issue_id = get_int("i", 0)

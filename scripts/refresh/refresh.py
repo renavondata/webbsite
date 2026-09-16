@@ -4,6 +4,7 @@
 #     "boto3>=1.34",
 #     "pyarrow>=16",
 #     "psycopg2-binary>=2.9",
+#     "sentry-sdk>=2.0",
 # ]
 # ///
 """Pull-based R2 -> Postgres refresh loader (ADR 001).
@@ -417,6 +418,29 @@ def freshness_ok(cur, ccass_done: str, budget_trading_days: int = 4) -> bool:
         "SELECT count(*) FROM ccass.calendar WHERE tradedate > %s", (ccass_done,)
     )
     return cur.fetchone()[0] <= budget_trading_days
+
+
+def init_sentry() -> None:
+    """Report unhandled loader exceptions when SENTRY_DSN is set (refresh-env).
+
+    Optional by design: a mirror without a DSN runs exactly as before. The
+    dead-man ping still covers "did not run"; this covers "ran and blew up
+    somewhere the ping never saw", with the traceback attached.
+    """
+    dsn = os.environ.get("SENTRY_DSN")
+    if not dsn:
+        return
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=dsn,
+        environment=os.environ.get("SENTRY_ENVIRONMENT", "production"),
+        traces_sample_rate=0.0,
+        send_default_pii=False,
+    )
+
+
+init_sentry()
 
 
 def ping_healthcheck(ok: bool, body: str) -> None:

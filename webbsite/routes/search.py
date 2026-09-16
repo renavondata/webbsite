@@ -4,7 +4,7 @@ Search routes - Direct port from searchorgs.asp and searchpeople.asp
 
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
-from webbsite.asp_helpers import rem_space, get_str, get_bool, apos, ts_words
+from webbsite.asp_helpers import rem_space, get_str, get_bool, apos, ts_words, escape_like
 
 bp = Blueprint("search", __name__)
 
@@ -49,9 +49,11 @@ def search_orgs():
             match_clause = "to_tsvector('simple', name1) @@ plainto_tsquery('simple', %s)"
             org_params = (n,)
         else:
-            # Left match (starts with) - use LOWER() + LIKE for case-insensitive with pattern index
-            match_clause = f"LOWER(name1) LIKE LOWER('{apos(n)}%')"
-            org_params = None
+            # Left match (starts with) - LOWER() + LIKE hits the pattern index.
+            # Bound, with % and _ escaped: apos() only doubles quotes, so a
+            # user-supplied % used to turn this into a leading-wildcard scan.
+            match_clause = "LOWER(name1) LIKE LOWER(%s) ESCAPE '\\'"
+            org_params = (escape_like(n) + "%",)
 
         # Search current names
         # Use CTE to force pattern index usage, then inline everListCo() logic
@@ -82,7 +84,7 @@ def search_orgs():
         if st == "a":
             old_match_clause = "to_tsvector('simple', oldName) @@ plainto_tsquery('simple', %s)"
         else:
-            old_match_clause = f"LOWER(oldName) LIKE LOWER('{apos(n)}%')"
+            old_match_clause = "LOWER(oldName) LIKE LOWER(%s) ESCAPE '\\'"
 
         sql = f"""
             WITH matched_names AS (

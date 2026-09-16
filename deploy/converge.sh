@@ -75,10 +75,21 @@ done <<< "$(echo "$MAP" | sed '/^[[:space:]]*$/d')"
 # change exists to prevent.
 CADDY_SRC="$REPO/deploy/Caddyfile"
 CADDY_DST=/etc/caddy/Caddyfile
+CADDY_LOG=/var/log/caddy/access.log
 if [ -f "$CADDY_SRC" ] && ! cmp -s "$CADDY_SRC" "$CADDY_DST" 2>/dev/null; then
     if command -v caddy >/dev/null 2>&1; then
-        caddy validate --adapter caddyfile --config "$CADDY_SRC" >/dev/null 2>&1 \
-            || die "deploy/Caddyfile does not validate; refusing to install it"
+        # `caddy validate` OPENS the access log to prove it can write it. Run as
+        # the caddy user, not root: a root-run validate would create the file
+        # root-owned and the daemon's next reload would fail on it. The file is
+        # pre-created with the daemon's ownership for the same reason.
+        if [ -z "$DRY" ] && id caddy >/dev/null 2>&1; then
+            [ -e "$CADDY_LOG" ] || install -o caddy -g caddy -m 0640 /dev/null "$CADDY_LOG"
+            runuser -u caddy -- caddy validate --adapter caddyfile --config "$CADDY_SRC" >/dev/null 2>&1 \
+                || die "deploy/Caddyfile does not validate (as caddy); refusing to install it"
+        else
+            caddy validate --adapter caddyfile --config "$CADDY_SRC" >/dev/null 2>&1 \
+                || die "deploy/Caddyfile does not validate; refusing to install it"
+        fi
     fi
     if [ -n "$DRY" ]; then
         log "would install deploy/Caddyfile -> $CADDY_DST"
@@ -117,6 +128,15 @@ if [ "$changed_caddy" = 1 ] && [ "$caddy_was_down" = 0 ]; then
     # broken config, and report non-zero so the deploy stops before touching the app.
     if systemctl reload caddy; then
         log "caddy reloaded"
+    elif grep -qsE '^[[:space:]]*admin[[:space:]]+off' "$CADDY_DST.bak"; then
+        # The RUNNING daemon was started from a Caddyfile with `admin off`, so
+        # it has no endpoint for `reload` to talk to and the reload fails no
+        # matter how good the new file is. Rolling back would re-install `admin
+        # off` and fail again on every tick, forever. This is the one case where
+        # a restart is right: it happens exactly once, on the tick that turns
+        # the endpoint on, and costs a few seconds of TLS.
+        log "caddy reload failed and the PREVIOUS Caddyfile had 'admin off'; restarting caddy once"
+        systemctl restart caddy || { log "caddy restart FAILED"; rc=1; }
     else
         log "caddy reload FAILED; restoring previous Caddyfile"
         [ -f "$CADDY_DST.bak" ] && cp -a "$CADDY_DST.bak" "$CADDY_DST" && systemctl reload caddy

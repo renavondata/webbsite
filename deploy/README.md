@@ -151,6 +151,19 @@ dead-man does not fail; it just never speaks, and nothing distinguishes that fro
 health — check `hc.gfrm.in`'s `dataguru-checks-armed` sweep, not just this file, if
 you're auditing whether monitoring actually exists.
 
+**Error reporting:** `SENTRY_DSN` (optional, in both `/etc/webbsite/env` and
+`/etc/webbsite/refresh-env`; `SENTRY_ENVIRONMENT` defaults to `production`) turns on
+Sentry for the app and the loader. Unset means silent, exactly like `HC_URL`: a
+mirror runs fine without it, but *this* deployment is not observed without it —
+`/dbpub/sdicap.asp` threw the same TypeError ~500 times a day for weeks before
+anyone looked at the journal. The app's Flask integration reports unhandled
+exceptions; its logging integration also promotes every ERROR log line to an event,
+which is how the routes' broad `except Exception` blocks (which render an empty
+page) become visible: `webbsite/db.py` logs at ERROR before raising. Every response
+carries an `X-Request-Id` (minted by Caddy, `deploy/Caddyfile`; echoed by the app;
+last field of gunicorn's access log; a Sentry tag), so one string joins the Caddy
+access log (`/var/log/caddy/access.log`, JSON), the journal, and an event.
+
 The loader pings `HC_URL` on success **only while fresh**
 (`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and
 `/fail` otherwise — so a silently-wedged upstream trips the healthcheck even

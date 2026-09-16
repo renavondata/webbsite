@@ -36,6 +36,15 @@ ExecStart=/usr/local/bin/uv run --frozen --no-dev gunicorn -c gunicorn.conf.py -
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=2
+# A ceiling, like the one Caddy got after 2026-09-11. Three gthread workers sit
+# around 140 MB RSS each (plus a master); 2 GB is several times that, so this
+# never fires in normal service. It exists so a runaway worker meets the cgroup
+# OOM killer here -- which Restart= recovers from in 2s -- rather than the
+# kernel's global one, which picks its own victim.
+MemoryAccounting=yes
+MemoryHigh=2G
+MemoryMax=2560M
+TasksMax=256
 StandardOutput=journal
 StandardError=journal
 

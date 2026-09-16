@@ -37,7 +37,10 @@ max_requests_jitter = 50
 accesslog = "-"  # Log to stdout
 errorlog = "-"  # Log to stderr
 loglevel = os.environ.get("GUNICORN_LOG_LEVEL", "info")
-access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
+# Trailing field: the X-Request-Id Caddy mints per request (deploy/Caddyfile) and
+# the app echoes back, so a journal line, a Caddy access-log line, a Sentry event
+# and a user's report can all be joined on one string.
+access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s %({x-request-id}i)s'
 
 # Process naming
 proc_name = "webbsite"
