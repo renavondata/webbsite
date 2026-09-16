@@ -190,10 +190,57 @@ def create_app(config_class=Config):
     def index():
         return redirect("/dbpub/")
 
-    # Health check endpoint
+    # Health check endpoint.
+    #
+    # Bare /health is a liveness probe: cheap, no I/O, answers "this process is
+    # up and routing". /health?deep=1 is the readiness probe an external uptime
+    # monitor should point at, because a shallow 200 is exactly what let a real
+    # outage hide -- and the failure it hides is not hypothetical: on 2026-09-11
+    # this app stayed perfectly healthy for five days while the site served 521s.
+    #
+    # The deep check deliberately does NOT go through webbsite.watermarks: that
+    # module swallows DB errors and returns a frozen-archive fallback so pages
+    # degrade instead of 500ing, which is right for pages and exactly wrong here
+    # -- it would report ok with Postgres dead. It also deliberately does not
+    # render a page (the pattern used elsewhere in the fleet): the heavy pages
+    # here cost hundreds of ms, and a 5-minute probe that adds load to a box
+    # whose failure mode IS load would be a monitor that causes outages.
     @app.route("/health")
     def health():
-        return {"status": "ok"}, 200
+        if request.args.get("deep", "") not in ("1", "true", "True", "yes"):
+            return {"status": "ok"}, 200
+
+        from .db import execute_scalar
+
+        body = {"status": "ok", "deep": "ok"}
+        try:
+            # One round-trip that proves the pool, the connection, the schema and
+            # the refresh loader's own watermark all still exist.
+            ccass_done = execute_scalar(
+                "SELECT val FROM enigma.log WHERE name = %s", ("CCASSdateDone",)
+            )
+            if not ccass_done:
+                raise RuntimeError("enigma.log has no CCASSdateDone row")
+
+            # Same freshness semantics as the loader's healthcheck gate
+            # (scripts/refresh/refresh.py::freshness_ok): how many trading days
+            # have closed that we have not loaded CCASS for. Budget 4, so a
+            # long weekend or one late upstream run is not an alarm.
+            behind = execute_scalar(
+                "SELECT count(*) FROM ccass.calendar WHERE tradedate > %s", (ccass_done,)
+            )
+            body["ccass_done"] = str(ccass_done)
+            body["trading_days_behind"] = int(behind)
+        except Exception as exc:
+            logger.exception("deep health check failed")
+            # 500, not 503: the data being stale is a different fact from the
+            # database being unreachable, and they want different pages.
+            return {"status": "error", "deep": f"{type(exc).__name__}: {exc}"}, 500
+
+        if body["trading_days_behind"] > 4:
+            body["status"] = "stale"
+            return body, 503
+        return body, 200
 
     @app.route("/robots.txt")
     def robots_txt():
