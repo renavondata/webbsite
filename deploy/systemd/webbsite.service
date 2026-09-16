@@ -5,9 +5,14 @@
 # already drifted from it on two lines by 2026-09-06: the box carried
 # `--no-dev` and an ExecReload that were never committed back. A mirror kept in
 # sync by hand is a mirror that drifts, and nothing detected it for months.
-# `deploy/site.toml` plus a converge step is the fix; until that lands, this
-# file is a *mirror*, not an authority, and `systemctl cat webbsite.service` on
-# the box is what settles a disagreement.
+# `deploy/site.toml` plus a converge step is the fix, and the converge step
+# landed on 2026-09-16 (`deploy/converge.sh`, armed by `converge = true`): this
+# file is now installed on the box on every deploy tick, so it is an authority
+# again rather than a mirror, and a hand-edit on the box is reverted within two
+# minutes instead of quietly becoming the truth.
+#
+# Verified against the live box before converge was armed -- installing the
+# stale copy would have removed the ExecReload below and broken every deploy.
 [Unit]
 Description=Webb-site Flask
 After=network-online.target postgresql.service

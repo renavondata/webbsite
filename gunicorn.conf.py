@@ -7,7 +7,16 @@ import os
 
 # Server socket
 bind = f"0.0.0.0:{os.environ.get('PORT', '10000')}"
-backlog = 2048
+# Shallow on purpose. The listen backlog is the queue of connections accepted by
+# the kernel but not yet picked up by a worker thread. At 2048 a request flood
+# could park ~2000 connections here; Caddy holds a live proxy request (and its
+# buffers) for every one of them, which is how Caddy reached 4.7 GB and was
+# OOM-killed on 2026-09-11 while this app was still answering in 90-340 ms.
+# A shallow queue makes saturation visible fast (the kernel drops the SYN, and
+# Caddy's dial_timeout turns that into a prompt 502) instead of absorbing it
+# invisibly into the proxy's heap. 128 still absorbs an ordinary burst against
+# 24 request slots.
+backlog = 128
 
 # Worker processes
 workers = int(os.environ.get("GUNICORN_WORKERS", "3"))

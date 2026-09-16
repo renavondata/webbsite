@@ -1,4 +1,6 @@
-# Captured from the live droplet webbsite-web (/etc/caddy/Caddyfile). Source of truth.
+# Captured from the live droplet webbsite-web (/etc/caddy/Caddyfile). Source of truth,
+# and since 2026-09 enforced as such: deploy/converge.sh installs this file on every
+# deploy tick, so an edit here reaches the box and a hand-edit on the box is reverted.
 # Terminates TLS on :443 and reverse-proxies to gunicorn on 127.0.0.1:8000.
 # Uses `tls internal` (Caddy self-signed CA): the renavon.com Cloudflare zone runs SSL mode
 # "Full" (not strict), so CF encrypts to the origin without validating the cert — consistent
@@ -10,7 +12,28 @@
 }
 
 webbsite.renavon.com {
-	encode zstd gzip
-	reverse_proxy 127.0.0.1:8000
+	# gzip only. Cloudflare offers the origin `Accept-Encoding: gzip, br` and never
+	# zstd (verified against the request headers in the 2026-09-11 journal), so a
+	# zstd encoder was configuration that could never fire.
+	encode gzip
+
+	reverse_proxy 127.0.0.1:8000 {
+		transport http {
+			# Shed, don't queue. When gunicorn's accept queue is full the kernel
+			# DROPS SYNs rather than refusing them, so an unbounded dial waits
+			# indefinitely and every waiting request keeps its buffers alive in
+			# Caddy — that is how 4.7 GB accumulated on 2026-09-11 before the
+			# OOM kill. A short dial timeout converts origin saturation into a
+			# prompt 502 and bounds memory by bounding how long a request lives.
+			dial_timeout 5s
+
+			# Above gunicorn's own 60s worker timeout, so this never truncates a
+			# page the app would have finished. It exists to stop a wedged
+			# upstream pinning connections forever, not to police slow pages:
+			# a few deterministic analytical pages legitimately approach 60s.
+			response_header_timeout 65s
+		}
+	}
+
 	tls internal
 }

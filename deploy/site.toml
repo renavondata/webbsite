@@ -45,5 +45,27 @@ health_match = '"ok"'
 # does NOT purge — its TTL ladder self-heals within 4h.
 cf_zone_id = "c754c09daa8fb9cce8e4977d44cbd246"
 
+# Run deploy/converge.sh as root each tick, after `uv sync` and before the reload,
+# so the tracked units and Caddyfile ARE the box rather than a hopeful mirror of it.
+#
+# This is the "plus a converge step" half of the fix begun in #27. That PR restored
+# an ExecReload the repo had lost, but nothing stopped the next drift; this does.
+# It was armed after 2026-09-11, when Caddy -- whose unit was tracked in no repo at
+# all and therefore carried no Restart= that anyone had ever reviewed -- was
+# OOM-killed during a scraper flood and left the site serving Cloudflare 521s for
+# five days while gunicorn answered every health check on localhost.
+#
+# Needs a sudoers grant for exactly /srv/webbsite/deploy/converge.sh. Note what that
+# grants: a unit's ExecStart runs as root, so on this box merge access to this repo
+# is root access. The repo is public to READ; merge is not, and that is the boundary.
+converge = true
+
+# health_path stays on the SHALLOW /health on purpose, even though ?deep=1 exists.
+# This gate answers "did the new code boot and start serving", which is the
+# deploy's business. ?deep=1 also asserts the data is fresh -- a true and useful
+# thing, but not one a code deploy should be blocked by: a stale upstream feed
+# would otherwise wedge every deploy, including the one carrying the fix. Data
+# freshness belongs to the uptime probe and the refresh loader's own dead-man.
+
 # No build_service: webbsite is Postgres-backed and has no snapshot builder.
 # No Tailwind either — there is no static/src.css, so the CSS step auto-skips.
