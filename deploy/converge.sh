@@ -97,9 +97,23 @@ if [ "$changed_units" = 1 ]; then
     systemctl daemon-reload || { log "daemon-reload failed"; rc=1; }
 fi
 
-if [ "$changed_caddy" = 1 ]; then
-    # reload, not restart: keeps connections and the internal CA intact. On
-    # failure, put the previous file back so the NEXT reload cannot inherit a
+# Caddy must be enabled and running. `enable` is idempotent and costs nothing;
+# its absence is not what made the 2026-09-11 kill permanent, but the absence of
+# any assertion that caddy is UP is. A unit sitting in `failed` stays there
+# forever -- Restart= governs future exits, not a terminal state already reached
+# -- so a dead proxy is only ever revived by something asking. This asks, every
+# tick. Deliberate downtime is `systemctl mask caddy`, which this respects.
+systemctl is-enabled --quiet caddy || systemctl enable --quiet caddy || true
+caddy_was_down=0
+if ! systemctl is-active --quiet caddy; then
+    caddy_was_down=1
+    log "caddy is $(systemctl is-active caddy) -- starting it"
+    systemctl start caddy || { log "could not start caddy"; rc=1; }
+fi
+
+if [ "$changed_caddy" = 1 ] && [ "$caddy_was_down" = 0 ]; then
+    # reload, not restart: keeps in-flight connections and the internal CA intact.
+    # On failure, put the previous file back so the NEXT reload cannot inherit a
     # broken config, and report non-zero so the deploy stops before touching the app.
     if systemctl reload caddy; then
         log "caddy reloaded"
@@ -108,12 +122,12 @@ if [ "$changed_caddy" = 1 ]; then
         [ -f "$CADDY_DST.bak" ] && cp -a "$CADDY_DST.bak" "$CADDY_DST" && systemctl reload caddy
         rc=1
     fi
+elif [ "$changed_caddy" = 1 ]; then
+    # It was down and we just started it, so it already read the new file. Reloading
+    # here would be redundant, and on a cold start the reload can lose a race with
+    # the daemon coming up and report a failure that would roll back a GOOD config.
+    log "caddy started with the new Caddyfile; no reload needed"
 fi
-
-# Caddy is not ours to own beyond this file, but it must be running and enabled;
-# `enable` is idempotent and costs nothing, and its absence is what made the
-# 2026-09-11 kill permanent.
-systemctl is-enabled --quiet caddy || systemctl enable --quiet caddy || true
 
 [ "$changed_units$changed_caddy" = "00" ] || log "converge complete (units=$changed_units caddy=$changed_caddy)"
 exit $rc
