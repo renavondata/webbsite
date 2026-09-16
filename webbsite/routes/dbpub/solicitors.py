@@ -2,13 +2,10 @@
 Hong Kong solicitor and law firm data
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from flask import Blueprint, render_template, request, current_app
+from datetime import date
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int
 
 bp = Blueprint("dbpub_solicitors", __name__)
 
@@ -25,7 +22,6 @@ def hk_sols():
 
     Tables used: enigma.lsposts, enigma.lsppl, enigma.lsorgs, enigma.lsroles, enigma.organisations, enigma.people
     """
-    from flask import current_app
 
     p = get_int("p", 0)
     sort_param = request.args.get("sort", "admup")
@@ -96,7 +92,6 @@ def hk_sol_firms():
 
     Tables used: enigma.lsposts, enigma.lsorgs, enigma.organisations
     """
-    from flask import current_app
 
     d = request.args.get("d", str(date.today()))
     sort_param = request.args.get("sort", "totdn")
@@ -178,7 +173,6 @@ def hk_sols_moves():
 
     Tables used: enigma.directorships, enigma.lsppl, enigma.lsorgs, enigma.organisations, enigma.people, enigma.positions, enigma.lsroles
     """
-    from flask import current_app
 
     sort_param = request.args.get("sort", "orgup")
 
@@ -258,7 +252,6 @@ def hk_sol_emps():
 
     Tables used: enigma.lsjobs, enigma.lsemps, enigma.organisations
     """
-    from flask import current_app
 
     sort_param = request.args.get("sort", "cntdn")
 

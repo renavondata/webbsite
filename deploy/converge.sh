@@ -48,6 +48,7 @@ MAP="
 deploy/systemd/webbsite.service                  /etc/systemd/system/webbsite.service
 deploy/systemd/webbsite-refresh.service          /etc/systemd/system/webbsite-refresh.service
 deploy/systemd/webbsite-refresh.timer            /etc/systemd/system/webbsite-refresh.timer
+deploy/systemd/webbsite-refresh-failed.service   /etc/systemd/system/webbsite-refresh-failed.service
 deploy/systemd/caddy.service.d/override.conf     /etc/systemd/system/caddy.service.d/override.conf
 "
 

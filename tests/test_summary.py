@@ -39,7 +39,7 @@ print(f"\nPassed: {passed}")
 print(f"Failed: {failed}")
 
 if failed_routes:
-    print(f"\nFailed routes:")
+    print("\nFailed routes:")
     for route in failed_routes[:20]:  # Show first 20
         print(f"  ✗ {route}")
     if len(failed_routes) > 20:

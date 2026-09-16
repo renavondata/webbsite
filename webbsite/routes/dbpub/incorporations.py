@@ -2,12 +2,10 @@
 Company incorporations, dissolutions, and registrations
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
+from flask import Blueprint, render_template, request, current_app
+from datetime import date
 import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
+from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
 bp = Blueprint("dbpub_incorporations", __name__)
@@ -253,7 +251,6 @@ def inc_hk_annual():
     Query params: t (orgtype filter)
     Shows chart and table of incorporations/dissolutions
     """
-    from datetime import date
     from webbsite.asp_helpers import get_int
 
     t = get_int("t", 0)
@@ -327,7 +324,7 @@ def oldest_hk_cos():
     The oldest HK-incorporated companies
     Query params: a (alive only), t (orgtype filter), sort
     """
-    from webbsite.asp_helpers import get_int, get_bool, get_str
+    from webbsite.asp_helpers import get_int, get_str
 
     a = get_bool("a")  # Alive only
     t = get_int("t", 0)  # Orgtype filter

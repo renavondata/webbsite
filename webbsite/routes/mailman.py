@@ -4,7 +4,7 @@ Skeleton implementation for 4 routes (requires admin authentication)
 """
 
 from flask import Blueprint, render_template, request
-from webbsite.asp_helpers import get_str, get_int
+from webbsite.asp_helpers import get_str
 
 bp = Blueprint("mailman", __name__)
 

@@ -2,13 +2,10 @@
 Corporate structure - officers, advisers, positions, holders
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from flask import Blueprint, render_template, request, current_app
+from datetime import date
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, get_bool
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
 bp = Blueprint("dbpub_corporate", __name__)
@@ -582,7 +579,7 @@ def positions():
             r.rankID,
             r.RankText,
             company,
-            {f"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
+            {"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
             o.name1,
             h.issueid,
             apptDate,

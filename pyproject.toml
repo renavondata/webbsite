@@ -15,6 +15,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pytest>=8",
     "requests>=2.33.0",
     "ruff>=0.14.1",
 ]
@@ -25,3 +26,28 @@ test = [
     "pyyaml>=6.0.3",
     "requests>=2.33.0",
 ]
+
+[tool.ruff]
+line-length = 120
+# Only lint; the ported ASP code is not reformatted wholesale.
+[tool.ruff.lint]
+# The pre-0.15 ruff defaults, stated explicitly so a ruff upgrade cannot widen
+# the gate on its own. Ratchet: add codes here as the codebase earns them.
+select = ["E4", "E7", "E9", "F"]
+# E722 (bare except) is endemic to the ported routes (~40 sites) and every one
+# renders an empty page rather than a 500 -- Sentry now sees them via db.py's
+# ERROR log. Fix them as routes are touched, not in one sweep.
+ignore = ["E722"]
+[tool.ruff.lint.per-file-ignores]
+# Baseline as of 2026-09-16: unused locals in ported routes, and the blueprint
+# aggregator's import-after-code. Shrink these lists; never grow them.
+"webbsite/routes/dbpub/__init__.py" = ["E402"]
+"webbsite/routes/ccass.py" = ["F841"]
+"webbsite/routes/dbpub/corporate.py" = ["F841"]
+"webbsite/routes/dbpub/incorporations.py" = ["F841"]
+"webbsite/routes/dbpub/sdi.py" = ["F841"]
+"webbsite/routes/dbpub/sfc.py" = ["F841"]
+"webbsite/routes/dbpub/statistics.py" = ["F841"]
+"webbsite/routes/dbpub/transport.py" = ["F841"]
+"webbsite/routes/mailman.py" = ["F841"]
+"webbsite/routes/pages.py" = ["F841"]

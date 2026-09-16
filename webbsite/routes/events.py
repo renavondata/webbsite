@@ -3,7 +3,7 @@ Events route - Direct port from events.asp
 Corporate actions (dividends, rights issues, etc.)
 """
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_str
 

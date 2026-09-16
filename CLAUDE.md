@@ -30,6 +30,9 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
   (`webbsite/__init__.py`); since the data is static today, edge cache hit rates are high.
 - **Hardening:** UFW denies inbound except `:443` from Cloudflare IP ranges (the origin is not exposed
   directly); SSH is over Tailscale only.
+- **CI:** `.github/workflows/tests.yml` gates every PR and push (ruff, DB-free unit checks, a
+  planted-failure self-proof, shellcheck, converge dry-run, `caddy validate`, the refresh loader
+  ladder against Postgres 17) and fast-forwards `ci-green` on a green `master`.
 - **Deploy:** pushing to `master` *is* the deploy (a `site-deploy` timer fast-forwards, runs
   `uv sync`, **converges `deploy/` onto the box**, reloads the service, health-gates the reload, and
   purges the Cloudflare edge cache). Knobs live in `deploy/site.toml`, reviewable in a PR.

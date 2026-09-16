@@ -7,9 +7,9 @@ import hashlib
 import secrets
 import base64
 import bcrypt
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
-from flask import session, request, redirect, url_for, current_app
+from flask import session, request, redirect, url_for
 from webbsite.db import execute_query, execute_scalar
 
 # Constants

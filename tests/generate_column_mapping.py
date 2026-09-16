@@ -17,7 +17,7 @@ def get_all_tables(schema):
     """Get all table names in schema"""
     with app.app_context():
         result = execute_query(
-            f"""
+            """
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = %s
@@ -32,7 +32,7 @@ def get_table_columns(schema, table):
     """Get all columns for a table"""
     with app.app_context():
         result = execute_query(
-            f"""
+            """
             SELECT column_name, data_type, character_maximum_length
             FROM information_schema.columns
             WHERE table_schema = %s AND table_name = %s

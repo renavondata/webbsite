@@ -2,13 +2,9 @@
 Market capitalization and returns data
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from flask import Blueprint, render_template, request, current_app
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, get_bool
 from webbsite import watermarks
 
 bp = Blueprint("dbpub_market_data", __name__)
@@ -214,7 +210,6 @@ def alltotrets():
     from webbsite.asp_helpers import (
         get_bool,
         get_date_or_default,
-        format_percent_sig,
         pcsig,
     )
 
@@ -375,8 +370,6 @@ def mcap():
 
     Tables used: issuedshares, quotes, stocklistings, hkexdata
     """
-    from flask import current_app
-    from datetime import date as dt
 
     e = request.args.get("e", "a")
     t = request.args.get("t", "s")
@@ -509,7 +502,6 @@ def mcaphist():
 
     Tables used: issuedshares, quotes, stocklistings
     """
-    from flask import current_app
     from datetime import date as dt
 
     d = request.args.get("d", str(dt.today()))

@@ -45,7 +45,7 @@ else:
     flask_lines = flask_norm.splitlines()
     asp_lines = asp_norm.splitlines()
 
-    print(f"❌ Test failed")
+    print("❌ Test failed")
     print(f"Flask lines: {len(flask_lines)}")
     print(f"ASP lines: {len(asp_lines)}")
 

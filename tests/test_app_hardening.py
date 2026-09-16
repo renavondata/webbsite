@@ -41,6 +41,11 @@ def check(name, got, want):
 
 
 def run():
+    # CI's self-proof: with PLANTED_FAILURE set this script must exit 1, or the
+    # gate is decoration. Nothing else changes.
+    if os.environ.get("PLANTED_FAILURE"):
+        check("planted failure (CI self-proof; expected to fail)", 1, 0)
+
     # 1. LIKE escaping -------------------------------------------------------
     check("escape_like: plain text untouched", escape_like("Cheung Kong"), "Cheung Kong")
     check("escape_like: % escaped", escape_like("50%"), "50\\%")
@@ -102,6 +107,11 @@ def run():
         return 1
     print(f"\nall {len(ccass_routes) + 22} checks passed")
     return 0
+
+
+def test_all():
+    """pytest entry point (CI); the direct-run house style still works."""
+    assert run() == 0, "\n".join(_failures)
 
 
 if __name__ == "__main__":

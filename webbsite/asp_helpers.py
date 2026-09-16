@@ -474,7 +474,6 @@ def find_stock():
     Use input 'sc' (stock code) or 'i' (issueID) to return (issue_id, issue_name, person_id)
     Port of ASP findStock() function
     """
-    from webbsite.db import execute_query
 
     # Try stock code first
     stock_code = get_int("sc", 0)

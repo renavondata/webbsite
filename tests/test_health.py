@@ -125,6 +125,12 @@ def run():
         _db.execute_scalar = original
 
 
+def test_all():
+    """pytest entry point (CI); the direct-run house style still works."""
+    run()
+    assert not _failures, "\n".join(_failures)
+
+
 if __name__ == "__main__":
     run()
     print()

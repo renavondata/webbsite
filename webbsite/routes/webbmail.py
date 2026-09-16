@@ -4,14 +4,12 @@ Full implementation of 18 routes
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, make_response, current_app
-from webbsite.asp_helpers import get_str, get_int, get_bool
+from webbsite.asp_helpers import get_str, get_int
 from webbsite.db import execute_query
 from webbsite.auth import (
     login_user, logout_user, register_user, verify_email,
-    request_password_reset, reset_password, check_persistent_login,
-    is_logged_in, get_current_user, login_required, clean_expired_tokens
+    request_password_reset, reset_password, is_logged_in, get_current_user, login_required, clean_expired_tokens
 )
-from datetime import date
 
 bp = Blueprint("webbmail", __name__)
 

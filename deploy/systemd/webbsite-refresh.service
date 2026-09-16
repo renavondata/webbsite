@@ -5,6 +5,9 @@
 Description=Webb-site data refresh (R2 -> Postgres)
 After=network-online.target postgresql.service
 Wants=network-online.target
+# A failure anywhere in this unit -- including before refresh.py gets to its
+# own ping -- pages via the dead-man's /fail. See that unit's header.
+OnFailure=webbsite-refresh-failed.service
 
 [Service]
 Type=oneshot
@@ -15,6 +18,12 @@ WorkingDirectory=/srv/webbsite
 # dropping privileges, so the webbsite user never needs read access to it.
 EnvironmentFile=/etc/webbsite/refresh-env
 Environment=HOME=/srv/webbsite
+# /start ping: with it, a loader that hangs (or is killed mid-run) shows as a
+# check that started and never finished, and pages at grace instead of never.
+# The leading `-` is load-bearing: on a Type=oneshot unit a non-prefixed
+# ExecStartPre that fails (HC_URL unset on a mirror, a network blip) fails the
+# whole unit before the loader runs. Monitoring must never block the work.
+ExecStartPre=-/usr/bin/curl -fsS --max-time 10 --retry 2 -o /dev/null ${HC_URL}/start
 ExecStart=/usr/local/bin/uv run --script scripts/refresh/refresh.py
 TimeoutStartSec=45min
 StandardOutput=journal

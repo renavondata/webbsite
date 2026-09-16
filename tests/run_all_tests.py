@@ -7,7 +7,6 @@ Supports parallel execution for faster results.
 
 import subprocess
 import yaml
-import sys
 from pathlib import Path
 from collections import defaultdict
 from multiprocessing import Pool, cpu_count
@@ -106,7 +105,7 @@ def main():
     max_workers = cpu_count()
     if args.serial:
         workers = 1
-        print(f"Running in SERIAL mode (1 worker)\n")
+        print("Running in SERIAL mode (1 worker)\n")
     else:
         workers = min(args.workers, max_workers)
         print(f"Running in PARALLEL mode ({workers} workers, {max_workers} CPUs available)\n")

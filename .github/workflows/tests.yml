@@ -1,0 +1,141 @@
+# The merge gate. On this repo a merge to master is root on the droplet
+# (deploy/converge.sh runs as root on every deploy tick), and until 2026-09
+# nothing ran here but a code-review bot that had been failing since July.
+#
+# Shape borrowed from the renavon fleet: `test` proves the tree, `green`
+# fast-forwards the `ci-green` ref that the box deploys from (site-deploy's
+# deploy_ref knob), so an untested commit on master is never what serves.
+# Path filtering, if ever wanted, goes INSIDE a job -- a workflow-level
+# `on.push.paths` filter would skip the run that advances the ref and stall
+# every box silently.
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_HTTP_RETRIES: "8"
+  DATABASE_URL: postgresql://stub:stub@127.0.0.1:1/stub
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: true
+
+      # `--frozen` on the box installs from a lock that may no longer match
+      # pyproject.toml; only --check asserts they agree.
+      - name: uv lock --check
+        run: uv lock --check
+      - name: uv sync
+        run: uv sync --frozen --group dev
+
+      - name: ruff
+        run: uv run ruff check .
+
+      - name: unit checks (no database)
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py
+
+      # A gate that has never failed a planted defect is decoration. Run the
+      # same harness with a check forced to fail and require a red result.
+      - name: self-proof: a planted failure fails
+        run: |
+          if PLANTED_FAILURE=1 uv run python tests/test_app_hardening.py >/dev/null 2>&1; then
+            echo "planted failure passed -- the harness is not gating"; exit 1
+          fi
+          echo "planted failure correctly failed"
+
+      - name: shellcheck deploy/
+        run: |
+          sudo apt-get install -y -q shellcheck >/dev/null
+          shellcheck -S warning deploy/*.sh
+
+      # converge.sh runs as root on the box; prove it parses and that its
+      # allowlist resolves before it ever gets there. Dry-run needs no root.
+      - name: converge.sh dry run
+        run: |
+          out=$(CONVERGE_DRY_RUN=1 REPO_DIR="$PWD" deploy/converge.sh 2>&1)
+          echo "$out"
+          echo "$out" | grep -q 'missing in repo' && { echo "converge allowlist names a file that does not exist"; exit 1; }
+          true
+
+      # env-check must pass on a complete fixture, fail on a missing required
+      # name and on an undeclared name, and be BLIND (2) on an unreadable
+      # manifest. Verified by mutation, not by inspection.
+      - name: env-check.sh by mutation
+        run: |
+          set -e
+          T=$(mktemp -d); mkdir -p "$T/good" "$T/bad"
+          awk '!/^#/ && NF>=3 {print $1, $2}' deploy/required-env.txt | while read -r f n; do echo "$n=x" >> "$T/good/$f"; done
+          cp "$T"/good/* "$T/bad/"; sed -i '/^DATABASE_URL=/d' "$T/bad/env"; echo "ROGUE=1" >> "$T/bad/refresh-env"
+          ETC="$T/good" deploy/env-check.sh
+          ! ETC="$T/bad" deploy/env-check.sh
+          ETC="$T/good" MANIFEST=/nonexistent deploy/env-check.sh; [ $? -eq 2 ]
+
+      - name: caddy validate deploy/Caddyfile
+        run: |
+          docker run --rm -v "$PWD/deploy:/d:ro" caddy:2 \
+            sh -c 'mkdir -p /var/log/caddy && caddy validate --adapter caddyfile --config /d/Caddyfile'
+
+      - name: systemd units parse
+        run: |
+          for u in deploy/systemd/*.service deploy/systemd/*.timer deploy/systemd/caddy.service.d/*.conf; do
+            # Ini shape only: every non-comment line is a [Section] or Key=Value.
+            if grep -vE '^\s*(#|;|$)|^\[[A-Za-z]+\]$|^[A-Za-z]+=' "$u"; then
+              echo "$u: malformed line(s) above"; exit 1
+            fi
+          done
+
+  # The refresh loader against a real Postgres 17: happy path, idempotent
+  # re-run, and every negative exits 1 with nothing committed. Same script the
+  # operator runs locally (tests/refresh/run_ladder.sh).
+  refresh-ladder:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: true
+      - name: postgres client
+        run: sudo apt-get install -y -q postgresql-client >/dev/null
+      - name: run the ladder
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: tests/refresh/run_ladder.sh
+
+  # Advances `ci-green` only when every job above passed on master. The guard
+  # is spelled out so a SKIPPED job (none today) would still advance it while
+  # a failed or cancelled one never does.
+  green:
+    needs: [test, refresh-ladder]
+    if: github.ref == 'refs/heads/master' && always() && !failure() && !cancelled()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: fast-forward ci-green
+        run: git push origin "HEAD:refs/heads/ci-green"

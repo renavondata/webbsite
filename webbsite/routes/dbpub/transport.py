@@ -3,13 +3,10 @@ Hong Kong transport and vehicle data
 Full implementations matching original ASP pages
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
+from flask import Blueprint, render_template
 import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str, ms_date, iif
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, get_bool, get_str, ms_date
 
 bp = Blueprint("dbpub_transport", __name__)
 
@@ -1404,7 +1401,6 @@ def vefuel():
     m = max(min(get_int("m", maxd_month), 12), 1)
 
     # Calculate actual date (end of month)
-    import calendar
     last_day = calendar.monthrange(y, m)[1]
     from datetime import date as dt_date
     d = dt_date(y, m, last_day)

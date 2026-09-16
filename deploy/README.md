@@ -32,12 +32,24 @@ systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, 
 ## Layout
 ```
 deploy/
-  systemd/webbsite.service           # gunicorn unit (captured from the box)
-  systemd/webbsite-refresh.service   # daily R2 -> Postgres loader (oneshot)
-  systemd/webbsite-refresh.timer     # fires the loader 02:45 + 06:45 UTC
-  Caddyfile                          # /etc/caddy/Caddyfile (captured from the box)
+  systemd/webbsite.service                # gunicorn unit
+  systemd/webbsite-refresh.service        # daily R2 -> Postgres loader (oneshot)
+  systemd/webbsite-refresh.timer          # fires the loader 02:45 + 06:45 UTC
+  systemd/webbsite-refresh-failed.service # OnFailure= hook: /fail ping with the journal tail
+  systemd/caddy.service.d/override.conf   # Restart= + memory cap for the proxy
+  Caddyfile                               # /etc/caddy/Caddyfile
+  converge.sh                             # installs all of the above on every deploy tick (root)
+  site.toml                               # site-deploy knobs, reviewable here
+  required-env.txt                        # every env NAME the box must/may carry, by file
+  env-check.sh                            # asserts required-env.txt against /etc/webbsite (names only)
+  checks.txt                              # the hc.gfrm.in checks this deployment expects
   README.md
 ```
+Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
+Caddyfile on every tick. `.github/workflows/tests.yml` is the merge gate (lint, DB-free unit checks,
+a planted-failure self-proof, shellcheck, a converge dry-run, `caddy validate`, the loader ladder
+against a real Postgres) and fast-forwards `ci-green` on a passing `master` run; the box follows
+that ref once site-deploy's `deploy_ref` knob lands (see `site.toml`).
 
 ## Deploy a code change
 
@@ -151,6 +163,17 @@ dead-man does not fail; it just never speaks, and nothing distinguishes that fro
 health — check `hc.gfrm.in`'s `dataguru-checks-armed` sweep, not just this file, if
 you're auditing whether monitoring actually exists.
 
+**Crash before the ping:** `webbsite-refresh.service` carries
+`OnFailure=webbsite-refresh-failed.service`, which posts the loader's last 60 journal lines to
+`HC_URL/fail`, and an `ExecStartPre=-…/start` ping so a hung run pages at grace. Both are no-ops
+when `HC_URL` is unset. That closes the "unit exited 1 and nothing announced it" half of issue
+#28; the per-dataset quarantine half is separate.
+
+**Env names:** `deploy/required-env.txt` lists every name each `/etc/webbsite/*` file must
+(`required`) or may (`optional`) carry, and what its absence costs; `sudo deploy/env-check.sh`
+asserts it in both directions (a required name missing, or a name on the box nobody declared) and
+never reads a value. `deploy/checks.txt` is the matching inventory of hc.gfrm.in checks.
+
 **Error reporting:** `SENTRY_DSN` (optional, in both `/etc/webbsite/env` and
 `/etc/webbsite/refresh-env`; `SENTRY_ENVIRONMENT` defaults to `production`) turns on
 Sentry for the app and the loader. Unset means silent, exactly like `HC_URL`: a
@@ -174,11 +197,11 @@ though the loader itself exits 0. Exit codes: 0 loaded/up-to-date, 1 validation
 (idempotent upserts). Row *retraction* is admin-only SQL by design — the loader
 role cannot DELETE. Pages self-heal within the ≤4h edge TTL; no purge needed.
 
-**Local validation:** see `tests/refresh/` (schema fixture + feed generator +
-the negative flags) — the full ladder ran green 2026-07-19: dry-run, real load,
-idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-freeze`/missing-log-key
-each exit 1 with nothing committed, role-parity denials, and a real 3.9M-row
-feed load in 43s.
+**Local validation:** `tests/refresh/run_ladder.sh` (needs a local Postgres superuser via
+`PGHOST`/`PGUSER`) builds the fixture DB and runs the whole ladder — role-parity denials,
+dry-run, real load, idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-freeze`/missing-log-key
+each exiting 1 with nothing committed. CI runs the same script against a Postgres 17 service
+container on every push. (A real 3.9M-row feed loaded in 43s on 2026-07-19.)
 
 ## Rebuild the data (rare)
 To reload the **frozen baseline**, restore the `pg_dump` archive

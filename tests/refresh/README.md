@@ -3,6 +3,10 @@
 Local, self-contained validation of the daily R2 → Postgres refresh loader —
 no droplet, no R2 required.
 
+**One command:** `PGHOST=localhost PGUSER=postgres tests/refresh/run_ladder.sh` does every step
+below (drops and recreates the fixture DB first). CI runs it on every push. The manual steps
+stay documented for when one rung needs poking at.
+
 ```bash
 # 1. Fixture database: the loader's exact table surface + the restricted role
 createdb -h localhost -U postgres enigma_pg_refreshtest
