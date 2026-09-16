@@ -31,8 +31,16 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
 - **Hardening:** UFW denies inbound except `:443` from Cloudflare IP ranges (the origin is not exposed
   directly); SSH is over Tailscale only.
 - **Deploy:** pushing to `master` *is* the deploy (a `site-deploy` timer fast-forwards, runs
-  `uv sync --frozen`, reloads the service, and purges the Cloudflare edge cache). Infra-as-code
-  (systemd unit, Caddyfile, ops runbook) lives in `deploy/` — see `deploy/README.md`.
+  `uv sync`, **converges `deploy/` onto the box**, reloads the service, health-gates the reload, and
+  purges the Cloudflare edge cache). Knobs live in `deploy/site.toml`, reviewable in a PR.
+- **Convergence:** `deploy/` is applied, not merely documented — `deploy/converge.sh` installs the
+  tracked systemd units (including a Caddy drop-in) and the Caddyfile on every tick, so a hand-edit
+  on the box is reverted within ~2 minutes. It runs as root, so **merge access to this repo is root
+  on the droplet.** See `deploy/README.md` and ADR 002.
+- **Monitoring:** the daily refresh loader pings a dead-man check when `HC_URL` is set; an external
+  uptime probe is pending (renavon-monorepo#1612). `/health` is liveness, `/health?deep=1` is
+  readiness (touches Postgres + the refresh watermark). A Caddy OOM kill went unnoticed for five
+  days in Sept 2026 — see "When the site is down" in `deploy/README.md`.
 
 > This is a **public repository.** Operational secrets and host-identifying details (origin IP, host
 > identifiers, DB passwords, API tokens) are intentionally **not** committed here; they live in the
