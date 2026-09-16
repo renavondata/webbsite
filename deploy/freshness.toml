@@ -1,0 +1,21 @@
+# How stale the CCASS data may be before the site and its monitors call it stale.
+# Read by scripts/refresh/refresh.py (the loader's success-vs-/fail ping) and by
+# /health?deep=1 (webbsite/freshness.py), so the two vantages that page on a
+# stale feed agree on what "stale" means. Units: HK trading days after the
+# latest ccass.calendar row that CCASSdateDone may lag behind.
+#
+# The upstream chain publishes 22:00 UTC Mon-Fri and the loader pulls at 02:45
+# UTC, so one late upstream run costs one day; a long weekend costs nothing
+# (the calendar has no trading days in it). 4 absorbs one missed run plus a
+# public holiday without paging.
+
+[ccass]
+budget_trading_days = 4
+
+# Seasonal windows widen the budget when the upstream is known to run late or
+# not at all; each is inclusive, MM-DD, and may wrap the year end. None today;
+# the shape is here so adding one is a two-line reviewed commit, not code.
+# [[ccass.windows]]
+# start = "12-24"
+# end = "01-02"
+# budget_trading_days = 6

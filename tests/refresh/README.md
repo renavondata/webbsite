@@ -45,7 +45,7 @@ UPDATE enigma.log SET val='2025-10-10' WHERE name IN ('MBquotesDate','GEMquotesD
 
 | fixture flag | trips |
 |---|---|
-| `--poison` | bigchanges `abs(stkchg) > 100` sanity bound |
+| `--poison` | **not a negative since 2026-09**: the `abs(stkchg) > 100` row is quarantined (logged, excluded, counted in the ping), the other seven datasets load, exit 0 (#28) |
 | `--bad-counts` | staged rows != manifest rows |
 | `--pre-freeze` | a row dated on/before 2025-10-10 (the freeze guard) |
 | (delete a log row) | `enigma.log keys missing` pre-flight |

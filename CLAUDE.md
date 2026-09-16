@@ -39,7 +39,9 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
 - **Convergence:** `deploy/` is applied, not merely documented — `deploy/converge.sh` installs the
   tracked systemd units (including a Caddy drop-in) and the Caddyfile on every tick, so a hand-edit
   on the box is reverted within ~2 minutes. It runs as root, so **merge access to this repo is root
-  on the droplet.** See `deploy/README.md` and ADR 002.
+  on the droplet.** See `deploy/README.md`, ADR 002 and ADR 003 (which repo owns what:
+  webbsite = the app and its declarations, site-deploy = the deploy and the host, renavon = identity
+  and routing; `docs/operations/non-derivable-state.md` lists what is not a function of git).
 - **Monitoring:** the daily refresh loader pings a dead-man check when `HC_URL` is set; an external
   uptime probe is pending (renavon-monorepo#1612). `/health` is liveness, `/health?deep=1` is
   readiness (touches Postgres + the refresh watermark). Errors go to Sentry when `SENTRY_DSN` is

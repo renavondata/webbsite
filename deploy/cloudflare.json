@@ -1,0 +1,101 @@
+{
+  "_comment": "Desired Cloudflare state for webbsite.renavon.com, captured VERBATIM from live on 2026-09-16 so the first apply is a no-op and every rule keeps its id. This zone (renavon.com) is SHARED with other renavon hosts, so this file declares only the rules that reference this host (rule_scope) and never the zone's SSL mode or DNS: those are the zone owner's. Until the 2026-09 incident these rules existed only in the dashboard and in prose -- the load-bearing edge defence was versioned nowhere. Reconciled by site-deploy's cf-converge (dry-run by default; a root cf-converge@ unit holds CF_CONFIG_TOKEN, never gunicorn's env). The plan is renavon.com Free (5 WAF custom rules, 1 rate-limit rule); the fourth WAF slot and the single rate-limit rule are the constraints every change here works around until the Pro upgrade.",
+  "rule_scope": {
+    "host": "webbsite.renavon.com"
+  },
+  "cache_rules": [
+    {
+      "action": "set_cache_settings",
+      "action_parameters": {
+        "browser_ttl": {
+          "mode": "respect_origin"
+        },
+        "cache": true,
+        "edge_ttl": {
+          "default": 604800,
+          "mode": "override_origin"
+        }
+      },
+      "expression": "(http.host eq \"webbsite.renavon.com\" and starts_with(http.request.uri.path, \"/static/\"))",
+      "description": "webbsite static assets - 7 day edge cache",
+      "enabled": true
+    },
+    {
+      "action": "set_cache_settings",
+      "action_parameters": {
+        "browser_ttl": {
+          "mode": "respect_origin"
+        },
+        "cache": true,
+        "edge_ttl": {
+          "default": 86400,
+          "mode": "override_origin"
+        }
+      },
+      "expression": "(http.host eq \"webbsite.renavon.com\" and ends_with(http.request.uri.path, \"CSV.asp\"))",
+      "description": "webbsite CSV exports - 1 day edge cache",
+      "enabled": true
+    },
+    {
+      "action": "set_cache_settings",
+      "action_parameters": {
+        "browser_ttl": {
+          "mode": "respect_origin"
+        },
+        "cache": true,
+        "edge_ttl": {
+          "mode": "respect_origin"
+        }
+      },
+      "expression": "(http.host eq \"webbsite.renavon.com\")",
+      "description": "webbsite all pages - respect origin CDN-Cache-Control (long for historical)",
+      "enabled": true
+    }
+  ],
+  "waf_custom_rules": [
+    {
+      "action": "block",
+      "expression": "(http.host eq \"webbsite.renavon.com\" and (starts_with(http.request.uri.path, \"/ccass/\") or starts_with(http.request.uri.path, \"/dbpub/\")) and (http.referer eq \"https://webbsite.renavon.com\" or http.referer eq \"https://webbsite.renavon.com/\" or http.referer eq \"http://webbsite.renavon.com\" or http.referer eq \"http://webbsite.renavon.com/\") and http.request.uri.query ne \"\")",
+      "description": "webbsite: block forged bare-host Referer on /ccass + /dbpub deep URLs (distributed scraper signature)",
+      "enabled": true,
+      "_comment": "The rule that ended the 2026-09-11 flood: the distributed scraper sent a bare-host Referer (https://webbsite.renavon.com with no path) on every deep URL, which no browser does. Widened from /ccass/ to /dbpub/ on 2026-09-16 while the site was still 521ing; it took origin-bound requests from ~200/s to ~3/s."
+    },
+    {
+      "action": "block",
+      "expression": "(http.host eq \"webbsite.renavon.com\" and (lower(http.user_agent) contains \"semrushbot\" or lower(http.user_agent) contains \"ahrefsbot\" or lower(http.user_agent) contains \"mj12bot\" or lower(http.user_agent) contains \"dotbot\" or lower(http.user_agent) contains \"petalbot\" or lower(http.user_agent) contains \"yandexbot\" or lower(http.user_agent) contains \"baiduspider\" or lower(http.user_agent) contains \"bytespider\" or lower(http.user_agent) contains \"gptbot\" or lower(http.user_agent) contains \"claudebot\" or lower(http.user_agent) contains \"ccbot\" or lower(http.user_agent) contains \"amazonbot\" or lower(http.user_agent) contains \"applebot\" or lower(http.user_agent) contains \"facebookexternalhit\" or lower(http.user_agent) contains \"meta-externalagent\" or lower(http.user_agent) contains \"perplexitybot\" or lower(http.user_agent) contains \"diffbot\" or lower(http.user_agent) contains \"blexbot\"))",
+      "description": "webbsite: block aggressive SEO/AI scraper bots by user-agent",
+      "enabled": true
+    },
+    {
+      "action": "block",
+      "expression": "(http.host eq \"webbsite.renavon.com\" and starts_with(http.request.uri.path, \"/ccass/\") and http.request.uri.query ne \"\" and not (lower(http.user_agent) contains \"mozilla\" or lower(http.user_agent) contains \"googlebot\" or lower(http.user_agent) contains \"bingbot\"))",
+      "description": "webbsite: block deep /ccass URLs from non-browser user-agents",
+      "enabled": true
+    },
+    {
+      "action": "managed_challenge",
+      "expression": "(http.host eq \"webbsite.renavon.com\" and starts_with(http.request.uri.path, \"/ccass/\") and http.request.uri.query ne \"\" and len(http.request.headers[\"accept-language\"]) == 0)",
+      "description": "webbsite: managed challenge /ccass deep URLs missing accept-language header",
+      "enabled": true,
+      "_comment": "Challenges any /ccass/ deep request with no Accept-Language. Real browsers always send one; python-requests does not, which is why tests/check_all_routes.py sets it explicitly. Widen to /dbpub/ only if the /dbpub/ rate limit (Pro plan) proves insufficient."
+    }
+  ],
+  "rate_limit_rules": [
+    {
+      "action": "block",
+      "expression": "((http.host eq \"webbsite.renavon.com\" and starts_with(http.request.uri.path, \"/ccass/\")) or (http.host eq \"samples.renavon.com\"))",
+      "description": "webbsite ccass + samples.renavon.com bandwidth/scrape rate limit (Free-plan single rule)",
+      "enabled": true,
+      "ratelimit": {
+        "characteristics": [
+          "ip.src",
+          "cf.colo.id"
+        ],
+        "mitigation_timeout": 10,
+        "period": 10,
+        "requests_per_period": 30
+      },
+      "_comment": "SHARED with samples.renavon.com: the Free plan allows exactly one rate-limit rule per zone, so webbsite's /ccass/ limiter and renavon's samples limiter are one expression. Mentions another host, so under rule_scope this file reports it and does not touch it; on Pro, split it and add a /dbpub/ limiter (the flood's actual surface) here."
+    }
+  ]
+}

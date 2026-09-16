@@ -45,11 +45,18 @@ import logging
 import os
 import sys
 import tempfile
+import tomllib
 import urllib.request
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 FREEZE_DATE = "2025-10-10"  # the frozen-archive boundary; staged rows must be strictly after
+# deploy/freshness.toml: the trading-day budget CCASSdateDone may lag, shared
+# with /health?deep=1 (webbsite/freshness.py carries the same 20 lines; the
+# tests pin the two copies to identical answers).
+FRESHNESS_TOML = Path(__file__).resolve().parent.parent.parent / "deploy" / "freshness.toml"
+DEFAULT_BUDGET = 4
 
 log = logging.getLogger("webbsite-refresh")
 
@@ -308,16 +315,36 @@ def validate_staged(cur, target: Target) -> None:
         raise ValidationError(f"{target.dataset}: {n} duplicate PK groups")
 
     if target.dataset == "webbsite_ccass_bigchanges":
-        # Sanity bound, not a business rule: |stkchg| beyond 100x issued is
-        # parse corruption. (Values slightly over 1.0 are expected while the
-        # issued-shares series is seed-only — post-freeze issuance missing
-        # from the denominator — and self-heal as daily SDW captures land.)
-        cur.execute(f"SELECT count(*) FROM {staging} WHERE abs(stkchg) > 100")
-        if (n := cur.fetchone()[0]) > 0:
-            raise ValidationError(f"bigchanges: {n} rows with |stkchg| > 100")
         cur.execute(f"SELECT count(*) FROM {staging} WHERE abs(stkchg) > 1")
         if (n := cur.fetchone()[0]) > 0:
             log.warning("bigchanges: %d rows with |stkchg| > 100%% (seed-only denominator era)", n)
+
+
+def quarantine_bigchanges_outliers(cur) -> int:
+    """bigchanges only: drop staged rows with |stkchg| > 100 instead of aborting.
+
+    The bound is a sanity check, not a business rule: 100x the issued shares is
+    parse corruption upstream. Until 2026-09 it raised ValidationError, and on
+    2026-09-11 two such rows rolled back ~8.3M clean rows across the other seven
+    datasets (issue #28) -- a day of CCASS that HKEX's one-year lookback makes
+    unrecoverable if it is missed for long. Now the rows are logged with their
+    keys, excluded, counted into the healthcheck body, and left in the feed for
+    renavon to re-export corrected. Abort is reserved for what cannot be
+    isolated: PK duplicates, the freeze guard, a manifest that does not match.
+    """
+    cur.execute(
+        "SELECT issueid, partid, atdate, stkchg FROM stg_webbsite_ccass_bigchanges "
+        "WHERE abs(stkchg) > 100 ORDER BY abs(stkchg) DESC LIMIT 20"
+    )
+    sample = cur.fetchall()
+    cur.execute("DELETE FROM stg_webbsite_ccass_bigchanges WHERE abs(stkchg) > 100")
+    if cur.rowcount:
+        log.warning(
+            "bigchanges: quarantined %d rows with |stkchg| > 100 (first %d): %s",
+            cur.rowcount, len(sample),
+            "; ".join(f"issue {i} part {p} {d} stkchg={s}" for i, p, d, s in sample),
+        )
+    return cur.rowcount
 
 
 def quarantine_unknown_issueids(cur) -> int:
@@ -412,8 +439,32 @@ def analyze(conn, touched: list[str]) -> None:
     conn.commit()
 
 
-def freshness_ok(cur, ccass_done: str, budget_trading_days: int = 4) -> bool:
-    """Is CCASSdateDone within N trading days of the latest known trade date?"""
+def _in_window(today: date, start: str, end: str) -> bool:
+    s = (int(start[:2]), int(start[3:]))
+    e = (int(end[:2]), int(end[3:]))
+    t = (today.month, today.day)
+    return s <= t <= e if s <= e else (t >= s or t <= e)
+
+
+def budget_for(today: date, config: dict | None = None) -> int:
+    """Trading days CCASSdateDone may lag on `today` (deploy/freshness.toml).
+    Same function as webbsite/freshness.py, kept in step by tests/test_freshness.py."""
+    if config is None:
+        try:
+            config = tomllib.loads(FRESHNESS_TOML.read_text())
+        except (OSError, tomllib.TOMLDecodeError):
+            return DEFAULT_BUDGET
+    ccass = config.get("ccass", {})
+    for w in ccass.get("windows", []):
+        if _in_window(today, w["start"], w["end"]):
+            return int(w["budget_trading_days"])
+    return int(ccass.get("budget_trading_days", DEFAULT_BUDGET))
+
+
+def freshness_ok(cur, ccass_done: str, budget_trading_days: int | None = None) -> bool:
+    """Is CCASSdateDone within the budget of trading days of the latest known trade date?"""
+    if budget_trading_days is None:
+        budget_trading_days = budget_for(date.today())
     cur.execute(
         "SELECT count(*) FROM ccass.calendar WHERE tradedate > %s", (ccass_done,)
     )
@@ -473,12 +524,19 @@ def run(args: argparse.Namespace) -> int:
         with conn.cursor() as cur:
             watermarks = read_log_watermarks(cur)
             if not args.table and not needs_run(manifest, watermarks):
+                # "Nothing to load" is not "fresh": an upstream that stopped
+                # publishing leaves the manifest and the watermarks agreeing
+                # forever, and this branch pinged success every day regardless.
+                # A check the loader pings about itself cannot see a failure
+                # that leaves the loader exiting 0 -- unless it looks.
+                fresh = freshness_ok(cur, watermarks[LOG_CCASS])
                 log.info(
-                    "up to date (log: %s) — nothing to load",
+                    "up to date (log: %s) — nothing to load%s",
                     {k: watermarks[k] for k in (LOG_CCASS, LOG_MB, LOG_GEM)},
+                    "" if fresh else "; STALE: upstream has not advanced within the budget",
                 )
                 conn.rollback()
-                ping_healthcheck(True, "up to date")
+                ping_healthcheck(fresh, "up to date" + ("" if fresh else " — STALE beyond the trading-day budget"))
                 return 0
 
         with tempfile.TemporaryDirectory(prefix="webbsite-refresh-") as tmp:
@@ -494,6 +552,7 @@ def run(args: argparse.Namespace) -> int:
 
                 touched: list[str] = []
                 total_upserts: dict[str, int] = {}
+                quarantined = 0
                 for name, target in selected.items():
                     staged = stage_table(
                         cur, target, files[name], manifest["tables"][name]["rows"]
@@ -501,6 +560,10 @@ def run(args: argparse.Namespace) -> int:
                     validate_staged(cur, target)
                     if name == "webbsite_issuedshares":
                         staged -= quarantine_unknown_issueids(cur)
+                    if name == "webbsite_ccass_bigchanges":
+                        q = quarantine_bigchanges_outliers(cur)
+                        staged -= q
+                        quarantined += q
                     counts = upsert(cur, target, int(env("REFRESH_USERID", "0")))
                     total_upserts.update(counts)
                     touched.extend(t for t, _ in target.upserts)
@@ -534,6 +597,7 @@ def run(args: argparse.Namespace) -> int:
         ping_healthcheck(
             fresh,
             f"loaded; log={new_marks}"
+            + (f"; WARNING quarantined {quarantined} bigchanges rows (see journal)" if quarantined else "")
             + ("" if fresh else " — STALE beyond the trading-day budget"),
         )
         return 0

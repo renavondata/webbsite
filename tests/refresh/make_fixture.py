@@ -11,7 +11,8 @@ issuedshares path (and load fine everywhere else — only issuedshares carries
 the FK).
 
 Negatives:
-  --poison      absurd bigchanges stkchg (=250) -> loader must exit 1
+  --poison      absurd bigchanges stkchg (=250) -> loader quarantines that row,
+                loads the rest, exits 0 (was: abort everything; issue #28)
   --bad-counts  manifest rows off by one on quotes -> loader must exit 1
   --pre-freeze  one holdings row dated 2025-10-10 -> loader must exit 1
 

@@ -11,6 +11,7 @@ import logging.config
 import sys
 import uuid
 from .config import Config
+from . import freshness
 
 logger = logging.getLogger(__name__)
 
@@ -307,20 +308,22 @@ def create_app(config_class=Config):
 
             # Same freshness semantics as the loader's healthcheck gate
             # (scripts/refresh/refresh.py::freshness_ok): how many trading days
-            # have closed that we have not loaded CCASS for. Budget 4, so a
-            # long weekend or one late upstream run is not an alarm.
+            # have closed that we have not loaded CCASS for, against the budget
+            # both sides read from deploy/freshness.toml (4 today, so a long
+            # weekend or one late upstream run is not an alarm).
             behind = execute_scalar(
                 "SELECT count(*) FROM ccass.calendar WHERE tradedate > %s", (ccass_done,)
             )
             body["ccass_done"] = str(ccass_done)
             body["trading_days_behind"] = int(behind)
+            body["budget_trading_days"] = freshness.budget_for(_date.today())
         except Exception as exc:
             logger.exception("deep health check failed")
             # 500, not 503: the data being stale is a different fact from the
             # database being unreachable, and they want different pages.
             return {"status": "error", "deep": f"{type(exc).__name__}: {exc}"}, 500
 
-        if body["trading_days_behind"] > 4:
+        if body["trading_days_behind"] > body["budget_trading_days"]:
             body["status"] = "stale"
             return body, 503
         return body, 200
