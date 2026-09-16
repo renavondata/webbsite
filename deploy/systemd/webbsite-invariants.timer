@@ -1,0 +1,13 @@
+# Daily at 04:30 UTC: after both refresh slots (02:45, 06:45 is the retry --
+# the 04:30 run sees the day's first attempt) and before the HK working day
+# ends. The webbsite-invariants check is daily / grace 6h to match.
+[Unit]
+Description=Daily Webb-site box invariants
+
+[Timer]
+OnCalendar=*-*-* 04:30:00 UTC
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

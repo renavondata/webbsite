@@ -49,6 +49,8 @@ deploy/systemd/webbsite.service                  /etc/systemd/system/webbsite.se
 deploy/systemd/webbsite-refresh.service          /etc/systemd/system/webbsite-refresh.service
 deploy/systemd/webbsite-refresh.timer            /etc/systemd/system/webbsite-refresh.timer
 deploy/systemd/webbsite-refresh-failed.service   /etc/systemd/system/webbsite-refresh-failed.service
+deploy/systemd/webbsite-invariants.service       /etc/systemd/system/webbsite-invariants.service
+deploy/systemd/webbsite-invariants.timer         /etc/systemd/system/webbsite-invariants.timer
 deploy/systemd/caddy.service.d/override.conf     /etc/systemd/system/caddy.service.d/override.conf
 "
 
@@ -102,7 +104,27 @@ if [ -f "$CADDY_SRC" ] && ! cmp -s "$CADDY_SRC" "$CADDY_DST" 2>/dev/null; then
     changed_caddy=1
 fi
 
-[ -n "$DRY" ] && { log "dry run; units_changed=$changed_units caddy_changed=$changed_caddy"; exit $rc; }
+# --- PostgreSQL --------------------------------------------------------------
+# The tuning that used to live only in postgresql.auto.conf (hand ALTER SYSTEM)
+# is deploy/postgresql/conf.d/webbsite.conf, installed into the cluster's
+# conf.d. Convergence here is install + reload; a setting that needs a restart
+# is REPORTED, never restarted -- that is a person's call, a few seconds of
+# downtime, best taken after the 02:45 UTC refresh.
+PG_SRC="$REPO/deploy/postgresql/conf.d/webbsite.conf"
+PG_DIR=/etc/postgresql/17/main/conf.d
+PG_DST="$PG_DIR/webbsite.conf"
+changed_pg=0
+if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
+    if [ -n "$DRY" ]; then
+        log "would install deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
+    else
+        install -o postgres -g postgres -m 0644 "$PG_SRC" "$PG_DST" || { log "could not install $PG_DST"; rc=1; }
+        log "installed deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
+    fi
+    changed_pg=1
+fi
+
+[ -n "$DRY" ] && { log "dry run; units_changed=$changed_units caddy_changed=$changed_caddy pg_changed=$changed_pg"; exit $rc; }
 
 # --- apply -----------------------------------------------------------------
 if [ "$changed_units" = 1 ]; then
@@ -150,5 +172,31 @@ elif [ "$changed_caddy" = 1 ]; then
     log "caddy started with the new Caddyfile; no reload needed"
 fi
 
-[ "$changed_units$changed_caddy" = "00" ] || log "converge complete (units=$changed_units caddy=$changed_caddy)"
+# Postgres: make the tracked file authoritative, then reload. postgresql.auto.conf
+# (ALTER SYSTEM) outranks conf.d, so any key our file declares that auto.conf
+# still carries is RESET there -- once, on the tick that installs the file, and
+# again if anyone ALTER SYSTEMs it back. The extension is created when its
+# library is finally loaded (i.e. on the first tick after the restart).
+psql_pg() { runuser -u postgres -- psql -Atq -v ON_ERROR_STOP=1 "$@"; }
+if [ "$changed_pg" = 1 ] && id postgres >/dev/null 2>&1; then
+    for k in $(grep -oE '^[a-z_]+(\.[a-z_]+)?' "$PG_SRC"); do
+        if [ "$(psql_pg -c "SELECT 1 FROM pg_file_settings WHERE name = '$k' AND sourcefile LIKE '%postgresql.auto.conf'" 2>/dev/null)" = 1 ]; then
+            psql_pg -c "ALTER SYSTEM RESET $k" >/dev/null && log "postgres: reset $k in postgresql.auto.conf; conf.d is authoritative now"
+        fi
+    done
+    if systemctl reload postgresql@17-main; then
+        log "postgres reloaded"
+    else
+        log "postgres reload FAILED"; rc=1
+    fi
+    pending=$(psql_pg -c "SELECT string_agg(name, ', ') FROM pg_settings WHERE pending_restart" 2>/dev/null)
+    [ -n "$pending" ] && log "postgres: RESTART REQUIRED to apply: $pending (converge never restarts it)"
+fi
+if id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
+    psql_pg -d enigma -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements" >/dev/null 2>&1 \
+        && [ "$(psql_pg -d enigma -c "SELECT count(*) FROM pg_extension WHERE extname = 'pg_stat_statements'")" = 1 ] \
+        || true   # library not loaded yet (pre-restart): silent, the invariants job reports it
+fi
+
+[ "$changed_units$changed_caddy$changed_pg" = "000" ] || log "converge complete (units=$changed_units caddy=$changed_caddy pg=$changed_pg)"
 exit $rc

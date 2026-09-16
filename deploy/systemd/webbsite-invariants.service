@@ -1,0 +1,26 @@
+# Daily box invariants (scripts/assert_box.py): the tracked Postgres settings
+# and indexes are live, no restart is pending, disk has room, every declared
+# env name is present, every route still renders data, every hc.gfrm.in check
+# in deploy/checks.txt is armed. Reports to the webbsite-invariants check:
+# success, /fail with the failing assertions, or /fail + exit 2 when it could
+# not tell (BLIND is never a pass). Installed by deploy/converge.sh.
+#
+# Root: env-check.sh reads root-only files and the journal; the database is
+# reached with the app's own DSN from /etc/webbsite/env (pg_settings and
+# pg_indexes are readable by any role). Uses the app's venv interpreter
+# directly rather than `uv run`, which would try to sync a venv it does not own.
+[Unit]
+Description=Webb-site daily box invariants
+After=network-online.target postgresql.service webbsite.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/webbsite
+EnvironmentFile=/etc/webbsite/env
+EnvironmentFile=-/etc/webbsite/ops-env
+Environment=BASE_URL=http://127.0.0.1:8000
+ExecStart=/srv/webbsite/.venv/bin/python scripts/assert_box.py
+TimeoutStartSec=30min
+StandardOutput=journal
+StandardError=journal

@@ -26,17 +26,24 @@ import os
 import re
 import sys
 from urllib.parse import urlencode
-
-import requests
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 
 BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:8000").rstrip("/")
 TIMEOUT = int(os.environ.get("ROUTE_CHECK_TIMEOUT", "30"))
 
-# crawl_asp.py sys.exit()s at import if this isn't set; we only want its URL
-# constants, not its crawler, so satisfy the guard with a dummy value.
-os.environ.setdefault("BRIGHTDATA_UNBLOCKER_PROXY", "unused-by-this-script")
+# The route fixtures are pure data in route_fixtures.py (no requests, no proxy
+# guard), so this script runs on the box's app venv with only the stdlib.
 sys.path.insert(0, os.path.dirname(__file__))
-import crawl_asp as ca  # noqa: E402
+import route_fixtures as ca  # noqa: E402
+
+# Sent on every request. Through Cloudflare, a client with no Accept-Language
+# is challenged on /ccass/ (a WAF rule aimed at the 2026-09 scraper); the origin
+# does not care. Override with ACCEPT_LANGUAGE= if a run needs to look different.
+HEADERS = {
+    "User-Agent": "webbsite-route-check/1 (+deploy/README.md)",
+    "Accept-Language": os.environ.get("ACCEPT_LANGUAGE", "en-GB,en;q=0.8"),
+}
 
 # Deferred interactive features: every path under these must be 410 Gone.
 DEFERRED_PREFIXES = ("/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor")
@@ -147,9 +154,11 @@ def collect_targets():
 
 def probe(url):
     try:
-        r = requests.get(url, timeout=TIMEOUT)
-        return r.status_code, r.text
-    except requests.RequestException as e:
+        with urlopen(Request(url, headers=HEADERS), timeout=TIMEOUT) as r:  # noqa: S310
+            return r.status, r.read().decode("utf-8", "replace")
+    except HTTPError as e:
+        return e.code, e.read().decode("utf-8", "replace")
+    except (URLError, OSError) as e:
         return None, str(e)
 
 
