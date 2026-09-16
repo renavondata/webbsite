@@ -1,0 +1,35 @@
+# Environment names the box must (or may) carry, by file under /etc/webbsite/.
+# Names only -- values live on the box and in the operator's keyring, never here.
+# Checked by deploy/env-check.sh (presence, never content). Grades:
+#   required  absent => the box is misconfigured; env-check exits 1
+#   optional  absent => a documented degradation (usually "unmonitored")
+# Keep this honest in BOTH directions: env-check also reports names present on
+# the box that are not declared here, so a knob cannot exist only in /etc.
+#
+# file        NAME                    grade     read by
+env           DATABASE_URL            required  webbsite/config.py (the app's DSN)
+env           SECRET_KEY              required  webbsite/config.py
+env           DEPLOY_RELOAD           required  site-deploy auto-deploy.sh (reload verb)
+env           DEPLOY_UV_ARGS          required  site-deploy auto-deploy.sh
+env           CF_ZONE_ID              required  site-deploy cf-purge.sh (non-secret half)
+env           CF_CACHE_PURGE_TOKEN    required  site-deploy cf-purge.sh; unset = 30-day stale HTML after a deploy
+env           SENTRY_DSN              optional  webbsite/__init__.py; unset = errors go nowhere
+env           SENTRY_ENVIRONMENT      optional  webbsite/config.py (default: production)
+env           PROBE_URL               optional  site-deploy health-probe.sh; unset = THIS SITE IS UNPROBED
+env           HEALTHCHECKS_PROBE_URL  optional  site-deploy health-probe.sh (the webbsite-probe check)
+env           HEALTHCHECKS_DEPLOY_URL optional  site-deploy auto-deploy.sh heartbeat (the webbsite-deploy check)
+env           FLASK_ENV               optional  legacy; harmless
+env           PORT                    optional  legacy Render knob; the unit passes --bind explicitly
+refresh-env   DATABASE_URL            required  scripts/refresh/refresh.py (the webbsite_refresh role's DSN)
+refresh-env   R2_ENDPOINT             required  scripts/refresh/refresh.py
+refresh-env   R2_BUCKET               required  scripts/refresh/refresh.py
+refresh-env   R2_PREFIX               required  scripts/refresh/refresh.py
+refresh-env   R2_ACCESS_KEY_ID        required  scripts/refresh/refresh.py (read-only token)
+refresh-env   R2_SECRET_ACCESS_KEY    required  scripts/refresh/refresh.py
+refresh-env   REFRESH_USERID          required  scripts/refresh/refresh.py
+refresh-env   HC_URL                  required  scripts/refresh/refresh.py + webbsite-refresh*.service; unset = a loader that reports to nobody (2026-07-19..09-16)
+refresh-env   SENTRY_DSN              optional  scripts/refresh/refresh.py
+refresh-env   SENTRY_ENVIRONMENT      optional  scripts/refresh/refresh.py
+ops-env       HC_API_KEY              required  scripts/assert_box.py (read-only hc.gfrm.in API key: asserts the checks in checks.txt exist, are unpaused and have a channel)
+ops-env       HC_API_URL              optional  scripts/assert_box.py (default https://hc.gfrm.in/api/v3)
+ops-env       HC_INVARIANTS_URL       required  scripts/assert_box.py + webbsite-invariants.service (the webbsite-invariants check); unset = the invariants job reports to nobody
