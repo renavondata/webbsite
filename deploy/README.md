@@ -255,8 +255,15 @@ concurrency exceeded its 24 request slots, connections piled into gunicorn's
 then-2048-deep accept queue, and Caddy held a live proxy request for each one
 until it reached 4.7 GB RSS on an 8 GB box with no swap. The global OOM killer
 chose it. The distro unit had no `Restart=`, so it never came back, and nothing
-probed the site from outside. Cloudflare served 13.6M requests to a dead origin
-over the following 71 hours.
+probed the site from outside.
+
+The scrape did not stop. Over the 71 hours to 2026-09-16 the zone took 13.4M
+requests, of which **6.9M still reached the origin** and 521'd — 27 req/s
+average, peaking at 142 req/s. The rest were blocked at the edge by the
+`/ccass/` rules added after the incident, which is also why the origin-bound
+rate had fallen to 3–5 req/s by 16 Sept. Read zone-level request counts with
+care: most of that traffic never touches the origin, and the number that matters
+for capacity is the 521 (or 2xx) count, not the total.
 
 Fixed by `deploy/systemd/caddy.service.d/override.conf` (restart policy + memory
 cap), `dial_timeout` in the Caddyfile, a shallower gunicorn backlog, swap, and a
