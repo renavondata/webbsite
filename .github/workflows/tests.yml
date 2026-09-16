@@ -82,7 +82,8 @@ jobs:
           cp "$T"/good/* "$T/bad/"; sed -i '/^DATABASE_URL=/d' "$T/bad/env"; echo "ROGUE=1" >> "$T/bad/refresh-env"
           ETC="$T/good" deploy/env-check.sh
           ! ETC="$T/bad" deploy/env-check.sh
-          ETC="$T/good" MANIFEST=/nonexistent deploy/env-check.sh; [ $? -eq 2 ]
+          rc=0; ETC="$T/good" MANIFEST=/nonexistent deploy/env-check.sh || rc=$?
+          [ "$rc" -eq 2 ] || { echo "BLIND case: expected exit 2, got $rc"; exit 1; }
 
       - name: caddy validate deploy/Caddyfile
         run: |
