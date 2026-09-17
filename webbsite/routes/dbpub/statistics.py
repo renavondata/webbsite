@@ -1948,6 +1948,7 @@ def _gov_explorer(i, t, g, value_col, self_route):
     # Get current item details
     item_query = """
         SELECT
+            g.id,
             COALESCE(a.parentid, g.parentid) as parentid,
             COALESCE(a.txt, g.txt) as txt,
             g.txt as origtxt,
@@ -2915,7 +2916,10 @@ def advbyrole():
         from_year, to_year = to_year, from_year
 
     # Calculate days for CAG returns
-    days = round(years * 365.25, 0)
+    # round(x) (no ndigits) returns int in Python 3; round(x, 0) returns float,
+    # which renders as a numeric literal and breaks the enigma.cagretdays/
+    # cagreldays(integer, date, integer) overload lookup.
+    days = round(years * 365.25)
 
     # Helper function to find last trading date
     def last_trading(year):

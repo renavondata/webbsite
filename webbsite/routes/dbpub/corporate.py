@@ -531,12 +531,12 @@ def positions():
         "appdn": "apptDate DESC, name1",
         "resup": "resDate, name1",
         "resdn": "resDate DESC, name1",
-        "totup": "totRet, name1",
-        "totdn": "totRet DESC, name1",
-        "cagretup": "CAGret, name1",
-        "cagretdn": "CAGret DESC, name1",
-        "cagrelup": "CAGrel, name1",
-        "cagreldn": "CAGrel DESC, name1",
+        "totup": "tot_ret, name1",
+        "totdn": "tot_ret DESC, name1",
+        "cagretup": "cagr_ret, name1",
+        "cagretdn": "cagr_ret DESC, name1",
+        "cagrelup": "cagr_rel, name1",
+        "cagreldn": "cagr_rel DESC, name1",
     }
     order_by = order_by_map.get(sort_param, "name1, apptDate")
 

@@ -156,7 +156,7 @@ def status():
         stats['orgs'] = result[0]['count'] if result else 0
 
         # Count people
-        result = execute_query("SELECT COUNT(*) as count FROM enigma.people WHERE isPerson = TRUE")
+        result = execute_query("SELECT COUNT(*) as count FROM enigma.people")
         stats['people'] = result[0]['count'] if result else 0
 
         # Count current HK-listed companies

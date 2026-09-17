@@ -2040,7 +2040,7 @@ def custhist():
                             "holders": row["holders"],
                             "shares": row["shares"],
                             "stake": (
-                                holding / row["shares"]
+                                float(holding) / row["shares"]
                                 if row["shares"] and row["shares"] > 0
                                 else None
                             ),

@@ -51,8 +51,14 @@ $$;
 -- Function: orgName(personID, date)
 -- Get organization name as it was at a specific date
 -- Looks up old names from namechanges table, falls back to current name
+--
+-- personID is BIGINT to match enigma.organisations.personid; an INT overload
+-- previously installed here couldn't resolve calls with bigint arguments
+-- (company/orgid columns), raising "function ... does not exist".
+DROP FUNCTION IF EXISTS enigma.orgName(INT, DATE);
+
 CREATE OR REPLACE FUNCTION enigma.orgName(
-    p INT,
+    p BIGINT,
     d DATE
 )
 RETURNS VARCHAR(255)
