@@ -137,6 +137,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      # fetch-depth: 0 -- a shallow checkout only has HEAD, so git can't prove
+      # the push is a fast-forward and rejects it ("fetch first") even when it
+      # trivially is; this bit every merge until traced (2026-09-17).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - name: fast-forward ci-green
         run: git push origin "HEAD:refs/heads/ci-green"
