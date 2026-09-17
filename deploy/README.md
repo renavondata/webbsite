@@ -44,7 +44,7 @@ deploy/
   site.toml                               # site-deploy knobs, reviewable here
   required-env.txt                        # every env NAME the box must/may carry, by file
   env-check.sh                            # asserts required-env.txt against /etc/webbsite (names only)
-  checks.txt                              # the hc.gfrm.in checks this deployment expects
+  checks.txt                              # the monitoring checks this deployment expects
   README.md
 ```
 Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
@@ -137,7 +137,7 @@ R2_SECRET_ACCESS_KEY=...
 R2_BUCKET=hkdata
 R2_PREFIX=webbsite-refresh
 REFRESH_USERID=<chosen above>
-HC_URL=https://hc.gfrm.in/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
+HC_URL=https://<your-healthchecks-host>/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
 ```
 The R2 token must be **Object Read only**, scoped to the `hkdata` bucket (Cloudflare
 dashboard → R2 → Manage API Tokens). Never reuse a write-capable key here.
@@ -160,10 +160,10 @@ sudo -u webbsite sh -c 'cd /srv/webbsite && set -a && . /etc/webbsite/refresh-en
 returns early when it is unset, so an unset value is a loader that runs every day
 reporting to nobody — which is what it did from go-live on 2026-07-19 until it was
 noticed and set on 2026-09-16 while investigating an unrelated outage (the
-`webbsite-refresh` check on hc.gfrm.in, tag `dataguru`, grace 6h). A missing
-dead-man does not fail; it just never speaks, and nothing distinguishes that from
-health — check `hc.gfrm.in`'s `dataguru-checks-armed` sweep, not just this file, if
-you're auditing whether monitoring actually exists.
+`webbsite-refresh` check on the operator's Healthchecks instance, tag `dataguru`,
+grace 6h). A missing dead-man does not fail; it just never speaks, and nothing
+distinguishes that from health — check that instance's own paused-check sweep, not
+just this file, if you're auditing whether monitoring actually exists.
 
 **Crash before the ping:** `webbsite-refresh.service` carries
 `OnFailure=webbsite-refresh-failed.service`, which posts the loader's last 60 journal lines to
@@ -174,7 +174,7 @@ when `HC_URL` is unset. That closes the "unit exited 1 and nothing announced it"
 **Env names:** `deploy/required-env.txt` lists every name each `/etc/webbsite/*` file must
 (`required`) or may (`optional`) carry, and what its absence costs; `sudo deploy/env-check.sh`
 asserts it in both directions (a required name missing, or a name on the box nobody declared) and
-never reads a value. `deploy/checks.txt` is the matching inventory of hc.gfrm.in checks.
+never reads a value. `deploy/checks.txt` is the matching inventory of monitoring checks.
 
 **Error reporting:** `SENTRY_DSN` (optional, in both `/etc/webbsite/env` and
 `/etc/webbsite/refresh-env`; `SENTRY_ENVIRONMENT` defaults to `production`) turns on
