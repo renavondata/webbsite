@@ -33,7 +33,7 @@ Concretely:
 
 | Layer | Owns | Examples |
 |---|---|---|
-| renavon (private) | identity and routing | hc.gfrm.in checks and the `dataguru` sweep, the external probe's vantage (renavon-monorepo#1612), the Sentry org, the R2 buckets and their tokens, alert→issue triage |
+| renavon (private) | identity and routing | the operator's monitoring checks and the `dataguru` sweep, the external probe's vantage (renavon-monorepo#1612), the Sentry org, the R2 buckets and their tokens, alert→issue triage |
 | site-deploy (public, generic) | the deploy and the host | the poller and its heartbeat, the self-probe timer, host convergence (swap, journald, needrestart, Cloudflare ranges), the backup timer, the Cloudflare reconciler, the `deploy_ref` gate |
 | webbsite (public, app) | the app and its declarations | code, units, Caddyfile, `cloudflare.json`, `postgresql/conf.d`, `required-env.txt`, `checks.txt`, `freshness.toml`, the invariants job, tests and CI |
 | the box (`/etc/webbsite/*`) | values | ping URLs, DSN, tokens: opaque capabilities in root-only files whose **names** the public repo declares |

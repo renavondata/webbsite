@@ -14,14 +14,14 @@ missing gets added here, not fixed by hand on the box.
 | File | Names | Record | Restore |
 |---|---|---|---|
 | `env` (root:webbsite 0640) | see `deploy/required-env.txt` `env` rows: DB DSN, `SECRET_KEY`, deploy knobs, CF purge token + zone id, `SENTRY_DSN`, probe/heartbeat URLs | operator keyring (`secret-tool`), per-name | write the file; `sudo deploy/env-check.sh` until clean |
-| `refresh-env` (root:root 0600) | `refresh-env` rows: loader DSN (`webbsite_refresh` role), R2 read-only token, `HC_URL`, `SENTRY_DSN` | keyring `WEBBSITE_REFRESH_R2_*`; hc.gfrm.in for the ping URL | same |
+| `refresh-env` (root:root 0600) | `refresh-env` rows: loader DSN (`webbsite_refresh` role), R2 read-only token, `HC_URL`, `SENTRY_DSN` | keyring `WEBBSITE_REFRESH_R2_*`; the operator's monitoring instance for the ping URL | same |
 | `ops-env` (root:root 0600) | `HC_API_KEY`, `HC_INVARIANTS_URL` | keyring `HC_SELFHOST_API_KEY` | same |
 | `cf-env`, `backup-env` (root:root 0600) | `CF_CONFIG_TOKEN`; the backup writer token + age recipient (Phases 4–5) | keyring | same |
 
 `deploy/env-check.sh` asserts every declared name is present and no undeclared
 name exists; the daily invariants job runs it.
 
-## 2. hc.gfrm.in — the checks themselves
+## 2. The operator's monitoring instance — the checks themselves
 
 - **Enumerate:** `deploy/checks.txt` (names, sizing, status); live list via the
   API with `HC_API_KEY`.
