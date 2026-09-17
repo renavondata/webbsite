@@ -36,6 +36,8 @@ deploy/
   systemd/webbsite-refresh.service        # daily R2 -> Postgres loader (oneshot)
   systemd/webbsite-refresh.timer          # fires the loader 02:45 + 06:45 UTC
   systemd/webbsite-refresh-failed.service # OnFailure= hook: /fail ping with the journal tail
+  systemd/webbsite-invariants.{service,timer} # daily 04:30 UTC: scripts/assert_box.py
+  postgresql/conf.d/webbsite.conf         # Postgres tuning, installed into the cluster's conf.d
   systemd/caddy.service.d/override.conf   # Restart= + memory cap for the proxy
   Caddyfile                               # /etc/caddy/Caddyfile
   converge.sh                             # installs all of the above on every deploy tick (root)
@@ -219,21 +221,42 @@ archived alongside the pg_dump at `r2:hkdata/webbsite-backup/asp_cache-ground-tr
 It is git-ignored, not committed. Restore it under `tests/ground_truth/` to re-run
 `tests/compare_asp_flask.py`.
 
-## Performance / Postgres tuning
-The tuning in step 4 below is applied via `ALTER SYSTEM` (persisted to
-`postgresql.auto.conf`). **`shared_buffers` only takes effect after a full
-Postgres restart** — a reload is not enough — so confirm the live value rather
-than trusting the config:
+## Postgres as code
+
+`deploy/postgresql/conf.d/webbsite.conf` is the tuning (plus `pg_stat_statements`,
+`track_io_timing`, a 2 s slow-statement log). `converge.sh` installs it into
+`/etc/postgresql/17/main/conf.d/`, **resets any key it declares that
+`postgresql.auto.conf` still carries** (auto.conf outranks conf.d, and the May 2026
+bootstrap wrote everything there with `ALTER SYSTEM`), reloads, and reports -- never
+performs -- a pending restart. `shared_buffers` and `shared_preload_libraries` need one:
 ```bash
-sudo -u postgres psql -tAc "SHOW shared_buffers;"          # expect 2GB, not 128MB
-sudo -u postgres psql -tAc "SELECT name, pending_restart FROM pg_settings WHERE pending_restart;"
-# if shared_buffers is still the 128MB default, it never restarted:
-sudo -u postgres psql -tAc "ALTER SYSTEM SET shared_buffers = '2GB';"
-sudo -u postgres psql -tAc "ALTER SYSTEM SET effective_cache_size = '6GB';"
-systemctl restart postgresql && systemctl restart webbsite
+sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC refresh
 ```
-The data is static, so this is a one-time correction. `vmtouch /var/lib/postgresql/17/main`
-shows how much of the DB is resident; the CCASS working set should stay warm.
+`database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
+any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`).
+
+**Daily invariants:** `webbsite-invariants.timer` (04:30 UTC) runs `scripts/assert_box.py`
+as root and pings `HC_INVARIANTS_URL` (the `webbsite-invariants` check): every conf.d line
+is the live value, nothing pending a restart, `pg_stat_statements` installed, every index
+present, disk under 80 %, `env-check.sh` clean, every route still renders data
+(`tests/check_all_routes.py` against the origin), and every `live` check in `checks.txt`
+exists on the operator's monitoring instance, unpaused, with a channel (needs `HC_API_KEY`
+and `HC_API_URL` in `/etc/webbsite/ops-env`). Exit 2 = could not tell = `/fail`, never a
+pass. Run it by hand:
+`sudo systemctl start webbsite-invariants` then `journalctl -u webbsite-invariants`.
+
+**Measure before resizing:** `sudo -u postgres /srv/webbsite/.venv/bin/python
+scripts/pg_report.py` -- top statements by total and mean time, I/O share, per-table
+cache-hit ratio, temp spills, seq scans on big tables. Two weeks of that decides whether
+the 8 GB box needs to grow; the plan says measure first.
+
+## Performance / Postgres tuning (history)
+Until 2026-09 the tuning was applied by hand with `ALTER SYSTEM` (persisted to
+`postgresql.auto.conf`) and verified with a checklist. That is superseded by the
+conf.d file above: **do not `ALTER SYSTEM` on this box** -- converge resets any key the
+tracked file declares, and the daily invariants job reports the drift. `vmtouch
+/var/lib/postgresql/17/main` still shows how much of the DB is resident; the CCASS working
+set should stay warm.
 
 ## Move to a dedicated domain (when decided)
 The app is domain-agnostic: canonical/OG URLs, the XML sitemap, and the Google

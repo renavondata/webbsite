@@ -8,6 +8,7 @@ from datetime import datetime, date as _date
 import time
 import logging
 import logging.config
+import sys
 import uuid
 from .config import Config
 
@@ -81,6 +82,27 @@ ROBOTS_DISALLOW = (
 )
 
 
+class _LiveStderrHandler(logging.StreamHandler):
+    """A StreamHandler that looks up sys.stderr at emit time, not at config time.
+
+    Test runners (pytest's capture) swap sys.stderr per test and close the old
+    one; a handler that captured the object at startup then raises "Logging
+    error" from the atexit engine-dispose line. Production never notices the
+    difference, and the tests stop printing a spurious traceback.
+    """
+
+    def __init__(self):
+        super().__init__(stream=None)
+
+    @property
+    def stream(self):
+        return sys.stderr
+
+    @stream.setter
+    def stream(self, value):  # StreamHandler.__init__ assigns it; ignore.
+        pass
+
+
 def _configure_logging(app):
     """One explicit logging config, applied before anything logs.
 
@@ -98,11 +120,7 @@ def _configure_logging(app):
             "plain": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
         },
         "handlers": {
-            "stderr": {
-                "class": "logging.StreamHandler",
-                "formatter": "plain",
-                "stream": "ext://sys.stderr",
-            },
+            "stderr": {"()": _LiveStderrHandler, "formatter": "plain"},
         },
         "loggers": {
             "webbsite": {"level": level, "handlers": ["stderr"], "propagate": False},
