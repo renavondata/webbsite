@@ -135,7 +135,10 @@ def checks_verdict(expected: list[dict[str, str]], live: list[dict]) -> list[str
             continue
         if c.get("status") == "paused":
             problems.append(f"check {row['name']}: PAUSED (pings are accepted and discarded)")
-        if not c.get("channels"):
+        # A read-only hc.gfrm.in API key omits `channels` from the response entirely
+        # (rather than returning it empty), so its absence means "cannot tell", not
+        # "none assigned" -- only flag the field when the API actually reported it.
+        if "channels" in c and not c["channels"]:
             problems.append(f"check {row['name']}: no notification channel (its alarm goes nowhere)")
     return problems
 
