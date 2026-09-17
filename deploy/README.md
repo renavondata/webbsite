@@ -242,6 +242,15 @@ sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC 
 `database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
 any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`).
 
+**The invariants job's DSN needs one extra grant.** A handful of GUCs, including
+`shared_preload_libraries`, are hidden from `pg_settings` (and `SHOW`) for any role that
+isn't a member of `pg_read_all_settings` -- without it the drift check reads a live,
+correctly-set value as `(unknown to the server; extension not loaded yet?)`. Apply after
+any restore, alongside the `webbsite_refresh` grants below:
+```sql
+GRANT pg_read_all_settings TO webbsite;
+```
+
 **Daily invariants:** `webbsite-invariants.timer` (04:30 UTC) runs `scripts/assert_box.py`
 as root and pings `HC_INVARIANTS_URL` (the `webbsite-invariants` check): every conf.d line
 is the live value, nothing pending a restart, `pg_stat_statements` installed, every index

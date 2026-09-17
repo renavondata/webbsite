@@ -14,7 +14,7 @@
 webbsite-refresh    | cron   | daily              | 6h   | live    | webbsite-refresh.service via HC_URL (+ -failed.service on failure)
 webbsite-probe      | simple | 300s               | 600s | pending | site-probe@webbsite.timer (site-deploy); pending that toolkit
 webbsite-deploy     | simple | 600s               | 900s | pending | site-deploy@webbsite.service heartbeat; pending that toolkit
-webbsite-invariants | cron   | daily 04:30 UTC    | 6h   | pending | webbsite-invariants.timer via HC_INVARIANTS_URL; arm after the unit lands
+webbsite-invariants | cron   | daily 04:30 UTC    | 6h   | live    | webbsite-invariants.timer via HC_INVARIANTS_URL; armed 2026-09-17
 webbsite-cf-drift   | cron   | daily              | 6h   | planned | cf-drift@webbsite.timer (Phase 4)
 webbsite-backup     | cron   | weekly Sun 03:30   | 1d   | planned | site-backup@webbsite.timer (Phase 5)
 #
