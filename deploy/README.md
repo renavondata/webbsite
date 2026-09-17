@@ -42,7 +42,7 @@ deploy/
   site.toml                               # site-deploy knobs, reviewable here
   required-env.txt                        # every env NAME the box must/may carry, by file
   env-check.sh                            # asserts required-env.txt against /etc/webbsite (names only)
-  checks.txt                              # the hc.gfrm.in checks this deployment expects
+  checks.txt                              # the monitoring checks this deployment expects
   README.md
 ```
 Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
@@ -172,7 +172,7 @@ when `HC_URL` is unset. That closes the "unit exited 1 and nothing announced it"
 **Env names:** `deploy/required-env.txt` lists every name each `/etc/webbsite/*` file must
 (`required`) or may (`optional`) carry, and what its absence costs; `sudo deploy/env-check.sh`
 asserts it in both directions (a required name missing, or a name on the box nobody declared) and
-never reads a value. `deploy/checks.txt` is the matching inventory of hc.gfrm.in checks.
+never reads a value. `deploy/checks.txt` is the matching inventory of monitoring checks.
 
 **Error reporting:** `SENTRY_DSN` (optional, in both `/etc/webbsite/env` and
 `/etc/webbsite/refresh-env`; `SENTRY_ENVIRONMENT` defaults to `production`) turns on
