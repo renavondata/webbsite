@@ -74,6 +74,9 @@ def run():
     check("verdict: no channel flagged", ab.checks_verdict([{"name": "a", "status": "live"}],
           [{"name": "a", "status": "up", "channels": ""}]),
           ["check a: no notification channel (its alarm goes nowhere)"])
+    check("verdict: channels key absent (read-only API key) not asserted",
+          ab.checks_verdict([{"name": "a", "status": "live"}], [{"name": "a", "status": "up"}]),
+          [])
 
     if _failures:
         print("\nFAILED:")
