@@ -1,12 +1,14 @@
-# hc.gfrm.in checks this deployment expects to exist. Names and sizing only; the
-# ping URLs are capabilities held in /etc/webbsite/* (see required-env.txt).
-# All tagged `dataguru webbsite`, all on the shared email channel, each
-# bootstrap-pinged once before its timer is armed (or the first run is a
-# spurious DOWN). The timer cadence and the check's timeout/grace are ONE
-# decision: change one, change both.
+# Healthchecks-style checks this deployment expects to exist on the operator's
+# monitoring instance (a self-hosted Healthchecks-compatible service; its
+# hostname is operator infrastructure, not part of this public repo). Names
+# and sizing only; the ping URLs are capabilities held in /etc/webbsite/*
+# (see required-env.txt). All tagged `dataguru webbsite`, all on the shared
+# email channel, each bootstrap-pinged once before its timer is armed (or the
+# first run is a spurious DOWN). The timer cadence and the check's
+# timeout/grace are ONE decision: change one, change both.
 #
 # Pipe-delimited so scripts/assert_box.py can read it: a check whose status is
-# `live` must exist on hc.gfrm.in, be unpaused, and have a channel.
+# `live` must exist on the monitoring instance, be unpaused, and have a channel.
 #
 # name | kind | timeout or schedule | grace | status | pinged by
 webbsite-refresh    | cron   | daily              | 6h   | live    | webbsite-refresh.service via HC_URL (+ -failed.service on failure)
@@ -16,8 +18,9 @@ webbsite-invariants | cron   | daily 04:30 UTC    | 6h   | pending | webbsite-in
 webbsite-cf-drift   | cron   | daily              | 6h   | planned | cf-drift@webbsite.timer (Phase 4)
 webbsite-backup     | cron   | weekly Sun 03:30   | 1d   | planned | site-backup@webbsite.timer (Phase 5)
 #
-# Composition (borrowed from the fleet): the instance canary asks "can hc.gfrm.in
-# still ALERT?"; its checks-armed sweep asks "is each dataguru check ARMED (not
-# paused)?"; these dead-men ask "did the job RUN?". Each is blind to the others.
+# Composition (borrowed from the fleet): the instance canary asks "can the
+# monitoring instance still ALERT?"; its checks-armed sweep asks "is each
+# dataguru check ARMED (not paused)?"; these dead-men ask "did the job RUN?".
+# Each is blind to the others.
 # A stale upstream feed pages twice by design: /health?deep=1 (probe) and the
 # loader's own /fail (refresh) see the same fact from two vantages.

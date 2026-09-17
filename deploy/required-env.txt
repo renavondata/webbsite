@@ -30,6 +30,6 @@ refresh-env   REFRESH_USERID          required  scripts/refresh/refresh.py
 refresh-env   HC_URL                  required  scripts/refresh/refresh.py + webbsite-refresh*.service; unset = a loader that reports to nobody (2026-07-19..09-16)
 refresh-env   SENTRY_DSN              optional  scripts/refresh/refresh.py
 refresh-env   SENTRY_ENVIRONMENT      optional  scripts/refresh/refresh.py
-ops-env       HC_API_KEY              required  scripts/assert_box.py (read-only hc.gfrm.in API key: asserts the checks in checks.txt exist, are unpaused and have a channel)
-ops-env       HC_API_URL              optional  scripts/assert_box.py (default https://hc.gfrm.in/api/v3)
+ops-env       HC_API_KEY              required  scripts/assert_box.py (read-only Healthchecks API key: asserts the checks in checks.txt exist, are unpaused and have a channel)
+ops-env       HC_API_URL              required  scripts/assert_box.py (the operator's Healthchecks-compatible API base URL; no default, since a default would bake operator infrastructure into this public repo)
 ops-env       HC_INVARIANTS_URL       required  scripts/assert_box.py + webbsite-invariants.service (the webbsite-invariants check); unset = the invariants job reports to nobody

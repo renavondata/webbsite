@@ -12,8 +12,8 @@ Asserts the things a test suite cannot see and a deploy does not check:
   backup     /var/lib/webbsite/backup-last-success is younger than 8 days,
              once /etc/webbsite/backup-env exists (Phase 5)
   routes     tests/check_all_routes.py against the origin renders data on every page
-  checks     every check in deploy/checks.txt marked `live` exists on hc.gfrm.in,
-             is not paused, and has a notification channel
+  checks     every check in deploy/checks.txt marked `live` exists on the operator's
+             Healthchecks instance, is not paused, and has a notification channel
 
 Exit 0 clean, 1 when any assertion fails, 2 when one could not be evaluated
 (BLIND -- never a pass; a verifier that fails silently manufactures a green you
@@ -24,8 +24,10 @@ printed.
 Environment (from /etc/webbsite/env and /etc/webbsite/ops-env via the unit):
   DATABASE_URL       the app's DSN; pg_settings/pg_indexes are readable by any role
   BASE_URL           origin for the route check (default http://127.0.0.1:8000)
-  HC_API_KEY         read-only hc.gfrm.in API key (checks assertion; unset = BLIND)
-  HC_API_URL         default https://hc.gfrm.in/api/v3
+  HC_API_KEY         read-only Healthchecks API key (checks assertion; unset = BLIND)
+  HC_API_URL         the operator's Healthchecks-compatible API base URL (no default --
+                     a default would bake operator infrastructure into this public repo;
+                     unset = BLIND, same as HC_API_KEY)
   HC_INVARIANTS_URL  this job's own dead-man ping URL
 Stdlib + psycopg2 only, so it runs on the app's own venv interpreter.
 """
@@ -135,7 +137,7 @@ def checks_verdict(expected: list[dict[str, str]], live: list[dict]) -> list[str
             continue
         if c.get("status") == "paused":
             problems.append(f"check {row['name']}: PAUSED (pings are accepted and discarded)")
-        # A read-only hc.gfrm.in API key omits `channels` from the response entirely
+        # A read-only Healthchecks API key omits `channels` from the response entirely
         # (rather than returning it empty), so its absence means "cannot tell", not
         # "none assigned" -- only flag the field when the API actually reported it.
         if "channels" in c and not c["channels"]:
@@ -267,7 +269,11 @@ def assert_checks(rep: Report):
     if not key:
         rep.blind("checks: HC_API_KEY unset; cannot see whether the alarms are armed")
         return
-    base = os.environ.get("HC_API_URL", "https://hc.gfrm.in/api/v3").rstrip("/")
+    base = os.environ.get("HC_API_URL")
+    if not base:
+        rep.blind("checks: HC_API_URL unset; cannot see whether the alarms are armed")
+        return
+    base = base.rstrip("/")
     try:
         req = urllib.request.Request(f"{base}/checks/", headers={"X-Api-Key": key})
         with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310

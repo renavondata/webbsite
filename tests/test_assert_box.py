@@ -6,7 +6,7 @@
 The invariants job runs as root on the droplet once a day; what can be pinned
 here is the logic that decides "drift" and "armed": the setting normaliser
 (conf-file spelling vs pg_settings units), the three parsers, and the verdict
-over hc.gfrm.in's check list. Everything I/O-shaped stays in the script.
+over the monitoring instance's check list. Everything I/O-shaped stays in the script.
 """
 
 import os
