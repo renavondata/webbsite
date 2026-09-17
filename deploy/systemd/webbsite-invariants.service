@@ -1,7 +1,8 @@
 # Daily box invariants (scripts/assert_box.py): the tracked Postgres settings
 # and indexes are live, no restart is pending, disk has room, every declared
-# env name is present, every route still renders data, every hc.gfrm.in check
-# in deploy/checks.txt is armed. Reports to the webbsite-invariants check:
+# env name is present, every route still renders data, every check in
+# deploy/checks.txt is armed on the operator's monitoring instance. Reports
+# to the webbsite-invariants check:
 # success, /fail with the failing assertions, or /fail + exit 2 when it could
 # not tell (BLIND is never a pass). Installed by deploy/converge.sh.
 #

@@ -240,8 +240,9 @@ as root and pings `HC_INVARIANTS_URL` (the `webbsite-invariants` check): every c
 is the live value, nothing pending a restart, `pg_stat_statements` installed, every index
 present, disk under 80 %, `env-check.sh` clean, every route still renders data
 (`tests/check_all_routes.py` against the origin), and every `live` check in `checks.txt`
-exists on hc.gfrm.in unpaused with a channel (needs `HC_API_KEY` in
-`/etc/webbsite/ops-env`). Exit 2 = could not tell = `/fail`, never a pass. Run it by hand:
+exists on the operator's monitoring instance, unpaused, with a channel (needs `HC_API_KEY`
+and `HC_API_URL` in `/etc/webbsite/ops-env`). Exit 2 = could not tell = `/fail`, never a
+pass. Run it by hand:
 `sudo systemctl start webbsite-invariants` then `journalctl -u webbsite-invariants`.
 
 **Measure before resizing:** `sudo -u postgres /srv/webbsite/.venv/bin/python
