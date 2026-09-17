@@ -45,6 +45,9 @@ deploy/
   required-env.txt                        # every env NAME the box must/may carry, by file
   env-check.sh                            # asserts required-env.txt against /etc/webbsite (names only)
   checks.txt                              # the monitoring checks this deployment expects
+  cloudflare.json                         # the zone rules that mention this host (reconciled by site-deploy)
+  freshness.toml                          # the CCASS staleness budget, shared by the loader and /health?deep=1
+  backup-producer.sh                      # pg_dump to stdout for site-deploy's backup timer
   README.md
 ```
 Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
@@ -189,11 +192,15 @@ carries an `X-Request-Id` (minted by Caddy, `deploy/Caddyfile`; echoed by the ap
 last field of gunicorn's access log; a Sentry tag), so one string joins the Caddy
 access log (`/var/log/caddy/access.log`, JSON), the journal, and an event.
 
-The loader pings `HC_URL` on success **only while fresh**
-(`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and
-`/fail` otherwise — so a silently-wedged upstream trips the healthcheck even
-though the loader itself exits 0. Exit codes: 0 loaded/up-to-date, 1 validation
-(nothing committed), 2 infrastructure.
+The loader pings `HC_URL` on success **only while fresh** (`CCASSdateDone` within
+the trading-day budget in `deploy/freshness.toml`, 4 today, the same budget
+`/health?deep=1` uses) and `/fail` otherwise — including on the "up to date, nothing
+to load" path, so an upstream that silently stops publishing pages even though the
+loader exits 0 every day. Exit codes: 0 loaded/up-to-date, 1 validation (nothing
+committed), 2 infrastructure/BLIND. A bigchanges row with `|stkchg| > 100` no longer
+aborts the day (issue #28): it is quarantined — logged with its keys, excluded,
+counted in the success ping's body — and the other datasets load; abort is reserved
+for PK duplicates, the freeze guard and a manifest that does not match.
 
 **Corrections / rollback:** renavon re-exports and the loader re-applies
 (idempotent upserts). Row *retraction* is admin-only SQL by design — the loader

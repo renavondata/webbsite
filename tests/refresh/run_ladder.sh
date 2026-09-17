@@ -6,8 +6,10 @@
 # Creates (dropping first) the fixture database enigma_pg_refreshtest, then:
 #   1. role parity: DELETE / TRUNCATE / DROP must all be denied to webbsite_refresh
 #   2. happy path: --dry-run (rollback), real load (commit), rerun ("up to date")
-#   3. negatives: --poison, --bad-counts, --pre-freeze, missing log key -- each
-#      must exit 1 and leave the watermarks and row counts untouched
+#   3. quarantine: --poison (one bigchanges row with |stkchg| > 100) must exit 0,
+#      load the other seven datasets, and leave that row out
+#   4. negatives: --bad-counts, --pre-freeze, missing log key -- each must exit 1
+#      and leave the watermarks and row counts untouched
 # Any deviation exits non-zero with the step named. Nothing here touches R2 or
 # the droplet; HC_URL is unset so the loader's ping is a no-op.
 set -euo pipefail
@@ -58,8 +60,18 @@ loader --source "$FIX/good" || fail "rerun exit $?"
 echo "  quarantine: $(psql -Atq -d "$DB" -c "SELECT count(*) FROM enigma.issuedshares WHERE issueid = 9000001") row(s) with the minted id in issuedshares (want 0)"
 [ "$(psql -Atq -d "$DB" -c "SELECT count(*) FROM enigma.issuedshares WHERE issueid = 9000001")" = 0 ] || fail "minted issueid was not quarantined"
 
+step "quarantine: --poison loads everything except the outlier row"
+reset_watermarks
+fixture "$FIX/poison" --poison >/dev/null
+before_big=$(psql -Atq -d "$DB" -c "SELECT count(*) FROM ccass.bigchanges WHERE abs(stkchg) > 100")
+loader --source "$FIX/poison" 2> "$FIX/poison.log" || fail "--poison: expected exit 0, got $?"
+grep -q "quarantined 1 rows" "$FIX/poison.log" || fail "--poison: no quarantine line in the log"
+[ "$(psql -Atq -d "$DB" -c "SELECT count(*) FROM ccass.bigchanges WHERE abs(stkchg) > 100")" = "$before_big" ] || fail "--poison: outlier row was loaded"
+[ "$(watermark)" != "2025-10-10" ] || fail "--poison: the clean datasets were not loaded"
+echo "  --poison: exit 0, outlier quarantined, the rest loaded"
+
 step "negatives: each exits 1 with nothing committed"
-for flag in --poison --bad-counts --pre-freeze; do
+for flag in --bad-counts --pre-freeze; do
     reset_watermarks
     before=$(rows)
     fixture "$FIX/neg$flag" "$flag" >/dev/null
