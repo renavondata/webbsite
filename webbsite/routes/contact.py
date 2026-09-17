@@ -4,9 +4,8 @@ Full implementation of contact form
 """
 
 from flask import Blueprint, render_template, request, current_app
-from datetime import datetime, date
-from webbsite.db import execute_query, execute_scalar
-from webbsite.asp_helpers import get_str
+from datetime import date
+from webbsite.db import execute_query
 
 bp = Blueprint("contact", __name__)
 

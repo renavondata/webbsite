@@ -2,13 +2,9 @@
 Significant Dealer Information (SDI) routes
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str, decimals_to_float
+from flask import Blueprint, render_template, request, current_app
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, decimals_to_float
 from webbsite.routes.dbpub._navctx import stock_nav, person_nav, org_nav
 
 bp = Blueprint("dbpub_sdi", __name__)
@@ -17,7 +13,6 @@ bp = Blueprint("dbpub_sdi", __name__)
 @bp.route("/sdilatest.asp")
 def sdilatest():
     """Latest SDI disclosures - latest 200 director & CEO dealings"""
-    from flask import current_app
 
     sort_param = request.args.get("sort", "relddn")
 
@@ -93,7 +88,6 @@ def sdilatest():
 @bp.route("/sdiissue.asp")
 def sdiissue():
     """SDI disclosures for a specific stock"""
-    from flask import current_app
 
     issue_id = get_int("i", 0)
     stock_code = request.args.get("sc", "")
@@ -188,7 +182,6 @@ def sdiissue():
 @bp.route("/sdidir.asp")
 def sdidir():
     """SDI disclosures by a specific director - shows all stocks where person has filed"""
-    from flask import current_app
 
     person_id = get_int("p", 0)
     sort_param = request.args.get("sort", "stkup")
@@ -249,7 +242,6 @@ def sdidir():
 @bp.route("/sdidirco.asp")
 def sdidirco():
     """SDI cross-reference: director and company - all dealings by person in stock"""
-    from flask import current_app
 
     person_id = get_int("p", 0)
     issue_id = get_int("i", 0)
@@ -332,7 +324,6 @@ def sdidirco():
 @bp.route("/sdicap.asp")
 def sdicap():
     """SDI filing details - full details of a single SDI filing"""
-    from flask import current_app
 
     sdi_id = get_int("r", 0)
 

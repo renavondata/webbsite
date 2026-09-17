@@ -3,7 +3,7 @@ Prices route - Direct port from prices.asp
 Economic data charts (CPI, import prices, etc.)
 """
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int
 

@@ -4,7 +4,7 @@ Skeleton implementation for 6 routes
 """
 
 from flask import Blueprint, render_template, request
-from webbsite.asp_helpers import get_int, get_str
+from webbsite.asp_helpers import get_int
 
 bp = Blueprint("vote", __name__)
 

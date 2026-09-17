@@ -1,0 +1,18 @@
+# Fires via OnFailure= when webbsite-refresh.service fails. Pings the refresh
+# check's /fail endpoint with the loader's last journal lines, so a crash that
+# happens BEFORE refresh.py reaches its own ping_healthcheck (uv resolution,
+# a missing env file, Postgres refusing the connection, a SIGTERM from
+# needrestart) is still a page and not a silent `systemctl --failed`. Issue #28
+# named exactly that silence.
+#
+# Runs as root: reading another unit's journal needs it, and the env file is
+# root:root 0600. Nothing here writes anywhere. Installed by deploy/converge.sh.
+[Unit]
+Description=Report a failed Webb-site refresh to its healthchecks dead-man
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/webbsite/refresh-env
+# HC_URL unset (a mirror without monitoring) is a no-op, not an error. The
+# journal tail is the /fail body: it is what the alert mail shows.
+ExecStart=/bin/sh -c 'test -n "$HC_URL" || exit 0; journalctl -u webbsite-refresh.service -n 60 --no-pager -o cat | curl -fsS --max-time 10 --retry 2 --data-binary @- -o /dev/null "$HC_URL/fail"'

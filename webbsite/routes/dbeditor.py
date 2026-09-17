@@ -3,8 +3,8 @@ Database editor routes - Authenticated editing system
 Skeleton implementation for 51 routes (requires wsroles authentication)
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for
-from webbsite.asp_helpers import get_int, get_str, get_bool
+from flask import Blueprint, render_template, request
+from webbsite.asp_helpers import get_int, get_str
 from datetime import date
 
 bp = Blueprint("dbeditor", __name__)

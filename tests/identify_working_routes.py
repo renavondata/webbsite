@@ -82,7 +82,7 @@ def main():
     stub_routes = [r for r in all_routes if r["is_stub"]]
 
     print(f"\n{'='*70}")
-    print(f"Route Analysis")
+    print("Route Analysis")
     print(f"{'='*70}\n")
     print(f"Total routes found: {len(all_routes)}")
     print(f"Working routes: {len(working_routes)}")
@@ -98,7 +98,7 @@ def main():
         by_module[module].append(route)
 
     print(f"{'='*70}")
-    print(f"Working Routes by Module")
+    print("Working Routes by Module")
     print(f"{'='*70}\n")
 
     for module in sorted(by_module.keys()):
@@ -109,7 +109,7 @@ def main():
         print()
 
     print(f"{'='*70}")
-    print(f"Stub Routes")
+    print("Stub Routes")
     print(f"{'='*70}\n")
 
     by_module_stub = {}

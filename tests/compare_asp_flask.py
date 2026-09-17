@@ -3,7 +3,6 @@
 Compare cached ASP HTML with Flask responses.
 Generates a gap report showing which routes match, differ, or fail.
 """
-import os
 import re
 import json
 import requests

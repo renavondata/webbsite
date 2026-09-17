@@ -952,7 +952,7 @@ def dirs_hk_age_distn():
         base_url = f"/dbpub/DirsHKAgeDistn.asp?d={d_str}"
         sort_links = {
             "yob_age": sl(
-                f"Year<br>of<br>birth", "YOBup", "YOBdn", sort_param, base_url
+                "Year<br>of<br>birth", "YOBup", "YOBdn", sort_param, base_url
             )
         }
 
@@ -1094,7 +1094,6 @@ def pay():
 
     Tables used: enigma.pay, enigma.people, enigma.directorships, enigma.documents
     """
-    from datetime import date as dt
 
     person_id = get_int("p", 0)
     d = request.args.get("d", "")
@@ -1214,7 +1213,7 @@ def payleague():
     Shows director pay aggregated across all companies
     Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
     """
-    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+    from webbsite.asp_helpers import get_int, get_bool, get_str
 
     # Constants
     MAX_YEAR = 2024
@@ -1386,7 +1385,7 @@ def payleague_org():
     Shows total pay per company aggregated across all directors
     Query params: y (year), c (currency), i (INED only), s (exclude share-based), sort
     """
-    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+    from webbsite.asp_helpers import get_int, get_bool, get_str
 
     # Constants
     MAX_YEAR = 2024
@@ -1945,7 +1944,6 @@ def _gov_explorer(i, t, g, value_col, self_route):
     i=govitem ID (default Consolidated Accounts), t=tree, g=as % of GDP.
     value_col 'act' (govac) or 'est' (govest); self_route is the drill-down target.
     """
-    from webbsite.asp_helpers import col_sum, join_row
 
     # Get current item details
     item_query = """
@@ -2898,7 +2896,7 @@ def advbyrole():
     from webbsite.asp_helpers import get_int, get_dbl
     from webbsite.db import execute_query
     from flask import render_template, current_app
-    from datetime import date as dt_date, datetime
+    from datetime import date as dt_date
 
     now_year = dt_date.today().year
     r = get_int("r", 0)
@@ -3234,7 +3232,7 @@ def possum():
         ret_to_date = f"LEAST(COALESCE(d2.resDate, '{to_date}'), '{to_date}')"
 
         # Optional old name field
-        org_name_field = f"enigma.orgname(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
+        org_name_field = "enigma.orgname(d1.company, COALESCE(d1.apptDate, d2.resDate)) AS old_name," if n else ""
 
         # Main SQL query with window functions to consolidate consecutive directorships
         sql = f"""
@@ -4947,7 +4945,7 @@ def hksolsadmos():
     """
     from webbsite.asp_helpers import get_str
     from webbsite.db import execute_query
-    from flask import render_template, current_app, request
+    from flask import render_template, current_app
 
     sort_param = get_str("sort", "cntdn")
 
@@ -6057,7 +6055,7 @@ def prhdistricts():
 @bp.route("/HKflights.asp")
 def hkflights():
     """Hong Kong flight statistics - full implementation matching ASP"""
-    from webbsite.asp_helpers import get_str, get_int, ms_date
+    from webbsite.asp_helpers import get_str
     from datetime import datetime, date as dt_date
 
     # Get parameters
@@ -6159,8 +6157,7 @@ def hkflights():
 @bp.route("/HKflightscan.asp")
 def hkflightscan():
     """Hong Kong flight cancellations - full implementation matching ASP"""
-    from webbsite.asp_helpers import get_str, get_int, ms_date
-    from datetime import datetime, date as dt_date
+    from webbsite.asp_helpers import get_str
 
     # Get parameters
     ad = get_str("ad", "a")  # a=arrivals, d=departures
@@ -6867,7 +6864,7 @@ def lirstaffhist():
 @bp.route("/str.asp")
 def str_route():
     """Webb-site Single stock Total Return chart - port of str.asp"""
-    from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+    from webbsite.asp_helpers import get_int, get_bool
     from webbsite.db import execute_query
     from flask import render_template
 
@@ -7803,7 +7800,7 @@ def hkpax():
     """
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
-    from flask import render_template, request
+    from flask import render_template
 
     t = get_int("t", 0)  # passenger type
     p = get_int("p", 0)  # port
@@ -7905,7 +7902,7 @@ def jail():
     """
     from webbsite.asp_helpers import get_int
     from webbsite.db import execute_query
-    from flask import render_template, request
+    from flask import render_template
 
     j = get_int("j", 0)  # jail ID
 
@@ -8089,7 +8086,7 @@ def orgdata():
     Tables used: weborgs view, lsorgs, orgdata, freg, oldcrf, ess,
                  nameChanges, domChanges, reorg, stocklistings, issue, etc.
     """
-    from webbsite.asp_helpers import get_int, get_str, html_ent, ms_date
+    from webbsite.asp_helpers import get_int, get_str
 
     # Get query parameters
     person_id = get_int("p", 0)

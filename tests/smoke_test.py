@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Smoke test all Flask routes, report 500 errors."""
 import sys
-import re
 import requests
-from pathlib import Path
 from urllib.parse import urlencode
 
 BASE = "http://127.0.0.1:5001"

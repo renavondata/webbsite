@@ -1180,7 +1180,6 @@ def chistory():
     Tables used: ccass.holdings, ccass.quotes, ccass.participants, ccass.calendar
     """
     from flask import current_app, session
-    import json
     from datetime import datetime
 
     guard = _validate_ccass_query()
@@ -2622,7 +2621,6 @@ def portchg():
     guard = _validate_ccass_query()
     if guard is not None:
         return guard
-    from webbsite.asp_helpers import ms_date
 
     p = get_int("p", 1)
 

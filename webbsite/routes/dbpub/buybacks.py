@@ -2,13 +2,11 @@
 Share buyback data and analysis
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
+from flask import Blueprint, render_template, request, current_app
 from datetime import date, timedelta
 import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, get_bool
 
 bp = Blueprint("dbpub_buybacks", __name__)
 
@@ -16,8 +14,6 @@ bp = Blueprint("dbpub_buybacks", __name__)
 @bp.route("/buybacks.asp")
 def buybacks():
     """Share buyback transactions for a specific stock"""
-    from flask import current_app
-    from datetime import date
     from webbsite.asp_helpers import get_int, get_bool
 
     issue_id = get_int("i", 0)
@@ -404,8 +400,6 @@ def buybacks():
 @bp.route("/buybacksum.asp")
 def buybacksum():
     """Buyback summary - all stocks on a given date/period"""
-    from flask import current_app
-    from datetime import date
 
     # Get parameters
     unadj = get_bool("u")  # Show unadjusted for splits
@@ -540,8 +534,6 @@ def buybacksum():
 @bp.route("/buybackstime.asp")
 def buybacks_time():
     """Buybacks lookback view - last N days"""
-    from flask import current_app
-    from datetime import date, timedelta
 
     # Get lookback period parameter (in days)
     hist = get_int("hist", 10)

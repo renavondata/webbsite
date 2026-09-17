@@ -2,13 +2,10 @@
 Short selling data
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from flask import Blueprint, render_template, request, current_app
+from datetime import date
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int
 from webbsite.routes.dbpub._navctx import stock_nav
 from webbsite.diskcache import load_json_keyed, save_json_keyed
 from webbsite import watermarks
@@ -19,7 +16,6 @@ bp = Blueprint("dbpub_short_selling", __name__)
 @bp.route("/short.asp")
 def short():
     """Short selling positions for a specific stock - time series with charting data"""
-    from flask import current_app
 
     issue_id = get_int("i", 0)
     stock_code = request.args.get("sc", "")
@@ -107,7 +103,6 @@ def short():
 @bp.route("/shortsum.asp")
 def shortsum():
     """Short selling weekly summary - aggregate across all stocks"""
-    from flask import current_app
 
     # The market-wide weekly summary is constant for a given dataset, so
     # compute it once per data watermark and serve from disk. It joins
@@ -173,8 +168,6 @@ def shortsum():
 @bp.route("/shortdate.asp")
 def shortdate():
     """Short positions on a specific date - all stocks"""
-    from flask import current_app
-    from datetime import date
 
     # Get date parameter
     d = request.args.get("d", "")

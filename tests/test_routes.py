@@ -18,11 +18,11 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlencode
 
 import requests
 import yaml
-from bs4 import BeautifulSoup, Comment
+from bs4 import BeautifulSoup
 from colorama import Fore, Style, init
 
 # Initialize colorama for cross-platform colored output
@@ -212,7 +212,6 @@ class RouteComparator:
         # Simple normalization: just normalize whitespace and paths
         # Don't use BeautifulSoup prettify as it reformats the entire HTML
         import re
-        from bs4 import BeautifulSoup
 
         # Extract main content only (ignore headers/footers)
         soup = BeautifulSoup(html, "html.parser")
@@ -334,7 +333,6 @@ class RouteComparator:
 
         # For table-heavy pages, compare table row counts instead of exact HTML
         # (database collation differences cause different row orders but same content)
-        from bs4 import BeautifulSoup
 
         flask_soup = BeautifulSoup(flask_html, "html.parser")
         asp_soup = BeautifulSoup(asp_html, "html.parser")

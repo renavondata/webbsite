@@ -2,13 +2,9 @@
 Corporate events and documents
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from flask import Blueprint, render_template, request, current_app
+from webbsite.db import execute_query
+from webbsite.asp_helpers import get_int, get_str
 
 bp = Blueprint("dbpub_events", __name__)
 

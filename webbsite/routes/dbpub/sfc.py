@@ -2,12 +2,9 @@
 Securities and Futures Commission (SFC) licensee data
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
+from flask import Blueprint, render_template, request, current_app
 from datetime import date, timedelta
-import calendar
-import io
-import re
-from webbsite.db import execute_query, get_db
+from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
 
 bp = Blueprint("dbpub_sfc", __name__)
@@ -28,7 +25,6 @@ def sfc_licensees():
 
     Tables used: enigma.directorships (for all activities) or enigma.licrec (for specific activity)
     """
-    from flask import current_app
 
     person_id = get_int("p", 0)
     d = request.args.get("d", str(date.today()))
@@ -164,7 +160,6 @@ def sfc_hist_all():
 
     Tables used: enigma.licrecsum
     """
-    from flask import current_app
 
     act = get_int("a", 0)
 
@@ -216,7 +211,6 @@ def sfc_hist_firm():
 
     Tables used: enigma.licrec
     """
-    from flask import current_app
     from datetime import date as dt_date
     from calendar import monthrange
 
@@ -364,8 +358,6 @@ def sfc_changes():
 
     Tables used: enigma.directorships (positionid 394=Rep, 395=RO)
     """
-    from flask import current_app
-    from datetime import timedelta
 
     d = request.args.get("d", "")
     sort_param = request.args.get("sort", "orgup")
@@ -456,8 +448,6 @@ def sfc_licount():
 
     Tables used: enigma.licrec, enigma.olicrec, enigma.organisations
     """
-    from flask import current_app
-    from datetime import timedelta
 
     # Get dates
     da = request.args.get("da", str(date.today()))
@@ -753,7 +743,6 @@ def sfc_lic_rec():
 
     Tables used: enigma.licrec, enigma.organisations, enigma.activity
     """
-    from flask import current_app
 
     person_id = get_int("p", 0)
     if not person_id:

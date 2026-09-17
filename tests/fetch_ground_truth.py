@@ -18,7 +18,7 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Tuple
 from urllib.parse import urlencode
 
 import requests

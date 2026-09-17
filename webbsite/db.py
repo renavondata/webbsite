@@ -128,7 +128,7 @@ def execute_query(sql, params=None, timeout_s=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError(f"Query exceeded 8s time limit") from e
+            raise QueryTimeoutError("Query exceeded 8s time limit") from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
@@ -198,7 +198,7 @@ def execute_scalar(sql, params=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError(f"Query exceeded 8s time limit") from e
+            raise QueryTimeoutError("Query exceeded 8s time limit") from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):

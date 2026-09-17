@@ -7,7 +7,7 @@ import sys
 import time
 import requests
 from pathlib import Path
-from urllib.parse import urlencode, urlparse, parse_qs
+from urllib.parse import urlencode
 
 # Bright Data Web Unlocker proxy - reads from environment variable
 # Set BRIGHTDATA_UNBLOCKER_PROXY to: username:password@host:port
