@@ -59,7 +59,7 @@ def run():
 
     rows = ab.parse_checks(ab.CHECKS_TXT.read_text())
     check("checks.txt parses 6 rows", len(rows), 6)
-    check("refresh is live", [r["name"] for r in rows if r["status"] == "live"], ["webbsite-refresh"])
+    check("refresh is live", [r["name"] for r in rows if r["status"] == "live"], ["webbsite-refresh", "webbsite-invariants"])
 
     expected = [{"name": "a", "status": "live"}, {"name": "b", "status": "pending"}, {"name": "c", "status": "live"}, {"name": "d", "status": "live"}]
     live = [
