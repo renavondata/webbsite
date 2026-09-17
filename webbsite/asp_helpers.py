@@ -95,6 +95,38 @@ def apos(s):
     return str(s).replace("'", "''")
 
 
+def escape_like(s):
+    """Escape a user string for use as a bound LIKE pattern (pair with ESCAPE '\\').
+
+    apos() only doubles quotes, so `%` and `_` in the input stayed live wildcards:
+    `searchorgs.asp?n=%25` turned a cheap prefix match into a leading-wildcard
+    scan of the whole organisations table (~19.5M rows), twice per request.
+    """
+    if s is None:
+        return ""
+    return str(s).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def decimals_to_float(rows):
+    """Coerce every decimal.Decimal in a row dict, or a list of row dicts, to float.
+
+    psycopg2 returns NUMERIC as Decimal and DOUBLE PRECISION as float, and Jinja
+    happily writes `avprice / vwap` without knowing which is which -- that
+    TypeError 500'd sdicap.asp ~500 times a day in Sept 2026 before anyone saw
+    it. Coerce once at the route, where the row shape is known.
+    """
+    from decimal import Decimal
+
+    def _row(r):
+        if r is None:
+            return None
+        return {k: (float(v) if isinstance(v, Decimal) else v) for k, v in r.items()}
+
+    if isinstance(rows, list):
+        return [_row(r) for r in rows]
+    return _row(rows)
+
+
 def rem_space(s):
     """Remove extra spaces, similar to ASP remSpace()"""
     if not s:

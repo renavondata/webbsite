@@ -123,7 +123,7 @@ R2_SECRET_ACCESS_KEY=...
 R2_BUCKET=hkdata
 R2_PREFIX=webbsite-refresh
 REFRESH_USERID=<chosen above>
-HC_URL=https://hc.gfrm.in/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
+HC_URL=https://<your-healthchecks-host>/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
 ```
 The R2 token must be **Object Read only**, scoped to the `hkdata` bucket (Cloudflare
 dashboard → R2 → Manage API Tokens). Never reuse a write-capable key here.
@@ -146,10 +146,23 @@ sudo -u webbsite sh -c 'cd /srv/webbsite && set -a && . /etc/webbsite/refresh-en
 returns early when it is unset, so an unset value is a loader that runs every day
 reporting to nobody — which is what it did from go-live on 2026-07-19 until it was
 noticed and set on 2026-09-16 while investigating an unrelated outage (the
-`webbsite-refresh` check on hc.gfrm.in, tag `dataguru`, grace 6h). A missing
-dead-man does not fail; it just never speaks, and nothing distinguishes that from
-health — check `hc.gfrm.in`'s `dataguru-checks-armed` sweep, not just this file, if
-you're auditing whether monitoring actually exists.
+`webbsite-refresh` check on the operator's Healthchecks instance, tag `dataguru`,
+grace 6h). A missing dead-man does not fail; it just never speaks, and nothing
+distinguishes that from health — check that instance's own paused-check sweep, not
+just this file, if you're auditing whether monitoring actually exists.
+
+**Error reporting:** `SENTRY_DSN` (optional, in both `/etc/webbsite/env` and
+`/etc/webbsite/refresh-env`; `SENTRY_ENVIRONMENT` defaults to `production`) turns on
+Sentry for the app and the loader. Unset means silent, exactly like `HC_URL`: a
+mirror runs fine without it, but *this* deployment is not observed without it —
+`/dbpub/sdicap.asp` threw the same TypeError ~500 times a day for weeks before
+anyone looked at the journal. The app's Flask integration reports unhandled
+exceptions; its logging integration also promotes every ERROR log line to an event,
+which is how the routes' broad `except Exception` blocks (which render an empty
+page) become visible: `webbsite/db.py` logs at ERROR before raising. Every response
+carries an `X-Request-Id` (minted by Caddy, `deploy/Caddyfile`; echoed by the app;
+last field of gunicorn's access log; a Sentry tag), so one string joins the Caddy
+access log (`/var/log/caddy/access.log`, JSON), the journal, and an event.
 
 The loader pings `HC_URL` on success **only while fresh**
 (`CCASSdateDone` within 4 trading days of the latest `ccass.calendar` row) and

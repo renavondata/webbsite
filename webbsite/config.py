@@ -43,7 +43,14 @@ class Config:
 
     # App settings
     DEBUG = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
-    TEMPLATES_AUTO_RELOAD = True
+    # Only stat() templates on every render in development; in production the
+    # deploy is a SIGHUP, which re-reads templates anyway.
+    TEMPLATES_AUTO_RELOAD = DEBUG
+
+    # Error reporting. Optional: unset means "no Sentry", which is what a mirror
+    # gets by default. The DSN is a capability and lives only in the box's env.
+    SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+    SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "production")
 
     # SQL Logging - logs all SQL queries when enabled (development only)
     SQL_ECHO = os.environ.get("SQL_ECHO", "False").lower() == "true"

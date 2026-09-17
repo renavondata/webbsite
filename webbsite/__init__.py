@@ -4,10 +4,11 @@ Direct port from Classic ASP to Flask/Jinja
 """
 
 from flask import Flask, render_template, redirect, request, g, Response
-from flask_compress import Compress
 from datetime import datetime, date as _date
 import time
 import logging
+import logging.config
+import uuid
 from .config import Config
 
 logger = logging.getLogger(__name__)
@@ -58,9 +59,11 @@ BLOCKED_BOT_UA_SUBSTRINGS = (
 )
 
 # Interactive/account features deferred for the read-only archive (see CLAUDE.md).
-# Every path under these prefixes returns 410 Gone rather than a 500.
+# Every path under these prefixes returns 410 Gone rather than a 500. /contact is
+# here because its handler reads the `iplog` schema, which the archive never had,
+# and its form never verified its CAPTCHA or sent mail.
 DEFERRED_FEATURE_PREFIXES = (
-    "/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor",
+    "/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor", "/contact",
 )
 
 # Paths kept out of search indexes. Single source of truth shared by robots.txt
@@ -74,18 +77,80 @@ ROBOTS_DISALLOW = (
     "/ccass/ctothist.asp", "/ccass/nciphist.asp", "/ccass/brokhist.asp",
     "/ccass/ipstakes.asp",
     "/CSV.asp", "/dbpub/CSV.asp", "/dbpub/pricesCSV.asp", "/dbpub/govacCSV.asp",
-    "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/",
+    "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/", "/contact/",
 )
+
+
+def _configure_logging(app):
+    """One explicit logging config, applied before anything logs.
+
+    Nothing configured logging before this: the root logger sat at WARNING so
+    every logger.info in the app was silently dropped, and the `webbsite` logger
+    reached the journal only because its name happened to equal Flask's
+    app.logger name. Flask skips its own default handler when the logger already
+    has one, so there is no double-logging.
+    """
+    level = "DEBUG" if app.config.get("DEBUG") else "INFO"
+    logging.config.dictConfig({
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "plain": {"format": "%(asctime)s %(levelname)s %(name)s: %(message)s"},
+        },
+        "handlers": {
+            "stderr": {
+                "class": "logging.StreamHandler",
+                "formatter": "plain",
+                "stream": "ext://sys.stderr",
+            },
+        },
+        "loggers": {
+            "webbsite": {"level": level, "handlers": ["stderr"], "propagate": False},
+        },
+        "root": {"level": "WARNING", "handlers": ["stderr"]},
+    })
+
+
+def _init_sentry(app):
+    """Error reporting, on only when SENTRY_DSN is set (deploy/README.md).
+
+    The Flask integration captures every unhandled exception with the request
+    attached; the logging integration turns every ERROR log line (db.py logs one
+    for each failed query before the route swallows it) into an event too. That
+    is what makes the 188 `except Exception: render empty page` blocks visible
+    without rewriting them. Traces are sampled low to get per-route timing
+    without paying for every request.
+    """
+    dsn = app.config.get("SENTRY_DSN")
+    if not dsn:
+        return False
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
+    sentry_sdk.init(
+        dsn=dsn,
+        environment=app.config.get("SENTRY_ENVIRONMENT"),
+        integrations=[
+            FlaskIntegration(),
+            LoggingIntegration(level=logging.INFO, event_level=logging.ERROR),
+        ],
+        traces_sample_rate=0.05,
+        send_default_pii=False,
+    )
+    return True
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Enable gzip/brotli compression
-    app.config["COMPRESS_MIN_SIZE"] = 500
-    app.config["COMPRESS_LEVEL"] = 6
-    Compress(app)
+    _configure_logging(app)
+    sentry_on = _init_sentry(app)
+
+    # No in-process compression: Caddy's `encode gzip` (deploy/Caddyfile) does it
+    # off the worker thread. Flask-Compress at level 6 was burning request-slot
+    # CPU on work the proxy repeated.
 
     # Initialize database
     from webbsite import db
@@ -256,6 +321,26 @@ def create_app(config_class=Config):
         )
         return Response("\n".join(lines), mimetype="text/plain")
 
+    # One id per request. Caddy mints X-Request-Id (deploy/Caddyfile) and we
+    # echo it on the response, tag Sentry with it and put it in the slow-request
+    # log, so every record of one request shares one string. A request that
+    # arrives without one (local dev, direct curl) gets a fresh id here.
+    # Registered first so even a 403/410 short-circuit below carries it.
+    @app.before_request
+    def _request_id():
+        rid = request.headers.get("X-Request-Id", "").strip() or uuid.uuid4().hex
+        g.request_id = rid[:64]
+        if sentry_on:
+            import sentry_sdk
+            sentry_sdk.set_tag("request_id", g.request_id)
+
+    @app.after_request
+    def _echo_request_id(response):
+        rid = getattr(g, "request_id", None)
+        if rid:
+            response.headers["X-Request-Id"] = rid
+        return response
+
     # Block aggressive crawlers at the origin (defense-in-depth; CF WAF is primary)
     @app.before_request
     def _block_bots():
@@ -285,8 +370,9 @@ def create_app(config_class=Config):
         elapsed = time.monotonic() - getattr(g, "_request_start", time.monotonic())
         if elapsed > 5:
             logger.warning(
-                "SLOW REQUEST: %.1fs %s %s (status %s)",
+                "SLOW REQUEST: %.1fs %s %s (status %s) rid=%s",
                 elapsed, request.method, request.path, response.status_code,
+                getattr(g, "request_id", "-"),
             )
         return response
 
