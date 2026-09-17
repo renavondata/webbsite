@@ -33,7 +33,7 @@ an opaque capability URL in a root-only env file.**
 
 | Concern | Lives in | Why |
 |---|---|---|
-| Uptime probing, check definitions, alert routing, on-call triage | private fleet (`hc.gfrm.in`) | It already exists and is better than anything this repo would grow. Checks tagged into the fleet's sweep inherit its paused-check detection and its alert→issue path for free. |
+| Uptime probing, check definitions, alert routing, on-call triage | private operator fleet | It already exists and is better than anything this repo would grow. Checks tagged into the fleet's sweep inherit its paused-check detection and its alert→issue path for free. |
 | Box convergence (`deploy/converge.sh`, site-deploy) | this repo + a generic, separate toolkit | A mirrorer can run both. Converging from a private repo would make this repo unusable to anyone but us. |
 | Units, Caddy config, app code, `/health` | this repo | Mirrorable, reviewable, no private knowledge required. |
 | Check UUIDs, API tokens, origin identity | `/etc/webbsite/*` + the operator keyring | Ping URLs are capabilities: anyone holding one can flip the check. They never enter a public repo. |
