@@ -95,7 +95,11 @@ WHERE sl.stockexid IN (1, 20, 23)  -- Main Board, GEM, REITs
   AND i.typeid IN (0, 6, 7, 8, 10, 42);  -- Ordinary shares and related types
 
 -- Grant permissions
-GRANT EXECUTE ON FUNCTION enigma.service TO PUBLIC;
-GRANT EXECUTE ON FUNCTION enigma.MSdateAcc TO PUBLIC;
-GRANT EXECUTE ON FUNCTION enigma.orgName TO PUBLIC;
+-- Argument lists are explicit because enigma.MSdateAcc has a second,
+-- separately-installed (DATE, INTEGER) overload (used by call sites that
+-- pass a bare integer literal) -- an unqualified GRANT is ambiguous once
+-- both overloads exist and aborts the rest of this script.
+GRANT EXECUTE ON FUNCTION enigma.service(DATE, DATE, DATE) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION enigma.MSdateAcc(DATE, SMALLINT) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION enigma.orgName(BIGINT, DATE) TO PUBLIC;
 GRANT SELECT ON enigma.hklistedordsever TO PUBLIC;
