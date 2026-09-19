@@ -26,14 +26,17 @@ def enigma_events():
     stock_code = get_str("sc", "")
     sort_param = request.args.get("sort", "annddn")
 
-    # Look up issueid from stock code if provided
+    # Look up issueid from stock code if provided. stockCode is a zero-padded
+    # varchar, so '700' only matches '0700' via LPAD -- the ASP compared these
+    # numerically in MySQL. Same pattern as statistics._resolve_stock.
     if stock_code and not issue_id:
         try:
             result = execute_query(
                 """
                 SELECT issueid
-                FROM stocklistings
-                WHERE stockCode = %s AND delistdate IS NULL
+                FROM enigma.stocklistings
+                WHERE LPAD(stockCode, 8, '0') = LPAD(%s, 8, '0')
+                  AND delistdate IS NULL
                 ORDER BY firsttradedate DESC
                 LIMIT 1
             """,
