@@ -138,6 +138,70 @@ def about():
     return render_template("pages/about.html")
 
 
+# One query per figure on the status page. Each is independent: a missing
+# table or a timeout shows '?' for that figure only (and still reaches Sentry
+# through execute_query's error log) instead of blanking the whole page.
+_STATUS_COUNTS = {
+    "orgs": "SELECT COUNT(*) AS count FROM enigma.organisations",
+    "people": "SELECT COUNT(*) AS count FROM enigma.people",
+    # Current HK-listed companies
+    "listed": """
+        SELECT COUNT(DISTINCT i.issuer) AS count
+        FROM enigma.issue i
+        JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+        WHERE sl.delistdate IS NULL
+          AND sl.stockexid IN (1, 20)
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
+    """,
+    # Current SFC licensees: Representative (394) and Responsible Officer (395)
+    "sfc_licensees": """
+        SELECT COUNT(DISTINCT d.director) AS count
+        FROM enigma.directorships d
+        WHERE d.positionid IN (394, 395)
+          AND (d.resdate IS NULL OR d.resdate > CURRENT_DATE)
+    """,
+    # Solicitors in private practice: live Law Society posts, as hksols.asp
+    # counts them (the MySQL-era enigma.hksols table was not carried over).
+    "solicitors": """
+        SELECT COUNT(DISTINCT lp.personid) AS count
+        FROM enigma.lsposts ps
+        JOIN enigma.lsppl lp ON ps.lsppl = lp.lsid
+        WHERE NOT ps.dead
+    """,
+    # Announcements and financial reports (annual/interim reports, circulars,
+    # results...); the MySQL-era enigma.reports table was not carried over.
+    "reports": "SELECT COUNT(*) AS count FROM enigma.documents",
+    # Planner estimate: an exact COUNT(*) over ccass.holdings exceeds the 8s
+    # statement timeout.
+    "ccass_holdings": (
+        "SELECT reltuples::bigint AS count FROM pg_class"
+        " WHERE oid = 'ccass.holdings'::regclass"
+    ),
+}
+
+
+def _status_count(sql):
+    from webbsite.db import execute_query
+
+    try:
+        rows = execute_query(sql)
+        return rows[0]["count"] if rows else 0
+    except Exception:
+        return "?"
+
+
+def _ccass_latest():
+    """The loader's watermark. MAX(atdate) is a 22s full scan (no index leads
+    with atdate)."""
+    from datetime import date
+    from webbsite import watermarks
+
+    try:
+        return date.fromisoformat(watermarks.ccass_done())
+    except Exception:
+        return None
+
+
 @bp.route("/status.asp")
 def status():
     """
@@ -145,78 +209,9 @@ def status():
     Shows key statistics about the database content
     """
     from datetime import date
-    from webbsite.db import execute_query
 
-    # Get database statistics
-    stats = {}
-
-    try:
-        # Count organizations
-        result = execute_query("SELECT COUNT(*) as count FROM enigma.organisations")
-        stats['orgs'] = result[0]['count'] if result else 0
-
-        # Count people
-        result = execute_query("SELECT COUNT(*) as count FROM enigma.people")
-        stats['people'] = result[0]['count'] if result else 0
-
-        # Count current HK-listed companies
-        result = execute_query("""
-            SELECT COUNT(DISTINCT i.issuer) as count
-            FROM enigma.issue i
-            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
-            WHERE sl.delistdate IS NULL
-              AND sl.stockexid IN (1, 20)
-              AND i.typeid NOT IN (1, 2, 40, 41, 46)
-        """)
-        stats['listed'] = result[0]['count'] if result else 0
-
-        # Count CCASS records: planner estimate, an exact COUNT(*) over
-        # ccass.holdings exceeds the 8s statement timeout.
-        result = execute_query(
-            "SELECT reltuples::bigint AS count FROM pg_class"
-            " WHERE oid = 'ccass.holdings'::regclass"
-        )
-        stats['ccass_holdings'] = result[0]['count'] if result else 0
-
-        # Latest CCASS date: the loader's watermark. MAX(atdate) is a 22s
-        # full scan (no index leads with atdate).
-        from webbsite import watermarks
-        stats['ccass_latest'] = date.fromisoformat(watermarks.ccass_done())
-
-        # Count SFC licensees (current)
-        result = execute_query("""
-            SELECT COUNT(DISTINCT d.director) as count
-            FROM enigma.directorships d
-            WHERE d.positionid IN (394, 395)
-              AND (d.resdate IS NULL OR d.resdate > CURRENT_DATE)
-        """)
-        stats['sfc_licensees'] = result[0]['count'] if result else 0
-
-        # Count HK solicitors
-        result = execute_query("""
-            SELECT COUNT(DISTINCT personid) as count
-            FROM enigma.hksols
-            WHERE live = TRUE
-        """)
-        stats['solicitors'] = result[0]['count'] if result else 0
-
-        # Count financial reports
-        result = execute_query("SELECT COUNT(*) as count FROM enigma.reports")
-        stats['reports'] = result[0]['count'] if result else 0
-
-    except Exception as ex:
-        # If database queries fail, show placeholder values
-        stats = {
-            'orgs': '?',
-            'people': '?',
-            'listed': '?',
-            'ccass_holdings': '?',
-            'ccass_latest': None,
-            'sfc_licensees': '?',
-            'solicitors': '?',
-            'reports': '?'
-        }
-
+    stats = {key: _status_count(sql) for key, sql in _STATUS_COUNTS.items()}
+    stats["ccass_latest"] = _ccass_latest()
     return render_template("pages/status.html", stats=stats, today=date.today())
 
 

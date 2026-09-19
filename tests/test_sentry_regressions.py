@@ -14,6 +14,8 @@ Pins:
      as '' (SFClicensees.asp?d= was an InvalidDatetimeFormat);
   3b. positions.asp / possum.asp validate ?f= ?t= (they were pasted into SQL);
   3d. str.asp?sc= compares the zero-padded varchar stockcode as text;
+  3e. status.asp counts only tables that exist, and one failing figure shows
+      '?' without blanking the rest;
   4. a failed query is ONE error log record (the logging integration makes
      each ERROR line its own Sentry issue).
 
@@ -148,9 +150,11 @@ def run():
         corporate.execute_query, statistics.execute_query = real_c, real_s
 
     # 3c. timeout shapes: filter-first calendars, guarded positions, no holdings scan
+    from webbsite import watermarks
     from webbsite.routes.dbpub import incorporations
 
     real_i, real_db = incorporations.execute_query, db_module.execute_query
+    real_ccass_done = watermarks.ccass_done
     incorporations.execute_query = corporate.execute_query = rec
     # str_route imports execute_query from webbsite.db per call, so stub there.
     db_module.execute_query = rec
@@ -187,9 +191,37 @@ def run():
         check("str.asp: stockcode compared LPAD-normalised",
               len(main) == 1 and "LPAD(sl.stockcode, 8, '0')" in main[0][0], True)
         check("str.asp: stockcode bound as text", main[0][1] if main else None, ("700",))
+
+        # 3e. status.asp: enigma.hksols and enigma.reports do not exist
+        # (WEBBSITE-1C), and one failing figure used to blank all of them.
+        # Stub the watermark, or its dead-port failure ends the page before
+        # the hksols query and this check passes vacuously.
+        watermarks.ccass_done = lambda: "2025-10-10"
+        status_sql = []
+
+        def counts(sql, params=None, timeout_s=None):
+            status_sql.append(sql)
+            return [{"count": 5}]
+
+        db_module.execute_query = counts
+        client.get("/pages/status.asp")
+        check("status: no query on the missing hksols/reports tables",
+              [s for s in status_sql if "enigma.hksols" in s or "enigma.reports" in s], [])
+
+        def one_fails(sql, params=None, timeout_s=None):
+            if "enigma.people" in sql:
+                raise RuntimeError("boom")
+            return [{"count": 5}]
+
+        db_module.execute_query = one_fails
+        body = client.get("/pages/status.asp").get_data(as_text=True)
+        check("status: a failing figure shows '?'", body.count('<td class="right">?</td>'), 1)
+        check("status: the other figures still render",
+              body.count('<td class="right">5</td>'), 6)
     finally:
         incorporations.execute_query, corporate.execute_query = real_i, real_c
         db_module.execute_query = real_db
+        watermarks.ccass_done = real_ccass_done
 
     # 4. one log record per failed query --------------------------------------
     collect = _Collect()
