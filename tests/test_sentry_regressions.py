@@ -12,6 +12,7 @@ Pins:
      unchanged rows when o=0;
   3. an empty or junk ?d= falls back to the default instead of reaching SQL
      as '' (SFClicensees.asp?d= was an InvalidDatetimeFormat);
+  3b. positions.asp / possum.asp validate ?f= ?t= (they were pasted into SQL);
   4. a failed query is ONE error log record (the logging integration makes
      each ERROR line its own Sentry issue).
 
@@ -115,6 +116,35 @@ def run():
     for qs, want in (("d=", "2020-01-01"), ("d=junk", "2020-01-01"), ("d=2024-05-06", "2024-05-06")):
         with app.test_request_context(f"/?{qs}"):
             check(f"get_date_or_default ?{qs}", get_date_or_default("d", "2020-01-01"), want)
+
+    # 3b. f/t never reach SQL raw (positions.asp and possum.asp interpolated them)
+    from webbsite.routes.dbpub import corporate, statistics
+
+    evil = "2024-01-01') OR 1=1 --"
+    seen = []
+
+    def rec(sql, params=None, timeout_s=None):
+        seen.append((sql, params))
+        if "FROM enigma.people" in sql:
+            return [{"name1": "X", "name2": None, "cname": None, "is_org": False}]
+        return []
+
+    real_c, real_s = corporate.execute_query, statistics.execute_query
+    corporate.execute_query = statistics.execute_query = rec
+    try:
+        for url in (f"/dbpub/positions.asp?p=1&f={evil}&t={evil}",
+                    f"/dbpub/possum.asp?p=1&f={evil}&t={evil}"):
+            seen.clear()
+            client.get(url)
+            leaked = [s for s, p in seen if "OR 1=1" in s or "OR 1=1" in str(p)]
+            check(f"{url.split('?')[0]}: injected f/t never reaches SQL", leaked, [])
+        seen.clear()
+        client.get("/dbpub/positions.asp?p=1&f=2020-01-01&t=2021-01-01&hide=Y")
+        main = [(s, p) for s, p in seen if "enigma.directorships" in s]
+        check("positions: date filter parameterized", "'2020-01-01'" in main[0][0], False)
+        check("positions: date filter params bound", list(main[0][1][-2:]), ["2020-01-01", "2021-01-01"])
+    finally:
+        corporate.execute_query, statistics.execute_query = real_c, real_s
 
     # 4. one log record per failed query --------------------------------------
     collect = _Collect()

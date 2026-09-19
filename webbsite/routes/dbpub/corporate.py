@@ -480,8 +480,9 @@ def positions():
         return "PersonID required", 400
 
     # Get parameters
-    from_date = request.args.get("f", "")
-    to_date = request.args.get("t", "")
+    # Validated to YYYY-MM-DD (or "") before use: both reach the SQL below.
+    from_date = get_date_or_default("f", "")
+    to_date = get_date_or_default("t", "")
     c = get_bool("c")  # include new appointments
     n = get_bool("n")  # show old org names
     hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
@@ -540,30 +541,34 @@ def positions():
     }
     order_by = order_by_map.get(sort_param, "name1, apptDate")
 
-    # Build date filter conditions
+    # Build date filter conditions (parameterized; hide_params follow person_id)
     hide_str = ""
+    hide_params = []
     if from_date == "":
         if to_date == "":
             if hide == "Y":
                 hide_str = " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
         else:
-            hide_str = f" AND (apptDate IS NULL OR apptDate < '{to_date}')"
+            hide_str = " AND (apptDate IS NULL OR apptDate < %s)"
+            hide_params.append(to_date)
             if hide == "Y":
-                hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+                hide_str += " AND (resDate IS NULL OR resDate > %s)"
+                hide_params.append(to_date)
     elif to_date == "":
         if not c:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
+            hide_str = " AND (apptDate IS NULL OR apptDate <= %s)"
+            hide_params.append(from_date)
         if hide == "Y":
             hide_str += " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
         else:
-            hide_str += f" AND (resDate IS NULL OR resDate > '{from_date}')"
+            hide_str += " AND (resDate IS NULL OR resDate > %s)"
+            hide_params.append(from_date)
     else:
-        if not c:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
-        else:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{to_date}')"
+        hide_str = " AND (apptDate IS NULL OR apptDate <= %s)"
+        hide_params.append(to_date if c else from_date)
         if hide == "Y":
-            hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+            hide_str += " AND (resDate IS NULL OR resDate > %s)"
+            hide_params.append(to_date)
 
     # Build results by rank — single query joining rank table
     rank_data = []
@@ -616,7 +621,8 @@ def positions():
     try:
         all_positions = execute_query(
             sql,
-            (from_param, to_param, from_param, to_param, from_param, to_param, person_id)
+            (from_param, to_param, from_param, to_param, from_param, to_param, person_id,
+             *hide_params)
         )
 
         # Group results by rank in Python
