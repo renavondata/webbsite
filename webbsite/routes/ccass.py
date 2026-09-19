@@ -618,7 +618,9 @@ def cholder():
                   {holding_filter}
                 ORDER BY {ob}
             """
-            results = execute_query(sql, (part, d, d, d, d, d))
+            # timeout_s: a large custodian (e.g. part=1243) walks ~3.5M parthold
+            # rows; deterministic and edge-cached, like the other heavy reports.
+            results = execute_query(sql, (part, d, d, d, d, d), timeout_s=25)
 
             for row in results:
                 holdings.append(

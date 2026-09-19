@@ -178,9 +178,10 @@ def status():
         )
         stats['ccass_holdings'] = result[0]['count'] if result else 0
 
-        # Get latest CCASS date
-        result = execute_query("SELECT MAX(atdate) as latest FROM ccass.holdings")
-        stats['ccass_latest'] = result[0]['latest'] if result and result[0]['latest'] else None
+        # Latest CCASS date: the loader's watermark. MAX(atdate) is a 22s
+        # full scan (no index leads with atdate).
+        from webbsite import watermarks
+        stats['ccass_latest'] = date.fromisoformat(watermarks.ccass_done())
 
         # Count SFC licensees (current)
         result = execute_query("""

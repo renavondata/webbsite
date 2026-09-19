@@ -578,7 +578,9 @@ def positions():
     from_param = from_date if from_date else None
     to_param = to_date if to_date else None
 
-    # Single query for all ranks (eliminates N+1 loop)
+    # Single query for all ranks (eliminates N+1 loop). The return functions
+    # only mean anything for a listed company, so skip them otherwise: most
+    # rows of a long history are unlisted and each call still probes quotes.
     sql = f"""
         SELECT
             r.rankID,
@@ -594,21 +596,21 @@ def positions():
             p.posShort,
             p.posLong,
             CASE WHEN h.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed,
-            enigma.totRet(
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.totRet(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as tot_ret,
-            enigma.CAGRet(
+            ) END as tot_ret,
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.CAGRet(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as cagr_ret,
-            enigma.CAGRel(
+            ) END as cagr_ret,
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.CAGRel(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(CAST(%s AS date), '1999-11-12'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as cagr_rel
+            ) END as cagr_rel
         FROM enigma.directorships d
         JOIN enigma.organisations o ON company = o.personid
         JOIN enigma.positions p ON d.positionid = p.positionid
@@ -622,7 +624,10 @@ def positions():
         all_positions = execute_query(
             sql,
             (from_param, to_param, from_param, to_param, from_param, to_param, person_id,
-             *hide_params)
+             *hide_params),
+            # Some people hold tens of thousands of positions (p=12865061: 51k,
+            # none listed); deterministic and edge-cached.
+            timeout_s=25,
         )
 
         # Group results by rank in Python

@@ -418,6 +418,33 @@ def oldest_hk_cos():
 # Directors per person distribution
 
 
+def _orgs_cte(date_col, hk=True):
+    """Filter-first CTE for the incorporation/dissolution calendars, named `o`
+    so callers keep their o.* columns and ORDER BY maps.
+
+    Without the fence the planner walks organisations in name1 order to satisfy
+    ORDER BY name1 LIMIT 5000, badly misestimating the date range (120k rows
+    expected, 1 actual for HK disdate in 2023): over 120s, versus 0.4s when the
+    filter runs first. `date_col` is a literal, never request input.
+
+    hk=True takes the HK-registry shape (domicile 1, numeric CR number and two
+    date bounds); hk=False leaves the domicile as the caller's first parameter.
+    Either way the parameter order is unchanged: domicile (UK only), then the
+    two dates, then whatever the branch adds.
+    """
+    where = (
+        "domicile = 1\n                  AND incid ~ '^[0-9]'"
+        if hk
+        else "domicile = %s"
+    )
+    return f"""WITH o AS MATERIALIZED (
+                SELECT * FROM enigma.organisations
+                WHERE {where}
+                  AND {date_col} >= %s
+                  AND {date_col} <= %s
+            )"""
+
+
 @bp.route("/incHKcaltype.asp")
 def inchkcaltype():
     """HK companies incorporated by calendar date and type"""
@@ -453,6 +480,10 @@ def inchkcaltype():
         "typdn": "ot.typename DESC, o.name1",
     }
     order_by = order_by_map.get(sort_param, "o.name1")
+    # With a type selected, that branch does not join orgtypes -- and sorting by
+    # one constant type is meaningless anyway.
+    if t > 0 and sort_param.startswith("typ"):
+        order_by = "o.name1"
 
     # Build date range
     if m > 0:
@@ -479,14 +510,11 @@ def inchkcaltype():
     if t == 0:
         # All types
         sql = f"""
+            {_orgs_cte('incdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
                    o.orgtype, ot.typename
-            FROM enigma.organisations o
+            FROM o
             JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.incdate >= %s
-              AND o.incdate <= %s
             ORDER BY {order_by}
             LIMIT 5000
         """
@@ -494,12 +522,10 @@ def inchkcaltype():
     else:
         # Specific type
         sql = f"""
+            {_orgs_cte('incdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate
-            FROM enigma.organisations o
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.incdate >= %s
-              AND o.incdate <= %s
+            FROM o
+            WHERE TRUE
               AND o.orgtype = %s
             ORDER BY {order_by}
             LIMIT 5000
@@ -584,6 +610,10 @@ def dishkcaltype():
         "disdn": "o.disdate DESC, o.name1",
     }
     order_by = order_by_map.get(sort_param, "o.name1")
+    # A fixed type (or method) means that branch does not join orgtypes (or
+    # dismodes) -- and sorting by one constant value is meaningless anyway.
+    if (t > 0 and sort_param.startswith("typ")) or (w > 0 and sort_param.startswith("mod")):
+        order_by = "o.name1"
 
     # Build date range
     if m > 0:
@@ -606,15 +636,12 @@ def dishkcaltype():
     if t == 0 and w == 0:
         # All types and methods
         sql = f"""
+            {_orgs_cte('disdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
                    o.orgtype, ot.typename, dm.dismodetxt
-            FROM enigma.organisations o
+            FROM o
             JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
             JOIN enigma.dismodes dm ON o.dismode = dm.id
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.disdate >= %s
-              AND o.disdate <= %s
             ORDER BY {order_by}
             LIMIT 5000
         """
@@ -622,14 +649,12 @@ def dishkcaltype():
     elif t > 0 and w == 0:
         # Specific type, all methods
         sql = f"""
+            {_orgs_cte('disdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
                    dm.dismodetxt
-            FROM enigma.organisations o
+            FROM o
             JOIN enigma.dismodes dm ON o.dismode = dm.id
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.disdate >= %s
-              AND o.disdate <= %s
+            WHERE TRUE
               AND o.orgtype = %s
             ORDER BY {order_by}
             LIMIT 5000
@@ -638,14 +663,12 @@ def dishkcaltype():
     elif t == 0 and w > 0:
         # All types, specific method
         sql = f"""
+            {_orgs_cte('disdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate,
                    o.orgtype, ot.typename
-            FROM enigma.organisations o
+            FROM o
             JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.disdate >= %s
-              AND o.disdate <= %s
+            WHERE TRUE
               AND o.dismode = %s
             ORDER BY {order_by}
             LIMIT 5000
@@ -654,12 +677,10 @@ def dishkcaltype():
     else:
         # Specific type and method
         sql = f"""
+            {_orgs_cte('disdate')}
             SELECT o.personid, o.name1, o.cname, o.incid, o.incdate, o.disdate
-            FROM enigma.organisations o
-            WHERE o.domicile = 1
-              AND o.incid ~ '^[0-9]'
-              AND o.disdate >= %s
-              AND o.disdate <= %s
+            FROM o
+            WHERE TRUE
               AND o.orgtype = %s
               AND o.dismode = %s
             ORDER BY {order_by}
@@ -1296,6 +1317,10 @@ def incukcaltype():
         "typdn": "ot.typename DESC, o.name1",
     }
     order_by = order_by_map.get(sort_param, "o.name1")
+    # With a type selected, that branch does not join orgtypes -- and sorting by
+    # one constant type is meaningless anyway.
+    if t > 0 and sort_param.startswith("typ"):
+        order_by = "o.name1"
 
     # Build date range
     if m > 0:
@@ -1316,24 +1341,21 @@ def incukcaltype():
     # Build query based on type filter
     if t == 0:
         sql = f"""
+            {_orgs_cte('incdate', hk=False)}
             SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate,
                    o.orgtype, ot.typename
-            FROM enigma.organisations o
+            FROM o
             JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
-            WHERE o.domicile = %s
-              AND o.incdate >= %s
-              AND o.incdate <= %s
             ORDER BY {order_by}
             LIMIT 5000
         """
         params = (dom, month_start, month_end)
     else:
         sql = f"""
+            {_orgs_cte('incdate', hk=False)}
             SELECT o.personid, o.name1, o.incid, o.incdate, o.disdate
-            FROM enigma.organisations o
-            WHERE o.domicile = %s
-              AND o.incdate >= %s
-              AND o.incdate <= %s
+            FROM o
+            WHERE TRUE
               AND o.orgtype = %s
             ORDER BY {order_by}
             LIMIT 5000

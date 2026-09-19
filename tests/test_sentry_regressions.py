@@ -146,6 +146,40 @@ def run():
     finally:
         corporate.execute_query, statistics.execute_query = real_c, real_s
 
+    # 3c. timeout shapes: filter-first calendars, guarded positions, no holdings scan
+    from webbsite.routes.dbpub import incorporations
+
+    real_i, real_db = incorporations.execute_query, db_module.execute_query
+    incorporations.execute_query = corporate.execute_query = rec
+    db_module.execute_query = rec
+    try:
+        for qs in ("", "&t=2", "&w=3", "&t=2&w=3"):
+            seen.clear()
+            client.get(f"/dbpub/disHKcaltype.asp?y=2023{qs}")
+            main = [s for s, _ in seen if "LIMIT 5000" in s]
+            check(f"disHKcaltype{qs or ' (all)'}: filters before ORDER BY/LIMIT",
+                  len(main) == 1 and "AS MATERIALIZED" in main[0], True)
+        for qs in ("", "&t=2"):
+            seen.clear()
+            client.get(f"/dbpub/incHKcaltype.asp?y=2023{qs}")
+            main = [s for s, _ in seen if "LIMIT 5000" in s]
+            check(f"incHKcaltype{qs or ' (all)'}: filters before ORDER BY/LIMIT",
+                  len(main) == 1 and "AS MATERIALIZED" in main[0], True)
+
+        seen.clear()
+        client.get("/dbpub/positions.asp?p=1")
+        main = [s for s, _ in seen if "enigma.directorships" in s]
+        check("positions: return functions only for listed rows",
+              main[0].count("CASE WHEN h.issueid IS NOT NULL THEN enigma."), 3)
+
+        seen.clear()
+        client.get("/pages/status.asp")
+        check("status: no MAX(atdate) scan of ccass.holdings",
+              [s for s, _ in seen if "MAX(atdate)" in s and "ccass.holdings" in s], [])
+    finally:
+        incorporations.execute_query, corporate.execute_query = real_i, real_c
+        db_module.execute_query = real_db
+
     # 4. one log record per failed query --------------------------------------
     collect = _Collect()
     db_module.logger.addHandler(collect)
