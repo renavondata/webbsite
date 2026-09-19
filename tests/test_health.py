@@ -104,7 +104,8 @@ def run():
         body = r.get_json()
         check("500, not 200", r.status_code, 500)
         check("status", body["status"], "error")
-        check("names the failure", body["deep"].startswith("RuntimeError:"), True)
+        check("names the failure", body["deep"], "RuntimeError")
+        check("hides the message", "could not connect" in r.get_data(as_text=True), False)
     finally:
         _db.execute_scalar = original
 

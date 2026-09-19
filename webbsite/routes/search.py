@@ -4,7 +4,7 @@ Search routes - Direct port from searchorgs.asp and searchpeople.asp
 
 from flask import Blueprint, render_template, request
 from webbsite.db import execute_query
-from webbsite.asp_helpers import rem_space, get_str, get_bool, apos, ts_words, escape_like
+from webbsite.asp_helpers import rem_space, get_str, get_bool, ts_words, escape_like
 
 bp = Blueprint("search", __name__)
 
@@ -149,20 +149,25 @@ def search_people():
     alias_results = []
 
     if n1 or n2:
+        # Bound values in placeholder order, shared by the current-names and
+        # alias queries, which mirror each other.
+        params = []
         # Build WHERE clauses for current names query
         if e:
             # Exact match mode
             where_current = "1=1"
             where_alias = "1=1"
             if n1:
-                where_current += f" AND dn1 = '{apos(n1)}'"
-                where_alias += f" AND a.dn1 = '{apos(n1)}'"
+                where_current += " AND dn1 = %s"
+                where_alias += " AND a.dn1 = %s"
+                params.append(n1)
             if n2 == "":
                 where_current += " AND dn2 IS NULL"
                 where_alias += " AND a.dn2 IS NULL"
             else:
-                where_current += f" AND dn2 = '{apos(n2)}'"
-                where_alias += f" AND a.dn2 = '{apos(n2)}'"
+                where_current += " AND dn2 = %s"
+                where_alias += " AND a.dn2 = %s"
+                params.append(n2)
         else:
             # Full-text search mode. User words are reduced to safe tsquery
             # lexemes (ts_words); the &/|/() operators below are ours, so the
@@ -188,9 +193,6 @@ def search_people():
                 )
                 forename = " & ".join(forename_parts)
 
-            # Collect tsquery values in placeholder order (shared by both the
-            # current-names and alias queries, which mirror each other).
-            ts_params = []
             if d:
                 # Match family and given names separately
                 where_current = "1=1"
@@ -198,11 +200,11 @@ def search_people():
                 if fname:
                     where_current += " AND to_tsvector('simple', dn1) @@ to_tsquery('simple', %s)"
                     where_alias += " AND to_tsvector('simple', a.dn1) @@ to_tsquery('simple', %s)"
-                    ts_params.append(fname)
+                    params.append(fname)
                 if forename:
                     where_current += " AND to_tsvector('simple', dn2) @@ to_tsquery('simple', %s)"
                     where_alias += " AND to_tsvector('simple', a.dn2) @@ to_tsquery('simple', %s)"
-                    ts_params.append(forename)
+                    params.append(forename)
             else:
                 # Match across both fields
                 combined = fname
@@ -211,15 +213,13 @@ def search_people():
                 if combined:
                     where_current = "to_tsvector('simple', COALESCE(dn1, '') || ' ' || COALESCE(dn2, '')) @@ to_tsquery('simple', %s)"
                     where_alias = "to_tsvector('simple', COALESCE(a.dn1, '') || ' ' || COALESCE(a.dn2, '')) @@ to_tsquery('simple', %s)"
-                    ts_params.append(combined)
+                    params.append(combined)
                 else:
                     # User input sanitised to nothing -> no full-text match.
                     where_current = "1=0"
                     where_alias = "1=0"
 
-        # In exact mode the where clauses carry no placeholders; pass None so
-        # psycopg2 doesn't treat any literal % as a format spec.
-        people_params = tuple(ts_params) or None if not e else None
+        people_params = tuple(params) or None
 
         # Query current names
         sql = f"""

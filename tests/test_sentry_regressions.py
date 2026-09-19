@@ -21,6 +21,7 @@ Pins:
   5. ncipchg.asp joins currencies and filters on holdings, not a SELECT alias;
      no query uses c.currency without binding alias c;
   6. db.py error events are fingerprinted per route (one frame, else merged).
+  7. searchpeople.asp exact mode and indexhk.asp bind user text (CodeQL #2).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -292,6 +293,37 @@ def run():
           "fingerprint" in group({"logger": "webbsite", "transaction": "x"}, None), False)
     check("sentry: no transaction, default grouping",
           "fingerprint" in group({"logger": "webbsite.db"}, None), False)
+
+    # 7. CodeQL py/sql-injection: user text is bound, never spliced into SQL.
+    from webbsite.routes import search
+
+    bound = []
+
+    def rec_bound(sql, params=None, timeout_s=None):
+        bound.append((sql, params))
+        return []
+
+    real_search, real_stats = search.execute_query, statistics.execute_query
+    search.execute_query = statistics.execute_query = rec_bound
+    try:
+        client.get("/dbpub/searchpeople.asp?n1=O'Brien&n2=Pat&e=1")
+        check("searchpeople exact: two queries", len(bound), 2)
+        for sql, params in bound:
+            check("searchpeople exact: name not in SQL", "Brien" in sql, False)
+            check("searchpeople exact: names bound", params, ("O'Brien", "Pat"))
+        bound.clear()
+        client.get("/dbpub/searchpeople.asp?n1=Chan&e=1")
+        check("searchpeople exact, no n2: IS NULL and one param",
+              [("dn2 IS NULL" in s, p) for s, p in bound], [(True, ("Chan",))] * 2)
+        bound.clear()
+        client.get("/dbpub/indexhk.asp?p=B")
+        check("indexhk: letter bound as a LIKE prefix",
+              [("LIKE %s" in s, p) for s, p in bound], [(True, ("B%",))] * 2)
+        bound.clear()
+        client.get("/dbpub/indexhk.asp?p=0")
+        check("indexhk: numeric starts take no params", [p for _, p in bound], [None, None])
+    finally:
+        search.execute_query, statistics.execute_query = real_search, real_stats
 
     if _failures:
         print("\nFAILED:")

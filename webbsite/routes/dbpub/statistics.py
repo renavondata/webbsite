@@ -5149,9 +5149,7 @@ def indexhk():
 
     Tables used: enigma.listedcoshk, listedcoshkever, enigma.organisations, personstories
     """
-    # Single index letter ("A"-"Z") or "0" for numeric starts. Restrict to one
-    # alphanumeric char: it is interpolated into a LIKE below, so this also
-    # closes the SQL-injection vector.
+    # Single index letter ("A"-"Z") or "0" for numeric starts.
     p = request.args.get("p", "")[:1]
     if p and not p.isalnum():
         p = ""
@@ -5175,9 +5173,11 @@ def indexhk():
     if p == "0":
         # Numeric starts
         where_clause = "LEFT(o.name1,1) >= '0' AND LEFT(o.name1,1) <= '9'"
+        params = None
     else:
-        # Letter starts
-        where_clause = f"o.name1 LIKE '{p}%'"
+        # Letter starts. p is one alphanumeric char, so no LIKE wildcard to escape.
+        where_clause = "o.name1 LIKE %s"
+        params = (p + "%",)
 
     try:
         # HK-listed companies with articles
@@ -5189,7 +5189,7 @@ def indexhk():
             WHERE {where_clause}
             ORDER BY name
         """
-        listed_companies = execute_query(listed_query)
+        listed_companies = execute_query(listed_query, params)
 
         # HK-delisted companies (no personstories join - shows all, not just with articles)
         delisted_query = f"""
@@ -5200,7 +5200,7 @@ def indexhk():
               AND {where_clause}
             ORDER BY name
         """
-        delisted_companies = execute_query(delisted_query)
+        delisted_companies = execute_query(delisted_query, params)
 
     except Exception as e:
         # Surface DB errors loudly (global 500/timeout handlers render the page)

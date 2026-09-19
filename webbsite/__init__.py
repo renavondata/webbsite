@@ -336,7 +336,10 @@ def create_app(config_class=Config):
             logger.exception("deep health check failed")
             # 500, not 503: the data being stale is a different fact from the
             # database being unreachable, and they want different pages.
-            return {"status": "error", "deep": f"{type(exc).__name__}: {exc}"}, 500
+            # Only the class name goes out: this endpoint is public, and a
+            # driver message can carry the DSN host and port. The full error
+            # is in the log line above, and so in Sentry.
+            return {"status": "error", "deep": type(exc).__name__}, 500
 
         if body["trading_days_behind"] > body["budget_trading_days"]:
             body["status"] = "stale"
