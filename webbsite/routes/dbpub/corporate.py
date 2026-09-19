@@ -5,7 +5,7 @@ Corporate structure - officers, advisers, positions, holders
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int, get_bool
+from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
 bp = Blueprint("dbpub_corporate", __name__)
@@ -27,7 +27,7 @@ def advisers():
     Tables used: enigma.adviserships, enigma.organisations, roles
     """
     person_id = request.args.get("p", type=int)
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     hide = request.args.get("hide", "N")  # ASP defaults to 'N' (show history)
     u = request.args.get("u", type=bool, default=False)
     sort_param = request.args.get("sort", "advup")
@@ -197,7 +197,7 @@ def officers():
     Tables used: enigma.directorships, people, enigma.positions, rank
     """
     person_id = request.args.get("p", type=int)
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
     u = request.args.get("u", type=bool, default=False)
     sort_param = request.args.get("sort", "namup")
@@ -480,8 +480,9 @@ def positions():
         return "PersonID required", 400
 
     # Get parameters
-    from_date = request.args.get("f", "")
-    to_date = request.args.get("t", "")
+    # Validated to YYYY-MM-DD (or "") before use: both reach the SQL below.
+    from_date = get_date_or_default("f", "")
+    to_date = get_date_or_default("t", "")
     c = get_bool("c")  # include new appointments
     n = get_bool("n")  # show old org names
     hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
@@ -540,30 +541,34 @@ def positions():
     }
     order_by = order_by_map.get(sort_param, "name1, apptDate")
 
-    # Build date filter conditions
+    # Build date filter conditions (parameterized; hide_params follow person_id)
     hide_str = ""
+    hide_params = []
     if from_date == "":
         if to_date == "":
             if hide == "Y":
                 hide_str = " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
         else:
-            hide_str = f" AND (apptDate IS NULL OR apptDate < '{to_date}')"
+            hide_str = " AND (apptDate IS NULL OR apptDate < %s)"
+            hide_params.append(to_date)
             if hide == "Y":
-                hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+                hide_str += " AND (resDate IS NULL OR resDate > %s)"
+                hide_params.append(to_date)
     elif to_date == "":
         if not c:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
+            hide_str = " AND (apptDate IS NULL OR apptDate <= %s)"
+            hide_params.append(from_date)
         if hide == "Y":
             hide_str += " AND (resDate IS NULL OR resDate > CURRENT_DATE)"
         else:
-            hide_str += f" AND (resDate IS NULL OR resDate > '{from_date}')"
+            hide_str += " AND (resDate IS NULL OR resDate > %s)"
+            hide_params.append(from_date)
     else:
-        if not c:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{from_date}')"
-        else:
-            hide_str = f" AND (apptDate IS NULL OR apptDate <= '{to_date}')"
+        hide_str = " AND (apptDate IS NULL OR apptDate <= %s)"
+        hide_params.append(to_date if c else from_date)
         if hide == "Y":
-            hide_str += f" AND (resDate IS NULL OR resDate > '{to_date}')"
+            hide_str += " AND (resDate IS NULL OR resDate > %s)"
+            hide_params.append(to_date)
 
     # Build results by rank — single query joining rank table
     rank_data = []
@@ -573,7 +578,9 @@ def positions():
     from_param = from_date if from_date else None
     to_param = to_date if to_date else None
 
-    # Single query for all ranks (eliminates N+1 loop)
+    # Single query for all ranks (eliminates N+1 loop). The return functions
+    # only mean anything for a listed company, so skip them otherwise: most
+    # rows of a long history are unlisted and each call still probes quotes.
     sql = f"""
         SELECT
             r.rankID,
@@ -589,21 +596,21 @@ def positions():
             p.posShort,
             p.posLong,
             CASE WHEN h.issuer IS NOT NULL THEN 1 ELSE 0 END as is_listed,
-            enigma.totRet(
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.totRet(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as tot_ret,
-            enigma.CAGRet(
+            ) END as tot_ret,
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.CAGRet(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1994-01-03'::date), COALESCE(CAST(%s AS date), '1994-01-03'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as cagr_ret,
-            enigma.CAGRel(
+            ) END as cagr_ret,
+            CASE WHEN h.issueid IS NOT NULL THEN enigma.CAGRel(
                 h.issueid,
                 GREATEST(COALESCE(apptDate, '1999-11-12'::date), COALESCE(CAST(%s AS date), '1999-11-12'::date)),
                 LEAST(COALESCE(resDate, CURRENT_DATE), COALESCE(CAST(%s AS date), CURRENT_DATE))
-            ) as cagr_rel
+            ) END as cagr_rel
         FROM enigma.directorships d
         JOIN enigma.organisations o ON company = o.personid
         JOIN enigma.positions p ON d.positionid = p.positionid
@@ -616,7 +623,11 @@ def positions():
     try:
         all_positions = execute_query(
             sql,
-            (from_param, to_param, from_param, to_param, from_param, to_param, person_id)
+            (from_param, to_param, from_param, to_param, from_param, to_param, person_id,
+             *hide_params),
+            # Some people hold tens of thousands of positions (p=12865061: 51k,
+            # none listed); deterministic and edge-cached.
+            timeout_s=25,
         )
 
         # Group results by rank in Python

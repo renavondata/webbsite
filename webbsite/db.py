@@ -115,10 +115,11 @@ def execute_query(sql, params=None, timeout_s=None):
                 logger.debug("Query executed successfully (no results)")
             return []
     except Exception as e:
-        # Log the error (params intentionally excluded to avoid logging sensitive data)
-        logger.error(f"SQL Error: {e}")
-        logger.error(f"SQL Query: {sql}")
-        logger.error("Full traceback:", exc_info=True)
+        # str(e) from SQLAlchemy carries the bound parameters ([parameters: ...]);
+        # acceptable here: every value comes from a public URL of a login-free archive.
+        # One record per failure: the logging integration turns each ERROR line
+        # into its own Sentry issue, so three lines made three issues.
+        logger.error("SQL Error: %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error
         try:
@@ -185,10 +186,8 @@ def execute_scalar(sql, params=None):
         row = result.fetchone()
         return row[0] if row else None
     except Exception as e:
-        # Log the error (params intentionally excluded to avoid logging sensitive data)
-        logger.error(f"SQL Error (scalar): {e}")
-        logger.error(f"SQL Query: {sql}")
-        logger.error("Full traceback:", exc_info=True)
+        # str(e) includes the bound parameters; see execute_query.
+        logger.error("SQL Error (scalar): %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error
         try:

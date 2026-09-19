@@ -50,7 +50,8 @@ def run():
     check("parse_conf", conf, {"shared_buffers": "'2GB'", "work_mem": "'96MB'", "pg_stat_statements.track": "'top'"})
 
     real = ab.parse_conf(ab.PG_CONF.read_text())
-    check("real conf has 13 settings", len(real), 13)
+    check("real conf has 14 settings", len(real), 14)
+    check("real conf turns JIT off", real["jit"], "off")
     check("real conf loads pg_stat_statements", real["shared_preload_libraries"], "'pg_stat_statements'")
 
     idx = ab.parse_index_names("CREATE INDEX IF NOT EXISTS a_b ON t (x);\ncreate index if not exists c\n  on t (y);")

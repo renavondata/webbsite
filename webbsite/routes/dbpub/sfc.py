@@ -5,7 +5,7 @@ Securities and Futures Commission (SFC) licensee data
 from flask import Blueprint, render_template, request, current_app
 from datetime import date, timedelta
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite.asp_helpers import get_int, get_bool, get_str, get_date_or_default
 
 bp = Blueprint("dbpub_sfc", __name__)
 
@@ -27,7 +27,7 @@ def sfc_licensees():
     """
 
     person_id = get_int("p", 0)
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     act = get_int("a", 0)
     hide = get_str("hide", "Y")
     sort_param = request.args.get("sort", "namup")

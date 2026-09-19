@@ -9,7 +9,7 @@ import io
 import re
 from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_or_default
 from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
 
@@ -2496,7 +2496,7 @@ def overlap():
     from datetime import date as dt
 
     person_id = get_int("p", 0)
-    d = request.args.get("d", str(dt.today()))
+    d = get_date_or_default("d", str(dt.today()))
     sort_param = request.args.get("sort", "cnt")
 
     # Get organization name
@@ -3162,8 +3162,9 @@ def possum():
     person_id = get_int("p", 0)
     sort_param = request.args.get("sort", "orgup")
     hide = request.args.get("hide", "Y")
-    from_date = request.args.get("f", "")
-    to_date = request.args.get("t", str(date.today()))
+    # Validated to YYYY-MM-DD: both are interpolated into the SQL below.
+    from_date = get_date_or_default("f", "")
+    to_date = get_date_or_default("t", str(date.today()))
     c = get_bool("c")  # include appointments after start date
     n = get_bool("n")  # show old names
 
@@ -9482,8 +9483,9 @@ def adviserships():
     role_id = get_int("r", -1)
     sort_param = request.args.get("sort", "orgup")
     hide = request.args.get("hide", "N")
-    from_date = request.args.get("f", "")
-    to_date = request.args.get("t", "")
+    # Validated to YYYY-MM-DD so a junk date is a default, not an SQL error.
+    from_date = get_date_or_default("f", "")
+    to_date = get_date_or_default("t", "")
     years = get_dbl("y", 1.0)
     include_new = get_bool("c")
 
