@@ -22,6 +22,7 @@ Pins:
      no query uses c.currency without binding alias c;
   6. db.py error events are fingerprinted per route (one frame, else merged).
   7. searchpeople.asp exact mode and indexhk.asp bind user text (CodeQL #2).
+  8. events.asp?sc= matches an unpadded stock code ('5' finds '0005').
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -324,6 +325,26 @@ def run():
         check("indexhk: numeric starts take no params", [p for _, p in bound], [None, None])
     finally:
         search.execute_query, statistics.execute_query = real_search, real_stats
+
+    # 8. events.asp?sc= pads the stock code (sc=5 found nothing; only '0005' did).
+    from webbsite.routes.dbpub import events
+
+    looked_up = []
+
+    def rec_events(sql, params=None, timeout_s=None):
+        looked_up.append((sql, params))
+        return []
+
+    real_events = events.execute_query
+    events.execute_query = rec_events
+    try:
+        client.get("/dbpub/events.asp?sc=5")
+        lookup = [(s, p) for s, p in looked_up if "stocklistings" in s]
+        check("events sc=: stockcode compared padded",
+              len(lookup) == 1 and "LPAD(stockCode, 8, '0') = LPAD(%s, 8, '0')" in lookup[0][0], True)
+        check("events sc=: code bound as text", lookup[0][1] if lookup else None, ("5",))
+    finally:
+        events.execute_query = real_events
 
     if _failures:
         print("\nFAILED:")
