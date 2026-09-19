@@ -5,7 +5,7 @@ Hong Kong solicitor and law firm data
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int
+from webbsite.asp_helpers import get_int, get_date_or_default
 
 bp = Blueprint("dbpub_solicitors", __name__)
 
@@ -93,7 +93,7 @@ def hk_sol_firms():
     Tables used: enigma.lsposts, enigma.lsorgs, enigma.organisations
     """
 
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     sort_param = request.args.get("sort", "totdn")
 
     # Build sort order

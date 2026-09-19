@@ -5,6 +5,7 @@ Stock listings and delisting routes
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
+from webbsite.asp_helpers import get_date_or_default
 
 bp = Blueprint("dbpub_listings", __name__)
 
@@ -27,7 +28,7 @@ def listed():
     sort_param = request.args.get("sort", "nameup")
     e = request.args.get("e", "a")
     t = request.args.get("t", "s")
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
 
     # Build title based on filters
     exchange_titles = {

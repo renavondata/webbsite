@@ -105,7 +105,7 @@ def tv():
 
     Pure static content page, no database queries
     """
-    return render_template("pages/tv.html")
+    return render_template("pages/TV.html")
 
 
 @bp.route("/electiondisclosures.asp")
@@ -170,8 +170,12 @@ def status():
         """)
         stats['listed'] = result[0]['count'] if result else 0
 
-        # Count CCASS records
-        result = execute_query("SELECT COUNT(*) as count FROM ccass.holdings")
+        # Count CCASS records: planner estimate, an exact COUNT(*) over
+        # ccass.holdings exceeds the 8s statement timeout.
+        result = execute_query(
+            "SELECT reltuples::bigint AS count FROM pg_class"
+            " WHERE oid = 'ccass.holdings'::regclass"
+        )
         stats['ccass_holdings'] = result[0]['count'] if result else 0
 
         # Get latest CCASS date

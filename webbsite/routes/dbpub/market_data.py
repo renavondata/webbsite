@@ -4,7 +4,7 @@ Market capitalization and returns data
 
 from flask import Blueprint, render_template, request, current_app
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int, get_bool
+from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite import watermarks
 
 bp = Blueprint("dbpub_market_data", __name__)
@@ -504,7 +504,7 @@ def mcaphist():
     """
     from datetime import date as dt
 
-    d = request.args.get("d", str(dt.today()))
+    d = get_date_or_default("d", str(dt.today()))
     e = request.args.get("e", "a")
     t = request.args.get("t", "s")
     exclude_pending = get_bool("p")

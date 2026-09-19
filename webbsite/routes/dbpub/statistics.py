@@ -9,7 +9,7 @@ import io
 import re
 from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
-from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl
+from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_or_default
 from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
 
@@ -2496,7 +2496,7 @@ def overlap():
     from datetime import date as dt
 
     person_id = get_int("p", 0)
-    d = request.args.get("d", str(dt.today()))
+    d = get_date_or_default("d", str(dt.today()))
     sort_param = request.args.get("sort", "cnt")
 
     # Get organization name

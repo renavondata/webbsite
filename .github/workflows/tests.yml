@@ -46,7 +46,7 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.

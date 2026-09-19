@@ -5,7 +5,7 @@ Corporate structure - officers, advisers, positions, holders
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int, get_bool
+from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
 bp = Blueprint("dbpub_corporate", __name__)
@@ -27,7 +27,7 @@ def advisers():
     Tables used: enigma.adviserships, enigma.organisations, roles
     """
     person_id = request.args.get("p", type=int)
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     hide = request.args.get("hide", "N")  # ASP defaults to 'N' (show history)
     u = request.args.get("u", type=bool, default=False)
     sort_param = request.args.get("sort", "advup")
@@ -197,7 +197,7 @@ def officers():
     Tables used: enigma.directorships, people, enigma.positions, rank
     """
     person_id = request.args.get("p", type=int)
-    d = request.args.get("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     hide = request.args.get("hide", "N")  # ASP defaults to N (show history)
     u = request.args.get("u", type=bool, default=False)
     sort_param = request.args.get("sort", "namup")

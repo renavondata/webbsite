@@ -2840,27 +2840,32 @@ def portchg():
 @bp.route("/reghist.asp")
 def reghist():
     """
-    Regional trading history (Connect schemes) - port of reghist.asp
-    Shows Shanghai-HK and Shenzhen-HK Connect holdings over time
+    Estimated securities not in CCASS - port of reghist.asp
+    Non-CCASS holding = issued shares - (intermediary + NCIP + CIP) CCASS total
 
     Query params:
     - i: issueID
     - sc: stock code
+    - sort: dateup (chronological) or datedn (reverse chronological)
+    - o: include rows with no change (0/1, stored in session)
 
-    Tables used: ccass.parthold
+    Tables used: ccass.dailylog, enigma.issuedshares, issue, organisations
     """
     guard = _validate_ccass_query()
     if guard is not None:
         return guard
-    from flask import current_app
+    from flask import current_app, session
 
     issue_id = get_int("i", 0)
     stock_code = get_str("sc", "")
+    sort_param = "dateup" if request.args.get("sort") == "dateup" else "datedn"
 
-    # Shanghai-HK Connect partID = 1323
-    # Shenzhen-HK Connect partID = 1456
+    if request.args.get("o") is not None:
+        o = get_bool("o")
+        session["nochange"] = o
+    else:
+        o = session.get("nochange", False)
 
-    # Lookup stock if stock code provided
     if not issue_id and stock_code:
         try:
             result = execute_query(
@@ -2876,64 +2881,118 @@ def reghist():
         except Exception as ex:
             current_app.logger.error(f"Error looking up stock code: {ex}")
 
-    # Get stock name
     stock_name = "No stock specified"
     person_id = 0
+    hk_listings = []
+    current_stock_code = None
+    at_date = None
+    history = []
     if issue_id > 0:
         try:
             result = execute_query(
                 """
-                SELECT o.name1, o.personID
+                SELECT o.name1 || ':  ' || st.typeShort || ' ' ||
+                       COALESCE(c.currency, 'HKD') AS stockName,
+                       o.personID
                 FROM enigma.issue i
                 JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                LEFT JOIN enigma.currencies c ON i.sehkcurr = c.id
                 WHERE i.id1 = %s
             """,
                 (issue_id,),
             )
             if result:
-                stock_name = result[0]["name1"]
+                stock_name = result[0]["stockname"]
                 person_id = result[0]["personid"]
-        except Exception as ex:
-            current_app.logger.error(f"Error looking up stock: {ex}")
 
-    # Query Connect holdings history
-    history = []
-    if issue_id > 0:
-        try:
-            sql = """
-                SELECT
-                    ph.atDate,
-                    SUM(CASE WHEN ph.partID = 1323 THEN ph.holding ELSE 0 END) AS shanghai_holding,
-                    SUM(CASE WHEN ph.partID = 1456 THEN ph.holding ELSE 0 END) AS shenzhen_holding
-                FROM ccass.parthold ph
-                WHERE ph.issueID = %s
-                  AND ph.partID IN (1323, 1456)
-                GROUP BY ph.atDate
-                ORDER BY ph.atDate DESC
-            """
-            results = execute_query(sql, (issue_id,))
+            hk_listings = execute_query(
+                """
+                SELECT sl.*, l.shortname
+                FROM enigma.stocklistings sl
+                JOIN enigma.listings l ON sl.stockexid = l.stockexid
+                WHERE sl.stockexid IN (1, 20, 22, 23, 38, 71) AND sl.issueid = %s
+                ORDER BY sl.firsttradedate
+            """,
+                (issue_id,),
+            )
+            current_stock_code = next(
+                (sl["stockcode"] for sl in reversed(hk_listings) if sl["delistdate"] is None),
+                None,
+            )
 
-            for row in results:
-                history.append(
-                    {
-                        "atDate": row["atdate"],
-                        "shanghai_holding": row["shanghai_holding"],
-                        "shenzhen_holding": row["shenzhen_holding"],
-                    }
-                )
+            ob = "d.atDate" if sort_param == "dateup" else "d.atDate DESC"
+            results = execute_query(
+                f"""
+                SELECT d.atDate,
+                       d.intermedHldg + d.NCIPhldg + d.CIPhldg AS ctotal,
+                       s.atDate AS maxDate,
+                       s.outstanding AS shares
+                FROM ccass.dailylog d
+                LEFT JOIN LATERAL (
+                    SELECT i.atDate, i.outstanding
+                    FROM enigma.issuedshares i
+                    WHERE i.issueID = d.issueID AND i.atDate <= d.atDate
+                    ORDER BY i.atDate DESC
+                    LIMIT 1
+                ) s ON TRUE
+                WHERE d.issueID = %s
+                ORDER BY {ob}
+            """,
+                (issue_id,),
+            )
+            rows = [
+                {
+                    "atDate": r["atdate"],
+                    "maxDate": r["maxdate"],
+                    "shares": float(r["shares"]) if r["shares"] is not None else None,
+                    "holding": (
+                        float(r["shares"]) - float(r["ctotal"] or 0)
+                        if r["shares"] is not None
+                        else None
+                    ),
+                }
+                for r in results
+            ]
+            if rows:
+                at_date = max(r["atDate"] for r in rows)
+
+            # Change vs the chronologically previous row: the prior row when
+            # ascending, the next row when descending (reghist.asp).
+            neighbours = [None] + rows[:-1] if sort_param == "dateup" else rows[1:] + [None]
+            history = [
+                {
+                    **row,
+                    "change": (
+                        row["holding"] - prev["holding"]
+                        if prev is not None
+                        and row["holding"] is not None
+                        and prev["holding"] is not None
+                        else None
+                    ),
+                }
+                for row, prev in zip(rows, neighbours)
+            ]
+            if not o:
+                history = [r for r in history if r["change"] != 0]
         except Exception as ex:
-            current_app.logger.error(f"Error querying Connect holdings: {ex}")
+            current_app.logger.error(
+                f"Error querying non-CCASS holdings history: {ex}", exc_info=True
+            )
             history = []
 
     return render_template(
         "ccass/reghist.html",
-        i=issue_id,  # Template expects 'i'
         issue_id=issue_id,
         stock_code=stock_code,
         stock_name=stock_name,
         person_id=person_id,
-        p=person_id,  # Template might expect 'p' for person_id
         history=history,
+        sort=sort_param,
+        o=o,
+        hk_listings=hk_listings,
+        current_stock_code=current_stock_code,
+        at_date=at_date,
     )
 
 
