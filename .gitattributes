@@ -1,0 +1,14 @@
+# Every text file is LF, in the repository and in the working tree.
+#
+# The files ported from the Classic ASP site arrived CRLF (and a few mixed),
+# so a Python rewrite of one of them silently turned the whole file into a
+# one-line-per-line diff. `eol=lf` also stops a Windows checkout from
+# reintroducing CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.parquet binary
