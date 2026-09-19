@@ -17,7 +17,10 @@ Pins:
   3e. status.asp counts only tables that exist, and one failing figure shows
       '?' without blanking the rest;
   4. a failed query is ONE error log record (the logging integration makes
-     each ERROR line its own Sentry issue).
+     each ERROR line its own Sentry issue);
+  5. ncipchg.asp joins currencies and filters on holdings, not a SELECT alias;
+     no query uses c.currency without binding alias c;
+  6. db.py error events are fingerprinted per route (one frame, else merged).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -240,6 +243,55 @@ def run():
     finally:
         db_module.get_db = real_get_db
         db_module.logger.removeHandler(collect)
+
+    # 5. ncipchg.asp: missing currencies join (WEBBSITE-1D), and the default
+    # "hide unchanged" filter named the SELECT alias hldchg inside WHERE.
+    captured = []
+
+    def cap(sql, params=None, timeout_s=None):
+        captured.append(sql)
+        return []
+
+    real = ccass.execute_query
+    ccass.execute_query = cap
+    try:
+        for z in ("0", "1"):
+            captured.clear()
+            client.get(f"/ccass/ncipchg.asp?d=2026-09-14&z={z}")
+            main = [s for s in captured if "ncip1" in s]
+            check(f"ncipchg z={z}: currencies joined as c",
+                  len(main) == 1 and "enigma.currencies c ON" in main[0], True)
+            where = main[0].split("WHERE COALESCE(n2.holding", 1)[1] if main else ""
+            check(f"ncipchg z={z}: WHERE does not name the hldchg alias",
+                  "hldchg" in where.split("ORDER BY")[0], False)
+    finally:
+        ccass.execute_query = real
+
+    # 5b. No query anywhere uses c.currency without binding alias c.
+    import glob
+    import re
+
+    root = os.path.join(os.path.dirname(__file__), "..", "webbsite")
+    unbound = []
+    for f in glob.glob(os.path.join(root, "**", "*.py"), recursive=True):
+        src = open(f, newline="").read()
+        for m in re.finditer(r'"""(.*?)"""', src, re.S):
+            q = m.group(1)
+            if (re.search(r"\bc\.currency\b", q, re.I)
+                    and not re.search(r"currencies\s+(AS\s+)?c\b", q, re.I)):
+                unbound.append(f"{os.path.relpath(f, root)}:{src[:m.start()].count(chr(10)) + 1}")
+    check("every c.currency query joins currencies c", unbound, [])
+
+    # 6. Sentry grouping: db.py errors split by route, everything else untouched.
+    from webbsite import _group_db_errors_by_route as group
+
+    ev = group({"logger": "webbsite.db", "transaction": "ccass.ncipchg"}, None)
+    check("sentry: db error fingerprinted by route",
+          ev.get("fingerprint"), ["{{ default }}", "ccass.ncipchg"])
+    check("sentry: other loggers keep default grouping",
+          "fingerprint" in group({"logger": "webbsite", "transaction": "x"}, None), False)
+    check("sentry: no transaction, default grouping",
+          "fingerprint" in group({"logger": "webbsite.db"}, None), False)
 
     if _failures:
         print("\nFAILED:")

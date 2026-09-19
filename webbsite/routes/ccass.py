@@ -2142,8 +2142,9 @@ def ncipchg():
     if sort_param not in sort_orders:
         sort_param = "valcdn"
 
-    # Build WHERE clause for unchanged holdings filter
-    change_filter = "" if z else "AND hldchg <> 0"
+    # Build WHERE clause for unchanged holdings filter. WHERE cannot see the
+    # SELECT alias hldchg, so compare the two holdings directly.
+    change_filter = "" if z else "AND COALESCE(n2.holding, 0) <> COALESCE(n1.holding, 0)"
 
     # Query NCIP changes
     changes = []
@@ -2190,6 +2191,7 @@ def ncipchg():
             JOIN enigma.issue i ON COALESCE(n2.issueID, n1.issueID) = i.id1
             JOIN enigma.organisations o ON i.issuer = o.personID
             JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.currencies c ON i.SEHKcurr = c.id
             LEFT JOIN LATERAL (
                 SELECT i2.outstanding FROM enigma.issuedshares i2
                 WHERE i2.issueID = COALESCE(n2.issueID, n1.issueID) AND i2.atDate <= %s

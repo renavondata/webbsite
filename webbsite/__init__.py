@@ -130,6 +130,20 @@ def _configure_logging(app):
     })
 
 
+def _group_db_errors_by_route(event, hint):
+    """Sentry before_send: one issue per route for db.py's error log.
+
+    execute_query logs every failed query from the same frame, so their in-app
+    stack is identical and Sentry merged unrelated failures into one issue
+    (WEBBSITE-1C held both status.asp's missing table and ncipchg.asp's missing
+    join). Adding the Flask endpoint to the default fingerprint splits them
+    again without losing the per-exception-type grouping.
+    """
+    if event.get("logger") == "webbsite.db" and event.get("transaction"):
+        event["fingerprint"] = ["{{ default }}", event["transaction"]]
+    return event
+
+
 def _init_sentry(app):
     """Error reporting, on only when SENTRY_DSN is set (deploy/README.md).
 
@@ -156,6 +170,7 @@ def _init_sentry(app):
         ],
         traces_sample_rate=0.05,
         send_default_pii=False,
+        before_send=_group_db_errors_by_route,
     )
     return True
 
