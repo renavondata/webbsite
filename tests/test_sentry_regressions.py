@@ -13,6 +13,7 @@ Pins:
   3. an empty or junk ?d= falls back to the default instead of reaching SQL
      as '' (SFClicensees.asp?d= was an InvalidDatetimeFormat);
   3b. positions.asp / possum.asp validate ?f= ?t= (they were pasted into SQL);
+  3d. str.asp?sc= compares the zero-padded varchar stockcode as text;
   4. a failed query is ONE error log record (the logging integration makes
      each ERROR line its own Sentry issue).
 
@@ -151,6 +152,7 @@ def run():
 
     real_i, real_db = incorporations.execute_query, db_module.execute_query
     incorporations.execute_query = corporate.execute_query = rec
+    # str_route imports execute_query from webbsite.db per call, so stub there.
     db_module.execute_query = rec
     try:
         for qs in ("", "&t=2", "&w=3", "&t=2&w=3"):
@@ -176,6 +178,15 @@ def run():
         client.get("/pages/status.asp")
         check("status: no MAX(atdate) scan of ccass.holdings",
               [s for s, _ in seen if "MAX(atdate)" in s and "ccass.holdings" in s], [])
+
+        # 3d. stockcode is a zero-padded varchar ('0700'): str.asp?sc=00700
+        # compared it to the int 700, an UndefinedFunction error.
+        seen.clear()
+        client.get("/dbpub/str.asp?sc=00700")
+        main = [(s, p) for s, p in seen if "enigma.stocklistings sl" in s]
+        check("str.asp: stockcode compared LPAD-normalised",
+              len(main) == 1 and "LPAD(sl.stockcode, 8, '0')" in main[0][0], True)
+        check("str.asp: stockcode bound as text", main[0][1] if main else None, ("700",))
     finally:
         incorporations.execute_query, corporate.execute_query = real_i, real_c
         db_module.execute_query = real_db

@@ -6882,7 +6882,10 @@ def str_route():
     stock_type = ""
     stock_exp = ""
 
-    # Find enigma.issue ID from stock code if needed (ASP: Call findStock)
+    # Find enigma.issue ID from stock code if needed (ASP: Call findStock).
+    # stockcode is a zero-padded varchar ('0700'), so normalise both sides with
+    # LPAD, as _resolve_stock does -- `stockcode = 700` is a type error, not a
+    # miss, and the bare except below turned it into a blank chart.
     if sc > 0 and i == 0:
         issue_sql = """
             SELECT i.id1, o.name1, st.typeshort,
@@ -6891,13 +6894,13 @@ def str_route():
             JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
             JOIN enigma.organisations o ON i.issuer = o.personid
             JOIN enigma.sectypes st ON i.typeid = st.typeid
-            WHERE sl.stockcode = %s
+            WHERE LPAD(sl.stockcode, 8, '0') = LPAD(%s, 8, '0')
               AND NOT sl."2ndCtr"
             ORDER BY sl.firsttradedate DESC
             LIMIT 1
         """
         try:
-            issue_result = execute_query(issue_sql, (sc,))
+            issue_result = execute_query(issue_sql, (str(sc),))
             if issue_result:
                 i = issue_result[0]["id1"]
                 stock_name = issue_result[0]["name1"]
