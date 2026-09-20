@@ -181,6 +181,11 @@ retained only for parity and is deprecated in favour of parameterization.
   one cell: guard ported divisors with `NULLIF(d, 0)` (see `database/schema/functions.sql`).
 - Grouped queries: MySQL's loose `GROUP BY` allows `ORDER BY <base column>`; PostgreSQL
   requires a grouped/aggregated expression, so order by the SELECT alias.
+- Every `?sort=` value is its own ORDER BY, so it is its own code path: `tests/sort_fixtures.py`
+  reads them all back out of the routes and `tests/check_all_routes.py` requests each one,
+  requiring 200 *and* the same row count as the unsorted page (a caught SQL error renders an
+  empty table with a 200). Adding a sort value needs nothing; adding a sort-taking *page*
+  needs one entry in `tests/route_fixtures.py` whose parameters render rows.
 - Local dev DSN: `postgresql://postgres:@localhost:5432/enigma_pg`; production reads `DATABASE_URL`.
 
 ## Data revival

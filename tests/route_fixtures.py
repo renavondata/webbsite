@@ -3,6 +3,13 @@ parameters that render real data. Pure data, no imports, so the route-health
 gate (check_all_routes.py) and the daily invariants job on the box can use it
 with nothing but the standard library. Lifted verbatim from crawl_asp.py, which
 still imports it under the same names.
+
+One entry per page is enough here. check_all_routes.py multiplies each of these
+out by every ?sort= value the route accepts (sort_fixtures.py reads those out of
+the route source), so a page listed once with parameters that render real data
+gets all of its column-header links exercised. That is why a fixture whose
+parameters render an *empty* page is worse than none: it passes every check
+while testing nothing.
 """
 
 DBPUB_ROUTES_NO_PARAMS = [
@@ -122,6 +129,11 @@ DBPUB_ROUTES_NO_PARAMS = [
     "/dbpub/overlap.asp",
     "/dbpub/possum.asp",
     "/dbpub/matches.asp",
+    # --- Sort-sweep coverage: reached only from another page's links, so these
+    # had no fixture and none of their sort values had ever been requested. ---
+    "/dbpub/HKsolfirms.asp",
+    "/dbpub/HKsolsmoves.asp",
+    "/dbpub/HKsolemps.asp",
 ]
 
 # ============================================================
@@ -203,8 +215,11 @@ DBPUB_ROUTES_WITH_PARAMS = [
     ("/dbpub/officers.asp", {"p": "24855630"}),
     ("/dbpub/officers.asp", {"p": "382"}),     # HSBC
     ("/dbpub/officers.asp", {"p": "21290"}),   # Tencent
+    ("/dbpub/positions.asp", {"p": "105"}),    # Au, Alexander Siu Kee -- first,
+                                               # because the sort sweep uses the
+                                               # first fixture for a path as its
+                                               # baseline and p=24855630 is empty
     ("/dbpub/positions.asp", {"p": "24855630"}),
-    ("/dbpub/positions.asp", {"p": "105"}),    # Au, Alexander Siu Kee
     ("/dbpub/positions.asp", {"p": "135"}),    # Lee, Shau Kee
     ("/dbpub/advisers.asp", {"p": "24855630"}),
     ("/dbpub/advisers.asp", {"p": "382"}),     # HSBC
@@ -275,16 +290,17 @@ DBPUB_ROUTES_WITH_PARAMS = [
     # --- SFC with params ---
     ("/dbpub/SFChistfirm.asp", {"p": "374"}),  # HSBC SFC firm
     ("/dbpub/SFChistfirm.asp", {"p": "395"}),  # Hang Seng Bank
+    ("/dbpub/sfclicrec.asp", {"p": "101742"}),  # the most-licensed individual
     ("/dbpub/sfclicrec.asp", {"p": "40"}),     # Chan, Stephen (SFC licensee)
     ("/dbpub/sfclicrec.asp", {"p": "90"}),     # Coull, Gary
-    ("/dbpub/SFClicensees.asp", {"act": "1"}),
-    ("/dbpub/SFClicensees.asp", {"act": "9"}),
+    ("/dbpub/SFClicensees.asp", {"p": "1464", "a": "1"}),  # the route reads p
+    ("/dbpub/SFClicensees.asp", {"p": "1464"}),            # and a, never "act"
 
     # --- Incorporation stats with year params ---
     ("/dbpub/incHKannual.asp", {"y": "2023"}),
     ("/dbpub/incHKmonth.asp", {"y": "2023"}),
     ("/dbpub/incHKcaltype.asp", {"y": "2023"}),
-    ("/dbpub/disHKcaltype.asp", {"y": "2023"}),
+    ("/dbpub/disHKcaltype.asp", {"y": "2015"}),  # 2023 has two rows
     ("/dbpub/incUKcaltype.asp", {"y": "2023"}),
 
     # --- Auditor changes with year ---
@@ -312,6 +328,34 @@ DBPUB_ROUTES_WITH_PARAMS = [
 
     # --- PRH routes with params ---
     ("/dbpub/prhdistricts.asp", {"d": "HK"}),
+
+    # --- Sort-sweep coverage ---
+    # Drill-down pages, each reachable only from a link on the page above it, so
+    # none of them had a fixture and none of their sort links had ever been
+    # requested. Parameters chosen because they render rows: an empty page would
+    # make every sort check on it vacuous.
+    ("/dbpub/enigma.events.asp", {"i": "1088"}),
+    ("/dbpub/docs.asp", {"p": "382"}),
+    ("/dbpub/SFColicrec.asp", {"p": "374"}),   # HSBC: an org, not a person -- a
+                                               # personID here is a 404 by design
+    ("/dbpub/HKsols.asp", {"p": "1"}),         # p is the role (1 = Partner)
+    ("/dbpub/payleagueorg.asp", {"y": "2023"}),
+    ("/dbpub/prhestates.asp", {"dis": "3"}),
+    ("/dbpub/prhblocks.asp", {"e": "1"}),
+    ("/dbpub/prhfloors.asp", {"b": "1"}),
+    ("/dbpub/prhunits.asp", {"b": "1"}),
+    ("/dbpub/lirstaffhist.asp", {"s": "1"}),
+
+    # Pages that were listed without parameters and so rendered an empty table:
+    # the sort sweep passed on every one of them without testing anything.
+    ("/dbpub/possum.asp", {"p": "105"}),
+    ("/dbpub/holdings.asp", {"p": "382"}),
+    ("/dbpub/searchESS.asp", {"n": "Chan"}),
+    ("/dbpub/ESSraw.asp", {"p": "1631609"}),
+    ("/dbpub/incFcal.asp", {"y": "2023"}),
+    ("/dbpub/disFcal.asp", {"y": "2015"}),
+    ("/dbpub/hpu.asp", {"i": "983"}),            # parallel trading: needs an
+    ("/dbpub/hpup.asp", {"i": "983"}),           # issue that actually had some
 ]
 
 # ============================================================
@@ -361,4 +405,10 @@ CCASS_ROUTES_WITH_PARAMS = [
     ("/ccass/choldings.asp", {"i": "1088", "d": "2024-06-01"}),
     ("/ccass/cholder.asp", {"part": "1323", "d": "2024-06-01"}),
     ("/ccass/cholder.asp", {"part": "7", "d": "2024-06-01"}),
+
+    # --- Sort-sweep coverage: two-date change pages, linked from cholder/
+    # choldings and so never fixtured. portchg.asp is the same shape and is
+    # already covered by EXTRA_URLS in check_all_routes.py.
+    ("/ccass/ncipchg.asp", {"d1": "2024-06-03", "d": "2024-06-14"}),
+    ("/ccass/chldchg.asp", {"i": "1088", "d1": "2024-06-03", "d": "2024-06-14"}),
 ]
