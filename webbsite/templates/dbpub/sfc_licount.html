@@ -80,7 +80,7 @@ SFC-licensed firms.</p>
 	{% for row in stats %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
-			<td class="left"><a href='SFClicensees.asp?p={{ row.orgid }}&amp;a={{ act }}&amp;h=Y&amp;sort=posdn&amp;d={{ da }}'>{{ row.name }}</a></td>
+			<td class="left"><a href='SFClicensees.asp?p={{ row.orgid }}&amp;a={{ act }}&amp;h=Y&amp;d={{ da }}'>{{ row.name }}</a></td>
 			<td class="colHide1">{{ row.bro|int }}</td>
 			<td class="colHide1">{{ row.brep|int }}</td>
 			<td class="colHide1">{{ row.bcnt|int }}</td>

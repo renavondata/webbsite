@@ -51,7 +51,7 @@
         <td>{{ loop.index }}</td>
         <td>{{ row.c }}</td>
         <td>{{ "%.2f"|format(row.c / total * 100) if total > 0 else '0.00' }}</td>
-        <td class="left"><a href="adviserships.asp?p={{ row.personid }}&r={{ r }}&sort=cagdn">{{ row.name1 }}</a></td>
+        <td class="left"><a href="adviserships.asp?p={{ row.personid }}&r={{ r }}">{{ row.name1 }}</a></td>
     </tr>
     {% endfor %}
 </table>
