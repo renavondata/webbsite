@@ -22,6 +22,7 @@ to name ten). That only works while the reader keeps up with the routes, so:
      shape it should reject.
 
     uv run python tests/test_sort_fixtures.py
+    PLANTED_FAILURE=1 uv run python tests/test_sort_fixtures.py   # must fail
 """
 
 import ast
@@ -64,8 +65,15 @@ SORTS_BY_ANOTHER_PARAMETER = {
 }
 
 # A string that looks like one of this site's sort keys: a short column
-# abbreviation plus a direction.
+# abbreviation plus a direction. Ordinary English ends that way too, and a
+# template variable named "group" turning this red would have no honest place
+# to be recorded -- SORTS_BY_ANOTHER_PARAMETER is keyed by route and means
+# something else.
 SORT_KEY = re.compile(r"^[A-Za-z0-9]{2,10}(up|dn|UP|DN)$")
+NOT_SORT_KEYS = {
+    "backup", "cleanup", "group", "lineup", "lookup", "makeup", "markup",
+    "popup", "roundup", "setup", "signup", "startup", "warmup",
+}
 
 
 def uncaptured_sort_keys(found, patterns):
@@ -80,7 +88,8 @@ def uncaptured_sort_keys(found, patterns):
             mentioned = {node.value for node in ast.walk(func)
                          if isinstance(node, ast.Constant)
                          and isinstance(node.value, str)
-                         and SORT_KEY.match(node.value)}
+                         and SORT_KEY.match(node.value)
+                         and node.value.lower() not in NOT_SORT_KEYS}
             for path in sort_fixtures._route_paths(func):
                 full = prefix + path
                 extra = {key for key in mentioned
@@ -155,9 +164,18 @@ def run():
     found = sort_fixtures.sort_values()
     patterns = sort_fixtures.sort_patterns()
 
+    if os.environ.get("PLANTED_FAILURE"):
+        # The self-proof CI step runs this and requires a red result. Check 4 is
+        # the one that found reghist.asp, and it is the only check here that
+        # cannot be proved red from a synthetic module -- it compares the reader
+        # against the real tree, so the planted defect has to be a value the
+        # reader really returns and this pretends it did not.
+        found = {path: [v for v in values if v not in ("datedn", "dateup")]
+                 for path, values in found.items()}
+
     # 1. Scale. A lower bound only trips if the reader loses ground.
-    check("reads sort values from every sort-taking route", len(found) >= 115, True)
-    check("total sort values", sum(len(v) for v in found.values()) >= 1000, True)
+    check("reads sort values from every sort-taking route", len(found) >= 118, True)
+    check("total sort values", sum(len(v) for v in found.values()) >= 1014, True)
 
     # The bug this exists for: all ten of tuntraff.asp's, not just the default.
     check("tuntraff.asp sort values", found.get("/dbpub/tuntraff.asp"),

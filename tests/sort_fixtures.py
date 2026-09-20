@@ -26,12 +26,19 @@ A function that reads ``sort`` but yields neither raises: that means the route
 spells its sort values in a shape this does not understand, and silently
 returning nothing for it would quietly shrink the sweep back down again.
 
+The shape that would still be lost quietly is a sort map built by a helper --
+``ob = _order(sort)`` -- because the values live in a function with no route of
+its own and no ``?sort=`` read to notice. Nothing in the tree does that today,
+and tests/test_sort_fixtures.py cross-checks every sort-shaped literal in the
+routes against what this returns, which is what would catch it.
+
 Stdlib only (like route_fixtures.py), so the route-health gate and the daily
 invariants job on the box can both import it. Nothing here imports the app: it
 is a parse, not a run, so it works with no database and no Flask.
 """
 
 import ast
+import functools
 import pathlib
 import re
 
@@ -234,8 +241,14 @@ def url_prefixes():
     return prefixes
 
 
+@functools.lru_cache(maxsize=None)
 def _scan(routes_dir=ROUTES):
-    """{path: (values, patterns)} for every route that reads ?sort=."""
+    """{path: (values, patterns)} for every route that reads ?sort=.
+
+    Cached: sort_values() and sort_patterns() are called for the same tree in
+    one run, and re-parsing statistics.py (9.5k lines) for each is waste. The
+    route source does not change while the gate runs.
+    """
     prefixes = url_prefixes()
     found = {}
     for source in sorted(pathlib.Path(routes_dir).rglob("*.py")):
@@ -282,7 +295,9 @@ def _scan(routes_dir=ROUTES):
             if not isinstance(func, ast.FunctionDef):
                 continue
             target = by_function.get(_delegates_to(func) or "")
-            for path in _route_paths(func) if target else ():
+            if not target:
+                continue
+            for path in _route_paths(func):
                 v, pt = found.setdefault(prefix + path, (set(), set()))
                 v.update(target[0])
                 pt.update(target[1])

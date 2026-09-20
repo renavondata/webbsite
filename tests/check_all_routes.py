@@ -141,7 +141,9 @@ CONTENT_CHECKS = [
 
 # Pages whose row count legitimately changes with the sort order. Every entry
 # needs a reason, because the usual cause of a changed row count is a broken
-# ORDER BY that the route caught and rendered as an empty table.
+# ORDER BY that the route caught and rendered as an empty table. These pages are
+# held to a floor rather than exempted: turning the check off for them would let
+# through, on exactly these pages, the failure it exists to catch.
 SORT_ROW_COUNT_VARIES = {
     "/dbpub/lirstaff.asp":
         "collapses *consecutive* rows for the same staff member, faithful to the "
@@ -156,6 +158,18 @@ SORT_ROW_COUNT_VARIES = {
 SORT_BASE_OVERRIDES = {
     # Renders the gated-off suspension notice, never a table.
     "/dbpub/HKIDindex120215.asp": None,
+}
+
+# A fixture that renders no rows makes every sort check on that page pass while
+# testing nothing, so it FAILS unless it is named here -- otherwise a page whose
+# data drifts out from under its fixture leaves the sweep as quietly as an
+# extractor that returns nothing, which this design refuses to allow elsewhere.
+# (Reporting it would not do: scripts/assert_box.py forwards only FAIL lines to
+# the daily ping, so an INFO line reaches nobody.)
+SORT_FIXTURE_TOO_THIN = {
+    "/dbpub/sdidirco.asp":
+        "no parameters found that render more than two rows; the page needs a "
+        "person who is a director of a company with an SDI filing",
 }
 
 
@@ -188,23 +202,35 @@ def collect_targets():
     return targets
 
 
-def probe(url, attempts=2):
+# Retrying is for a momentarily saturated origin, not a dead one: once this many
+# probes in a row have failed to connect, the origin is down and a second attempt
+# per URL only spends the invariants job's budget, turning a clear FAIL into an
+# out-of-time BLIND.
+GIVE_UP_RETRYING_AFTER = 10
+_unreachable = 0
+
+
+def probe(url):
     """(status, body). Status is None when the origin could not be reached.
 
-    Retried once, because a connection-level failure is usually the origin being
-    momentarily saturated rather than the route being broken, and a single
-    transient here turns the daily invariants run red for no reason. An origin
-    that is actually down still reports None, just twice as slowly.
+    Retried once, because a single connection-level transient here otherwise
+    turns the daily invariants run red for no reason -- one did, mid-sweep,
+    against a page that answers in 15 ms.
     """
+    global _unreachable
+    attempts = 1 if _unreachable >= GIVE_UP_RETRYING_AFTER else 2
     last = "not attempted"
     for _ in range(attempts):
         try:
             with urlopen(Request(url, headers=HEADERS), timeout=TIMEOUT) as r:  # noqa: S310
+                _unreachable = 0
                 return r.status, r.read().decode("utf-8", "replace")
         except HTTPError as e:
+            _unreachable = 0
             return e.code, e.read().decode("utf-8", "replace")
         except (URLError, OSError) as e:
             last = str(e)
+    _unreachable += 1
     return None, last
 
 
@@ -212,7 +238,10 @@ def sort_base_urls():
     """{path: query string} -- one representative, data-rendering URL per page.
 
     Whatever fixture already exercises the page is reused, so adding a sort
-    value to a route needs no new fixture and a new page needs only one.
+    value to a route needs no new fixture and a new page needs only one. Where a
+    page has several, the first wins, which makes fixture order load-bearing --
+    but picking an empty one is a failure now (SORT_FIXTURE_TOO_THIN), not a
+    quiet pass, so it cannot go unnoticed.
     """
     base = {}
     # Most specific first: a page listed both with and without parameters is
@@ -255,7 +284,10 @@ def check_sorts():
 
     Also checks the other direction: a sort link the page *offers* that its
     route does not handle is a dead header -- it returns 200, with exactly the
-    rows it already had, in exactly the order it already had.
+    rows it already had, in exactly the order it already had. Only the unsorted
+    page's links are read, so for a header that toggles direction this sees one
+    of the two; a value linked *only* from an already-sorted page would be
+    missed.
     """
     values, patterns = sort_fixtures.sort_values(), sort_fixtures.sort_patterns()
     base = sort_base_urls()
@@ -278,44 +310,54 @@ def check_sorts():
     workers = int(os.environ.get("ROUTE_CHECK_WORKERS", "6"))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         bases = dict(zip(targets, pool.map(
-            lambda p: probe(f"{BASE_URL}{p}?{base[p]}"), targets)))
+            lambda p: measure(f"{BASE_URL}{p}?{base[p]}", p), targets)))
         jobs = [(p, v) for p in targets for v in values[p]]
         sorted_pages = dict(zip(jobs, pool.map(
-            lambda j: probe(f"{BASE_URL}{j[0]}?{query_for(*j)}"), jobs)))
-
-    def rows(body):
-        return len(re.findall(r"<tr", body, re.I))
+            lambda j: measure(f"{BASE_URL}{j[0]}?{query_for(*j)}"), jobs)))
 
     vacuous = []
     for path in targets:
-        code, body = bases[path]
+        code, base_rows, links = bases[path]
         if code != 200:
             failures.append(f"SORT {path}: base page status {code}")
             print(f"  FAIL  {path}  (base page status {code})")
             continue
-        base_rows = rows(body)
         if base_rows < 3:
             # Nothing to sort, so every check below would pass without testing
-            # anything. Reported, not failed: it is a fixture to improve.
-            vacuous.append(f"{path}?{base[path]} ({base_rows} rows)")
+            # anything.
+            where = f"{path}?{base[path]} ({base_rows} rows)"
+            if path in SORT_FIXTURE_TOO_THIN:
+                vacuous.append(f"{where} -- {SORT_FIXTURE_TOO_THIN[path]}")
+            else:
+                failures.append(f"SORT {where}: fixture renders no rows, so none "
+                                "of this page's sort links are being checked")
+                print(f"  FAIL  {where}  (fixture renders nothing to sort)")
             continue
         bad = 0
         for value in values[path]:
-            code, body = sorted_pages[(path, value)]
+            code, sorted_rows, _ = sorted_pages[(path, value)]
             label = f"{path}?{query_for(path, value)}"
             if code != 200:
                 failures.append(f"SORT {label}: status {code}")
                 print(f"  FAIL  {label}  (status {code})")
                 bad += 1
-            elif rows(body) != base_rows and path not in SORT_ROW_COUNT_VARIES:
+            elif path in SORT_ROW_COUNT_VARIES:
+                if sorted_rows < max(3, base_rows // 2):
+                    failures.append(
+                        f"SORT {label}: {sorted_rows} rows; this page regroups on "
+                        f"sort, but not down from {base_rows}")
+                    print(f"  FAIL  {label}  ({sorted_rows} rows, regrouping from "
+                          f"{base_rows} cannot explain that)")
+                    bad += 1
+            elif sorted_rows != base_rows:
                 failures.append(
-                    f"SORT {label}: {rows(body)} rows, unsorted page has {base_rows}")
-                print(f"  FAIL  {label}  ({rows(body)} rows vs {base_rows} unsorted)")
+                    f"SORT {label}: {sorted_rows} rows, unsorted page has {base_rows}")
+                print(f"  FAIL  {label}  ({sorted_rows} rows vs {base_rows} unsorted)")
                 bad += 1
         # A sort link the route does not handle: the header is there, the click
         # does nothing. Resolved against the link's own target, because plenty
         # of these point at another page.
-        for target, value in sorted(sort_links(bases[path][1], path)):
+        for target, value in sorted(links):
             if expected_status(target) != 200:
                 continue
             if not sort_fixtures.handles(target, value, values, patterns):
@@ -327,8 +369,8 @@ def check_sorts():
             print(f"  ok    {path}  ({len(values[path])} sort values, {base_rows} rows)")
 
     if vacuous:
-        print(f"INFO: {len(vacuous)} fixture(s) render too few rows for their sort "
-              "checks to mean anything:")
+        print(f"INFO: {len(vacuous)} known-thin fixture(s), excluded from the sort "
+              "checks by SORT_FIXTURE_TOO_THIN:")
         for entry in vacuous:
             print(f"       {entry}")
     if uncovered:
@@ -337,6 +379,20 @@ def check_sorts():
         for path in uncovered:
             print(f"       {path}")
     return failures
+
+
+def measure(url, page_path=None):
+    """(status, row count, sort links) for one page. The body is NOT retained.
+
+    The sweep fetches ~1120 pages and the checks need only a status, a row
+    count and (for the base page of each route) the set of sort links it
+    offers. Keeping the decoded bodies alive until the end would hold hundreds
+    of megabytes on a box that has been OOM-killed before -- some of these
+    pages are five thousand rows.
+    """
+    code, body = probe(url)
+    links = sort_links(body, page_path) if page_path else frozenset()
+    return code, len(re.findall(r"<tr", body, re.I)), links
 
 
 def sort_links(body, page_path):

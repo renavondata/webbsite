@@ -52,6 +52,10 @@
         <td>{{ row.c }}</td>
         <td>{{ "%.2f"|format(row.c / total * 100) if total > 0 else '0.00' }}</td>
         <td class="left"><a href="adviserships.asp?p={{ row.personid }}&r={{ r }}">{{ row.name1 }}</a></td>
+        {# The ASP linked this with sort=cagdn. adviserships.asp on webb-site.com
+           sorted on totdn/cagretdn/cagreldn; this port does not implement those
+           columns yet (see the note in dbpub_statistics.adviserships), so the
+           parameter had nothing to sort by and is dropped until they exist. #}
     </tr>
     {% endfor %}
 </table>

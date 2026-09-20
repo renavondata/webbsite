@@ -72,6 +72,12 @@ def sfc_licensees():
         "resdn": f"{res_var} DESC,name",
         "rolup": f"role,name,{appt_var}",
         "roldn": f"role DESC,name,{appt_var}",
+        # SFClicount.asp has always linked here with sort=posdn -- it is in the
+        # archived ASP crawl -- and "position" on this page is the RO/Rep role
+        # the column headers call Role. Aliased rather than dropped, so the link
+        # lands the way it did on webb-site.com.
+        "posup": f"role,name,{appt_var}",
+        "posdn": f"role DESC,name,{appt_var}",
         "agedn": f"YOB,name,{appt_var}",
         "ageup": f"YOB DESC,name,{appt_var}",
         "sexup": f"sex,name,{appt_var}",

@@ -52,10 +52,12 @@ jobs:
       # same harness with a check forced to fail and require a red result.
       - name: "self-proof: a planted failure fails"
         run: |
-          if PLANTED_FAILURE=1 uv run python tests/test_app_hardening.py >/dev/null 2>&1; then
-            echo "planted failure passed -- the harness is not gating"; exit 1
-          fi
-          echo "planted failure correctly failed"
+          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py; do
+            if PLANTED_FAILURE=1 uv run python "$t" >/dev/null 2>&1; then
+              echo "$t passed with a planted failure -- it is not gating"; exit 1
+            fi
+            echo "planted failure correctly failed: $t"
+          done
 
       - name: shellcheck deploy/
         run: |
