@@ -12,7 +12,11 @@ to name ten). That only works while the reader keeps up with the routes, so:
   3. every route that takes ?sort= has a fixture to exercise it with, so a new
      sort-taking page cannot ship with its column headers untested -- which is
      exactly how tuntraff.asp's were 500s for the life of the Flask port;
-  4. the reader still handles each shape in use (dict literal, module-level
+  4. no route mentions a sort-looking string the reader did not capture --
+     under-reporting is silent where a raise is loud, and this is what catches
+     it (reghist.asp reads ?sort= inside a conditional expression and was
+     missed entirely until this check existed);
+  5. the reader still handles each shape in use (dict literal, module-level
      dict, if/elif chain, f-string comparison, alias route), proved by parsing
      a module written to contain each one, and proved to go red by parsing a
      shape it should reject.
@@ -20,8 +24,10 @@ to name ten). That only works while the reader keeps up with the routes, so:
     uv run python tests/test_sort_fixtures.py
 """
 
+import ast
 import os
 import pathlib
+import re
 import sys
 import tempfile
 
@@ -45,6 +51,45 @@ def check(name, got, want):
 
 # Blueprints the port answers 410 for; their sort values are not exercised.
 DEFERRED = ("/webbmail", "/vote", "/pollman", "/mailman", "/dbeditor")
+
+# Pages that sort on a query parameter other than ?sort=, so their sort values
+# are genuinely not this reader's to find. They are listed rather than ignored:
+# the sweep does not exercise their column headers, and the list must not grow
+# without someone noticing.
+SORTS_BY_ANOTHER_PARAMETER = {
+    "/dbpub/donations.asp": "sort1",
+    "/dbpub/holders.asp": "s1",
+    "/dbpub/leagueDirsHK.asp": "s1/s2/s3 (three-level sort)",
+    "/dbpub/orgdata.asp": "per-section parameters on a page of many tables",
+}
+
+# A string that looks like one of this site's sort keys: a short column
+# abbreviation plus a direction.
+SORT_KEY = re.compile(r"^[A-Za-z0-9]{2,10}(up|dn|UP|DN)$")
+
+
+def uncaptured_sort_keys(found, patterns):
+    """{path: keys} the route source mentions but the reader did not return."""
+    prefixes = sort_fixtures.url_prefixes()
+    missed = {}
+    for source in sorted(sort_fixtures.ROUTES.rglob("*.py")):
+        prefix = prefixes.get(source.stem, prefixes.get(source.parent.name, ""))
+        for func in ast.walk(ast.parse(source.read_text())):
+            if not isinstance(func, ast.FunctionDef):
+                continue
+            mentioned = {node.value for node in ast.walk(func)
+                         if isinstance(node, ast.Constant)
+                         and isinstance(node.value, str)
+                         and SORT_KEY.match(node.value)}
+            for path in sort_fixtures._route_paths(func):
+                full = prefix + path
+                extra = {key for key in mentioned
+                         if key not in set(found.get(full, ()))
+                         and not any(re.fullmatch(p, key)
+                                     for p in patterns.get(full, ()))}
+                if extra:
+                    missed.setdefault(full, set()).update(extra)
+    return missed
 
 # One module containing every shape the reader has had to learn, so a rewrite
 # that drops one fails here rather than in six months on the box.
@@ -135,7 +180,17 @@ def run():
     )
     check("every sort-taking route has a fixture", unexercised, [])
 
-    # 4. Each shape the reader has had to learn.
+    # 4. Nothing sort-shaped in the routes goes uncaptured without a reason.
+    #    A route the reader does not recognise at all contributes nothing and
+    #    raises nothing, so only this notices.
+    unexplained = sorted(
+        f"{path} ({sorted(keys)})"
+        for path, keys in uncaptured_sort_keys(found, patterns).items()
+        if path not in SORTS_BY_ANOTHER_PARAMETER
+    )
+    check("no sort key goes uncaptured without a reason", unexplained, [])
+
+    # 5. Each shape the reader has had to learn.
     with tempfile.TemporaryDirectory() as tmp:
         every_shape = written(tmp, SHAPES)
         shapes = sort_fixtures.sort_values(every_shape)

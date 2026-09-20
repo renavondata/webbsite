@@ -43,25 +43,44 @@ class SortMapNotUnderstood(Exception):
     """A route reads ?sort= but its sort values could not be read back out."""
 
 
+def _reads_sort(expression):
+    """Does this expression read the ?sort= query parameter anywhere inside it?
+
+    Matching only a bare `x = get_str("sort", d)` missed reghist.asp, whose read
+    is buried in a conditional -- and missed it *silently*, contributing nothing
+    and raising nothing, which is the one failure mode this module is built to
+    avoid. Anything containing the read counts.
+    """
+    for node in ast.walk(expression):
+        if not (isinstance(node, ast.Call) and node.args):
+            continue
+        # get_str("sort", ...) or request.args.get("sort", ...) -- the two
+        # spellings in use; asp_helpers.get_str wraps the latter.
+        func = node.func
+        name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", None)
+        first = node.args[0]
+        if name in ("get_str", "get") and isinstance(first, ast.Constant) \
+                and first.value == "sort":
+            return True
+    return False
+
+
 def _sort_param_name(node):
-    """('sortvar', 'default') if this statement reads the ?sort= parameter."""
+    """('sortvar', {values}) if this statement assigns from a ?sort= read.
+
+    Every string constant in the assigning expression is a value the route can
+    hold: `get_str("sort", "datdn")` yields its default, and reghist.asp's
+    `"dateup" if request.args.get("sort") == "dateup" else "datedn"` yields both
+    of the two orders it supports.
+    """
     if not isinstance(node, ast.Assign) or len(node.targets) != 1:
         return None
     target = node.targets[0]
-    call = node.value
-    if not isinstance(target, ast.Name) or not isinstance(call, ast.Call) or not call.args:
+    if not isinstance(target, ast.Name) or not _reads_sort(node.value):
         return None
-    # get_str("sort", ...) or request.args.get("sort", ...) -- the two spellings
-    # in use; asp_helpers.get_str wraps the latter.
-    func = call.func
-    name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", None)
-    first = call.args[0]
-    if name not in ("get_str", "get") or not (
-        isinstance(first, ast.Constant) and first.value == "sort"
-    ):
-        return None
-    default = call.args[1] if len(call.args) > 1 else None
-    return target.id, default.value if isinstance(default, ast.Constant) else None
+    values = {c.value for c in ast.walk(node.value)
+              if isinstance(c, ast.Constant) and isinstance(c.value, str)}
+    return target.id, values - {"sort", ""}
 
 
 def _string_key_dicts(nodes):
@@ -234,8 +253,7 @@ def _scan(routes_dir=ROUTES):
                 read = _sort_param_name(stmt)
                 if read:
                     sort_vars.add(read[0])
-                    if read[1]:
-                        defaults.add(read[1])
+                    defaults |= read[1]
             if not sort_vars:
                 continue
             local = _string_key_dicts(ast.walk(func))

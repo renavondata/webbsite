@@ -409,6 +409,7 @@ CCASS_ROUTES_WITH_PARAMS = [
     # --- Sort-sweep coverage: two-date change pages, linked from cholder/
     # choldings and so never fixtured. portchg.asp is the same shape and is
     # already covered by EXTRA_URLS in check_all_routes.py.
+    ("/ccass/reghist.asp", {"i": "1088"}),
     ("/ccass/ncipchg.asp", {"d1": "2024-06-03", "d": "2024-06-14"}),
     ("/ccass/chldchg.asp", {"i": "1088", "d1": "2024-06-03", "d": "2024-06-14"}),
 ]
