@@ -24,6 +24,35 @@
 
 SET search_path TO enigma, ccass, public;
 
+-- CREATE OR REPLACE cannot rename an input parameter, so a database whose
+-- bodies came from database/migrations/002_sync_missing_objects.sql (parameter
+-- `issueid_param`, the retired Render bootstrap) rejects this whole file with
+-- "cannot change name of input parameter" -- and converge would then fail on
+-- every tick forever, leaving the guard unapplied in exactly the rebuild case
+-- it exists for. Drop only a clashing signature, so the ordinary path (live,
+-- and any pg_restore of the R2 baseline, both of which already spell it `id`)
+-- keeps CREATE OR REPLACE and with it the function's owner and grants.
+DO $drop_clashing$
+DECLARE
+    fn     text;
+    target regprocedure;
+    want   CONSTANT text := 'id integer, fromdate date, todate date';
+BEGIN
+    FOREACH fn IN ARRAY ARRAY['totret', 'cagret', 'cagrel'] LOOP
+        -- to_regprocedure is NULL when that exact signature does not exist, so
+        -- this never touches an unrelated overload. (pg_get_function_identity_
+        -- arguments is NOT the test to use here: it includes parameter names.)
+        target := to_regprocedure(format('enigma.%I(integer, date, date)', fn));
+        IF target IS NOT NULL AND pg_get_function_arguments(target::oid) <> want THEN
+            -- Rare (a rebuild from 002); the recreate below is then owned by
+            -- whoever runs this file rather than by the previous owner.
+            RAISE NOTICE 'dropping % : parameter names differ from this file', target;
+            EXECUTE format('DROP FUNCTION %s', target::text);
+        END IF;
+    END LOOP;
+END
+$drop_clashing$;
+
 -- Total return between two dates.
 CREATE OR REPLACE FUNCTION enigma.totret(id integer, fromdate date, todate date)
  RETURNS double precision

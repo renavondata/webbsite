@@ -216,14 +216,35 @@ if id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
         || true   # library not loaded yet (pre-restart): silent, the invariants job reports it
 fi
 
-# The return calculations (enigma.totret/cagret/cagrel). CREATE OR REPLACE,
-# idempotent and instant, so it runs every tick rather than being a manual
-# post-restore step like the indexes: a plain restore brings back the MySQL-era
+# The return calculations (enigma.totret/cagret/cagrel). Unlike the indexes
+# these are CREATE OR REPLACE and instant, so converge owns them rather than
+# leaving a manual post-restore step: a plain restore brings back the MySQL-era
 # bodies whose unguarded `/ firstQF` takes out every page that ranks returns,
-# and nothing else on the box would notice. The invariants job verifies it.
+# and nothing else on the box would notice.
+#
+# Gated on drift rather than applied every tick. Rewriting pg_proc 720x a day
+# invalidates cached plans in the long-lived gunicorn connections for no reason,
+# and it would mean the one interesting event -- a restore reverting the guard --
+# never appears in the log. The gate is deliberately coarse (present, right
+# parameter name, a guard in the body); scripts/assert_box.py compares the whole
+# body against the file daily, so a subtler edit is still caught, just not here.
 if [ -f "$FN_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
-    psql_pg -d enigma -f "$FN_SRC" >/dev/null 2>&1 \
-        || { log "postgres: database/schema/functions.sql FAILED to apply"; rc=1; }
+    guarded=$(psql_pg -d enigma -c "SELECT count(*) FROM pg_proc p \
+        JOIN pg_namespace n ON n.oid = p.pronamespace \
+        WHERE n.nspname = 'enigma' AND p.proname IN ('totret', 'cagret', 'cagrel') \
+          AND pg_get_function_arguments(p.oid) = 'id integer, fromdate date, todate date' \
+          AND p.prosrc LIKE '%NULLIF%'" 2>/dev/null)
+    if [ -z "$guarded" ]; then
+        :   # could not ask (mid-restart, saturated): silent, like the extension
+            # check above; the invariants job reports it daily either way.
+    elif [ "$guarded" != 3 ]; then
+        if fn_out=$(psql_pg -d enigma -f "$FN_SRC" 2>&1); then
+            log "postgres: applied database/schema/functions.sql ($guarded/3 were guarded)"
+        else
+            log "postgres: database/schema/functions.sql FAILED to apply: $(printf '%s' "$fn_out" | tail -1)"
+            rc=1
+        fi
+    fi
 fi
 
 [ "$changed_units$changed_caddy$changed_pg" = "000" ] || log "converge complete (units=$changed_units caddy=$changed_caddy pg=$changed_pg)"

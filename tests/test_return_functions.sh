@@ -151,7 +151,31 @@ check_val totret 1.500000
 check_val cagret "$want_cagret"
 check_val cagrel "$want_cagrel"
 
-step "4. a zero cumAdjust divisor is guarded too"
+step "4. applies onto a database that names the parameter differently"
+# migrations/002 spells it issueid_param, and CREATE OR REPLACE cannot rename a
+# parameter -- without the conditional DROP this file fails outright, so converge
+# would fail every tick and the guard would never land on a rebuilt database.
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -c "DROP FUNCTION enigma.totret(integer, date, date)"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" <<'SQL'
+CREATE FUNCTION enigma.totret(issueid_param integer, fromdate date, todate date)
+ RETURNS double precision LANGUAGE plpgsql STABLE AS $function$
+BEGIN RETURN 42; END; $function$;
+SQL
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f "$ROOT/database/schema/functions.sql" \
+    || fail "functions.sql could not apply over the issueid_param signature"
+got=$(q "SELECT pg_get_function_arguments('enigma.totret(integer,date,date)'::regprocedure)")
+[ "$got" = "id integer, fromdate date, todate date" ] \
+    || fail "parameter not renamed: got '$got'"
+got=$(q "SELECT COALESCE(enigma.totret(2, DATE '2020-01-01', DATE '2021-06-01')::text, 'NULL')")
+[ "$got" = "NULL" ] || fail "after the rename, the guard is not live: got '$got'"
+echo "  dropped the clashing signature and applied the guarded body"
+
+step "5. re-applying is a no-op (converge runs this on every tick)"
+psql -q -v ON_ERROR_STOP=1 -d "$DB" -f "$ROOT/database/schema/functions.sql" \
+    || fail "functions.sql is not re-appliable"
+echo "  second apply clean"
+
+step "6. a zero cumAdjust divisor is guarded too"
 psql -q -v ON_ERROR_STOP=1 -d "$DB" \
     -c "INSERT INTO enigma.adjustments VALUES (1, DATE '2021-01-01', 0)"
 got=$(q "SELECT COALESCE(enigma.totret(1, DATE '2020-01-01', DATE '2021-06-01')::text, 'NULL')") \

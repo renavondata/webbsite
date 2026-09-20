@@ -241,10 +241,16 @@ def assert_postgres(rep: Report):
         # used to abort the whole SELECT); a plain restore brings back the
         # unguarded MySQL-era bodies, and nothing else would notice.
         declared = parse_functions(FUNCTIONS_SQL.read_text())
+        # Pinned to the (integer, date, date) signature: enigma carries overloads
+        # of these names (the *days family), and matching on proname alone would
+        # let one of those win the dict and mask a stale body on the signature
+        # the app actually calls. oidvectortypes, not pg_get_function_identity_
+        # arguments -- the latter includes parameter names.
         cur.execute(
             "SELECT p.proname, pg_get_functiondef(p.oid) FROM pg_proc p "
             "JOIN pg_namespace n ON n.oid = p.pronamespace "
-            "WHERE n.nspname = 'enigma' AND p.proname = ANY(%s)",
+            "WHERE n.nspname = 'enigma' AND p.proname = ANY(%s) "
+            "AND oidvectortypes(p.proargtypes) = 'integer, date, date'",
             (list(declared),),
         )
         live = {name: body for name, body in cur.fetchall()}
