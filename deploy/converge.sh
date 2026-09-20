@@ -112,6 +112,10 @@ fi
 # downtime, best taken after the 02:45 UTC refresh.
 PG_SRC="$REPO/deploy/postgresql/conf.d/webbsite.conf"
 PG_DIR=/etc/postgresql/17/main/conf.d
+# Applied further down (after the dry-run exit), but checked for HERE so the CI
+# dry run greps the same "missing in repo" line for it as for every other file.
+FN_SRC="$REPO/database/schema/functions.sql"
+[ -f "$FN_SRC" ] || log "missing in repo, skipped: database/schema/functions.sql"
 PG_DST="$PG_DIR/webbsite.conf"
 changed_pg=0
 if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
@@ -210,6 +214,16 @@ if id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
     psql_pg -d enigma -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements" >/dev/null 2>&1 \
         && [ "$(psql_pg -d enigma -c "SELECT count(*) FROM pg_extension WHERE extname = 'pg_stat_statements'")" = 1 ] \
         || true   # library not loaded yet (pre-restart): silent, the invariants job reports it
+fi
+
+# The return calculations (enigma.totret/cagret/cagrel). CREATE OR REPLACE,
+# idempotent and instant, so it runs every tick rather than being a manual
+# post-restore step like the indexes: a plain restore brings back the MySQL-era
+# bodies whose unguarded `/ firstQF` takes out every page that ranks returns,
+# and nothing else on the box would notice. The invariants job verifies it.
+if [ -f "$FN_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
+    psql_pg -d enigma -f "$FN_SRC" >/dev/null 2>&1 \
+        || { log "postgres: database/schema/functions.sql FAILED to apply"; rc=1; }
 fi
 
 [ "$changed_units$changed_caddy$changed_pg" = "000" ] || log "converge complete (units=$changed_units caddy=$changed_caddy pg=$changed_pg)"

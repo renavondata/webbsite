@@ -346,6 +346,40 @@ def run():
     finally:
         events.execute_query = real_events
 
+    # 9. tuntraff.asp sorts by a SELECT alias, never a base column. The query is
+    # grouped, so ORDER BY defcnt is a GroupingError (WEBBSITE-1G/1H) -- the two
+    # direction-column headers were 500s in both directions and both frequencies.
+    from webbsite.routes.dbpub import transport
+
+    tt_sql = []
+
+    def rec_tuntraff(sql, params=None, timeout_s=None):
+        tt_sql.append(sql)
+        if "FROM enigma.tunnels WHERE" in sql:
+            return [{"name": "Cross-Harbour", "notes": "", "opened": date(1972, 8, 2)}]
+        if "defdir" in sql:
+            return [{"defdir": "Northbound", "altdir": "Southbound"}]
+        return []
+
+    # Only these are grouped or aggregated, so only these may be ordered by.
+    aliases = {"d", "defc", "altc", "defa", "alta"}
+    real_t = transport.execute_query
+    transport.execute_query = rec_tuntraff
+    try:
+        for sort in ("defup", "defdn", "altup", "altdn", "defaup", "defadn",
+                     "altaup", "altadn", "datup", "datdn", "junk"):
+            for f in (1, 2):
+                tt_sql.clear()
+                r = client.get(f"/dbpub/tuntraff.asp?t=1&vc=0&f={f}&sort={sort}")
+                main = [s for s in tt_sql if "SUM(defcnt)" in s and "GROUP BY" in s]
+                terms = [t.strip().removesuffix(" DESC")
+                         for t in main[0].rsplit("ORDER BY", 1)[1].split(",")] if main else []
+                check(f"tuntraff sort={sort} f={f}: 200", r.status_code, 200)
+                check(f"tuntraff sort={sort} f={f}: ORDER BY names a SELECT alias",
+                      terms and set(terms) <= aliases, True)
+    finally:
+        transport.execute_query = real_t
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:

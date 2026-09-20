@@ -219,13 +219,18 @@ def tuntraff():
     defdir = dir_info[0]["defdir"] if dir_info else ""
     altdir = dir_info[0]["altdir"] if dir_info else ""
 
-    # Sorting
+    # Sorting. Every target must be an output alias of the SELECT below, not a
+    # base column: the query is grouped, so ORDER BY defcnt is "must appear in
+    # the GROUP BY clause" (WEBBSITE-1G/1H) -- the four direction-column header
+    # links were 500s. The ASP carried defcnt/altcnt here because MySQL's loose
+    # GROUP BY silently sorted by some row of the group; the totals the page
+    # actually prints are SUM(defcnt) AS defc and SUM(altcnt) AS altc.
     sort = get_str("sort", "datdn")
     sort_map = {
-        "defup": "defcnt",
-        "defdn": "defcnt DESC",
-        "altup": "altcnt",
-        "altdn": "altcnt DESC",
+        "defup": "defc",
+        "defdn": "defc DESC",
+        "altup": "altc",
+        "altdn": "altc DESC",
         "defaup": "defa",
         "defadn": "defa DESC",
         "altaup": "alta",

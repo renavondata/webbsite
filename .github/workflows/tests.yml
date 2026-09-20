@@ -127,6 +127,16 @@ jobs:
           PGPASSWORD: postgres
         run: tests/refresh/run_ladder.sh
 
+      # database/schema/functions.sql: the return calculations against the same
+      # Postgres. Self-proving -- it first loads the pre-fix bodies and requires
+      # them to raise on a zero close.
+      - name: return functions
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: tests/test_return_functions.sh
+
   # Advances `ci-green` only when every job above passed on master. The guard
   # is spelled out so a SKIPPED job (none today) would still advance it while
   # a failed or cancelled one never does.

@@ -7,6 +7,8 @@ Asserts the things a test suite cannot see and a deploy does not check:
   restart    no Postgres setting is waiting for a restart
   extension  pg_stat_statements is installed (the conf loads it; a restart makes it real)
   indexes    every index database/schema/indexes.sql names exists
+  functions  every function database/schema/functions.sql declares has that body
+             live (they are CREATE OR REPLACE, so a restore silently reverts them)
   disk       the root filesystem is under 80% (the 72 GB database has to fit)
   env        deploy/env-check.sh passes (every declared name present, no undeclared name)
   backup     /var/lib/webbsite/backup-last-success is younger than 8 days,
@@ -48,6 +50,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PG_CONF = ROOT / "deploy" / "postgresql" / "conf.d" / "webbsite.conf"
 INDEXES_SQL = ROOT / "database" / "schema" / "indexes.sql"
+FUNCTIONS_SQL = ROOT / "database" / "schema" / "functions.sql"
 CHECKS_TXT = ROOT / "deploy" / "checks.txt"
 ENV_CHECK = ROOT / "deploy" / "env-check.sh"
 ROUTE_CHECK = ROOT / "tests" / "check_all_routes.py"
@@ -108,6 +111,17 @@ def parse_conf(text: str) -> dict[str, str]:
 
 def parse_index_names(sql: str) -> list[str]:
     return re.findall(r"CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+(\w+)", sql, re.I)
+
+
+def parse_functions(sql: str) -> dict[str, str]:
+    """name -> declared definition, one per CREATE OR REPLACE FUNCTION block."""
+    blocks = re.finditer(r"CREATE OR REPLACE FUNCTION enigma\.(\w+)\(.*?\$function\$;", sql, re.S)
+    return {m.group(1): m.group(0).rstrip(";") for m in blocks}
+
+
+def same_sql(a: str, b: str) -> bool:
+    """Equal ignoring whitespace runs, which pg_get_functiondef may reflow."""
+    return a.split() == b.split()
 
 
 def parse_checks(text: str) -> list[dict[str, str]]:
@@ -223,6 +237,23 @@ def assert_postgres(rep: Report):
             rep.fail(f"indexes missing ({len(missing)}/{len(names)}): {', '.join(missing)} -- apply database/schema/indexes.sql")
         else:
             rep.ok(f"indexes: all {len(names)} from database/schema/indexes.sql present")
+        # functions -- the return calculations guard their divisors (a zero close
+        # used to abort the whole SELECT); a plain restore brings back the
+        # unguarded MySQL-era bodies, and nothing else would notice.
+        declared = parse_functions(FUNCTIONS_SQL.read_text())
+        cur.execute(
+            "SELECT p.proname, pg_get_functiondef(p.oid) FROM pg_proc p "
+            "JOIN pg_namespace n ON n.oid = p.pronamespace "
+            "WHERE n.nspname = 'enigma' AND p.proname = ANY(%s)",
+            (list(declared),),
+        )
+        live = {name: body for name, body in cur.fetchall()}
+        stale = [n for n, want in declared.items() if not same_sql(live.get(n, ""), want)]
+        if stale:
+            rep.fail(f"functions differ from database/schema/functions.sql: {', '.join(sorted(stale))}"
+                     " -- apply database/schema/functions.sql")
+        else:
+            rep.ok(f"functions: all {len(declared)} from database/schema/functions.sql match")
     conn.close()
 
 
