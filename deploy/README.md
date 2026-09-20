@@ -240,7 +240,17 @@ performs -- a pending restart. `shared_buffers` and `shared_preload_libraries` n
 sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC refresh
 ```
 `database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
-any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`).
+any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`). It is too
+slow to rebuild on a tick, so it stays a manual post-restore step that the invariants job
+checks for.
+
+`database/schema/functions.sql` is the return calculations (`enigma.totret` / `cagret` /
+`cagrel`). These are `CREATE OR REPLACE` and instant, so unlike the indexes **converge
+applies them on every tick** -- a restore brings back the MySQL-era bodies, whose
+unguarded `/ firstQF` raises `division_by_zero` on any security that closed at 0 and so
+takes out every page that ranks returns (listed.asp, delisted.asp, the statistics
+rankings) rather than blanking one cell. The invariants job compares the live bodies
+against the file, so drift is reported even if converge never runs.
 
 **The invariants job's DSN needs one extra grant.** A handful of GUCs, including
 `shared_preload_libraries`, are hidden from `pg_settings` (and `SHOW`) for any role that
@@ -254,7 +264,7 @@ GRANT pg_read_all_settings TO webbsite;
 **Daily invariants:** `webbsite-invariants.timer` (04:30 UTC) runs `scripts/assert_box.py`
 as root and pings `HC_INVARIANTS_URL` (the `webbsite-invariants` check): every conf.d line
 is the live value, nothing pending a restart, `pg_stat_statements` installed, every index
-present, disk under 80 %, `env-check.sh` clean, every route still renders data
+present, every function in `database/schema/functions.sql` with that body live, disk under 80 %, `env-check.sh` clean, every route still renders data
 (`tests/check_all_routes.py` against the origin), and every `live` check in `checks.txt`
 exists on the operator's monitoring instance, unpaused, with a channel (needs `HC_API_KEY`
 and `HC_API_URL` in `/etc/webbsite/ops-env`). Exit 2 = could not tell = `/fail`, never a

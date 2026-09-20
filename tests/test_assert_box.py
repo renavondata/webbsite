@@ -58,6 +58,15 @@ def run():
     check("parse_index_names", idx, ["a_b", "c"])
     check("real indexes.sql names 21", len(ab.parse_index_names(ab.INDEXES_SQL.read_text())), 21)
 
+    fns = ab.parse_functions(ab.FUNCTIONS_SQL.read_text())
+    check("functions.sql declares the three return calculations",
+          sorted(fns), ["cagrel", "cagret", "totret"])
+    check("every declared function guards its divisors",
+          [n for n, b in fns.items() if "NULLIF" not in b], [])
+    check("same_sql ignores whitespace runs", ab.same_sql("a  b\nc", "a b c"), True)
+    check("same_sql sees a dropped NULLIF",
+          ab.same_sql("x / NULLIF(y, 0)", "x / y"), False)
+
     rows = ab.parse_checks(ab.CHECKS_TXT.read_text())
     check("checks.txt parses 6 rows", len(rows), 6)
     check("refresh is live", [r["name"] for r in rows if r["status"] == "live"], ["webbsite-refresh", "webbsite-invariants"])

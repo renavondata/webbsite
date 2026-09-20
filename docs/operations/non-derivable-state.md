@@ -69,6 +69,8 @@ Read token: `webbsite-refresh-loader-readonly` (keyring `WEBBSITE_REFRESH_R2_*`)
 ## 6. The database
 
 **Derived, in principle:** base dump (§5) + `database/schema/indexes.sql` +
+`database/schema/functions.sql` (the return calculations; converge reapplies them
+every tick because a restore reverts them silently) +
 the latest feed replayed by `scripts/refresh/refresh.py` = the live `enigma`
 database. The post-freeze rows exist in this Postgres and in renavon's
 warehouse; the weekly backup (Phase 5) is belt-and-braces. Roles and grants

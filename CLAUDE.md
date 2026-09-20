@@ -177,6 +177,10 @@ retained only for parity and is deprecated in favour of parameterization.
 - Full-text search uses `to_tsvector()` / `to_tsquery()` (sanitize user input before `to_tsquery`).
 - All tables are schema-qualified (`enigma.organisations`, `ccass.holdings`).
 - Boolean aggregation: `SUM(bool)` → `SUM(bool::int)`; `LPAD(numeric)` → cast `::text` first.
+- `x / 0` is NULL in MySQL but raises in PostgreSQL, killing the whole query rather than
+  one cell: guard ported divisors with `NULLIF(d, 0)` (see `database/schema/functions.sql`).
+- Grouped queries: MySQL's loose `GROUP BY` allows `ORDER BY <base column>`; PostgreSQL
+  requires a grouped/aggregated expression, so order by the SELECT alias.
 - Local dev DSN: `postgresql://postgres:@localhost:5432/enigma_pg`; production reads `DATABASE_URL`.
 
 ## Data revival
