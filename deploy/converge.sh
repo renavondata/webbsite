@@ -112,12 +112,12 @@ fi
 # downtime, best taken after the 02:45 UTC refresh.
 PG_SRC="$REPO/deploy/postgresql/conf.d/webbsite.conf"
 PG_DIR=/etc/postgresql/17/main/conf.d
+PG_DST="$PG_DIR/webbsite.conf"
+changed_pg=0
 # Applied further down (after the dry-run exit), but checked for HERE so the CI
 # dry run greps the same "missing in repo" line for it as for every other file.
 FN_SRC="$REPO/database/schema/functions.sql"
 [ -f "$FN_SRC" ] || log "missing in repo, skipped: database/schema/functions.sql"
-PG_DST="$PG_DIR/webbsite.conf"
-changed_pg=0
 if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
     if [ -n "$DRY" ]; then
         log "would install deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
