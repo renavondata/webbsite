@@ -46,16 +46,18 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.
       - name: "self-proof: a planted failure fails"
         run: |
-          if PLANTED_FAILURE=1 uv run python tests/test_app_hardening.py >/dev/null 2>&1; then
-            echo "planted failure passed -- the harness is not gating"; exit 1
-          fi
-          echo "planted failure correctly failed"
+          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py; do
+            if PLANTED_FAILURE=1 uv run python "$t" >/dev/null 2>&1; then
+              echo "$t passed with a planted failure -- it is not gating"; exit 1
+            fi
+            echo "planted failure correctly failed: $t"
+          done
 
       - name: shellcheck deploy/
         run: |

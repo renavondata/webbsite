@@ -196,15 +196,8 @@ def enigma_positions():
     """
     Director enigma.positions across all companies - port of enigma.positions.asp
 
-    Query params:
-    - p: personid of the person/director
-    - sort: sorting column (orgup/orgdn, posup/posdn, appup/appdn, resup/resdn)
-    - hide: Y=current only, N=show history
-
-    Tables used: enigma.directorships, enigma.positions, enigma.organisations, rank
-
-    Note: Simplified version for MVP - total returns calculations omitted
-          (requires totRet, CAGret, CAGrel functions not yet ported)
+    Every query parameter is forwarded untouched, so a link that arrives here
+    with a ?sort= keeps working; positions.asp owns those.
     """
     # Spurious migration-artifact route (there is no original enigma.positions.asp);
     # the real, fully-featured page is positions.asp. Redirect there, preserving
@@ -213,140 +206,6 @@ def enigma_positions():
 
     _qs = request.query_string.decode()
     return redirect("/dbpub/positions.asp" + (("?" + _qs) if _qs else ""), code=301)
-
-    person_id = get_int("p", 0)
-    sort_param = request.args.get("sort", "orgup")
-    hide = request.args.get("hide", "Y")
-
-    if not person_id:
-        return "PersonID required", 400
-
-    # Determine sort order
-    sort_orders = {
-        "orgup": "name1, apptdate",
-        "orgdn": "name1 DESC, apptdate",
-        "posup": "posShort, name1",
-        "posdn": "posShort DESC, name1",
-        "appup": "apptdate, name1",
-        "appdn": "apptdate DESC, name1",
-        "resup": "resdate, name1",
-        "resdn": "resdate DESC, name1",
-    }
-    ob = sort_orders.get(sort_param, "name1, apptdate")
-    if sort_param not in sort_orders:
-        sort_param = "orgup"
-
-    # Date filter for current vs history (directorships cols are apptdate/resdate)
-    if hide == "Y":
-        date_filter = "(resdate IS NULL OR resdate > CURRENT_DATE)"
-    else:
-        date_filter = "TRUE"
-
-    # Get person name
-    try:
-        person_result = execute_query(
-            """
-            SELECT
-                CASE
-                    WHEN p.personid IS NOT NULL THEN
-                        CASE
-                            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                            ELSE p.name1
-                        END
-                    ELSE o.name1
-                END AS personname,
-                CASE WHEN p.personid IS NOT NULL THEN TRUE ELSE FALSE END AS isperson
-            FROM enigma.people p
-            FULL OUTER JOIN enigma.organisations o ON p.personid = o.personid
-            WHERE COALESCE(p.personid, o.personid) = %s
-        """,
-            (person_id,),
-        )
-
-        if person_result and len(person_result) > 0:
-            person_name = person_result[0]["personname"]
-            is_person = person_result[0]["isperson"]
-        else:
-            person_name = f"Person {person_id}"
-            is_person = True
-    except Exception as ex:
-        current_app.logger.error(
-            f"Error fetching person name for enigma.positions: {type(ex).__name__}: {ex}",
-            exc_info=True,
-        )
-        person_name = f"Person {person_id}"
-        is_person = True
-
-    # Query enigma.directorships grouped by rank
-    # Note: Simplified - no total returns, no complex date range filtering
-    try:
-        # Get all ranks with enigma.positions
-        ranks = execute_query(
-            """
-            SELECT DISTINCT r.rankid, r.ranktext
-            FROM enigma.directorships d
-            JOIN enigma.positions pos ON d.positionid = pos.positionid
-            JOIN enigma.rank r ON pos.rank = r.rankid
-            WHERE d.director = %s
-              AND {date_filter}
-            ORDER BY r.rankid
-        """.format(
-                date_filter=date_filter
-            ),
-            (person_id,),
-        )
-
-        # For each rank, get the enigma.directorships
-        positions_by_rank = []
-        for rank_row in ranks:
-            rank_id = rank_row["rankid"]
-            rank_text = rank_row["ranktext"]
-
-            directorships_list = execute_query(
-                """
-                SELECT
-                    d.company AS company,
-                    o.name1,
-                    i.id1 AS issueid,
-                    d.apptdate AS apptdate,
-                    d.resdate AS resdate,
-                    pos.posshort,
-                    pos.poslong
-                FROM enigma.directorships d
-                JOIN enigma.organisations o ON d.company = o.personid
-                JOIN enigma.positions pos ON d.positionid = pos.positionid
-                LEFT JOIN enigma.issue i ON d.company = i.issuer
-                WHERE pos.rank = %s
-                  AND d.director = %s
-                  AND {date_filter}
-                ORDER BY {ob}
-            """.format(
-                    date_filter=date_filter, ob=ob
-                ),
-                (rank_id, person_id),
-            )
-
-            if directorships_list:
-                positions_by_rank.append(
-                    {
-                        "rank_id": rank_id,
-                        "rank_text": rank_text,
-                        "enigma.directorships": directorships_list,
-                    }
-                )
-    except Exception as ex:
-        current_app.logger.error(f"Error in enigma.positions query: {ex}")
-        positions_by_rank = []
-
-    return render_template(
-        "dbpub/positions.html",
-        person_id=person_id,
-        person_name=person_name,
-        is_person=is_person,
-        positions_by_rank=positions_by_rank,
-        sort=sort_param,
-        hide=hide,
-    )
 
 
 # Alias route for positions.asp (backward compatibility with ASP URLs)

@@ -539,8 +539,9 @@ def cholder():
     sort_orders = {
         "nameup": "name1, stake DESC",
         "namedn": "name1 DESC, stake DESC",
-        "partup": "partName, stake DESC",
-        "partdn": "partName DESC, stake DESC",
+        # No partup/partdn here: this page is one participant's holdings
+        # (the query runs only `if part > 0`), so partName is not in the SELECT
+        # and ordering by it raised UndefinedColumn -- a blank table, 200.
         "chgdn": "stake DESC, name1",
         "chgup": "stake, name1",
         "stakdn": "stake DESC, name1",

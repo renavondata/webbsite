@@ -210,7 +210,13 @@ def shortdate():
         current_app.logger.error(f"Error getting previous short date: {e}")
         prev_date = "2012-08-31"
 
-    # Sort mapping
+    # Sort mapping. Every target must be a column this SELECT produces, and
+    # every column header shortdate.html links must appear here -- the two had
+    # drifted apart in both directions: "diff" was no column at all (the change
+    # column is "change"), so ?sort=diffdn raised UndefinedColumn, which the
+    # except below turned into a 200 with an empty table; and the iss/sht/pct
+    # headers the page actually offers were missing, so clicking them silently
+    # re-rendered the default order.
     sort_map = {
         "nameup": "name1",
         "namedn": "name1 DESC",
@@ -220,12 +226,18 @@ def shortdate():
         "valuup": "value, name1",
         "codeup": "stockCode",
         "codedn": "stockCode DESC",
+        "issup": "outstanding, name1",
+        "issdn": "outstanding DESC, name1",
+        "shtup": "shortpos, name1",
+        "shtdn": "shortpos DESC, name1",
+        "pctup": "pct, name1",
+        "pctdn": "pct DESC, name1",
         "mcapdn": "mcap DESC",
         "mcapup": "mcap",
         "typeup": "typeShort, stake DESC",
         "typedn": "typeShort DESC, stake DESC",
-        "diffdn": "diff DESC, name1",
-        "diffup": "diff, name1",
+        "diffdn": "change DESC, name1",
+        "diffup": "change, name1",
     }
     ob = sort_map.get(sort_param, "stake DESC, name1")
 

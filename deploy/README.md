@@ -265,7 +265,12 @@ GRANT pg_read_all_settings TO webbsite;
 as root and pings `HC_INVARIANTS_URL` (the `webbsite-invariants` check): every conf.d line
 is the live value, nothing pending a restart, `pg_stat_statements` installed, every index
 present, every function in `database/schema/functions.sql` with that body live, disk under 80 %, `env-check.sh` clean, every route still renders data
-(`tests/check_all_routes.py` against the origin), and every `live` check in `checks.txt`
+(`tests/check_all_routes.py` against the origin -- including every `?sort=` value
+every page accepts, which is ~1100 requests and the slow part of the run: 278 s
+for the whole gate as measured against the origin on 2026-09-20, against the
+1500 s this job allows it. Set `ROUTE_CHECK_SORTS=0` to skip the sweep while
+debugging something else, `ROUTE_CHECK_WORKERS` to change its concurrency from
+the default 6 of gunicorn's 24 request slots), and every `live` check in `checks.txt`
 exists on the operator's monitoring instance, unpaused, with a channel (needs `HC_API_KEY`
 and `HC_API_URL` in `/etc/webbsite/ops-env`). Exit 2 = could not tell = `/fail`, never a
 pass. Run it by hand:
