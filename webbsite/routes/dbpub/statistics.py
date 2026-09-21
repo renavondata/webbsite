@@ -7961,9 +7961,11 @@ def orgdata():
     s1 = get_str("s1", "")
     s2 = get_str("s2", "")
     s3 = get_str("s3", "")
-    expand = get_str("x", "c")
+    # The holdings view: flat (n) unless expanded (y), which is the ASP's
+    # default. "c" left the Simple/Expanded toggle lit on the wrong button.
+    expand = get_str("x", "n")
     if expand not in ("n", "y"):
-        expand = "c"
+        expand = "n"
 
     # Convert stock code to personid if provided
     if code > 0:

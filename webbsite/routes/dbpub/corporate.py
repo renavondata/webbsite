@@ -967,24 +967,27 @@ def _aggregate_condensed_holders(tree):
     Modifies tree in place.
     """
     # Step 1: Attribute indirect holdings (ASP lines 150-163)
-    # For each visible holder, find the nearest visible parent and inherit their attributes
-    for idx, node in enumerate(tree):
+    # A visible holder reached through hidden (wholly-owned) intermediates holds
+    # what the *topmost* hidden one holds -- the stake in the issue itself, or in
+    # the nearest visible holder -- and moves up to sit directly beneath that.
+    # The ASP climbs from the row itself (y=x) while y's parent is hidden and
+    # takes the stake from y, so a holder with a visible parent keeps its own.
+    # Parent -1 is the issue, which the ASP stores as row 0: visible, level -1.
+    for node in tree:
         if not node["visible"]:
             continue
 
-        # Trace up to find nearest visible parent
-        parent_idx = node["parent_idx"]
-        while parent_idx >= 0 and not tree[parent_idx]["visible"]:
-            parent_idx = tree[parent_idx]["parent_idx"]
-
-        # If we have a visible parent, inherit stake/issue/level from them
-        if parent_idx >= 0:
-            parent_holder = tree[parent_idx]["holder"]
-            node["holder"]["stakecomp"] = parent_holder.get("stakecomp")
-            node["holder"]["issue"] = parent_holder.get("issue")
-            node["holder"]["typeshort"] = parent_holder.get("typeshort")
-            # Level is one below the visible parent
-            node["level"] = tree[parent_idx]["level"] + 1
+        y = node
+        while y["parent_idx"] >= 0 and not tree[y["parent_idx"]]["visible"]:
+            y = tree[y["parent_idx"]]
+        # Even when y is the row itself, its level is recomputed: a visible
+        # parent earlier in the list may already have moved up.
+        parent_idx = y["parent_idx"]
+        node["holder"]["stakecomp"] = y["holder"].get("stakecomp")
+        node["holder"]["issue"] = y["holder"].get("issue")
+        node["holder"]["typeshort"] = y["holder"].get("typeshort")
+        node["level"] = (tree[parent_idx]["level"] if parent_idx >= 0 else -1) + 1
+        node["parent_idx"] = parent_idx
 
     # Step 2: Aggregate duplicate holdings (ASP lines 165-173)
     # If same personID holds same issueID multiple times (via different paths),

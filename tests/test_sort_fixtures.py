@@ -65,15 +65,6 @@ OTHER_PARAMETERS = {
     "/dbpub/orgdata.asp": {"s2", "s3"},
 }
 
-# A string that looks like one of this site's sort keys (sort_fixtures.SORT_KEY)
-# -- but ordinary English ends that way too.
-SORT_KEY = sort_fixtures.SORT_KEY
-NOT_SORT_KEYS = {
-    "backup", "cleanup", "group", "lineup", "lookup", "makeup", "markup",
-    "popup", "roundup", "setup", "signup", "startup", "warmup",
-}
-
-
 def uncaptured_sort_keys(found, patterns):
     """{path: keys} the route source mentions but the reader did not return."""
     prefixes = sort_fixtures.url_prefixes()
@@ -86,8 +77,7 @@ def uncaptured_sort_keys(found, patterns):
             mentioned = {node.value for node in ast.walk(func)
                          if isinstance(node, ast.Constant)
                          and isinstance(node.value, str)
-                         and SORT_KEY.match(node.value)
-                         and node.value.lower() not in NOT_SORT_KEYS}
+                         and sort_fixtures.looks_like_sort_key(node.value)}
             for path in sort_fixtures._route_paths(func):
                 full = prefix + path
                 known = {v for vals in found.get(full, {}).values() for v in vals}
@@ -161,6 +151,19 @@ def sections():
     first = {"aup": "a", "adn": "a DESC"}
     second = {"bup": "b", "bdn": "b DESC"}
     return first.get(s2, "a") + second.get(s3, "b")
+
+
+@bp.route("/annotated.asp")
+def annotated():
+    sort: str = get_str("sort", "annup")
+    return {"annup": "a", "anndn": "a DESC"}.get(sort)
+
+
+@bp.route("/subscripted.asp")
+def subscripted():
+    sort = request.args["sort"]
+    order = {"subup": "s", "subdn": "s DESC"}
+    return order[sort]
 
 
 @bp.route("/codes.asp")
@@ -303,6 +306,10 @@ def run():
               {"s1": ["cntdn", "cntup"], "s2": ["cntdn", "cntup"]})
         check("one map per parameter on a page of several tables",
               shapes.get("/sections.asp"), {"s2": ["adn", "aup"], "s3": ["bdn", "bup"]})
+        check("an annotated assignment is a sort read", shapes.get("/annotated.asp"),
+              {"sort": ["annup"]})
+        check("request.args[...] is a sort read", shapes.get("/subscripted.asp"),
+              {"sort": ["subdn", "subup"]})
         check("f-string names in a for loop are not sort reads",
               "/codes.asp" in shapes, False)
 

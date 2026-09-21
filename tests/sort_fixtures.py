@@ -65,6 +65,15 @@ SORT_PARAMS = frozenset({"sort", "sort1", "s1", "s2", "s3"})
 # by its value, which is how a link naming the *wrong* parameter is caught --
 # league_dirs_hk.html once sent possum.asp `s=cagreldn`, which it never reads.
 SORT_KEY = re.compile(r"^[A-Za-z0-9]{2,10}(up|dn|UP|DN)$")
+# Ordinary English that happens to end that way.
+NOT_SORT_KEYS = frozenset({
+    "backup", "cleanup", "group", "lineup", "lookup", "makeup", "markup",
+    "popup", "roundup", "setup", "signup", "startup", "warmup",
+})
+
+
+def looks_like_sort_key(value):
+    return bool(SORT_KEY.match(value)) and value.lower() not in NOT_SORT_KEYS
 
 # Parameters a route reads and hands straight back to its template without
 # ordering anything by them. Each needs a reason, or it would hide a sort map
@@ -133,6 +142,10 @@ def _sort_params_read(expression):
     loops = _loop_values(expression)
     params = set()
     for node in ast.walk(expression):
+        if (isinstance(node, ast.Subscript)                  # request.args["sort"]
+                and getattr(node.value, "attr", None) == "args"):
+            params |= _param_names(node.slice, loops) & SORT_PARAMS
+            continue
         if not (isinstance(node, ast.Call) and node.args):
             continue
         # get_str("sort", ...) or request.args.get("sort", ...) -- the two
@@ -154,9 +167,12 @@ def _sort_reads(node):
     request.args.get("sort") == "dateup" else "datedn"` yields both of the two
     orders it supports.
     """
-    if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+    if isinstance(node, ast.Assign) and len(node.targets) == 1:
+        target = node.targets[0]
+    elif isinstance(node, ast.AnnAssign) and node.value is not None:
+        target = node.target                                 # sort: str = ...
+    else:
         return None
-    target = node.targets[0]
     if not isinstance(target, ast.Name):
         return None
     params = _sort_params_read(node.value)

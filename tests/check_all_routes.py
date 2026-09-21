@@ -340,16 +340,25 @@ def check_sorts():
     # statement timeout mid-sweep -- which listed.asp renders as an empty table
     # with a 200, indistinguishable from the bug this looks for. A broken ORDER
     # BY fails every time; contention does not. So whatever failed is measured
-    # again, one request at a time, and only a repeat counts.
+    # again, one request at a time, and only a repeat counts. A timeout this
+    # forgives is not lost: the app logs it, and the log reaches Sentry.
+    # Past CONFIRM_AT_MOST failures it is not contention but a broken deploy,
+    # and re-measuring each at up to 8 s could run the daily job out of time
+    # before it reported anything -- so they are reported as they stand.
     retried = [t for t in targets if base_problem(*bases[t][:2])]
+    if len(retried) > CONFIRM_AT_MOST:
+        retried = []
     for t in retried:
         bases[t] = measure(f"{BASE_URL}{t[0]}?{t[1]}", t[0])
     again = [j for j in jobs
              if not base_problem(*bases[j[:2]][:2])
              and sort_problem(j[0], bases[j[:2]][1], *sorted_pages[j][:2])]
+    if len(again) > CONFIRM_AT_MOST:
+        again = []
     for j in again:
         sorted_pages[j] = measure(f"{BASE_URL}{j[0]}?{with_param(*j[1:])}")
-    retried += again
+    retried = [f"{t[0]}?{t[1]}" for t in retried] + [
+        f"{j[0]}?{with_param(*j[1:])}" for j in again]
 
     vacuous = []
     for path, query in targets:
@@ -404,7 +413,9 @@ def check_sorts():
 
     if retried:
         print(f"INFO: {len(retried)} measurement(s) failed once and were "
-              "taken again one at a time; only a repeat failure is reported")
+              "taken again one at a time; only a repeat failure is reported:")
+        for url in retried:
+            print(f"       {url}")
     if vacuous:
         print(f"INFO: {len(vacuous)} known-thin fixture(s), excluded from the sort "
               "checks by SORT_FIXTURE_TOO_THIN:")
@@ -416,6 +427,10 @@ def check_sorts():
         for path in uncovered:
             print(f"       {path}")
     return failures
+
+
+# More failures than this in one pass are reported without re-measuring.
+CONFIRM_AT_MOST = 20
 
 
 def base_problem(code, rows):
@@ -481,7 +496,7 @@ def sort_links(body, page_path):
             continue
         for param, sent in parse_qs(parts.query, keep_blank_values=True).items():
             if param in sort_fixtures.SORT_PARAMS or any(
-                    sort_fixtures.SORT_KEY.match(v) for v in sent):
+                    sort_fixtures.looks_like_sort_key(v) for v in sent):
                 found.add((parts.path or page_path, param, tuple(sent)))
     return found
 
