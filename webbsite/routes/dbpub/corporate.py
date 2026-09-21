@@ -778,8 +778,12 @@ def holders():
             # Expanded or condensed mode - recursive tree
             holders_tree = []
             seen_holders = {person_id: -1}  # Track to detect cross-holdings
+            # -1: top-level holders have no parent. Passing 0 made each one the
+            # child of the first -- an IndexError when the issue has no holders,
+            # every stake overwritten by the first holder's in condensed mode,
+            # and a loop that never ends when that first holder is hidden.
             _build_holders_tree(
-                issue_id, 0, 0, ob, holders_tree, seen_holders, expand == "c"
+                issue_id, -1, 0, ob, holders_tree, seen_holders, expand == "c"
             )
 
             # For condensed mode, apply aggregation and sorting

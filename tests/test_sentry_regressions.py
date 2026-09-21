@@ -23,6 +23,9 @@ Pins:
   6. db.py error events are fingerprinted per route (one frame, else merged).
   7. searchpeople.asp exact mode and indexhk.asp bind user text (CodeQL #2).
   8. events.asp?sc= matches an unpadded stock code ('5' finds '0005').
+  9. holders.asp's tree modes (x=c, x=y) start with no parent (-1, not 0):
+     an issue with no holders was a 500, and in condensed mode every
+     top-level holder inherited the first one's stake.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -387,6 +390,37 @@ def run():
                       aliases >= printed, True)
     finally:
         transport.execute_query = real_t
+
+    # 9. holders.asp tree modes: top-level holders have no parent. The sort
+    # sweep found x=c and x=y were 500s on every company it tried.
+    holders_rows = []
+
+    def rec_holders(sql, params=None, timeout_s=None):
+        if "enigma.sectypes" in sql:
+            return [{"issueid": 10, "typelong": "Ordinary shares",
+                     "osdate": None, "outstanding": 1000}]
+        if "enigma.webholders3" in sql:
+            return [dict(r) for r in holders_rows]
+        return []
+
+    def person(pid, name, stake):
+        return {"personid": pid, "persontype": "P", "name": name, "stakecomp": stake,
+                "issue": 10, "holdingdate": None, "typeshort": None}
+
+    real_h = corporate.execute_query
+    corporate.execute_query = rec_holders
+    try:
+        for x in ("c", "y"):
+            holders_rows[:] = []
+            r = client.get(f"/dbpub/holders.asp?p=1&x={x}")
+            check(f"holders x={x}: an issue with no holders renders", r.status_code, 200)
+        holders_rows[:] = [person(2, "Alpha", 0.3), person(3, "Beta", 0.2)]
+        for x in ("c", "y"):
+            body = client.get(f"/dbpub/holders.asp?p=1&x={x}").get_data(as_text=True)
+            check(f"holders x={x}: each top-level holder keeps its own stake",
+                  ("30.00%" in body, "20.00%" in body), (True, True))
+    finally:
+        corporate.execute_query = real_h
 
     if _failures:
         print("\nFAILED:")

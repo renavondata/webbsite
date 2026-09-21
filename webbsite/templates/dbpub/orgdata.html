@@ -536,7 +536,12 @@
 
 		{# Simple/Expanded toggle #}
 		<ul class="navlist">
-			{% set qs = "p=" ~ person_id ~ "&s1=" ~ s1 ~ "&s3=" ~ s3 ~ "&s2=" ~ s2 %}
+			{# The column headers append their own s2, so they build on hqs, which
+			   leaves it out: a second copy is ignored (the server reads the first),
+			   which left every holdings sort header doing nothing. The view toggles
+			   keep the current sort, as the ASP's did. #}
+			{% set hqs = "p=" ~ person_id ~ "&s1=" ~ s1 ~ "&s3=" ~ s3 %}
+			{% set qs = hqs ~ "&s2=" ~ s2 %}
 			{% if expand == 'n' %}
 				<li class="livebutton">Simple</li>
 				<li><a href="orgdata.asp?{{ qs }}&x=y">Expanded</a></li>
@@ -552,10 +557,10 @@
 			<div style="float:left;width:40px;">&nbsp;</div>
 			<div style="float:left;width:80px;"><b>Held at</b></div>
 			<div style="text-align:right;float:left;width:65px;padding-right:5px">
-				<a href="orgdata.asp?{{ qs }}&x=y&s2={% if s2 == 'stakdn' %}stakup{% else %}stakdn{% endif %}"><b>Stake</b></a>
+				<a href="orgdata.asp?{{ hqs }}&x=y&s2={% if s2 == 'stakdn' %}stakup{% else %}stakdn{% endif %}"><b>Stake</b></a>
 			</div>
 			<div>
-				<a href="orgdata.asp?{{ qs }}&x=y&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issue</b></a>
+				<a href="orgdata.asp?{{ hqs }}&x=y&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issue</b></a>
 			</div>
 			<div class="clear"></div>
 
@@ -597,18 +602,18 @@
 			<table class="txtable">
 				<tr>
 					<th>
-						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issuer</b></a>
+						<a href="orgdata.asp?{{ hqs }}&x={{ expand }}&s2={% if s2 == 'nameup' %}namedn{% else %}nameup{% endif %}"><b>Issuer</b></a>
 					</th>
 					<th class="colHide3">
-						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'domiup' %}domidn{% else %}domiup{% endif %}"><b>&#x1f310;</b></a>
+						<a href="orgdata.asp?{{ hqs }}&x={{ expand }}&s2={% if s2 == 'domiup' %}domidn{% else %}domiup{% endif %}"><b>&#x1f310;</b></a>
 					</th>
 					<th class="colHide3">
-						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'incdup' %}incddn{% else %}incdup{% endif %}"><b>Formed</b></a>
+						<a href="orgdata.asp?{{ hqs }}&x={{ expand }}&s2={% if s2 == 'incdup' %}incddn{% else %}incdup{% endif %}"><b>Formed</b></a>
 					</th>
 					<th class="colHide3">Issue</th>
 					<th class="colHide3">Shares</th>
 					<th class="right">
-						<a href="orgdata.asp?{{ qs }}&s2={% if s2 == 'stakup' %}stakdn{% else %}stakup{% endif %}"><b>Stake</b></a>
+						<a href="orgdata.asp?{{ hqs }}&x={{ expand }}&s2={% if s2 == 'stakup' %}stakdn{% else %}stakup{% endif %}"><b>Stake</b></a>
 					</th>
 					<th class="colHide3">Holding date</th>
 				</tr>

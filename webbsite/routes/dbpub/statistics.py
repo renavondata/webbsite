@@ -8567,6 +8567,10 @@ def orgdata():
                 "stakdn": "stakecomp DESC, name",
                 "namedn": "name DESC",
                 "namup": "name",
+                # The ASP's Issuer header sent nameup, which fell through to its
+                # default -- also name order -- so it worked by accident. Named
+                # here so it works on purpose.
+                "nameup": "name",
                 "incdup": "incdate, name",
                 "incddn": "incdate DESC, name",
                 "domiup": "a2, name",
