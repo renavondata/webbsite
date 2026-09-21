@@ -2887,6 +2887,8 @@ def advbyrole():
         "dbpub/advbyrole.html",
         results=results,
         r=r,
+        from_date=from_date,
+        to_date=to_date,
         role_name=role_name,
         one_time=one_time,
         from_year=from_year,
@@ -9354,6 +9356,8 @@ def adviserships():
     # Validated to YYYY-MM-DD so a junk date is a default, not an SQL error.
     from_date = get_date_or_default("f", "")
     to_date = get_date_or_default("t", "")
+    if to_date and from_date > to_date:
+        from_date, to_date = to_date, from_date
     years = get_dbl("y", 1.0)
     include_new = get_bool("c")
 
@@ -9425,7 +9429,8 @@ def adviserships():
             role_name=None,
         )
 
-    # Determine sort order
+    # NULL placement is MySQL's, which the ASP ran on: a client with no return
+    # sorts as the smallest value, last descending and first ascending.
     sort_map = {
         "orgup": "org, addDate",
         "orgdn": "org DESC, addDate",
@@ -9433,31 +9438,81 @@ def adviserships():
         "adddn": "addDate DESC, org",
         "remup": "remDate, org",
         "remdn": "remDate DESC, org",
+        "totdn": "totret DESC NULLS LAST, org",
+        "totup": "totret NULLS FIRST, org",
+        "cagretdn": "cagret DESC NULLS LAST, org",
+        "cagretup": "cagret NULLS FIRST, org",
+        "cagreldn": "cagrel DESC NULLS LAST, org",
+        "cagrelup": "cagrel NULLS FIRST, org",
+        # advltsnap.asp has always linked here with sort=cagdn, which the ASP
+        # never handled, so the click landed on Client order. advbyrole.asp's
+        # identical click-through sorts cagreldn; that is what it meant.
+        "cagdn": "cagrel DESC NULLS LAST, org",
     }
-    order_by = sort_map.get(sort_param, "org, addDate")
+    if sort_param not in sort_map:
+        sort_param = "orgup"  # as the ASP did, so the Client grouping applies
+    order_by = sort_map[sort_param]
 
-    # Build WHERE clause for date filtering
-    where_clauses = []
-    params = [role_id, person_id]
+    # The window each return is measured over, as the ASP built it. A one-time
+    # role (sponsor, IFA) is judged over the performance period after the
+    # appointment; a continuing one (auditor, banker) over its tenure, clipped
+    # to the chosen dates. The return functions supply the rest: no start means
+    # 3-Jan-1994 (12-Nov-1999 for the Tracker Fund comparison), no end means
+    # the last trading date.
+    if one_time:
+        window = "a.ID1, addDate, addDate + %s"
+        window_params = [round(years * 365.25)]
+    else:
+        start = "GREATEST(COALESCE(addDate, CAST(%s AS date)), CAST(%s AS date))" if from_date else "addDate"
+        end = "LEAST(COALESCE(remDate, CAST(%s AS date)), CAST(%s AS date))" if to_date else "remDate"
+        window = f"a.ID1, {start}, {end}"
+        window_params = [from_date] * 2 * bool(from_date) + [to_date] * 2 * bool(to_date)
+    # Relative returns start no earlier than 12-Nov-1999, so a one-time role
+    # appointed before then has none to show (the ASP blanked it).
+    cagrel = f"enigma.cagrel({window}) - 1"
+    if one_time:
+        cagrel = f"CASE WHEN addDate >= '1999-11-12' THEN {cagrel} END"
 
-    if hide == "Y" and not from_date and not to_date:
-        where_clauses.append("(remDate IS NULL OR remDate > CURRENT_DATE)")
+    # Which appointments and which issues count, as the ASP decided. The two
+    # stocklistings tests stay separate because a stock can delist from GEM
+    # and relist on the Main Board.
+    where, where_params = [], []
+    delisted_after = first_traded_by = None
+    if one_time:
+        if from_date:
+            delisted_after = from_date
+            where.append("addDate >= %s")
+            where_params.append(from_date)
+        if to_date:
+            where.append("addDate <= %s")
+            where_params.append(to_date)
+    else:
+        if from_date:
+            delisted_after = from_date
+            where.append("(remDate IS NULL OR remDate > %s)")
+            where_params.append(from_date)
+            if not include_new:
+                # nothing appointed, or first traded, after the start date
+                first_traded_by = from_date
+                where.append("(addDate IS NULL OR addDate <= %s)")
+                where_params.append(from_date)
+        if to_date and (not from_date or include_new):
+            first_traded_by = to_date
+            where.append("(addDate IS NULL OR addDate <= %s)")
+            where_params.append(to_date)
+        if hide == "Y" and not from_date and not to_date:
+            where.append("(remDate IS NULL OR remDate > CURRENT_DATE)")
 
-    if from_date:
-        where_clauses.append("(remDate IS NULL OR remDate > %s)")
-        params.append(from_date)
-        if not include_new:
-            where_clauses.append("(addDate IS NULL OR addDate <= %s)")
-            params.append(from_date)
+    listed = "SELECT issueid FROM enigma.stocklistings WHERE stockExID IN (1, 20, 23)"
+    issue_tests = [f"a.ID1 IN ({listed}"
+                   + (" AND (delistDate IS NULL OR delistDate > %s)" if delisted_after else "")
+                   + ")"]
+    issue_params = [delisted_after] if delisted_after else []
+    if first_traded_by:
+        issue_tests.append(
+            f"a.ID1 IN ({listed} AND (firstTradeDate IS NULL OR firstTradeDate <= %s))")
+        issue_params.append(first_traded_by)
 
-    if to_date:
-        if not from_date or include_new:
-            where_clauses.append("(addDate IS NULL OR addDate <= %s)")
-            params.append(to_date)
-
-    where_clause = " AND " + " AND ".join(where_clauses) if where_clauses else ""
-
-    # Query adviserships (simplified without total returns for now)
     adviserships = execute_query(
         f"""
         SELECT
@@ -9465,23 +9520,32 @@ def adviserships():
             o.name1 AS org,
             a.ID1 AS issueid,
             addDate,
-            remDate
+            remDate,
+            enigma.totret({window}) - 1 AS totret,
+            enigma.cagret({window}) - 1 AS cagret,
+            {cagrel} AS cagrel
         FROM enigma.adviserships adv
         JOIN enigma.organisations o ON adv.company = o.personid
         JOIN enigma.issue a ON adv.company = a.issuer
         WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
           AND adv.role = %s
           AND adv.adviser = %s
-          AND a.ID1 IN (
-              SELECT DISTINCT issueid
-              FROM enigma.stocklistings
-              WHERE stockExID IN (1, 20, 23)
-          )
-          {where_clause}
+          AND {" AND ".join(issue_tests + where)}
         ORDER BY {order_by}
     """,
-        tuple(params),
+        tuple(window_params * 3 + [role_id, person_id] + issue_params + where_params),
     )
+
+    # The return links open the chart from where the measurement starts.
+    for row in adviserships:
+        added = row["adddate"].isoformat() if row["adddate"] else ""
+        row["from"] = added if one_time or not from_date or from_date < added else from_date
+    cagrets = [row["cagret"] for row in adviserships if row["cagret"] is not None]
+    cagrels = [row["cagrel"] for row in adviserships if row["cagrel"] is not None]
+    averages = {
+        "cagret": sum(cagrets) / len(cagrets) if cagrets else None,
+        "cagrel": sum(cagrels) / len(cagrels) if cagrels else None,
+    }
 
     return render_template(
         "dbpub/adviserships.html",
@@ -9489,6 +9553,7 @@ def adviserships():
         org_name=org_name,
         all_roles=all_roles,
         adviserships=adviserships,
+        averages=averages,
         role_id=role_id,
         role_name=role_name,
         one_time=one_time,

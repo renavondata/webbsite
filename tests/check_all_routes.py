@@ -152,6 +152,13 @@ SORT_ROW_COUNT_VARIES = {
     "/dbpub/offpay.asp":
         "groups by year or by name depending on the sort, and prints a header "
         "row per group",
+    # A page with parameters names just that variant; its other views keep the
+    # exact check.
+    "/dbpub/holders.asp?p=382&x=c":
+        "condensed view: a company met twice in the ownership tree is expanded "
+        "where it is met first, and the sort decides which that is -- so which "
+        "intermediates are hidden and merged depends on it, as it did in the "
+        "ASP. The expanded view (x=y) shows every row and is held exactly",
 }
 
 # A few pages run the same sort value down a different query depending on some
@@ -352,7 +359,7 @@ def check_sorts():
         bases[t] = measure(f"{BASE_URL}{t[0]}?{t[1]}", t[0])
     again = [j for j in jobs
              if not base_problem(*bases[j[:2]][:2])
-             and sort_problem(j[0], bases[j[:2]][1], *sorted_pages[j][:2])]
+             and sort_problem(j[0], j[1], bases[j[:2]][1], *sorted_pages[j][:2])]
     if len(again) > CONFIRM_AT_MOST:
         again = []
     for j in again:
@@ -380,7 +387,7 @@ def check_sorts():
         for param, vals in sorted(values[path].items()):
             for value in vals:
                 code, sorted_rows, _ = sorted_pages[(path, query, param, value)]
-                problem = sort_problem(path, base_rows, code, sorted_rows)
+                problem = sort_problem(path, query, base_rows, code, sorted_rows)
                 if problem:
                     label = f"{path}?{with_param(query, param, value)}"
                     failures.append(f"SORT {label}: {problem}")
@@ -438,11 +445,11 @@ def base_problem(code, rows):
     return code != 200 or rows < 3
 
 
-def sort_problem(path, base_rows, code, rows):
+def sort_problem(path, query, base_rows, code, rows):
     """Why this sorted page is wrong, or None. Sorting cannot change the rows."""
     if code != 200:
         return f"status {code}"
-    if path in SORT_ROW_COUNT_VARIES:
+    if path in SORT_ROW_COUNT_VARIES or f"{path}?{query}" in SORT_ROW_COUNT_VARIES:
         if rows < max(3, base_rows // 2):
             return (f"{rows} rows; this page regroups on sort, but not down "
                     f"from {base_rows}")

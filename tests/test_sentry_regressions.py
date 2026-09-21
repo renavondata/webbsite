@@ -26,6 +26,8 @@ Pins:
   9. holders.asp's tree modes (x=c, x=y) start with no parent (-1, not 0):
      an issue with no holders was a 500; and condensed mode attributes a
      holding through hidden 100% intermediates as the ASP's drawTable did.
+ 10. adviserships.asp shows the ASP's three return columns, measured over the
+     window the ASP used for each kind of role, and numbers its rows.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -450,6 +452,93 @@ def run():
               condensed_rows(), [(0, "30.00"), (1, "50.00"), (1, "50.00")])
     finally:
         corporate.execute_query = real_h
+
+    # 10. adviserships.asp: returns, per the ASP (dbpub/adviserships.asp).
+    adv_sql = []
+    one_time = [False]
+    same_client = [False]
+
+    def rec_adv(sql, params=None, timeout_s=None):
+        if "enigma.adviserships adv" in sql:
+            adv_sql.append((sql, params))
+            return [
+                {"orgid": 763, "org": "OOIL", "issueid": 279, "adddate": date(1998, 3, 20),
+                 "remdate": None, "totret": 646.6509, "cagret": 0.2613, "cagrel": 0.2096},
+                {"orgid": 763 if same_client[0] else 66471, "org": "Samsonite", "issueid": 6940,
+                 "adddate": date(2011, 6, 3), "remdate": date(2017, 3, 15),
+                 "totret": 0.9882, "cagret": 0.1270, "cagrel": None},
+            ]
+        if "FROM enigma.organisations WHERE personid" in sql:
+            return [{"name1": "HSBC"}]
+        if "roleID" in sql or "roleid" in sql.lower():
+            return [{"roleid": 2, "rolelong": "Banker", "onetime": one_time[0]}]
+        return []
+
+    real_s = statistics.execute_query
+    statistics.execute_query = rec_adv
+    try:
+        body = client.get("/dbpub/adviserships.asp?p=382&r=2&sort=cagretdn"
+                          "&f=2010-01-01&t=2020-12-31").get_data(as_text=True)
+        sql, params = adv_sql[-1]
+        check("adviserships: totret, cagret and cagrel selected",
+              all(f"enigma.{fn}(" in sql for fn in ("totret", "cagret", "cagrel")), True)
+        check("adviserships: sorted as asked, no return last",
+              sql.rstrip().endswith("ORDER BY cagret DESC NULLS LAST, org"), True)
+        check("adviserships: continuing role clips its tenure to the chosen dates",
+              "GREATEST(COALESCE(addDate, CAST(%s AS date)), CAST(%s AS date))" in sql
+              and "LEAST(COALESCE(remDate, CAST(%s AS date)), CAST(%s AS date))" in sql, True)
+        check("adviserships: dates bound, never pasted",
+              "2010-01-01" in sql or "2020-12-31" in sql, False)
+        check("adviserships: one placeholder per param",
+              sql.count("%s"), len(params))
+        bound = sql
+        for v in params:
+            bound = bound.replace("%s", repr(v), 1)
+        check("adviserships: the start date clips the start, the end date the end",
+              ("GREATEST(COALESCE(addDate, CAST('2010-01-01' AS date))" in bound,
+               "LEAST(COALESCE(remDate, CAST('2020-12-31' AS date))" in bound), (True, True))
+        client.get("/dbpub/adviserships.asp?p=382&r=2&f=2020-12-31&t=2010-01-01")
+        swapped = adv_sql[-1][0]
+        for v in adv_sql[-1][1]:
+            swapped = swapped.replace("%s", repr(v), 1)
+        check("adviserships: dates given backwards are swapped, as the ASP did",
+              "GREATEST(COALESCE(addDate, CAST('2010-01-01' AS date))" in swapped, True)
+        same_client[0] = True
+        junk = client.get("/dbpub/adviserships.asp?p=382&r=2&sort=junk").get_data(as_text=True)
+        current = client.get("/dbpub/adviserships.asp?p=382&r=2&sort=orgup&hide=Y"
+                             ).get_data(as_text=True)
+        same_client[0] = False
+        check("adviserships: an unknown sort is Client order, grouped by client",
+              re.findall(r'<td class="right colHide1">(\d*)</td>', junk), ["1", ""])
+        check("adviserships: a client's second row keeps every column under Current",
+              [row.count("<td") for row in re.findall(r"<tr[^>]*>(.*?)</tr>", current, re.S)[1:3]],
+              [7, 7])
+        check("adviserships: percentages as the ASP formatted them",
+              ("64,665.09%" in body, "26.13%" in body, "98.82%" in body), (True, True, True))
+        check("adviserships: average of the CAGRs that exist",
+              (f"{(0.2613 + 0.1270) / 2:.2%}</b>" in body, "20.96%</b>" in body),
+              (True, True))
+        check("adviserships: rows numbered 1, 2 (a set in a for loop reset every row)",
+              re.findall(r'<td class="right colHide1">(\d+)</td>', body), ["1", "2"])
+        check("adviserships: header links keep the dates",
+              "&amp;f=2010-01-01&amp;t=2020-12-31&amp;y=1&amp;hide=N&sort=totdn" in body, True)
+        check("adviserships: chart link starts where the measurement does",
+              'ctr.asp?i1=6940&d1=2011-06-03' in body and 'ctr.asp?i1=279&d1=2010-01-01' in body,
+              True)
+
+        client.get("/dbpub/adviserships.asp?p=382&r=2&sort=cagdn")
+        check("adviserships: advltsnap's sort=cagdn means CAGR relative",
+              adv_sql[-1][0].rstrip().endswith("ORDER BY cagrel DESC NULLS LAST, org"), True)
+
+        one_time[0] = True
+        client.get("/dbpub/adviserships.asp?p=382&r=2&y=2")
+        sql, params = adv_sql[-1]
+        check("adviserships: one-time role measured over the period after appointment",
+              "enigma.totret(a.ID1, addDate, addDate + %s)" in sql and 730 in params, True)
+        check("adviserships: one-time role has no relative return before 12-Nov-1999",
+              "CASE WHEN addDate >= '1999-11-12' THEN enigma.cagrel(" in sql, True)
+    finally:
+        statistics.execute_query = real_s
 
     if _failures:
         print("\nFAILED:")
