@@ -239,9 +239,8 @@ DBPUB_ROUTES_WITH_PARAMS = [
     ("/dbpub/events.asp", {"i": "1088", "fd": "2020-01-01", "td": "2020-12-31"}),
 
     # --- Holders (complex!) ---
-    ("/dbpub/holders.asp", {"i": "1088"}),     # HSBC
-    ("/dbpub/holders.asp", {"i": "3601"}),     # Tencent
-    ("/dbpub/holders.asp", {"i": "2516"}),     # HKEX
+    ("/dbpub/holders.asp", {"p": "382"}),      # HSBC -- the route reads p, and
+    ("/dbpub/holders.asp", {"p": "21290"}),    # these were i=, a blank page
 
     # --- Quotes/Prices ---
     ("/dbpub/quotes.asp", {"i": "1088"}),      # HSBC
@@ -262,6 +261,8 @@ DBPUB_ROUTES_WITH_PARAMS = [
     ("/dbpub/sdilatest.asp", {"sort": "stakdn"}),
     ("/dbpub/sdilatest.asp", {"d": "2024-06-01"}),
     ("/dbpub/sdidir.asp", {"p": "105"}),       # Au, Alexander
+    ("/dbpub/sdidirco.asp", {"p": "692", "i": "37"}),  # 1372 dealings: the route
+                                               # needs a director AND a stock
     ("/dbpub/sdidirco.asp", {"p": "382"}),     # HSBC
     ("/dbpub/sdiissue.asp", {"i": "1088"}),    # HSBC issueID
     ("/dbpub/sdicap.asp", {"i": "1088"}),

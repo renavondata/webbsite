@@ -23,6 +23,9 @@ Pins:
   6. db.py error events are fingerprinted per route (one frame, else merged).
   7. searchpeople.asp exact mode and indexhk.asp bind user text (CodeQL #2).
   8. events.asp?sc= matches an unpadded stock code ('5' finds '0005').
+  9. holders.asp's tree modes (x=c, x=y) start with no parent (-1, not 0):
+     an issue with no holders was a 500; and condensed mode attributes a
+     holding through hidden 100% intermediates as the ASP's drawTable did.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -30,6 +33,7 @@ a stubbed execute_query.
 
 import logging
 import os
+import re
 import sys
 from datetime import date
 
@@ -271,7 +275,6 @@ def run():
 
     # 5b. No query anywhere uses c.currency without binding alias c.
     import glob
-    import re
 
     root = os.path.join(os.path.dirname(__file__), "..", "webbsite")
     unbound = []
@@ -349,7 +352,6 @@ def run():
     # 9. tuntraff.asp sorts by a SELECT alias, never a base column. The query is
     # grouped, so ORDER BY defcnt is a GroupingError (WEBBSITE-1G/1H) -- the two
     # direction-column headers were 500s in both directions and both frequencies.
-    import re  # noqa: F811 -- explicit, not inherited from check 5b's local import
 
     from webbsite.routes.dbpub import transport
 
@@ -387,6 +389,67 @@ def run():
                       aliases >= printed, True)
     finally:
         transport.execute_query = real_t
+
+    # 9. holders.asp tree modes: top-level holders have no parent. The sort
+    # sweep found x=c and x=y were 500s on every company it tried; once they
+    # rendered, condensed mode turned out to attribute stakes differently from
+    # the ASP's drawTable.
+    holders_of, issues_of = {}, {}
+
+    def rec_holders(sql, params=None, timeout_s=None):
+        if "enigma.sectypes" in sql:
+            return [{"issueid": 10, "typelong": "Ordinary shares",
+                     "osdate": None, "outstanding": 1000}]
+        if "enigma.webholders3" in sql:
+            return [dict(r) for r in holders_of.get(params[-1], [])]
+        if "SELECT id1 FROM enigma.issue" in sql:
+            return [{"id1": i} for i in issues_of.get(params[0], [])]
+        return []
+
+    def holder(pid, name, stake, issue, kind="P"):
+        return {"personid": pid, "persontype": kind, "name": name, "stakecomp": stake,
+                "issue": issue, "holdingdate": None, "typeshort": None, "orgtype": None}
+
+    def condensed_rows():
+        """(level, stake) per tree row; the stake cell is 60px wider per level."""
+        body = client.get("/dbpub/holders.asp?p=1&x=c").get_data(as_text=True)
+        return sorted((int(w) // 60 - 1, pct) for w, pct in re.findall(
+            r'text-align:right;width:(\d+)px;padding-right:5px">\s*(\d+\.\d\d)%', body))
+
+    real_h = corporate.execute_query
+    corporate.execute_query = rec_holders
+    try:
+        for x in ("c", "y"):
+            r = client.get(f"/dbpub/holders.asp?p=1&x={x}")
+            check(f"holders x={x}: an issue with no holders renders", r.status_code, 200)
+
+        # Two people holding the issue directly keep their own stakes (with
+        # parent 0, the second became the first's child and took its 30%).
+        holders_of.clear()
+        holders_of[10] = [holder(2, "Alpha", 0.3, 10), holder(3, "Beta", 0.2, 10)]
+        check("holders x=c: each top-level holder keeps its own stake",
+              condensed_rows(), [(0, "20.00"), (0, "30.00")])
+
+        # A wholly-owned intermediate is hidden and its owner shown holding
+        # what the intermediate held: MrX 60%, not the 100% he has of HoldCo.
+        holders_of.clear()
+        issues_of.clear()
+        holders_of[10] = [holder(2, "HoldCo", 0.6, 10, "O"), holder(3, "MrsY", 0.4, 10)]
+        holders_of[20] = [holder(4, "MrX", 1.0, 20)]
+        issues_of[2] = [20]
+        check("holders x=c: a 100% intermediate passes its stake down",
+              condensed_rows(), [(0, "40.00"), (0, "60.00")])
+
+        # A visible intermediate keeps its holders' own stakes beneath it.
+        holders_of.clear()
+        issues_of.clear()
+        holders_of[10] = [holder(2, "Vis", 0.3, 10, "O")]
+        holders_of[30] = [holder(5, "A", 0.5, 30), holder(6, "B", 0.5, 30)]
+        issues_of[2] = [30]
+        check("holders x=c: holders of a visible intermediate keep their stakes",
+              condensed_rows(), [(0, "30.00"), (1, "50.00"), (1, "50.00")])
+    finally:
+        corporate.execute_query = real_h
 
     if _failures:
         print("\nFAILED:")

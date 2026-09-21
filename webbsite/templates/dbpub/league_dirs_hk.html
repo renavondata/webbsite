@@ -52,7 +52,7 @@ computation-heavy, be patient</strong>.</p>
     <tr>
         <td class="colHide2">{{ loop.index }}</td>
         <td>{{ d.cntpos }}</td>
-        <td class="left"><a href="/dbpub/possum.asp?p={{ d.dir }}&f={{ from_date }}&t={{ to_date }}&s=cagreldn">{{ d.name }}</a></td>
+        <td class="left"><a href="/dbpub/possum.asp?p={{ d.dir }}&f={{ from_date }}&t={{ to_date }}&sort=cagreldn">{{ d.name }}</a></td>
         <td>{% if d.cagrel is not none %}{{ "%.2f%%"|format(d.cagrel * 100) }}{% endif %}</td>
         <td class="colHide3">{% if d.yob %}{{ current_year - d.yob }}{% endif %}</td>
         <td>{{ d.sex if d.sex else '' }}</td>

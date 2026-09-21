@@ -7961,9 +7961,11 @@ def orgdata():
     s1 = get_str("s1", "")
     s2 = get_str("s2", "")
     s3 = get_str("s3", "")
-    expand = get_str("x", "c")
+    # The holdings view: flat (n) unless expanded (y), which is the ASP's
+    # default. "c" left the Simple/Expanded toggle lit on the wrong button.
+    expand = get_str("x", "n")
     if expand not in ("n", "y"):
-        expand = "c"
+        expand = "n"
 
     # Convert stock code to personid if provided
     if code > 0:
@@ -8567,6 +8569,10 @@ def orgdata():
                 "stakdn": "stakecomp DESC, name",
                 "namedn": "name DESC",
                 "namup": "name",
+                # The ASP's Issuer header sent nameup, which fell through to its
+                # default -- also name order -- so it worked by accident. Named
+                # here so it works on purpose.
+                "nameup": "name",
                 "incdup": "incdate, name",
                 "incddn": "incdate DESC, name",
                 "domiup": "a2, name",
