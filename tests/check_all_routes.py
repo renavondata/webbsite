@@ -11,7 +11,8 @@ renders *zero* rows). This gate checks three things the fidelity comparator can'
   2. **Content** — a curated set of data pages must actually contain data, not an
      empty table. Catches *silent* failures like the listedcoshk/.issuer bug,
      where the page returned 200 with no rows.
-  3. **Sort links** — every ``?sort=`` value every fixtured page accepts must
+  3. **Sort links** — every sort value every fixtured page accepts (``?sort=``
+     on most pages; ``sort1``/``s1``/``s2``/``s3`` on a few) must
      return 200 *and* the same number of rows as the unsorted page. A column
      header runs a different ORDER BY against the same query, so it is a
      separate code path that nothing else executes: tuntraff.asp's direction
@@ -40,7 +41,7 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from html import unescape
-from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
+from urllib.parse import parse_qs, parse_qsl, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
@@ -153,6 +154,23 @@ SORT_ROW_COUNT_VARIES = {
         "row per group",
 }
 
+# A few pages run the same sort value down a different query depending on some
+# other parameter, so one baseline exercises only half of each value. Each
+# variant listed here is swept in full as well, against its own row count.
+SORT_EXTRA_BASES = {
+    "/dbpub/holders.asp": {
+        "p=382&x=c": "condensed tree, sorted in Python by a separate key map",
+        "p=382&x=y": "expanded tree, built by recursive queries",
+    },
+    "/dbpub/orgdata.asp": {
+        "p=382&x=y": "holdings as a recursive tree rather than the flat query",
+    },
+    "/dbpub/leagueDirsHK.asp": {
+        "m=20": "any non-default variant is sorted by PostgreSQL; the default "
+                "table is cached and sorted in Python, so it never runs order_map",
+    },
+}
+
 # Base parameters for pages whose only fixture is an EXTRA_URLS entry above, or
 # that need different parameters to render rows than the fixture uses.
 SORT_BASE_OVERRIDES = {
@@ -166,11 +184,7 @@ SORT_BASE_OVERRIDES = {
 # extractor that returns nothing, which this design refuses to allow elsewhere.
 # (Reporting it would not do: scripts/assert_box.py forwards only FAIL lines to
 # the daily ping, so an INFO line reaches nobody.)
-SORT_FIXTURE_TOO_THIN = {
-    "/dbpub/sdidirco.asp":
-        "no parameters found that render more than two rows; the page needs a "
-        "person who is a director of a company with an SDI filing",
-}
+SORT_FIXTURE_TOO_THIN = {}
 
 
 def url_for(path, params=None):
@@ -268,7 +282,7 @@ def sort_base_urls():
 
 
 def check_sorts():
-    """Every ?sort= value must return 200 with the same rows as the unsorted page.
+    """Every sort value must return 200 with the same rows as the unsorted page.
 
     Two failure modes, one check each:
 
@@ -284,14 +298,17 @@ def check_sorts():
 
     Also checks the other direction: a sort link the page *offers* that its
     route does not handle is a dead header -- it returns 200, with exactly the
-    rows it already had, in exactly the order it already had. Only the unsorted
-    page's links are read, so for a header that toggles direction this sees one
+    rows it already had, in exactly the order it already had. So is a link that
+    sends its sort parameter twice, since only the first copy is read. Only the
+    unsorted page's links are read, so for a header that toggles direction this sees one
     of the two; a value linked *only* from an already-sorted page would be
     missed.
     """
     values, patterns = sort_fixtures.sort_values(), sort_fixtures.sort_patterns()
     base = sort_base_urls()
     failures, uncovered = [], []
+    # (path, base query) pairs: each page's fixture, plus any variant that sends
+    # the same sort values down a different query.
     targets = []
     for path in sorted(values):
         if expected_status(path) != 200 or path in KNOWN_MISSING:
@@ -299,33 +316,50 @@ def check_sorts():
         if path not in base:
             uncovered.append(path)
             continue
-        targets.append(path)
-
-    def query_for(path, value):
-        query = base[path]
-        return f"{query}&sort={value}" if query else f"sort={value}"
+        targets.append((path, base[path]))
+        targets.extend((path, q) for q in SORT_EXTRA_BASES.get(path, {}))
 
     # Six of gunicorn's 24 request slots (3 workers x 8 threads), so the daily
     # run leaves the site responsive to actual visitors while it sweeps.
+    # One parameter varies per request, the others left at their defaults --
+    # never the cross product. For leagueDirsHK.asp that still reaches its
+    # three-term ORDER BY, because s2 and s3 have defaults of their own.
     workers = int(os.environ.get("ROUTE_CHECK_WORKERS", "6"))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         bases = dict(zip(targets, pool.map(
-            lambda p: measure(f"{BASE_URL}{p}?{base[p]}", p), targets)))
-        jobs = [(p, v) for p in targets for v in values[p]]
+            lambda t: measure(f"{BASE_URL}{t[0]}?{t[1]}", t[0]), targets)))
+        jobs = [(path, query, param, value)
+                for path, query in targets
+                for param, vals in sorted(values[path].items())
+                for value in vals]
         sorted_pages = dict(zip(jobs, pool.map(
-            lambda j: measure(f"{BASE_URL}{j[0]}?{query_for(*j)}"), jobs)))
+            lambda j: measure(f"{BASE_URL}{j[0]}?{with_param(*j[1:])}"), jobs)))
+
+    # Confirm before failing. The sweep runs six pages at a time on a small box,
+    # and a whole-market page that answers in 1.2 s alone has hit the 8 s
+    # statement timeout mid-sweep -- which listed.asp renders as an empty table
+    # with a 200, indistinguishable from the bug this looks for. A broken ORDER
+    # BY fails every time; contention does not. So whatever failed is measured
+    # again, one request at a time, and only a repeat counts.
+    retried = [t for t in targets if base_problem(*bases[t][:2])]
+    for t in retried:
+        bases[t] = measure(f"{BASE_URL}{t[0]}?{t[1]}", t[0])
+    again = [j for j in jobs
+             if not base_problem(*bases[j[:2]][:2])
+             and sort_problem(j[0], bases[j[:2]][1], *sorted_pages[j][:2])]
+    for j in again:
+        sorted_pages[j] = measure(f"{BASE_URL}{j[0]}?{with_param(*j[1:])}")
+    retried += again
 
     vacuous = []
-    for path in targets:
-        code, base_rows, links = bases[path]
+    for path, query in targets:
+        where = f"{path}?{query}"
+        code, base_rows, links = bases[(path, query)]
         if code != 200:
-            failures.append(f"SORT {path}: base page status {code}")
-            print(f"  FAIL  {path}  (base page status {code})")
+            failures.append(f"SORT {where}: base page status {code}")
+            print(f"  FAIL  {where}  (base page status {code})")
             continue
         if base_rows < 3:
-            # Nothing to sort, so every check below would pass without testing
-            # anything.
-            where = f"{path}?{base[path]} ({base_rows} rows)"
             if path in SORT_FIXTURE_TOO_THIN:
                 vacuous.append(f"{where} -- {SORT_FIXTURE_TOO_THIN[path]}")
             else:
@@ -334,57 +368,85 @@ def check_sorts():
                 print(f"  FAIL  {where}  (fixture renders nothing to sort)")
             continue
         bad = 0
-        for value in values[path]:
-            code, sorted_rows, _ = sorted_pages[(path, value)]
-            label = f"{path}?{query_for(path, value)}"
-            if code != 200:
-                failures.append(f"SORT {label}: status {code}")
-                print(f"  FAIL  {label}  (status {code})")
-                bad += 1
-            elif path in SORT_ROW_COUNT_VARIES:
-                if sorted_rows < max(3, base_rows // 2):
-                    failures.append(
-                        f"SORT {label}: {sorted_rows} rows; this page regroups on "
-                        f"sort, but not down from {base_rows}")
-                    print(f"  FAIL  {label}  ({sorted_rows} rows, regrouping from "
-                          f"{base_rows} cannot explain that)")
+        for param, vals in sorted(values[path].items()):
+            for value in vals:
+                code, sorted_rows, _ = sorted_pages[(path, query, param, value)]
+                problem = sort_problem(path, base_rows, code, sorted_rows)
+                if problem:
+                    label = f"{path}?{with_param(query, param, value)}"
+                    failures.append(f"SORT {label}: {problem}")
+                    print(f"  FAIL  {label}  ({problem})")
                     bad += 1
-            elif sorted_rows != base_rows:
-                failures.append(
-                    f"SORT {label}: {sorted_rows} rows, unsorted page has {base_rows}")
-                print(f"  FAIL  {label}  ({sorted_rows} rows vs {base_rows} unsorted)")
-                bad += 1
         # A sort link the route does not handle: the header is there, the click
         # does nothing. Resolved against the link's own target, because plenty
         # of these point at another page.
-        for target, value in sorted(links):
+        for target, param, sent in sorted(links):
             if expected_status(target) != 200:
                 continue
-            if not sort_fixtures.handles(target, value, values, patterns):
-                failures.append(f"SORT {path}: links {target}?sort={value}, "
+            link = f"{target}?{'&'.join(f'{param}={v}' for v in sent)}"
+            if len(sent) > 1:
+                # The server reads the first copy, so the one the header meant
+                # to send is ignored -- orgdata.html once appended its s2 to a
+                # query string that already carried the current one.
+                failures.append(f"SORT {where}: links {link}, sending ?{param}= "
+                                f"{len(sent)} times; only the first is read")
+                print(f"  FAIL  {where}  (?{param}= sent {len(sent)} times -> {link})")
+                bad += 1
+            elif sent[0] and not sort_fixtures.handles(
+                    target, param, sent[0], values, patterns):
+                failures.append(f"SORT {where}: links {link}, "
                                 "which that route does not handle")
-                print(f"  FAIL  {path}  (dead link -> {target}?sort={value})")
+                print(f"  FAIL  {where}  (dead link -> {link})")
                 bad += 1
         if not bad:
-            print(f"  ok    {path}  ({len(values[path])} sort values, {base_rows} rows)")
+            count = sum(len(v) for v in values[path].values())
+            print(f"  ok    {where}  ({count} sort values, {base_rows} rows)")
 
+    if retried:
+        print(f"INFO: {len(retried)} measurement(s) failed once and were "
+              "taken again one at a time; only a repeat failure is reported")
     if vacuous:
         print(f"INFO: {len(vacuous)} known-thin fixture(s), excluded from the sort "
               "checks by SORT_FIXTURE_TOO_THIN:")
         for entry in vacuous:
             print(f"       {entry}")
     if uncovered:
-        print(f"INFO: {len(uncovered)} route(s) take ?sort= but have no fixture, so "
+        print(f"INFO: {len(uncovered)} route(s) take a sort but have no fixture, so "
               "none of their sort links are exercised:")
         for path in uncovered:
             print(f"       {path}")
     return failures
 
 
+def base_problem(code, rows):
+    """Is this base page unfit to compare sorts against?"""
+    return code != 200 or rows < 3
+
+
+def sort_problem(path, base_rows, code, rows):
+    """Why this sorted page is wrong, or None. Sorting cannot change the rows."""
+    if code != 200:
+        return f"status {code}"
+    if path in SORT_ROW_COUNT_VARIES:
+        if rows < max(3, base_rows // 2):
+            return (f"{rows} rows; this page regroups on sort, but not down "
+                    f"from {base_rows}")
+        return None
+    if rows != base_rows:
+        return f"{rows} rows vs {base_rows} unsorted"
+    return None
+
+
+def with_param(query, param, value):
+    """`query` with ?param=value set, replacing any value it already carried."""
+    pairs = [(k, v) for k, v in parse_qsl(query, keep_blank_values=True) if k != param]
+    return urlencode(pairs + [(param, value)])
+
+
 def measure(url, page_path=None):
     """(status, row count, sort links) for one page. The body is NOT retained.
 
-    The sweep fetches ~1120 pages and the checks need only a status, a row
+    The sweep fetches ~1200 pages and the checks need only a status, a row
     count and (for the base page of each route) the set of sort links it
     offers. Keeping the decoded bodies alive until the end would hold hundreds
     of megabytes on a box that has been OOM-killed before -- some of these
@@ -392,16 +454,35 @@ def measure(url, page_path=None):
     """
     code, body = probe(url)
     links = sort_links(body, page_path) if page_path else frozenset()
-    return code, len(re.findall(r"<tr", body, re.I)), links
+    return code, len(ROW.findall(body)), links
+
+
+# A table row, or a row of one of the ownership trees (holders.asp,
+# orgdata.asp?x=y), which are floated divs rather than a table; each numbers
+# its rows with an anchor, as the ASP did, and a sort reorders those rows
+# without adding or removing any.
+ROW = re.compile(r"""<tr\b|<a name=["'][HD]\d+["']""", re.I)
 
 
 def sort_links(body, page_path):
-    """{(target path, sort value)} for every ?sort= link the rendered page offers."""
+    """{(target path, param, (values sent...))} for every sort a page links to.
+
+    A parameter counts as a sort if it is one of the names routes read sorts
+    from, or if the value it carries is shaped like a sort key -- the second is
+    how a real sort key sent under a name the target never reads is caught
+    (league_dirs_hk.html once sent possum.asp `s=cagreldn`). Blank values are
+    kept, because a blank first copy is exactly what shadows a real second one.
+    """
+    site = urlsplit(BASE_URL).netloc
     found = set()
-    for href in re.findall(r"""href=['"]([^'"]*sort=[^'"]*)['"]""", body):
+    for href in re.findall(r"""href=['"]([^'"]*\?[^'"]*)['"]""", body):
         parts = urlsplit(urljoin(f"{BASE_URL}{page_path}", unescape(href)))
-        for value in parse_qs(parts.query).get("sort", []):
-            found.add((parts.path or page_path, value))
+        if parts.netloc != site:
+            continue
+        for param, sent in parse_qs(parts.query, keep_blank_values=True).items():
+            if param in sort_fixtures.SORT_PARAMS or any(
+                    sort_fixtures.SORT_KEY.match(v) for v in sent):
+                found.add((parts.path or page_path, param, tuple(sent)))
     return found
 
 

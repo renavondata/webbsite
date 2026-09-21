@@ -1,4 +1,4 @@
-"""Every ``?sort=`` value each route accepts, read out of the route source.
+"""Every sort value each route accepts, read out of the route source.
 
 Sort links are the archive's largest untested surface. A page renders fine, a
 user clicks a column header, and the route runs a *different* ORDER BY against
@@ -6,14 +6,19 @@ the same query -- one that nothing has ever executed. That is how WEBBSITE-1G/1H
 happened: tuntraff.asp's four direction-column headers ordered a grouped query
 by a base column, which MySQL allowed and PostgreSQL rejects, so both links were
 500s for as long as the Flask port had been live. ``route_fixtures.py`` named ten
-sort values in total across the whole site; there are 1014.
+sort values in total across the whole site; there are over a thousand.
 
 Hand-maintaining that list would go stale on the first new route, so this reads
 the values back out of the route functions instead:
 
-    sort_values()["/dbpub/tuntraff.asp"] -> ['altadn', 'altaup', ... 'defup']
+    sort_values()["/dbpub/tuntraff.asp"] -> {"sort": ['altadn', ... 'defup']}
 
-The rule, per route function: find the variable assigned from the ``sort`` query
+Most pages sort on ``?sort=``, but not all: donations.asp uses ``sort1``,
+holders.asp ``s1``, orgdata.asp ``s2``/``s3`` (one per table), and
+leagueDirsHK.asp takes three levels at once as ``s1``/``s2``/``s3``. So values
+are keyed by parameter, and SORT_PARAMS names the ones in use.
+
+The rule, per route function: find each variable assigned from a sort query
 parameter, find the dict literals that variable indexes (``m[sort]``,
 ``m.get(sort, d)``, ``sort in m``), and take their keys plus the parameter's own
 default. Routes that branch on the value instead of looking it up (the vehicle
@@ -22,13 +27,14 @@ contribute their compared literals, and an f-string comparison contributes a
 *pattern* instead -- ``f"f{x}dn"`` cannot be enumerated without running the
 route, but it is enough to recognise ``f3dn`` as a value the route handles.
 
-A function that reads ``sort`` but yields neither raises: that means the route
+A function that reads a sort parameter but yields neither raises (unless the
+route is listed in READ_BUT_UNUSED with a reason): that means the route
 spells its sort values in a shape this does not understand, and silently
 returning nothing for it would quietly shrink the sweep back down again.
 
 The shape that would still be lost quietly is a sort map built by a helper --
 ``ob = _order(sort)`` -- because the values live in a function with no route of
-its own and no ``?sort=`` read to notice. Nothing in the tree does that today,
+its own and no sort read to notice. Nothing in the tree does that today,
 and tests/test_sort_fixtures.py cross-checks every sort-shaped literal in the
 routes against what this returns, which is what would catch it.
 
@@ -50,14 +56,82 @@ class SortMapNotUnderstood(Exception):
     """A route reads ?sort= but its sort values could not be read back out."""
 
 
-def _reads_sort(expression):
-    """Does this expression read the ?sort= query parameter anywhere inside it?
+# Query parameters that carry a sort key. Most pages use ?sort=; a few older
+# ones spell it differently, and leagueDirsHK.asp takes three levels at once.
+SORT_PARAMS = frozenset({"sort", "sort1", "s1", "s2", "s3"})
+
+# A string shaped like one of this site's sort keys: a short column
+# abbreviation plus a direction. Used to recognise a sort parameter in a link
+# by its value, which is how a link naming the *wrong* parameter is caught --
+# league_dirs_hk.html once sent possum.asp `s=cagreldn`, which it never reads.
+SORT_KEY = re.compile(r"^[A-Za-z0-9]{2,10}(up|dn|UP|DN)$")
+
+# Parameters a route reads and hands straight back to its template without
+# ordering anything by them. Each needs a reason, or it would hide a sort map
+# this module has failed to read.
+READ_BUT_UNUSED = {
+    ("/dbpub/orgdata.asp", "s1"):
+        "sorted the holders section, which is not ported (see the TODO in "
+        "orgdata.html); the value is only echoed back into the other links",
+    ("/dbpub/natperson.asp", "s2"):
+        "carried as hidden form state for the ASP's sort; nothing orders by it",
+}
+
+
+def _loop_values(expression):
+    """{name: [values]} for comprehension variables iterating a constant range().
+
+    leagueDirsHK.asp reads its three sort levels in one comprehension,
+    `{i: get_str(f"s{i}", "") for i in range(1, 4)}`, so the parameter *name* is
+    an f-string. Only a comprehension over a literal range() is resolved -- a
+    `for` statement is deliberately not, because compare.asp reads stock codes
+    as `get_str(f"s{i}")` in one and they are not sort keys.
+    """
+    out = {}
+    for node in ast.walk(expression):
+        if not isinstance(node, (ast.DictComp, ast.ListComp, ast.SetComp, ast.GeneratorExp)):
+            continue
+        for gen in node.generators:
+            it = gen.iter
+            if (isinstance(gen.target, ast.Name)
+                    and isinstance(it, ast.Call)
+                    and isinstance(it.func, ast.Name) and it.func.id == "range"
+                    and it.args
+                    and all(isinstance(a, ast.Constant) and isinstance(a.value, int)
+                            for a in it.args)):
+                out[gen.target.id] = list(range(*(a.value for a in it.args)))
+    return out
+
+
+def _param_names(first, loops):
+    """The query parameter names a get_str()/get() first argument can spell."""
+    if isinstance(first, ast.Constant) and isinstance(first.value, str):
+        return {first.value}
+    if isinstance(first, ast.JoinedStr):
+        names = [""]
+        for part in first.values:
+            if isinstance(part, ast.Constant):
+                names = [n + str(part.value) for n in names]
+            elif (isinstance(part, ast.FormattedValue)
+                    and isinstance(part.value, ast.Name)
+                    and part.value.id in loops):
+                names = [n + str(v) for n in names for v in loops[part.value.id]]
+            else:
+                return set()
+        return set(names)
+    return set()
+
+
+def _sort_params_read(expression):
+    """The sort parameters this expression reads anywhere inside it.
 
     Matching only a bare `x = get_str("sort", d)` missed reghist.asp, whose read
     is buried in a conditional -- and missed it *silently*, contributing nothing
     and raising nothing, which is the one failure mode this module is built to
     avoid. Anything containing the read counts.
     """
+    loops = _loop_values(expression)
+    params = set()
     for node in ast.walk(expression):
         if not (isinstance(node, ast.Call) and node.args):
             continue
@@ -65,29 +139,35 @@ def _reads_sort(expression):
         # spellings in use; asp_helpers.get_str wraps the latter.
         func = node.func
         name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", None)
-        first = node.args[0]
-        if name in ("get_str", "get") and isinstance(first, ast.Constant) \
-                and first.value == "sort":
-            return True
-    return False
+        if name in ("get_str", "get"):
+            params |= _param_names(node.args[0], loops) & SORT_PARAMS
+    return params
 
 
-def _sort_param_name(node):
-    """('sortvar', {values}) if this statement assigns from a ?sort= read.
+def _sort_reads(node):
+    """(variable, {params}, {defaults}) if this statement assigns from a sort read.
 
-    Every string constant in the assigning expression is a value the route can
-    hold: `get_str("sort", "datdn")` yields its default, and reghist.asp's
-    `"dateup" if request.args.get("sort") == "dateup" else "datedn"` yields both
-    of the two orders it supports.
+    Keyed on the parameter the call names, not the variable it lands in:
+    holders.asp reads ?s1= into `sort_param`. Every string constant in the
+    assigning expression is a value the route can hold: `get_str("sort",
+    "datdn")` yields its default, and reghist.asp's `"dateup" if
+    request.args.get("sort") == "dateup" else "datedn"` yields both of the two
+    orders it supports.
     """
     if not isinstance(node, ast.Assign) or len(node.targets) != 1:
         return None
     target = node.targets[0]
-    if not isinstance(target, ast.Name) or not _reads_sort(node.value):
+    if not isinstance(target, ast.Name):
         return None
+    params = _sort_params_read(node.value)
+    if not params:
+        return None
+    fstring_parts = {id(c) for j in ast.walk(node.value) if isinstance(j, ast.JoinedStr)
+                     for c in j.values}
     values = {c.value for c in ast.walk(node.value)
-              if isinstance(c, ast.Constant) and isinstance(c.value, str)}
-    return target.id, values - {"sort", ""}
+              if isinstance(c, ast.Constant) and isinstance(c.value, str)
+              and id(c) not in fstring_parts}
+    return target.id, params, values - params - {""}
 
 
 def _string_key_dicts(nodes):
@@ -114,26 +194,33 @@ def _string_key_dicts(nodes):
     return out
 
 
+def _is_sort_var(node, sort_vars):
+    """`sort`, or one level of a multi-level read such as `sort_keys[2]`."""
+    if isinstance(node, ast.Name):
+        return node.id in sort_vars
+    return (isinstance(node, ast.Subscript)
+            and isinstance(node.value, ast.Name)
+            and node.value.id in sort_vars)
+
+
 def _dicts_keyed_by(func, sort_vars):
     """Names of dicts the sort variable indexes, .get()s, or is tested against."""
     used = set()
     for node in ast.walk(func):
         if (isinstance(node, ast.Subscript)
                 and isinstance(node.value, ast.Name)
-                and isinstance(node.slice, ast.Name)
-                and node.slice.id in sort_vars):
+                and _is_sort_var(node.slice, sort_vars)):
             used.add(node.value.id)                      # order_map[sort]
         elif (isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Attribute)
                 and node.func.attr == "get"
                 and isinstance(node.func.value, ast.Name)
+                and node.func.value.id not in sort_vars
                 and node.args
-                and isinstance(node.args[0], ast.Name)
-                and node.args[0].id in sort_vars):
+                and _is_sort_var(node.args[0], sort_vars)):
             used.add(node.func.value.id)                 # sort_map.get(sort, d)
         elif (isinstance(node, ast.Compare)
-                and isinstance(node.left, ast.Name)
-                and node.left.id in sort_vars):
+                and _is_sort_var(node.left, sort_vars)):
             for op, other in zip(node.ops, node.comparators):
                 if isinstance(op, (ast.In, ast.NotIn)) and isinstance(other, ast.Name):
                     used.add(other.id)                   # if sort not in order_map
@@ -153,8 +240,7 @@ def _comparisons(func, sort_vars):
     values, patterns = set(), set()
     for node in ast.walk(func):
         if not (isinstance(node, ast.Compare)
-                and isinstance(node.left, ast.Name)
-                and node.left.id in sort_vars):
+                and _is_sort_var(node.left, sort_vars)):
             continue
         for other in node.comparators:
             if isinstance(other, ast.Constant) and isinstance(other.value, str):
@@ -241,9 +327,29 @@ def url_prefixes():
     return prefixes
 
 
+def _function_sorts(func, module_dicts):
+    """{param: (values, patterns)} for one function, from each variable it reads."""
+    reads = [r for r in map(_sort_reads, ast.walk(func)) if r]
+    if not reads:
+        return {}
+    local = _string_key_dicts(ast.walk(func))
+    dicts = {name: module_dicts.get(name, set()) | local.get(name, set())
+             for name in set(module_dicts) | set(local)}
+    out = {}
+    for var, params, defaults in reads:
+        keyed = _dicts_keyed_by(func, {var})
+        compared, patterns = _comparisons(func, {var})
+        values = {v for name in keyed for v in dicts.get(name, [])} | defaults | compared
+        for param in params:
+            v, pt = out.setdefault(param, (set(), set()))
+            v.update(values)
+            pt.update(patterns)
+    return out
+
+
 @functools.lru_cache(maxsize=None)
 def _scan(routes_dir=ROUTES):
-    """{path: (values, patterns)} for every route that reads ?sort=.
+    """{path: {param: (values, patterns)}} for every route that reads a sort.
 
     Cached: sort_values() and sort_patterns() are called for the same tree in
     one run, and re-parsing statistics.py (9.5k lines) for each is waste. The
@@ -251,6 +357,14 @@ def _scan(routes_dir=ROUTES):
     """
     prefixes = url_prefixes()
     found = {}
+
+    def record(paths, sorts):
+        for path in paths:
+            for param, (values, patterns) in sorts.items():
+                v, pt = found.setdefault(path, {}).setdefault(param, (set(), set()))
+                v.update(values)
+                pt.update(patterns)
+
     for source in sorted(pathlib.Path(routes_dir).rglob("*.py")):
         # dbpub sub-blueprints are registered under the package's own prefix;
         # every other module is registered by its own stem in webbsite/__init__.
@@ -261,33 +375,24 @@ def _scan(routes_dir=ROUTES):
         for func in ast.walk(tree):
             if not isinstance(func, ast.FunctionDef):
                 continue
-            sort_vars, defaults = set(), set()
-            for stmt in ast.walk(func):
-                read = _sort_param_name(stmt)
-                if read:
-                    sort_vars.add(read[0])
-                    defaults |= read[1]
-            if not sort_vars:
+            sorts = _function_sorts(func, module_dicts)
+            if not sorts:
                 continue
-            local = _string_key_dicts(ast.walk(func))
-            dicts = {name: module_dicts.get(name, set()) | local.get(name, set())
-                     for name in set(module_dicts) | set(local)}
-            keyed = _dicts_keyed_by(func, sort_vars)
-            values = {v for name in keyed for v in dicts.get(name, [])} | defaults
-            compared, patterns = _comparisons(func, sort_vars)
-            values |= compared
-            if not values and not patterns:
+            paths = [prefix + path for path in _route_paths(func)]
+            for param, (values, patterns) in sorts.items():
+                if values or patterns:
+                    continue
+                if paths and all((path, param) in READ_BUT_UNUSED for path in paths):
+                    continue
                 where = source.relative_to(ROOT) if source.is_relative_to(ROOT) else source
                 raise SortMapNotUnderstood(
-                    f"{where}:{func.name} reads ?sort= but no sort "
+                    f"{where}:{func.name} reads ?{param}= but no sort "
                     "values could be read back. Teach this module its shape rather "
                     "than leaving the route's sort links unexercised."
                 )
-            by_function[func.name] = (values, patterns)
-            for path in _route_paths(func):
-                v, pt = found.setdefault(prefix + path, (set(), set()))
-                v.update(values)
-                pt.update(patterns)
+            sorts = {param: vp for param, vp in sorts.items() if vp[0] or vp[1]}
+            by_function[func.name] = sorts
+            record(paths, sorts)
 
         # Aliases kept for ASP URL compatibility forward to the real route, so
         # they answer to its sort values without mentioning any of their own.
@@ -295,44 +400,51 @@ def _scan(routes_dir=ROUTES):
             if not isinstance(func, ast.FunctionDef):
                 continue
             target = by_function.get(_delegates_to(func) or "")
-            if not target:
-                continue
-            for path in _route_paths(func):
-                v, pt = found.setdefault(prefix + path, (set(), set()))
-                v.update(target[0])
-                pt.update(target[1])
-    return found
+            if target:
+                record([prefix + path for path in _route_paths(func)], target)
+    return {path: sorts for path, sorts in found.items() if sorts}
 
 
 def sort_values(routes_dir=ROUTES):
-    """{full route path: sorted sort values} for every route that reads ?sort=."""
-    return {path: sorted(v) for path, (v, _) in _scan(routes_dir).items()}
+    """{full route path: {param: sorted values}} for every route that sorts."""
+    return {path: {param: sorted(v) for param, (v, _) in sorts.items() if v}
+            for path, sorts in _scan(routes_dir).items()}
 
 
 def sort_patterns(routes_dir=ROUTES):
-    """{full route path: regexes} for the sort values a route computes at runtime."""
-    return {path: sorted(p) for path, (_, p) in _scan(routes_dir).items() if p}
+    """{full route path: {param: regexes}} for sort values computed at runtime."""
+    out = {}
+    for path, sorts in _scan(routes_dir).items():
+        pats = {param: sorted(p) for param, (_, p) in sorts.items() if p}
+        if pats:
+            out[path] = pats
+    return out
 
 
-def handles(path, value, values=None, patterns=None):
-    """Does this route do anything with ?sort=<value>, or silently ignore it?
+def handles(path, param, value, values=None, patterns=None):
+    """Does this route do anything with ?<param>=<value>, or silently ignore it?
 
     A value that is neither in the route's sort map nor matched by one of its
     patterns is a dead link: the page offers the column header, the route falls
     through to its default, and the table comes back in the order it already was.
+    So is a real sort key sent under a parameter the route never reads.
     """
     values = sort_values() if values is None else values
     patterns = sort_patterns() if patterns is None else patterns
-    if value in values.get(path, ()):
+    if value in values.get(path, {}).get(param, ()):
         return True
-    return any(re.fullmatch(p, value) for p in patterns.get(path, ()))
+    return any(re.fullmatch(p, value) for p in patterns.get(path, {}).get(param, ()))
 
 
 if __name__ == "__main__":
     found = sort_values()
     pats = sort_patterns()
-    for path, values in sorted(found.items()):
-        extra = "  +" + ",".join(pats[path]) if path in pats else ""
-        print(f"{path:44s} {len(values):3d}  {','.join(values)}{extra}")
-    print(f"\n{len(found)} routes, {sum(len(v) for v in found.values())} sort values, "
-          f"{sum(len(v) for v in pats.values())} runtime patterns")
+    for path, params in sorted(found.items()):
+        for param, values in sorted(params.items()):
+            extra = pats.get(path, {}).get(param)
+            extra = "  +" + ",".join(extra) if extra else ""
+            label = path if param == "sort" else f"{path} ?{param}="
+            print(f"{label:48s} {len(values):3d}  {','.join(values)}{extra}")
+    print(f"\n{len(found)} routes, "
+          f"{sum(len(v) for p in found.values() for v in p.values())} sort values, "
+          f"{sum(len(v) for p in pats.values() for v in p.values())} runtime patterns")

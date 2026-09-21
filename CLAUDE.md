@@ -185,7 +185,9 @@ retained only for parity and is deprecated in favour of parameterization.
   reads them all back out of the routes and `tests/check_all_routes.py` requests each one,
   requiring 200 *and* the same row count as the unsorted page (a caught SQL error renders an
   empty table with a 200). Adding a sort value needs nothing; adding a sort-taking *page*
-  needs one entry in `tests/route_fixtures.py` whose parameters render rows.
+  needs one entry in `tests/route_fixtures.py` whose parameters render rows. A few pages
+  sort on another parameter (`sort1`, `s1`/`s2`/`s3`); a new name goes in
+  `sort_fixtures.SORT_PARAMS` (`tests/test_sort_fixtures.py` fails until it is).
 - Local dev DSN: `postgresql://postgres:@localhost:5432/enigma_pg`; production reads `DATABASE_URL`.
 
 ## Data revival
