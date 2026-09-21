@@ -156,7 +156,8 @@ def sections():
 @bp.route("/annotated.asp")
 def annotated():
     sort: str = get_str("sort", "annup")
-    return {"annup": "a", "anndn": "a DESC"}.get(sort)
+    order = {"annup": "a", "anndn": "a DESC"}
+    return order.get(sort)
 
 
 @bp.route("/subscripted.asp")
@@ -307,7 +308,7 @@ def run():
         check("one map per parameter on a page of several tables",
               shapes.get("/sections.asp"), {"s2": ["adn", "aup"], "s3": ["bdn", "bup"]})
         check("an annotated assignment is a sort read", shapes.get("/annotated.asp"),
-              {"sort": ["annup"]})
+              {"sort": ["anndn", "annup"]})
         check("request.args[...] is a sort read", shapes.get("/subscripted.asp"),
               {"sort": ["subdn", "subup"]})
         check("f-string names in a for loop are not sort reads",
