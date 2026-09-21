@@ -9356,6 +9356,8 @@ def adviserships():
     # Validated to YYYY-MM-DD so a junk date is a default, not an SQL error.
     from_date = get_date_or_default("f", "")
     to_date = get_date_or_default("t", "")
+    if to_date and from_date > to_date:
+        from_date, to_date = to_date, from_date
     years = get_dbl("y", 1.0)
     include_new = get_bool("c")
 
@@ -9447,7 +9449,9 @@ def adviserships():
         # identical click-through sorts cagreldn; that is what it meant.
         "cagdn": "cagrel DESC NULLS LAST, org",
     }
-    order_by = sort_map.get(sort_param, "org, addDate")
+    if sort_param not in sort_map:
+        sort_param = "orgup"  # as the ASP did, so the Client grouping applies
+    order_by = sort_map[sort_param]
 
     # The window each return is measured over, as the ASP built it. A one-time
     # role (sponsor, IFA) is judged over the performance period after the

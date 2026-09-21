@@ -456,6 +456,7 @@ def run():
     # 10. adviserships.asp: returns, per the ASP (dbpub/adviserships.asp).
     adv_sql = []
     one_time = [False]
+    same_client = [False]
 
     def rec_adv(sql, params=None, timeout_s=None):
         if "enigma.adviserships adv" in sql:
@@ -463,7 +464,7 @@ def run():
             return [
                 {"orgid": 763, "org": "OOIL", "issueid": 279, "adddate": date(1998, 3, 20),
                  "remdate": None, "totret": 646.6509, "cagret": 0.2613, "cagrel": 0.2096},
-                {"orgid": 66471, "org": "Samsonite", "issueid": 6940,
+                {"orgid": 763 if same_client[0] else 66471, "org": "Samsonite", "issueid": 6940,
                  "adddate": date(2011, 6, 3), "remdate": date(2017, 3, 15),
                  "totret": 0.9882, "cagret": 0.1270, "cagrel": None},
             ]
@@ -490,6 +491,28 @@ def run():
               "2010-01-01" in sql or "2020-12-31" in sql, False)
         check("adviserships: one placeholder per param",
               sql.count("%s"), len(params))
+        bound = sql
+        for v in params:
+            bound = bound.replace("%s", repr(v), 1)
+        check("adviserships: the start date clips the start, the end date the end",
+              ("GREATEST(COALESCE(addDate, CAST('2010-01-01' AS date))" in bound,
+               "LEAST(COALESCE(remDate, CAST('2020-12-31' AS date))" in bound), (True, True))
+        client.get("/dbpub/adviserships.asp?p=382&r=2&f=2020-12-31&t=2010-01-01")
+        swapped = adv_sql[-1][0]
+        for v in adv_sql[-1][1]:
+            swapped = swapped.replace("%s", repr(v), 1)
+        check("adviserships: dates given backwards are swapped, as the ASP did",
+              "GREATEST(COALESCE(addDate, CAST('2010-01-01' AS date))" in swapped, True)
+        same_client[0] = True
+        junk = client.get("/dbpub/adviserships.asp?p=382&r=2&sort=junk").get_data(as_text=True)
+        current = client.get("/dbpub/adviserships.asp?p=382&r=2&sort=orgup&hide=Y"
+                             ).get_data(as_text=True)
+        same_client[0] = False
+        check("adviserships: an unknown sort is Client order, grouped by client",
+              re.findall(r'<td class="right colHide1">(\d*)</td>', junk), ["1", ""])
+        check("adviserships: a client's second row keeps every column under Current",
+              [row.count("<td") for row in re.findall(r"<tr[^>]*>(.*?)</tr>", current, re.S)[1:3]],
+              [7, 7])
         check("adviserships: percentages as the ASP formatted them",
               ("64,665.09%" in body, "26.13%" in body, "98.82%" in body), (True, True, True))
         check("adviserships: average of the CAGRs that exist",
