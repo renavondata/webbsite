@@ -63,67 +63,64 @@
     <p>This is a one-time role. Returns are from the appointment date to the earliest of the end of the specified performance period and the last trading date.</p>
     {% else %}
     <p>This is a continuing role. Total returns are measured from the latest of the start date, the appointment date and 3-Jan-1994
-    until the earliest of the end date, the resignation/removal date and the last trading date.
-    CAGR is the annualised return and is not shown for periods under 180 days.
-    Relative returns are to the <a href="/dbpub/orgdata.asp?p=51819">Tracker Fund of HK</a> (2800), starting from the latest of 12-Nov-1999, the appointment date and the chosen start date.</p>
+    until the earliest of the end date, the resignation/removal date and the last trading date.</p>
     {% endif %}
+    <p>CAGR is the annualised return and is not shown for periods under 180 days.
+    Relative returns are to the <a href="/dbpub/orgdata.asp?p=51819">Tracker Fund of HK</a> (2800), starting from the latest of 12-Nov-1999, the appointment date and the chosen start date.</p>
 
     {% if adviserships %}
+        {# A header sorts one way on first click and flips on the next, carrying
+           the dates and period the ASP's did. #}
+        {% set state = "?p=" ~ person_id ~ "&r=" ~ role_id ~ "&f=" ~ from_date ~ "&t=" ~ to_date
+                       ~ "&y=" ~ "%g"|format(years) ~ ("&c=1" if include_new else "") ~ "&hide=" ~ hide %}
+        {% macro sl(label, first, second) -%}
+            {% if sort == first %}<a href="{{ state }}&sort={{ second }}"><b>{{ label|safe }}</b> ▼</a>
+            {%- else %}<a href="{{ state }}&sort={{ first }}">{{ label|safe }}</a>{% endif %}
+        {%- endmacro %}
+        {% macro pct(v) %}{{ "{:,.2%}".format(v) if v is not none else "" }}{% endmacro %}
         <table class="opltable">
             <tr>
                 <th class="colHide1"></th>
-                <th>
-                    {% if sort == 'orgup' %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=orgdn&hide={{ hide }}">Client ▼</a>
-                    {% else %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=orgup&hide={{ hide }}">Client</a>
-                    {% endif %}
-                </th>
-                <th class="colHide2">
-                    {% if sort == 'addup' %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=adddn&hide={{ hide }}">Added ▼</a>
-                    {% else %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=addup&hide={{ hide }}">Added</a>
-                    {% endif %}
-                </th>
+                <th>{{ sl("Client", "orgup", "orgdn") }}</th>
+                <th class="colHide2">{{ sl("Added", "addup", "adddn") }}</th>
                 {% if not one_time %}
-                <th>
-                    {% if sort == 'remup' %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=remdn&hide={{ hide }}">Removed ▼</a>
-                    {% else %}
-                        <a href="?p={{ person_id }}&r={{ role_id }}&sort=remup&hide={{ hide }}">Removed</a>
-                    {% endif %}
-                </th>
+                <th>{{ sl("Removed", "remup", "remdn") }}</th>
                 {% endif %}
+                <th class="right colHide3">{{ sl("Total<br>return", "totdn", "totup") }}</th>
+                <th class="right colHide2">{{ sl("CAGR<br>total<br>return", "cagretdn", "cagretup") }}</th>
+                <th class="right">{{ sl("CAGR<br>relative<br>return", "cagreldn", "cagrelup") }}</th>
             </tr>
-            {% set last_org = 0 %}
-            {% set cnt = 0 %}
+            {# namespace, because a plain set inside a for loop resets every row #}
+            {% set ns = namespace(last_org=none, cnt=0) %}
             {% for adv in adviserships %}
-                {% if adv.orgid != last_org or (sort[:3] != 'org') %}
-                    {% set cnt = cnt + 1 %}
-                    <tr class="total">
-                        <td class="right colHide1">{{ cnt }}</td>
-                        <td><a href="/dbpub/advisers.asp?p={{ adv.orgid }}&hide={{ hide }}">{{ adv.org }}</a></td>
-                        <td class="colHide2 nowrap">{{ adv.adddate.strftime('%Y-%m-%d') if adv.adddate else '' }}</td>
-                        {% if not one_time %}
-                        <td class="nowrap">{{ adv.remdate.strftime('%Y-%m-%d') if adv.remdate else '' }}</td>
-                        {% endif %}
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td class="colHide1"></td>
-                        <td></td>
-                        <td class="colHide2 nowrap">{{ adv.adddate.strftime('%Y-%m-%d') if adv.adddate else '' }}</td>
-                        {% if not one_time and hide != 'Y' %}
-                        <td class="nowrap">{{ adv.remdate.strftime('%Y-%m-%d') if adv.remdate else '' }}</td>
-                        {% endif %}
-                    </tr>
-                {% endif %}
-                {% set last_org = adv.orgid %}
+                {% set new_org = adv.orgid != ns.last_org or sort[:3] != 'org' %}
+                {% if new_org %}{% set ns.cnt = ns.cnt + 1 %}{% endif %}
+                <tr{% if new_org %} class="total"{% endif %}>
+                    <td class="right colHide1">{{ ns.cnt if new_org else '' }}</td>
+                    <td>{% if new_org %}<a href="/dbpub/advisers.asp?p={{ adv.orgid }}&hide={{ hide }}">{{ adv.org }}</a>{% endif %}</td>
+                    <td class="colHide2 nowrap">{{ adv.adddate.strftime('%Y-%m-%d') if adv.adddate else '' }}</td>
+                    {% if not one_time and (new_org or hide != 'Y') %}
+                    <td class="nowrap">{{ adv.remdate.strftime('%Y-%m-%d') if adv.remdate else '' }}</td>
+                    {% endif %}
+                    <td class="right colHide3"><a href="/dbpub/ctr.asp?i1={{ adv.issueid }}&d1={{ adv['from'] }}">{{ pct(adv.totret) }}</a></td>
+                    <td class="right colHide2">{{ pct(adv.cagret) }}</td>
+                    <td class="right"><a href="/dbpub/ctr.asp?rel=1&i1=5295&i2={{ adv.issueid }}&d1={{ adv['from'] }}">{{ pct(adv.cagrel) }}</a></td>
+                </tr>
+                {% set ns.last_org = adv.orgid %}
             {% endfor %}
+            {% if averages.cagret is not none or averages.cagrel is not none %}
+            <tr class="total">
+                <td class="colHide1"></td>
+                <td>Average</td>
+                <td class="colHide2"></td>
+                {% if not one_time %}<td></td>{% endif %}
+                <td class="colHide3"></td>
+                <td class="right colHide2"><b>{{ pct(averages.cagret) }}</b></td>
+                <td class="right"><b>{{ pct(averages.cagrel) }}</b></td>
+            </tr>
+            {% endif %}
         </table>
         <br>
-        <p><i>Note: Total returns calculations require additional stored functions and will be implemented in a future update.</i></p>
     {% else %}
         <p>None found.</p>
     {% endif %}

@@ -70,7 +70,10 @@ which adviser gets which stock, so there is an element of luck.</p>
 	{% for row in results %}
 	<tr>
 		<td class="colHide1">{{ loop.index }}</td>
-		<td class="left"><a href="advisers.asp?p={{ row['personid'] }}">{{ row['name1'] }}</a></td>
+		{# The adviser's clients in this role, over this period, best performers
+		   first -- as the ASP linked it. advisers.asp is the other direction: a
+		   firm's own advisers. #}
+		<td class="left"><a href="adviserships.asp?p={{ row['personid'] }}&amp;r={{ r }}&amp;f={{ from_date }}&amp;t={{ to_date }}&amp;y={{ years }}&amp;sort=cagreldn">{{ row['name1'] }}</a></td>
 		<td>{{ row['cntpos'] }}</td>
 		<td>{{ "%.2f"|format(row['cagret'] * 100) if row['cagret'] is not none else '' }}</td>
 		<td>{{ "%.2f"|format(row['cagrel'] * 100) if row['cagrel'] is not none else '' }}</td>
