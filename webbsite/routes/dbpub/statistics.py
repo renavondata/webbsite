@@ -3,7 +3,7 @@ Statistical analysis and reporting routes
 """
 
 from flask import Blueprint, render_template, request, abort, current_app, Response
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 import calendar
 import csv as csvlib  # a route below is named csv
 import io
@@ -2491,64 +2491,52 @@ def csv():
 
     Tables used: various enigma schema tables for COVID/transport data
     """
-    from flask import request, Response
-    from webbsite.db import get_db
-    import io
-    import csv
-
     table = request.args.get("t", "")
 
-    # Whitelist of allowed tables and queries
+    # Whitelist of allowed tables and queries. Whole tables, as the ASP wrote
+    # them: a LIMIT here silently truncated the file.
+    whole = ("airlines", "airports", "destor", "flights", "hkpx", "hkpxtypes",
+             "hkports", "qt", "qtcentres", "vax", "jails", "jailtypes",
+             "prisoners", "prisorigin")
     valid_exports = {
-        "airlines": "SELECT * FROM enigma.airlines LIMIT 50000",
-        "airports": "SELECT * FROM enigma.airports LIMIT 50000",
-        "destor": "SELECT * FROM enigma.destor LIMIT 50000",
-        "flights": "SELECT * FROM enigma.flights LIMIT 50000",
-        "hkpx": "SELECT * FROM enigma.hkpx LIMIT 50000",
-        "hkpxtypes": "SELECT * FROM enigma.hkpxtypes LIMIT 50000",
-        "hkports": "SELECT * FROM enigma.hkports LIMIT 50000",
-        "qt": "SELECT * FROM enigma.qt LIMIT 50000",
-        "qtcentres": "SELECT * FROM enigma.qtcentres LIMIT 50000",
-        "vax": "SELECT * FROM enigma.vax LIMIT 50000",
-        "vaxcohorts": "SELECT id, minage, popn, mpopn, fpopn FROM enigma.vaxcohorts LIMIT 50000",
-        "jails": "SELECT * FROM enigma.jails LIMIT 50000",
-        "jailtypes": "SELECT * FROM enigma.jailtypes LIMIT 50000",
-        "prisoners": "SELECT * FROM enigma.prisoners LIMIT 50000",
-        "prisorigin": "SELECT * FROM enigma.prisorigin LIMIT 50000",
+        **{name: f"SELECT * FROM enigma.{name}" for name in whole},
+        "vaxcohorts": "SELECT id, minage, popn, mpopn, fpopn FROM enigma.vaxcohorts",
     }
 
     if table not in valid_exports:
         return Response("Not a valid download", mimetype="text/plain"), 400
 
-    # Execute query
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(valid_exports[table])
+    # Through execute_query, so a failure is logged once and never cached.
+    rows = execute_query(valid_exports[table], timeout_s=30)
 
-        # Get column names
-        columns = [desc[0] for desc in cursor.description]
+    # As the ASP's GetCSV: a bare header, then each row's cells.
+    lines = [",".join(rows[0].keys())] if rows else []
+    lines += [",".join(_csv_cell(v) for v in row.values()) for row in rows]
 
-        # Create CSV in memory
-        output = io.StringIO()
-        writer = csv.writer(output)
-
-        # Write header
-        writer.writerow(columns)
-
-        # Write data rows
-        for row in cursor:
-            writer.writerow(row)
-
-        # Get CSV content
-        csv_content = output.getvalue()
-        output.close()
-
-    # Return CSV response
     return Response(
-        csv_content,
+        "".join(line + "\r\n" for line in lines),
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={table}.csv"},
     )
+
+
+def _csv_cell(v):
+    """One value as the ASP's GetCSV wrote it: strings quoted (quotes doubled),
+    floats to 5 places, a date as yyyy-mm-dd (a timestamp keeps its time),
+    booleans as MySQL's 1/0, NULL as nothing."""
+    if v is None:
+        return ""
+    if isinstance(v, str):
+        return '"' + v.replace('"', '""') + '"'
+    if isinstance(v, bool):
+        return str(int(v))
+    if isinstance(v, float):
+        return str(round(v, 5))
+    if isinstance(v, datetime):
+        return v.date().isoformat() if v.time() == time() else v.isoformat(sep=" ")
+    if isinstance(v, date):
+        return v.isoformat()
+    return str(v)
 
 
 # FAQ pages

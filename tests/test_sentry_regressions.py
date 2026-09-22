@@ -35,6 +35,12 @@ Pins:
  12. a page rendered after a route swallowed a database failure (timeout,
      query error, no connection) is never cached: routes catch broadly and
      render an empty 200, which the edge then served for hours, or a year.
+ 13. CSV.asp exports: it called .cursor() on a SQLAlchemy Connection (a 500
+     for every table), and a LIMIT 50000 truncated whole-table exports;
+     values are written as the ASP's GetCSV wrote them.
+ 14. one failed query is one Sentry issue: the route's own re-log of a
+     failure db.py already reported is dropped (with or without exc_info),
+     while unrelated route errors and unhandled exceptions still report.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -691,6 +697,103 @@ def run():
               cache_headers("/dbpub/bornyear.asp?y=1957&m=4")[2], "max-age=14400")
     finally:
         db_module.get_db = real_get_db
+
+    # 13. CSV.asp: every export was an AttributeError (.cursor() on a
+    # SQLAlchemy Connection), and LIMIT 50000 would have truncated the file.
+
+    from datetime import datetime
+
+    csv_calls = []
+
+    def rec_csv(sql, params=None, timeout_s=None):
+        csv_calls.append((sql, timeout_s))
+        return [
+            {"id": 1, "name": 'Stanley "Women\'s"', "opened": date(1937, 1, 1),
+             "seen": datetime(2020, 5, 6, 7, 8, 9), "rate": 1 / 3, "open": True,
+             "note": None},
+            {"id": 2, "name": "Lai Chi Kok", "opened": date(1976, 3, 1),
+             "seen": datetime(2020, 5, 6), "rate": 2.5, "open": False, "note": "x"},
+        ]
+
+    statistics.execute_query = rec_csv
+    try:
+        r = client.get("/dbpub/CSV.asp?t=jails")
+        check("CSV.asp: 200", r.status_code, 200)
+        check("CSV.asp: the ASP's header and cells",
+              r.get_data(as_text=True).splitlines(),
+              ["id,name,opened,seen,rate,open,note",
+               '1,"Stanley ""Women\'s""",1937-01-01,2020-05-06 07:08:09,0.33333,1,',
+               '2,"Lai Chi Kok",1976-03-01,2020-05-06,2.5,0,"x"'])
+        check("CSV.asp: the whole table, no LIMIT, a heavy-query timeout",
+              csv_calls[-1] if csv_calls else None, ("SELECT * FROM enigma.jails", 30))
+        check("CSV.asp: an unknown table is refused",
+              client.get("/dbpub/CSV.asp?t=people").status_code, 400)
+    finally:
+        statistics.execute_query = real_s
+
+    # 14. One failed query, one Sentry issue. db.py logs it with the SQL; the
+    # route then logged it again, a second issue under another type (every
+    # timeout filed WEBBSITE-1Y and 1Z). Through a real client, so the hint
+    # before_send is actually given is what is tested.
+
+    import sentry_sdk
+    from sentry_sdk.transport import Transport
+    from webbsite import _sentry_options
+
+    sent = []
+
+    class _Capture(Transport):
+        def capture_envelope(self, envelope):
+            ev = envelope.get_event()
+            if ev is not None:
+                sent.append(ev.get("logger"))
+
+    probe_app = create_app()
+
+    @probe_app.route("/_probe_other")  # a DB failure, then an unrelated error
+    def _probe_other():
+        try:
+            db_module.execute_query("SELECT 1")
+        except Exception:
+            pass
+        try:
+            int("x")
+        except ValueError:
+            probe_app.logger.error("parse failed", exc_info=True)
+        return "ok"
+
+    @probe_app.route("/_probe_crash")  # a DB failure, then an unhandled crash
+    def _probe_crash():
+        try:
+            db_module.execute_query("SELECT 1")
+        except Exception:
+            pass
+        raise KeyError("unrelated")
+
+    sentry_sdk.init(**{**_sentry_options(app), "dsn": "https://k@example.invalid/1",
+                       "transport": _Capture, "traces_sample_rate": 0})
+    real_get_db = db_module.get_db
+    db_module.get_db = lambda: _TimingOut()
+    try:
+        sent.clear()
+        client.get("/dbpub/bornyear.asp?y=1957&m=4")  # route logs with exc_info
+        check("sentry: a swallowed timeout is one event, db.py's", sent, ["webbsite.db"])
+        sent.clear()
+        client.get("/dbpub/SFClicensees.asp")  # route logs f"...: {ex}", no exc_info
+        check("sentry: a message-only re-log is dropped too",
+              (len(sent) >= 1, set(sent)), (True, {"webbsite.db"}))
+        sent.clear()
+        probe_app.test_client().get("/_probe_other")
+        check("sentry: an unrelated route error is still reported",
+              sent, ["webbsite.db", "webbsite"])
+        sent.clear()
+        probe_app.test_client().get("/_probe_crash")
+        check("sentry: an unhandled exception is still reported",
+              None in sent, True)
+    finally:
+        db_module.get_db = real_get_db
+        sentry_sdk.get_client().close()
+        sentry_sdk.init()
 
     if _failures:
         print("\nFAILED:")

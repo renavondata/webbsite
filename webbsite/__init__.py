@@ -3,7 +3,7 @@ Webb-site Flask Application Factory
 Direct port from Classic ASP to Flask/Jinja
 """
 
-from flask import Flask, render_template, redirect, request, g, Response
+from flask import Flask, render_template, redirect, request, g, Response, has_app_context
 from datetime import datetime, date as _date
 import time
 import logging
@@ -144,25 +144,49 @@ def _group_db_errors_by_route(event, hint):
     return event
 
 
-def _init_sentry(app):
-    """Error reporting, on only when SENTRY_DSN is set (deploy/README.md).
+def _reported_by_db(event, hint):
+    """Whether this is a route re-logging a failure db.py already reported.
 
-    The Flask integration captures every unhandled exception with the request
-    attached; the logging integration turns every ERROR log line (db.py logs one
-    for each failed query before the route swallows it) into an event too. That
-    is what makes the 188 `except Exception: render empty page` blocks visible
-    without rewriting them. Traces are sampled low to get per-route timing
-    without paying for every request.
+    db.py logs every failed query with its SQL, then raises; the route catches
+    it and logs again, as its own issue under another exception type (every
+    timeout was WEBBSITE-1Y and 1Z). The route's line is the duplicate when
+    its exception is in the chain db.py raised, or, logged without exc_info
+    (most routes: f"Error ...: {ex}"), when its message quotes one. An
+    unhandled exception (no logger) is always kept.
     """
-    dsn = app.config.get("SENTRY_DSN")
-    if not dsn:
+    if event.get("logger") in (None, "webbsite.db") or not has_app_context():
         return False
-    import sentry_sdk
+    reported = g.get("db_reported") or []
+    if not reported:
+        return False
+    record = (hint or {}).get("log_record")
+    exc = ((hint or {}).get("exc_info") or (None, None))[1] or (
+        record.exc_info[1] if record is not None and record.exc_info else None
+    )
+    chain = []
+    while exc is not None and exc not in chain:
+        chain.append(exc)
+        exc = exc.__cause__ or exc.__context__
+    if chain:
+        return any(r is c for r in reported for c in chain)
+    message = record.getMessage() if record is not None else ""
+    return any(str(r) and str(r) in message for r in reported)
+
+
+def _before_send(event, hint):
+    """Sentry before_send: drop route duplicates of db.py's report, then group."""
+    if _reported_by_db(event, hint):
+        return None
+    return _group_db_errors_by_route(event, hint)
+
+
+def _sentry_options(app):
+    """sentry_sdk.init's arguments (the regression tests reuse them)."""
     from sentry_sdk.integrations.flask import FlaskIntegration
     from sentry_sdk.integrations.logging import LoggingIntegration
 
-    sentry_sdk.init(
-        dsn=dsn,
+    return dict(
+        dsn=app.config.get("SENTRY_DSN"),
         environment=app.config.get("SENTRY_ENVIRONMENT"),
         integrations=[
             FlaskIntegration(),
@@ -170,8 +194,26 @@ def _init_sentry(app):
         ],
         traces_sample_rate=0.05,
         send_default_pii=False,
-        before_send=_group_db_errors_by_route,
+        before_send=_before_send,
     )
+
+
+def _init_sentry(app):
+    """Error reporting, on only when SENTRY_DSN is set (deploy/README.md).
+
+    The Flask integration captures every unhandled exception with the request
+    attached; the logging integration turns every ERROR log line (db.py logs one
+    for each failed query before the route swallows it) into an event too. That
+    is what makes the 188 `except Exception: render empty page` blocks visible
+    without rewriting them; the route's own re-log of the same failure is
+    dropped (_reported_by_db). Traces are sampled low to get per-route timing
+    without paying for every request.
+    """
+    if not app.config.get("SENTRY_DSN"):
+        return False
+    import sentry_sdk
+
+    sentry_sdk.init(**_sentry_options(app))
     return True
 
 

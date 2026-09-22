@@ -24,11 +24,18 @@ class QueryTimeoutError(DatabaseError):
     pass
 
 
-def _mark_failed():
-    """Record on the request that a database call failed. Routes catch broadly
-    and render an empty page as a 200; _set_cache_headers reads this so such a
-    page is served no-store instead of cached at the edge (for up to a year)."""
+def _mark_failed(e):
+    """Record on the request that a database call failed, and which exception.
+
+    Routes catch broadly and render an empty page as a 200: _set_cache_headers
+    reads g.db_failed so such a page is served no-store instead of cached at
+    the edge (for up to a year). g.db_reported lets Sentry's before_send drop
+    the route's own re-log of a failure this module already reported, which
+    filed every timeout twice (WEBBSITE-1Y beside 1Z). Returns e, to raise it.
+    """
     g.db_failed = True
+    g.db_reported = [*g.get("db_reported", []), e]
+    return e
 
 
 def get_db():
@@ -51,7 +58,7 @@ def get_db():
             if current_app.config.get("DEBUG"):
                 logger.debug("Database connection acquired from pool")
         except Exception as e:
-            _mark_failed()
+            _mark_failed(e)
             logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
             raise
     return g.db
@@ -127,7 +134,7 @@ def execute_query(sql, params=None, timeout_s=None):
         # acceptable here: every value comes from a public URL of a login-free archive.
         # One record per failure: the logging integration turns each ERROR line
         # into its own Sentry issue, so three lines made three issues.
-        _mark_failed()
+        _mark_failed(e)
         logger.error("SQL Error: %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error
@@ -138,7 +145,7 @@ def execute_query(sql, params=None, timeout_s=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError("Query exceeded 8s time limit") from e
+            raise _mark_failed(QueryTimeoutError("Query exceeded 8s time limit")) from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
@@ -148,7 +155,7 @@ def execute_query(sql, params=None, timeout_s=None):
         # place the real failure survives. `from e` keeps the DBAPI class in the
         # traceback; DatabaseError lets a caller distinguish "the database
         # failed" from any other exception.
-        raise DatabaseError(f"Database query failed: {e}") from e
+        raise _mark_failed(DatabaseError(f"Database query failed: {e}")) from e
     finally:
         # Restore the default timeout on this pooled connection.
         if timeout_s is not None:
@@ -196,7 +203,7 @@ def execute_scalar(sql, params=None):
         return row[0] if row else None
     except Exception as e:
         # str(e) includes the bound parameters; see execute_query.
-        _mark_failed()
+        _mark_failed(e)
         logger.error("SQL Error (scalar): %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error
@@ -207,7 +214,7 @@ def execute_scalar(sql, params=None):
 
         # Detect statement_timeout cancellation
         if "canceling statement due to statement timeout" in str(e):
-            raise QueryTimeoutError("Query exceeded 8s time limit") from e
+            raise _mark_failed(QueryTimeoutError("Query exceeded 8s time limit")) from e
 
         # In debug mode, re-raise to show in browser
         if current_app.config.get("DEBUG"):
@@ -217,7 +224,7 @@ def execute_scalar(sql, params=None):
         # place the real failure survives. `from e` keeps the DBAPI class in the
         # traceback; DatabaseError lets a caller distinguish "the database
         # failed" from any other exception.
-        raise DatabaseError(f"Database query failed: {e}") from e
+        raise _mark_failed(DatabaseError(f"Database query failed: {e}")) from e
 
 
 def init_engine(app):
