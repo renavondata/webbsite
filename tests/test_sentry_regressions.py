@@ -769,6 +769,13 @@ def run():
         check("CSV.asp: an unknown table is refused",
               client.get("/dbpub/CSV.asp?t=people").status_code, 400)
 
+        conn = db_module._engine = _Streaming()
+        r = client.get("/dbpub/CSV.asp?t=jails", buffered=False)
+        next(iter(r.response))  # the header, then the client goes away
+        r.close()
+        check("CSV.asp: a download dropped before its first row returns the connection",
+              conn.closed, True)
+
         conn = db_module._engine = _Streaming(
             fail_start="canceling statement due to statement timeout")
         r = client.get("/dbpub/CSV.asp?t=jails")

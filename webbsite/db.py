@@ -244,10 +244,10 @@ def _failure(db, e, sql):
 def stream_query(sql, timeout_s=None, batch=5000):
     """Run a parameterless SELECT through a server-side cursor.
 
-    Returns (column names, iterator of row tuples), holding only `batch` rows
-    in memory, for whole-table exports the ASP streamed (GetCSV ran with
-    Response.Buffer=False). The cursor gets its own pooled connection, closed
-    when the iterator ends: g's is closed at teardown, which Flask runs before
+    Returns (column names, rows): iterate rows for tuples, holding only
+    `batch` in memory, and call rows.close() in a finally. For whole-table
+    exports the ASP streamed (GetCSV ran with Response.Buffer=False). The
+    cursor gets its own pooled connection, returned by rows.close(): g's is closed at teardown, which Flask runs before
     a streamed body is sent, and that killed the cursor after the first rows.
     The timeout is SET LOCAL, so closing (a rollback) restores the default.
 
@@ -280,22 +280,39 @@ def stream_query(sql, timeout_s=None, batch=5000):
         conn.close()
         raise err from e
 
-    def rows():
+    return columns, _StreamRows(conn, result)
+
+
+class _StreamRows:
+    """stream_query's rows. close() returns the connection, and the caller must
+    call it (a finally around the loop): a download dropped before the first
+    row closes a generator that never started, whose own finally never runs,
+    and each such connection sat idle in transaction until the pool ran dry.
+    """
+
+    def __init__(self, conn, result):
+        self._conn, self._result = conn, result
+
+    def __iter__(self):
         try:
-            for row in result:
+            for row in self._result:
                 yield tuple(row)
         except Exception as e:
             if "canceling statement due to statement timeout" in str(e):
                 raise QueryTimeoutError("Query exceeded the statement time limit") from e
             raise DatabaseError(f"Database query failed: {e}") from e
         finally:
-            try:
-                result.close()
-            except Exception:
-                pass
-            conn.close()
+            self.close()
 
-    return columns, rows()
+    def close(self):
+        if self._conn is None:
+            return
+        conn, self._conn = self._conn, None
+        try:
+            self._result.close()
+        except Exception:
+            pass
+        conn.close()
 
 
 def init_engine(app):

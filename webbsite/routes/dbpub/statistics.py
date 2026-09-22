@@ -2513,9 +2513,12 @@ def csv():
 
     def lines():
         # As the ASP's GetCSV: a bare header, then each row's cells.
-        yield ",".join(columns) + "\r\n"
-        for row in rows:
-            yield ",".join(_csv_cell(v) for v in row) + "\r\n"
+        try:
+            yield ",".join(columns) + "\r\n"
+            for row in rows:
+                yield ",".join(_csv_cell(v) for v in row) + "\r\n"
+        finally:
+            rows.close()  # a dropped download too, before its first row
 
     return Response(
         stream_with_context(lines()),
