@@ -713,11 +713,16 @@ def run():
     ]
 
     class _Streaming:
-        """A connection whose SELECT streams rows; fail_at makes the n-th row fail."""
+        """A pooled connection whose SELECT streams rows. Like a real server-side
+        cursor, it dies if its connection is closed (by teardown, say) mid-stream;
+        fail_at makes the n-th row fail."""
 
         def __init__(self, fail_start=None, fail_at=None):
             self.sql, self.options, self.closed = [], {}, False
             self.fail_start, self.fail_at = fail_start, fail_at
+
+        def connect(self):  # the engine hands out this one connection
+            return self
 
         def execute(self, stmt, *a, execution_options=None, **k):
             self.sql.append(str(stmt))
@@ -731,6 +736,8 @@ def run():
 
         def __iter__(self):
             for n, row in enumerate(jail_rows):
+                if self.closed:
+                    raise RuntimeError("named cursor isn't valid anymore")
                 if n == self.fail_at:
                     raise RuntimeError("canceling statement due to statement timeout")
                 yield row
@@ -741,36 +748,37 @@ def run():
         def rollback(self):
             pass
 
-    real_get_db = db_module.get_db
+    real_engine = db_module._engine
     try:
-        conn = _Streaming()
-        db_module.get_db = lambda: conn
-        r = client.get("/dbpub/CSV.asp?t=jails")
-        check("CSV.asp: 200", r.status_code, 200)
-        check("CSV.asp: the ASP's header and cells (a timestamp's clock, no offset)",
-              r.get_data(as_text=True).splitlines(),
+        conn = db_module._engine = _Streaming()
+        try:
+            r = client.get("/dbpub/CSV.asp?t=jails")
+            status, body = r.status_code, r.get_data(as_text=True).splitlines()
+        except Exception as ex:  # the stream died mid-body
+            status, body = None, [repr(ex)]
+        check("CSV.asp: 200", status, 200)
+        check("CSV.asp: every row, after teardown closed the request's connection",
+              body,
               ["id,name,opened,seen,rate,open,note",
                '1,"Stanley ""Women\'s""",1937-01-01,2020-05-06 07:08:09,0.33333,1,',
                '2,"Lai Chi Kok",1976-03-01,2020-05-06,2.5,0,"x"'])
-        check("CSV.asp: the whole table, no LIMIT, 30 s, then the 8 s default back",
-              conn.sql, ["SET statement_timeout = '30s'", "SELECT * FROM enigma.jails",
-                         "SET statement_timeout = '8s'"])
-        check("CSV.asp: a server-side cursor, the result closed",
+        check("CSV.asp: the whole table, no LIMIT, 30 s for this transaction only",
+              conn.sql, ["SET LOCAL statement_timeout = '30s'", "SELECT * FROM enigma.jails"])
+        check("CSV.asp: a server-side cursor on its own connection, closed at the end",
               (conn.options.get("stream_results"), conn.closed), (True, True))
         check("CSV.asp: an unknown table is refused",
               client.get("/dbpub/CSV.asp?t=people").status_code, 400)
 
-        conn = _Streaming(fail_start="canceling statement due to statement timeout")
+        conn = db_module._engine = _Streaming(
+            fail_start="canceling statement due to statement timeout")
         r = client.get("/dbpub/CSV.asp?t=jails")
         check("CSV.asp: a timeout starting the export is the uncached 504",
               (r.status_code, r.headers.get("Cache-Control"), r.headers.get("CDN-Cache-Control")),
               (504, "no-store", None))
-        check("CSV.asp: the timeout is reset after a failed start",
-              conn.sql[-1], "SET statement_timeout = '8s'")
+        check("CSV.asp: the connection is closed after a failed start", conn.closed, True)
 
-        conn = _Streaming(fail_at=1)
+        conn = db_module._engine = _Streaming(fail_at=1)
         with app.test_request_context("/dbpub/CSV.asp?t=jails"):
-            from flask import g as req_g
             cols, rows = db_module.stream_query("SELECT * FROM enigma.jails", timeout_s=30)
             got = []
             try:
@@ -781,11 +789,10 @@ def run():
                 raised = ex
             check("stream_query: a failure mid-stream raises, after the rows it had",
                   (got, type(raised).__name__), ([1], "QueryTimeoutError"))
-            check("stream_query: mid-stream failure marked and the cursor closed",
-                  (req_g.get("db_failed"), conn.closed, conn.sql[-1]),
-                  (True, True, "SET statement_timeout = '8s'"))
+            check("stream_query: its connection is closed after a mid-stream failure",
+                  conn.closed, True)
     finally:
-        db_module.get_db = real_get_db
+        db_module._engine = real_engine
 
     # 14. One failed query, one Sentry issue. db.py logs it with the SQL; the
     # route then logged it again, a second issue under another type (every
