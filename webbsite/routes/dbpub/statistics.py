@@ -2520,11 +2520,15 @@ def csv():
         finally:
             rows.close()  # a dropped download too, before its first row
 
-    return Response(
+    response = Response(
         stream_with_context(lines()),
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={table}.csv"},
     )
+    # And when the response closes: a HEAD request's body is discarded before
+    # lines() ever starts, so its finally alone left the connection checked out.
+    response.call_on_close(rows.close)
+    return response
 
 
 def _csv_cell(v):

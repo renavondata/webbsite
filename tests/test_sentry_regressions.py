@@ -775,6 +775,10 @@ def run():
         r.close()
         check("CSV.asp: a download dropped before its first row returns the connection",
               conn.closed, True)
+        conn = db_module._engine = _Streaming()
+        client.head("/dbpub/CSV.asp?t=jails").close()
+        check("CSV.asp: a HEAD request (body never started) returns the connection",
+              conn.closed, True)
 
         conn = db_module._engine = _Streaming(
             fail_start="canceling statement due to statement timeout")
