@@ -57,3 +57,16 @@ CREATE INDEX IF NOT EXISTS idx_payfx_lookup
   ON enigma.payfx (d, repcurr, dispcurr);
 CREATE INDEX IF NOT EXISTS idx_documents_pay_filter
   ON enigma.documents (orgid, doctypeid, recorddate, pay);
+
+-- Born-in-month listing (bornyear.asp). One year+month is ~17k people spread
+-- over ~16k heap pages of the 1.66 GB table, so a cold request read ~125 MB at
+-- random and hit the 8 s statement timeout (WEBBSITE-1Y/1Z). Covering every
+-- column the page reads makes it an index-only scan (~140 pages); ~920 MB.
+-- CONCURRENTLY, so people stays readable and writable while it builds (and so
+-- this statement runs outside a transaction: never apply this file with -1).
+-- A failed concurrent build leaves an INVALID index of this name, which IF NOT
+-- EXISTS then skips; assert_box reports it, and the fix is DROP INDEX
+-- CONCURRENTLY enigma.idx_people_born_cover, then re-run this file.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_people_born_cover
+  ON enigma.people (yob, mob, name1, name2)
+  INCLUDE (personid, cname, dob, yod, mond, dod);

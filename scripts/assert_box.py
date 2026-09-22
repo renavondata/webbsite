@@ -24,7 +24,7 @@ otherwise. The ping is a leaf: it never changes the exit code and is never
 printed.
 
 Environment (from /etc/webbsite/env and /etc/webbsite/ops-env via the unit):
-  DATABASE_URL       the app's DSN; pg_settings/pg_indexes are readable by any role
+  DATABASE_URL       the app's DSN; pg_settings and the pg_index/pg_class catalogs are readable by any role
   BASE_URL           origin for the route check (default http://127.0.0.1:8000)
   HC_API_KEY         read-only Healthchecks API key (checks assertion; unset = BLIND)
   HC_API_URL         the operator's Healthchecks-compatible API base URL (no default --
@@ -110,7 +110,7 @@ def parse_conf(text: str) -> dict[str, str]:
 
 
 def parse_index_names(sql: str) -> list[str]:
-    return re.findall(r"CREATE\s+INDEX\s+IF\s+NOT\s+EXISTS\s+(\w+)", sql, re.I)
+    return re.findall(r"CREATE\s+INDEX\s+(?:CONCURRENTLY\s+)?IF\s+NOT\s+EXISTS\s+(\w+)", sql, re.I)
 
 
 def parse_functions(sql: str) -> dict[str, str]:
@@ -229,14 +229,23 @@ def assert_postgres(rep: Report):
             rep.fail("postgres: pg_stat_statements not installed (needs the restart, then converge creates it)")
         # indexes
         names = parse_index_names(INDEXES_SQL.read_text())
-        cur.execute("SELECT indexname FROM pg_indexes WHERE schemaname IN ('enigma','ccass') AND indexname = ANY(%s)",
+        # indisvalid too: a failed CREATE INDEX CONCURRENTLY leaves an invalid index
+        # of the name, which IF NOT EXISTS then skips and the planner never uses.
+        cur.execute("SELECT c.relname, i.indisvalid FROM pg_index i"
+                    " JOIN pg_class c ON c.oid = i.indexrelid"
+                    " JOIN pg_namespace n ON n.oid = c.relnamespace"
+                    " WHERE n.nspname IN ('enigma','ccass') AND c.relname = ANY(%s)",
                     (names,))
-        have = {r[0] for r in cur.fetchall()}
-        missing = [n for n in names if n not in have]
+        valid = dict(cur.fetchall())
+        missing = [n for n in names if n not in valid]
+        invalid = [n for n in names if valid.get(n) is False]
         if missing:
             rep.fail(f"indexes missing ({len(missing)}/{len(names)}): {', '.join(missing)} -- apply database/schema/indexes.sql")
-        else:
-            rep.ok(f"indexes: all {len(names)} from database/schema/indexes.sql present")
+        if invalid:
+            rep.fail(f"indexes invalid (a failed concurrent build): {', '.join(invalid)} -- "
+                     "DROP INDEX CONCURRENTLY each, then apply database/schema/indexes.sql")
+        if not missing and not invalid:
+            rep.ok(f"indexes: all {len(names)} from database/schema/indexes.sql present and valid")
         # functions -- the return calculations guard their divisors (a zero close
         # used to abort the whole SELECT); a plain restore brings back the
         # unguarded MySQL-era bodies, and nothing else would notice.

@@ -56,7 +56,9 @@ def run():
 
     idx = ab.parse_index_names("CREATE INDEX IF NOT EXISTS a_b ON t (x);\ncreate index if not exists c\n  on t (y);")
     check("parse_index_names", idx, ["a_b", "c"])
-    check("real indexes.sql names 21", len(ab.parse_index_names(ab.INDEXES_SQL.read_text())), 21)
+    check("parse_index_names: CONCURRENTLY",
+          ab.parse_index_names("CREATE INDEX CONCURRENTLY IF NOT EXISTS d ON t (z);"), ["d"])
+    check("real indexes.sql names 22", len(ab.parse_index_names(ab.INDEXES_SQL.read_text())), 22)
 
     fns = ab.parse_functions(ab.FUNCTIONS_SQL.read_text())
     check("functions.sql declares the three return calculations",
