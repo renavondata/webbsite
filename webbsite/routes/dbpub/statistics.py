@@ -2132,8 +2132,10 @@ def govac_csv():
     item_rows = execute_query(
         """
         SELECT
+            g.id,
             COALESCE(a.txt, g.txt) as txt,
             g.firstd,
+            g.head,
             g.rev
         FROM enigma.govitems g
         LEFT JOIN enigma.govadopt a ON g.id = a.govitem AND a.tree = %s
@@ -2187,7 +2189,7 @@ def govac_csv():
     )
 
     if not items_rows:
-        # No children, show just this item
+        # No children, show just this item (so its row must select id and head)
         items_rows = [item]
 
     items = [dict(row) for row in items_rows]

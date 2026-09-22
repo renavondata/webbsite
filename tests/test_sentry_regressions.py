@@ -28,6 +28,8 @@ Pins:
      holding through hidden 100% intermediates as the ASP's drawTable did.
  10. adviserships.asp shows the ASP's three return columns, measured over the
      window the ASP used for each kind of role, and numbers its rows.
+ 11. govacCSV.asp exports a leaf item (no children) as its own column: the
+     fallback reused the item row, which never selected id/head (WEBBSITE-24).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -537,6 +539,34 @@ def run():
               "enigma.totret(a.ID1, addDate, addDate + %s)" in sql and 730 in params, True)
         check("adviserships: one-time role has no relative return before 12-Nov-1999",
               "CASE WHEN addDate >= '1999-11-12' THEN enigma.cagrel(" in sql, True)
+    finally:
+        statistics.execute_query = real_s
+
+    # 11. govacCSV.asp on a leaf item: with no children the export falls back to
+    # the item row itself, so that row must carry the id and head the per-column
+    # sum reads (WEBBSITE-24: KeyError 'id' for /dbpub/govacCSV.asp?t=0&i=4587).
+
+    def rec_govac(sql, params=None, timeout_s=None):
+        if "WHERE g.id = %s" in sql:
+            # Only the columns the route actually selects, as psycopg would.
+            cols = {"id": 4587, "txt": "Leaf item", "firstd": date(2000, 3, 31),
+                    "rev": True, "head": False}
+            select = sql.split("FROM", 1)[0]
+            return [{k: v for k, v in cols.items()
+                     if re.search(rf"\b(g\.{k}|as {k})\b", select)}]
+        if "SELECT DISTINCT d::text" in sql:
+            return [{"d": "2001-03-31"}, {"d": "2002-03-31"}]
+        if "AND govitem = %s" in sql and params == (4587,):
+            return [{"d": "2001-03-31", "act": 10}, {"d": "2002-03-31", "act": 12}]
+        return []
+
+    statistics.execute_query = rec_govac
+    try:
+        r = client.get("/dbpub/govacCSV.asp?t=0&i=4587")
+        check("govacCSV leaf: 200, not a KeyError", r.status_code, 200)
+        check("govacCSV leaf: the item is its own column",
+              r.get_data(as_text=True).splitlines(),
+              ['"Year","Leaf item","Total"', "2001,10,10", "2002,12,12"])
     finally:
         statistics.execute_query = real_s
 
