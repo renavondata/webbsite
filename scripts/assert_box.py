@@ -24,7 +24,7 @@ otherwise. The ping is a leaf: it never changes the exit code and is never
 printed.
 
 Environment (from /etc/webbsite/env and /etc/webbsite/ops-env via the unit):
-  DATABASE_URL       the app's DSN; pg_settings/pg_indexes are readable by any role
+  DATABASE_URL       the app's DSN; pg_settings and the pg_index/pg_class catalogs are readable by any role
   BASE_URL           origin for the route check (default http://127.0.0.1:8000)
   HC_API_KEY         read-only Healthchecks API key (checks assertion; unset = BLIND)
   HC_API_URL         the operator's Healthchecks-compatible API base URL (no default --
