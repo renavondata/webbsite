@@ -24,6 +24,13 @@ class QueryTimeoutError(DatabaseError):
     pass
 
 
+def _mark_failed():
+    """Record on the request that a database call failed. Routes catch broadly
+    and render an empty page as a 200; _set_cache_headers reads this so such a
+    page is served no-store instead of cached at the edge (for up to a year)."""
+    g.db_failed = True
+
+
 def get_db():
     """Get database connection from pool and store in Flask g context"""
     if "db" not in g:
@@ -44,6 +51,7 @@ def get_db():
             if current_app.config.get("DEBUG"):
                 logger.debug("Database connection acquired from pool")
         except Exception as e:
+            _mark_failed()
             logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
             raise
     return g.db
@@ -119,6 +127,7 @@ def execute_query(sql, params=None, timeout_s=None):
         # acceptable here: every value comes from a public URL of a login-free archive.
         # One record per failure: the logging integration turns each ERROR line
         # into its own Sentry issue, so three lines made three issues.
+        _mark_failed()
         logger.error("SQL Error: %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error
@@ -187,6 +196,7 @@ def execute_scalar(sql, params=None):
         return row[0] if row else None
     except Exception as e:
         # str(e) includes the bound parameters; see execute_query.
+        _mark_failed()
         logger.error("SQL Error (scalar): %s\nSQL Query: %s", e, sql, exc_info=True)
 
         # Rollback on error

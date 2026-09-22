@@ -32,6 +32,9 @@ Pins:
      fallback reused the item row, which never selected id/head (WEBBSITE-24);
      and it writes the ASP's layout (Others row, totals, quoting, filename),
      from the same table govac.asp renders.
+ 12. a page rendered after a route swallowed a database failure (timeout,
+     query error, no connection) is never cached: routes catch broadly and
+     render an empty 200, which the edge then served for hours, or a year.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -610,6 +613,69 @@ def run():
               ["Total108"])
     finally:
         statistics.execute_query = real_s
+
+    # 12. A swallowed database failure must not be cached. bornyear.asp catches
+    # every exception and renders an empty table as a 200 (WEBBSITE-1Y/1Z), and
+    # _set_cache_headers gave it the data-page edge TTL like any other 200.
+
+    class _TimingOut:
+        def execute(self, *a, **k):
+            raise RuntimeError("canceling statement due to statement timeout")
+
+        def rollback(self):
+            pass
+
+    class _NoPool:
+        def connect(self):
+            raise RuntimeError("connection refused")
+
+    def cache_headers(path):
+        r = client.get(path)
+        return r.status_code, r.headers.get("Cache-Control"), r.headers.get("CDN-Cache-Control")
+
+    class _Answers:  # every query succeeds, with no rows
+        returns_rows = True
+
+        def execute(self, *a, **k):
+            return self
+
+        def __iter__(self):
+            return iter(())
+
+        def fetchone(self):
+            return None
+
+        def rollback(self):
+            pass
+
+    real_get_db, real_engine = db_module.get_db, db_module._engine
+    db_module.get_db = lambda: _Answers()
+    try:
+        check("queries that succeed: the page keeps its edge TTL",
+              cache_headers("/dbpub/bornyear.asp?y=1957&m=4"), (200, "public, max-age=3600",
+                                                                "max-age=14400"))
+    finally:
+        db_module.get_db = real_get_db
+    db_module.get_db = lambda: _TimingOut()
+    try:
+        check("swallowed query timeout: 200 but never cached",
+              cache_headers("/dbpub/bornyear.asp?y=1957&m=4"), (200, "no-store", None))
+        check("swallowed timeout on a pinned-date page: never cached",
+              cache_headers("/dbpub/SFClicensees.asp?d=2020-01-01")[1:], ("no-store", None))
+    finally:
+        db_module.get_db = real_get_db
+    db_module._engine = _NoPool()
+    try:
+        check("swallowed connection failure: never cached",
+              cache_headers("/dbpub/bornyear.asp?y=1957&m=4"), (200, "no-store", None))
+    finally:
+        db_module._engine = real_engine
+    db_module.get_db = lambda: _Answers()
+    try:
+        check("the next request is cacheable again (the flag is per request)",
+              cache_headers("/dbpub/bornyear.asp?y=1957&m=4")[2], "max-age=14400")
+    finally:
+        db_module.get_db = real_get_db
 
     if _failures:
         print("\nFAILED:")
