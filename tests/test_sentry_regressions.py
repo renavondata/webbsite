@@ -28,8 +28,10 @@ Pins:
      holding through hidden 100% intermediates as the ASP's drawTable did.
  10. adviserships.asp shows the ASP's three return columns, measured over the
      window the ASP used for each kind of role, and numbers its rows.
- 11. govacCSV.asp exports a leaf item (no children) as its own column: the
-     fallback reused the item row, which never selected id/head (WEBBSITE-24).
+ 11. govacCSV.asp exports a leaf item (no children) as its own row: the
+     fallback reused the item row, which never selected id/head (WEBBSITE-24);
+     and it writes the ASP's layout (Others row, totals, quoting, filename),
+     from the same table govac.asp renders.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -545,28 +547,67 @@ def run():
     # 11. govacCSV.asp on a leaf item: with no children the export falls back to
     # the item row itself, so that row must carry the id and head the per-column
     # sum reads (WEBBSITE-24: KeyError 'id' for /dbpub/govacCSV.asp?t=0&i=4587).
+    # Then the layout the ASP wrote: one row per item across the periods, an
+    # "Others/no breakdown" row where the item's own value differs from its
+    # breakdown (the total is then the item's own value), a Total row only for
+    # 2+ rows, quoted names, and the graph title as the filename.
+
+    items = {
+        4587: {"id": 4587, "parentid": 100, "txt": "Leaf item", "head": False},
+        100: {"id": 100, "parentid": None, "txt": "Rates/Fees head", "head": True},
+    }
+    children = {100: [{"id": 1, "txt": "Alpha", "head": False, "rev": True},
+                      {"id": 2, "txt": 'Fees "misc"', "head": False, "rev": True}]}
+    # a head's own value is 10 in 2001 (its breakdown sums to 8) and absent in 2002
+    values = {4587: [10, 12], 1: [5, 5], 2: [3, 3], 100: [10, None]}
+    periods = ["2001-03-31", "2002-03-31"]
 
     def rec_govac(sql, params=None, timeout_s=None):
         if "WHERE g.id = %s" in sql:
             # Only the columns the route actually selects, as psycopg would.
-            cols = {"id": 4587, "txt": "Leaf item", "firstd": date(2000, 3, 31),
-                    "rev": True, "head": False}
+            cols = {**items[params[1]], "firstd": date(2000, 3, 31), "rev": True,
+                    "origtxt": items[params[1]]["txt"], "approved": True, "h3": None}
             select = sql.split("FROM", 1)[0]
             return [{k: v for k, v in cols.items()
                      if re.search(rf"\b(g\.{k}|as {k})\b", select)}]
+        if "SELECT txt FROM enigma.govitems WHERE id = %s" in sql:
+            return [{"txt": items[params[0]]["txt"]}]
         if "SELECT DISTINCT d::text" in sql:
-            return [{"d": "2001-03-31"}, {"d": "2002-03-31"}]
-        if "AND govitem = %s" in sql and params == (4587,):
-            return [{"d": "2001-03-31", "act": 10}, {"d": "2002-03-31", "act": 12}]
+            return [{"d": d} for d in periods]
+        if "ORDER BY COALESCE(a.priority, g.priority)" in sql:
+            return children.get(params[1], [])
+        if "AND govitem = %s" in sql:
+            return [{"d": d, "act": v} for d, v in zip(periods, values[params[0]])
+                    if v is not None]
         return []
 
     statistics.execute_query = rec_govac
     try:
         r = client.get("/dbpub/govacCSV.asp?t=0&i=4587")
         check("govacCSV leaf: 200, not a KeyError", r.status_code, 200)
-        check("govacCSV leaf: the item is its own column",
+        check("govacCSV leaf: the item is its own row, no Total for one row",
               r.get_data(as_text=True).splitlines(),
-              ['"Year","Leaf item","Total"', "2001,10,10", "2002,12,12"])
+              ["Year ended,2001-03-31,2002-03-31", "Leaf item,10,12"])
+        check("govacCSV leaf: named after its parent, as the ASP's graphTitle",
+              r.headers["Content-Disposition"],
+              "attachment; filename*=UTF-8''Rates%2FFees%20head.csv")
+
+        r = client.get("/dbpub/govacCSV.asp?t=0&i=100")
+        check("govacCSV head: Others row, own value as total, quoted names",
+              r.get_data(as_text=True).splitlines(),
+              ["Year ended,2001-03-31,2002-03-31", "Alpha,5,5",
+               '"Fees ""misc""",3,3', "Others/no breakdown,2,0", "Total,10,8"])
+        check("govacCSV head: named after the item itself, a / percent-encoded",
+              r.headers["Content-Disposition"],
+              "attachment; filename*=UTF-8''Rates%2FFees%20head.csv")
+
+        html = client.get("/dbpub/govac.asp?t=0&i=100").get_data(as_text=True)
+        check("govac.asp: same Others row as the CSV",
+              "Others/no breakdown" in html, True)
+        check("govac.asp: a period with no own value totals its breakdown (8, not 0)",
+              [re.sub(r"<[^>]+>|\s", "", c) for c in
+               re.findall(r"<tr[^>]*>\s*<td[^>]*>\s*(?:<b>)?Total.*?</tr>", html, re.S)][:1],
+              ["Total108"])
     finally:
         statistics.execute_query = real_s
 

@@ -5,8 +5,10 @@ Statistical analysis and reporting routes
 from flask import Blueprint, render_template, request, abort, current_app, Response
 from datetime import date, timedelta
 import calendar
+import csv as csvlib  # a route below is named csv
 import io
 import re
+from urllib.parse import quote as url_quote
 from sqlalchemy import text
 from webbsite.db import execute_query, execute_scalar, get_db
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_or_default
@@ -1913,62 +1915,10 @@ def _gov_explorer(i, t, g, value_col, self_route):
             # Still no items, use current item
             items_rows = [item]
 
-    items = items_rows
+    items, results, totals = govac_table(
+        i, items_rows, periods, where_clause, t, neg, value_col
+    )
     num_items = len(items)
-
-    # Build results matrix [period][item]
-    # Initialize with zeros
-    results = [[0 for _ in range(num_items)] for _ in range(num_periods)]
-
-    # Populate results for each item
-    for item_idx, item_row in enumerate(items):
-        item_id = item_row["id"]
-        is_head = item_row["head"]
-
-        # Get sum for this item (recursive for heads)
-        # Use the PARENT's neg value, not recalculate per item
-        item_data = get_govac_sum(item_id, is_head, periods, where_clause, t, neg, value_col)
-
-        for period_idx, period in enumerate(periods):
-            if period in item_data:
-                results[period_idx][item_idx] = item_data[period]
-
-    # Check for discrepancies and add "Others" row if needed
-    use_others = False
-    direct_values = get_govac_sum(i, False, periods, where_clause, t, neg, value_col)
-
-    for period_idx, period in enumerate(periods):
-        total = sum(results[period_idx])
-        direct_val = direct_values.get(period, 0)
-
-        if direct_val != 0 and direct_val != total:
-            if not use_others:
-                # Need to add "Others" row
-                use_others = True
-                num_items += 1
-                items.append(
-                    {
-                        "id": i,
-                        "txt": "Others/no breakdown",
-                        "short": "Others/no breakdown",
-                        "head": False,
-                        "rev": item_row["rev"] if items else False,
-                    }
-                )
-                # Extend results matrix
-                for p_idx in range(num_periods):
-                    results[p_idx].append(0)
-
-            # Set "Others" value
-            results[period_idx][num_items - 1] = direct_val - total
-
-    # Calculate totals row
-    totals = []
-    for period_idx in range(num_periods):
-        if use_others or direct_values.get(periods[period_idx], 0) != 0:
-            totals.append(direct_values.get(periods[period_idx], 0))
-        else:
-            totals.append(sum(results[period_idx]))
 
     # Divide by GDP if requested
     y_title = "HK$000"
@@ -2023,6 +1973,42 @@ def _gov_explorer(i, t, g, value_col, self_route):
         links=links,
         approved=approved,
         h3=h3,
+    )
+
+
+def govac_table(i, items, periods, where_clause, tree_id, neg, value_col="act"):
+    """The breakdown of item i, as govac.asp and govacCSV.asp both built it.
+
+    items are the columns (i's children, or i itself when it has none).
+    Returns (items, results[period][item], totals[period]). Where i's own
+    value in a period differs from its columns' sum, an "Others/no breakdown"
+    column carries the difference and the total is i's own value.
+    """
+    sums = [
+        get_govac_sum(it["id"], it["head"], periods, where_clause, tree_id, neg, value_col)
+        for it in items
+    ]
+    results = [[s.get(p, 0) for s in sums] for p in periods]
+    direct = get_govac_sum(i, False, periods, where_clause, tree_id, neg, value_col)
+    col_sums = [sum(row) for row in results]
+    others = [
+        direct[p] - total if direct[p] != 0 and direct[p] != total else 0
+        for p, total in zip(periods, col_sums)
+    ]
+    totals = [direct[p] or total for p, total in zip(periods, col_sums)]
+    if not any(others):
+        return list(items), results, totals
+    others_item = {
+        "id": i,
+        "txt": "Others/no breakdown",
+        "short": "Others/no breakdown",
+        "head": False,
+        "rev": items[-1]["rev"] if items else False,
+    }
+    return (
+        [*items, others_item],
+        [[*row, o] for row, o in zip(results, others)],
+        totals,
     )
 
 
@@ -2133,6 +2119,7 @@ def govac_csv():
         """
         SELECT
             g.id,
+            COALESCE(a.parentid, g.parentid) as parentid,
             COALESCE(a.txt, g.txt) as txt,
             g.firstd,
             g.head,
@@ -2188,52 +2175,37 @@ def govac_csv():
         (t, i),
     )
 
+    graph_title = title
     if not items_rows:
-        # No children, show just this item (so its row must select id and head)
+        # No children, show just this item (so its row must select id and head),
+        # titled by its parent as the ASP's graphTitle was
         items_rows = [item]
+        parent = execute_query(
+            "SELECT txt FROM enigma.govitems WHERE id = %s", (item["parentid"],)
+        )
+        if parent:
+            graph_title = parent[0]["txt"]
 
-    items = [dict(row) for row in items_rows]
+    items, results, totals = govac_table(i, items_rows, periods, where_clause, t, neg)
 
-    # Build results matrix
-    results = [[0 for _ in range(len(items))] for _ in range(len(periods))]
-
-    for item_idx, item_row in enumerate(items):
-        item_id = item_row["id"]
-        is_head = item_row["head"]
-
-        # Use the PARENT's neg value consistently
-        item_data = get_govac_sum(item_id, is_head, periods, where_clause, t, neg)
-
-        for period_idx, period in enumerate(periods):
-            if period in item_data:
-                results[period_idx][item_idx] = item_data[period]
-
-    # Calculate totals
-    totals = [sum(results[p]) for p in range(len(periods))]
-
-    # Build CSV
+    # One row per item across the periods, then a Total row when there is more
+    # than one, as the ASP wrote it; csv quotes names (the ASP's \" escaping
+    # was not RFC 4180, so a name with a quote broke the file for Excel).
     output = io.StringIO()
+    writer = csvlib.writer(output, lineterminator="\r\n")
+    writer.writerow(["Year ended", *periods])
+    for item_idx, it in enumerate(items):
+        writer.writerow([it["txt"], *(row[item_idx] for row in results)])
+    if len(items) > 1:
+        writer.writerow(["Total", *totals])
 
-    # Header row
-    header = ["Year"] + [item["txt"] for item in items] + ["Total"]
-    output.write(",".join(f'"{cell}"' for cell in header) + "\n")
-
-    # Data rows
-    for period_idx, period in enumerate(periods):
-        year = period[:4]  # Extract year from YYYY-MM-DD
-        row = [year]
-        row.extend([str(results[period_idx][i]) for i in range(len(items))])
-        row.append(str(totals[period_idx]))
-        output.write(",".join(row) + "\n")
-
-    csv_content = output.getvalue()
-    output.close()
-
-    # Return CSV response
     return Response(
-        csv_content,
+        output.getvalue(),
         mimetype="text/csv",
-        headers={"Content-Disposition": f"attachment; filename=govac_{i}.csv"},
+        headers={
+            "Content-Disposition": "attachment; filename*=UTF-8''"
+            + url_quote(f"{graph_title}.csv", safe="")
+        },
     )
 
 
@@ -2521,8 +2493,8 @@ def csv():
     """
     from flask import request, Response
     from webbsite.db import get_db
-    import csv
     import io
+    import csv
 
     table = request.args.get("t", "")
 
