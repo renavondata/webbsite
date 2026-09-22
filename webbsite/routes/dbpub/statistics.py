@@ -2,7 +2,7 @@
 Statistical analysis and reporting routes
 """
 
-from flask import Blueprint, render_template, request, abort, current_app, Response
+from flask import Blueprint, render_template, request, abort, current_app, Response, stream_with_context
 from datetime import date, datetime, time, timedelta
 import calendar
 import csv as csvlib  # a route below is named csv
@@ -10,7 +10,7 @@ import io
 import re
 from urllib.parse import quote as url_quote
 from sqlalchemy import text
-from webbsite.db import execute_query, execute_scalar, get_db
+from webbsite.db import execute_query, execute_scalar, get_db, stream_query
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_or_default
 from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
@@ -2506,15 +2506,19 @@ def csv():
     if table not in valid_exports:
         return Response("Not a valid download", mimetype="text/plain"), 400
 
-    # Through execute_query, so a failure is logged once and never cached.
-    rows = execute_query(valid_exports[table], timeout_s=30)
+    # Streamed, as the ASP's GetCSV was (Response.Buffer=False): a whole table
+    # held as dicts could exhaust the worker. Starting it goes through db.py, so
+    # a failure is logged once and the error page is never cached.
+    columns, rows = stream_query(valid_exports[table], timeout_s=30)
 
-    # As the ASP's GetCSV: a bare header, then each row's cells.
-    lines = [",".join(rows[0].keys())] if rows else []
-    lines += [",".join(_csv_cell(v) for v in row.values()) for row in rows]
+    def lines():
+        # As the ASP's GetCSV: a bare header, then each row's cells.
+        yield ",".join(columns) + "\r\n"
+        for row in rows:
+            yield ",".join(_csv_cell(v) for v in row) + "\r\n"
 
     return Response(
-        "".join(line + "\r\n" for line in lines),
+        stream_with_context(lines()),
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={table}.csv"},
     )
@@ -2522,8 +2526,8 @@ def csv():
 
 def _csv_cell(v):
     """One value as the ASP's GetCSV wrote it: strings quoted (quotes doubled),
-    floats to 5 places, a date as yyyy-mm-dd (a timestamp keeps its time),
-    booleans as MySQL's 1/0, NULL as nothing."""
+    floats to 5 places, a date as yyyy-mm-dd, booleans as MySQL's 1/0, NULL as
+    nothing; a timestamp keeps its time of day."""
     if v is None:
         return ""
     if isinstance(v, str):
@@ -2533,6 +2537,9 @@ def _csv_cell(v):
     if isinstance(v, float):
         return str(round(v, 5))
     if isinstance(v, datetime):
+        # The session's wall clock without an offset, as the HTML pages' to_char
+        # shows it (the ASP's MSdate dropped the time; flight times need it).
+        v = v.replace(tzinfo=None)
         return v.date().isoformat() if v.time() == time() else v.isoformat(sep=" ")
     if isinstance(v, date):
         return v.isoformat()

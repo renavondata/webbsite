@@ -700,36 +700,92 @@ def run():
 
     # 13. CSV.asp: every export was an AttributeError (.cursor() on a
     # SQLAlchemy Connection), and LIMIT 50000 would have truncated the file.
+    # Now streamed through db.stream_query, driven here by a fake session so
+    # the server-side cursor, the timeout and its reset are all exercised.
 
-    from datetime import datetime
+    from datetime import datetime, timedelta, timezone
 
-    csv_calls = []
+    hkt = timezone(timedelta(hours=8))
+    jail_rows = [
+        (1, 'Stanley "Women\'s"', date(1937, 1, 1), datetime(2020, 5, 6, 7, 8, 9, tzinfo=hkt),
+         1 / 3, True, None),
+        (2, "Lai Chi Kok", date(1976, 3, 1), datetime(2020, 5, 6), 2.5, False, "x"),
+    ]
 
-    def rec_csv(sql, params=None, timeout_s=None):
-        csv_calls.append((sql, timeout_s))
-        return [
-            {"id": 1, "name": 'Stanley "Women\'s"', "opened": date(1937, 1, 1),
-             "seen": datetime(2020, 5, 6, 7, 8, 9), "rate": 1 / 3, "open": True,
-             "note": None},
-            {"id": 2, "name": "Lai Chi Kok", "opened": date(1976, 3, 1),
-             "seen": datetime(2020, 5, 6), "rate": 2.5, "open": False, "note": "x"},
-        ]
+    class _Streaming:
+        """A connection whose SELECT streams rows; fail_at makes the n-th row fail."""
 
-    statistics.execute_query = rec_csv
+        def __init__(self, fail_start=None, fail_at=None):
+            self.sql, self.options, self.closed = [], {}, False
+            self.fail_start, self.fail_at = fail_start, fail_at
+
+        def execute(self, stmt, *a, execution_options=None, **k):
+            self.sql.append(str(stmt))
+            self.options = execution_options or self.options
+            if str(stmt).startswith("SELECT") and self.fail_start:
+                raise RuntimeError(self.fail_start)
+            return self
+
+        def keys(self):
+            return ["id", "name", "opened", "seen", "rate", "open", "note"]
+
+        def __iter__(self):
+            for n, row in enumerate(jail_rows):
+                if n == self.fail_at:
+                    raise RuntimeError("canceling statement due to statement timeout")
+                yield row
+
+        def close(self):
+            self.closed = True
+
+        def rollback(self):
+            pass
+
+    real_get_db = db_module.get_db
     try:
+        conn = _Streaming()
+        db_module.get_db = lambda: conn
         r = client.get("/dbpub/CSV.asp?t=jails")
         check("CSV.asp: 200", r.status_code, 200)
-        check("CSV.asp: the ASP's header and cells",
+        check("CSV.asp: the ASP's header and cells (a timestamp's clock, no offset)",
               r.get_data(as_text=True).splitlines(),
               ["id,name,opened,seen,rate,open,note",
                '1,"Stanley ""Women\'s""",1937-01-01,2020-05-06 07:08:09,0.33333,1,',
                '2,"Lai Chi Kok",1976-03-01,2020-05-06,2.5,0,"x"'])
-        check("CSV.asp: the whole table, no LIMIT, a heavy-query timeout",
-              csv_calls[-1] if csv_calls else None, ("SELECT * FROM enigma.jails", 30))
+        check("CSV.asp: the whole table, no LIMIT, 30 s, then the 8 s default back",
+              conn.sql, ["SET statement_timeout = '30s'", "SELECT * FROM enigma.jails",
+                         "SET statement_timeout = '8s'"])
+        check("CSV.asp: a server-side cursor, the result closed",
+              (conn.options.get("stream_results"), conn.closed), (True, True))
         check("CSV.asp: an unknown table is refused",
               client.get("/dbpub/CSV.asp?t=people").status_code, 400)
+
+        conn = _Streaming(fail_start="canceling statement due to statement timeout")
+        r = client.get("/dbpub/CSV.asp?t=jails")
+        check("CSV.asp: a timeout starting the export is the uncached 504",
+              (r.status_code, r.headers.get("Cache-Control"), r.headers.get("CDN-Cache-Control")),
+              (504, "no-store", None))
+        check("CSV.asp: the timeout is reset after a failed start",
+              conn.sql[-1], "SET statement_timeout = '8s'")
+
+        conn = _Streaming(fail_at=1)
+        with app.test_request_context("/dbpub/CSV.asp?t=jails"):
+            from flask import g as req_g
+            cols, rows = db_module.stream_query("SELECT * FROM enigma.jails", timeout_s=30)
+            got = []
+            try:
+                for row in rows:
+                    got.append(row[0])
+                raised = None
+            except db_module.QueryTimeoutError as ex:
+                raised = ex
+            check("stream_query: a failure mid-stream raises, after the rows it had",
+                  (got, type(raised).__name__), ([1], "QueryTimeoutError"))
+            check("stream_query: mid-stream failure marked and the cursor closed",
+                  (req_g.get("db_failed"), conn.closed, conn.sql[-1]),
+                  (True, True, "SET statement_timeout = '8s'"))
     finally:
-        statistics.execute_query = real_s
+        db_module.get_db = real_get_db
 
     # 14. One failed query, one Sentry issue. db.py logs it with the SQL; the
     # route then logged it again, a second issue under another type (every
@@ -762,6 +818,17 @@ def run():
             probe_app.logger.error("parse failed", exc_info=True)
         return "ok"
 
+    @probe_app.route("/_probe_during")  # an error raised while handling a DB failure
+    def _probe_during():
+        try:
+            db_module.execute_query("SELECT 1")
+        except Exception:
+            try:
+                {}["missing"]
+            except KeyError:
+                probe_app.logger.error("lookup failed", exc_info=True)
+        return "ok"
+
     @probe_app.route("/_probe_crash")  # a DB failure, then an unhandled crash
     def _probe_crash():
         try:
@@ -785,6 +852,10 @@ def run():
         sent.clear()
         probe_app.test_client().get("/_probe_other")
         check("sentry: an unrelated route error is still reported",
+              sent, ["webbsite.db", "webbsite"])
+        sent.clear()
+        probe_app.test_client().get("/_probe_during")
+        check("sentry: an error raised while handling a DB failure is its own report",
               sent, ["webbsite.db", "webbsite"])
         sent.clear()
         probe_app.test_client().get("/_probe_crash")

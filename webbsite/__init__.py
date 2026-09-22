@@ -166,7 +166,7 @@ def _reported_by_db(event, hint):
     chain = []
     while exc is not None and exc not in chain:
         chain.append(exc)
-        exc = exc.__cause__ or exc.__context__
+        exc = exc.__cause__  # not __context__: an error raised while handling one is its own
     if chain:
         return any(r is c for r in reported for c in chain)
     message = record.getMessage() if record is not None else ""

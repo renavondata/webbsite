@@ -227,6 +227,68 @@ def execute_scalar(sql, params=None):
         raise _mark_failed(DatabaseError(f"Database query failed: {e}")) from e
 
 
+def _failure(db, e, sql):
+    """db.py's handling of a failed query, as execute_query does it: marked,
+    logged once, rolled back. Returns the exception to raise from e."""
+    _mark_failed(e)
+    logger.error("SQL Error (stream): %s\nSQL Query: %s", e, sql, exc_info=True)
+    try:
+        db.rollback()
+    except Exception:
+        pass
+    if "canceling statement due to statement timeout" in str(e):
+        return _mark_failed(QueryTimeoutError("Query exceeded the statement time limit"))
+    return _mark_failed(DatabaseError(f"Database query failed: {e}"))
+
+
+def stream_query(sql, timeout_s=None, batch=5000):
+    """Run a parameterless SELECT through a server-side cursor.
+
+    Returns (column names, iterator of row tuples), holding only `batch` rows
+    in memory, for whole-table exports the ASP streamed (GetCSV ran with
+    Response.Buffer=False). A failure to start is handled as execute_query
+    handles one; a failure mid-stream is logged, marked and raised, which cuts
+    the response short, and neither a browser nor the edge keeps a truncated
+    chunked body. Iterate inside the request (stream_with_context): the
+    connection is g's, returned to the pool at teardown.
+    """
+    db = get_db()
+
+    def reset_timeout():
+        if timeout_s is not None:
+            try:
+                db.execute(text("SET statement_timeout = '8s'"))
+            except Exception:
+                pass
+
+    try:
+        if timeout_s is not None:
+            db.execute(text(f"SET statement_timeout = '{int(timeout_s)}s'"))
+        # Options on this execute only: Connection.execution_options() would set
+        # them on g's connection, making every later query a server-side cursor.
+        result = db.execute(
+            text(sql),
+            execution_options={"stream_results": True, "max_row_buffer": batch},
+        )
+        columns = list(result.keys())
+    except Exception as e:
+        err = _failure(db, e, sql)
+        reset_timeout()
+        raise err from e
+
+    def rows():
+        try:
+            for row in result:
+                yield tuple(row)
+        except Exception as e:
+            raise _failure(db, e, sql) from e
+        finally:
+            result.close()
+            reset_timeout()
+
+    return columns, rows()
+
+
 def init_engine(app):
     """Initialize SQLAlchemy database engine with connection pooling"""
     global _engine
