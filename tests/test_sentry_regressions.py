@@ -662,6 +662,21 @@ def run():
               cache_headers("/dbpub/bornyear.asp?y=1957&m=4"), (200, "no-store", None))
         check("swallowed timeout on a pinned-date page: never cached",
               cache_headers("/dbpub/SFClicensees.asp?d=2020-01-01")[1:], ("no-store", None))
+        from flask import abort
+
+        probe_app = create_app()  # routes cannot be added once app has served
+
+        @probe_app.route("/_probe_404")  # a lookup that failed, shown as not found
+        def _probe_404():
+            try:
+                db_module.execute_query("SELECT 1")
+            except Exception:
+                abort(404)
+
+        r = probe_app.test_client().get("/_probe_404")
+        check("swallowed failure rendered as a 404: never cached",
+              (r.status_code, r.headers.get("Cache-Control"), r.headers.get("CDN-Cache-Control")),
+              (404, "no-store", None))
     finally:
         db_module.get_db = real_get_db
     db_module._engine = _NoPool()

@@ -417,13 +417,14 @@ def create_app(config_class=Config):
 
     @app.after_request
     def _set_cache_headers(response):
-        if response.status_code >= 400:
-            return response
         # A route that caught a database failure rendered a partial or empty
-        # page as a 200: serve it, but never cache it (db._mark_failed).
+        # page (a 200, or a "not found" it could not really know): serve it,
+        # but never cache it (db._mark_failed).
         if g.get("db_failed"):
             response.headers["Cache-Control"] = "no-store"
             response.headers.pop("CDN-Cache-Control", None)
+            return response
+        if response.status_code >= 400:
             return response
         path = request.path
 
