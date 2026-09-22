@@ -554,7 +554,7 @@ def run():
 
     items = {
         4587: {"id": 4587, "parentid": 100, "txt": "Leaf item", "head": False},
-        100: {"id": 100, "parentid": None, "txt": "Parent head", "head": True},
+        100: {"id": 100, "parentid": None, "txt": "Rates/Fees head", "head": True},
     }
     children = {100: [{"id": 1, "txt": "Alpha", "head": False, "rev": True},
                       {"id": 2, "txt": 'Fees "misc"', "head": False, "rev": True}]}
@@ -590,16 +590,16 @@ def run():
               ["Year ended,2001-03-31,2002-03-31", "Leaf item,10,12"])
         check("govacCSV leaf: named after its parent, as the ASP's graphTitle",
               r.headers["Content-Disposition"],
-              "attachment; filename*=UTF-8''Parent%20head.csv")
+              "attachment; filename*=UTF-8''Rates%2FFees%20head.csv")
 
         r = client.get("/dbpub/govacCSV.asp?t=0&i=100")
         check("govacCSV head: Others row, own value as total, quoted names",
               r.get_data(as_text=True).splitlines(),
               ["Year ended,2001-03-31,2002-03-31", "Alpha,5,5",
                '"Fees ""misc""",3,3', "Others/no breakdown,2,0", "Total,10,8"])
-        check("govacCSV head: named after the item itself",
+        check("govacCSV head: named after the item itself, a / percent-encoded",
               r.headers["Content-Disposition"],
-              "attachment; filename*=UTF-8''Parent%20head.csv")
+              "attachment; filename*=UTF-8''Rates%2FFees%20head.csv")
 
         html = client.get("/dbpub/govac.asp?t=0&i=100").get_data(as_text=True)
         check("govac.asp: same Others row as the CSV",

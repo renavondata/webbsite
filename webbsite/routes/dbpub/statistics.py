@@ -2204,7 +2204,7 @@ def govac_csv():
         mimetype="text/csv",
         headers={
             "Content-Disposition": "attachment; filename*=UTF-8''"
-            + url_quote(f"{graph_title}.csv")
+            + url_quote(f"{graph_title}.csv", safe="")
         },
     )
 
