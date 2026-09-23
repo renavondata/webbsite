@@ -7,6 +7,7 @@ Using SQLAlchemy for robust connection pooling and management
 from sqlalchemy import create_engine, text
 from flask import current_app, g
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -371,12 +372,22 @@ def init_engine(app):
 
 
 def dispose_engine():
-    """Dispose of the engine and close all connections in the pool"""
-    global _engine
+    """Close every pooled connection (atexit). The engine itself is kept.
+
+    It used to be set to None, and a request still running when this ran then
+    failed with "Database engine not initialized" (WEBBSITE-2F, 2026-09-23).
+    A disposed engine opens a fresh pool on demand, so a late request just
+    reconnects. What let a request outlive the worker is not known: every
+    graceful exit tried locally joined the request threads before atexit. So
+    any other threads still alive are logged, to name the trigger if it recurs.
+    """
     if _engine is not None:
         _engine.dispose()
-        logger.info("Database engine disposed and all connections closed")
-        _engine = None
+        others = [t.name for t in threading.enumerate() if t is not threading.current_thread()]
+        if others:
+            logger.warning("Database engine disposed while threads still run: %s", others)
+        else:
+            logger.info("Database engine disposed and all connections closed")
 
 
 def init_app(app):

@@ -139,7 +139,14 @@ def _group_db_errors_by_route(event, hint):
     join). Adding the Flask endpoint to the default fingerprint splits them
     again without losing the per-exception-type grouping.
     """
-    if event.get("logger") == "webbsite.db" and event.get("transaction"):
+    if event.get("logger") != "webbsite.db":
+        return event
+    # Except a failure to connect: that is the database, not the route, so one
+    # outage is one issue (a 1 s refusal on 2026-09-23 filed nine, one per route).
+    record = (hint or {}).get("log_record")
+    if record is not None and str(record.msg).startswith("Failed to get connection from pool"):
+        event["fingerprint"] = ["webbsite.db", "connection-failed"]
+    elif event.get("transaction"):
         event["fingerprint"] = ["{{ default }}", event["transaction"]]
     return event
 
@@ -414,6 +421,10 @@ def create_app(config_class=Config):
         if sentry_on:
             import sentry_sdk
             sentry_sdk.set_tag("request_id", g.request_id)
+            # The 04:30 route check (tests/check_all_routes.py): its timeouts are
+            # real signal, but under its own 6-way load, so say so.
+            if request.headers.get("User-Agent", "").startswith("webbsite-route-check/"):
+                sentry_sdk.set_tag("synthetic", "route-check")
 
     @app.after_request
     def _echo_request_id(response):

@@ -41,6 +41,10 @@ Pins:
  14. one failed query is one Sentry issue: the route's own re-log of a
      failure db.py already reported is dropped (with or without exc_info),
      while unrelated route errors and unhandled exceptions still report.
+ 15. one database outage is one Sentry issue (connection failures are not
+     split by route; query errors still are), the 04:30 route check's own
+     requests are tagged synthetic, and a disposed engine does not strand a
+     request still running (WEBBSITE-2F: "Database engine not initialized").
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -816,13 +820,25 @@ def run():
 
     sent = []
 
+    events = []
+
     class _Capture(Transport):
         def capture_envelope(self, envelope):
             ev = envelope.get_event()
             if ev is not None:
                 sent.append(ev.get("logger"))
+                events.append(ev)
 
     probe_app = create_app()
+
+    # Configured as production is (a DSN, so sentry_on), for the request tags;
+    # made before the capturing client below replaces the one this starts.
+    from webbsite.config import Config
+
+    class _WithSentry(Config):
+        SENTRY_DSN = "https://k@example.invalid/1"
+
+    tagged_client = create_app(_WithSentry).test_client()
 
     @probe_app.route("/_probe_other")  # a DB failure, then an unrelated error
     def _probe_other():
@@ -879,10 +895,84 @@ def run():
         probe_app.test_client().get("/_probe_crash")
         check("sentry: an unhandled exception is still reported",
               None in sent, True)
+
+        # 15. An outage is one issue: a connection failure on two routes shares
+        # one fingerprint (06:59 on 2026-09-23 filed nine, one per route), while
+        # query errors on two routes still split. The route check is tagged.
+        def db_fingerprints(path, **kw):
+            events.clear()
+            client.get(path, **kw)
+            return [e.get("fingerprint") for e in events if e.get("logger") == "webbsite.db"]
+
+        class _Refusing:
+            def connect(self):
+                raise RuntimeError("connection to server at \"localhost\" (::1), port 5432 "
+                                   "failed: Connection refused")
+
+        db_module.get_db = real_get_db
+        real_engine = db_module._engine
+        db_module._engine = _Refusing()
+        try:
+            refused = (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                       + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        finally:
+            db_module._engine = real_engine
+        check("sentry: a connection failure on two routes is one issue",
+              (len(refused), refused[0] if refused else None,
+               len({str(f) for f in refused})),
+              (2, ["webbsite.db", "connection-failed"], 1))
+        db_module.get_db = lambda: _TimingOut()
+        timed = (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                 + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        check("sentry: query failures on two routes stay two issues",
+              (len(timed), len({str(f) for f in timed})), (2, 2))
+        events.clear()
+        tagged_client.get("/dbpub/bornyear.asp?y=1957&m=4",
+                          headers={"User-Agent": "webbsite-route-check/1 (+deploy/README.md)"})
+        check("sentry: the route check's requests are tagged synthetic",
+              [dict(e.get("tags") or {}).get("synthetic") for e in events][:1], ["route-check"])
+        events.clear()
+        tagged_client.get("/dbpub/bornyear.asp?y=1957&m=4", headers={"User-Agent": "Mozilla/5.0"})
+        check("sentry: a visitor's request is not tagged synthetic",
+              [dict(e.get("tags") or {}).get("synthetic") for e in events][:1], [None])
     finally:
         db_module.get_db = real_get_db
         sentry_sdk.get_client().close()
         sentry_sdk.init()
+
+    # 15b. dispose_engine (atexit) keeps the engine: disposing closes the pool,
+    # and a request still running then reconnects rather than failing with
+    # "Database engine not initialized" (WEBBSITE-2F).
+    class _Pool:
+        def __init__(self):
+            self.disposed = 0
+
+        def dispose(self):
+            self.disposed += 1
+
+        def connect(self):
+            return _FreshConn()
+
+    class _FreshConn:
+        def close(self):
+            pass
+
+        def __eq__(self, other):
+            return other == "fresh connection"
+
+    real_engine = db_module._engine
+    stub = db_module._engine = _Pool()
+    try:
+        db_module.dispose_engine()
+        with app.app_context():
+            try:
+                got = db_module.get_db()
+            except RuntimeError as ex:
+                got = repr(ex)
+        check("dispose_engine: pool closed, engine kept, a late request reconnects",
+              (stub.disposed, db_module._engine is stub, got), (1, True, "fresh connection"))
+    finally:
+        db_module._engine = real_engine
 
     if _failures:
         print("\nFAILED:")
