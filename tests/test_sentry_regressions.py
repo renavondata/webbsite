@@ -45,6 +45,11 @@ Pins:
      split by route; query errors still are), the 04:30 route check's own
      requests are tagged synthetic, and a disposed engine does not strand a
      request still running (WEBBSITE-2F: "Database engine not initialized").
+ 16. the whole-market pages that timed out cold (incHKannual, incHKmonth,
+     listed.asp; incHKsurvive shares their shape) are computed once per data
+     watermark and served from disk after: a repeat makes no heavy query, each
+     variant keeps its own file, a failure saves nothing, and a pinned date is
+     never cached.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -1042,6 +1047,101 @@ def run():
               any("late-request" in w and "bg-daemon" not in w for w in warned), True)
     finally:
         db_module._engine = real_engine
+
+    # 16. Whole-market pages from the disk cache (WEBBSITE-1R/1S/1T, 21).
+    import tempfile
+    from webbsite import watermarks as wm
+    from webbsite.routes.dbpub import incorporations, listings
+
+    heavy = []
+
+    def rec_market(sql, params=None, timeout_s=None):
+        if "FROM enigma.orgtypes WHERE orgtype = %s" in sql:
+            return [{"typename": "Private company"}] if params == (1,) else []
+        if "FROM enigma.orgtypes" in sql:  # the dropdown
+            return [{"orgtype": 1, "typename": "Private company"}]
+        heavy.append((sql.split("FROM", 1)[0][-60:], timeout_s))
+        if fail[0]:
+            raise db_module.QueryTimeoutError("Query exceeded 8s time limit")
+        if "inc_total" in sql:
+            return [{"inc_total": 10, "dis_total": 4}]
+        if "AS surviving" in sql:
+            return [{"y": 2000, "incorporated": 7, "surviving": 5}]
+        if "TO_CHAR(d, 'YYYY-MM-DD') AS d" in sql:
+            return [{"d": "2000-01-01", "incorporated": 3, "dissolved": 1}]
+        if "enigma.totret" in sql:
+            return [{"stockcode": "0005", "issueid": 1, "typeshort": "O", "typelong": "Ord",
+                     "name1": "HSBC", "personid": 2, "firsttradedate": date(1991, 1, 2),
+                     "totret": 0.5, "cagret": 0.1, "cagrel": None}]
+        return [{"year": 2000, "incorporated": 7, "dissolved": 2}]
+
+    fail = [False]
+    real_inc, real_lst, real_qe = incorporations.execute_query, listings.execute_query, wm.quotes_end
+    old_dir = os.environ.get("WEBBSITE_CACHE_DIR")
+    tmp = tempfile.mkdtemp()
+    os.environ["WEBBSITE_CACHE_DIR"] = tmp
+    incorporations.execute_query = listings.execute_query = rec_market
+    wm.quotes_end = lambda: "2026-09-22"
+    try:
+        for url in ("/dbpub/incHKannual.asp", "/dbpub/incHKmonth.asp",
+                    "/dbpub/incHKsurvive.asp", "/dbpub/listed.asp?sort=cagretdn"):
+            heavy.clear()
+            first = client.get(url).get_data(as_text=True)
+            n_first, timeouts = len(heavy), {t for _, t in heavy}
+            heavy.clear()
+            second = client.get(url).get_data(as_text=True)
+            check(f"cache {url}: cold run queries with the heavy-query timeout, a repeat none",
+                  (n_first > 0, timeouts, len(heavy)), (True, {30}, 0))
+            check(f"cache {url}: the cached page renders the same", second, first)
+        heavy.clear()
+        client.get("/dbpub/incHKannual.asp?t=1")
+        check("cache: a type variant has its own entry", len(heavy) > 0, True)
+        client.get("/dbpub/listed.asp")  # the default entries exist first
+        files_before = set(os.listdir(tmp))
+        client.get("/dbpub/incHKannual.asp?t=987654")
+        client.get("/dbpub/listed.asp?sort=junk&e=zz&t=qq")
+        check("cache: junk parameters reuse the default entries, no new files",
+              set(os.listdir(tmp)) - files_before, set())
+        # An unknown type filters as given (zeros, as master did) and runs live.
+        heavy.clear()
+        seen_params = []
+        real_rec = incorporations.execute_query
+
+        def rec_params(sql, params=None, timeout_s=None):
+            seen_params.append(params)
+            return rec_market(sql, params, timeout_s)
+
+        incorporations.execute_query = rec_params
+        client.get("/dbpub/incHKmonth.asp?t=987654")
+        client.get("/dbpub/incHKmonth.asp?t=987654")
+        incorporations.execute_query = real_rec
+        check("cache: an unknown type is filtered as given, never cached",
+              (any(p and 987654 in p for p in seen_params), len(heavy),
+               set(os.listdir(tmp)) - files_before), (True, 4, set()))
+        heavy.clear()
+        client.get("/dbpub/listed.asp?d=2020-01-01")
+        client.get("/dbpub/listed.asp?d=2020-01-01")
+        check("cache: a pinned date is never cached", len(heavy), 2)
+        fail[0] = True
+        heavy.clear()
+        wm.quotes_end = lambda: "2026-09-23"  # a new watermark: recompute
+        client.get("/dbpub/incHKannual.asp")
+        client.get("/dbpub/incHKannual.asp")
+        check("cache: a failed compute saves nothing (the next request retries)",
+              len(heavy), 2)
+        fail[0] = False
+        heavy.clear()
+        client.get("/dbpub/incHKannual.asp")
+        check("cache: a new watermark recomputes once, then serves from disk",
+              (len(heavy) > 0, [f for f in os.listdir(tmp) if f.startswith("inchkannual_t0_")]),
+              (True, ["inchkannual_t0_2026-09-23.json"]))
+    finally:
+        incorporations.execute_query, listings.execute_query = real_inc, real_lst
+        wm.quotes_end = real_qe
+        if old_dir is None:
+            os.environ.pop("WEBBSITE_CACHE_DIR", None)
+        else:
+            os.environ["WEBBSITE_CACHE_DIR"] = old_dir
 
     if _failures:
         print("\nFAILED:")

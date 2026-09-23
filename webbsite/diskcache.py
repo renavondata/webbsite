@@ -70,3 +70,21 @@ def save_json_keyed(prefix, key, obj):
                 old.unlink(missing_ok=True)
     except OSError:
         pass
+
+
+def cached(prefix, key, compute):
+    """compute() once per `key`, then from disk until the key changes.
+
+    `prefix` names one page variant and must only ever hold validated, finite
+    values (save_json_keyed sweeps the prefix's other keys, and a prefix built
+    from raw request input would let a crawler fill the disk). `key` is the
+    data watermark. compute() must return JSON-safe data; if it raises,
+    nothing is saved and the exception propagates, so the next request
+    retries instead of serving a failure for a day.
+    """
+    hit = load_json_keyed(prefix, key)
+    if hit is not None:
+        return hit
+    value = compute()
+    save_json_keyed(prefix, key, value)
+    return value
