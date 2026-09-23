@@ -7,6 +7,7 @@ Using SQLAlchemy for robust connection pooling and management
 from sqlalchemy import create_engine, text
 from flask import current_app, g
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -38,29 +39,40 @@ def _mark_failed(e):
     return e
 
 
+def _connect(engine):
+    """engine.connect(), with a failure marked, logged once as a connection
+    failure (Sentry groups those as one outage, not per route) and re-raised."""
+    try:
+        return engine.connect()
+    except Exception as e:
+        _mark_failed(e)
+        g.db_connect_failed = [*g.get("db_connect_failed", []), e]
+        logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
+        raise
+
+
+def _engine_missing():
+    """The engine is not there: a bug (init_app never ran), not an outage, so
+    it is logged under its own message and keeps per-route grouping."""
+    err = RuntimeError("Database engine not initialized. Call init_app() first.")
+    _mark_failed(err)
+    logger.error("Database engine not initialized (init_app never ran for this process)")
+    return err
+
+
 def get_db():
     """Get database connection from pool and store in Flask g context"""
     if "db" not in g:
-        try:
-            if _engine is None:
-                raise RuntimeError(
-                    "Database engine not initialized. Call init_app() first."
-                )
-
-            # Get connection from pool. search_path and the 8s statement_timeout
-            # are session defaults set at connect time (init_engine's
-            # connect_args["options"]), so a pooled connection already carries
-            # them; issuing them here again cost three round-trips per request.
-            # pool_pre_ping=True validates the connection before handing it over.
-            conn = _engine.connect()
-            g.db = conn
-
-            if current_app.config.get("DEBUG"):
-                logger.debug("Database connection acquired from pool")
-        except Exception as e:
-            _mark_failed(e)
-            logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
-            raise
+        if _engine is None:
+            raise _engine_missing()
+        # Get connection from pool. search_path and the 8s statement_timeout
+        # are session defaults set at connect time (init_engine's
+        # connect_args["options"]), so a pooled connection already carries
+        # them; issuing them here again cost three round-trips per request.
+        # pool_pre_ping=True validates the connection before handing it over.
+        g.db = _connect(_engine)
+        if current_app.config.get("DEBUG"):
+            logger.debug("Database connection acquired from pool")
     return g.db
 
 
@@ -258,13 +270,8 @@ def stream_query(sql, timeout_s=None, batch=5000):
     the WSGI error report of the raise is its one Sentry event.
     """
     if _engine is None:
-        raise RuntimeError("Database engine not initialized. Call init_app() first.")
-    try:
-        conn = _engine.connect()
-    except Exception as e:
-        _mark_failed(e)
-        logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
-        raise
+        raise _engine_missing()
+    conn = _connect(_engine)
     try:
         if timeout_s is not None:
             conn.execute(text(f"SET LOCAL statement_timeout = '{int(timeout_s)}s'"))
@@ -371,12 +378,25 @@ def init_engine(app):
 
 
 def dispose_engine():
-    """Dispose of the engine and close all connections in the pool"""
-    global _engine
+    """Close every pooled connection (atexit). The engine itself is kept.
+
+    It used to be set to None, and a request still running when this ran then
+    failed with "Database engine not initialized" (WEBBSITE-2F, 2026-09-23).
+    A disposed engine opens a fresh pool on demand, so a late request just
+    reconnects. What let a request outlive the worker is not known: every
+    graceful exit tried locally joined the request threads before atexit. So
+    any other threads still alive are logged, to name the trigger if it recurs.
+    """
     if _engine is not None:
         _engine.dispose()
-        logger.info("Database engine disposed and all connections closed")
-        _engine = None
+        # Non-daemon only: daemon threads (Sentry's BackgroundWorker, its
+        # monitor) are always alive and never hold a request.
+        others = [t.name for t in threading.enumerate()
+                  if t is not threading.current_thread() and not t.daemon]
+        if others:
+            logger.warning("Database engine disposed while threads still run: %s", others)
+        else:
+            logger.info("Database engine disposed and all connections closed")
 
 
 def init_app(app):

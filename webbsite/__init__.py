@@ -139,7 +139,14 @@ def _group_db_errors_by_route(event, hint):
     join). Adding the Flask endpoint to the default fingerprint splits them
     again without losing the per-exception-type grouping.
     """
-    if event.get("logger") == "webbsite.db" and event.get("transaction"):
+    if event.get("logger") != "webbsite.db":
+        return event
+    # Except a failure to connect: that is the database, not the route, so one
+    # outage is one issue (a 1 s refusal on 2026-09-23 filed nine, one per route).
+    record = (hint or {}).get("log_record")
+    if record is not None and str(record.msg).startswith("Failed to get connection from pool"):
+        event["fingerprint"] = ["webbsite.db", "connection-failed"]
+    elif event.get("transaction"):
         event["fingerprint"] = ["{{ default }}", event["transaction"]]
     return event
 
@@ -173,10 +180,29 @@ def _reported_by_db(event, hint):
     return any(str(r) and str(r) in message for r in reported)
 
 
+def _failed_to_connect(event, hint):
+    """An unhandled exception (Flask's own event, no logger) caused by a failure
+    to connect: a route that does not catch it 500s, and when a request failed
+    to connect more than once Sentry's dedupe (last exception only) lets this
+    event through. It belongs to the outage issue, not a per-route one."""
+    if event.get("logger") is not None or not has_app_context():
+        return False
+    failed = g.get("db_connect_failed") or []
+    exc = ((hint or {}).get("exc_info") or (None, None))[1]
+    seen = []
+    while exc is not None and exc not in seen:
+        seen.append(exc)
+        exc = exc.__cause__
+    return any(f is c for f in failed for c in seen)
+
+
 def _before_send(event, hint):
     """Sentry before_send: drop route duplicates of db.py's report, then group."""
     if _reported_by_db(event, hint):
         return None
+    if _failed_to_connect(event, hint):
+        event["fingerprint"] = ["webbsite.db", "connection-failed"]
+        return event
     return _group_db_errors_by_route(event, hint)
 
 
@@ -414,6 +440,10 @@ def create_app(config_class=Config):
         if sentry_on:
             import sentry_sdk
             sentry_sdk.set_tag("request_id", g.request_id)
+            # The 04:30 route check (tests/check_all_routes.py): its timeouts are
+            # real signal, but under its own 6-way load, so say so.
+            if request.headers.get("User-Agent", "").startswith("webbsite-route-check/"):
+                sentry_sdk.set_tag("synthetic", "route-check")
 
     @app.after_request
     def _echo_request_id(response):

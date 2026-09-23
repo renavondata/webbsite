@@ -41,6 +41,10 @@ Pins:
  14. one failed query is one Sentry issue: the route's own re-log of a
      failure db.py already reported is dropped (with or without exc_info),
      while unrelated route errors and unhandled exceptions still report.
+ 15. one database outage is one Sentry issue (connection failures are not
+     split by route; query errors still are), the 04:30 route check's own
+     requests are tagged synthetic, and a disposed engine does not strand a
+     request still running (WEBBSITE-2F: "Database engine not initialized").
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -816,13 +820,25 @@ def run():
 
     sent = []
 
+    events = []
+
     class _Capture(Transport):
         def capture_envelope(self, envelope):
             ev = envelope.get_event()
             if ev is not None:
                 sent.append(ev.get("logger"))
+                events.append(ev)
 
     probe_app = create_app()
+
+    # Configured as production is (a DSN, so sentry_on), for the request tags;
+    # made before the capturing client below replaces the one this starts.
+    from webbsite.config import Config
+
+    class _WithSentry(Config):
+        SENTRY_DSN = "https://k@example.invalid/1"
+
+    tagged_client = create_app(_WithSentry).test_client()
 
     @probe_app.route("/_probe_other")  # a DB failure, then an unrelated error
     def _probe_other():
@@ -879,10 +895,153 @@ def run():
         probe_app.test_client().get("/_probe_crash")
         check("sentry: an unhandled exception is still reported",
               None in sent, True)
+
+        # 15. An outage is one issue: a connection failure on two routes shares
+        # one fingerprint (06:59 on 2026-09-23 filed nine, one per route), while
+        # query errors on two routes still split. The route check is tagged.
+        def db_fingerprints(path, **kw):
+            events.clear()
+            client.get(path, **kw)
+            return [e.get("fingerprint") for e in events if e.get("logger") == "webbsite.db"]
+
+        class _Refusing:
+            def connect(self):
+                raise RuntimeError("connection to server at \"localhost\" (::1), port 5432 "
+                                   "failed: Connection refused")
+
+        db_module.get_db = real_get_db
+        real_engine = db_module._engine
+        db_module._engine = _Refusing()
+        try:
+            refused = (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                       + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        finally:
+            db_module._engine = real_engine
+        check("sentry: a connection failure on two routes is one issue",
+              (len(refused), refused[0] if refused else None,
+               len({str(f) for f in refused})),
+              (2, ["webbsite.db", "connection-failed"], 1))
+        # A route that does not catch it also sends Flask's unhandled event (no
+        # logger), which must join the same issue rather than split by route.
+        # A real engine against a closed port (this module's DATABASE_URL), as
+        # production refused: a route that does not catch it 500s, and every
+        # event of that request is the outage issue.
+        events.clear()
+        status = client.get("/dbpub/orgdata.asp?p=1").status_code
+        check("sentry: an uncaught connection failure (a 500) is the outage issue",
+              (status, len(events) > 0, {str(e.get("fingerprint")) for e in events}),
+              (500, True, {str(["webbsite.db", "connection-failed"])}))
+        # Flask's own unhandled event (no logger) for it: Sentry's dedupe drops it
+        # under these options, but not when a request fails to connect more than
+        # once in some configurations -- it must join the outage issue too.
+        from webbsite import _before_send
+
+        refused_exc = RuntimeError("Connection refused")
+        with app.test_request_context("/dbpub/orgdata.asp?p=1"):
+            from flask import g as req_g
+            req_g.db_connect_failed = [refused_exc]
+            try:
+                raise db_module.DatabaseError("wrapped") from refused_exc
+            except db_module.DatabaseError as wrapped:
+                unhandled = _before_send({"logger": None, "transaction": "dbpub_statistics.orgdata"},
+                                         {"exc_info": (type(wrapped), wrapped, None)})
+            other = _before_send({"logger": None, "transaction": "dbpub_statistics.orgdata"},
+                                 {"exc_info": (KeyError, KeyError("x"), None)})
+        check("sentry: Flask's unhandled event for a failed connect joins the outage issue",
+              (unhandled or {}).get("fingerprint"), ["webbsite.db", "connection-failed"])
+        check("sentry: an unrelated unhandled exception keeps default grouping",
+              "fingerprint" in (other or {}), False)
+        # An engine that is not there is a bug, not an outage: keep it separate.
+        db_module._engine = None
+        try:
+            gone = db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")
+        finally:
+            db_module._engine = real_engine
+        check("sentry: 'engine not initialized' is not filed as an outage",
+              bool(gone) and ["webbsite.db", "connection-failed"] not in gone, True)
+        db_module.get_db = lambda: _TimingOut()
+        timed = (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                 + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        check("sentry: query failures on two routes stay two issues",
+              (len(timed), len({str(f) for f in timed})), (2, 2))
+        events.clear()
+        tagged_client.get("/dbpub/bornyear.asp?y=1957&m=4",
+                          headers={"User-Agent": "webbsite-route-check/1 (+deploy/README.md)"})
+        check("sentry: the route check's requests are tagged synthetic",
+              [dict(e.get("tags") or {}).get("synthetic") for e in events][:1], ["route-check"])
+        events.clear()
+        tagged_client.get("/dbpub/bornyear.asp?y=1957&m=4", headers={"User-Agent": "Mozilla/5.0"})
+        check("sentry: a visitor's request is not tagged synthetic",
+              [dict(e.get("tags") or {}).get("synthetic") for e in events][:1], [None])
     finally:
         db_module.get_db = real_get_db
         sentry_sdk.get_client().close()
         sentry_sdk.init()
+
+    # 15b. dispose_engine (atexit) keeps the engine: disposing closes the pool,
+    # and a request still running then reconnects rather than failing with
+    # "Database engine not initialized" (WEBBSITE-2F).
+    class _Pool:
+        def __init__(self):
+            self.disposed = 0
+
+        def dispose(self):
+            self.disposed += 1
+
+        def connect(self):
+            return _FreshConn()
+
+    class _FreshConn:
+        def close(self):
+            pass
+
+        def __eq__(self, other):
+            return other == "fresh connection"
+
+    real_engine = db_module._engine
+    stub = db_module._engine = _Pool()
+    try:
+        db_module.dispose_engine()
+        with app.app_context():
+            try:
+                got = db_module.get_db()
+            except RuntimeError as ex:
+                got = repr(ex)
+        check("dispose_engine: pool closed, engine kept, a late request reconnects",
+              (stub.disposed, db_module._engine is stub, got), (1, True, "fresh connection"))
+
+        # The thread warning names only threads that could hold a request:
+        # daemon threads (Sentry's BackgroundWorker) are always alive and are
+        # not it, or every worker exit would warn.
+        import threading
+        import time as _time
+
+        warned = []
+
+        class _Warn(logging.Handler):
+            def emit(self, record):
+                if record.levelno == logging.WARNING:
+                    warned.append(record.getMessage())
+
+        handler = _Warn()
+        db_module.logger.addHandler(handler)
+        try:
+            bg = threading.Thread(target=_time.sleep, args=(1,), name="bg-daemon", daemon=True)
+            bg.start()
+            db_module.dispose_engine()
+            daemon_only = list(warned)
+            fg = threading.Thread(target=_time.sleep, args=(1,), name="late-request")
+            fg.start()
+            db_module.dispose_engine()
+            fg.join()
+        finally:
+            db_module.logger.removeHandler(handler)
+        check("dispose_engine: a daemon thread alone is no warning",
+              [w for w in daemon_only if "bg-daemon" in w], [])
+        check("dispose_engine: a live request thread is named",
+              any("late-request" in w and "bg-daemon" not in w for w in warned), True)
+    finally:
+        db_module._engine = real_engine
 
     if _failures:
         print("\nFAILED:")
