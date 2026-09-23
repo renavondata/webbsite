@@ -766,8 +766,7 @@ def inchkmonth():
     """Monthly HK company incorporations and dissolutions"""
     t = get_int("t", -1)  # -1 = all types
 
-    # Get type name if filtering (inside the try: a failure blanked nothing
-    # before, it 500ed). An unknown t is the all-types page.
+    # Get type name if filtering (inside a try: a failure there was a 500).
     typename = None
     try:
         if t > 0:
@@ -778,11 +777,13 @@ def inchkmonth():
                 typename = type_result[0]["typename"]
     except Exception:
         pass
-    t_eff = t if typename else -1
+    # The SQL filters on t as given (an unknown type shows zeros, as before).
+    # Only all types or a known type is cached, so a junk t never adds a file.
+    cacheable = t <= 0 or typename is not None
 
     # Build query for monthly data since 1985
     end_date = date.today().replace(day=1).isoformat()
-    type_filter = "AND orgtype = %s" if t_eff > 0 else ""
+    type_filter = "AND orgtype = %s" if t > 0 else ""
 
     # This query generates monthly data points
     sql = f"""
@@ -820,7 +821,7 @@ def inchkmonth():
         ) dis ON dates.d = dis.mstart
         ORDER BY d
     """
-    params = (end_date, end_date, t_eff, end_date, t_eff) if t_eff > 0 else (end_date,) * 3
+    params = (end_date, end_date, t, end_date, t) if t > 0 else (end_date,) * 3
 
     # Initial totals before the start date
     init_sql = f"""
@@ -841,7 +842,7 @@ def inchkmonth():
              "dissolved": int(r["dissolved"])}
             for r in execute_query(sql, params, timeout_s=30)
         ]
-        init = execute_query(init_sql, (t_eff,) if t_eff > 0 else None, timeout_s=30)
+        init = execute_query(init_sql, (t,) if t > 0 else None, timeout_s=30)
         return {
             "months": months,
             "inc_total": int(init[0]["inc_total"]) if init else 0,
@@ -849,7 +850,8 @@ def inchkmonth():
         }
 
     try:
-        data = cached(f"inchkmonth_t{t_eff}", f"{watermarks.quotes_end()}_{end_date}", compute)
+        data = (cached(f"inchkmonth_t{t if t > 0 else -1}", f"{watermarks.quotes_end()}_{end_date}", compute)
+                if cacheable else compute())
         results, inc_total, dis_total = data["months"], data["inc_total"], data["dis_total"]
 
         # Get org types for dropdown
@@ -892,8 +894,8 @@ def inchksurvive():
     except ValueError:
         snapshot_date = date.today()
 
-    # Get type name if filtering (inside a try, as incHKmonth). An unknown t
-    # is the all-types page.
+    # Get type name if filtering (inside a try, as incHKmonth). The SQL filters
+    # on t as given; only all types or a known type is cached.
     typename = None
     try:
         if t > 0:
@@ -904,7 +906,7 @@ def inchksurvive():
                 typename = type_result[0]["typename"]
     except Exception:
         pass
-    t_eff = t if typename else -1
+    cacheable = t <= 0 or typename is not None
 
     # Query survival rates by year of incorporation
     sql = f"""
@@ -929,12 +931,12 @@ def inchksurvive():
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
               AND incdate <= CAST(%s AS date)
-              {"AND orgtype = %s" if t_eff > 0 else ""}
+              {"AND orgtype = %s" if t > 0 else ""}
             GROUP BY incyear
         ) t ON y = t.incyear
         ORDER BY y
     """
-    params = (snapshot_date,) * 3 + ((t_eff,) if t_eff > 0 else ())
+    params = (snapshot_date,) * 3 + ((t,) if t > 0 else ())
 
     # The same whole-table count as incHKannual. Only today's view is cached
     # (once per watermark and day); another date is computed live.
@@ -946,8 +948,8 @@ def inchksurvive():
         ]
 
     try:
-        if snapshot_date == date.today():
-            results = cached(f"inchksurvive_t{t_eff}",
+        if snapshot_date == date.today() and cacheable:
+            results = cached(f"inchksurvive_t{t if t > 0 else -1}",
                              f"{watermarks.quotes_end()}_{snapshot_date}", compute)
         else:
             results = compute()

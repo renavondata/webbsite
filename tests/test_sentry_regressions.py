@@ -1102,6 +1102,22 @@ def run():
         client.get("/dbpub/listed.asp?sort=junk&e=zz&t=qq")
         check("cache: junk parameters reuse the default entries, no new files",
               set(os.listdir(tmp)) - files_before, set())
+        # An unknown type filters as given (zeros, as master did) and runs live.
+        heavy.clear()
+        seen_params = []
+        real_rec = incorporations.execute_query
+
+        def rec_params(sql, params=None, timeout_s=None):
+            seen_params.append(params)
+            return rec_market(sql, params, timeout_s)
+
+        incorporations.execute_query = rec_params
+        client.get("/dbpub/incHKmonth.asp?t=987654")
+        client.get("/dbpub/incHKmonth.asp?t=987654")
+        incorporations.execute_query = real_rec
+        check("cache: an unknown type is filtered as given, never cached",
+              (any(p and 987654 in p for p in seen_params), len(heavy),
+               set(os.listdir(tmp)) - files_before), (True, 4, set()))
         heavy.clear()
         client.get("/dbpub/listed.asp?d=2020-01-01")
         client.get("/dbpub/listed.asp?d=2020-01-01")
