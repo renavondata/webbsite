@@ -70,3 +70,11 @@ CREATE INDEX IF NOT EXISTS idx_documents_pay_filter
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_people_born_cover
   ON enigma.people (yob, mob, name1, name2)
   INCLUDE (personid, cname, dob, yod, mond, dod);
+
+-- UK incorporation calendar (incUKcaltype.asp). A year of England & Wales is
+-- ~820k companies (2023) among 19.6M organisations; with only single-column
+-- indexes the planner read the whole 2.7 GB table (350k pages) and timed out
+-- (WEBBSITE-23). Measured on a restore of the R2 dump: 16k pages with this.
+-- ~135 MB. CONCURRENTLY and INVALID-on-failure as idx_people_born_cover.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_organisations_domicile_incdate
+  ON enigma.organisations (domicile, incdate);
