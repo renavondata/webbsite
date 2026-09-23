@@ -71,6 +71,34 @@ def _validate_ccass_query():
     return None
 
 
+
+# A participant's latest parthold row per issue on/before a date, for
+# portchg.asp and cholder.asp. parthold records changes only, so a big
+# custodian has millions of rows (participant 463: 5.2M over 3.7k issues).
+# DISTINCT ON sorted all of them (1.4 s, 53k pages, per date, measured on the
+# R2 dump; WEBBSITE-2E). This walks the (partID, issueID, atDate) primary key
+# instead: a loose index scan for the distinct issues, then one LIMIT 1 probe
+# each -- 50 ms, the same rows. The participant must reach every probe as a
+# literal (a join-supplied one lost the plan: 10+ minutes), so the parameters
+# are (part, part, part, date).
+_LATEST_PARTHOLD = """(
+    WITH RECURSIVE issues AS (
+        (SELECT issueid FROM ccass.parthold WHERE partid = %s ORDER BY issueid LIMIT 1)
+        UNION ALL
+        SELECT (SELECT p.issueid FROM ccass.parthold p
+                WHERE p.partid = %s AND p.issueid > i.issueid
+                ORDER BY p.issueid LIMIT 1)
+        FROM issues i WHERE i.issueid IS NOT NULL
+    )
+    SELECT i.issueid, h.holding, h.atdate, h.partid
+    FROM issues i
+    CROSS JOIN LATERAL (
+        SELECT holding, atdate, partid FROM ccass.parthold
+        WHERE partid = %s AND issueid = i.issueid AND atdate <= %s
+        ORDER BY atdate DESC LIMIT 1
+    ) h
+)"""
+
 @bp.route("/bigchanges.asp")
 def bigchanges():
     """Top CCASS changes - port of bigchanges.asp"""
@@ -591,12 +619,7 @@ def cholder():
                             THEN TRUE
                             ELSE FALSE
                        END AS susp
-                FROM (
-                    SELECT DISTINCT ON (issueid) issueid, holding, atdate, partid
-                    FROM ccass.parthold
-                    WHERE partid = %s AND atdate <= %s
-                    ORDER BY issueid, atdate DESC
-                ) ph
+                FROM {_LATEST_PARTHOLD} ph
                 JOIN enigma.issue i ON ph.issueID = i.id1
                 JOIN enigma.organisations o ON i.issuer = o.personID
                 JOIN enigma.secTypes st ON i.typeID = st.typeID
@@ -621,7 +644,7 @@ def cholder():
             """
             # timeout_s: a large custodian (e.g. part=1243) walks ~3.5M parthold
             # rows; deterministic and edge-cached, like the other heavy reports.
-            results = execute_query(sql, (part, d, d, d, d, d), timeout_s=25)
+            results = execute_query(sql, (part, part, part, d, d, d, d, d), timeout_s=25)
 
             for row in results:
                 holdings.append(
@@ -2749,16 +2772,10 @@ def portchg():
 
             sql = f"""
                 WITH start_holdings AS (
-                    SELECT DISTINCT ON (ph.issueID) ph.issueID, ph.holding
-                    FROM ccass.parthold ph
-                    WHERE ph.partID = %s AND ph.atDate <= %s
-                    ORDER BY ph.issueID, ph.atDate DESC
+                    SELECT ph.issueid, ph.holding FROM {_LATEST_PARTHOLD} ph
                 ),
                 end_holdings AS (
-                    SELECT DISTINCT ON (ph.issueID) ph.issueID, ph.holding
-                    FROM ccass.parthold ph
-                    WHERE ph.partID = %s AND ph.atDate <= %s
-                    ORDER BY ph.issueID, ph.atDate DESC
+                    SELECT ph.issueid, ph.holding FROM {_LATEST_PARTHOLD} ph
                 ),
                 combined AS (
                     SELECT COALESCE(s.issueID, e.issueID) as issueID,
@@ -2798,9 +2815,9 @@ def portchg():
                 ORDER BY {o}
             """
 
-            # params follow %s text order: start partID, start date, end partID,
-            # end date, susp-cmp, outstanding LATERAL, quote LATERAL (last four = d2)
-            results = execute_query(sql, (p, d1, p, d2, d2, d2, d2), timeout_s=25)
+            # params follow %s text order: start (part x3, d1), end (part x3, d2),
+            # then susp-cmp, outstanding LATERAL, quote LATERAL (last four = d2)
+            results = execute_query(sql, (p, p, p, d1, p, p, p, d2, d2, d2, d2), timeout_s=25)
 
             for row in results:
                 stake = row.get("stake")
