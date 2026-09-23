@@ -1369,7 +1369,11 @@ def incukcaltype():
         params = (dom, month_start, month_end, t)
 
     try:
-        results = execute_query(sql, params)
+        # A year of England & Wales is ~820k companies, all sorted before the
+        # LIMIT: ~3 s on production (Postgres 17 finds them through the incdate
+        # index; the cost is the sort, not reads). It hit 8 s under the 04:30
+        # route check's load (WEBBSITE-23), so give it the heavy-page ceiling.
+        results = execute_query(sql, params, timeout_s=30)
 
         typename = None
         if t > 0:
