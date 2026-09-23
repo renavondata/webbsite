@@ -45,6 +45,9 @@ Pins:
      split by route; query errors still are), the 04:30 route check's own
      requests are tagged synthetic, and a disposed engine does not strand a
      request still running (WEBBSITE-2F: "Database engine not initialized").
+ 17. portchg.asp / cholder.asp take a participant's latest parthold row per
+     issue by a loose index scan, not DISTINCT ON over its whole history
+     (WEBBSITE-2E), with every placeholder bound.
  16. the whole-market pages that timed out cold (incHKannual, incHKmonth,
      listed.asp; incHKsurvive shares their shape) are computed once per data
      watermark and served from disk after: a repeat makes no heavy query, each
@@ -1142,6 +1145,35 @@ def run():
             os.environ.pop("WEBBSITE_CACHE_DIR", None)
         else:
             os.environ["WEBBSITE_CACHE_DIR"] = old_dir
+
+    # 17. portchg / choldings: the latest-per-issue subquery, placeholders bound.
+    ch_calls = []
+
+    def rec_ccass(sql, params=None, timeout_s=None):
+        if "ccass.parthold" in sql:
+            ch_calls.append((sql, params))
+        return []
+
+    real_ccass = ccass.execute_query
+    ccass.execute_query = rec_ccass
+    try:
+        for url in ("/ccass/portchg.asp?p=463&d1=2025-09-08&d=2025-09-09",
+                    "/ccass/cholder.asp?part=463&d=2025-09-09"):
+            ch_calls.clear()
+            client.get(url)
+            sql, params = ch_calls[-1] if ch_calls else ("", ())
+            check(f"parthold {url.split('?')[0]}: loose index scan, no DISTINCT ON the history",
+                  ("WITH RECURSIVE issues" in sql,
+                   bool(re.search(r"DISTINCT ON \(\w+\.?issue", sql, re.I) and "parthold" in
+                        sql.split("DISTINCT ON", 1)[1][:200] if "DISTINCT ON" in sql else False)),
+                  (True, False))
+            head = list(params[:4]) if params else []
+            check(f"parthold {url.split('?')[0]}: one bound value per placeholder, part x3 then date",
+                  (sql.count("%s") == len(params), len(set(head[:3])) == 1 and len(head) == 4,
+                   bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(head[3]) if len(head) == 4 else ""))),
+                  (True, True, True))
+    finally:
+        ccass.execute_query = real_ccass
 
     if _failures:
         print("\nFAILED:")
