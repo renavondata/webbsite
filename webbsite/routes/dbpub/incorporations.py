@@ -7,6 +7,8 @@ from datetime import date
 import calendar
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
+from webbsite import watermarks
+from webbsite.diskcache import cached
 
 bp = Blueprint("dbpub_incorporations", __name__)
 
@@ -257,21 +259,19 @@ def inc_hk_annual():
     title = "HK companies"
 
     # Build type filter
+    ot_filter = ""
+    t_eff = 0  # the type actually filtered on: an unknown t is the default page
     if t > 0:
-        # Get type name
-        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
         try:
-            type_result = execute_query(type_sql, (t,))
-            if type_result:
-                type_name = type_result[0]["typename"]
-                title += f": {type_name}"
-                ot_filter = f"AND o.orgtype = {t}"
-            else:
-                ot_filter = ""
-        except:
-            ot_filter = ""
-    else:
-        ot_filter = ""
+            type_result = execute_query(
+                "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,)
+            )
+        except Exception:
+            type_result = []
+        if type_result:
+            title += f": {type_result[0]['typename']}"
+            ot_filter = f"AND o.orgtype = {t}"
+            t_eff = t
 
     # Query incorporations and dissolutions by year
     sql = f"""
@@ -306,8 +306,18 @@ def inc_hk_annual():
         ORDER BY y.y
     """
 
+    # Every HK company, counted twice: ~5 GB read cold, so it timed out at 8 s
+    # (WEBBSITE-1R). The counts only change with the data, so compute them once
+    # per watermark and serve from disk (webbsite/diskcache.py).
+    def compute():
+        return [
+            {"year": int(r["year"]), "incorporated": int(r["incorporated"]),
+             "dissolved": int(r["dissolved"])}
+            for r in execute_query(sql, timeout_s=30)
+        ]
+
     try:
-        results = execute_query(sql)
+        results = cached(f"inchkannual_t{t_eff}", watermarks.quotes_end(), compute)
     except Exception as ex:
         current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
         results = []
@@ -754,28 +764,28 @@ def dishkcaltype():
 @bp.route("/incHKmonth.asp")
 def inchkmonth():
     """Monthly HK company incorporations and dissolutions"""
-    from webbsite.asp_helpers import get_int
-    from webbsite.db import execute_query
-    from datetime import date
-    from flask import render_template
-
     t = get_int("t", -1)  # -1 = all types
 
-    # Get type name if filtering
+    # Get type name if filtering (inside the try: a failure blanked nothing
+    # before, it 500ed). An unknown t is the all-types page.
     typename = None
-    if t > 0:
-        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-        type_result = execute_query(type_sql, (t,))
-        if type_result:
-            typename = type_result[0]["typename"]
+    try:
+        if t > 0:
+            type_result = execute_query(
+                "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,)
+            )
+            if type_result:
+                typename = type_result[0]["typename"]
+    except Exception:
+        pass
+    t_eff = t if typename else -1
 
     # Build query for monthly data since 1985
-    start_date = "1985-01-01"
     end_date = date.today().replace(day=1).isoformat()
+    type_filter = "AND orgtype = %s" if t_eff > 0 else ""
 
     # This query generates monthly data points
-    sql = (
-        """
+    sql = f"""
         WITH RECURSIVE dates AS (
             SELECT DATE '1985-01-01' AS d
             UNION ALL
@@ -795,9 +805,7 @@ def inchkmonth():
               AND incid ~ '^[0-9]'
               AND incdate >= '1985-01-01'
               AND incdate <= CAST(%s AS date)
-    """
-        + ("AND orgtype = %s" if t > 0 else "")
-        + """
+              {type_filter}
             GROUP BY mstart
         ) inc ON dates.d = inc.mstart
         LEFT JOIN (
@@ -807,58 +815,50 @@ def inchkmonth():
               AND incid ~ '^[0-9]'
               AND disdate >= '1985-01-01'
               AND disdate <= CAST(%s AS date)
-    """
-        + ("AND orgtype = %s" if t > 0 else "")
-        + """
+              {type_filter}
             GROUP BY mstart
         ) dis ON dates.d = dis.mstart
         ORDER BY d
     """
-    )
+    params = (end_date, end_date, t_eff, end_date, t_eff) if t_eff > 0 else (end_date,) * 3
+
+    # Initial totals before the start date
+    init_sql = f"""
+        SELECT
+            COUNT(*) FILTER (WHERE incdate < '1985-01-01') AS inc_total,
+            COUNT(*) FILTER (WHERE disdate < '1985-01-01') AS dis_total
+        FROM enigma.organisations
+        WHERE domicile = 1
+          AND incid ~ '^[0-9]'
+          {type_filter}
+    """
+
+    # Whole-table counts, as incHKannual (WEBBSITE-1S/1T): once per watermark,
+    # and per month the series ends on.
+    def compute():
+        months = [
+            {"d": r["d"], "incorporated": int(r["incorporated"]),
+             "dissolved": int(r["dissolved"])}
+            for r in execute_query(sql, params, timeout_s=30)
+        ]
+        init = execute_query(init_sql, (t_eff,) if t_eff > 0 else None, timeout_s=30)
+        return {
+            "months": months,
+            "inc_total": int(init[0]["inc_total"]) if init else 0,
+            "dis_total": int(init[0]["dis_total"]) if init else 0,
+        }
 
     try:
-        if t > 0:
-            params = (end_date, end_date, t, end_date, t)
-        else:
-            params = (end_date, end_date, end_date)
-
-        results = execute_query(sql, params)
-
-        # Get initial totals before start date
-        if t > 0:
-            init_sql = """
-                SELECT
-                    COUNT(*) FILTER (WHERE incdate < '1985-01-01') AS inc_total,
-                    COUNT(*) FILTER (WHERE disdate < '1985-01-01') AS dis_total
-                FROM enigma.organisations
-                WHERE domicile = 1
-                  AND incid ~ '^[0-9]'
-                  AND orgtype = %s
-            """
-            init_result = execute_query(init_sql, (t,))
-        else:
-            init_sql = """
-                SELECT
-                    COUNT(*) FILTER (WHERE incdate < '1985-01-01') AS inc_total,
-                    COUNT(*) FILTER (WHERE disdate < '1985-01-01') AS dis_total
-                FROM enigma.organisations
-                WHERE domicile = 1
-                  AND incid ~ '^[0-9]'
-            """
-            init_result = execute_query(init_sql)
-
-        inc_total = init_result[0]["inc_total"] if init_result else 0
-        dis_total = init_result[0]["dis_total"] if init_result else 0
+        data = cached(f"inchkmonth_t{t_eff}", f"{watermarks.quotes_end()}_{end_date}", compute)
+        results, inc_total, dis_total = data["months"], data["inc_total"], data["dis_total"]
 
         # Get org types for dropdown
-        types_sql = """
+        orgtypes_list = execute_query("""
             SELECT orgtype, typename
             FROM enigma.orgtypes
             WHERE orgtype IN (1,19,21,26,28)
             ORDER BY typename
-        """
-        orgtypes_list = execute_query(types_sql)
-
+        """)
     except Exception as ex:
         current_app.logger.error(f"Error in incHKmonth.asp: {ex}", exc_info=True)
         results = []
@@ -883,11 +883,6 @@ def inchkmonth():
 @bp.route("/incHKsurvive.asp")
 def inchksurvive():
     """Survival of HK companies at a given date"""
-    from webbsite.asp_helpers import get_int, get_str
-    from webbsite.db import execute_query
-    from datetime import date
-    from flask import render_template
-
     # Get parameters
     d_str = get_str("d", date.today().isoformat())
     t = get_int("t", -1)  # -1 = all types
@@ -897,17 +892,22 @@ def inchksurvive():
     except ValueError:
         snapshot_date = date.today()
 
-    # Get type name if filtering
+    # Get type name if filtering (inside a try, as incHKmonth). An unknown t
+    # is the all-types page.
     typename = None
-    if t > 0:
-        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-        type_result = execute_query(type_sql, (t,))
-        if type_result:
-            typename = type_result[0]["typename"]
+    try:
+        if t > 0:
+            type_result = execute_query(
+                "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,)
+            )
+            if type_result:
+                typename = type_result[0]["typename"]
+    except Exception:
+        pass
+    t_eff = t if typename else -1
 
     # Query survival rates by year of incorporation
-    sql = (
-        """
+    sql = f"""
         WITH RECURSIVE years AS (
             SELECT 1865 AS y
             UNION ALL
@@ -929,32 +929,36 @@ def inchksurvive():
             WHERE domicile = 1
               AND incid ~ '^[0-9]'
               AND incdate <= CAST(%s AS date)
-    """
-        + ("AND orgtype = %s" if t > 0 else "")
-        + """
+              {"AND orgtype = %s" if t_eff > 0 else ""}
             GROUP BY incyear
         ) t ON y = t.incyear
         ORDER BY y
     """
-    )
+    params = (snapshot_date,) * 3 + ((t_eff,) if t_eff > 0 else ())
+
+    # The same whole-table count as incHKannual. Only today's view is cached
+    # (once per watermark and day); another date is computed live.
+    def compute():
+        return [
+            {"y": int(r["y"]), "incorporated": int(r["incorporated"]),
+             "surviving": int(r["surviving"])}
+            for r in execute_query(sql, params, timeout_s=30)
+        ]
 
     try:
-        if t > 0:
-            params = (snapshot_date, snapshot_date, snapshot_date, t)
+        if snapshot_date == date.today():
+            results = cached(f"inchksurvive_t{t_eff}",
+                             f"{watermarks.quotes_end()}_{snapshot_date}", compute)
         else:
-            params = (snapshot_date, snapshot_date, snapshot_date)
-
-        results = execute_query(sql, params)
+            results = compute()
 
         # Get org types for dropdown
-        types_sql = """
+        orgtypes_list = execute_query("""
             SELECT orgtype, typename
             FROM enigma.orgtypes
             WHERE orgtype IN (1,19,21,26,28)
             ORDER BY typename
-        """
-        orgtypes_list = execute_query(types_sql)
-
+        """)
     except Exception as ex:
         current_app.logger.error(f"Error in incHKsurvive.asp: {ex}", exc_info=True)
         results = []

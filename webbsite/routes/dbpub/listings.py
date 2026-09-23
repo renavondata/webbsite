@@ -6,6 +6,8 @@ from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_date_or_default
+from webbsite import watermarks
+from webbsite.diskcache import cached
 
 bp = Blueprint("dbpub_listings", __name__)
 
@@ -119,10 +121,13 @@ def listed():
         ORDER BY {order_by}
     """
 
-    try:
-        results = execute_query(sql, (d, d, d, d, d))
+    # Three return functions per listing (each ~10 quote lookups) over every
+    # listed stock timed out cold at 8 s (WEBBSITE-21). Today's view -- each
+    # validated e/t/sort variant -- is computed once per watermark and day and
+    # served from disk; a pinned ?d= is computed live.
+    def compute():
         stocks = []
-        for row in results:
+        for row in execute_query(sql, (d, d, d, d, d), timeout_s=30):
             # Format return percentages (NULL becomes empty string, values multiplied by 100 and formatted to 2 decimals)
             totret = "" if row["totret"] is None else f"{row['totret'] * 100:.2f}"
             cagret = "" if row["cagret"] is None else f"{row['cagret'] * 100:.2f}"
@@ -136,12 +141,26 @@ def listed():
                     "typeLong": row["typelong"],
                     "Name1": row["name1"],
                     "PersonID": row["personid"],
-                    "FirstTradeDate": row["firsttradedate"],
+                    # As text, as the template prints the date (JSON-safe).
+                    "FirstTradeDate": None if row["firsttradedate"] is None
+                    else str(row["firsttradedate"]),
                     "totRet": totret,
                     "CAGret": cagret,
                     "CAGrel": cagrel,
                 }
             )
+        return stocks
+
+    try:
+        if "d" not in request.args:
+            variant = "_".join((
+                e if e in exchange_filters else "a",
+                t if t in type_filters else "s",
+                sort_param if sort_param in order_by_map else "nameup",
+            ))
+            stocks = cached(f"listed_{variant}", f"{watermarks.quotes_end()}_{d}", compute)
+        else:
+            stocks = compute()
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         current_app.logger.error(
