@@ -2,7 +2,9 @@
 --
 -- Idempotent, like database/schema/functions.sql: apply after any restore
 --     sudo -u postgres psql -d enigma -f database/schema/views.sql
--- deploy/converge.sh re-applies it whenever the live definition has drifted.
+-- deploy/converge.sh applies it once per version of this file: it stamps the
+-- file's sha256 into the view's COMMENT and re-applies when that differs (an
+-- edit here, or a restore, which brings back the old view without the stamp).
 --
 -- enigma.hklistedordsever: every issue that was ever an HK-listed ordinary
 -- share, with its issuer. positions.asp, possum.asp and the league tables join
@@ -23,6 +25,12 @@
 -- tests/test_views.sh proves the pushdown and the equivalence.
 
 SET search_path TO enigma, ccass, public;
+
+-- CREATE OR REPLACE VIEW takes an ACCESS EXCLUSIVE lock, queued behind every
+-- in-flight reader (heavy pages run for up to 50 s) and ahead of every new one:
+-- waiting would stall positions.asp site-wide. Give up instead; converge's
+-- next tick retries.
+SET lock_timeout = '3s';
 
 CREATE OR REPLACE VIEW enigma.hklistedordsever AS
 SELECT i.id1 AS issueid, i.issuer

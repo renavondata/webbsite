@@ -249,17 +249,19 @@ if [ -f "$FN_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
     fi
 fi
 
-# database/schema/views.sql, gated on drift like functions.sql above. The only
-# drift that matters is the old DISTINCT hklistedordsever (a restore brings it
-# back): it cannot take a join predicate, and every positions.asp built the
-# whole view. 0 = the old definition, empty = could not ask.
+# database/schema/views.sql, once per version of the file: a successful apply
+# stamps its sha256 into the view's COMMENT, and a differing stamp -- an edit
+# to the file, or a restore bringing back the old DISTINCT view unstamped --
+# applies it again. Not every tick: CREATE OR REPLACE locks a hot view. If
+# asking fails (mid-restart, saturated), skip silently like the checks above.
 if [ -f "$VIEW_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
-    pushed=$(psql_pg -d enigma -c "SELECT count(*) FROM pg_views \
-        WHERE schemaname = 'enigma' AND viewname = 'hklistedordsever' \
-          AND definition NOT ILIKE '%DISTINCT%'" 2>/dev/null)
-    if [ "$pushed" = 0 ]; then
-        if view_out=$(psql_pg -d enigma -f "$VIEW_SRC" 2>&1); then
-            log "postgres: applied database/schema/views.sql"
+    view_sha=$(sha256sum "$VIEW_SRC" | cut -c1-64)
+    if stamp=$(psql_pg -d enigma -c "SELECT 'stamp:' || COALESCE(obj_description( \
+            to_regclass('enigma.hklistedordsever'), 'pg_class'), '')" 2>/dev/null) \
+       && [ "$stamp" != "stamp:views.sql sha256 $view_sha" ]; then
+        if view_out=$(psql_pg -d enigma -f "$VIEW_SRC" \
+                -c "COMMENT ON VIEW enigma.hklistedordsever IS 'views.sql sha256 $view_sha'" 2>&1); then
+            log "postgres: applied database/schema/views.sql ($view_sha)"
         else
             log "postgres: database/schema/views.sql FAILED to apply: $(printf '%s' "$view_out" | tail -1)"
             rc=1
