@@ -185,12 +185,11 @@ For more help, see <b><a href="/dbpub/TRnotes.asp" target="_blank">the notes</a>
 {% if adj_data|length > 0 %}
     <div id="graphdiv" class="chart" style="width:95%"></div>
 
-    {% if not rel or issues|length == 1 %}
+    {# show_rel, csv_rows and table_rows come from ctr_series() in the route #}
+    {% if not show_rel %}
         {% set chart_title = "Absolute Webb-site Total Returns %" %}
-        {% set show_rel = false %}
     {% else %}
         {% set chart_title = "Relative Webb-site Total Returns %" %}
-        {% set show_rel = true %}
     {% endif %}
 
     {# Build CSV data for Dygraph #}
@@ -208,21 +207,7 @@ For more help, see <b><a href="/dbpub/TRnotes.asp" target="_blank">the notes</a>
     {% endif %}
 
     {% set _ = csv_lines.append(legend_parts|join(',')) %}
-
-    {% for row in adj_data %}
-        {% set line_parts = [row[0].strftime('%Y-%m-%d')] %}
-        {% if not show_rel %}
-            {% for i in range(1, issues|length + 1) %}
-                {% set _ = line_parts.append('%.2f'|format(row[i])) %}
-            {% endfor %}
-        {% elif row[1] != -100 %}
-            {% for i in range(2, issues|length + 1) %}
-                {% set rel_return = 100 * ((row[i] + 100) / (row[1] + 100) - 1) %}
-                {% set _ = line_parts.append('%.2f'|format(rel_return)) %}
-            {% endfor %}
-        {% endif %}
-        {% set _ = csv_lines.append(line_parts|join(',')) %}
-    {% endfor %}
+    {% set _ = csv_lines.append(csv_rows) %}
 
     {# Build color array #}
     {% set color_list = [] %}
@@ -268,20 +253,7 @@ For more help, see <b><a href="/dbpub/TRnotes.asp" target="_blank">the notes</a>
                 {% endfor %}
             {% endif %}
         </tr>
-        {% for row in adj_data|reverse %}
-        <tr>
-            <td>{{ row[0].strftime('%Y-%m-%d') }}</td>
-            {% for i in range(1, issues|length + 1) %}
-                <td {% if i > 4 %}class="colHide3"{% endif %}>{{ "%.2f"|format(row[i]) }}</td>
-            {% endfor %}
-            {% if show_rel %}
-                {% for i in range(2, issues|length + 1) %}
-                    {% set rel_return = 100 * ((row[i] + 100) / (row[1] + 100) - 1) %}
-                    <td {% if issues|length > 2 %}class="colHide3"{% endif %}>{{ "%.2f"|format(rel_return) }}</td>
-                {% endfor %}
-            {% endif %}
-        </tr>
-        {% endfor %}
+        {{ table_rows }}
     </table>
 {% endif %}
 
