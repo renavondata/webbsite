@@ -118,6 +118,8 @@ changed_pg=0
 # dry run greps the same "missing in repo" line for it as for every other file.
 FN_SRC="$REPO/database/schema/functions.sql"
 [ -f "$FN_SRC" ] || log "missing in repo, skipped: database/schema/functions.sql"
+VIEW_SRC="$REPO/database/schema/views.sql"
+[ -f "$VIEW_SRC" ] || log "missing in repo, skipped: database/schema/views.sql"
 if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
     if [ -n "$DRY" ]; then
         log "would install deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
@@ -242,6 +244,26 @@ if [ -f "$FN_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
             log "postgres: applied database/schema/functions.sql ($guarded/3 were guarded)"
         else
             log "postgres: database/schema/functions.sql FAILED to apply: $(printf '%s' "$fn_out" | tail -1)"
+            rc=1
+        fi
+    fi
+fi
+
+# database/schema/views.sql, once per version of the file: a successful apply
+# stamps its sha256 into the view's COMMENT, and a differing stamp -- an edit
+# to the file, or a restore bringing back the old DISTINCT view unstamped --
+# applies it again. Not every tick: CREATE OR REPLACE locks a hot view. If
+# asking fails (mid-restart, saturated), skip silently like the checks above.
+if [ -f "$VIEW_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
+    view_sha=$(sha256sum "$VIEW_SRC" | cut -c1-64)
+    if stamp=$(psql_pg -d enigma -c "SELECT 'stamp:' || COALESCE(obj_description( \
+            to_regclass('enigma.hklistedordsever'), 'pg_class'), '')" 2>/dev/null) \
+       && [ "$stamp" != "stamp:views.sql sha256 $view_sha" ]; then
+        if view_out=$(psql_pg -d enigma -f "$VIEW_SRC" \
+                -c "COMMENT ON VIEW enigma.hklistedordsever IS 'views.sql sha256 $view_sha'" 2>&1); then
+            log "postgres: applied database/schema/views.sql ($view_sha)"
+        else
+            log "postgres: database/schema/views.sql FAILED to apply: $(printf '%s' "$view_out" | tail -1)"
             rc=1
         fi
     fi
