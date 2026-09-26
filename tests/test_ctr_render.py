@@ -12,6 +12,7 @@ No DB, no pytest -- same house style as tests/test_sentry_regressions.py:
 
     uv run python tests/test_ctr_render.py
 """
+import os
 import re
 import sys
 import time
@@ -88,30 +89,52 @@ def check(name, adj_data, n_issues, show_rel):
         failures.append(name)
 
 
-check("absolute, one issue", rows(1, 50), 1, False)
-check("absolute, five issues (colHide3 on the 5th)", rows(5, 50), 5, False)
-check("relative, two issues", rows(2, 50), 2, True)
-check("relative, five issues (rel columns colHide3)", rows(5, 50), 5, True)
-# CSV drops a relative row whose base is -100; the table would divide by zero
-# in both versions, so the -100 rows are checked on the CSV only.
-base_gone = rows(3, 20, first=-100)
-check("absolute, first stock at -100%", base_gone, 3, False)
-try:
-    ctr_series(base_gone, 3, True)
-    failures.append("relative, -100 base: table should raise like the template did")
-    print("FAIL relative, -100 base did not raise")
-except ZeroDivisionError:
-    print("ok   relative, -100 base raises in the table, as the template did")
+def run():
+    failures.clear()
+    # CI's self-proof: with PLANTED_FAILURE set this script must exit 1, or the
+    # gate is decoration. The reference renders 5 columns; ctr_series gets 4.
+    if os.environ.get("PLANTED_FAILURE"):
+        ref = REFERENCE.render(adj_data=rows(5, 5), issues=[{}] * 5, show_rel=False)
+        ok = ctr_series(rows(5, 5), 4, False)[0] == ref.split("@@CSV@@")[1].split("@@TABLE@@")[0]
+        print(f"{'ok  ' if ok else 'FAIL'} planted failure (CI self-proof; expected to fail)")
+        if not ok:
+            failures.append("planted failure")
 
-big = rows(5, 7000)
-t = time.perf_counter()
-REFERENCE.render(adj_data=big, issues=[{}] * 5, show_rel=True)
-t_ref = time.perf_counter() - t
-t = time.perf_counter()
-ctr_series(big, 5, True)
-t_new = time.perf_counter() - t
-print(f"7000 rows x 5 issues, relative: template {t_ref * 1000:.0f} ms, ctr_series {t_new * 1000:.0f} ms")
+    check("absolute, one issue", rows(1, 50), 1, False)
+    check("absolute, five issues (colHide3 on the 5th)", rows(5, 50), 5, False)
+    check("relative, two issues", rows(2, 50), 2, True)
+    check("relative, five issues (rel columns colHide3)", rows(5, 50), 5, True)
+    # CSV drops a relative row whose base is -100; the table would divide by zero
+    # in both versions, so the -100 rows are checked on the CSV only.
+    base_gone = rows(3, 20, first=-100)
+    check("absolute, first stock at -100%", base_gone, 3, False)
+    try:
+        ctr_series(base_gone, 3, True)
+        failures.append("relative, -100 base: table should raise like the template did")
+        print("FAIL relative, -100 base did not raise")
+    except ZeroDivisionError:
+        print("ok   relative, -100 base raises in the table, as the template did")
 
-if failures:
-    sys.exit(f"{len(failures)} failed: {', '.join(failures)}")
-print("PASS")
+    big = rows(5, 7000)
+    t = time.perf_counter()
+    REFERENCE.render(adj_data=big, issues=[{}] * 5, show_rel=True)
+    t_ref = time.perf_counter() - t
+    t = time.perf_counter()
+    ctr_series(big, 5, True)
+    t_new = time.perf_counter() - t
+    print(f"7000 rows x 5 issues, relative: template {t_ref * 1000:.0f} ms, ctr_series {t_new * 1000:.0f} ms")
+
+    if failures:
+        print(f"{len(failures)} failed: {', '.join(failures)}")
+        return 1
+    print("PASS")
+    return 0
+
+
+def test_all():
+    """pytest entry point (CI); the direct-run house style still works."""
+    assert run() == 0, ", ".join(failures)
+
+
+if __name__ == "__main__":
+    sys.exit(run())
