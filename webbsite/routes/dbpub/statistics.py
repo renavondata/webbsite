@@ -7111,6 +7111,46 @@ def str_route():
     )
 
 
+def ctr_series(adj_data, n_issues, show_rel):
+    """The Dygraph CSV rows and the table rows of ctr.html, formatted here.
+
+    A full-history ctr.asp is ~7k trading days, rendered twice (chart and
+    table); as per-cell Jinja calls that was ~75% of the page's CPU, and under
+    the GIL a few concurrent ctr.asp requests starved the whole worker
+    (2026-09-26 crawl). Output matches the template loops it replaces --
+    tests/test_ctr_render.py renders both.
+
+    Returns (csv_rows, table_html): CSV lines without the legend, joined by
+    newlines, and the <tr> rows newest-first as Markup.
+    """
+    from markupsafe import Markup
+
+    def rel(row, i):
+        return 100 * ((row[i] + 100) / (row[1] + 100) - 1)
+
+    def csv_line(row):
+        if not show_rel:
+            vals = ["%.2f" % row[i] for i in range(1, n_issues + 1)]
+        elif row[1] != -100:
+            vals = ["%.2f" % rel(row, i) for i in range(2, n_issues + 1)]
+        else:
+            vals = []
+        return ",".join([row[0].isoformat(), *vals])
+
+    abs_open = ['<td class="colHide3">' if i > 4 else "<td>" for i in range(1, n_issues + 1)]
+    rel_open = '<td class="colHide3">' if n_issues > 2 else "<td>"
+
+    def table_row(row):
+        cells = [f"{abs_open[i - 1]}{'%.2f' % row[i]}</td>" for i in range(1, n_issues + 1)]
+        if show_rel:
+            cells += [f"{rel_open}{'%.2f' % rel(row, i)}</td>" for i in range(2, n_issues + 1)]
+        return f"<tr><td>{row[0].isoformat()}</td>{''.join(cells)}</tr>"
+
+    csv_rows = "\n".join(map(csv_line, adj_data))
+    table_html = Markup("\n".join(map(table_row, reversed(adj_data))))
+    return csv_rows, table_html
+
+
 @bp.route("/ctr.asp")
 def ctr():
     """Compare Webb-site Total Returns - up to 5 stocks"""
@@ -7608,10 +7648,16 @@ def ctr():
                     # Store return (carry forward last value for missing dates)
                     adj_data[date_idx][stock_idx + 1] = closing_return
 
+    show_rel = bool(rel) and len(issues) > 1
+    csv_rows, table_rows = ctr_series(adj_data, len(issues), show_rel)
+
     return render_template(
         "dbpub/ctr.html",
         issues=issues,
         adj_data=adj_data,
+        show_rel=show_rel,
+        csv_rows=csv_rows,
+        table_rows=table_rows,
         rel=rel,
         start_date_str=start_date_str,
         colors=colors,
