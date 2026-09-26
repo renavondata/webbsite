@@ -118,6 +118,8 @@ changed_pg=0
 # dry run greps the same "missing in repo" line for it as for every other file.
 FN_SRC="$REPO/database/schema/functions.sql"
 [ -f "$FN_SRC" ] || log "missing in repo, skipped: database/schema/functions.sql"
+VIEW_SRC="$REPO/database/schema/views.sql"
+[ -f "$VIEW_SRC" ] || log "missing in repo, skipped: database/schema/views.sql"
 if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
     if [ -n "$DRY" ]; then
         log "would install deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
@@ -242,6 +244,24 @@ if [ -f "$FN_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
             log "postgres: applied database/schema/functions.sql ($guarded/3 were guarded)"
         else
             log "postgres: database/schema/functions.sql FAILED to apply: $(printf '%s' "$fn_out" | tail -1)"
+            rc=1
+        fi
+    fi
+fi
+
+# database/schema/views.sql, gated on drift like functions.sql above. The only
+# drift that matters is the old DISTINCT hklistedordsever (a restore brings it
+# back): it cannot take a join predicate, and every positions.asp built the
+# whole view. 0 = the old definition, empty = could not ask.
+if [ -f "$VIEW_SRC" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
+    pushed=$(psql_pg -d enigma -c "SELECT count(*) FROM pg_views \
+        WHERE schemaname = 'enigma' AND viewname = 'hklistedordsever' \
+          AND definition NOT ILIKE '%DISTINCT%'" 2>/dev/null)
+    if [ "$pushed" = 0 ]; then
+        if view_out=$(psql_pg -d enigma -f "$VIEW_SRC" 2>&1); then
+            log "postgres: applied database/schema/views.sql"
+        else
+            log "postgres: database/schema/views.sql FAILED to apply: $(printf '%s' "$view_out" | tail -1)"
             rc=1
         fi
     fi

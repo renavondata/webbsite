@@ -83,16 +83,9 @@ BEGIN
 END;
 $$;
 
--- View: hklistedordsever
--- All issueIDs that were ever HK-listed ordinary shares
--- Used to determine which directorships have performance metrics
-CREATE OR REPLACE VIEW enigma.hklistedordsever AS
-SELECT DISTINCT sl.issueid, i.issuer
-FROM enigma.stocklistings sl
-JOIN enigma.issue i ON sl.issueid = i.id1
-WHERE sl.stockexid IN (1, 20, 23)  -- Main Board, GEM, REITs
-  AND sl."2ndCtr" = FALSE  -- Not temporary counter
-  AND i.typeid IN (0, 6, 7, 8, 10, 42);  -- Ordinary shares and related types
+-- View enigma.hklistedordsever lives in database/schema/views.sql, which
+-- converge applies. Its old DISTINCT definition here could not take a join
+-- predicate; re-running this file must not bring it back.
 
 -- Grant permissions
 -- Argument lists are explicit because enigma.MSdateAcc has a second,
@@ -102,4 +95,3 @@ WHERE sl.stockexid IN (1, 20, 23)  -- Main Board, GEM, REITs
 GRANT EXECUTE ON FUNCTION enigma.service(DATE, DATE, DATE) TO PUBLIC;
 GRANT EXECUTE ON FUNCTION enigma.MSdateAcc(DATE, SMALLINT) TO PUBLIC;
 GRANT EXECUTE ON FUNCTION enigma.orgName(BIGINT, DATE) TO PUBLIC;
-GRANT SELECT ON enigma.hklistedordsever TO PUBLIC;
