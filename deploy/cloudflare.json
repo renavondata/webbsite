@@ -1,5 +1,5 @@
 {
-  "_comment": "Desired Cloudflare state for webbsite.renavon.com, captured VERBATIM from live on 2026-09-16 so the first apply is a no-op and every rule keeps its id. This zone (renavon.com) is SHARED with other renavon hosts, so this file declares only the rules that reference this host (rule_scope) and never the zone's SSL mode or DNS: those are the zone owner's. Until the 2026-09 incident these rules existed only in the dashboard and in prose -- the load-bearing edge defence was versioned nowhere. Reconciled by site-deploy's cf-converge (dry-run by default; a root cf-converge@ unit holds CF_CONFIG_TOKEN, never gunicorn's env). The plan is renavon.com Free (5 WAF custom rules, 1 rate-limit rule); the fourth WAF slot and the single rate-limit rule are the constraints every change here works around until the Pro upgrade.",
+  "_comment": "Desired Cloudflare state for webbsite.renavon.com, captured VERBATIM from live on 2026-09-16 so the first apply is a no-op and every rule keeps its id. This zone (renavon.com) is SHARED with other renavon hosts, so this file declares only the rules that reference this host (rule_scope) and never the zone's SSL mode or DNS: those are the zone owner's. Until the 2026-09 incident these rules existed only in the dashboard and in prose -- the load-bearing edge defence was versioned nowhere. Reconciled by site-deploy's cf-converge (dry-run by default; a root cf-converge@ unit holds CF_CONFIG_TOKEN, never gunicorn's env). The plan is renavon.com Free (5 WAF custom rules, 1 rate-limit rule); all five WAF slots are now used (the fifth by the 2026-09-27 direct-deep-URL challenge) and, with the single rate-limit rule, they are the constraints every change here works around until the Pro upgrade.",
   "rule_scope": {
     "host": "webbsite.renavon.com"
   },
@@ -78,6 +78,13 @@
       "description": "webbsite: managed challenge /ccass deep URLs missing accept-language header",
       "enabled": true,
       "_comment": "Challenges any /ccass/ deep request with no Accept-Language. Real browsers always send one; python-requests does not, which is why tests/check_all_routes.py sets it explicitly. Widen to /dbpub/ only if the /dbpub/ rate limit (Pro plan) proves insufficient."
+    },
+    {
+      "action": "managed_challenge",
+      "expression": "(http.host eq \"webbsite.renavon.com\" and (starts_with(http.request.uri.path, \"/dbpub/\") or starts_with(http.request.uri.path, \"/ccass/\")) and http.request.uri.query ne \"\" and http.referer eq \"\" and any(http.request.headers[\"sec-fetch-site\"][*] eq \"none\") and not cf.client.bot)",
+      "description": "webbsite: managed challenge deep /dbpub + /ccass URLs opened directly (no Referer, Sec-Fetch-Site none; distributed scraper signature)",
+      "enabled": true,
+      "_comment": "The 2026-09-26 crawl: ~35k distinct positions.asp?p= with a random sort=, from ~27k residential IPs, every URL unique so none hit the edge cache; it saturated gunicorn for hours (125k 502/504s, the uptime probe down). Every request claimed to be a browser navigating straight to the URL: no Referer and Sec-Fetch-Site: none, i.e. typed or pasted. Over 35 min of 2026-09-27 that was 27,808 of ~32k deep requests, against 5 carrying a same-site Referer. Humans reach deep pages by clicking (a same-origin Referer) or from a search engine (cross-site), so this only challenges a pasted or bookmarked deep link, and a managed challenge is usually passed without interaction; verified crawlers (cf.client.bot) are exempt so indexing is unaffected. Complements, not replaces, the origin fixes (PRs #55, #56). Takes the zone's last Free-plan WAF slot."
     }
   ],
   "rate_limit_rules": [
