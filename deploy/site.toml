@@ -45,6 +45,11 @@ health_match = '"ok"'
 # does NOT purge — its TTL ladder self-heals within 4h.
 cf_zone_id = "c754c09daa8fb9cce8e4977d44cbd246"
 
+# Apex of the zone deploy/cloudflare.json declares rules in. site-deploy's
+# cf-converge@ (on a deploy that touches cloudflare.json) and cf-drift@ (daily)
+# refuse to run without it; the token they use lives in /etc/webbsite/cf-env.
+cf_domain = "renavon.com"
+
 # Run deploy/converge.sh as root each tick, after `uv sync` and before the reload,
 # so the tracked units and Caddyfile ARE the box rather than a hopeful mirror of it.
 #
