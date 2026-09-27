@@ -72,11 +72,14 @@ converge = true
 # would otherwise wedge every deploy, including the one carrying the fix. Data
 # freshness belongs to the uptime probe and the refresh loader's own dead-man.
 
-# deploy_ref = "ci-green"
-# The box should deploy the ref .github/workflows/tests.yml fast-forwards on a
-# green master run, not master itself, so an untested commit never serves.
-# Uncomment when site-deploy's auto-deploy.sh understands the knob (it refuses
-# to deploy when the ref is missing rather than falling back to master).
+# Deploy the ref .github/workflows/tests.yml fast-forwards on a green master
+# run, not master itself, so an untested commit never serves. site-deploy
+# refuses to deploy (and fails the dead-man) if the ref is missing rather than
+# falling back to master, and warns when ci-green lags master. To ship past a
+# broken CI, write `master` to /etc/webbsite/deploy-ref on the box (a file, not
+# a converged setting, so converge does not undo it); delete it afterwards.
+# A change to this knob takes effect from the NEXT deploy, not the one carrying it.
+deploy_ref = "ci-green"
 
 # No build_service: webbsite is Postgres-backed and has no snapshot builder.
 # No Tailwind either — there is no static/src.css, so the CSS step auto-skips.
