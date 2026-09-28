@@ -78,6 +78,16 @@ converge = true
 # not-stale, so the check itself vanishing is still an alarm.
 probe_external = "webbsite.renavon.com-probe"
 
+# site-backup@webbsite runs deploy/backup-producer.sh (a pg_dump -Fc of the ~77 GB
+# enigma database) through site-deploy's backup.sh: age-encrypt, rclone to R2, then
+# read the whole object back to verify. The dump alone measured 22m19s / 5.24 GB on
+# 2026-09-28 (nice 19, ionice idle, under crawl load), past the unit's 20min
+# default, and the encrypt + upload + round trip roughly doubles it. 2h leaves room
+# for the database to grow. host-converge renders this into a TimeoutStartSec
+# drop-in (gfrmin/site-deploy#42). The healthcheck's grace must exceed it, because
+# backup.sh pings /start at the beginning of the run.
+backup_timeout = "2h"
+
 # health_path stays on the SHALLOW /health on purpose, even though ?deep=1 exists.
 # This gate answers "did the new code boot and start serving", which is the
 # deploy's business. ?deep=1 also asserts the data is fresh -- a true and useful
