@@ -78,7 +78,7 @@ done <<< "$(echo "$MAP" | sed '/^[[:space:]]*$/d')"
 # change exists to prevent.
 CADDY_SRC="$REPO/deploy/Caddyfile"
 CADDY_DST=/etc/caddy/Caddyfile
-CADDY_LOG=/var/log/caddy/access.log
+CADDY_LOG=/var/log/caddy/webbsite.access.log   # named by the reverse-proxy.caddy import
 if [ -f "$CADDY_SRC" ] && ! cmp -s "$CADDY_SRC" "$CADDY_DST" 2>/dev/null; then
     if command -v caddy >/dev/null 2>&1; then
         # `caddy validate` OPENS the access log to prove it can write it. Run as

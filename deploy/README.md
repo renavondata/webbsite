@@ -190,7 +190,7 @@ which is how the routes' broad `except Exception` blocks (which render an empty
 page) become visible: `webbsite/db.py` logs at ERROR before raising. Every response
 carries an `X-Request-Id` (minted by Caddy, `deploy/Caddyfile`; echoed by the app;
 last field of gunicorn's access log; a Sentry tag), so one string joins the Caddy
-access log (`/var/log/caddy/access.log`, JSON), the journal, and an event.
+access log (`/var/log/caddy/webbsite.access.log`, JSON; `access.log` before 2026-09-28), the journal, and an event.
 
 The loader pings `HC_URL` on success **only while fresh** (`CCASSdateDone` within
 the trading-day budget in `deploy/freshness.toml`, 4 today, the same budget

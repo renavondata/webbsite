@@ -25,42 +25,31 @@ webbsite.renavon.com {
 	# thread no longer spends CPU on level-6 gzip that the proxy does anyway.
 	encode gzip
 
-	# Origin-side access log. During the 2026-09-11 flood the only record of
-	# what hit the box was Cloudflare's dashboard, after the fact. JSON so it
-	# can be grepped/jq'd; Caddy rolls it itself (5 x 100 MB), no logrotate.
-	log {
-		output file /var/log/caddy/access.log {
-			roll_size 100mb
-			roll_keep 5
-		}
-		format json
-	}
-
-	reverse_proxy 127.0.0.1:8000 {
-		# One id per request, minted here and echoed by the app in its response
-		# and access log, so a journal line, this log, a Sentry event and a
-		# user's report can be joined on it. Cloudflare's own CF-Ray is kept
-		# too (header_up passes all headers by default).
-		header_up X-Request-Id {http.request.uuid}
-		# The real client, not Cloudflare's edge; the app and its logs read this.
-		header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
-
-		transport http {
-			# Shed, don't queue. When gunicorn's accept queue is full the kernel
-			# DROPS SYNs rather than refusing them, so an unbounded dial waits
-			# indefinitely and every waiting request keeps its buffers alive in
-			# Caddy — that is how 4.7 GB accumulated on 2026-09-11 before the
-			# OOM kill. A short dial timeout converts origin saturation into a
-			# prompt 502 and bounds memory by bounding how long a request lives.
-			dial_timeout 5s
-
-			# Above gunicorn's own 60s worker timeout, so this never truncates a
-			# page the app would have finished. It exists to stop a wedged
-			# upstream pinning connections forever, not to police slow pages:
-			# a few deterministic analytical pages legitimately approach 60s.
-			response_header_timeout 65s
-		}
-	}
+	# Proxy + access log come from site-deploy's reference block
+	# (host/caddy/reverse-proxy.caddy, gfrmin/site-deploy#25): a JSON access log
+	# at /var/log/caddy/webbsite.access.log (5 x 100 MB), dial_timeout 5s,
+	# response_header_timeout 65s, and a cap of N requests in flight. Imported,
+	# not copied, so a fix to it reaches every site. Its header explains each line.
+	#
+	# N = 48: gunicorn serves 24 at once (3 workers x 8 threads), times a queue
+	# factor of 2, so a burst waits at most about one request's service time.
+	# Request N+1 gets an immediate 503 instead of queueing. That is the shed the
+	# 2026-09-26 crawl needed: 125k requests queued behind a saturated gunicorn
+	# until they failed as 502/504, the probe with them. The cap is soft (a
+	# simultaneous burst overshoots it slightly), so it is sized with margin.
+	#
+	# The two request headers are set here rather than as header_up, because the
+	# reverse_proxy block lives in the import. request_header runs before
+	# reverse_proxy and the proxy forwards request headers, so the app sees the
+	# same values:
+	# - X-Request-Id: one id per request, minted here and echoed by the app in
+	#   its response and access log, so a journal line, this log, a Sentry event
+	#   and a user's report can be joined on it. Cloudflare's CF-Ray is kept too.
+	# - X-Real-IP: the real client, not Cloudflare's edge; the app and its logs
+	#   read this.
+	request_header X-Request-Id {http.request.uuid}
+	request_header X-Real-IP {http.request.header.Cf-Connecting-Ip}
+	import /srv/site-deploy/host/caddy/reverse-proxy.caddy webbsite 127.0.0.1:8000 48
 
 	tls internal
 }

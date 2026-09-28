@@ -60,10 +60,23 @@ cf_domain = "renavon.com"
 # OOM-killed during a scraper flood and left the site serving Cloudflare 521s for
 # five days while gunicorn answered every health check on localhost.
 #
-# Needs a sudoers grant for exactly /srv/webbsite/deploy/converge.sh. Note what that
-# grants: a unit's ExecStart runs as root, so on this box merge access to this repo
-# is root access. The repo is public to READ; merge is not, and that is the boundary.
+# Root does not run the checkout's copy. Since gfrmin/site-deploy#39 the poller runs
+# `sudo site-tree.sh converge webbsite <sha>`: root's own `git archive` of a commit
+# verified to be on master, fetched from the origin pinned in
+# /etc/site-deploy/origin/webbsite. The hook runs in a private mount namespace where
+# /srv/webbsite IS that tree, read-only, so REPO=/srv/webbsite still works but
+# everything converge.sh reads must be in git and it cannot write under /srv/webbsite.
+# A deploy-ref override to any branch but master therefore deploys without
+# converging. What merge access grants is unchanged: whatever reaches master runs as
+# root on this box. The repo is public to READ; merge is not, and that is the boundary.
 converge = true
+
+# The uptime probe is external: hc.gfrm.in's `webbsite.renavon.com-probe`, run off
+# the box and so closer to a visitor's view. This tells site-deploy not to arm a
+# second on-box probe (site-probe@) for the same outage, and not to nag UNPROBED.
+# site-checks-armed@webbsite (ops-env) holds the named check to not-paused and
+# not-stale, so the check itself vanishing is still an alarm.
+probe_external = "webbsite.renavon.com-probe"
 
 # health_path stays on the SHALLOW /health on purpose, even though ?deep=1 exists.
 # This gate answers "did the new code boot and start serving", which is the
