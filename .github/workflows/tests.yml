@@ -87,9 +87,15 @@ jobs:
           rc=0; ETC="$T/good" MANIFEST=/nonexistent deploy/env-check.sh || rc=$?
           [ "$rc" -eq 2 ] || { echo "BLIND case: expected exit 2, got $rc"; exit 1; }
 
+      # The Caddyfile imports site-deploy's reference proxy block from the path
+      # the box has it at, so validate against the one on site-deploy's master
+      # (the toolkit the box self-updates to), mounted at that same path.
       - name: caddy validate deploy/Caddyfile
         run: |
-          docker run --rm -v "$PWD/deploy:/d:ro" caddy:2 \
+          mkdir -p "$RUNNER_TEMP/site-deploy/host/caddy"
+          curl -fsSL -o "$RUNNER_TEMP/site-deploy/host/caddy/reverse-proxy.caddy" \
+            https://raw.githubusercontent.com/gfrmin/site-deploy/master/host/caddy/reverse-proxy.caddy
+          docker run --rm -v "$PWD/deploy:/d:ro" -v "$RUNNER_TEMP/site-deploy:/srv/site-deploy:ro" caddy:2 \
             sh -c 'mkdir -p /var/log/caddy && caddy validate --adapter caddyfile --config /d/Caddyfile'
 
       - name: systemd units parse
