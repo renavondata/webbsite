@@ -1,0 +1,10 @@
+# Extra apt packages this box needs beyond site-deploy's host/packages.txt.
+# host-converge installs them on diff, from root's verified tree of master.
+#
+# Both are for site-backup@webbsite (deploy/backup-producer.sh -> site-deploy's
+# bin/backup.sh), which refuses to run without them: age encrypts the pg_dump to
+# the operator's public key before it leaves the box, and rclone ships it to R2
+# and reads it back to verify. The box also has a newer hand-installed rclone in
+# /usr/local/bin, which wins on PATH; this line is what a rebuilt box gets.
+age
+rclone
