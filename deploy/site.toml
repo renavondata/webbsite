@@ -91,8 +91,8 @@ backup_timeout = "2h"
 # The producer's pg_dump authenticates by PostgreSQL peer auth, which needs the OS
 # user postgres. site-backup@'s NoNewPrivileges=yes forbids switching user inside
 # the unit (runuser and setpriv both get EPERM), so site-deploy runs the producer
-# as this user in its own sandboxed transient unit instead, fed to `bash -s`
-# because postgres cannot read root's verified tree (gfrmin/site-deploy#44).
+# as this user in its own sandboxed transient unit instead, passing the script's
+# text because postgres cannot read root's verified tree (gfrmin/site-deploy#44).
 backup_user = "postgres"
 
 # health_path stays on the SHALLOW /health on purpose, even though ?deep=1 exists.
