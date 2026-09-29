@@ -88,6 +88,13 @@ probe_external = "webbsite.renavon.com-probe"
 # backup.sh pings /start at the beginning of the run.
 backup_timeout = "2h"
 
+# The producer's pg_dump authenticates by PostgreSQL peer auth, which needs the OS
+# user postgres. site-backup@'s NoNewPrivileges=yes forbids switching user inside
+# the unit (runuser and setpriv both get EPERM), so site-deploy runs the producer
+# as this user in its own sandboxed transient unit instead, passing the script's
+# text because postgres cannot read root's verified tree (gfrmin/site-deploy#44).
+backup_user = "postgres"
+
 # health_path stays on the SHALLOW /health on purpose, even though ?deep=1 exists.
 # This gate answers "did the new code boot and start serving", which is the
 # deploy's business. ?deep=1 also asserts the data is fresh -- a true and useful
