@@ -11,12 +11,13 @@
 # `live` must exist on the monitoring instance, be unpaused, and have a channel.
 #
 # name | kind | timeout or schedule | grace | status | pinged by
-webbsite-refresh    | cron   | daily              | 6h   | live    | webbsite-refresh.service via HC_URL (+ -failed.service on failure)
-webbsite-probe      | simple | 300s               | 600s | pending | site-probe@webbsite.timer (site-deploy); pending that toolkit
-webbsite-deploy     | simple | 600s               | 900s | pending | site-deploy@webbsite.service heartbeat; pending that toolkit
-webbsite-invariants | cron   | daily 04:30 UTC    | 6h   | live    | webbsite-invariants.timer via HC_INVARIANTS_URL; armed 2026-09-17
-webbsite-cf-drift   | cron   | daily              | 6h   | planned | cf-drift@webbsite.timer (Phase 4)
-webbsite-backup     | cron   | weekly Sun 03:30   | 1d   | planned | site-backup@webbsite.timer (Phase 5)
+webbsite-refresh           | cron   | daily           | 6h    | live | webbsite-refresh.service via HC_URL (+ -failed.service on failure)
+webbsite.renavon.com-probe | simple | 300s            | 600s  | live | the operator's external probe runner (site.toml probe_external); no on-box probe
+webbsite-deploy            | simple | 600s            | 900s  | live | site-deploy@webbsite.service heartbeat via HEALTHCHECKS_DEPLOY_URL (env)
+webbsite-invariants        | cron   | daily 04:30 UTC | 6h    | live | webbsite-invariants.timer via HC_INVARIANTS_URL; armed 2026-09-17
+webbsite-cf-drift          | simple | 86400s          | 6h    | live | cf-drift@webbsite.timer (daily dry run) via HEALTHCHECKS_CF_DRIFT_URL (cf-env)
+webbsite-backup            | simple | 86400s          | 4h    | live | site-backup@webbsite.timer (daily) via HEALTHCHECKS_BACKUP_URL (backup-env); grace > backup_timeout (2h)
+webbsite-checks-armed      | simple | 900s            | 1800s | live | site-checks-armed@webbsite.timer via HEALTHCHECKS_ARMED_URL (ops-env); asserts the rows above
 #
 # Composition (borrowed from the fleet): the instance canary asks "can the
 # monitoring instance still ALERT?"; its checks-armed sweep asks "is each

@@ -15,8 +15,6 @@ env           CF_ZONE_ID              required  site-deploy cf-purge.sh (non-sec
 env           CF_CACHE_PURGE_TOKEN    required  site-deploy cf-purge.sh; unset = 30-day stale HTML after a deploy
 env           SENTRY_DSN              optional  webbsite/__init__.py; unset = errors go nowhere
 env           SENTRY_ENVIRONMENT      optional  webbsite/config.py (default: production)
-env           PROBE_URL               optional  site-deploy health-probe.sh; unset = THIS SITE IS UNPROBED
-env           HEALTHCHECKS_PROBE_URL  optional  site-deploy health-probe.sh (the webbsite-probe check)
 env           HEALTHCHECKS_DEPLOY_URL optional  site-deploy auto-deploy.sh heartbeat (the webbsite-deploy check)
 env           FLASK_ENV               optional  legacy; harmless
 env           PORT                    optional  legacy Render knob; the unit passes --bind explicitly
@@ -33,3 +31,20 @@ refresh-env   SENTRY_ENVIRONMENT      optional  scripts/refresh/refresh.py
 ops-env       HC_API_KEY              required  scripts/assert_box.py (read-only Healthchecks API key: asserts the checks in checks.txt exist, are unpaused and have a channel)
 ops-env       HC_API_URL              required  scripts/assert_box.py (the operator's Healthchecks-compatible API base URL; no default, since a default would bake operator infrastructure into this public repo)
 ops-env       HC_INVARIANTS_URL       required  scripts/assert_box.py + webbsite-invariants.service (the webbsite-invariants check); unset = the invariants job reports to nobody
+ops-env       HEALTHCHECKS_API_URL    required  site-deploy checks-armed.sh (site-checks-armed@webbsite): the alarm-armed sweep
+ops-env       HEALTHCHECKS_API_KEY    required  site-deploy checks-armed.sh; also how it verifies the EXTERNAL probe (site.toml probe_external), so unset = an unverified probe
+ops-env       HEALTHCHECKS_SWEEP_TAG  required  site-deploy checks-armed.sh (every check tagged with it is held to not-paused, not-stale)
+ops-env       HEALTHCHECKS_EXPECTED_MIN required site-deploy checks-armed.sh (a floor, so an empty sweep can never pass; = the rows in checks.txt)
+ops-env       HEALTHCHECKS_ARMED_URL  required  site-deploy checks-armed.sh (the webbsite-checks-armed check)
+cf-env        CF_CONFIG_TOKEN         required  site-deploy cf-converge@/cf-drift@ (single-zone token: Zone Read + WAF + Cache Settings)
+cf-env        HEALTHCHECKS_CF_DRIFT_URL optional site-deploy cf-converge-run.sh --dry-run (the webbsite-cf-drift check); unset = drift only logged
+backup-env    BACKUP_AGE_RECIPIENT    required  site-deploy backup.sh (the operator's age PUBLIC key; the box cannot decrypt its own backups)
+backup-env    BACKUP_RCLONE_DEST      required  site-deploy backup.sh (<remote>:<bucket>/<prefix>)
+backup-env    BACKUP_KEEP_LAST        optional  site-deploy backup.sh (default 14)
+backup-env    HEALTHCHECKS_BACKUP_URL optional  site-deploy backup.sh (the webbsite-backup check); unset = a backup that stops silently
+backup-env    RCLONE_CONFIG_R2_TYPE   required  rclone, the `r2` remote defined in env so there is no rclone.conf to drift
+backup-env    RCLONE_CONFIG_R2_PROVIDER required rclone
+backup-env    RCLONE_CONFIG_R2_ENDPOINT required rclone
+backup-env    RCLONE_CONFIG_R2_NO_CHECK_BUCKET required rclone (the token is bucket-scoped and cannot create buckets)
+backup-env    RCLONE_CONFIG_R2_ACCESS_KEY_ID required rclone (bucket-scoped WRITE token; root-only file, never in gunicorn's env)
+backup-env    RCLONE_CONFIG_R2_SECRET_ACCESS_KEY required rclone
