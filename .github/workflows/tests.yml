@@ -100,7 +100,7 @@ jobs:
 
       - name: systemd units parse
         run: |
-          for u in deploy/systemd/*.service deploy/systemd/*.timer deploy/systemd/caddy.service.d/*.conf; do
+          for u in deploy/systemd/*.service deploy/systemd/*.timer deploy/systemd/caddy.service.d/*.conf deploy/systemd/site-backup@webbsite.timer.d/*.conf; do
             # Ini shape only: every non-comment line is a [Section] or Key=Value.
             if grep -vE '^\s*(#|;|$)|^\[[A-Za-z]+\]$|^[A-Za-z]+=' "$u"; then
               echo "$u: malformed line(s) above"; exit 1
