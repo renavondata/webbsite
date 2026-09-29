@@ -52,6 +52,7 @@ deploy/systemd/webbsite-refresh-failed.service   /etc/systemd/system/webbsite-re
 deploy/systemd/webbsite-invariants.service       /etc/systemd/system/webbsite-invariants.service
 deploy/systemd/webbsite-invariants.timer         /etc/systemd/system/webbsite-invariants.timer
 deploy/systemd/caddy.service.d/override.conf     /etc/systemd/system/caddy.service.d/override.conf
+deploy/systemd/site-backup@webbsite.timer.d/schedule.conf /etc/systemd/system/site-backup@webbsite.timer.d/schedule.conf
 "
 
 install_file() {   # <src> <dst>; echoes "changed" when it wrote
