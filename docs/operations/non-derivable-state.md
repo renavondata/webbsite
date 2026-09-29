@@ -62,7 +62,7 @@ name exists; the daily invariants job runs it.
 | `hkdata/webbsite-refresh/` | the daily feed: 8 Parquet + `_manifest.json`, **overwritten daily** | renavon re-exports (`dbt build --select tag:webbsite`) |
 | `hkdata/webbsite-backup/enigma-render-final-20260524/` | the base `pg_dump -Fd` of the frozen archive | canonical Google Drive release |
 | `hkdata/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst` | the archived ASP crawl the fidelity tests compare against | not regenerable (the ASP site is gone) |
-| `webbsite-backups/` (Phase 5) | weekly age-encrypted `pg_dump -Fc`, bucket-scoped writer token | — |
+| operator R2 bucket, `backups/webbsite/` | daily age-encrypted `pg_dump -Fc` (site-deploy `site-backup@`), bucket-scoped writer token, newest 7 kept | — |
 
 Read token: `webbsite-refresh-loader-readonly` (keyring `WEBBSITE_REFRESH_R2_*`).
 
@@ -73,7 +73,7 @@ Read token: `webbsite-refresh-loader-readonly` (keyring `WEBBSITE_REFRESH_R2_*`)
 every tick because a restore reverts them silently) +
 the latest feed replayed by `scripts/refresh/refresh.py` = the live `enigma`
 database. The post-freeze rows exist in this Postgres and in renavon's
-warehouse; the weekly backup (Phase 5) is belt-and-braces. Roles and grants
+warehouse; the daily backup is belt-and-braces. Roles and grants
 (`webbsite`, `webbsite_refresh` with no DELETE/TRUNCATE/DDL) are the runbook
 in `deploy/README.md`; `tests/refresh/schema_fixture.sql` carries the same
 grants and the ladder proves them.

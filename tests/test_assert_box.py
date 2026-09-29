@@ -70,8 +70,8 @@ def run():
           ab.same_sql("x / NULLIF(y, 0)", "x / y"), False)
 
     rows = ab.parse_checks(ab.CHECKS_TXT.read_text())
-    check("checks.txt parses 6 rows", len(rows), 6)
-    check("refresh is live", [r["name"] for r in rows if r["status"] == "live"], ["webbsite-refresh", "webbsite-invariants"])
+    check("checks.txt parses 7 rows", len(rows), 7)
+    check("every row is live", [r["name"] for r in rows if r["status"] != "live"], [])
 
     expected = [{"name": "a", "status": "live"}, {"name": "b", "status": "pending"}, {"name": "c", "status": "live"}, {"name": "d", "status": "live"}]
     live = [

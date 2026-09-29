@@ -11,8 +11,8 @@ Asserts the things a test suite cannot see and a deploy does not check:
              live (they are CREATE OR REPLACE, so a restore silently reverts them)
   disk       the root filesystem is under 80% (the 72 GB database has to fit)
   env        deploy/env-check.sh passes (every declared name present, no undeclared name)
-  backup     /var/lib/webbsite/backup-last-success is younger than 8 days,
-             once /etc/webbsite/backup-env exists (Phase 5)
+  backup     site-deploy's backup-last-success stamp is younger than 2 days
+             (the backup is daily), once /etc/webbsite/backup-env exists
   routes     tests/check_all_routes.py against the origin renders data on every page
   checks     every check in deploy/checks.txt marked `live` exists on the operator's
              Healthchecks instance, is not paused, and has a notification channel
@@ -55,9 +55,11 @@ CHECKS_TXT = ROOT / "deploy" / "checks.txt"
 ENV_CHECK = ROOT / "deploy" / "env-check.sh"
 ROUTE_CHECK = ROOT / "tests" / "check_all_routes.py"
 BACKUP_ENV = Path("/etc/webbsite/backup-env")
-BACKUP_MARKER = Path("/var/lib/webbsite/backup-last-success")
+# Written by site-deploy bin/backup.sh (root) after a round-trip-verified upload,
+# in root's own store, not the app's /var/lib/webbsite (gfrmin/site-deploy#31).
+BACKUP_MARKER = Path("/var/lib/site-deploy-root/backup/webbsite/backup-last-success")
 DISK_LIMIT_PCT = 80
-BACKUP_MAX_AGE_S = 8 * 86400
+BACKUP_MAX_AGE_S = 2 * 86400   # daily timer + one missed run
 
 CLEAN, FAILING, BLIND = 0, 1, 2
 
@@ -296,7 +298,7 @@ def assert_backup(rep: Report):
         rep.fail("backup: configured but no successful backup has ever been recorded")
         return
     age = time.time() - BACKUP_MARKER.stat().st_mtime
-    (rep.ok if age < BACKUP_MAX_AGE_S else rep.fail)(f"backup: last success {age / 86400:.1f} days ago (limit 8)")
+    (rep.ok if age < BACKUP_MAX_AGE_S else rep.fail)(f"backup: last success {age / 86400:.1f} days ago (limit {BACKUP_MAX_AGE_S / 86400:.0f})")
 
 
 def assert_routes(rep: Report):
