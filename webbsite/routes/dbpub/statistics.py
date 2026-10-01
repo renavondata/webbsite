@@ -8251,32 +8251,47 @@ def orgdata():
             (person_id,),
         )
 
-    # For each equity type, get detailed stock listing and navigation data
-    equity_details = []
-    for equity in equity_types:
-        issue_id = equity["i"]
-
-        # Get stock listings for this issue (equivalent to HKlistings)
-        listings = execute_query(
+    # For each equity type, get detailed stock listing and navigation data.
+    # Two queries for all of them: it was five per issue (Sentry WEBBSITE-2M).
+    issue_ids = list(dict.fromkeys(e["i"] for e in equity_types))
+    listings_by_issue, flags_by_issue = {}, {}
+    if issue_ids:
+        # Stock listings per issue (equivalent to HKlistings)
+        for row in execute_query(
             """
             SELECT sl.*, l.shortname as exchange_name
             FROM enigma.stocklistings sl
             JOIN enigma.listings l ON sl.stockExID = l.stockExID
             WHERE sl.stockExID IN (1, 20, 22, 23, 38, 71)
-              AND sl.issueid = %s
-            ORDER BY sl.firstTradeDate
+              AND sl.issueid = ANY(%s)
+            ORDER BY sl.issueid, sl.firstTradeDate
         """,
-            (issue_id,),
-        )
+            (issue_ids,),
+        ):
+            listings_by_issue.setdefault(row["issueid"], []).append(row)
+        # Security type (navigation logic) and which data pages exist
+        flags_by_issue = {
+            row["id1"]: row
+            for row in execute_query(
+                """
+                SELECT i.ID1, i.typeID,
+                       EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = i.ID1) AS has_outstanding,
+                       EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = i.ID1) AS has_short,
+                       EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = i.ID1) AS has_sdi
+                FROM enigma.issue i
+                WHERE i.ID1 = ANY(%s)
+            """,
+                (issue_ids,),
+            )
+        }
 
-        # Get security type for navigation logic
-        sec_type_result = execute_query(
-            """
-            SELECT typeID FROM enigma.issue WHERE ID1 = %s
-        """,
-            (issue_id,),
-        )
-        sec_type = sec_type_result[0]["typeid"] if sec_type_result else None
+    equity_details = []
+    for equity in equity_types:
+        issue_id = equity["i"]
+        # A copy per equity row: the stock codes are formatted in place below.
+        listings = [dict(r) for r in listings_by_issue.get(issue_id, [])]
+        flags = flags_by_issue.get(issue_id, {})
+        sec_type = flags.get("typeid")
 
         # Determine navigation flags
         has_hk_listed = len(listings) > 0
@@ -8286,26 +8301,8 @@ def orgdata():
 
         # Check for buybacks (not for rights/convertible bonds)
         has_buybacks = has_hk_listed and sec_type not in (2, 41)
-
-        # Check for outstanding shares data
-        outstanding_result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.issuedshares WHERE issueid = %s) as has_data
-        """,
-            (issue_id,),
-        )
-        has_outstanding = (
-            outstanding_result[0]["has_data"] if outstanding_result else False
-        )
-
-        # Check for short selling data
-        short_result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.sfcshort WHERE issueid = %s) as has_data
-        """,
-            (issue_id,),
-        )
-        has_short = short_result[0]["has_data"] if short_result else False
+        has_outstanding = flags.get("has_outstanding", False)
+        has_short = flags.get("has_short", False)
 
         # Check for CCASS (after Jun 26 2007, not rights/convertible/notes)
         from datetime import date as date_type
@@ -8315,14 +8312,7 @@ def orgdata():
             if delist_date is None or delist_date >= date_type(2007, 6, 26):
                 ccass_on = True
 
-        # Check for SDI dealings
-        sdi_result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.sdi WHERE issueid = %s) as has_data
-        """,
-            (issue_id,),
-        )
-        has_sdi = sdi_result[0]["has_data"] if sdi_result else False
+        has_sdi = flags.get("has_sdi", False)
 
         # Format stock codes (5 digits, zero-padded)
         for listing in listings:
@@ -8425,19 +8415,10 @@ def orgdata():
             (person_id,),
         )
 
-    # Check if ever listed (for holders section)
+    # Check if ever listed (for holders section), and the navigation menu
+    # visibility checks (orgBar equivalent): one query, it was ten in a row
+    # (Sentry WEBBSITE-2Q).
     ever_listed = False
-    if person_id > 0 and org_data:
-        ever_result = execute_query(
-            """
-            SELECT enigma.everlistco(%s) as ever_listed
-        """,
-            (person_id,),
-        )
-        if ever_result:
-            ever_listed = ever_result[0]["ever_listed"]
-
-    # Navigation menu visibility checks (orgBar equivalent)
     nav_has_directorships = False
     nav_has_pay = False
     nav_has_advisers = False
@@ -8449,89 +8430,37 @@ def orgdata():
     ccass_part_id = None
 
     if person_id > 0:
-        # Check for directorships (shows Officers + Overlaps)
-        result = execute_query(
+        p = person_id
+        nav = execute_query(
             """
-            SELECT EXISTS(SELECT 1 FROM enigma.directorships WHERE company = %s) as has_data
+            SELECT
+                CASE WHEN %s THEN enigma.everlistco(%s) END AS ever_listed,
+                -- Directorships (shows Officers + Overlaps)
+                EXISTS(SELECT 1 FROM enigma.directorships WHERE company = %s) AS has_directorships,
+                EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) AS has_pay,
+                EXISTS(SELECT 1 FROM enigma.adviserships WHERE company = %s) AS has_advisers,
+                -- Acts as adviser
+                EXISTS(SELECT 1 FROM enigma.adviserships WHERE adviser = %s) AS has_adviserships,
+                EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) AS has_sfc_licenses,
+                (SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1) AS partid,
+                EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) AS has_documents,
+                EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) AS has_stories,
+                EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) AS has_lir_team
         """,
-            (person_id,),
-        )
-        nav_has_directorships = result[0]["has_data"] if result else False
-
-        # Check for pay records
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE docTypeID = 0 AND pay AND orgid = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_pay = result[0]["has_data"] if result else False
-
-        # Check for advisers
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE company = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_advisers = result[0]["has_data"] if result else False
-
-        # Check for adviserships (acts as adviser)
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.adviserships WHERE adviser = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_adviserships = result[0]["has_data"] if result else False
-
-        # Check for SFC licenses
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.olicrec WHERE orgid = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_sfc_licenses = result[0]["has_data"] if result else False
-
-        # Check for CCASS participant
-        result = execute_query(
-            """
-            SELECT partID FROM ccass.participants WHERE personid = %s LIMIT 1
-        """,
-            (person_id,),
-        )
-        if result and result[0]["partid"]:
-            ccass_part_id = result[0]["partid"]
-
-        # Check for documents
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.documents WHERE orgid = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_documents = result[0]["has_data"] if result else False
-
-        # Check for stories
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.personstories WHERE personid = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_stories = result[0]["has_data"] if result else False
-
-        # Check for LIR team or is HKEX (personid 9643)
-        result = execute_query(
-            """
-            SELECT EXISTS(SELECT 1 FROM enigma.lirorgteam WHERE orgid = %s) as has_data
-        """,
-            (person_id,),
-        )
-        nav_has_lir_team = result[0]["has_data"] if result else False
-        if person_id == 9643:  # HKEX, regulated by SFC
-            nav_has_lir_team = True
+            (bool(org_data), p, p, p, p, p, p, p, p, p, p),
+        )[0]
+        ever_listed = nav["ever_listed"] if org_data else False
+        nav_has_directorships = nav["has_directorships"]
+        nav_has_pay = nav["has_pay"]
+        nav_has_advisers = nav["has_advisers"]
+        nav_has_adviserships = nav["has_adviserships"]
+        nav_has_sfc_licenses = nav["has_sfc_licenses"]
+        if nav["partid"]:
+            ccass_part_id = nav["partid"]
+        nav_has_documents = nav["has_documents"]
+        nav_has_stories = nav["has_stories"]
+        # LIR team, or HKEX (personid 9643), regulated by SFC
+        nav_has_lir_team = nav["has_lir_team"] or person_id == 9643
 
     # Web sites data
     websites = []

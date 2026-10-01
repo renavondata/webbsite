@@ -288,57 +288,56 @@ def sfc_hist_firm():
             # Add 2003-03-31
             dates.append(dt_date(2003, 3, 31))
 
-        # Query licensee counts for each date
+        # Licensee counts at every date in one query (it was one per date:
+        # ~280 round-trips for the monthly view, Sentry WEBBSITE-2K). The
+        # firm's rows are read once: re-reading them per date took the
+        # largest firm (12k rows, monthly) 3.0 s on prod, this 1.0 s.
+        act_filter = "AND actType = %s" if act > 0 else ""
+        try:
+            counts = {
+                r["d"]: r
+                for r in execute_query(
+                    f"""
+                    WITH firm AS MATERIALIZED (
+                        SELECT DISTINCT staffid, role, startDate, endDate
+                        FROM enigma.licrec
+                        WHERE orgid = %s
+                          {act_filter}
+                    )
+                    SELECT s.d, COUNT(DISTINCT t.staffid) AS total,
+                           COALESCE(SUM(CASE WHEN t.role = 1 THEN 1 ELSE 0 END), 0) AS ros
+                    FROM unnest(CAST(%s AS date[])) AS s(d)
+                    LEFT JOIN LATERAL (
+                        SELECT DISTINCT staffid, role
+                        FROM firm
+                        WHERE (endDate IS NULL OR endDate > s.d)
+                          AND (startDate IS NULL OR startDate <= s.d)
+                    ) t ON TRUE
+                    GROUP BY s.d
+                """,
+                    (person_id, act, dates) if act > 0 else (person_id, dates),
+                )
+            }
+        except Exception as ex:
+            current_app.logger.error(f"Error querying SFC hist firm: {ex}")
+            counts = {}
+
         for snap_date in dates:
-            try:
-                if act > 0:
-                    result = execute_query(
-                        """
-                        SELECT COUNT(DISTINCT staffid) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
-                        FROM (SELECT DISTINCT staffid, role
-                              FROM enigma.licrec
-                              WHERE orgid = %s
-                                AND actType = %s
-                                AND (endDate IS NULL OR endDate > %s)
-                                AND (startDate IS NULL OR startDate <= %s)
-                        ) t
-                    """,
-                        (person_id, act, snap_date, snap_date),
-                    )
-                else:
-                    result = execute_query(
-                        """
-                        SELECT COUNT(DISTINCT staffid) AS total, COALESCE(SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END), 0) AS ROs
-                        FROM (SELECT DISTINCT staffid, role
-                              FROM enigma.licrec
-                              WHERE orgid = %s
-                                AND (endDate IS NULL OR endDate > %s)
-                                AND (startDate IS NULL OR startDate <= %s)
-                        ) t
-                    """,
-                        (person_id, snap_date, snap_date),
-                    )
-
-                if result:
-                    total = result[0]["total"] or 0
-                    ros = result[0]["ros"] or 0
-                    reps = total - ros
-                    rep_ratio = reps / total if total > 0 else 0
-
-                    # Only include if not leading zeros
-                    if total > 0 or not history:
-                        history.append(
-                            {
-                                "d": snap_date,
-                                "ros": ros,
-                                "reps": reps,
-                                "total": total,
-                                "rep_ratio": rep_ratio,
-                            }
-                        )
-            except Exception as ex:
-                current_app.logger.error(
-                    f"Error querying SFC hist firm for {snap_date}: {ex}"
+            if snap_date not in counts:
+                continue
+            total = counts[snap_date]["total"] or 0
+            ros = counts[snap_date]["ros"] or 0
+            reps = total - ros
+            # Only include if not leading zeros
+            if total > 0 or not history:
+                history.append(
+                    {
+                        "d": snap_date,
+                        "ros": ros,
+                        "reps": reps,
+                        "total": total,
+                        "rep_ratio": reps / total if total > 0 else 0,
+                    }
                 )
 
     return render_template(

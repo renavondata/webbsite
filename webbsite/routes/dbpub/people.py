@@ -3,7 +3,7 @@ People and organization lookup
 """
 
 from flask import Blueprint, render_template, request, current_app
-from webbsite.db import execute_query
+from webbsite.db import execute_query, fetch_generations
 from webbsite.asp_helpers import get_int
 
 bp = Blueprint("dbpub_people", __name__)
@@ -365,125 +365,81 @@ def _calculate_age(yob, mob, dob, yod, mond, dod):
         return f"{diff_y} years"
 
 
-def _build_ascendants_tree(person_id, max_gen, level=0, seen=None):
-    """Recursively build ascendants (parents, grandparents) tree"""
-    if seen is None:
-        seen = set()
+# Parents of each of %s (rel2 is child, rel1 is parent when relid=0).
+_PARENTS_SQL = """
+    SELECT
+        r.rel2 as of_id,
+        r.rel1 as parent_id,
+        CASE
+            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
+            ELSE p.name1
+        END as name,
+        p.sex,
+        p.yob, p.mob, p.dob,
+        p.yod, p.mond, p.dod
+    FROM enigma.relatives r
+    JOIN enigma.people p ON r.rel1 = p.personid
+    WHERE r.relid = 0 AND r.rel2 = ANY(%s)
+    ORDER BY r.rel2, p.sex DESC, p.name1, p.name2
+"""
 
-    if person_id in seen:
+# Children of each of %s (rel1 is parent, rel2 is child when relid=0).
+_CHILDREN_SQL = """
+    SELECT
+        r.rel1 as of_id,
+        r.rel2 as child_id,
+        CASE
+            WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
+            ELSE p.name1
+        END as name,
+        p.yob, p.mob, p.dob,
+        p.yod, p.mond, p.dod
+    FROM enigma.relatives r
+    JOIN enigma.people p ON r.rel2 = p.personid
+    WHERE r.relid = 0 AND r.rel1 = ANY(%s)
+    ORDER BY r.rel1, p.yob, p.mob, p.name1, p.name2
+"""
+
+
+def _lineal_tree(edges, person_id, max_gen, id_key, sub_key, level, seen):
+    """The ASP's recursive tree walk, over edges prefetched one generation per
+    query (it ran one query per person, Sentry WEBBSITE-2G/2J): a person met
+    again is marked already_seen and not expanded (seen is shared, in walk
+    order)."""
+    if person_id in seen or (max_gen > 0 and level >= max_gen):
         return []
-
-    if max_gen > 0 and level >= max_gen:
-        return []
-
     seen.add(person_id)
+    result = []
+    for row in edges.get(person_id, []):
+        node = {k: v for k, v in row.items() if k != "of_id"}
+        node["born"] = _format_partial_date(row["yob"], row["mob"], row["dob"])
+        node["died"] = _format_partial_date(row["yod"], row["mond"], row["dod"])
+        node["level"] = level
+        node["already_seen"] = row[id_key] in seen
+        node[sub_key] = ([] if node["already_seen"] else
+                         _lineal_tree(edges, row[id_key], max_gen, id_key, sub_key, level + 1, seen))
+        result.append(node)
+    return result
 
-    # Get parents (rel2 is child, rel1 is parent when relid=0)
-    sql = """
-        SELECT
-            r.rel1 as parent_id,
-            CASE
-                WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                ELSE p.name1
-            END as name,
-            p.sex,
-            p.yob, p.mob, p.dob,
-            p.yod, p.mond, p.dod
-        FROM enigma.relatives r
-        JOIN enigma.people p ON r.rel1 = p.personid
-        WHERE r.relid = 0 AND r.rel2 = %s
-        ORDER BY p.sex DESC, p.name1, p.name2
-    """
 
+def _build_ascendants_tree(person_id, max_gen):
+    """Ascendants (parents, grandparents) tree"""
     try:
-        parents = execute_query(sql, (person_id,))
-        result = []
-
-        for parent in parents:
-            parent_dict = dict(parent)
-            parent_dict["born"] = _format_partial_date(
-                parent["yob"], parent["mob"], parent["dob"]
-            )
-            parent_dict["died"] = _format_partial_date(
-                parent["yod"], parent["mond"], parent["dod"]
-            )
-            parent_dict["level"] = level
-            parent_dict["already_seen"] = parent["parent_id"] in seen
-
-            # Recursively get ancestors
-            if not parent_dict["already_seen"]:
-                parent_dict["ancestors"] = _build_ascendants_tree(
-                    parent["parent_id"], max_gen, level + 1, seen
-                )
-            else:
-                parent_dict["ancestors"] = []
-
-            result.append(parent_dict)
-
-        return result
+        edges = fetch_generations(person_id, _PARENTS_SQL, "of_id", "parent_id", max_gen or None)
     except Exception as ex:
         current_app.logger.error(f"Error building ascendants tree: {ex}")
         return []
+    return _lineal_tree(edges, person_id, max_gen, "parent_id", "ancestors", 0, set())
 
 
-def _build_descendants_tree(person_id, max_gen, level=0, seen=None):
-    """Recursively build descendants (children, grandchildren) tree"""
-    if seen is None:
-        seen = set()
-
-    if person_id in seen:
-        return []
-
-    if max_gen > 0 and level >= max_gen:
-        return []
-
-    seen.add(person_id)
-
-    # Get children (rel1 is parent, rel2 is child when relid=0)
-    sql = """
-        SELECT
-            r.rel2 as child_id,
-            CASE
-                WHEN p.name2 IS NOT NULL THEN p.name1 || ', ' || p.name2
-                ELSE p.name1
-            END as name,
-            p.yob, p.mob, p.dob,
-            p.yod, p.mond, p.dod
-        FROM enigma.relatives r
-        JOIN enigma.people p ON r.rel2 = p.personid
-        WHERE r.relid = 0 AND r.rel1 = %s
-        ORDER BY p.yob, p.mob, p.name1, p.name2
-    """
-
+def _build_descendants_tree(person_id, max_gen):
+    """Descendants (children, grandchildren) tree"""
     try:
-        children = execute_query(sql, (person_id,))
-        result = []
-
-        for child in children:
-            child_dict = dict(child)
-            child_dict["born"] = _format_partial_date(
-                child["yob"], child["mob"], child["dob"]
-            )
-            child_dict["died"] = _format_partial_date(
-                child["yod"], child["mond"], child["dod"]
-            )
-            child_dict["level"] = level
-            child_dict["already_seen"] = child["child_id"] in seen
-
-            # Recursively get descendants
-            if not child_dict["already_seen"]:
-                child_dict["descendants"] = _build_descendants_tree(
-                    child["child_id"], max_gen, level + 1, seen
-                )
-            else:
-                child_dict["descendants"] = []
-
-            result.append(child_dict)
-
-        return result
+        edges = fetch_generations(person_id, _CHILDREN_SQL, "of_id", "child_id", max_gen or None)
     except Exception as ex:
         current_app.logger.error(f"Error building descendants tree: {ex}")
         return []
+    return _lineal_tree(edges, person_id, max_gen, "child_id", "descendants", 0, set())
 
 
 def _purl(s):
