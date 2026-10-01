@@ -9,6 +9,9 @@ from flask import current_app, g
 import logging
 import threading
 
+import psycopg2
+import psycopg2.errors
+
 logger = logging.getLogger(__name__)
 
 # Global SQLAlchemy engine (initialized in init_app)
@@ -39,6 +42,51 @@ def _mark_failed(e):
     return e
 
 
+# Server errors that mean the database went away, not that the query failed:
+# class 08 (connection exception) and 57P01-57P03 (admin or crash shutdown,
+# "the database system is shutting down").
+_SERVER_GONE = (
+    psycopg2.errors.ConnectionException,
+    psycopg2.errors.AdminShutdown,
+    psycopg2.errors.CrashShutdown,
+    psycopg2.errors.CannotConnectNow,
+)
+
+
+def _connection_lost(e):
+    """Whether a failed query failed because the database went away.
+
+    A restart mid-request fails the query in flight ("SSL connection has been
+    closed unexpectedly") and then the lazy reconnect ("Connection refused"):
+    both are the outage, not the route (WEBBSITE-2X, 2Y beside 2W). psycopg2
+    raises the bare OperationalError only client-side, for a dead socket; a
+    server error has a SQLSTATE subclass, and a timeout (QueryCanceled) is one.
+    """
+    orig = getattr(e, "orig", None)
+    return getattr(e, "connection_invalidated", False) or (
+        type(orig) is psycopg2.OperationalError or isinstance(orig, _SERVER_GONE)
+    )
+
+
+def _mark_outage(e):
+    """Record a failure that is the database's, not the route's: Sentry's
+    before_send files every event caused by it under one outage issue."""
+    g.db_connect_failed = [*g.get("db_connect_failed", []), e]
+
+
+def _log_failure(e, label, sql):
+    """Mark a failed query and log it once: as the outage when the connection
+    was lost (extra db_outage, one Sentry issue for all routes), else as a SQL
+    error (grouped per route)."""
+    _mark_failed(e)
+    if _connection_lost(e):
+        _mark_outage(e)
+        logger.error("Lost the database connection%s: %s\nSQL Query: %s", label, e, sql,
+                     exc_info=True, extra={"db_outage": True})
+    else:
+        logger.error("SQL Error%s: %s\nSQL Query: %s", label, e, sql, exc_info=True)
+
+
 def _connect(engine):
     """engine.connect(), with a failure marked, logged once as a connection
     failure (Sentry groups those as one outage, not per route) and re-raised."""
@@ -46,8 +94,9 @@ def _connect(engine):
         return engine.connect()
     except Exception as e:
         _mark_failed(e)
-        g.db_connect_failed = [*g.get("db_connect_failed", []), e]
-        logger.error(f"Failed to get connection from pool: {e}", exc_info=True)
+        _mark_outage(e)
+        logger.error(f"Failed to get connection from pool: {e}", exc_info=True,
+                     extra={"db_outage": True})
         raise
 
 
@@ -146,8 +195,7 @@ def execute_query(sql, params=None, timeout_s=None):
         # acceptable here: every value comes from a public URL of a login-free archive.
         # One record per failure: the logging integration turns each ERROR line
         # into its own Sentry issue, so three lines made three issues.
-        _mark_failed(e)
-        logger.error("SQL Error: %s\nSQL Query: %s", e, sql, exc_info=True)
+        _log_failure(e, "", sql)
 
         # Rollback on error
         try:
@@ -215,8 +263,7 @@ def execute_scalar(sql, params=None):
         return row[0] if row else None
     except Exception as e:
         # str(e) includes the bound parameters; see execute_query.
-        _mark_failed(e)
-        logger.error("SQL Error (scalar): %s\nSQL Query: %s", e, sql, exc_info=True)
+        _log_failure(e, " (scalar)", sql)
 
         # Rollback on error
         try:
@@ -242,8 +289,7 @@ def execute_scalar(sql, params=None):
 def _failure(db, e, sql):
     """db.py's handling of a failed query, as execute_query does it: marked,
     logged once, rolled back. Returns the exception to raise from e."""
-    _mark_failed(e)
-    logger.error("SQL Error (stream): %s\nSQL Query: %s", e, sql, exc_info=True)
+    _log_failure(e, " (stream)", sql)
     try:
         db.rollback()
     except Exception:

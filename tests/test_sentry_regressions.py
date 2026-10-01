@@ -48,6 +48,9 @@ Pins:
  17. portchg.asp / cholder.asp take a participant's latest parthold row per
      issue by a loose index scan, not DISTINCT ON over its whole history
      (WEBBSITE-2E), with every placeholder bound.
+ 18. boardcomp.asp, DirsPerListcoHKdstn.asp and advbyrole.asp give their
+     whole-market query the 25 s budget (WEBBSITE-2V, 2T, 2H); a connection
+     lost mid-query is the outage issue too (WEBBSITE-2X, 2Y), see 15.
  16. the whole-market pages that timed out cold (incHKannual, incHKmonth,
      listed.asp; incHKsurvive shares their shape) are computed once per data
      watermark and served from disk after: a repeat makes no heavy query, each
@@ -972,6 +975,41 @@ def run():
                  + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
         check("sentry: query failures on two routes stay two issues",
               (len(timed), len({str(f) for f in timed})), (2, 2))
+
+        # A connection lost MID-query is the same outage: the 06:32 restart on
+        # 2026-10-01 filed WEBBSITE-2W (connect refused) plus 2X ("SSL connection
+        # has been closed unexpectedly") and 2Y (the lazy reconnect refused),
+        # both per route. A SQLSTATE-bearing shutdown error counts too.
+        import psycopg2
+        import psycopg2.errors
+        from sqlalchemy.exc import OperationalError as SAOperationalError
+
+        def _losing(orig):
+            class _Lost:
+                def execute(self, *a, **k):
+                    raise SAOperationalError("SELECT 1", {}, orig)
+
+                def rollback(self):
+                    pass
+            return lambda: _Lost()
+
+        lost = []
+        for orig in (psycopg2.OperationalError("SSL connection has been closed unexpectedly"),
+                     psycopg2.errors.AdminShutdown("terminating connection due to "
+                                                   "administrator command")):
+            db_module.get_db = _losing(orig)
+            lost += (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                     + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        check("sentry: a connection lost mid-query on two routes is the outage issue",
+              (len(lost), {str(f) for f in lost}),
+              (4, {str(["webbsite.db", "connection-failed"])}))
+        db_module.get_db = _losing(psycopg2.errors.QueryCanceled(
+            "canceling statement due to statement timeout"))
+        canceled = (db_fingerprints("/dbpub/bornyear.asp?y=1957&m=4")[:1]
+                    + db_fingerprints("/dbpub/SFClicensees.asp")[:1])
+        check("sentry: a timeout (an OperationalError subclass) keeps per-route grouping",
+              (len(canceled), len({str(f) for f in canceled}),
+               ["webbsite.db", "connection-failed"] in canceled), (2, 2, False))
         events.clear()
         tagged_client.get("/dbpub/bornyear.asp?y=1957&m=4",
                           headers={"User-Agent": "webbsite-route-check/1 (+deploy/README.md)"})
@@ -1174,6 +1212,29 @@ def run():
                   (True, True, True))
     finally:
         ccass.execute_query = real_ccass
+
+    # 18. the whole-market pages that hit the 8 s default under load
+    # (WEBBSITE-2H, 2T, 2V) run their heavy query with the 25 s budget.
+    from webbsite.routes.dbpub import statistics
+
+    budgets = []
+
+    def rec_budget(sql, params=None, timeout_s=None):
+        budgets.append(timeout_s)
+        if "FROM enigma.roles WHERE" in sql:  # r=99 stands for a one-time role
+            return [{"rolelong": "Role", "onetime": params == (99,)}]
+        return []
+
+    real_stats, real_db = statistics.execute_query, db_module.execute_query
+    statistics.execute_query = db_module.execute_query = rec_budget
+    try:
+        for url in ("/dbpub/boardcomp.asp", "/dbpub/DirsPerListcoHKdstn.asp",
+                    "/dbpub/advbyrole.asp?r=0", "/dbpub/advbyrole.asp?r=99"):
+            budgets.clear()
+            client.get(url)
+            check(f"heavy budget {url}: the main query gets timeout_s=25", 25 in budgets, True)
+    finally:
+        statistics.execute_query, db_module.execute_query = real_stats, real_db
 
     if _failures:
         print("\nFAILED:")

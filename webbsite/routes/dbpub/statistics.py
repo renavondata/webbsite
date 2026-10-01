@@ -524,6 +524,8 @@ def dirs_per_listco_hk():
             ORDER BY numSeats DESC
         """,
             (snapshot_date, snapshot_date, snapshot_date, snapshot_date),
+            # Whole market: timed out once at 8 s under load (WEBBSITE-2T).
+            timeout_s=25,
         )
 
     except Exception as ex:
@@ -2819,7 +2821,7 @@ def advbyrole():
                 GROUP BY o.personid, o.name1
                 ORDER BY {ob}
             """
-            results = execute_query(sql, (from_date, r, from_date, to_date))
+            results = execute_query(sql, (from_date, r, from_date, to_date), timeout_s=25)
         else:
             # Continuing roles: serving during the period
             sql = f"""
@@ -2843,9 +2845,12 @@ def advbyrole():
                 GROUP BY o.personid, o.name1
                 ORDER BY {ob}
             """
+            # Two PL/pgSQL return functions per appointment: up to 6 s warm,
+            # and it hit the 8 s default (WEBBSITE-2H).
             results = execute_query(
                 sql, (from_date, to_date, to_date, from_date, to_date, to_date,
-                      from_date, from_date, r, from_date, from_date)
+                      from_date, from_date, r, from_date, from_date),
+                timeout_s=25,
             )
     except Exception as ex:
         current_app.logger.error(f"Error in advbyrole.asp: {ex}", exc_info=True)
@@ -3457,7 +3462,9 @@ def boardcomp():
     """
 
     try:
-        results = execute_query(sql, (d, d, d, d, d, d, d))
+        # Whole market, 0.6-4.2 s warm; it hit the 8 s default under load
+        # (WEBBSITE-2V).
+        results = execute_query(sql, (d, d, d, d, d, d, d), timeout_s=25)
     except Exception as ex:
         current_app.logger.error(f"Error in boardcomp.asp: {ex}", exc_info=True)
         results = []
