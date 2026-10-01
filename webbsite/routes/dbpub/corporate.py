@@ -4,7 +4,7 @@ Corporate structure - officers, advisers, positions, holders
 
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
-from webbsite.db import execute_query
+from webbsite.db import execute_query, fetch_generations
 from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
@@ -1215,7 +1215,7 @@ def holdings():
     )
 
 
-def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
+def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10, edges=None):
     """
     Recursive function to build holdings tree
 
@@ -1226,38 +1226,43 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
         tree: List to append results to
         org_tracker: Dict mapping personID -> first occurrence index (for cross-holding detection)
         max_depth: Maximum recursion depth (prevents runaway on deep ownership chains)
+        edges: holdings per holder, fetched once at the top: one query per
+            generation, not per holder (Sentry WEBBSITE-2R)
     """
     if level >= max_depth:
         return
+    if edges is None:
+        edges = fetch_generations(
+            person_id,
+            f"""
+            SELECT *,
+                   CASE
+                       WHEN shares IS NULL THEN stake
+                       ELSE shares / NULLIF(
+                               (SELECT outstanding
+                                FROM enigma.issuedshares
+                                WHERE issueid = issue
+                                  AND atdate <= CURRENT_DATE
+                                ORDER BY atdate DESC
+                                LIMIT 1), 0)
+                   END AS stakecomp,
+                   CASE
+                       WHEN incacc = 3 THEN 'U'
+                       WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
+                       WHEN incacc IN (2, 5) THEN TO_CHAR(incdate, 'YYYY-MM')
+                       ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
+                   END AS inc
+            FROM enigma.webholdings3
+            WHERE personid = ANY(%s)
+              AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
+            ORDER BY personid, {ob}
+        """,
+            "personid",
+            "issuer",
+            max_depth - level,
+        )
 
-    holdings = execute_query(
-        f"""
-        SELECT *,
-               CASE
-                   WHEN shares IS NULL THEN stake
-                   ELSE shares / NULLIF(
-                           (SELECT outstanding
-                            FROM enigma.issuedshares
-                            WHERE issueid = issue
-                              AND atdate <= CURRENT_DATE
-                            ORDER BY atdate DESC
-                            LIMIT 1), 0)
-               END AS stakecomp,
-               CASE
-                   WHEN incacc = 3 THEN 'U'
-                   WHEN incacc IN (1, 4) THEN TO_CHAR(incdate, 'YYYY')
-                   WHEN incacc IN (2, 5) THEN TO_CHAR(incdate, 'YYYY-MM')
-                   ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
-               END AS inc
-        FROM enigma.webholdings3
-        WHERE personid = %s
-          AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
-        ORDER BY {ob}
-    """,
-        (person_id,),
-    )
-
-    for holding in holdings:
+    for holding in edges.get(person_id, []):
         issuer_id = holding["issuer"]
 
         # Check if this issuer has been seen before (cross-holding)
@@ -1284,7 +1289,7 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10):
             )
 
             # Recursively get holdings of this issuer
-            _build_holdings_tree(issuer_id, level + 1, ob, tree, org_tracker, max_depth)
+            _build_holdings_tree(issuer_id, level + 1, ob, tree, org_tracker, max_depth, edges)
 
 
 # NOTE: /prices.asp is implemented in quotes.py blueprint, not here

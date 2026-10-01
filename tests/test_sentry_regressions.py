@@ -51,6 +51,9 @@ Pins:
  18. boardcomp.asp, DirsPerListcoHKdstn.asp and advbyrole.asp give their
      whole-market query the 25 s budget (WEBBSITE-2V, 2T, 2H); a connection
      lost mid-query is the outage issue too (WEBBSITE-2X, 2Y), see 15.
+ 19. tree walks (natperson relatives, holdings) fetch one generation per
+     query, SFChistfirm one query for all its dates, and orgdata's per-issue
+     and navigation checks no longer run once per issue (Sentry N+1 issues).
  16. the whole-market pages that timed out cold (incHKannual, incHKmonth,
      listed.asp; incHKsurvive shares their shape) are computed once per data
      watermark and served from disk after: a repeat makes no heavy query, each
@@ -1235,6 +1238,92 @@ def run():
             check(f"heavy budget {url}: the main query gets timeout_s=25", 25 in budgets, True)
     finally:
         statistics.execute_query, db_module.execute_query = real_stats, real_db
+    # 19. pages that walked a tree or a date list with one query per node
+    # (Sentry N+1: WEBBSITE-2G/2J natperson, 2R holdings, 2K SFChistfirm, 2M/2Q
+    # orgdata) run one query per generation, or one in all. A cycle (1 -> 2 -> 1)
+    # and a node reached twice (4) must not be fetched again.
+    from webbsite.routes.dbpub import corporate, people, sfc
+
+    graph = {1: [2, 3], 2: [1, 4], 3: [4], 4: []}
+    calls = []
+
+    def graph_query(sql, params=None, timeout_s=None):
+        calls.append(sql)
+        nodes = params[0] if params else []
+        nodes = nodes if isinstance(nodes, list) else [nodes]  # per-node: one id
+        if "enigma.relatives" in sql:
+            key = "child_id" if "as child_id" in sql else "parent_id"
+            return [{"of_id": n, key: c, "name": f"P{c}", "sex": "M", "yob": None, "mob": None,
+                     "dob": None, "yod": None, "mond": None, "dod": None}
+                    for n in nodes for c in graph[n]]
+        if "enigma.webholdings3" in sql:
+            return [{"personid": n, "issuer": c, "name": f"O{c}"} for n in nodes for c in graph[n]]
+        return []
+
+    real_q = (db_module.execute_query, people.execute_query, corporate.execute_query)
+    db_module.execute_query = people.execute_query = corporate.execute_query = graph_query
+
+    def under(t, i, k):  # t[i][k], or None when the walk came back short
+        return t[i][k] if len(t) > i else None
+
+    try:
+        with app.test_request_context():
+            edges = db_module.fetch_generations(1, "SELECT FROM enigma.webholdings3", "personid", "issuer")
+            check("fetch_generations: one query per generation, each node once",
+                  (len(calls), sorted(edges), [r["issuer"] for r in edges[2]]), (3, [1, 2, 3, 4], [1, 4]))
+            calls.clear()
+            db_module.fetch_generations(1, "SELECT FROM enigma.webholdings3", "personid", "issuer", 1)
+            check("fetch_generations: max_levels bounds the generations", len(calls), 1)
+
+            calls.clear()
+            tree = people._build_descendants_tree(1, 0)
+            check("natperson descendants: one query per generation, the walk as before",
+                  (len(calls), [c["child_id"] for c in tree],
+                   [c["already_seen"] for c in under(tree, 0, "descendants") or []],
+                   [c["child_id"] for c in under(tree, 1, "descendants") or []]),
+                  (3, [2, 3], [True, False], [4]))
+            calls.clear()
+            htree = []
+            corporate._build_holdings_tree(1, 0, "name", htree, {1: 0})
+            check("holdings tree: one query per generation, cross-holdings as before",
+                  (len(calls), [(t["level"], t["holding"]["issuer"], t["is_cross_holding"]) for t in htree]),
+                  (3, [(0, 2, False), (1, 1, True), (1, 4, False), (0, 3, False), (1, 4, True)]))
+    finally:
+        db_module.execute_query, people.execute_query, corporate.execute_query = real_q
+
+    def one_org(sql, params=None, timeout_s=None):
+        calls.append(sql)
+        if "FROM enigma.organisations WHERE personid" in sql:
+            return [{"name1": "Firm"}]
+        if "SELECT * FROM enigma.weborgs" in sql:
+            return [{"org": "Firm", "cname": None, "personid": 1}]
+        if "SELECT DISTINCT sl.issueid as i" in sql:  # five HK-listed equities
+            return [{"i": i, "typelong": "Ord", "curr": "HKD", "listord": 1, "typeshort": "O",
+                     "expmat": None} for i in range(1, 6)]
+        if "AS has_directorships" in sql:
+            return [{"ever_listed": True, "has_directorships": False, "has_pay": False,
+                     "has_advisers": False, "has_adviserships": False, "has_sfc_licenses": False,
+                     "partid": None, "has_documents": False, "has_stories": False,
+                     "has_lir_team": False}]
+        return []
+
+    real_sfc, real_stats = sfc.execute_query, statistics.execute_query
+    sfc.execute_query = statistics.execute_query = one_org
+    try:
+        calls.clear()
+        client.get("/dbpub/SFChistfirm.asp?p=1&f=m")
+        check("SFChistfirm monthly: one licrec query for every month",
+              sum("enigma.licrec" in c for c in calls), 1)
+        calls.clear()
+        client.get("/dbpub/orgdata.asp?p=1")
+        check("orgdata: per-issue queries do not grow with the issues (5 here)",
+              [sum(t in c for c in calls) for t in
+               ("enigma.listings l", "enigma.sdi", "enigma.sfcshort")], [1, 1, 1])
+        check("orgdata: the navigation checks are one query",
+              sum(all(t in c for t in ("everlistco", "enigma.directorships", "ccass.participants",
+                                       "enigma.lirorgteam")) for c in calls), 1)
+    finally:
+        sfc.execute_query, statistics.execute_query = real_sfc, real_stats
 
     if _failures:
         print("\nFAILED:")

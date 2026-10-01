@@ -286,6 +286,28 @@ def execute_scalar(sql, params=None):
         raise _mark_failed(DatabaseError(f"Database query failed: {e}")) from e
 
 
+def fetch_generations(root, sql, of_key, next_key, max_levels=None):
+    """{node: [its rows]} for a tree walked from root, one query per generation.
+
+    For pages that walk a tree (relatives, holdings) and used to run one query
+    per node. `sql` takes one parameter, an array of nodes, and returns each
+    node's rows with that node in `of_key`, ordered by `of_key` first; a row's
+    `next_key` is a child node. Each node is fetched once, at the first
+    generation that reaches it, so a walk that expands a node only below
+    max_levels (None: no limit) finds every node it expands here.
+    """
+    edges, frontier, level = {}, [root], 0
+    while frontier and (max_levels is None or level < max_levels):
+        rows = execute_query(sql, (frontier,))
+        by_node = {}
+        for r in rows:
+            by_node.setdefault(r[of_key], []).append(r)
+        edges.update({n: by_node.get(n, []) for n in frontier})
+        frontier = list(dict.fromkeys(r[next_key] for r in rows if r[next_key] not in edges))
+        level += 1
+    return edges
+
+
 def _failure(db, e, sql):
     """db.py's handling of a failed query, as execute_query does it: marked,
     logged once, rolled back. Returns the exception to raise from e."""
