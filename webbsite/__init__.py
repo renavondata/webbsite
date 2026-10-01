@@ -141,10 +141,11 @@ def _group_db_errors_by_route(event, hint):
     """
     if event.get("logger") != "webbsite.db":
         return event
-    # Except a failure to connect: that is the database, not the route, so one
-    # outage is one issue (a 1 s refusal on 2026-09-23 filed nine, one per route).
+    # Except the database going away (a failure to connect, or a connection
+    # lost mid-query): that is not the route, so one outage is one issue (a 1 s
+    # refusal on 2026-09-23 filed nine, one per route). db.py flags those lines.
     record = (hint or {}).get("log_record")
-    if record is not None and str(record.msg).startswith("Failed to get connection from pool"):
+    if record is not None and getattr(record, "db_outage", False):
         event["fingerprint"] = ["webbsite.db", "connection-failed"]
     elif event.get("transaction"):
         event["fingerprint"] = ["{{ default }}", event["transaction"]]
@@ -182,9 +183,10 @@ def _reported_by_db(event, hint):
 
 def _failed_to_connect(event, hint):
     """An unhandled exception (Flask's own event, no logger) caused by a failure
-    to connect: a route that does not catch it 500s, and when a request failed
-    to connect more than once Sentry's dedupe (last exception only) lets this
-    event through. It belongs to the outage issue, not a per-route one."""
+    to connect or a connection lost mid-query: a route that does not catch it
+    500s, and when a request failed to connect more than once Sentry's dedupe
+    (last exception only) lets this event through. It belongs to the outage
+    issue, not a per-route one."""
     if event.get("logger") is not None or not has_app_context():
         return False
     failed = g.get("db_connect_failed") or []
