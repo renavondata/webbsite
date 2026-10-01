@@ -113,3 +113,19 @@ deploy_ref = "ci-green"
 
 # No build_service: webbsite is Postgres-backed and has no snapshot builder.
 # No Tailwind either — there is no static/src.css, so the CSS step auto-skips.
+
+[host]
+# Unattended upgrades ran at the Ubuntu default, 06:00 UTC + up to 60 min =
+# 14:00-15:00 HKT, the site's day, and inside the 06:45 UTC refresh retry. Twice
+# (2026-09-23 libxml2, 2026-10-01 libssl3) needrestart restarted Postgres mid-day,
+# 500ing or emptying every in-flight request (gfrmin/site-deploy#49). 17:00 UTC
+# (+ up to 30 min) is 01:00-01:30 HKT: after the HK evening, before the 19:00 UTC
+# backup, and clear of refresh (02:45, 06:45) and invariants (04:30).
+upgrade_window_utc = "17:00"
+# Postgres is not restarted on each library upgrade; site-deferred-restart@
+# restarts it Sundays at 17:45 UTC (Mon 01:45 HKT), and only if it still maps a
+# replaced library. Sound because it listens on loopback only (listen_addresses =
+# localhost, pg_hba local/127.0.0.1/::1, checked 2026-10-01), so a TLS-library fix
+# waiting up to a week exposes nothing reachable. An upgrade of the postgresql-17
+# package itself still restarts it at once, from its maintainer scripts.
+defer_restart = ["postgresql"]
