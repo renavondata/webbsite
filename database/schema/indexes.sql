@@ -79,8 +79,8 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_people_born_cover
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_organisations_domicile_incdate
   ON enigma.organisations (domicile, incdate);
 
--- HK dissolution calendar (disHKcaltype.asp). The only disdate index spans
--- every domicile, so a month of HK dissolutions fetched ~60k mostly-UK rows on
+-- HK dissolution calendar (disHKcaltype.asp). The single-column disdate index
+-- spans every domicile, so a month of HK dissolutions fetched ~60k mostly-UK rows on
 -- ~22k heap pages to keep a handful: 0.45 s warm, past the 8 s limit cold
 -- (WEBBSITE-2Z). Partial: 11.7M of 19.6M organisations have a disdate, and a
 -- range on disdate implies it is not null.
