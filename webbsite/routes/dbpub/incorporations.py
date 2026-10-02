@@ -699,10 +699,11 @@ def dishkcaltype():
         params = (month_start, month_end, t, w)
 
     try:
-        # disdate's only index is single-column, so a month of HK dissolutions
-        # walks every domicile's rows for those dates: ~60k mostly-UK rows on
-        # ~22k heap pages to find a handful (prod, 2023-05). 0.45 s warm, past
-        # the 8 s limit cold (WEBBSITE-2Z), so the heavy-page timeout applies.
+        # Through the single-column disdate index a month of HK dissolutions
+        # walked every domicile's rows for those dates: ~60k mostly-UK rows on
+        # ~22k heap pages (prod, 2023-05), past the 8 s limit cold (WEBBSITE-2Z).
+        # idx_organisations_domicile_disdate is the fix; the heavy-page timeout
+        # covers a box restored without it.
         results = execute_query(sql, params, timeout_s=30)
 
         # Get type/method names for title
