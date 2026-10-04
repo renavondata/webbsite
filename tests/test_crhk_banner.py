@@ -56,6 +56,12 @@ def run():
     check("crhk branch: onclick uses location.pathname only", "source_path:location.pathname" in crhk)
     check("crhk branch: onclick has no raw url", "0001234" not in crhk.split("onclick=")[1].split(">")[0])
 
+    # A BRN deep link -> the partner embed loads for that BRN; a CR-number link -> no embed.
+    brn = _render(crhk_url="https://crhk.guru/company/brn/13937424")
+    check("brn link: loads crhk.guru's embed for that BRN",
+          '<script src="https://crhk.guru/embed/offer/13937424.js" defer></script>' in brn)
+    check("cr-number link: no embed", "embed/offer" not in crhk)
+
     # No crhk_url -> unchanged generic banner (orgdata maps to hkex_directors).
     generic = _render()
     check("generic branch: renders archive copy", "This is a free archive" in generic)
@@ -66,6 +72,7 @@ def run():
     none_url = _render(crhk_url=None)
     check("none crhk_url: falls back to generic", "This is a free archive" in none_url)
     check("none crhk_url: no crhk dataset", "crhkguru_company" not in none_url)
+    check("generic and none: no embed", "embed/offer" not in generic + none_url)
 
     if failures:
         print(f"FAILED {len(failures)} checks:")
