@@ -37,6 +37,13 @@
        onclick="if(window.posthog){posthog.capture('bridge_cta_click',{target_dataset:'crhkguru_company',source_path:location.pathname})}"
        style="color:#22d3ee;text-decoration:underline;font-weight:bold;margin-left:6px;">view on CRHK&nbsp;Guru &rarr;</a>
 </div>
+{#- A partner embed: when the profile is a post-2023 BRN deep link, crhk.guru may render what it offers
+    for that company just below this banner. Everything it shows -- whether anything, and what -- is
+    decided by crhk.guru's script, which is empty unless crhk.guru switches it on. The BRN reaches the
+    src only through crhk_company_url()'s 8-digit allowlist (crhk_url's /company/brn/ form). -#}
+{%- if '/company/brn/' in crhk_url %}
+<script src="https://crhk.guru/embed/offer/{{ crhk_url.rsplit('/', 1)[-1] }}.js" defer></script>
+{%- endif -%}
 {%- else -%}
 {%- set _bp = request.blueprint or '' -%}
 {%- set _path = request.path | lower -%}
