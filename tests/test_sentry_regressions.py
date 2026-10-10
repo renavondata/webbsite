@@ -59,6 +59,8 @@ Pins:
      watermark and served from disk after: a repeat makes no heavy query, each
      variant keeps its own file, a failure saves nothing, and a pinned date is
      never cached.
+ 20. a junk ?d= / ?d1= (a probe, a bare number) falls back to the default on
+     every route that read the date raw (WEBBSITE-30, 31, 32).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -68,6 +70,7 @@ import logging
 import os
 import re
 import sys
+from urllib.parse import quote as url_quote
 from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -158,7 +161,9 @@ def run():
         ccass.execute_query = real
 
     # 3. empty/invalid ?d= -----------------------------------------------------
-    for qs, want in (("d=", "2020-01-01"), ("d=junk", "2020-01-01"), ("d=2024-05-06", "2024-05-06")):
+    for qs, want in (("d=", "2020-01-01"), ("d=junk", "2020-01-01"), ("d=2024-05-06", "2024-05-06"),
+                     ("d=2024-5-6", "2024-05-06"), ("d=2024/5/6", "2024-05-06"),
+                     ("d=2024-05-06%20", "2024-05-06"), ("d=328912439", "2020-01-01")):
         with app.test_request_context(f"/?{qs}"):
             check(f"get_date_or_default ?{qs}", get_date_or_default("d", "2020-01-01"), want)
 
@@ -1324,6 +1329,33 @@ def run():
                                        "enigma.lirorgteam")) for c in calls), 1)
     finally:
         sfc.execute_query, statistics.execute_query = real_sfc, real_stats
+
+    # 20. a junk ?d= / ?d1= falls back to the default before it reaches SQL
+    # (WEBBSITE-30 shortdate.asp, a probe; WEBBSITE-31/32 matches.asp?d=328912439):
+    # every route that read the date raw, checked with a value Postgres rejects.
+    from webbsite.routes.dbpub import short_selling
+
+    junk = ("328912439", "2025-10-03\"'(.),abcd")
+    dated = ("/ccass/bigchanges.asp?", "/ccass/cconc.asp?", "/ccass/ipstakes.asp?",
+             "/ccass/cholder.asp?part=1&", "/ccass/choldings.asp?i=1&",
+             "/ccass/ncipchg.asp?i=1&", "/ccass/chldchg.asp?i=1&part=1&",
+             "/dbpub/SFCchanges.asp?", "/dbpub/shortdate.asp?",
+             "/dbpub/matches.asp?org1=1&org2=2&", "/dbpub/pay.asp?p=1&",
+             "/dbpub/advltsnap.asp?r=1&")
+    mods = (ccass, sfc, short_selling, statistics)
+    reals = [m.execute_query for m in mods]
+    for m in mods:
+        m.execute_query = rec
+    try:
+        for url in dated:
+            for bad in junk:
+                seen.clear()
+                client.get(f"{url}d={url_quote(bad)}&d1={url_quote(bad)}")
+                leaked = [s for s, p in seen if any(bad in str(x) for x in (s, p))]
+                check(f"{url.split('?')[0]} d={bad!r}: never reaches SQL", leaked, [])
+    finally:
+        for m, r in zip(mods, reals):
+            m.execute_query = r
 
     if _failures:
         print("\nFAILED:")

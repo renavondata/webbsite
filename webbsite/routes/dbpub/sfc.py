@@ -364,7 +364,7 @@ def sfc_changes():
     Tables used: enigma.directorships (positionid 394=Rep, 395=RO)
     """
 
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
     sort_param = request.args.get("sort", "orgup")
 
     # Default to latest data date if no date specified
