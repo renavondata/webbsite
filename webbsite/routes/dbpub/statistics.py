@@ -266,7 +266,7 @@ def matches():
 
     org1 = get_int("org1", 0)
     org2 = get_int("org2", 0)
-    d = get_str("d", str(date.today()))
+    d = get_date_or_default("d", str(date.today()))
     sort_param = request.args.get("sort", "name")
 
     # Get organization names (use placeholder if missing)
@@ -959,7 +959,7 @@ def pay():
     """
 
     person_id = get_int("p", 0)
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
     sort_param = request.args.get("sort", "nam")
 
     # Get organization name
@@ -2637,7 +2637,7 @@ def advltsnap():
     from datetime import date
 
     r = get_int("r", 0)  # Role ID
-    d = get_str("d", str(date.today()))  # Snapshot date
+    d = get_date_or_default("d", str(date.today()))  # Snapshot date
     sort_param = get_str("sort", "cntdn")
 
     # Get role information

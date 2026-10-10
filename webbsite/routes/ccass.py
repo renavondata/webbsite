@@ -7,7 +7,7 @@ from flask import Blueprint, render_template, request, Response
 import re
 from datetime import datetime, date
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date
+from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date, get_date_or_default
 from webbsite import watermarks
 
 bp = Blueprint("ccass", __name__)
@@ -107,7 +107,7 @@ def bigchanges():
         return guard
     sort_param = request.args.get("sort", "chgdn")
     etf = get_bool("etf")  # Whether to include unit ETFs, default no
-    d = request.args.get("d", "")  # Date parameter
+    d = get_date_or_default("d")  # Date parameter
 
     # SQL WHERE clause for ETF filtering
     sqletf = "" if etf else " AND o.orgType<>4"
@@ -201,7 +201,7 @@ def cconc():
         return guard
     sort_param = request.args.get("sort", "cp5dn")
     etf = get_bool("etf")  # Whether to include unit ETFs, default no
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
 
     # SQL WHERE clause for ETF filtering
     sqletf = "" if etf else " AND o.orgType<>4"
@@ -311,7 +311,7 @@ def ipstakes():
     if guard is not None:
         return guard
     sort_param = request.args.get("sort", "ipsdn")
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
 
     # Get latest CCASS date if not specified (the live MAX tracks the daily refresh;
     # the watermark is the fallback when the query fails or dailylog is empty).
@@ -510,7 +510,7 @@ def cholder():
     from flask import current_app
 
     part = get_int("part", 0)
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
     z = get_bool("z")  # Show zero/former holdings
     sort_param = request.args.get("sort", "stakdn")
 
@@ -702,7 +702,7 @@ def choldings():
         return guard
     issue_id = get_int("i", 0)
     stock_code = get_str("sc", "")
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
     z = get_bool("z")  # Show zero/former holdings
     sort_param = request.args.get("sort", "holddn")
 
@@ -2111,8 +2111,8 @@ def ncipchg():
         return guard
     from flask import current_app
 
-    d1 = request.args.get("d1", "")
-    d2 = request.args.get("d", "")
+    d1 = get_date_or_default("d1")
+    d2 = get_date_or_default("d")
     z = get_bool("z")  # Show unchanged holdings
     sort_param = request.args.get("sort", "valcdn")
 
@@ -3202,8 +3202,8 @@ def chldchg():
     issue_id = get_int("i", 0)
     stock_code = get_str("sc", "")
     sort_param = request.args.get("sort", "chngdn")
-    d2_param = request.args.get("d", "")  # End date
-    d1_param = request.args.get("d1", "")  # Start date
+    d2_param = get_date_or_default("d")  # End date
+    d1_param = get_date_or_default("d1")  # Start date
 
     # Lookup stock if stock code provided
     if not issue_id and stock_code:

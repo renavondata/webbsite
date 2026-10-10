@@ -5,7 +5,7 @@ Short selling data
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
-from webbsite.asp_helpers import get_int
+from webbsite.asp_helpers import get_int, get_date_or_default
 from webbsite.routes.dbpub._navctx import stock_nav
 from webbsite.diskcache import load_json_keyed, save_json_keyed
 from webbsite import watermarks
@@ -170,7 +170,7 @@ def shortdate():
     """Short positions on a specific date - all stocks"""
 
     # Get date parameter
-    d = request.args.get("d", "")
+    d = get_date_or_default("d")
     sort_param = request.args.get("sort", "stakdn")
 
     # Get list of available dates
