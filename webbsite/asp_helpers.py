@@ -429,8 +429,12 @@ def get_date_or_default(name, default=None):
     try:
         # Accept various date formats
         if isinstance(val, str):
-            # Try ISO format first
-            parsed = datetime.fromisoformat(val.replace("/", "-"))
+            # ISO first; strptime also takes the unpadded 2024-5-6 the ASP's IsDate did
+            val = val.strip().replace("/", "-")
+            try:
+                parsed = datetime.fromisoformat(val)
+            except ValueError:
+                parsed = datetime.strptime(val, "%Y-%m-%d")
         elif isinstance(val, (datetime, date)):
             parsed = val
         else:
