@@ -41,12 +41,41 @@ for _name in ("WEBBSITE_OVERLAY_DIR", "SITE_NAME", "SITE_SHORT_NAME", "CANONICAL
 from jinja2 import ChainableUndefined  # noqa: E402
 
 GOLDEN = ROOT / "tests" / "fixtures" / "render_parity.json"
+TEMPLATES = ROOT / "webbsite" / "templates"
 OVERLAY = ROOT / "tests" / "fixtures" / "overlay"
 REQUEST_PATH = "/dbpub/orgdata.asp?p=1"
 
 # Every name a context processor would supply, fixed so the output does not
 # depend on the date or the database.
 FIXED_CONTEXT = {"now": date(2026, 1, 2), "data_asof": "2025-10-10", "ccass_asof": "2025-10-17"}
+
+# Per-template fixtures: the least each needs to render IN FULL (not just its
+# <title>) under ChainableUndefined -- a callable, a number, a real date where
+# the template does arithmetic or formatting on one. Every template that uses
+# a site seam must render in full (SEAM_MARKERS below); add its entry here.
+class _Stats(dict):
+    """status.html's counts: any key not given reads as a number to format."""
+
+    def __missing__(self, key):
+        return 123456
+
+
+_TODAY = date(2026, 1, 2)
+PAGE_CONTEXT = {
+    "index.html": {"today": _TODAY},
+    "pages/status.html": {"today": _TODAY, "stats": _Stats(ccass_latest=date(2025, 10, 17))},
+    "dbpub/buybacksum.html": {"max_date": date(2025, 10, 10), "freq": "y", "year": 2025, "month": 0, "day": 0},
+    "dbpub/holdings.html": {"nav_flags": {}, "person_flags": {}},
+    "dbpub/sdidir.html": {"nav_flags": {}},
+    "dbpub/sdidirco.html": {"nav_flags": {}},
+    "dbpub/sdiissue.html": {"nav_flags": {}},
+    "dbpub/str.html": {"i": 0},
+    "dbeditor/index.html": {"session": lambda key: "", "makeSelect": lambda *a: "", "CStr": str},
+}
+
+# A template that references any of these carries a site seam, so its whole
+# output -- not just its title -- must be compared.
+SEAM_MARKERS = ("site_name", "site_short_name", "'site/", "config.POSTHOG")
 
 # The banner varies by request path and by a view-supplied crhk_url; each branch
 # is rendered on its own.
@@ -126,11 +155,11 @@ def render_all(app):
     out = {}
     for name in upstream:
         if name.endswith(".html") and name not in BANNER_TEMPLATES and not name.startswith("site/"):
-            out[name] = _render(app, env, name, REQUEST_PATH)
+            out[name] = _render(app, env, name, REQUEST_PATH, PAGE_CONTEXT.get(name))
             # The <title> block alone, so a page whose body cannot render
             # without real data still has its title pinned.
             if _defines_title(env, name):
-                out[f"title: {name}"] = _render(app, env, name, REQUEST_PATH, block="title")
+                out[f"title: {name}"] = _render(app, env, name, REQUEST_PATH, PAGE_CONTEXT.get(name), block="title")
     for i, (path, extra) in enumerate(BANNER_CASES):
         out[f"banner#{i} {path} {sorted(extra.items())}"] = _render(app, env, banner, path, extra)
     return out
@@ -162,6 +191,16 @@ def run():
     # Floors, so a harness that quietly stops rendering cannot pass as parity.
     check("parity: >180 templates render whole", sum(not _text[k].startswith("!!") for k in whole) > 180, True)
     check("parity: >200 title blocks render", sum(not _text[k].startswith("!!") for k in titles) > 200, True)
+    # No silent gaps: a template carrying a seam that renders only its title
+    # would let a changed body through unchecked.
+    seamed = sorted(
+        str(f.relative_to(TEMPLATES)) for f in TEMPLATES.rglob("*.html")
+        if not str(f.relative_to(TEMPLATES)).startswith("site/")
+        and any(m in f.read_text() for m in SEAM_MARKERS)
+    )
+    check("parity: >40 templates carry a seam", len(seamed) > 40, True)
+    check("parity: every seamed template renders in full (give it a PAGE_CONTEXT entry)",
+          [n for n in seamed if _text.get(n, "!! missing").startswith("!!")], [])
 
     # 2. An overlay replaces site/banner.html, and nothing else ---------------
     default_text = _text

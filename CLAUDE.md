@@ -160,7 +160,7 @@ site -- banner, footer credit, analytics snippet, header brand blocks -- lives i
 (`{{ site_name }}`, `{{ site_short_name }}` in templates). A deployment re-brands by setting
 `WEBBSITE_OVERLAY_DIR` to a directory with `templates/` and/or `static/`, whose files take
 precedence (`webbsite/overlay.py`; `url_for('static', ...)` is unchanged). A configured overlay
-that is missing fails at startup. Put new operator-specific markup in a `site/` include, never
+that is missing fails at startup. Click analytics render only when `POSTHOG_KEY` is set (`POSTHOG_HOST` too). Put new operator-specific markup in a `site/` include, never
 inline. `tests/test_render_parity.py` pins every template's default render (re-snapshot with
 `--write` only for an intended visible change); `tests/test_overlay.py` pins the seams.
 

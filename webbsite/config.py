@@ -39,6 +39,13 @@ class Config:
     SITE_NAME = os.environ.get("SITE_NAME", "Renavon Hong Kong Database")
     SITE_SHORT_NAME = os.environ.get("SITE_SHORT_NAME", "Renavon Hong Kong")
 
+    # Click analytics (site/analytics.html): the PostHog snippet renders only
+    # when POSTHOG_KEY is non-empty. A project key is public by design (it ships
+    # in every page), but it routes visitors' events to whoever owns it, so an
+    # operator sets their own or leaves it empty.
+    POSTHOG_KEY = os.environ.get("POSTHOG_KEY", "phc_1HRPWj8xOz5e1q7iGMicuo3qhK2MsLTN7BOPi3CIKwy")
+    POSTHOG_HOST = os.environ.get("POSTHOG_HOST", "https://us.i.posthog.com")
+
     # Optional deployment overlay: a directory with templates/ and/or static/
     # whose files take precedence over the app's own. Unset = upstream as-is.
     WEBBSITE_OVERLAY_DIR = os.environ.get("WEBBSITE_OVERLAY_DIR", "")

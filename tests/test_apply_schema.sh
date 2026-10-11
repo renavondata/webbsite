@@ -5,7 +5,8 @@
 # real run applies both files (three guarded functions, the view stamped with
 # views.sql's sha256); a second run is a no-op; a drifted stamp re-applies the
 # view; an apply that fails, and a database that cannot be asked, both exit
-# non-zero. Peer auth is replaced by the PG* env vars, which psql honours.
+# non-zero (unless UNREACHABLE_OK); QUIET silences a no-op; converge.sh has no
+# copy of its own. Peer auth is replaced by the PG* env vars, which psql honours.
 #
 # Needs a Postgres reachable through the PG* env vars as a superuser, and psql/
 # createdb. Nothing here touches production.
@@ -62,6 +63,10 @@ echo "$out"
 grep -q "functions.sql: up to date" <<<"$out" || fail "functions re-applied"
 grep -q "views.sql: up to date" <<<"$out" || fail "view re-applied"
 
+step "QUIET second run: silent"
+out=$(DB="$DB" QUIET=1 "$APPLY" 2>&1) || fail "quiet run exited non-zero: $out"
+[ -z "$out" ] || fail "QUIET no-op run printed: $out"
+
 step "drifted stamp: view re-applied"
 q "COMMENT ON VIEW enigma.hklistedordsever IS 'restored from an old dump'"
 out=$(DB="$DB" "$APPLY" 2>&1) || fail "re-apply exited non-zero: $out"
@@ -78,6 +83,15 @@ grep -q "views.sql: FAILED" <<<"$out" || fail "failure not reported"
 step "an unreachable database exits non-zero"
 if out=$(DB="${DB}_absent" "$APPLY" 2>&1); then fail "missing database exited 0: $out"; fi
 echo "$out"
+
+step "UNREACHABLE_OK: skipped, exit 0 (converge's ticks)"
+out=$(DB="${DB}_absent" UNREACHABLE_OK=1 "$APPLY" 2>&1) || fail "UNREACHABLE_OK exited non-zero: $out"
+
+step "one copy: converge.sh calls the script and carries no gate SQL of its own"
+grep -q 'scripts/apply_schema.sh' "$ROOT/deploy/converge.sh" || fail "converge.sh does not call apply_schema.sh"
+if grep -nE 'prosrc|hklistedordsever|views\.sql sha256' "$ROOT/deploy/converge.sh"; then
+    fail "converge.sh still has its own copy of the gates"
+fi
 
 echo
 echo "apply_schema.sh: all checks passed"

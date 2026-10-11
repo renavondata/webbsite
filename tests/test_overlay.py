@@ -6,7 +6,8 @@
 Pins webbsite/overlay.py: an overlay's templates and static files win, the
 app's own are the fallback, url_for('static') is unchanged, and a configured
 overlay that is missing or empty fails at startup instead of silently serving
-upstream branding. Also pins SITE_NAME / SITE_SHORT_NAME reaching templates.
+upstream branding. Also pins SITE_NAME / SITE_SHORT_NAME reaching templates,
+and POSTHOG_KEY / POSTHOG_HOST driving (or, empty, removing) the analytics snippet.
 tests/test_render_parity.py proves the default (no overlay) renders as before.
 """
 
@@ -104,6 +105,23 @@ def run():
         check("defaults: site_name", render_template_string("{{ site_name }}"), "Renavon Hong Kong Database")
         check("defaults: canonical_host", render_template_string("{{ canonical_host }}"),
               app.config["CANONICAL_HOST"])
+
+    # 5. Analytics: config-driven, and absent when the key is empty --------------
+    with app.test_request_context("/"):
+        default_head = render_template("errors/404.html")
+    check("analytics: default key rendered", "posthog.init('phc_1HRPWj8x" in default_head, True)
+    for key in ("", None):
+        off = create_app(_config(POSTHOG_KEY=key))
+        with off.test_request_context("/"):
+            page = render_template("errors/404.html")
+        check(f"analytics: POSTHOG_KEY={key!r} renders no snippet",
+              ("posthog.init" in page, "array.js" in page), (False, False))
+        check(f"analytics: POSTHOG_KEY={key!r} page still renders", "<title>Page Not Found" in page, True)
+    own = create_app(_config(POSTHOG_KEY="phc_operator", POSTHOG_HOST="https://eu.i.posthog.com"))
+    with own.test_request_context("/"):
+        page = render_template("errors/404.html")
+    check("analytics: operator key", "posthog.init('phc_operator'" in page, True)
+    check("analytics: operator host", "api_host: 'https://eu.i.posthog.com'" in page, True)
 
     if _failures:
         print("\nFAILED:")

@@ -250,7 +250,10 @@ applies them on every tick** -- a restore brings back the MySQL-era bodies, whos
 unguarded `/ firstQF` raises `division_by_zero` on any security that closed at 0 and so
 takes out every page that ranks returns (listed.asp, delisted.asp, the statistics
 rankings) rather than blanking one cell. The invariants job compares the live bodies
-against the file, so drift is reported even if converge never runs.
+against the file, so drift is reported even if converge never runs. Converge does this,
+and the once-per-version `views.sql` apply, by calling `scripts/apply_schema.sh` as
+`postgres`; a host that does not run converge runs the same script after each update
+(`sudo -u postgres scripts/apply_schema.sh`, `DRY_RUN=1` to only report).
 
 **The invariants job's DSN needs one extra grant.** A handful of GUCs, including
 `shared_preload_libraries`, are hidden from `pg_settings` (and `SHOW`) for any role that
