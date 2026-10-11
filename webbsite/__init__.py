@@ -249,6 +249,13 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # A deployment overlay's templates/static win over ours (webbsite/overlay.py).
+    # Applied first, before anything renders; a configured-but-missing overlay
+    # raises here rather than serving upstream branding.
+    from webbsite import overlay
+
+    overlay.apply(app, app.config.get("WEBBSITE_OVERLAY_DIR"))
+
     _configure_logging(app)
     sentry_on = _init_sentry(app)
 
@@ -565,6 +572,12 @@ def create_app(config_class=Config):
             return {"data_asof": watermarks.quotes_end(), "ccass_asof": watermarks.ccass_done()}
         except Exception:
             return {"data_asof": None, "ccass_asof": None}
+
+    # Site identity for templates: page titles, headings, the search box.
+    # CANONICAL_HOST rides along so an overlay need not reach into config.
+    app.jinja_env.globals["site_name"] = app.config["SITE_NAME"]
+    app.jinja_env.globals["site_short_name"] = app.config["SITE_SHORT_NAME"]
+    app.jinja_env.globals["canonical_host"] = app.config["CANONICAL_HOST"]
 
     # Expose canonical_query() to templates (base.html builds rel=canonical from it).
     from webbsite.asp_helpers import canonical_query

@@ -8493,7 +8493,7 @@ def orgdata():
             }
 
     # crhk.guru registry-profile deep link for the contextual cross-link banner
-    # (webbsite/templates/includes/_renavon_cta.html). HK-domicile companies only
+    # (webbsite/templates/site/banner.html). HK-domicile companies only
     # (domid == 1); prefer the current incorporation number, fall back to the
     # pre-2023 CR number. crhk_company_url() returns None for anything outside its
     # strict [0-9Ff] allowlist, so the banner never emits a guaranteed-404 link.

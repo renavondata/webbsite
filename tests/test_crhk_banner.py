@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render tests for the crhk_url branch of includes/_renavon_cta.html.
+"""Render tests for the crhk_url branch of site/banner.html.
 
 The contextual cross-link banner (included site-wide via base.html) grows a
 highest-priority branch: when a view passes a ``crhk_url`` template variable, the
@@ -34,7 +34,7 @@ _app = create_app()
 
 def _render(**context):
     with _app.test_request_context("/dbpub/orgdata.asp?p=123"):
-        return render_template("includes/_renavon_cta.html", **context)
+        return render_template("site/banner.html", **context)
 
 
 def run():
@@ -82,6 +82,11 @@ def run():
 
     print("PASSED all banner render checks")
     return 0
+
+
+def test_all():
+    """pytest entry point (CI); the direct-run house style still works."""
+    assert run() == 0
 
 
 if __name__ == "__main__":

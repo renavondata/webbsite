@@ -58,6 +58,12 @@ FREEZE_DATE = "2025-10-10"  # the frozen-archive boundary; staged rows must be s
 FRESHNESS_TOML = Path(__file__).resolve().parent.parent.parent / "deploy" / "freshness.toml"
 DEFAULT_BUDGET = 4
 
+
+def freshness_toml_path() -> Path:
+    """$FRESHNESS_TOML when set, else deploy/freshness.toml -- the same rule as
+    webbsite/freshness.py's toml_path(), pinned by tests/test_freshness.py."""
+    return Path(os.environ.get("FRESHNESS_TOML") or FRESHNESS_TOML)
+
 log = logging.getLogger("webbsite-refresh")
 
 
@@ -451,7 +457,7 @@ def budget_for(today: date, config: dict | None = None) -> int:
     Same function as webbsite/freshness.py, kept in step by tests/test_freshness.py."""
     if config is None:
         try:
-            config = tomllib.loads(FRESHNESS_TOML.read_text())
+            config = tomllib.loads(freshness_toml_path().read_text())
         except (OSError, tomllib.TOMLDecodeError):
             return DEFAULT_BUDGET
     ccass = config.get("ccass", {})
