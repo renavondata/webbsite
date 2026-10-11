@@ -1,5 +1,5 @@
 {% extends "base_database.html" %}
-{% block title %}Renavon Hong Kong Database: dealings in {{ stock_name }}{% endblock %}
+{% block title %}{{ site_name }}: dealings in {{ stock_name }}{% endblock %}
 
 {% macro sl(label, defsort, altsort) %}
 	{%- if sort == defsort %}<a href="{{ url_for('dbpub_sdi.sdiissue', i=issue_id, sort=altsort) }}"><strong>{{ label|safe }} &#8595;</strong></a>

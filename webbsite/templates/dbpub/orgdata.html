@@ -1,6 +1,6 @@
 {% extends "base_database.html" %}
 
-{% block title %}{{ title }} - Renavon Hong Kong Database{% endblock %}
+{% block title %}{{ title }} - {{ site_name }}{% endblock %}
 
 {% block extra_head %}
 <style type="text/css">
@@ -287,9 +287,9 @@
 		</div>
 	{% endif %}
 
-	{# Renavon Hong Kong Governance Rating #}
-	<h3>Renavon Hong Kong Governance Rating</h3>
-	<p><a href="../webbmail/login.asp"><b>Log in</b></a> to add your anonymous rating. Renavon Hong Kong users rate this organisation as follows:</p>
+	{# {{ site_short_name }} Governance Rating #}
+	<h3>{{ site_short_name }} Governance Rating</h3>
+	<p><a href="../webbmail/login.asp"><b>Log in</b></a> to add your anonymous rating. {{ site_short_name }} users rate this organisation as follows:</p>
 	<table class="rating">
 		<tr>
 			<th>Users</th>

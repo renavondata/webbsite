@@ -11,6 +11,7 @@ give the same answer for the same day and config.
 import importlib.util
 import os
 import sys
+import tempfile
 from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -60,6 +61,25 @@ def run():
     for d in (date(2026, 6, 15), date(2026, 10, 3), date(2026, 12, 31), date(2027, 1, 2), date(2027, 1, 3)):
         check(f"loader copy agrees on {d}", loader.budget_for(d, cfg), b(d, cfg))
     check("loader reads the same file", loader.FRESHNESS_TOML.resolve(), freshness.FRESHNESS_TOML.resolve())
+
+    # $FRESHNESS_TOML relocates the file for both readers; unset keeps deploy/.
+    saved = os.environ.pop("FRESHNESS_TOML", None)
+    try:
+        check("unset: app reads deploy/freshness.toml", freshness.toml_path(), freshness.FRESHNESS_TOML)
+        check("unset: loader reads deploy/freshness.toml", loader.freshness_toml_path(), loader.FRESHNESS_TOML)
+        with tempfile.TemporaryDirectory() as tmp:
+            moved = os.path.join(tmp, "freshness.toml")
+            with open(moved, "w") as f:
+                f.write("[ccass]\nbudget_trading_days = 7\n")
+            os.environ["FRESHNESS_TOML"] = moved
+            check("set: app reads $FRESHNESS_TOML", b(date(2026, 6, 15)), 7)
+            check("set: loader reads $FRESHNESS_TOML", loader.budget_for(date(2026, 6, 15)), 7)
+            os.environ["FRESHNESS_TOML"] = os.path.join(tmp, "absent.toml")
+            check("set but missing: default 4, as for a missing deploy/ file", b(date(2026, 6, 15)), 4)
+    finally:
+        os.environ.pop("FRESHNESS_TOML", None)
+        if saved is not None:
+            os.environ["FRESHNESS_TOML"] = saved
 
     if _failures:
         print("\nFAILED:")

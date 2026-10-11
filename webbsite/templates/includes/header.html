@@ -2,8 +2,7 @@
 <div id="banner" style="background-color:blue">
 	<div class="box1">
 		<a href="/" class="nodec">
-		<span style="font-size:1.6em;margin:0"><b>Renavon Reports</b></span><br>
-		<span style="font-size:0.9em"><b>Hong Kong financial data archive</b></span></a>
+		{% include 'site/reports_brand.html' %}</a>
 		<label for="menuchk" id="menubtn">Menu</label>
 		<div id="loginbtn">
 			{# TODO: Add authentication logic #}
@@ -21,7 +20,7 @@
 				<input type="hidden" name="oe" value="UTF-8">
 				<input type="hidden" name="domains" value="{{ config.SEARCH_DOMAIN }}">
 				<input type="hidden" name="sitesearch" value="{{ config.SEARCH_DOMAIN }}">
-				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search Renavon Hong Kong" onclick="value=''">
+				<input type="text" class="inptxt searchws" name="q" maxlength="255" value="search {{ site_short_name }}" onclick="value=''">
 				<input type="submit" class="btnFont" name="btnG" value="search">
 			</form>
 			<form class="box4b" method="post" action="/webbmail/join.asp">

@@ -1,4 +1,4 @@
-"""The CCASS freshness budget, read from deploy/freshness.toml.
+"""The CCASS freshness budget, read from deploy/freshness.toml (or $FRESHNESS_TOML).
 
 Stdlib only and dependency-free on purpose: scripts/refresh/refresh.py carries
 a copy of `budget_for` (it runs under its own PEP 723 environment and cannot
@@ -10,12 +10,19 @@ this file exists to end.
 
 from __future__ import annotations
 
+import os
 import tomllib
 from datetime import date
 from pathlib import Path
 
 FRESHNESS_TOML = Path(__file__).resolve().parent.parent / "deploy" / "freshness.toml"
 DEFAULT_BUDGET = 4
+
+
+def toml_path() -> Path:
+    """The budget file: $FRESHNESS_TOML when set (a deployment keeping its own
+    copy outside the app tree), else deploy/freshness.toml. Read per call."""
+    return Path(os.environ.get("FRESHNESS_TOML") or FRESHNESS_TOML)
 
 
 def _in_window(today: date, start: str, end: str) -> bool:
@@ -31,7 +38,7 @@ def budget_for(today: date, config: dict | None = None) -> int:
     applies (first match wins), else the default, else 4."""
     if config is None:
         try:
-            config = tomllib.loads(FRESHNESS_TOML.read_text())
+            config = tomllib.loads(toml_path().read_text())
         except (OSError, tomllib.TOMLDecodeError):
             return DEFAULT_BUDGET
     ccass = config.get("ccass", {})

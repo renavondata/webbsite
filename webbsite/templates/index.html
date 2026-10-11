@@ -1,6 +1,6 @@
 {% extends "base_reports.html" %}
 
-{% block title %}Renavon Hong Kong Database: financial data archive{% endblock %}
+{% block title %}{{ site_name }}: financial data archive{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -145,7 +145,7 @@
 	{# Birthday listings #}
 	<div style="border:thin black solid;margin:10px 0px;position:relative;padding:5px">
 		<span style="text-align:center"><strong>Today's big birthdays, {{ today.day }}&nbsp;{{ today.strftime('%B') }}</strong></span><br>
-		<i><a href="/dbpub/bornday.asp">more from Renavon Hong Kong Who's Who</a></i>
+		<i><a href="/dbpub/bornday.asp">more from {{ site_short_name }} Who's Who</a></i>
 		{% if birthdays %}
 		<table style="width:100%">
 			<tbody><tr>

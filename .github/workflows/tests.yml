@@ -46,23 +46,23 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.
       - name: "self-proof: a planted failure fails"
         run: |
-          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py tests/test_ctr_render.py; do
+          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py; do
             if PLANTED_FAILURE=1 uv run python "$t" >/dev/null 2>&1; then
               echo "$t passed with a planted failure -- it is not gating"; exit 1
             fi
             echo "planted failure correctly failed: $t"
           done
 
-      - name: shellcheck deploy/
+      - name: shellcheck deploy/ and the schema apply
         run: |
           sudo apt-get install -y -q shellcheck >/dev/null
-          shellcheck -S warning deploy/*.sh
+          shellcheck -S warning deploy/*.sh scripts/apply_schema.sh tests/test_apply_schema.sh
 
       # converge.sh runs as root on the box; prove it parses and that its
       # allowlist resolves before it ever gets there. Dry-run needs no root.
@@ -153,6 +153,15 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
         run: tests/test_views.sh
+
+      # scripts/apply_schema.sh (the two blocks above, standalone): dry run,
+      # apply, no-op re-run, drifted stamp, and both failure exits.
+      - name: schema apply script
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: tests/test_apply_schema.sh
 
   # Advances `ci-green` only when every job above passed on master. The guard
   # is spelled out so a SKIPPED job (none today) would still advance it while

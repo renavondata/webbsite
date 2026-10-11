@@ -143,14 +143,26 @@ Tracks ownership through Hong Kong's Central Clearing and Settlement System, bac
 app.py                         # entry point, creates the Flask app
 webbsite/
 ├── __init__.py                # app factory + CDN-Cache-Control TTL ladder
-├── config.py                  # environment/config
+├── config.py                  # environment/config (incl. SITE_NAME, SITE_SHORT_NAME, WEBBSITE_OVERLAY_DIR)
+├── overlay.py                 # deployment overlay: <dir>/templates and <dir>/static win over ours
 ├── db.py                      # database helpers
 ├── asp_helpers.py             # ASP-compatibility functions (ported from functions1.asp)
 ├── diskcache.py               # JSON disk cache for heavy deterministic pages
 ├── routes/                    # route blueprints (search, quotes, events, dbpub/, ccass, articles, …)
 ├── sql/                       # SQL used by the app
 └── templates/                 # Jinja2 templates (base.html, header.html, includes/, …)
+    └── site/                  # the operator-specific fragments an overlay replaces
 ```
+
+**Operator branding is a seam, not an edit.** Everything that makes a deployment *one operator's*
+site -- banner, footer credit, analytics snippet, header brand blocks -- lives in
+`webbsite/templates/site/*.html`, and the site's name in `SITE_NAME` / `SITE_SHORT_NAME`
+(`{{ site_name }}`, `{{ site_short_name }}` in templates). A deployment re-brands by setting
+`WEBBSITE_OVERLAY_DIR` to a directory with `templates/` and/or `static/`, whose files take
+precedence (`webbsite/overlay.py`; `url_for('static', ...)` is unchanged). A configured overlay
+that is missing fails at startup. Put new operator-specific markup in a `site/` include, never
+inline. `tests/test_render_parity.py` pins every template's default render (re-snapshot with
+`--write` only for an intended visible change); `tests/test_overlay.py` pins the seams.
 
 Dependencies are managed with **`uv`** (`pyproject.toml` + `uv.lock`); there is no `requirements.txt`.
 Run locally with `uv sync` then `uv run flask run` (see the top-level `README.md`).
