@@ -13,37 +13,37 @@
 
 {# Organization Navigation Bar - matching orgBar from navbars.asp #}
 <ul class="navlist">
-    <li><a href="/dbpub/orgdata.asp?p={{ issues[0]['personID'] }}">Key Data</a></li>
+    <li><a href="/dbpub/orgdata.asp?p={{ issues[0]['personid'] }}">Key Data</a></li>
     {% if org_nav.has_officers %}
-        <li><a href="/dbpub/officers.asp?p={{ issues[0]['personID'] }}">Officers</a></li>
-        <li><a href="/dbpub/overlap.asp?p={{ issues[0]['personID'] }}">Overlaps</a></li>
+        <li><a href="/dbpub/officers.asp?p={{ issues[0]['personid'] }}">Officers</a></li>
+        <li><a href="/dbpub/overlap.asp?p={{ issues[0]['personid'] }}">Overlaps</a></li>
     {% endif %}
     {% if org_nav.has_pay %}
-        <li><a href="/dbpub/pay.asp?p={{ issues[0]['personID'] }}">Pay</a></li>
+        <li><a href="/dbpub/pay.asp?p={{ issues[0]['personid'] }}">Pay</a></li>
     {% endif %}
     {% if org_nav.has_advisers %}
-        <li><a href="/dbpub/advisers.asp?p={{ issues[0]['personID'] }}">Advisers</a></li>
+        <li><a href="/dbpub/advisers.asp?p={{ issues[0]['personid'] }}">Advisers</a></li>
     {% endif %}
     {% if org_nav.has_adviserships %}
-        <li><a href="/dbpub/adviserships.asp?p={{ issues[0]['personID'] }}">Adviserships</a></li>
+        <li><a href="/dbpub/adviserships.asp?p={{ issues[0]['personid'] }}">Adviserships</a></li>
     {% endif %}
     {% if org_nav.has_sfc_licenses %}
-        <li><a href="/dbpub/SFColicrec.asp?p={{ issues[0]['personID'] }}">SFC licenses</a></li>
+        <li><a href="/dbpub/SFColicrec.asp?p={{ issues[0]['personid'] }}">SFC licenses</a></li>
     {% endif %}
     {% if org_nav.ccass_part_id %}
         <li><a href="/ccass/cholder.asp?part={{ org_nav.ccass_part_id }}">CCASS holdings</a></li>
     {% endif %}
     {% if org_nav.has_financials %}
-        <li><a href="/dbpub/docs.asp?p={{ issues[0]['personID'] }}">Financials</a></li>
+        <li><a href="/dbpub/docs.asp?p={{ issues[0]['personid'] }}">Financials</a></li>
     {% endif %}
     {% if org_nav.has_ess %}
-        <li><a href="/dbpub/ESSraw.asp?p={{ issues[0]['personID'] }}">ESS</a></li>
+        <li><a href="/dbpub/ESSraw.asp?p={{ issues[0]['personid'] }}">ESS</a></li>
     {% endif %}
     {% if org_nav.has_articles %}
-        <li><a href="/dbpub/articles.asp?p={{ issues[0]['personID'] }}">Webb-site Reports</a></li>
+        <li><a href="/dbpub/articles.asp?p={{ issues[0]['personid'] }}">Webb-site Reports</a></li>
     {% endif %}
     {% if org_nav.has_complain %}
-        <li><a href="/dbpub/complain.asp?p={{ issues[0]['personID'] }}">Complain</a></li>
+        <li><a href="/dbpub/complain.asp?p={{ issues[0]['personid'] }}">Complain</a></li>
     {% endif %}
 </ul>
 <div class="clear"></div>

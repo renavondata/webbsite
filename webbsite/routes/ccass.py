@@ -250,6 +250,7 @@ def cconc():
             f"""
             SELECT
                 d.issueID,
+                o.personID,
                 o.name1,
                 st.typeShort,
                 CAST(d.c5 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp5,

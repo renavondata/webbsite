@@ -89,8 +89,27 @@ def check(name, adj_data, n_issues, show_rel):
         failures.append(name)
 
 
+def check_org_nav():
+    """The org bar links to the issuer: get_issue() keys it `personid`, and a
+    `personID` lookup rendered every link as `?p=` (officers.asp?p= etc.)."""
+    src = (Path(__file__).resolve().parent.parent / "webbsite/templates/dbpub/ctr.html").read_text()
+    bar = re.search(r'<ul class="navlist">.*?</ul>', src, re.S).group(0)
+    issue = {"issueID": 3119, "lastCode": "5", "personid": 4242, "name": "X: Ordinary"}
+    org_nav = {k: True for k in ("has_officers", "has_pay", "has_advisers", "has_adviserships",
+                                 "has_sfc_licenses", "has_financials", "has_ess",
+                                 "has_articles", "has_complain")}
+    body = Environment().from_string(bar).render(issues=[issue], org_nav=org_nav)
+    hrefs = re.findall(r'href="(/dbpub/[^"]*\?p=[^"]*)"', body)
+    ok = len(hrefs) > 5 and all(h.endswith("?p=4242") for h in hrefs)
+    print(f"{'ok  ' if ok else 'FAIL'} org nav links carry the issuer id ({len(hrefs)} links)")
+    if not ok:
+        print("     " + " ".join(h for h in hrefs if not h.endswith("?p=4242")))
+        failures.append("org nav personid")
+
+
 def run():
     failures.clear()
+    check_org_nav()
     # CI's self-proof: with PLANTED_FAILURE set this script must exit 1, or the
     # gate is decoration. The reference renders 5 columns; ctr_series gets 4.
     if os.environ.get("PLANTED_FAILURE"):
