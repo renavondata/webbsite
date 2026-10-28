@@ -8370,7 +8370,9 @@ def orgdata():
                    END as exp,
                    st.typeShort, i.coupon, i.floating,
                    c.currency,
-                   NULL as os
+                   CASE WHEN sl.delistDate IS NULL OR sl.delistDate > CURRENT_DATE
+                        THEN ROUND((enigma.outstanding(sl.issueid, NULL) / 1000000)::numeric, 2)
+                   END AS os
             FROM enigma.stocklistings sl
             JOIN enigma.issue i ON sl.issueid = i.ID1
             JOIN enigma.sectypes st ON i.typeID = st.typeID
