@@ -599,8 +599,8 @@ def mcaphist():
             # Complex query for historical market caps
             curr_data = execute_query(
                 f"""
-                SELECT t2.sc, t2.i, st.typeShort, t2.p, t2.closing, t2.td,
-                       t2.os,
+                SELECT t2.sc, t2.sc AS stockcode, t2.i, st.typeShort, t2.p AS issuer,
+                       t2.closing, t2.td, t2.os, t2.os AS outstanding,
                        COALESCE(t2.closing * t2.os / 1000000.0, 0) AS mcap,
                        COALESCE(t2.os + t2.pendsh, 0) AS totsh,
                        COALESCE(t2.closing * (t2.os + t2.pendsh) / 1000000.0, 0) AS pendMcap,
