@@ -1357,6 +1357,40 @@ def run():
         for m, r in zip(mods, reals):
             m.execute_query = r
 
+    # Live-crawl finds (Oct 2026): rows that rendered blank. choldings never
+    # set "stake"; portchg's table was an unported stub of "-" cells.
+    def rec_ccass_tables(sql, params=None, timeout_s=None):
+        if "FROM enigma.issuedshares" in sql and "LIMIT 1" in sql:
+            return [{"outstanding": 1000}]
+        if "ccass.holdings h" in sql:
+            return [{"partid": 7, "holding": 250, "atdate": date(2026, 1, 2),
+                     "partname": "ACME BROKER", "ccassid": "B00007"}]
+        if "start_holdings" in sql:
+            return [{"issueid": 1088, "stockcode": 5, "stockname": "HSBC: Ord HKD",
+                     "holding": 1500, "hldchg": -500, "stake": 0.015, "stkchg": -0.005,
+                     "valchg": -42000, "lastdate": date(2026, 1, 2), "susp": True}]
+        if "ccass.participants" in sql:
+            return [{"partname": "ACME BROKER", "personid": None}]
+        if "ccass.calendar" in sql:
+            return [{"d1": date(2026, 1, 1)}]
+        return []
+
+    real = ccass.execute_query
+    ccass.execute_query = rec_ccass_tables
+    try:
+        body = client.get("/ccass/choldings.asp?i=1088&d=2026-01-02").get_data(as_text=True)
+        check("choldings: stake = holding / issued (250 / 1000)",
+              '<td class="colHide2">25.00</td>' in body, True)
+        body = client.get("/ccass/portchg.asp?p=7&d1=2026-01-01&d=2026-01-02").get_data(as_text=True)
+        check("portchg: the row links its issue", 'href="chldchg.asp?i=1088&amp;d1=' in body, True)
+        check("portchg: code, name, holding, change, stake, value, suspended, date",
+              all(c in body for c in ("<td>5</td>", ">HSBC: Ord HKD</a>", "1,500", "-500",
+                                      "<td>1.50</td>", ">-0.50</a>", "-42,000", "<td>*</td>",
+                                      ">2026-01-02</td>")), True)
+        check("portchg: no raw ASP left in the page", "<%" in body, False)
+    finally:
+        ccass.execute_query = real
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:

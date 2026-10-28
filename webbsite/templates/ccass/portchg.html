@@ -95,31 +95,36 @@
 	<p>"Value change" is the value of the holding change at the closing price at the end of the period. Hit the "stake change" to see history.
 		&quot;*&quot;=stock is suspended or in parallel trading. Last close on this counter is used.</p>
 	{{ mobile(1) }}
+	{% macro sl(label, defsort, altsort) %}
+		{%- if sort == defsort %}<a href="{{ url_for('ccass.portchg', p=p, d1=d1, d=d2, z=z, sort=altsort) }}"><strong>{{ label|safe }} &#8595;</strong></a>
+		{%- elif sort == altsort %}<a href="{{ url_for('ccass.portchg', p=p, d1=d1, d=d2, z=z, sort=defsort) }}"><strong>{{ label|safe }} &#8593;</strong></a>
+		{%- else %}<a href="{{ url_for('ccass.portchg', p=p, d1=d1, d=d2, z=z, sort=defsort) }}">{{ label|safe }}</a>{% endif %}
+	{%- endmacro %}
 	<table class="optable yscroll">
 		<tr>
 			<th class="colHide1">Row</th>
-			<th>{# TODO: Port ASP logic: SL "Last<br>code","codeup","codedn"... #}</th>
-			<th class="left">{# TODO: Port ASP logic: SL "Name","nameup","namedn"... #}</th>
-			<th class="colHide1">{# TODO: Port ASP logic: SL "Holding","holddn","holdup"... #}</th>
-			<th class="colHide1">{# TODO: Port ASP logic: SL "Change", "chngdn","chngup"... #}</th>
-			<th><%SL "Stake<br>%","stakdn","stakup"%></th>
-			<th><%SL "Stake<br>&#x0394; %","stkcdn","stkcup"%></th>
-			<th class="colHide3">{# TODO: Port ASP logic: SL "Value<br>change","valcdn","valcup"... #}</th>
+			<th>{{ sl("Last<br>code", "codeup", "codedn") }}</th>
+			<th class="left">{{ sl("Name", "nameup", "namedn") }}</th>
+			<th class="colHide1">{{ sl("Holding", "holddn", "holdup") }}</th>
+			<th class="colHide1">{{ sl("Change", "chngdn", "chngup") }}</th>
+			<th>{{ sl("Stake<br>%", "stakdn", "stakup") }}</th>
+			<th>{{ sl("Stake<br>&#x0394; %", "stkcdn", "stkcup") }}</th>
+			<th class="colHide3">{{ sl("Value<br>change", "valcdn", "valcup") }}</th>
 			<th></th>
-			<th class="colHide3">{# TODO: Port ASP logic: SL "Last<br>holding","lastdn","lastup"... #}</th>
+			<th class="colHide3">{{ sl("Last<br>holding", "lastdn", "lastup") }}</th>
 		</tr>
 		{% for row in changes %}
 		<tr>
 			<td class="colHide1">{{ loop.index }}</td>
-			<td>{{ row.stockcode or '' }}</td>
-			<td class="left"><a href="chldchg.asp?i={{ row.issueid }}&d1={{ d1 }}&d={{ d2 }}">{{ row.stockname }}</a></td>
-			<td class="colHide1">{{ '{:,.2f}'.format(row.holding) if row.holding else '-' }}</td>
-			<td class="colHide1">-</td>
-			<td>-</td>
-			<td><a href="chistory.asp?i={{ row.issueid }}&part={{ p }}">-</a></td>
-			<td class="colHide3">-</td>
-			<td></td>
-			<td class="colHide3" style="white-space:nowrap">-</td>
+			<td>{{ row.stockCode }}</td>
+			<td class="left"><a href="chldchg.asp?i={{ row.issueID }}&amp;d1={{ d1 }}&amp;d={{ d2 }}">{{ row.stockName }}</a></td>
+			<td class="colHide1">{{ "{:,.0f}".format(row.holding) }}</td>
+			<td class="colHide1">{{ "{:,.0f}".format(row.hldchg) }}</td>
+			<td>{{ "{:,.2f}".format(row.stake) if row.stake is not none else '-' }}</td>
+			<td><a href="chistory.asp?i={{ row.issueID }}&amp;part={{ p }}">{{ "{:,.2f}".format(row.stkchg) if row.stkchg is not none else '-' }}</a></td>
+			<td class="colHide3">{{ "{:,.0f}".format(row.valchg) if row.valchg is not none else '-' }}</td>
+			<td>{% if row.susp %}*{% endif %}</td>
+			<td class="colHide3" style="white-space:nowrap">{{ row.lastDate|ms_date }}</td>
 		</tr>
 		{% endfor %}
 	</table>
