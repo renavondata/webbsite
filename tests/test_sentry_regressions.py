@@ -1391,6 +1391,38 @@ def run():
     finally:
         ccass.execute_query = real
 
+    # lrvaluecats: a {% set %} inside the inner loop never left it, so every
+    # cell was blank and every total 0; stat IDs 41-46 are not value bands.
+    lr_sql = []
+
+    def rec_lr(sql, params=None, timeout_s=None):
+        lr_sql.append(sql)
+        if "MAX(d)" in sql:
+            return [{"maxd": date(2026, 2, 1)}]
+        if "enigma.stats" in sql:
+            return [{"id": 35, "short_name": "<$1m"}, {"id": 36, "short_name": "$1m<$2m"}]
+        if "statID IN (35)" in sql:
+            return [{"period": date(2026, 1, 1), "units": 30}, {"period": date(2026, 2, 1), "units": 10}]
+        if "statID IN (36)" in sql:
+            return [{"period": date(2026, 2, 1), "units": 30}]
+        return []
+
+    real_db = db_module.execute_query
+    db_module.execute_query = rec_lr
+    try:
+        body = client.get("/dbpub/lrvaluecats.asp").get_data(as_text=True)
+        cells = re.findall(r'<td class="r">(.*?)</td>', body)
+        check("lrvaluecats: cells and totals render (a band missing a period is blank)",
+              cells, ["30", "", "<b>30</b>", "10", "30", "<b>40</b>"])
+        check("lrvaluecats: stat IDs 41-46 (not value bands) excluded",
+              any("NOT BETWEEN 41 AND 46" in q for q in lr_sql), True)
+        body = client.get("/dbpub/lrvaluecats.asp?p=1").get_data(as_text=True)
+        check("lrvaluecats p=1: percentages of each period",
+              re.findall(r'<td class="r">(.*?)</td>', body),
+              ["100.0", "0.0", "<b>30</b>", "25.0", "75.0", "<b>40</b>"])
+    finally:
+        db_module.execute_query = real_db
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:
