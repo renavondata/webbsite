@@ -5749,7 +5749,7 @@ def lrvaluecats():
         return render_template(
             "dbpub/lrvaluecats.html",
             title=title,
-            data=[],
+            rows=[],
             categories=[],
             selected_g=g,
             selected_f=f,
@@ -5775,6 +5775,7 @@ def lrvaluecats():
                    RIGHT(statName, LENGTH(statName) - 31) AS short_name
             FROM enigma.stats
             WHERE ID BETWEEN 35 AND 64
+              AND ID NOT BETWEEN 41 AND 46  -- not value bands; the ASP skips them too
             ORDER BY ID
             """
         )
@@ -5807,18 +5808,32 @@ def lrvaluecats():
             """
 
         cat_data = execute_query(sql)
-        data.append({"category": cat["name"], "data": cat_data})
+        data.append({row["period"]: int(row["units"] or 0) for row in cat_data})
 
     return render_template(
         "dbpub/lrvaluecats.html",
         title=title,
-        data=data,
+        rows=lrvaluecats_rows(data, p),
         categories=[c["name"] for c in categories],
         selected_g=g,
         selected_f=f,
         selected_p=p,
         max_date=max_date
     )
+
+
+def lrvaluecats_rows(data, pct):
+    """Pivot per-band {period: units} into (period, cells, total) rows over
+    every period any band has; cells are percentages of the row when pct."""
+    periods = sorted({period for band in data for period in band})
+
+    def row(period):
+        units = [band.get(period, 0) for band in data]
+        total = sum(units)
+        cells = [100 * u / total if total else 0 for u in units] if pct else units
+        return period, cells, total
+
+    return [row(period) for period in periods]
 
 
 # Public rental housing districts

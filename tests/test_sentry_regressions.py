@@ -1357,6 +1357,72 @@ def run():
         for m, r in zip(mods, reals):
             m.execute_query = r
 
+    # Live-crawl finds (Oct 2026): rows that rendered blank. choldings never
+    # set "stake"; portchg's table was an unported stub of "-" cells.
+    def rec_ccass_tables(sql, params=None, timeout_s=None):
+        if "FROM enigma.issuedshares" in sql and "LIMIT 1" in sql:
+            return [{"outstanding": 1000}]
+        if "ccass.holdings h" in sql:
+            return [{"partid": 7, "holding": 250, "atdate": date(2026, 1, 2),
+                     "partname": "ACME BROKER", "ccassid": "B00007"}]
+        if "start_holdings" in sql:
+            return [{"issueid": 1088, "stockcode": 5, "stockname": "HSBC: Ord HKD",
+                     "holding": 1500, "hldchg": -500, "stake": 0.015, "stkchg": -0.005,
+                     "valchg": -42000, "lastdate": date(2026, 1, 2), "susp": True}]
+        if "ccass.participants" in sql:
+            return [{"partname": "ACME BROKER", "personid": None}]
+        if "ccass.calendar" in sql:
+            return [{"d1": date(2026, 1, 1)}]
+        return []
+
+    real = ccass.execute_query
+    ccass.execute_query = rec_ccass_tables
+    try:
+        body = client.get("/ccass/choldings.asp?i=1088&d=2026-01-02").get_data(as_text=True)
+        check("choldings: stake = holding / issued (250 / 1000)",
+              '<td class="colHide2">25.00</td>' in body, True)
+        body = client.get("/ccass/portchg.asp?p=7&d1=2026-01-01&d=2026-01-02").get_data(as_text=True)
+        check("portchg: the row links its issue", 'href="chldchg.asp?i=1088&amp;d1=' in body, True)
+        check("portchg: code, name, holding, change, stake, value, suspended, date",
+              all(c in body for c in ("<td>5</td>", ">HSBC: Ord HKD</a>", "1,500", "-500",
+                                      "<td>1.50</td>", ">-0.50</a>", "-42,000", "<td>*</td>",
+                                      ">2026-01-02</td>")), True)
+        check("portchg: no raw ASP left in the page", "<%" in body, False)
+    finally:
+        ccass.execute_query = real
+
+    # lrvaluecats: a {% set %} inside the inner loop never left it, so every
+    # cell was blank and every total 0; stat IDs 41-46 are not value bands.
+    lr_sql = []
+
+    def rec_lr(sql, params=None, timeout_s=None):
+        lr_sql.append(sql)
+        if "MAX(d)" in sql:
+            return [{"maxd": date(2026, 2, 1)}]
+        if "enigma.stats" in sql:
+            return [{"id": 35, "short_name": "<$1m"}, {"id": 36, "short_name": "$1m<$2m"}]
+        if "statID IN (35)" in sql:
+            return [{"period": date(2026, 1, 1), "units": 30}, {"period": date(2026, 2, 1), "units": 10}]
+        if "statID IN (36)" in sql:
+            return [{"period": date(2026, 2, 1), "units": 30}]
+        return []
+
+    real_db = db_module.execute_query
+    db_module.execute_query = rec_lr
+    try:
+        body = client.get("/dbpub/lrvaluecats.asp").get_data(as_text=True)
+        cells = re.findall(r'<td class="r">(.*?)</td>', body)
+        check("lrvaluecats: cells and totals render (a band missing a period is blank)",
+              cells, ["30", "", "<b>30</b>", "10", "30", "<b>40</b>"])
+        check("lrvaluecats: stat IDs 41-46 (not value bands) excluded",
+              any("NOT BETWEEN 41 AND 46" in q for q in lr_sql), True)
+        body = client.get("/dbpub/lrvaluecats.asp?p=1").get_data(as_text=True)
+        check("lrvaluecats p=1: percentages of each period",
+              re.findall(r'<td class="r">(.*?)</td>', body),
+              ["100.0", "0.0", "<b>30</b>", "25.0", "75.0", "<b>40</b>"])
+    finally:
+        db_module.execute_query = real_db
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:

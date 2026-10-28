@@ -888,10 +888,12 @@ def choldings():
             )
 
             for row in holdings_result:
+                holding = float(row["holding"]) if row["holding"] else 0
                 holdings.append(
                     {
                         "partID": row["partid"],
-                        "holding": float(row["holding"]) if row["holding"] else 0,
+                        "holding": holding,
+                        "stake": holding / issued if issued else None,
                         "atDate": row["atdate"],
                         "partName": row["partname"],
                         "CCASSID": row["ccassid"],
