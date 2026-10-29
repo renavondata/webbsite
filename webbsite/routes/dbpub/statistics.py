@@ -5814,6 +5814,7 @@ def lrvaluecats():
         "dbpub/lrvaluecats.html",
         title=title,
         rows=lrvaluecats_rows(data, p),
+        series=lrvaluecats_series([c["name"] for c in categories], data),
         categories=[c["name"] for c in categories],
         selected_g=g,
         selected_f=f,
@@ -5834,6 +5835,21 @@ def lrvaluecats_rows(data, pct):
         return period, cells, total
 
     return [row(period) for period in periods]
+
+
+def lrvaluecats_series(names, data):
+    """Highstock series per band: [epoch ms, units] points. An annual period is
+    a year number, plotted at 1 January of that year."""
+    from datetime import date, datetime, timezone
+
+    def ms(period):
+        d = period if isinstance(period, date) else date(int(period), 1, 1)
+        return int(datetime(d.year, d.month, d.day, tzinfo=timezone.utc).timestamp() * 1000)
+
+    return [
+        {"name": name, "data": [[ms(period), units] for period, units in sorted(band.items())]}
+        for name, band in zip(names, data)
+    ]
 
 
 # Public rental housing districts

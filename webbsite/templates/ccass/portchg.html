@@ -13,6 +13,7 @@
 <body>
 {% extends "base_database.html" %}
 {% block content %}
+{% from 'includes/navbars.html' import orgbar, ccassbarpart %}
 {% if m %}
 	<p><b>{{ m }}</b></p>
 {% else %}
@@ -69,9 +70,12 @@
 			Call humanBar(name,person,5)
 		End If
 	Else #}
+	{% if person and isOrg %}
+		{{ orgbar(name, person, 0, 0) }}
+	{% else %}
 		<h2>{{ name }}</h2>
-	{# TODO: Port ASP logic: End If
-	Call ccassbarpart(p,d2,2)... #}
+	{% endif %}
+	{{ ccassbarpart(p, d2, 2) }}
 
 	<h3>CCASS holding changes from {{ d1 }} to {{ d2 }}</h3>
 	<form method="get" action="portchg.asp">

@@ -768,6 +768,23 @@ def choldings():
 
             current_app.logger.error(f"Error getting CCASS date: {ex}")
 
+    # On a split's ex-date the ASP divided every holding by the split's adjust
+    # factor, putting the day's CCASS holdings on the same basis as `issued`.
+    sa = 1.0
+    if issue_id > 0 and d:
+        try:
+            result = execute_query(
+                "SELECT adjust FROM enigma.events "
+                "WHERE issueID = %s AND eventType = 4 AND exDate = %s LIMIT 1",
+                (issue_id, d),
+            )
+            if result and result[0]["adjust"]:
+                sa = float(result[0]["adjust"])
+        except Exception as ex:
+            from flask import current_app
+
+            current_app.logger.error(f"Error getting split adjustment: {ex}")
+
     # Query summary data from dailylog
     summary = {}
     if issue_id > 0 and d:
@@ -785,22 +802,22 @@ def choldings():
             if result:
                 summary = {
                     "NCIPhldg": (
-                        float(result[0]["nciphldg"]) if result[0]["nciphldg"] else 0
+                        float(result[0]["nciphldg"]) / sa if result[0]["nciphldg"] else 0
                     ),
                     "NCIPcnt": (
                         float(result[0]["ncipcnt"]) if result[0]["ncipcnt"] else 0
                     ),
                     "BrokHldg": (
-                        float(result[0]["brokhldg"]) if result[0]["brokhldg"] else 0
+                        float(result[0]["brokhldg"]) / sa if result[0]["brokhldg"] else 0
                     ),
                     "CustHldg": (
-                        float(result[0]["custhldg"]) if result[0]["custhldg"] else 0
+                        float(result[0]["custhldg"]) / sa if result[0]["custhldg"] else 0
                     ),
                     "CIPHldg": (
-                        float(result[0]["ciphldg"]) if result[0]["ciphldg"] else 0
+                        float(result[0]["ciphldg"]) / sa if result[0]["ciphldg"] else 0
                     ),
                     "intermedHldg": (
-                        float(result[0]["intermedhldg"])
+                        float(result[0]["intermedhldg"]) / sa
                         if result[0]["intermedhldg"]
                         else 0
                     ),
@@ -888,7 +905,7 @@ def choldings():
             )
 
             for row in holdings_result:
-                holding = float(row["holding"]) if row["holding"] else 0
+                holding = float(row["holding"]) / sa if row["holding"] else 0
                 holdings.append(
                     {
                         "partID": row["partid"],
@@ -1079,7 +1096,8 @@ def bigchangespart():
     guard = _validate_ccass_query()
     if guard is not None:
         return guard
-    part_param = request.args.get("part", "")
+    # The ASP page read p; the participant nav bars still link with it.
+    part_param = request.args.get("part") or request.args.get("p", "")
     sort_param = request.args.get("sort", "datedn")
 
     # Sort order mapping

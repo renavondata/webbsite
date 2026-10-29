@@ -6,6 +6,7 @@ Direct ports to maintain compatibility with ASP logic
 from datetime import datetime, date
 from urllib.parse import urlencode
 from flask import request
+from markupsafe import Markup
 import re
 import html
 
@@ -298,10 +299,11 @@ def make_select_onch(name, value, options_str, onchange=""):
 
 
 def checkbox(name, value, auto_submit=False):
-    """Generate HTML checkbox"""
+    """Generate HTML checkbox (Markup, so a template's autoescape keeps it a tag)"""
     checked = " checked" if value else ""
     onchange = " onchange='this.form.submit()'" if auto_submit else ""
-    return f"<input type='checkbox' name='{name}' id='{name}' value='1'{checked}{onchange}>"
+    name = html.escape(name)
+    return Markup(f"<input type='checkbox' name='{name}' id='{name}' value='1'{checked}{onchange}>")
 
 
 def checked(condition):
