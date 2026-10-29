@@ -1359,7 +1359,11 @@ def run():
 
     # Live-crawl finds (Oct 2026): rows that rendered blank. choldings never
     # set "stake"; portchg's table was an unported stub of "-" cells.
+    split = []  # adjust factor of a split ex-dated on the requested day
+
     def rec_ccass_tables(sql, params=None, timeout_s=None):
+        if "eventType = 4" in sql:
+            return [{"adjust": a} for a in split]
         if "FROM enigma.issuedshares" in sql and "LIMIT 1" in sql:
             return [{"outstanding": 1000}]
         if "ccass.holdings h" in sql:
@@ -1388,6 +1392,19 @@ def run():
                                       "<td>1.50</td>", ">-0.50</a>", "-42,000", "<td>*</td>",
                                       ">2026-01-02</td>")), True)
         check("portchg: no raw ASP left in the page", "<%" in body, False)
+        check("portchg: participant nav bar, Changes live",
+              all(c in body for c in ("/ccass/cholder.asp?part=7&amp;d=",
+                                      "/ccass/bigchangespart.asp?p=7'",
+                                      "<li class='livebutton'>Changes</li>")), True)
+        check("portchg: the z checkbox renders as a tag, not escaped text",
+              "<input type='checkbox' name='z'" in body, True)
+        body = client.get("/ccass/bigchangespart.asp?p=7").get_data(as_text=True)
+        check("bigchangespart: reads the nav bars' p= (as the ASP did)",
+              "<h2>ACME BROKER</h2>" in body, True)
+        split.append(2)
+        body = client.get("/ccass/choldings.asp?i=1088&d=2026-01-02").get_data(as_text=True)
+        check("choldings: holdings on a split's ex-date divided by its adjust (125 / 1000)",
+              '<td class="colHide2">12.50</td>' in body, True)
     finally:
         ccass.execute_query = real
 
@@ -1420,6 +1437,11 @@ def run():
         check("lrvaluecats p=1: percentages of each period",
               re.findall(r'<td class="r">(.*?)</td>', body),
               ["100.0", "0.0", "<b>30</b>", "25.0", "75.0", "<b>40</b>"])
+        check("lrvaluecats p=1: chart stacks by percent",
+              "stacking: 'percent'" in body and 'id="chart1"' in body, True)
+        check("lrvaluecats: chart series are [epoch ms, units] per band",
+              '[[1767225600000, 30], [1769904000000, 10]]' in body
+              and '[[1769904000000, 30]]' in body, True)
     finally:
         db_module.execute_query = real_db
 

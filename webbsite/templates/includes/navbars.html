@@ -90,7 +90,7 @@
 	{{ stockbar(issue_id, 4, stock_code, listings) }}
 	{% if issue_id and issue_id > 0 %}
 		{# Ensure date is formatted properly #}
-		{% set d = date.strftime('%Y-%m-%d') if date else '' %}
+		{% set d = date if date is string else (date.strftime('%Y-%m-%d') if date else '') %}
 		<ul class="navlist">
 			{{ btn(1, url_for('ccass.choldings', i=issue_id, d=d), 'Holdings', target) }}
 			{{ btn(2, url_for('ccass.chldchg', i=issue_id, d=d, sort='chngdn'), 'Changes', target) }}
@@ -107,7 +107,7 @@
 {% macro ccassbarpart(part_id, date, target) -%}
 	{# Navigation bar for a CCASS participant page #}
 	{% if part_id and part_id > 0 %}
-		{% set d = date.strftime('%Y-%m-%d') if date else '' %}
+		{% set d = date if date is string else (date.strftime('%Y-%m-%d') if date else '') %}
 		<ul class="navlist">
 			{{ btn(1, url_for('ccass.cholder', part=part_id, d=d), 'Holdings', target) }}
 			{{ btn(2, url_for('ccass.portchg', p=part_id, d=d), 'Changes', target) }}
