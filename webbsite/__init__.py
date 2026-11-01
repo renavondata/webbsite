@@ -80,7 +80,25 @@ ROBOTS_DISALLOW = (
     "/ccass/ipstakes.asp",
     "/CSV.asp", "/dbpub/CSV.asp", "/dbpub/pricesCSV.asp", "/dbpub/govacCSV.asp",
     "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/", "/contact/",
+    "/_probe/",
 )
+
+# /_probe/swr/<variant>: which header does Cloudflare honour stale-while-revalidate
+# in? Its docs say "in the Cache-Control header" (revalidation page) but also that
+# Cache-Control "does not affect caching decisions" once CDN-Cache-Control is
+# present (CDN-Cache-Control page) -- which is how every data page here is sent.
+# Each variant returns a timestamp body with a 30 s edge TTL and a 10 min SWR
+# window in one place; curl it through the edge (deploy/README.md "Edge
+# stale-while-revalidate") and see which one answers UPDATING with the old body.
+SWR_PROBE_HEADERS = {
+    "cc":    {"Cache-Control": "public, max-age=30, stale-while-revalidate=600"},
+    "cdn":   {"Cache-Control": "public, max-age=5",
+              "CDN-Cache-Control": "max-age=30, stale-while-revalidate=600"},
+    "cfcdn": {"Cache-Control": "public, max-age=5",
+              "Cloudflare-CDN-Cache-Control": "max-age=30, stale-while-revalidate=600"},
+    "mixed": {"Cache-Control": "public, max-age=5, stale-while-revalidate=600",
+              "CDN-Cache-Control": "max-age=30"},
+}
 
 
 class _LiveStderrHandler(logging.StreamHandler):
@@ -381,6 +399,14 @@ def create_app(config_class=Config):
     # render a page (the pattern used elsewhere in the fleet): the heavy pages
     # here cost hundreds of ms, and a 5-minute probe that adds load to a box
     # whose failure mode IS load would be a monitor that causes outages.
+    @app.route("/_probe/swr/<variant>")
+    def swr_probe(variant):
+        """No database, no template: a timestamp under one header variant."""
+        headers = SWR_PROBE_HEADERS.get(variant)
+        if headers is None:
+            return Response("unknown variant\n", status=404, mimetype="text/plain")
+        return Response(f"{time.time():.3f}\n", mimetype="text/plain", headers=headers)
+
     @app.route("/health")
     def health():
         if request.args.get("deep", "") not in ("1", "true", "True", "yes"):
