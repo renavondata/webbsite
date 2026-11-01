@@ -62,7 +62,7 @@ jobs:
       - name: shellcheck deploy/ and the schema apply
         run: |
           sudo apt-get install -y -q shellcheck >/dev/null
-          shellcheck -S warning deploy/*.sh scripts/apply_schema.sh tests/test_apply_schema.sh
+          shellcheck -S warning deploy/*.sh scripts/apply_schema.sh tests/test_apply_schema.sh scripts/build_derived.sh scripts/db_build.sh tests/test_derived.sh
 
       # converge.sh runs as root on the box; prove it parses and that its
       # allowlist resolves before it ever gets there. Dry-run needs no root.
@@ -162,6 +162,16 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
         run: tests/test_apply_schema.sh
+
+      # scripts/build_derived.sh + db_build.sh (the converge-started builds of
+      # indexes and derived tables): cold start, no-op re-run, stale fingerprint,
+      # emptied table, crash leftovers, invalid index.
+      - name: derived tables and db builds
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: tests/test_derived.sh
 
   # Advances `ci-green` only when every job above passed on master. The guard
   # is spelled out so a SKIPPED job (none today) would still advance it while

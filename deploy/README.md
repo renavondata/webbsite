@@ -239,10 +239,17 @@ performs -- a pending restart. `shared_buffers` and `shared_preload_libraries` n
 ```bash
 sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC refresh
 ```
-`database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
-any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`). It is too
-slow to rebuild on a tick, so it stays a manual post-restore step that the invariants job
-checks for.
+`database/schema/indexes.sql` (the app's performance indexes) and `database/derived/*.sql`
+(derived tables such as `enigma.people_search`) are **built automatically**: every converge
+tick asks `scripts/db_build.sh --needed`, and when an index is missing or INVALID or a
+derived table is missing, empty or stale, it starts `webbsite-db-build.service`, which
+builds them beside live traffic (indexes `CONCURRENTLY`, derived tables into `_new` and
+swapped, with a disk preflight). So after a restore there is nothing to run by hand: the
+box is cattle. Merging an index or a derived table *is* its deploy. A failed build leaves
+`/var/lib/webbsite-db-build/failed` and is retried after 6 h; its journal says why
+(`journalctl -u webbsite-db-build`). The invariants job reports these as "building" while
+the unit runs and FAILs only if it is not running. Derived tables' rows are left out of the
+backup (`deploy/backup-producer.sh`); a restore brings them back empty and they rebuild.
 
 `database/schema/functions.sql` is the return calculations (`enigma.totret` / `cagret` /
 `cagrel`). These are `CREATE OR REPLACE` and instant, so unlike the indexes **converge

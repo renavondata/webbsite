@@ -69,6 +69,31 @@ def run():
     check("same_sql sees a dropped NULLIF",
           ab.same_sql("x / NULLIF(y, 0)", "x / y"), False)
 
+    # derived tables (database/derived/, scripts/build_derived.sh)
+    hdrs = {f.stem: ab.parse_derived_header(f.read_text()) for f in sorted(ab.DERIVED_DIR.glob("*.sql"))}
+    check("people_search declares its two tables",
+          hdrs["people_search"]["tables"], ["enigma.people_search", "enigma.people_tokfreq"])
+    check("every derived file has tables, a fingerprint query and a size",
+          [n for n, h in hdrs.items() if not (h["tables"] and h["fingerprint"].upper().startswith("SELECT")
+                                              and h["size_gb"] > 0)], [])
+    check("derived bodies only create _new objects (never touch the live tables)",
+          [n for n in hdrs if any(f"CREATE TABLE {t} " in (ab.DERIVED_DIR / f"{n}.sql").read_text()
+                                  or f"CREATE TABLE {t}\n" in (ab.DERIVED_DIR / f"{n}.sql").read_text()
+                                  for t in hdrs[n]["tables"])], [])
+    excluded = {t for h in hdrs.values() if h["exclude_data"] for t in h["tables"]}
+    check("backup-producer.sh excludes exactly the exclude-data derived tables",
+          ab.backup_excludes(ab.BACKUP_PRODUCER.read_text()), excluded)
+    stamp = ab.derived_stamp("abc", "42")
+    check("derived: fresh when the comment carries the stamp",
+          ab.derived_problem("t", "present", stamp + "built=2026-11-01T00:00:00Z", stamp), None)
+    check("derived: stale on another stamp",
+          ab.derived_problem("t", "present", ab.derived_stamp("abc", "41") + "built=x", stamp) is not None, True)
+    check("derived: a prefix of the fingerprint is not a match",
+          ab.derived_problem("t", "present", ab.derived_stamp("abc", "4") + "built=x", stamp) is not None, True)
+    check("derived: missing / empty reported",
+          [ab.derived_problem("t", s, None, stamp) for s in ("missing", "empty")],
+          ["t missing", "t empty"])
+
     rows = ab.parse_checks(ab.CHECKS_TXT.read_text())
     check("checks.txt parses 7 rows", len(rows), 7)
     check("every row is live", [r["name"] for r in rows if r["status"] != "live"], [])
