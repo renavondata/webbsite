@@ -46,13 +46,13 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py tests/test_people_search.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.
       - name: "self-proof: a planted failure fails"
         run: |
-          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py; do
+          for t in tests/test_app_hardening.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_people_search.py; do
             if PLANTED_FAILURE=1 uv run python "$t" >/dev/null 2>&1; then
               echo "$t passed with a planted failure -- it is not gating"; exit 1
             fi
@@ -172,6 +172,15 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
         run: tests/test_derived.sh
+
+      # searchpeople.asp on enigma.people_search returns exactly what the old
+      # GIN query on people does: ~25 searches, ids in order, with self-proofs.
+      - name: people search equivalence
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: uv run python tests/test_people_search_pg.py
 
   # Advances `ci-green` only when every job above passed on master. The guard
   # is spelled out so a SKIPPED job (none today) would still advance it while
