@@ -33,13 +33,22 @@ Usage:
 
     ROUTE_CHECK_SORTS=0   skip the sort sweep (~1100 requests, the slow part)
     ROUTE_CHECK_WORKERS=6 concurrency for the sweep
+    ROUTE_CHECK_BUDGET=report|enforce   latency budget mode (tests/perf_budget.py)
+    ROUTE_TIMINGS_DIR=dir write every request's timing to dir/YYYY-MM-DD.tsv
+
+Every request is timed (wall clock, plus the app's Server-Timing split). A 200
+whose Server-Timing says `dberr` is a FAIL: a query failed and the route
+rendered a page anyway -- the empty-table-with-a-200 failure mode, caught
+directly instead of only through row counts.
 
 Exit code 0 = all checks passed; 1 = at least one failure.
 """
 import os
 import re
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date
 from html import unescape
 from urllib.parse import parse_qs, parse_qsl, urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
@@ -51,6 +60,7 @@ TIMEOUT = int(os.environ.get("ROUTE_CHECK_TIMEOUT", "30"))
 # The route fixtures are pure data in route_fixtures.py (no requests, no proxy
 # guard), so this script runs on the box's app venv with only the stdlib.
 sys.path.insert(0, os.path.dirname(__file__))
+import perf_budget  # noqa: E402
 import route_fixtures as ca  # noqa: E402
 import sort_fixtures  # noqa: E402
 
@@ -230,6 +240,11 @@ def collect_targets():
 GIVE_UP_RETRYING_AFTER = 10
 _unreachable = 0
 
+# One row per request: (phase, url, status, wall ms, parsed Server-Timing).
+# Appended from the sweep's worker threads too (list.append is atomic).
+SAMPLES = []
+_phase = "status"
+
 
 def probe(url):
     """(status, body). Status is None when the origin could not be reached.
@@ -242,17 +257,121 @@ def probe(url):
     attempts = 1 if _unreachable >= GIVE_UP_RETRYING_AFTER else 2
     last = "not attempted"
     for _ in range(attempts):
+        t0 = time.perf_counter()
         try:
             with urlopen(Request(url, headers=HEADERS), timeout=TIMEOUT) as r:  # noqa: S310
                 _unreachable = 0
-                return r.status, r.read().decode("utf-8", "replace")
+                body = r.read().decode("utf-8", "replace")
+                _record(url, r.status, t0, r.headers)
+                return r.status, body
         except HTTPError as e:
             _unreachable = 0
-            return e.code, e.read().decode("utf-8", "replace")
+            body = e.read().decode("utf-8", "replace")
+            _record(url, e.code, t0, e.headers)
+            return e.code, body
         except (URLError, OSError) as e:
             last = str(e)
     _unreachable += 1
     return None, last
+
+
+def _record(url, status, t0, headers):
+    wall_ms = (time.perf_counter() - t0) * 1000
+    st = perf_budget.parse_server_timing(headers.get("Server-Timing") if headers else None)
+    SAMPLES.append((_phase, url, status, wall_ms, st))
+
+
+def page_ms(sample):
+    """The app's own time for a request (excludes gunicorn queueing), else wall."""
+    _phase_, _url, _status, wall_ms, st = sample
+    return st.get("app", wall_ms)
+
+
+def report_timings(samples, remeasure=None, mode="report", out_dir=None, today=None):
+    """Timing checks over every request this run made; returns failure strings.
+
+    remeasure(url) -> sample or None re-fetches one URL sequentially (warm).
+    """
+    failures = []
+    timed = [s for s in samples if s[2] is not None]
+    if not timed:
+        return failures
+
+    # A 200 rendered after a failed query: the route swallowed the error.
+    swallowed = sorted({s[1] for s in timed if s[2] == 200 and s[4].get("dberr")})
+    for url in swallowed:
+        failures.append(f"DBERR {url}: 200 rendered after a failed query")
+        print(f"  FAIL  {url}  (200 rendered after a failed query: Server-Timing dberr)")
+
+    if out_dir:
+        _write_tsv(timed, out_dir, today or date.today())
+
+    ms = [page_ms(s) for s in timed]
+    print(f"INFO: timing over {len(ms)} requests: p50 {perf_budget.percentile(ms, 50):.0f} ms, "
+          f"p95 {perf_budget.percentile(ms, 95):.0f} ms, max {max(ms):.0f} ms")
+    for s in sorted(timed, key=page_ms, reverse=True)[:10]:
+        st = s[4]
+        print(f"       {page_ms(s):7.0f} ms  db {st.get('db', 0):6.0f}  render "
+              f"{st.get('render', 0):5.0f}  {s[1]}")
+
+    # Budget: each URL's first measurement; over-budget ones get one warm retry.
+    first = {}
+    for s in timed:
+        if s[2] == 200:
+            first.setdefault(s[1], s)
+    over = [s for s in first.values()
+            if page_ms(s) > perf_budget.budget_ms(urlsplit(s[1]).path)]
+    over.sort(key=page_ms, reverse=True)
+    if not over:
+        print(f"INFO: budget: all {len(first)} URLs within budget")
+        return failures
+    print(f"INFO: budget ({mode}): {len(over)} of {len(first)} URLs over on first fetch")
+    for s in over[:REMEASURE_AT_MOST]:
+        path = urlsplit(s[1]).path
+        again = remeasure(s[1]) if remeasure else None
+        warm = page_ms(again) if again and again[2] == 200 else page_ms(s)
+        why = perf_budget.verdict(path, warm)
+        label = f"{page_ms(s):.0f} ms cold, {warm:.0f} ms warm"
+        if why and mode == "enforce":
+            failures.append(f"BUDGET {s[1]}: {why}")
+            print(f"  FAIL  {s[1]}  ({label}: {why})")
+        else:
+            print(f"INFO:  over budget  {s[1]}  ({label}{'' if why else '; ok warm or known'})")
+    if len(over) > REMEASURE_AT_MOST:
+        print(f"INFO:  ... and {len(over) - REMEASURE_AT_MOST} more over budget, not re-measured")
+    return failures
+
+
+def _write_tsv(samples, out_dir, today, keep_days=30):
+    """dir/YYYY-MM-DD.tsv, one line per request; files older than keep_days go."""
+    try:
+        os.makedirs(out_dir, exist_ok=True)
+        cols = ("app", "db", "db_n", "render", "cpu")
+        with open(os.path.join(out_dir, f"{today.isoformat()}.tsv"), "w") as f:
+            f.write("phase\tstatus\twall_ms\t" + "\t".join(cols) + "\tcache\tdberr\turl\n")
+            for phase, url, status, wall_ms, st in samples:
+                f.write("\t".join([phase, str(status), f"{wall_ms:.1f}",
+                                   *(str(st.get(c, "")) for c in cols),
+                                   st.get("cache", ""), "1" if st.get("dberr") else "",
+                                   url]) + "\n")
+        for name in os.listdir(out_dir):
+            stem = name.removesuffix(".tsv")
+            if name.endswith(".tsv") and len(stem) == 10:
+                try:
+                    if (today - date.fromisoformat(stem)).days > keep_days:
+                        os.remove(os.path.join(out_dir, name))
+                except ValueError:
+                    pass
+    except OSError as e:  # the timings are diagnostics; never fail the run on them
+        print(f"INFO: timings not written ({e})")
+
+
+def _remeasure(url):
+    global _phase
+    _phase = "remeasure"
+    n = len(SAMPLES)
+    probe(url)
+    return SAMPLES[-1] if len(SAMPLES) > n else None
 
 
 def sort_base_urls():
@@ -439,6 +558,10 @@ def check_sorts():
 # More failures than this in one pass are reported without re-measuring.
 CONFIRM_AT_MOST = 20
 
+# Over-budget URLs re-measured sequentially (warm) per run; the rest are only
+# reported. Bounded so a bad day cannot push the run past assert_box's timeout.
+REMEASURE_AT_MOST = 40
+
 
 def base_problem(code, rows):
     """Is this base page unfit to compare sorts against?"""
@@ -520,6 +643,8 @@ def main():
             print(f"  FAIL  {label}  (expected {exp}, got {code})")
 
     # 2) content (silent-failure) checks
+    global _phase
+    _phase = "content"
     print("-" * 60)
     for path, params, must_match, must_not in CONTENT_CHECKS:
         url = url_for(path, params)
@@ -583,7 +708,15 @@ def main():
     # 3) sort links: every ?sort= value, and every sort link the page offers.
     if os.environ.get("ROUTE_CHECK_SORTS", "1") != "0":
         print("-" * 60)
+        _phase = "sort"
         failures.extend(check_sorts())
+
+    # 3.5) timing: swallowed query failures, the slowest pages, the budget
+    print("-" * 60)
+    failures.extend(report_timings(
+        SAMPLES, remeasure=_remeasure,
+        mode=os.environ.get("ROUTE_CHECK_BUDGET", "report"),
+        out_dir=os.environ.get("ROUTE_TIMINGS_DIR")))
 
     # 4) coverage report (informational): parameterless GET rules with no fixture
     try:
