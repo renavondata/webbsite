@@ -435,6 +435,10 @@ def init_engine(app):
             # Echo SQL if configured
             echo=app.config.get("SQL_ECHO", False),
         )
+        # Per-request SQL time for the Server-Timing header (webbsite/timing.py).
+        from webbsite import timing
+
+        timing.attach_engine(_engine)
         logger.info(
             f"SQLAlchemy database engine initialized with pool_pre_ping "
             f"(pool_size={app.config.get('DB_POOL_MIN_CONN', 2)}, "
