@@ -7105,13 +7105,17 @@ def str_route():
                 current_app.logger.error(f"Error building org_nav: {ex}", exc_info=True)
 
         # Get adjusted quotes using getadjust() function (ASP lines 19-36)
-        quotes_sql = """
+        quotes_sql = f"""
             SELECT
                 EXTRACT(EPOCH FROM atDate) * 1000 AS timestamp,
-                ROUND((vol / enigma.getadjust(%s, atDate))::numeric) AS adj_vol,
-                ROUND((closing * enigma.getadjust(%s, atDate))::numeric, 5) AS adj_close
-            FROM ccass.quotes
-            WHERE issueid = %s
+                ROUND((vol / cum)::numeric) AS adj_vol,
+                ROUND((closing * cum)::numeric, 5) AS adj_close
+            FROM (
+                SELECT q.atDate, q.vol, q.closing, {cum_adjust("%s", "q.atDate")} AS cum
+                FROM ccass.quotes q
+                WHERE q.issueid = %s
+                OFFSET 0
+            ) t
             ORDER BY atDate
         """
 
@@ -7149,7 +7153,7 @@ def str_route():
         """
 
         try:
-            quotes = execute_query(quotes_sql, (i, i, i))
+            quotes = execute_query(quotes_sql, (i, i))
 
             # Fill in gaps in closing prices with previous close (ASP lines 24-28)
             if quotes:
