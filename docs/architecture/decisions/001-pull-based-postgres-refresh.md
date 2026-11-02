@@ -52,7 +52,8 @@ uv script, systemd timer 02:45/06:45 UTC):
 - **Purge-based freshness** — edge purges couple the loader to Cloudflare
   credentials and fail unsafe (a purge without a load serves slow misses; a
   load without a purge serves stale for 30d under the old TTLs). The TTL
-  ladder self-heals within hours with neither credential nor coupling.
+  ladder self-heals within hours (at most 24 h on a rarely visited page, since the
+  edge may serve one stale copy while it refetches) with neither credential nor coupling.
 
 ## Consequences
 
