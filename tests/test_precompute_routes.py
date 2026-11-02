@@ -225,3 +225,19 @@ def test_unknown_oldest_type_shows_the_unfiltered_list_from_its_copy(client):
     calls.clear()
     assert client.get(f"/dbpub/oldestHKcos.asp?t={UNKNOWN_ID}").status_code == 200
     assert not any("LIMIT" in c for c in calls), "the main query ran again"
+
+
+@pytest.mark.parametrize("path, page, first, second", [
+    ("/dbpub/disHKcaltype.asp", "dishkcaltype", "y=2020&w=2", "y=2020&w=3"),
+    ("/dbpub/disHKcaltype.asp", "dishkcaltype", "y=2020&t=28", "y=2020&t=19"),
+    ("/dbpub/incUKcaltype.asp", "incukcaltype", "y=2020&dom=116", "y=2020&dom=112"),
+    ("/dbpub/incHKcaltype.asp", "inchkcaltype", "y=2020", "y=2019"),
+    ("/dbpub/SFClicount.asp", "sfclicount", "a=1", "a=2"),
+    ("/dbpub/oldestHKcos.asp", "oldesthkcos", "a=1", "t=28"),
+])
+def test_each_selection_has_its_own_copy(client, path, page, first, second):
+    """A parameter left out of the key would serve one selection's rows for another."""
+    client.get(f"{path}?{first}")
+    files = set(_files(page))
+    assert _queries(client, f"{path}?{second}") > 0, "served from the other selection's file"
+    assert len(set(_files(page)) - files) == 1
