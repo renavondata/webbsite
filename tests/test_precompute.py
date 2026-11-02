@@ -389,3 +389,35 @@ def test_a_waiter_given_a_failure_flags_its_page_uncacheable(cache):
         with pytest.raises(precompute.ComputeFailed):
             precompute._raise_shared_failure()
         assert g.get("db_failed") is True
+
+
+def test_a_route_that_does_not_catch_it_gets_the_timeout_page_not_a_500(cache, monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
+    from webbsite import create_app
+
+    app = create_app()
+
+    @app.route("/_t/uncaught.asp")
+    def _uncaught():
+        precompute._raise_shared_failure()
+
+    r = app.test_client().get("/_t/uncaught.asp")
+    assert r.status_code == 504
+    assert issubclass(precompute.ComputeFailed, precompute.QueryTimeoutError)
+
+
+def _marker(root, version, age=0.0):
+    path = Path(root) / "failure.err"
+    path.write_text(version)
+    moment = time.time() + age
+    os.utime(path, (moment, moment))
+    return path
+
+
+def test_a_failure_only_counts_for_its_own_version_and_a_sane_time(tmp_path):
+    now = time.time()
+    assert precompute._failed_since(_marker(tmp_path, "v1"), "v1", now - 5)
+    assert not precompute._failed_since(_marker(tmp_path, "v0"), "v1", now - 5), "another version"
+    assert not precompute._failed_since(_marker(tmp_path, "v1", age=-60), "v1", now - 5), "before arrival"
+    assert not precompute._failed_since(_marker(tmp_path, "v1", age=3600), "v1", now - 5), "future"
+    assert not precompute._failed_since(tmp_path / "absent.err", "v1", now), "no marker"

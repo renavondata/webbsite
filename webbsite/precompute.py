@@ -59,7 +59,7 @@ from pathlib import Path
 from flask import g, has_app_context
 
 from webbsite import watermarks
-from webbsite.db import _mark_failed
+from webbsite.db import QueryTimeoutError, _mark_failed
 
 FORMAT = "pc1"
 SLUG = re.compile(r"[A-Za-z0-9_-]{1,80}")
@@ -228,8 +228,9 @@ def sweep(page_dir: Path, max_entries: int, now: float | None = None) -> None:
             pass
 
 
-class ComputeFailed(RuntimeError):
-    """The compute this request was waiting for failed."""
+class ComputeFailed(QueryTimeoutError):
+    """The compute this request was waiting for failed. A timeout to everything that
+    handles one: the 504 page for routes that do not catch it, and no Sentry event."""
 
 
 def _raise_shared_failure():
@@ -242,9 +243,13 @@ def _raise_shared_failure():
     raise error
 
 
-def _failed_since(err_path: Path, moment: float) -> bool:
+def _failed_since(err_path: Path, version: str, moment: float) -> bool:
+    """Did this version's compute fail since moment? A failure of another data version
+    or release says nothing about this one, and a marker dated ahead of now (the clock
+    stepped back) is ignored, or it would fail every request until the clock caught up."""
     try:
-        return err_path.stat().st_mtime >= moment
+        return (moment <= err_path.stat().st_mtime <= time.time() + 1
+                and err_path.read_text() == version)
     except OSError:
         return False
 
@@ -315,13 +320,13 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
             if hit is not None:
                 _set_state("hit")
                 return hit
-            if _failed_since(err_path, arrived):
+            if _failed_since(err_path, version, arrived):
                 _raise_shared_failure()
             try:
                 value = compute()
             except Exception:
                 try:
-                    err_path.touch()
+                    err_path.write_text(version)
                 except OSError:
                     pass
                 raise
