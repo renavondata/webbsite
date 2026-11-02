@@ -24,11 +24,12 @@ from flask import Blueprint, Response, abort, current_app
 from webbsite import ROBOTS_DISALLOW
 from webbsite.db import execute_query
 from webbsite import watermarks
+from webbsite.precompute import precomputed
 
 bp = Blueprint("sitemap", __name__)
 
 _URLS_PER_SITEMAP = 50000  # sitemaps.org protocol cap
-_cache: dict[str, list[str]] = {}  # URL lists are structural -> memoise per worker
+_pages: list[str] = []  # the URL map is fixed for a worker's life -> memoise
 
 
 def _host() -> str:
@@ -81,8 +82,8 @@ def _sfc_firm_paths() -> list[str]:
 
 def _sfc_person_paths() -> list[str]:
     """sfclicrec.asp?p=<staffid> — every SFC-licensed individual."""
-    # ~130k rows / ~4s: over the default 8s? No, but raise headroom anyway. This
-    # runs once per worker (memoised below) on a frozen dataset, not per request.
+    # ~130k rows / ~4s: under the default 8s, but raise headroom anyway. This
+    # runs once per data version (precomputed in _paths), not per request.
     rows = execute_query(
         "SELECT DISTINCT staffid FROM enigma.licrec ORDER BY staffid",
         timeout_s=30,
@@ -113,8 +114,8 @@ def _natperson_paths() -> list[str]:
         ORDER BY personid
         """,
         # ~193k rows / ~13s on the box — over the default 8s statement_timeout.
-        # Runs once per worker (memoised below) for this frozen dataset, well
-        # under the 60s gunicorn worker timeout, not on every request.
+        # Runs once per data version (precomputed in _paths), well under the
+        # 60s gunicorn worker timeout, not on every request.
         timeout_s=45,
     )
     return [f"/dbpub/natperson.asp?p={r['personid']}" for r in rows]
@@ -132,9 +133,15 @@ _SOURCES = {
 
 
 def _paths(name: str) -> list[str]:
-    if name not in _cache:
-        _cache[name] = _SOURCES[name]()
-    return _cache[name]
+    """The URL list for one child sitemap. "pages" comes from the URL map; the
+    rest are database lists of up to ~200k ids (13 s cold for "people"),
+    computed once per data version for every worker (webbsite/precompute.py)
+    rather than once per worker per restart."""
+    if name == "pages":
+        if not _pages:
+            _pages.extend(_static_page_paths())
+        return _pages
+    return precomputed("sitemap", name, ("enigma",), _SOURCES[name], module=__name__)
 
 
 def _xml_response(body: str) -> Response:

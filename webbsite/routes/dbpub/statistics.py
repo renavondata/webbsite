@@ -303,28 +303,29 @@ def namechange_hk():
     """
     sort_param = request.args.get("sort", "newup")
 
-    # Sort order mapping
+    # Sorts mirror the ASP's ORDER BY; names sort on database ordinals.
     sort_mappings = {
-        "oldup": "oldname",
-        "olddn": "oldname DESC",
-        "newdn": "name1 DESC",
-        "newup": "name1",
-        "datup": "datechanged, name1",
-        "datdn": "datechanged DESC, name1",
+        "oldup": [("o_old", False)],
+        "olddn": [("o_old", True)],
+        "newdn": [("o_new", True)],
+        "newup": [("o_new", False)],
+        "datup": [("datechanged", False), ("o_new", False)],
+        "datdn": [("datechanged", True), ("o_new", False)],
     }
-    ob = sort_mappings.get(sort_param, "name1")
+    sort_spec = sort_mappings.get(sort_param, sort_mappings["newup"])
 
     # Query name changes for HK companies in last 30 days relative to latest data
     # domicile=1 is Hong Kong
     # Use latest data date as reference instead of CURRENT_DATE to handle stale data
-    changes_data = execute_query(
-        f"""
+    sql = f"""
         SELECT o.personid,
                nc.datechanged,
                nc.oldname,
                nc.oldcname,
                o.name1,
-               o.cname
+               o.cname,
+               {ordinal("nc.oldname", "o_old")},
+               {ordinal("o.name1", "o_new")}
         FROM enigma.namechanges nc
         JOIN enigma.organisations o ON nc.personid = o.personid
         WHERE o.domicile = 1
@@ -338,9 +339,12 @@ def namechange_hk():
                   CURRENT_DATE
               )) - INTERVAL '30 days'
           )
-        ORDER BY {ob}
     """
-    )
+    # Scans every name change (5 s cold): once per data version and day.
+    changes_data = sort_rows(
+        precomputed("namechangehk", "all", ("enigma", "today"),
+                    lambda: execute_query(sql, timeout_s=30), module=__name__),
+        sort_spec)
 
     return render_template(
         "dbpub/namechange_hk.html", changes_data=changes_data, sort_param=sort_param
@@ -358,33 +362,36 @@ def namechange_hk_listed():
 
     # Sort order mapping
     sort_mappings = {
-        "oldup": "oldname, datechanged",
-        "olddn": "oldname DESC, datechanged DESC",
-        "datup": "datechanged, name1",
-        "datdn": "datechanged DESC, name1",
-        "newup": "name1, datechanged DESC",
-        "newdn": "name1 DESC, datechanged",
+        "oldup": [("o_old", False), ("datechanged", False)],
+        "olddn": [("o_old", True), ("datechanged", True)],
+        "datup": [("datechanged", False), ("o_new", False)],
+        "datdn": [("datechanged", True), ("o_new", False)],
+        "newup": [("o_new", False), ("datechanged", True)],
+        "newdn": [("o_new", True), ("datechanged", False)],
     }
-    ob = sort_mappings.get(sort_param, "datechanged DESC, name1")
+    sort_spec = sort_mappings.get(sort_param, sort_mappings["datdn"])
 
     # Query name changes for listed companies
-    changes_data = execute_query(
-        f"""
+    sql = f"""
         SELECT o.personid,
                nc.datechanged,
                nc.oldname,
                nc.oldcname,
                o.name1,
-               o.cname
+               o.cname,
+               {ordinal("nc.oldname", "o_old")},
+               {ordinal("o.name1", "o_new")}
         FROM enigma.namechanges nc
         JOIN enigma.organisations o ON nc.personid = o.personid
         JOIN enigma.listedcoshkever l ON nc.personid = l.personid
         WHERE (nc.oldname IS NOT NULL OR nc.oldcname IS NOT NULL)
           AND ((nc.oldname <> o.name1 OR nc.oldname IS NULL)
                OR (nc.oldcname <> o.cname OR nc.oldcname IS NULL))
-        ORDER BY {ob}
     """
-    )
+    changes_data = sort_rows(
+        precomputed("namechangehklisted", "all", ("enigma",),
+                    lambda: execute_query(sql, timeout_s=30), module=__name__),
+        sort_spec)
 
     return render_template(
         "dbpub/namechange_hk_listed.html",
@@ -4524,71 +4531,65 @@ def hksols():
 
     sort_param = get_str("sort", "admup")
     p = get_int("p", 0)  # Role filter: 0=All, 1-5=specific lsroles
+    if not 1 <= p <= 5:
+        p = 0
 
+    # Sorts mirror the ASP's ORDER BY (orgdn really is "oname, admhk"); text
+    # sorts on database ordinals.
     order_by_map = {
-        "humup": "pname, oname",
-        "humdn": "pname DESC, oname",
-        "orgup": "oname, lstxt, pname",
-        "orgdn": "oname, admhk, pname",
-        "admup": "admhk, pname, oname",
-        "admdn": "admhk DESC, pname, oname",
-        "ageup": "age, pname, oname",
-        "agedn": "age DESC, pname, oname",
-        "rolup": "lstxt, pname, oname",
-        "roldn": "lstxt DESC, oname, pname",
+        "humup": [("o_p", False), ("o_o", False)],
+        "humdn": [("o_p", True), ("o_o", False)],
+        "orgup": [("o_o", False), ("o_role", False), ("o_p", False)],
+        "orgdn": [("o_o", False), ("o_adm", False), ("o_p", False)],
+        "admup": [("o_adm", False), ("o_p", False), ("o_o", False)],
+        "admdn": [("o_adm", True), ("o_p", False), ("o_o", False)],
+        "ageup": [("age", False), ("o_p", False), ("o_o", False)],
+        "agedn": [("age", True), ("o_p", False), ("o_o", False)],
+        "rolup": [("o_role", False), ("o_p", False), ("o_o", False)],
+        "roldn": [("o_role", True), ("o_o", False), ("o_p", False)],
     }
-    order_by = order_by_map.get(sort_param, "admhk, pname, oname")
+    sort_spec = order_by_map.get(sort_param, order_by_map["admup"])
 
-    role_filter = ""
-    params = []
-    if p and 1 <= p <= 5:
-        role_filter = " AND ps.post = %s"
-        params.append(p)
-
-    # Get role name for title
-    title = "All solicitors"
-    if p and 1 <= p <= 5:
-        try:
-            role_result = execute_query(
-                "SELECT lstxt FROM enigma.lsroles WHERE id = %s", (p,)
-            )
-            if role_result:
-                title = role_result[0]["lstxt"] + "s"
-        except:
-            pass
-
-    # Get available roles for dropdown
-    try:
-        roles = execute_query(
-            "SELECT id, lstxt FROM enigma.lsroles WHERE id <> 4 ORDER BY id"
-        )
-    except:
-        roles = []
-
+    pname = "CASE WHEN p.name2 IS NULL THEN p.name1 ELSE p.name1 || ', ' || p.name2 END"
     sql = f"""
         SELECT enigma.msdateacc(lp.admhk, 2) AS admhk,
                o.personid AS orgid, o.name1 AS oname,
                p.personid AS pid,
-               CASE WHEN p.name2 IS NULL THEN p.name1
-                    ELSE p.name1 || ', ' || p.name2
-               END AS pname,
+               {pname} AS pname,
                lr.lstxt,
-               EXTRACT(YEAR FROM CURRENT_DATE)::int - p.yob AS age
+               EXTRACT(YEAR FROM CURRENT_DATE)::int - p.yob AS age,
+               {ordinal("enigma.msdateacc(lp.admhk, 2)", "o_adm")},
+               {ordinal("o.name1", "o_o")},
+               {ordinal(pname, "o_p")},
+               {ordinal("lr.lstxt", "o_role")}
         FROM enigma.lsposts ps
         JOIN enigma.lsppl lp ON ps.lsppl = lp.lsid
         JOIN enigma.lsorgs lo ON ps.lsorg = lo.lsid
         JOIN enigma.lsroles lr ON ps.post = lr.id
         JOIN enigma.organisations o ON lo.personid = o.personid
         JOIN enigma.people p ON lp.personid = p.personid
-        WHERE NOT ps.dead{role_filter}
-        ORDER BY {order_by}
+        WHERE NOT ps.dead{" AND ps.post = %s" if p else ""}
     """
 
+    # Every live Law Society post (1.3 s): once per data version and year (the
+    # age column), sorted per request. The title and dropdown ride along.
+    def compute():
+        title = "All solicitors"
+        if p:
+            role = execute_query("SELECT lstxt FROM enigma.lsroles WHERE id = %s", (p,))
+            if role:
+                title = role[0]["lstxt"] + "s"
+        roles = execute_query("SELECT id, lstxt FROM enigma.lsroles WHERE id <> 4 ORDER BY id")
+        return {"title": title, "roles": roles,
+                "rows": execute_query(sql, (p,) if p else None, timeout_s=30)}
+
     try:
-        results = execute_query(sql, tuple(params) if params else None)
+        data = precomputed("hksols", f"p{p}", ("enigma", "year"), compute, module=__name__)
+        title, roles = data["title"], data["roles"]
+        results = sort_rows(data["rows"], sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error in hksols.asp: {ex}", exc_info=True)
-        results = []
+        title, roles, results = "All solicitors", [], []
 
     return render_template(
         "dbpub/hksols.html",
@@ -5273,172 +5274,186 @@ def esstop():
 
     sort_param = get_str("sort", "amtdn")
 
-    # Define sort order
+    # Sorts as (field, descending), mirroring the ASP's ORDER BY; the name sorts
+    # on its database ordinal (webbsite/precompute.py).
     sort_map = {
-        "hdsup": "hds, name",
-        "hdsdn": "hds DESC, name",
-        "namup": "name",
-        "namdn": "name DESC",
-        "avgup": "avg, name",
-        "avgdn": "avg DESC, name",
-        "amtup": "amt, name",
-        "amtdn": "amt DESC, name",
+        "hdsup": [("hds", False), ("o_name", False)],
+        "hdsdn": [("hds", True), ("o_name", False)],
+        "namup": [("o_name", False)],
+        "namdn": [("o_name", True)],
+        "avgup": [("avg", False), ("o_name", False)],
+        "avgdn": [("avg", True), ("o_name", False)],
+        "amtup": [("amt", False), ("o_name", False)],
+        "amtdn": [("amt", True), ("o_name", False)],
     }
-    order_by = sort_map.get(sort_param, "amt DESC, name")
+    sort_spec = sort_map.get(sort_param, sort_map["amtdn"])
 
-    # Statistics queries
-    stats_data = []
-    matched_stats = None
-    claim_analysis = None
+    o_name = ordinal("COALESCE(o.name1, t.name)", "o_name")
 
-    if p == 0:
-        # Statistics for both phases
-        stats_data = execute_query(
+    # Every query reads the whole ESS table (7 s cold); it never changes, so
+    # each phase is computed once per data version and sorted per request.
+    def compute():
+        # Statistics queries
+        stats_data = []
+        matched_stats = None
+        claim_analysis = None
+
+        if p == 0:
+            # Statistics for both phases
+            stats_data = execute_query(
+                """
+                SELECT phase, COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
+                       SUM(amt)::numeric / SUM(heads) AS avg
+                FROM enigma.ess
+                GROUP BY phase
+                ORDER BY phase
             """
-            SELECT phase, COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
-                   SUM(amt)::numeric / SUM(heads) AS avg
-            FROM enigma.ess
-            GROUP BY phase
-            ORDER BY phase
-        """
-        )
-    else:
-        # Statistics for specific phase - matched vs unmatched
-        total_stats = execute_query(
-            """
-            SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds
-            FROM enigma.ess
-            WHERE phase = %s
-        """,
-            (p,),
-        )
+            )
+        else:
+            # Statistics for specific phase - matched vs unmatched
+            total_stats = execute_query(
+                """
+                SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds
+                FROM enigma.ess
+                WHERE phase = %s
+            """,
+                (p,),
+            )
 
-        matched_data = execute_query(
-            """
-            SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
-                   SUM(amt)::numeric / SUM(heads) AS avg
-            FROM enigma.ess
-            WHERE orgid IS NOT NULL AND phase = %s
-        """,
-            (p,),
-        )
-
-        if total_stats and matched_data:
-            total = total_stats[0]
-            matched = matched_data[0]
-            matched_stats = {
-                "matched": matched,
-                "total": total,
-                "unmatched": {
-                    "cnt": total["cnt"] - matched["cnt"],
-                    "amt": total["amt"] - matched["amt"],
-                    "hds": total["hds"] - matched["hds"],
-                    "avg": (
-                        (total["amt"] - matched["amt"])
-                        / (total["hds"] - matched["hds"])
-                        if (total["hds"] - matched["hds"]) > 0
-                        else 0
-                    ),
-                },
-            }
-
-        # Claim size analysis
-        claim_analysis = execute_query(
-            """
-            SELECT
-                CASE
-                    WHEN amt < 100000 THEN '<100k'
-                    WHEN amt >= 100000 AND amt < 1000000 THEN '100k to <1m'
-                    WHEN amt >= 1000000 AND amt < 10000000 THEN '1m to <10m'
-                    WHEN amt >= 10000000 AND amt < 100000000 THEN '10m to <100m'
-                    ELSE '>100m'
-                END AS amtrange,
-                MIN(CASE
-                    WHEN amt < 100000 THEN 1
-                    WHEN amt >= 100000 AND amt < 1000000 THEN 2
-                    WHEN amt >= 1000000 AND amt < 10000000 THEN 3
-                    WHEN amt >= 10000000 AND amt < 100000000 THEN 4
-                    ELSE 5
-                END) AS sort_order,
-                COUNT(*) AS cnt,
-                SUM(amt) AS amt,
-                SUM(heads) AS hds,
-                SUM(amt)::numeric / NULLIF(SUM(heads), 0) AS avg
-            FROM enigma.ess
-            WHERE phase = %s
-            GROUP BY amtrange
-            ORDER BY sort_order
-        """,
-            (p,),
-        )
-
-    # Main query for top 5000
-    # Build the queries differently to avoid ORDER BY inside UNION
-    if p > 0:
-        # Specific phase - simplified query
-        sql = (
-            """
-            WITH top_ess AS (
-                SELECT orgid, NULL::text AS name, SUM(amt) AS amt, SUM(heads) AS hds
+            matched_data = execute_query(
+                """
+                SELECT COUNT(*) AS cnt, SUM(amt) AS amt, SUM(heads) AS hds,
+                       SUM(amt)::numeric / SUM(heads) AS avg
                 FROM enigma.ess
                 WHERE orgid IS NOT NULL AND phase = %s
-                GROUP BY orgid
-                UNION ALL
-                SELECT NULL, COALESCE(ename, cname), SUM(amt) AS amt, SUM(heads) AS hds
+            """,
+                (p,),
+            )
+
+            if total_stats and matched_data:
+                total = total_stats[0]
+                matched = matched_data[0]
+                matched_stats = {
+                    "matched": matched,
+                    "total": total,
+                    "unmatched": {
+                        "cnt": total["cnt"] - matched["cnt"],
+                        "amt": total["amt"] - matched["amt"],
+                        "hds": total["hds"] - matched["hds"],
+                        "avg": (
+                            (total["amt"] - matched["amt"])
+                            / (total["hds"] - matched["hds"])
+                            if (total["hds"] - matched["hds"]) > 0
+                            else 0
+                        ),
+                    },
+                }
+
+            # Claim size analysis
+            claim_analysis = execute_query(
+                """
+                SELECT
+                    CASE
+                        WHEN amt < 100000 THEN '<100k'
+                        WHEN amt >= 100000 AND amt < 1000000 THEN '100k to <1m'
+                        WHEN amt >= 1000000 AND amt < 10000000 THEN '1m to <10m'
+                        WHEN amt >= 10000000 AND amt < 100000000 THEN '10m to <100m'
+                        ELSE '>100m'
+                    END AS amtrange,
+                    MIN(CASE
+                        WHEN amt < 100000 THEN 1
+                        WHEN amt >= 100000 AND amt < 1000000 THEN 2
+                        WHEN amt >= 1000000 AND amt < 10000000 THEN 3
+                        WHEN amt >= 10000000 AND amt < 100000000 THEN 4
+                        ELSE 5
+                    END) AS sort_order,
+                    COUNT(*) AS cnt,
+                    SUM(amt) AS amt,
+                    SUM(heads) AS hds,
+                    SUM(amt)::numeric / NULLIF(SUM(heads), 0) AS avg
                 FROM enigma.ess
-                WHERE orgid IS NULL AND phase = %s
-                GROUP BY ename, cname
+                WHERE phase = %s
+                GROUP BY amtrange
+                ORDER BY sort_order
+            """,
+                (p,),
             )
-            SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
-                   t.amt, t.hds,
-                   (t.amt::numeric / NULLIF(t.hds, 0)) AS avg
-            FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
-            LEFT JOIN enigma.organisations o ON t.orgid = o.personid
-            ORDER BY """
-            + order_by
-        )
-        top_data = execute_query(sql, (p, p))
-    else:
-        # Both phases - show p1/p2 indicators
-        sql = (
-            """
-            WITH top_ess AS (
-                SELECT orgid, NULL::text AS name,
-                       SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
-                       SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
-                       SUM(amt) AS amt,
-                       AVG(hds) AS hds_avg
-                FROM (
-                    SELECT orgid, phase, SUM(amt) AS amt, SUM(heads) AS hds
+
+        # Main query for top 5000
+        # Build the queries differently to avoid ORDER BY inside UNION
+        if p > 0:
+            # Specific phase - simplified query
+            sql = (
+                f"""
+                WITH top_ess AS (
+                    SELECT orgid, NULL::text AS name, SUM(amt) AS amt, SUM(heads) AS hds
                     FROM enigma.ess
-                    WHERE orgid IS NOT NULL
-                    GROUP BY orgid, phase
-                ) t1
-                GROUP BY orgid
-                UNION ALL
-                SELECT NULL, COALESCE(ename, cname),
-                       SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
-                       SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
-                       SUM(amt) AS amt,
-                       AVG(hds) AS hds_avg
-                FROM (
-                    SELECT ename, cname, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                    WHERE orgid IS NOT NULL AND phase = %s
+                    GROUP BY orgid
+                    UNION ALL
+                    SELECT NULL, COALESCE(ename, cname), SUM(amt) AS amt, SUM(heads) AS hds
                     FROM enigma.ess
-                    WHERE orgid IS NULL
-                    GROUP BY ename, cname, phase
-                ) t2
-                GROUP BY ename, cname
+                    WHERE orgid IS NULL AND phase = %s
+                    GROUP BY ename, cname
+                )
+                SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
+                       {o_name},
+                       t.amt, t.hds,
+                       (t.amt::numeric / NULLIF(t.hds, 0)) AS avg
+                FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
+                LEFT JOIN enigma.organisations o ON t.orgid = o.personid
+                """
             )
-            SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
-                   t.amt, ROUND(t.hds_avg, 0) AS hds,
-                   ROUND(t.amt::numeric / NULLIF(t.hds_avg, 0), 0) AS avg,
-                   t.p1, t.p2
-            FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
-            LEFT JOIN enigma.organisations o ON t.orgid = o.personid
-            ORDER BY """
-            + order_by
-        )
-        top_data = execute_query(sql)
+            top_data = execute_query(sql, (p, p), timeout_s=30)
+        else:
+            # Both phases - show p1/p2 indicators
+            sql = (
+                f"""
+                WITH top_ess AS (
+                    SELECT orgid, NULL::text AS name,
+                           SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
+                           SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
+                           SUM(amt) AS amt,
+                           AVG(hds) AS hds_avg
+                    FROM (
+                        SELECT orgid, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                        FROM enigma.ess
+                        WHERE orgid IS NOT NULL
+                        GROUP BY orgid, phase
+                    ) t1
+                    GROUP BY orgid
+                    UNION ALL
+                    SELECT NULL, COALESCE(ename, cname),
+                           SUM(CASE WHEN phase=1 THEN 1 ELSE 0 END) AS p1,
+                           SUM(CASE WHEN phase=2 THEN 1 ELSE 0 END) AS p2,
+                           SUM(amt) AS amt,
+                           AVG(hds) AS hds_avg
+                    FROM (
+                        SELECT ename, cname, phase, SUM(amt) AS amt, SUM(heads) AS hds
+                        FROM enigma.ess
+                        WHERE orgid IS NULL
+                        GROUP BY ename, cname, phase
+                    ) t2
+                    GROUP BY ename, cname
+                )
+                SELECT t.orgid, COALESCE(o.name1, t.name) AS name,
+                       {o_name},
+                       t.amt, ROUND(t.hds_avg, 0) AS hds,
+                       ROUND(t.amt::numeric / NULLIF(t.hds_avg, 0), 0) AS avg,
+                       t.p1, t.p2
+                FROM (SELECT * FROM top_ess ORDER BY amt DESC LIMIT 5000) t
+                LEFT JOIN enigma.organisations o ON t.orgid = o.personid
+                """
+            )
+            top_data = execute_query(sql, timeout_s=30)
+
+        return {"stats_data": stats_data, "matched_stats": matched_stats,
+                "claim_analysis": claim_analysis, "top_data": top_data}
+
+    data = precomputed("esstop", f"p{p}", ("enigma",), compute, module=__name__)
+    stats_data, matched_stats = data["stats_data"], data["matched_stats"]
+    claim_analysis = data["claim_analysis"]
+    top_data = sort_rows(data["top_data"], sort_spec)
 
     return render_template(
         "dbpub/esstop.html",
@@ -5821,26 +5836,26 @@ def prhdistricts():
     """
     sort_param = request.args.get("sort", "r")
 
-    # Determine sort order
+    # Sorts mirror the ASP's ORDER BY; text sorts on database ordinals.
     sort_map = {
-        "en": "en",
-        "end": "en DESC",
-        "cn": "cn",
-        "cnd": "cn DESC",
-        "tota": "tota",
-        "totad": "tota DESC",
-        "a": "a",
-        "ad": "a DESC",
-        "c": "c, en",
-        "cd": "c DESC, en",
-        "r": "region, en",
-        "rd": "region DESC, en",
+        "en": [("o_en", False)],
+        "end": [("o_en", True)],
+        "cn": [("o_cn", False)],
+        "cnd": [("o_cn", True)],
+        "tota": [("tota", False)],
+        "totad": [("tota", True)],
+        "a": [("a", False)],
+        "ad": [("a", True)],
+        "c": [("c", False), ("o_en", False)],
+        "cd": [("c", True), ("o_en", False)],
+        "r": [("o_region", False), ("o_en", False)],
+        "rd": [("o_region", True), ("o_en", False)],
     }
-    order_by = sort_map.get(sort_param, "region, en")
+    sort_spec = sort_map.get(sort_param, sort_map["r"])
 
-    # Query districts with aggregated PRH data
-    districts = execute_query(
-        f"""
+    # Every flat seen in the latest crawl, grouped by district: once per data
+    # version, sorted per request.
+    sql = f"""
         SELECT
             d.ID,
             d.en,
@@ -5849,7 +5864,10 @@ def prhdistricts():
             SUM(f.area) AS tota,
             SUM(f.area) / COUNT(*) AS a,
             r.en || ' ' || r.cn AS region,
-            SUM(CASE WHEN f.elevator THEN 1 ELSE 0 END) AS elev
+            SUM(CASE WHEN f.elevator THEN 1 ELSE 0 END) AS elev,
+            {ordinal("d.en", "o_en")},
+            {ordinal("d.cn", "o_cn")},
+            {ordinal("r.en || ' ' || r.cn", "o_region")}
         FROM enigma.prhflat f
         JOIN enigma.prhblock b ON f.blockID = b.id
         JOIN enigma.prhestate e ON b.estateID = e.id
@@ -5857,9 +5875,11 @@ def prhdistricts():
         JOIN enigma.hkregion r ON d.regionID = r.id
         WHERE f.lastseen >= (SELECT DATE(MAX(lastSeen)) FROM enigma.prhflat)
         GROUP BY d.ID, d.en, d.cn, r.en, r.cn
-        ORDER BY {order_by}
     """
-    )
+    districts = sort_rows(
+        precomputed("prhdistricts", "all", ("enigma",),
+                    lambda: execute_query(sql, timeout_s=30), module=__name__),
+        sort_spec)
 
     # Calculate totals
     total_units = sum(d["c"] for d in districts) if districts else 0
@@ -6002,42 +6022,41 @@ def hkflightscan():
     title += "arrivals" if arrival else "departures"
     title += " and cancellations"
 
-    # Sorting
+    # Sorting: (field, descending), mirroring the ASP's ORDER BY.
     sort = get_str("sort", "ddn")
     sort_map = {
-        "pup": "p, d",
-        "pdn": "p DESC, d DESC",
-        "cup": "c, d",
-        "cdn": "c DESC, d DESC",
-        "tup": "t, d",
-        "tdn": "t DESC, d DESC",
-        "xpup": "xp, d",
-        "xpdn": "xp DESC, d DESC",
-        "xcup": "xc, d",
-        "xcdn": "xc DESC, d DESC",
-        "xtup": "xt, d",
-        "xtdn": "xt DESC, d DESC",
-        "npup": "np, d",
-        "npdn": "np DESC, d DESC",
-        "ncup": "nc, d",
-        "ncdn": "nc DESC, d DESC",
-        "ntup": "nt, d",
-        "ntdn": "nt DESC, d DESC",
-        "xpsup": "xps, d",
-        "xpsdn": "xps DESC, d DESC",
-        "xcsup": "xcs, d",
-        "xcsdn": "xcs DESC, d DESC",
-        "xtsup": "xts, d",
-        "xtsdn": "xts DESC, d DESC",
-        "dup": "d",
-        "ddn": "d DESC"
+        "pup": [("p", False), ("d", False)],
+        "pdn": [("p", True), ("d", True)],
+        "cup": [("c", False), ("d", False)],
+        "cdn": [("c", True), ("d", True)],
+        "tup": [("t", False), ("d", False)],
+        "tdn": [("t", True), ("d", True)],
+        "xpup": [("xp", False), ("d", False)],
+        "xpdn": [("xp", True), ("d", True)],
+        "xcup": [("xc", False), ("d", False)],
+        "xcdn": [("xc", True), ("d", True)],
+        "xtup": [("xt", False), ("d", False)],
+        "xtdn": [("xt", True), ("d", True)],
+        "npup": [("np", False), ("d", False)],
+        "npdn": [("np", True), ("d", True)],
+        "ncup": [("nc", False), ("d", False)],
+        "ncdn": [("nc", True), ("d", True)],
+        "ntup": [("nt", False), ("d", False)],
+        "ntdn": [("nt", True), ("d", True)],
+        "xpsup": [("xps", False), ("d", False)],
+        "xpsdn": [("xps", True), ("d", True)],
+        "xcsup": [("xcs", False), ("d", False)],
+        "xcsdn": [("xcs", True), ("d", True)],
+        "xtsup": [("xts", False), ("d", False)],
+        "xtsdn": [("xts", True), ("d", True)],
+        "dup": [("d", False)],
+        "ddn": [("d", True)],
     }
-    ob = sort_map.get(sort, "d DESC")
     if sort not in sort_map:
         sort = "ddn"
 
-    # Query aggregated daily statistics
-    sql = f"""
+    # Every flight ever recorded, grouped by day: once per data version.
+    sql = """
         SELECT d, p, c, t, xp, xc, xt,
                p - xp as np, c - xc as nc, t - xt as nt,
                CASE WHEN p > 0 THEN 100.0 * xp / p ELSE NULL END as xps,
@@ -6056,9 +6075,11 @@ def hkflightscan():
                 GROUP BY DATE(sched)
             ) t1
         ) t2
-        ORDER BY {ob}
     """
-    data = execute_query(sql, (arrival,))
+    data = sort_rows(
+        precomputed("hkflightscan", ad, ("enigma",),
+                    lambda: execute_query(sql, (arrival,), timeout_s=30), module=__name__),
+        sort_map[sort])
 
     return render_template(
         "dbpub/hkflightscan.html",
