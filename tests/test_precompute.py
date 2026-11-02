@@ -91,6 +91,52 @@ def test_junk_slugs_create_no_files(cache, page, variant):
     assert calls == [1] and not root.exists()
 
 
+def test_digests_describe_the_running_code_not_the_disk(cache, tmp_path):
+    # Hashed at import: a process on the old code after a git pull must keep
+    # saving under the old key, or new code would hit old code's output.
+    pkg = Path(precompute.__file__).resolve().parent
+    assert str(pkg / "watermarks.py") in precompute._file_digests
+    assert str(precompute._FUNCTIONS_SQL) in precompute._file_digests
+    on_disk = tmp_path / "m.py"
+    on_disk.write_text("v1")
+    first = precompute._file_digest(on_disk)
+    on_disk.write_text("v2")
+    assert precompute._file_digest(on_disk) == first
+
+
+def test_functions_sql_is_in_the_fingerprint(cache, monkeypatch):
+    before = precompute.code_fingerprint(MOD)
+    monkeypatch.setitem(precompute._file_digests, str(precompute._FUNCTIONS_SQL), "other")
+    assert precompute.code_fingerprint(MOD) != before
+
+
+def test_another_releases_payload_is_never_served_stale(cache, tmp_path):
+    from flask import Flask, g
+
+    root, version = cache
+    extra = tmp_path / "code.py"
+    extra.write_text("v1")
+    precomputed("p", "v", ("market",), lambda: ["old shape"], module=MOD, files=[extra])
+    extra.write_text("v2")
+    precompute._file_digests.pop(str(extra.resolve()))
+    started, release = threading.Event(), threading.Event()
+
+    def slow():
+        started.set()
+        release.wait(5)
+        return ["new"]
+
+    t = threading.Thread(target=lambda: precomputed(
+        "p", "v", ("market",), slow, module=MOD, files=[extra]))
+    t.start()
+    started.wait(5)
+    threading.Timer(0.2, release.set).start()
+    with Flask(__name__).app_context():
+        got = precomputed("p", "v", ("market",), lambda: ["recompute"], module=MOD, files=[extra])
+        assert got == ["new"] and g.cache_state == "hit"  # waited, not "stale"
+    t.join()
+
+
 def test_code_change_recomputes(cache, tmp_path):
     extra = tmp_path / "functions.sql"
     extra.write_text("v1")

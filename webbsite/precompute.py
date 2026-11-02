@@ -8,10 +8,15 @@ and serves it from a local pickle afterwards, so a hit makes no queries.
     rows = precomputed("listed", "m_s", ("market", "today"), compute,
                        module=__name__)
 
-Key: ``<cache>/pc/<page>/<variant>.<digest>.pkl``. The digest covers:
+Key: ``<cache>/pc/<page>/<variant>.<code>-<digest>.pkl``. The digest covers:
 
 - FORMAT (bump it to drop every entry when the payload layout changes);
-- the code: the calling module's source, this file's, and any ``files=``;
+- the code: the calling module's source, this file's, database/schema/
+  functions.sql (the page SQL calls those functions, and converge applies them),
+  and any ``files=``. Sources are hashed when this module is imported, so the
+  digest describes the code this process is running, not what is on disk now: a
+  worker still on the old code after the deploy's git pull cannot save its
+  output under the new code's key;
 - one version per source: ``market`` (the loader's MB/GEM/CCASS watermarks:
   the ccass tables and enigma.issuedshares), ``enigma`` (every other
   enigma.log row: the rest of enigma; see watermarks.enigma_version for the
@@ -25,8 +30,9 @@ and never saved, so junk query strings cannot create files.
 
 Single-flight: one process computes a variant at a time (``flock`` on a lock
 file; threads count too, as each opens its own descriptor). While one
-computes, the others serve the previous version if there is one (marked
-``stale``: the edge keeps it for 60 s, see webbsite/__init__.py), else wait.
+computes, the others serve the previous data version if the same code wrote
+one (marked ``stale``: the edge keeps it for 60 s, see webbsite/__init__.py),
+else wait: another release's payload may have another shape.
 A superseded version is deleted 15 minutes after its replacement is written.
 A failing compute saves nothing and raises, so the next request retries.
 
@@ -77,24 +83,46 @@ SOURCES = {
     "year": lambda: str(date.today().year),
 }
 
+_PACKAGE = Path(__file__).resolve().parent
+_FUNCTIONS_SQL = _PACKAGE.parent / "database" / "schema" / "functions.sql"
 _file_digests: dict[str, str] = {}
 
 
-def _file_digest(path: str) -> str:
+def _file_digest(path) -> str:
     """sha256 of a file's bytes, memoised per process (code changes only on a
-    deploy, which restarts the workers)."""
-    hit = _file_digests.get(path)
+    deploy, which restarts the workers). A file that isn't there hashes as
+    empty: functions.sql is absent if the package is deployed without database/."""
+    key = str(Path(path).resolve())
+    hit = _file_digests.get(key)
     if hit is None:
-        hit = hashlib.sha256(Path(path).read_bytes()).hexdigest()
-        _file_digests[path] = hit
+        try:
+            hit = hashlib.sha256(Path(key).read_bytes()).hexdigest()
+        except FileNotFoundError:
+            hit = ""
+        _file_digests[key] = hit
     return hit
 
 
+def _snapshot_sources() -> None:
+    """Hash what is running now, while it is what is on disk: workers import every
+    route at start, and a later git pull must not change these digests."""
+    for path in (*_PACKAGE.rglob("*.py"), _FUNCTIONS_SQL):
+        _file_digest(path)
+
+
+_snapshot_sources()
+
+
 def code_fingerprint(module: str, files=()) -> str:
-    paths = [__file__, sys.modules[module].__file__, *files]
+    paths = [__file__, sys.modules[module].__file__, _FUNCTIONS_SQL, *files]
     return hashlib.sha256(
-        "\x00".join(_file_digest(str(p)) for p in paths).encode()
+        "\x00".join(_file_digest(p) for p in paths).encode()
     ).hexdigest()
+
+
+def code_tag(fingerprint) -> str:
+    """Which release wrote a file: the stale path serves only its own."""
+    return hashlib.sha256(f"{FORMAT}\x00{fingerprint}".encode()).hexdigest()[:12]
 
 
 def digest(page, variant, versions, fingerprint) -> str:
@@ -146,10 +174,10 @@ def _save(path: Path, value) -> None:
             Path(tmp).unlink(missing_ok=True)
 
 
-def _versions_of(page_dir: Path, variant: str):
-    """Saved versions of one variant, newest first."""
+def _versions_of(page_dir: Path, variant: str, tag: str):
+    """Versions of one variant saved by this release, newest first."""
     try:
-        found = [p for p in page_dir.glob(f"{variant}.*.pkl")
+        found = [p for p in page_dir.glob(f"{variant}.{tag}-*.pkl")
                  if p.name.count(".") == 2]
         return sorted(found, key=lambda p: p.stat().st_mtime_ns, reverse=True)
     except OSError:
@@ -212,7 +240,9 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
         _set_state("bypass")
         return compute()
 
-    version = digest(page, variant, versions, code_fingerprint(module, files))
+    fingerprint = code_fingerprint(module, files)
+    tag = code_tag(fingerprint)
+    version = f"{tag}-{digest(page, variant, versions, fingerprint)}"
     root = str(cache_root())
     page_dir = _contained(root, page)
     path = _contained(root, page, f"{variant}.{version}.pkl")
@@ -244,7 +274,7 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
                 if hit is not None:
                     _set_state("hit")
                     return hit
-                older = [p for p in _versions_of(page_dir, variant) if p != path]
+                older = [p for p in _versions_of(page_dir, variant, tag) if p != path]
                 stale = _load(older[0]) if older else None
                 if stale is not None:
                     _set_state("stale")
