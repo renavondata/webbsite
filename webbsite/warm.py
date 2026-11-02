@@ -49,6 +49,14 @@ def warm_urls() -> list[str]:
         "/dbpub/payleague.asp",
         "/dbpub/payleagueorg.asp",
         "/dbpub/advbyrole.asp",
+        "/dbpub/oldestHKcos.asp",
+        "/dbpub/oldestHKcos.asp?a=1",
+        "/dbpub/incHKcaltype.asp",
+        "/dbpub/disHKcaltype.asp",
+        *[f"/dbpub/incUKcaltype.asp?dom={dom}" for dom in (116, 112, 311)],
+        "/dbpub/boardcomp.asp",
+        "/dbpub/INEDHKDistnCos.asp",
+        "/dbpub/SFClicount.asp",
     ]
 
 

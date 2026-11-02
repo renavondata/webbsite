@@ -23,6 +23,7 @@ Queries go to a recording stub; the engine points at a port nothing listens on.
 import os
 import sys
 from datetime import date
+import tempfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -73,9 +74,18 @@ def with_stub(client, url, answers=None):
              sfc.execute_query, statistics.execute_query)
     db_module.execute_query = incorporations.execute_query = rec
     sfc.execute_query = statistics.execute_query = rec
+    # Precomputed pages keep files: each call starts empty and never touches the real cache.
+    saved_cache_dir = os.environ.get("WEBBSITE_CACHE_DIR")
+    cache_dir = tempfile.TemporaryDirectory(prefix="webbsite-test-")
+    os.environ["WEBBSITE_CACHE_DIR"] = cache_dir.name
     try:
         r = client.get(url)
     finally:
+        cache_dir.cleanup()
+        if saved_cache_dir is None:
+            del os.environ["WEBBSITE_CACHE_DIR"]
+        else:
+            os.environ["WEBBSITE_CACHE_DIR"] = saved_cache_dir
         (db_module.execute_query, incorporations.execute_query,
          sfc.execute_query, statistics.execute_query) = saved
     return r, rec

@@ -34,7 +34,10 @@ def _row(i):
         "name": f"n{i}", "name1": f"n{i}", "cname": "c", "oname": f"o{i}",
         "pname": f"p{i}", "oldname": f"old{i}", "oldcname": None, "en": f"e{i}",
         "cn": "c", "region": "r", "lstxt": "Partner", "stockcode": f"{i:04d}",
-        "typeshort": "O", "typelong": "Ord", "typename": "t",
+        "typeshort": "O", "typelong": "Ord", "typename": "t", "incid": str(i), "o_incid": i,
+        "incdate": date(1900, 1, i), "disdate": None, "o_sc": i, "inepropn": Decimal(i), "fempropn": Decimal(1),
+        "ine": i, "startdate": date(2003, 1, i), "enddate": None, "aro": i, "bro": i, "cro": 0,
+        "actname": "Dealing", "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
         # ordinals
         "o_name": i, "o_code": i, "o_type": 1, "o_old": i, "o_new": i, "o_en": i,
         "o_cn": 1, "o_region": 1, "o_adm": i, "o_o": i, "o_p": i, "o_role": 1,
@@ -86,6 +89,9 @@ PAGES = {
     "/dbpub/payleague.asp": ["", "i=1"],
     "/dbpub/payleagueorg.asp": [""],
     "/dbpub/advbyrole.asp": [""],
+    "/dbpub/oldestHKcos.asp": ["", "a=1", "t=28"],
+    "/dbpub/boardcomp.asp": [""],
+    "/dbpub/SFClicount.asp": ["", "a=1"],
 }
 
 
@@ -100,7 +106,7 @@ def client(tmp_path_factory):
     app = create_app()
     mp.setattr(db, "execute_query", fake_query)
     mp.setattr("webbsite.watermarks.execute_scalar", lambda *a, **k: "2025-10-10")
-    for mod in ("statistics", "solicitors", "listings", "market_data"):
+    for mod in ("statistics", "solicitors", "listings", "market_data", "incorporations", "sfc"):
         mp.setattr(f"webbsite.routes.dbpub.{mod}.execute_query", fake_query)
     yield app.test_client()
     mp.undo()
@@ -132,3 +138,33 @@ def test_every_sort_renders_from_one_compute(client, path, caplog):
             assert errors == [], (url, errors)
         heavy = [c for c in calls if "dense_rank" in c or "enigma.ess" in c]
         assert heavy == [], (base, "a sort recomputed")
+
+
+CALENDARS = ("/dbpub/incHKcaltype.asp", "/dbpub/disHKcaltype.asp", "/dbpub/incUKcaltype.asp")
+
+
+@pytest.mark.parametrize("path", CALENDARS)
+def test_calendar_whole_year_is_cached_per_sort_and_months_stay_live(client, path, tmp_path):
+    def queries(url):
+        calls.clear()
+        r = client.get(url)
+        assert r.status_code == 200, url
+        return len(calls)
+
+    year = f"{path}?y=2023"
+    assert queries(year) > 0, "first hit computes"
+    assert queries(year) == 0, "second hit is from disk"
+    # A capped list holds different rows under each sort, so each sort is its own
+    # query, and asks SQL for that order.
+    assert queries(f"{year}&sort=namdn") > 0
+    assert any("DESC" in c for c in calls), "a sort reached the SQL"
+    assert queries(f"{year}&sort=namdn") == 0
+    # A junk sort is the default, and creates no file of its own.
+    assert queries(f"{year}&sort=junk") == 0
+    # A different selection is a different list.
+    assert queries(f"{year}&t=28") > 0
+    # Months and days are not kept.
+    assert queries(f"{year}&m=5") > 0
+    assert queries(f"{year}&m=5") > 0
+    assert queries(f"{year}&m=5&d=3") > 0
+    assert queries(f"{year}&m=5&d=3") > 0

@@ -7,7 +7,7 @@ from datetime import date
 import calendar
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
-from webbsite.precompute import precomputed
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_incorporations", __name__)
 
@@ -352,63 +352,68 @@ def oldest_hk_cos():
 
     title += " HK-incorporated companies"
 
-    # Build sort
-    order_by_map = {
-        "namup": "name",
-        "namdn": "name DESC",
-        "regup": "incid",
-        "regdn": "incid DESC",
-        "incup": "incdate, name",
-        "incdn": "incdate DESC, name",
-        "disdn": "disdate DESC, name",
-        "disup": "disdate, name",
-        "typup": "typename, name",
-        "typdn": "typename DESC, name",
+    # Sorted per request from one compute; text sorts on database ordinals.
+    sort_map = {
+        "namup": [("o_name", False)],
+        "namdn": [("o_name", True)],
+        "regup": [("o_incid", False)],
+        "regdn": [("o_incid", True)],
+        "incup": [("incdate", False), ("o_name", False)],
+        "incdn": [("incdate", True), ("o_name", False)],
+        "disdn": [("disdate", True), ("o_name", False)],
+        "disup": [("disdate", False), ("o_name", False)],
+        "typup": [("o_type", False), ("o_name", False)],
+        "typdn": [("o_type", True), ("o_name", False)],
     }
-    order_by = order_by_map.get(sort_param, order_by_map["incup"])
+    sort_spec = sort_map.get(sort_param, sort_map["incup"])
 
-    # Build type filter (bound, not interpolated). A type that does not exist
-    # is ignored, as before; a failed lookup is logged and flags the page.
-    ot_filter, params = "", None
-    if t > 0:
-        type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-        try:
-            type_result = execute_query(type_sql, (t,))
-        except Exception as ex:
-            current_app.logger.error(f"Error in oldestHKcos.asp type lookup: {ex}")
-            type_result = []
-        if type_result:
-            title += f", {type_result[0]['typename']}"
-            ot_filter, params = "AND o.orgtype = %s", (t,)
-
-    # Query oldest companies
-    sql = f"""
-        SELECT
-            personid,
-            name1 as name,
-            cname,
-            incdate,
-            disdate,
-            typename,
-            incid
-        FROM enigma.organisations o
-        JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
-        WHERE domicile = 1
-          AND incid ~ '^[0-9]'
-          {alive_filter}
-          {ot_filter}
-        ORDER BY incdate
-        LIMIT {limit}
-    """
-
-    # Re-sort based on user selection
-    final_sql = f"""
-        SELECT * FROM ({sql}) AS oldest
-        ORDER BY {order_by}
-    """
+    # The 5000 oldest companies: chosen by incdate whatever the sort, so one list
+    # serves every sort. Once per data version; the type's name rides along. A type
+    # that does not exist is ignored, as before.
+    def compute():
+        type_label, ot_filter, params = None, "", None
+        if t > 0:
+            type_result = execute_query(
+                "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,))
+            if type_result:
+                type_label = type_result[0]["typename"]
+                ot_filter, params = "AND o.orgtype = %s", (t,)
+        rows = execute_query(
+            f"""
+            SELECT oldest.*,
+                   {ordinal("name", "o_name")},
+                   {ordinal("incid", "o_incid")},
+                   {ordinal("typename", "o_type")}
+            FROM (
+                SELECT
+                    personid,
+                    name1 as name,
+                    cname,
+                    incdate,
+                    disdate,
+                    typename,
+                    incid
+                FROM enigma.organisations o
+                JOIN enigma.orgtypes ot ON o.orgtype = ot.orgtype
+                WHERE domicile = 1
+                  AND incid ~ '^[0-9]'
+                  {alive_filter}
+                  {ot_filter}
+                ORDER BY incdate
+                LIMIT {limit}
+            ) AS oldest
+            ORDER BY incdate, name
+            """,
+            params,
+        )
+        return {"type_label": type_label, "rows": rows}
 
     try:
-        results = execute_query(final_sql, params)
+        data = precomputed("oldesthkcos", f"a{int(bool(a))}_t{max(t, 0)}", ("enigma",), compute,
+                           module=__name__, max_entries=200)
+        if data["type_label"]:
+            title += f", {data['type_label']}"
+        results = sort_rows(data["rows"], sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
@@ -453,6 +458,38 @@ def _orgs_cte(date_col, hk=True):
             )"""
 
 
+def _whole_year_or_live(page, m, d, key, compute):
+    """A calendar page's whole-year view, once per data version; months and days live.
+
+    A year is the slow one (England & Wales 2023: ~820k companies sorted before the
+    LIMIT, 2 s). A month or a day is fast with the domicile/date indexes, and there
+    are far too many of them to be worth keeping. The list is capped at 5000 rows, so
+    the sort decides which rows it holds: each sort is its own file, built by the same
+    SQL as before. key: the parameters that select the rows.
+    """
+    if m == 0 and d == 0:
+        return precomputed(page, "_".join(str(k) for k in key), ("enigma",), compute,
+                           module=__name__, max_entries=400)
+    return compute()
+
+
+_HK_ORGTYPES = (1, 2, 9, 15, 19, 21, 22, 23, 26, 28, 35, 42, 43)
+
+
+def _orgtype_names(ids):
+    """The dropdown's organisation types."""
+    return execute_query(
+        "SELECT orgtype, typename FROM enigma.orgtypes"
+        " WHERE orgtype = ANY(CAST(%s AS int[])) ORDER BY typename",
+        (list(ids),),
+    )
+
+
+def _typename(t):
+    rows = execute_query("SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,)) if t > 0 else []
+    return rows[0]["typename"] if rows else None
+
+
 @bp.route("/incHKcaltype.asp")
 def inchkcaltype():
     """HK companies incorporated by calendar date and type"""
@@ -492,6 +529,8 @@ def inchkcaltype():
     # one constant type is meaningless anyway.
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
+    # Which file a whole year comes from: junk sorts and the case above share namup's.
+    sort_key = sort_param if order_by_map.get(sort_param) == order_by else "namup"
 
     # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
     from webbsite.asp_helpers import calendar_range
@@ -524,24 +563,16 @@ def inchkcaltype():
         """
         params = (month_start, month_end, t)
 
-    try:
-        results = execute_query(sql, params)
-        # Get type name if filtering by type
-        typename = None
-        if t > 0:
-            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-            type_result = execute_query(type_sql, (t,))
-            if type_result:
-                typename = type_result[0]["typename"]
+    def compute():
+        return {
+            "results": execute_query(sql, params),
+            "typename": _typename(t),
+            "orgtypes": _orgtype_names(_HK_ORGTYPES),
+        }
 
-        # Get org types for dropdown
-        types_sql = """
-            SELECT orgtype, typename
-            FROM enigma.orgtypes
-            WHERE orgtype IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
-            ORDER BY typename
-        """
-        orgtypes_list = execute_query(types_sql)
+    try:
+        data = _whole_year_or_live("inchkcaltype", m, d, (y, t, sort_key), compute)
+        results, typename, orgtypes_list = data["results"], data["typename"], data["orgtypes"]
     except Exception as ex:
         current_app.logger.error(f"Error in incHKcaltype.asp: {ex}", exc_info=True)
         results = []
@@ -606,6 +637,8 @@ def dishkcaltype():
     # dismodes) -- and sorting by one constant value is meaningless anyway.
     if (t > 0 and sort_param.startswith("typ")) or (w > 0 and sort_param.startswith("mod")):
         order_by = "o.name1"
+    # Which file a whole year comes from: junk sorts and the case above share namup's.
+    sort_key = sort_param if order_by_map.get(sort_param) == order_by else "namup"
 
     # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
     from webbsite.asp_helpers import calendar_range
@@ -668,45 +701,34 @@ def dishkcaltype():
         """
         params = (month_start, month_end, t, w)
 
-    try:
-        # Through the single-column disdate index a month of HK dissolutions
-        # walked every domicile's rows for those dates: ~60k mostly-UK rows on
-        # ~22k heap pages (prod, 2023-05), past the 8 s limit cold (WEBBSITE-2Z).
-        # idx_organisations_domicile_disdate is the fix; the heavy-page timeout
-        # covers a box restored without it.
-        results = execute_query(sql, params, timeout_s=30)
-
-        # Get type/method names for title
-        typename = None
+    def compute():
         methodname = None
-        if t > 0:
-            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-            type_result = execute_query(type_sql, (t,))
-            if type_result:
-                typename = type_result[0]["typename"]
         if w > 0:
-            method_sql = "SELECT dismodetxt FROM enigma.dismodes WHERE id = %s"
-            method_result = execute_query(method_sql, (w,))
+            method_result = execute_query("SELECT dismodetxt FROM enigma.dismodes WHERE id = %s", (w,))
             if method_result:
                 methodname = method_result[0]["dismodetxt"]
+        return {
+            # Through the single-column disdate index a month of HK dissolutions
+            # walked every domicile's rows for those dates: ~60k mostly-UK rows on
+            # ~22k heap pages (prod, 2023-05), past the 8 s limit cold (WEBBSITE-2Z).
+            # idx_organisations_domicile_disdate is the fix; the heavy-page timeout
+            # covers a box restored without it.
+            "results": execute_query(sql, params, timeout_s=30),
+            "typename": _typename(t),
+            "methodname": methodname,
+            "orgtypes": _orgtype_names(_HK_ORGTYPES),
+            "dismodes": execute_query("""
+                SELECT id, dismodetxt
+                FROM enigma.dismodes
+                WHERE id IN (1,2,3,4,5,8,9,10,18)
+                ORDER BY dismodetxt
+            """),
+        }
 
-        # Get org types for dropdown
-        types_sql = """
-            SELECT orgtype, typename
-            FROM enigma.orgtypes
-            WHERE orgtype IN (1,2,9,15,19,21,22,23,26,28,35,42,43)
-            ORDER BY typename
-        """
-        orgtypes_list = execute_query(types_sql)
-
-        # Get dissolution methods for dropdown
-        methods_sql = """
-            SELECT id, dismodetxt
-            FROM enigma.dismodes
-            WHERE id IN (1,2,3,4,5,8,9,10,18)
-            ORDER BY dismodetxt
-        """
-        dismodes_list = execute_query(methods_sql)
+    try:
+        data = _whole_year_or_live("dishkcaltype", m, d, (y, t, w, sort_key), compute)
+        results, typename, methodname = data["results"], data["typename"], data["methodname"]
+        orgtypes_list, dismodes_list = data["orgtypes"], data["dismodes"]
     except Exception as ex:
         current_app.logger.error(f"Error in disHKcaltype.asp: {ex}", exc_info=True)
         results = []
@@ -1305,6 +1327,8 @@ def incukcaltype():
     # one constant type is meaningless anyway.
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
+    # Which file a whole year comes from: junk sorts and the case above share namup's.
+    sort_key = sort_param if order_by_map.get(sort_param) == order_by else "namup"
 
     # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
     from webbsite.asp_helpers import calendar_range
@@ -1335,28 +1359,21 @@ def incukcaltype():
         """
         params = (dom, month_start, month_end, t)
 
+    def compute():
+        return {
+            # A year of England & Wales is ~820k companies, all sorted before the
+            # LIMIT: ~3 s on production (Postgres 17 finds them through the incdate
+            # index; the cost is the sort, not reads). It hit 8 s under the 04:30
+            # route check's load (WEBBSITE-23), so give it the heavy-page ceiling.
+            "results": execute_query(sql, params, timeout_s=30),
+            "typename": _typename(t),
+            # UK-specific org types
+            "orgtypes": _orgtype_names((7, 9, 19, 20, 21, 23, 25, 26, 35, 37, 38, 41)),
+        }
+
     try:
-        # A year of England & Wales is ~820k companies, all sorted before the
-        # LIMIT: ~3 s on production (Postgres 17 finds them through the incdate
-        # index; the cost is the sort, not reads). It hit 8 s under the 04:30
-        # route check's load (WEBBSITE-23), so give it the heavy-page ceiling.
-        results = execute_query(sql, params, timeout_s=30)
-
-        typename = None
-        if t > 0:
-            type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
-            type_result = execute_query(type_sql, (t,))
-            if type_result:
-                typename = type_result[0]["typename"]
-
-        # UK-specific org types
-        types_sql = """
-            SELECT orgtype, typename
-            FROM enigma.orgtypes
-            WHERE orgtype IN (7,9,19,20,21,23,25,26,35,37,38,41)
-            ORDER BY typename
-        """
-        orgtypes_list = execute_query(types_sql)
+        data = _whole_year_or_live("incukcaltype", m, d, (y, dom, t, sort_key), compute)
+        results, typename, orgtypes_list = data["results"], data["typename"], data["orgtypes"]
     except Exception as ex:
         current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)
         results = []
