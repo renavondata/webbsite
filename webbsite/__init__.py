@@ -451,8 +451,12 @@ def create_app(config_class=Config):
             sentry_sdk.set_tag("request_id", g.request_id)
             # The 04:30 route check (tests/check_all_routes.py): its timeouts are
             # real signal, but under its own 6-way load, so say so.
-            if request.headers.get("User-Agent", "").startswith("webbsite-route-check/"):
+            ua = request.headers.get("User-Agent", "")
+            if ua.startswith("webbsite-route-check/"):
                 sentry_sdk.set_tag("synthetic", "route-check")
+            elif ua.startswith("webbsite-warm/"):
+                # The cache warmer: deliberate cold computes, not visitor latency.
+                sentry_sdk.set_tag("synthetic", "warm")
 
     @app.after_request
     def _echo_request_id(response):
@@ -460,6 +464,12 @@ def create_app(config_class=Config):
         if rid:
             response.headers["X-Request-Id"] = rid
         return response
+
+    # Server-Timing on every response (webbsite/timing.py). Registered this early
+    # so it runs after the cache-header and slow-log hooks and times them too.
+    from webbsite import timing
+
+    timing.init_app(app)
 
     # Block aggressive crawlers at the origin (defense-in-depth; CF WAF is primary)
     @app.before_request
@@ -484,6 +494,7 @@ def create_app(config_class=Config):
     @app.before_request
     def _start_timer():
         g._request_start = time.monotonic()
+        timing.start_request()
 
     @app.after_request
     def _log_slow_requests(response):
