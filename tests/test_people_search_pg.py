@@ -67,6 +67,8 @@ def seed():
         esc = lambda v: "NULL" if v is None else "'" + v.replace("'", "''") + "'"  # noqa: E731
         rows.append(f"({i}, {esc(n1)}, {esc(n2)}, NULL, {1900 + i % 100}, NULL, NULL, "
                     f"{esc(n1)}, {esc(n2)})")
+    # dn1 alone has the word foo; dn1 || ' ' || dn2 parses as one <tag>, without it.
+    rows.append("(4001, '<foo', 'bar>', NULL, 1950, NULL, NULL, '<foo', 'bar>')")
     return "INSERT INTO enigma.people VALUES\n" + ",\n".join(rows) + ";"
 
 
@@ -77,7 +79,7 @@ SEARCHES = [
     ("Rare97", "", 0), ("Chan", "N10", 0), ("Nosuchname", "", 0), ("___", "", 0),
     ("Chan", "___", 0), ("Chan", "", 1), ("", "Tai", 1), ("Chan", "Tai Man", 1),
     ("Cheung", "Wai", 1), ("", "Ka Shing", 1), ("!!", "", 1), ("Lam", "Jayne Ping", 0),
-    ("ho", "siu wai", 0),
+    ("ho", "siu wai", 0), ("foo", "", 1), ("", "bar", 1),
 ]
 
 

@@ -2,11 +2,16 @@
 Search routes - Direct port from searchorgs.asp and searchpeople.asp
 """
 
+import logging
+
 from flask import Blueprint, render_template, request
+from sqlalchemy.exc import SQLAlchemyError
+
 from webbsite.db import execute_query
 from webbsite.asp_helpers import rem_space, get_str, get_bool, ts_words, escape_like
 
 bp = Blueprint("search", __name__)
+logger = logging.getLogger(__name__)
 
 
 @bp.route("/searchorgs.asp", methods=["GET", "POST"])
@@ -168,6 +173,13 @@ def pick_drivers(lexemes, mandatory, branches):
     return [must[0]] if must is not None else []
 
 
+# A given name such as "jayne" is ~35k rows on ~31k heap pages of enigma.people:
+# cold, that is random I/O past the 8 s default (WEBBSITE-3C). The token table
+# reads far less, but two common words that rarely coincide still scan the
+# rarer one's whole run, so both paths keep the heavy-query budget.
+PEOPLE_SEARCH_TIMEOUT_S = 25
+
+
 def _search_people_tokens(where, params, fname_words, forename_words, now_year):
     """The first 500 people the full-text WHERE clause matches, by name, read
     from enigma.people_search (database/derived/people_search.sql) instead of
@@ -210,7 +222,7 @@ def _search_people_tokens(where, params, fname_words, forename_words, now_year):
            f" FROM ({' UNION '.join([branch] * len(drivers))}) s"
            f" ORDER BY name1, name2, personid LIMIT 500")
     bound = tuple(v for drv in drivers for v in (drv, *params))
-    return execute_query(sql, bound)
+    return execute_query(sql, bound, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
 
 
 @bp.route("/searchpeople.asp", methods=["GET", "POST"])
@@ -320,19 +332,18 @@ def search_people():
                     where_alias = "1=0"
 
         people_params = tuple(params) or None
-        # Both queries must fetch every match before ORDER BY ... LIMIT 500,
-        # and enigma.people is 14.5M rows (UK officers included): a common
-        # given name such as "jayne" is ~35k rows on ~31k heap pages. Warm,
-        # that is milliseconds; cold, it is random I/O past the 8 s default
-        # (WEBBSITE-3C), so the search gets the heavy-query budget.
-        search_timeout_s = 25
 
         # Query current names: from the name-ordered token table when it is
         # ready, else (a fresh restore, until it is rebuilt) from people itself.
         current_results = None
         if fulltext_words is not None and where_current != "1=0":
-            current_results = _search_people_tokens(
-                where_current, params, *fulltext_words, now_year)
+            try:
+                current_results = _search_people_tokens(
+                    where_current, params, *fulltext_words, now_year)
+            except SQLAlchemyError:
+                # The table is an optimisation: a problem with it (a swap's
+                # race, a permissions slip) must not take search down.
+                logger.exception("people_search failed; falling back to enigma.people")
         if current_results is None:
             sql = f"""
                 SELECT personID, name1, name2, cName, YOB, MOB, DOB,
@@ -342,7 +353,7 @@ def search_people():
                 ORDER BY name1, name2
                 LIMIT 500
             """
-            current_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
+            current_results = execute_query(sql, people_params, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
 
         # Format birth dates for display
         for row in current_results:
@@ -369,7 +380,7 @@ def search_people():
             ORDER BY a.n1, a.n2
             LIMIT 500
         """
-        alias_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
+        alias_results = execute_query(sql, people_params, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
 
         # Format birth dates for alias results
         for row in alias_results:

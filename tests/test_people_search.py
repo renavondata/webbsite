@@ -28,6 +28,7 @@ os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
 
 from webbsite import create_app  # noqa: E402
 from webbsite.routes import search  # noqa: E402
+from sqlalchemy.exc import OperationalError  # noqa: E402
 
 _failures: list[str] = []
 
@@ -126,6 +127,25 @@ def run():
         check("route: a rare required word drives alone",
               (stub.shapes()[2], stub.calls[2][1]), ("tokens x1", ("chan", tsq)))
         check("route: no user text in the SQL", "Chan" in sql or "Tai" in sql, False)
+
+        logged = []
+        search.execute_query = lambda sql, params=None, timeout_s=None: (
+            logged.append(timeout_s) or [])
+        real_tokens = search._search_people_tokens
+
+        def broken(*a):
+            raise OperationalError("SELECT", {}, Exception("permission denied"))
+
+        search._search_people_tokens = broken
+        check("route: a failing token table falls back to people, not a 500",
+              (client.get("/dbpub/searchpeople.asp?n1=Chan").status_code, logged), (200, [25, 25]))
+        search._search_people_tokens = real_tokens
+
+        stub = Stub(counts={"chan": 50})
+        search.execute_query = stub
+        client.get("/dbpub/searchpeople.asp?n1=Chan")
+        check("route: the token query keeps the heavy-query budget",
+              [t for sql, _, t in stub.calls if "people_search" in sql and "token =" in sql], [25])
 
         stub = Stub(counts={"tai": 7, "man": 9, "taiman": 2})
         search.execute_query = stub
