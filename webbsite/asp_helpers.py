@@ -19,7 +19,53 @@ import html
 # the sitemap), instead of letting each facet combination be its own indexed page.
 # Denylist (not allowlist): unknown params are kept, so genuine content params
 # (p, d, a, i, part, ...) still keep distinct pages distinct.
-CANONICAL_DROP_PARAMS = frozenset({"sort", "so", "s2", "hide", "h", "x", "n", "m", "f"})
+CANONICAL_DROP_PARAMS = frozenset({"sort", "so", "s2", "hide", "h", "x", "n"})
+# Names that are presentation on one page but content on most. `m` and `f` were
+# in the global list, which made every month page (incHKcaltype.asp?y=2023&m=5,
+# bornyear.asp?y=1957&m=4) and every frequency or from-date variant (hpw.asp?f=m,
+# advbyrole.asp?f=2020) canonicalise to a different page, and so drop out of the
+# index. Two pages use them as pure view toggles: str.asp's `f` (show directors'
+# dealings) and natperson.asp's `m` (family tree depth).
+CANONICAL_DROP_PARAMS_BY_PATH = {
+    "/dbpub/str.asp": frozenset({"f"}),
+    "/dbpub/natperson.asp": frozenset({"m"}),
+}
+# ...and a page's own default is the same page as leaving the param out: hpw.asp
+# links ?i=1&f=w from every page, which must not be a second URL for ?i=1. Fixed
+# defaults only: one computed per request (a month from the data, last year) can
+# change, so it stays in the canonical. A value here must match the route's.
+_M0 = {"m": "0"}
+_F0 = {"f": "0"}
+_F1 = {"f": "1"}
+CANONICAL_DEFAULTS_BY_PATH = {
+    "/dbpub/" + page: defaults
+    for page, defaults in {
+        "buybacks.asp": {"f": "d"},
+        "disFcal.asp": _M0,
+        "disHKcaltype.asp": _M0,
+        "hkpax.asp": _F0,
+        "hpw.asp": {"f": "w"},
+        "incFcal.asp": _M0,
+        "incHKcaltype.asp": _M0,
+        "incUKcaltype.asp": _M0,
+        "judgments.asp": _M0,
+        "landreg.asp": _F0,
+        "leagueDirsHK.asp": {"m": "3"},
+        "lrvaluecats.asp": _F0,
+        "SFChistfirm.asp": {"f": "y"},
+        "tuntraff.asp": _F1,
+        "vebrandhist.asp": _F1,
+        "vedet.asp": {"f": "1", "m": "0"},
+        "veengine.asp": _F1,
+        "veFR.asp": _M0,
+        "veFRtype.asp": _M0,
+        "veFRtypehist.asp": _F1,
+        "vefuelhist.asp": _F1,
+        "veJourneyhist.asp": _F1,
+        "veJourneys.asp": _M0,
+        "yearendcos.asp": {"m": "12"},
+    }.items()
+}
 
 
 _TS_NONWORD = re.compile(r"\W+", re.UNICODE)
@@ -38,10 +84,12 @@ def ts_words(text: str) -> list[str]:
 
 def canonical_query() -> str:
     """Query string for rel=canonical, with presentation-only params removed."""
+    drop = CANONICAL_DROP_PARAMS | CANONICAL_DROP_PARAMS_BY_PATH.get(request.path, frozenset())
+    defaults = CANONICAL_DEFAULTS_BY_PATH.get(request.path, {})
     kept = [
         (k, v)
         for k, v in request.args.items(multi=True)
-        if k.lower() not in CANONICAL_DROP_PARAMS
+        if k.lower() not in drop and defaults.get(k.lower()) != v
     ]
     return urlencode(kept)
 
@@ -62,6 +110,32 @@ def get_int(name, default=0):
         return int(val)
     except (ValueError, OverflowError):
         return default
+
+
+def int_range(val, default, lo, hi):
+    """ASP getIntRange on an already-parsed int: the default passes through
+    unchanged (it may lie outside the range, e.g. 0 = "any"); any other value
+    is clamped into lo..hi. Clamped, not defaulted: ?m=13 means December."""
+    return default if val == default else max(lo, min(val, hi))
+
+
+def calendar_range(y, m, d):
+    """(m, d, start, end) for the calendar pages' y/m/d, as the ASP read them.
+
+    m is 0 (any month) or clamped to 1..12; d is 0 (any day) or clamped to
+    1..that month's last day, and only means anything with a month. A day is
+    that single day, a month that month, otherwise the whole year
+    (incHKcaltype.asp: ``BETWEEN dateYMD(y, m|1, d|1) AND dateYMD(y, m|12,
+    d|monthEnd)``). Impossible dates (?m=2&d=31) used to raise a 500.
+    """
+    import calendar
+    from datetime import date
+
+    m = int_range(m, 0, 1, 12)
+    d = 0 if m == 0 else int_range(d, 0, 1, calendar.monthrange(y, m)[1])
+    start = date(y, m or 1, d or 1)
+    end = date(y, m or 12, d or calendar.monthrange(y, m or 12)[1])
+    return m, d, start, end
 
 
 def get_str(name, default=""):
@@ -442,8 +516,8 @@ def get_date_or_default(name, default=None):
         else:
             return default if default else ""
 
-        # Return as YYYY-MM-DD string
-        return parsed.strftime("%Y-%m-%d")
+        # Return as YYYY-MM-DD string (isoformat: strftime's %Y doesn't pad year 999)
+        return parsed.isoformat()[:10]
     except (ValueError, AttributeError):
         return default if default else ""
 

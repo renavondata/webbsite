@@ -39,8 +39,10 @@ errorlog = "-"  # Log to stderr
 loglevel = os.environ.get("GUNICORN_LOG_LEVEL", "info")
 # Trailing field: the X-Request-Id Caddy mints per request (deploy/Caddyfile) and
 # the app echoes back, so a journal line, a Caddy access-log line, a Sentry event
-# and a user's report can all be joined on one string.
-access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s %({x-request-id}i)s'
+# and a user's report can all be joined on one string. Then the Server-Timing the
+# app set (webbsite/timing.py: app/db/render/cpu ms, cache state), so per-route
+# db vs render time can be read straight off the journal.
+access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s %({x-request-id}i)s "%({server-timing}o)s"'
 
 # Process naming
 proc_name = "webbsite"

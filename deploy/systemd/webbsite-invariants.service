@@ -21,6 +21,11 @@ WorkingDirectory=/srv/webbsite
 EnvironmentFile=/etc/webbsite/env
 EnvironmentFile=-/etc/webbsite/ops-env
 Environment=BASE_URL=http://127.0.0.1:8000
+# Per-request timings of the route check (tests/check_all_routes.py), 30 days
+# kept: the latency trend behind the budget (tests/perf_budget.py). Root's own
+# state dir, not the app's /var/lib/webbsite.
+StateDirectory=webbsite-invariants
+Environment=ROUTE_TIMINGS_DIR=/var/lib/webbsite-invariants/route-timings
 ExecStart=/srv/webbsite/.venv/bin/python scripts/assert_box.py
 TimeoutStartSec=30min
 StandardOutput=journal
