@@ -525,6 +525,27 @@ def cparticipants():
     )
 
 
+# Holdings lists kept on disk across all participants and dates: a few hundred
+# MB at worst, and evicting one only costs its next visitor a compute.
+CHOLDER_KEPT = 2000
+
+
+def _holdings_sources(d):
+    """What a participant's list on date d depends on.
+
+    A date more than 14 days behind the last CCASS load has its list kept across
+    daily refreshes, but only until the month rolls: the loader can still rewrite
+    old dates, so a late correction shows within about a month, as at the edge.
+    Age counts from the load and not from today, or a stalled feed would pin the
+    partial lists of dates it has not caught up on.
+    """
+    done = watermarks.ccass_done()
+    if not done:
+        return ("market", "enigma")
+    behind_days = (date.fromisoformat(str(done)[:10]) - date.fromisoformat(str(d)[:10])).days
+    return ("month", "enigma") if behind_days > 14 else ("market", "enigma")
+
+
 @bp.route("/cholder.asp")
 def cholder():
     """
@@ -554,6 +575,7 @@ def cholder():
         d = watermarks.ccass_done()
 
     # Get max settlement date <= requested date
+    d_is_settled = False  # d is a settlement date, so its list is worth keeping
     try:
         result = execute_query(
             """
@@ -565,6 +587,7 @@ def cholder():
         )
         if result and result[0]["max"]:
             d = ms_date(result[0]["max"])
+            d_is_settled = True
     except Exception as ex:
         current_app.logger.error(f"Error getting settlement date for cholder: {ex}")
 
@@ -574,6 +597,7 @@ def cholder():
     participant_ccassid = None
     person_id = None
     is_org = False
+    part_exists = False  # only a real participant's list is worth keeping
 
     if part > 0:
         try:
@@ -588,6 +612,7 @@ def cholder():
                 (part,),
             )
             if result:
+                part_exists = True
                 # Use org name1 if available, otherwise partName
                 participant_name = result[0]["name1"] or result[0]["partname"]
                 participant_name2 = result[0]["cname"]  # Chinese name
@@ -598,27 +623,26 @@ def cholder():
             current_app.logger.error(f"Error getting participant: {ex}")
             participant_name = "Unknown participant"
 
-    # Determine sort order
+    # Sorted per request from one compute; text sorts on database ordinals.
+    # No partup/partdn here: this page is one participant's holdings, so
+    # partName is not in the rows.
     sort_orders = {
-        "nameup": "name1, stake DESC",
-        "namedn": "name1 DESC, stake DESC",
-        # No partup/partdn here: this page is one participant's holdings
-        # (the query runs only `if part > 0`), so partName is not in the SELECT
-        # and ordering by it raised UndefinedColumn -- a blank table, 200.
-        "chgdn": "stake DESC, name1",
-        "chgup": "stake, name1",
-        "stakdn": "stake DESC, name1",
-        "stakup": "stake, name1",
-        "codeup": "lastCode, stake DESC",
-        "codedn": "lastCode DESC, stake DESC",
-        "holdup": "holding, name1",
-        "holddn": "holding DESC, name1",
-        "valndn": "valn DESC, name1",
-        "valnup": "valn, name1",
-        "datedn": "atDate DESC, name1",
-        "dateup": "atDate, name1",
+        "nameup": [("o_name", False), ("stake", True)],
+        "namedn": [("o_name", True), ("stake", True)],
+        "chgdn": [("stake", True), ("o_name", False)],
+        "chgup": [("stake", False), ("o_name", False)],
+        "stakdn": [("stake", True), ("o_name", False)],
+        "stakup": [("stake", False), ("o_name", False)],
+        "codeup": [("o_code", False), ("stake", True)],
+        "codedn": [("o_code", True), ("stake", True)],
+        "holdup": [("holding", False), ("o_name", False)],
+        "holddn": [("holding", True), ("o_name", False)],
+        "valndn": [("valn", True), ("o_name", False)],
+        "valnup": [("valn", False), ("o_name", False)],
+        "datedn": [("atdate", True), ("o_name", False)],
+        "dateup": [("atdate", False), ("o_name", False)],
     }
-    ob = sort_orders.get(sort_param, "stake DESC, name1")
+    sort_spec = sort_orders.get(sort_param, sort_orders["stakdn"])
     if sort_param not in sort_orders:
         sort_param = "stakdn"
 
@@ -631,55 +655,70 @@ def cholder():
     # (using DISTINCT ON to get the most recent record per issue).
     holdings = []
     if part > 0:
-        try:
+        # A cold big custodian takes 2.5 s, nearly all of it disk reads, so each
+        # participant and date is computed once however many sorts are asked for.
+        def compute():
             sql = f"""
-                SELECT ph.issueID, ph.holding, ph.atDate,
-                       o.name1, o.personID,
-                       st.typeShort,
-                       (SELECT sl.stockCode
-                        FROM enigma.stocklistings sl
-                        WHERE sl.issueID = ph.issueID
-                          AND sl.delistdate IS NULL
-                        ORDER BY sl.firsttradedate DESC
-                        LIMIT 1) AS lastCode,
-                       CASE WHEN ph.holding > 0 AND COALESCE(os.outstanding, 0) > 0
-                            THEN CAST(ph.holding AS FLOAT) / os.outstanding
-                            ELSE 0
-                       END AS stake,
-                       CASE WHEN COALESCE(q.closing, 0) > 0
-                            THEN ph.holding * q.closing
-                            ELSE 0
-                       END AS valn,
-                       CASE WHEN COALESCE(q.susp, FALSE) = TRUE OR COALESCE(sl2."2ndCtr", FALSE) = TRUE
-                            THEN TRUE
-                            ELSE FALSE
-                       END AS susp
-                FROM {_LATEST_PARTHOLD} ph
-                JOIN enigma.issue i ON ph.issueID = i.id1
-                JOIN enigma.organisations o ON i.issuer = o.personID
-                JOIN enigma.secTypes st ON i.typeID = st.typeID
-                LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
-                    AND os.atDate = (
-                        SELECT MAX(os2.atDate)
-                        FROM enigma.issuedshares os2
-                        WHERE os2.issueID = ph.issueID AND os2.atDate <= %s
-                    )
-                LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
-                    AND q.atDate = (
-                        SELECT MAX(q2.atDate)
-                        FROM ccass.quotes q2
-                        WHERE q2.issueID = ph.issueID AND q2.atDate <= %s
-                    )
-                LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
-                    AND %s >= sl2.firsttradedate
-                    AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
-                WHERE TRUE
-                  {holding_filter}
-                ORDER BY {ob}
+                SELECT t.*,
+                       {ordinal("t.name1", "o_name")},
+                       {ordinal("t.lastcode", "o_code")}
+                FROM (
+                    SELECT ph.issueID, ph.holding, ph.atDate,
+                           o.name1, o.personID,
+                           st.typeShort,
+                           (SELECT sl.stockCode
+                            FROM enigma.stocklistings sl
+                            WHERE sl.issueID = ph.issueID
+                              AND sl.delistdate IS NULL
+                            ORDER BY sl.firsttradedate DESC
+                            LIMIT 1) AS lastCode,
+                           CASE WHEN ph.holding > 0 AND COALESCE(os.outstanding, 0) > 0
+                                THEN CAST(ph.holding AS FLOAT) / os.outstanding
+                                ELSE 0
+                           END AS stake,
+                           CASE WHEN COALESCE(q.closing, 0) > 0
+                                THEN ph.holding * q.closing
+                                ELSE 0
+                           END AS valn,
+                           CASE WHEN COALESCE(q.susp, FALSE) = TRUE OR COALESCE(sl2."2ndCtr", FALSE) = TRUE
+                                THEN TRUE
+                                ELSE FALSE
+                           END AS susp
+                    FROM {_LATEST_PARTHOLD} ph
+                    JOIN enigma.issue i ON ph.issueID = i.id1
+                    JOIN enigma.organisations o ON i.issuer = o.personID
+                    JOIN enigma.secTypes st ON i.typeID = st.typeID
+                    LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
+                        AND os.atDate = (
+                            SELECT MAX(os2.atDate)
+                            FROM enigma.issuedshares os2
+                            WHERE os2.issueID = ph.issueID AND os2.atDate <= %s
+                        )
+                    LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
+                        AND q.atDate = (
+                            SELECT MAX(q2.atDate)
+                            FROM ccass.quotes q2
+                            WHERE q2.issueID = ph.issueID AND q2.atDate <= %s
+                        )
+                    LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
+                        AND %s >= sl2.firsttradedate
+                        AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
+                    WHERE TRUE
+                      {holding_filter}
+                ) t
+                ORDER BY t.stake DESC, t.name1
             """
             # timeout_s: a large custodian (e.g. part=1243) walks ~3.5M parthold
             # rows; deterministic and edge-cached, like the other heavy reports.
-            results = execute_query(sql, (part, part, part, d, d, d, d, d), timeout_s=25)
+            return execute_query(sql, (part, part, part, d, d, d, d, d), timeout_s=25)
+
+        try:
+            results = (
+                precomputed("cholder", f"p{part}_{d}_z{int(bool(z))}", _holdings_sources(d),
+                            compute, module=__name__, max_entries=CHOLDER_KEPT)
+                if d_is_settled and part_exists else compute()
+            )
+            results = sort_rows(results, sort_spec)
 
             for row in results:
                 holdings.append(
