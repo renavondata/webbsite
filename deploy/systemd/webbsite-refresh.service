@@ -8,9 +8,6 @@ Wants=network-online.target
 # A failure anywhere in this unit -- including before refresh.py gets to its
 # own ping -- pages via the dead-man's /fail. See that unit's header.
 OnFailure=webbsite-refresh-failed.service
-# New data makes every precomputed page stale: refill them now rather than
-# on the next warm timer tick (systemd >= 249; older ones ignore the key).
-OnSuccess=webbsite-warm.service
 
 [Service]
 Type=oneshot
