@@ -11,6 +11,7 @@ Run:  uv run pytest -q tests/test_precompute_routes.py
 """
 
 import os
+import re
 import sys
 from datetime import date
 from decimal import Decimal
@@ -107,6 +108,9 @@ def test_every_sort_renders_from_one_compute(client, path, caplog):
             r = client.get(url)
             assert r.status_code == 200, (url, r.status_code)
             assert "no-store" not in r.headers.get("Cache-Control", ""), url
+            # Sort ordinals are ours: hksols.html prints every key it is given.
+            html = r.get_data(as_text=True)
+            assert not re.search(r"\bo_[a-z]+\b", html), (url, "sort ordinal on the page")
             # Several pages catch their own errors and render an empty table.
             errors = [rec.getMessage() for rec in caplog.records if rec.levelname == "ERROR"]
             assert errors == [], (url, errors)

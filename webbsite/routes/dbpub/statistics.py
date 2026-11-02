@@ -4593,7 +4593,8 @@ def hksols():
 
     return render_template(
         "dbpub/hksols.html",
-        solicitors=results,
+        # This template prints every key of a row: the sort ordinals stay out.
+        solicitors=[{k: v for k, v in r.items() if not k.startswith("o_")} for r in results],
         sort=sort_param,
         p=p,
         title=title + " in HK law firms",
