@@ -155,7 +155,7 @@ def listed():
 
     try:
         if "d" not in request.args:
-            rows = precomputed("listed", f"{e_eff}_{t_eff}", ("market", "today"),
+            rows = precomputed("listed", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
                                compute, module=__name__)
         else:
             rows = compute()

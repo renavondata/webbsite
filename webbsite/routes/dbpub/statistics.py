@@ -3914,7 +3914,7 @@ def league_dirs_hk():
             return rows
 
         results = _sort_league_rows(
-            precomputed("leaguedirshk", "default", ("market", "today"), compute,
+            precomputed("leaguedirshk", "default", ("market", "enigma", "today"), compute,
                         module=__name__),
             sort_keys)
     else:
