@@ -9,6 +9,7 @@ Covers the load-bearing, DB-free logic:
 Run:  uv run python tests/test_cache_headers.py
 """
 
+import importlib.util
 import os
 import re
 import sys
@@ -114,10 +115,20 @@ def test_data_page_headers_end_to_end(monkeypatch):
 
 def test_watermark_fallback():
     print("== watermark fallback (no DB) ==")
-    # No app context -> the query fails -> the frozen-archive fallback is returned.
-    check("ccass_done fallback", watermarks.ccass_done(), "2025-10-17")
-    check("quotes_end fallback = min(MB,GEM)", watermarks.quotes_end(), "2025-10-10")
-    check("data_end is a date", watermarks.data_end(), date(2025, 10, 10))
+    # The query fails -> the frozen-archive fallback is returned. On a private copy of
+    # the module: tests/test_overlay.py replaces watermarks.log_val when pytest imports
+    # it, and other tests leave stubs and memoised values on the shared one.
+    spec = importlib.util.spec_from_file_location("_watermarks_fresh", watermarks.__file__)
+    fresh = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fresh)
+
+    def no_database(*_args):
+        raise RuntimeError("no database")
+
+    fresh.execute_scalar = no_database
+    check("ccass_done fallback", fresh.ccass_done(), "2025-10-17")
+    check("quotes_end fallback = min(MB,GEM)", fresh.quotes_end(), "2025-10-10")
+    check("data_end is a date", fresh.data_end(), date(2025, 10, 10))
 
 
 def test_freeze_constants_gone():
