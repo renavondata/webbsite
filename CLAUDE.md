@@ -147,7 +147,7 @@ webbsite/
 ├── overlay.py                 # deployment overlay: <dir>/templates and <dir>/static win over ours
 ├── db.py                      # database helpers
 ├── asp_helpers.py             # ASP-compatibility functions (ported from functions1.asp)
-├── diskcache.py               # JSON disk cache for heavy deterministic pages
+├── precompute.py              # whole-page results computed once per data version (pickled on disk)
 ├── routes/                    # route blueprints (search, quotes, events, dbpub/, ccass, articles, …)
 ├── sql/                       # SQL used by the app
 └── templates/                 # Jinja2 templates (base.html, header.html, includes/, …)

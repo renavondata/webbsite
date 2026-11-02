@@ -7,8 +7,7 @@ from datetime import date
 import calendar
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
-from webbsite import watermarks
-from webbsite.diskcache import cached
+from webbsite.precompute import precomputed
 
 bp = Blueprint("dbpub_incorporations", __name__)
 
@@ -308,7 +307,7 @@ def inc_hk_annual():
 
     # Every HK company, counted twice: ~5 GB read cold, so it timed out at 8 s
     # (WEBBSITE-1R). The counts only change with the data, so compute them once
-    # per watermark and serve from disk (webbsite/diskcache.py).
+    # per data version and serve from disk (webbsite/precompute.py).
     def compute():
         return [
             {"year": int(r["year"]), "incorporated": int(r["incorporated"]),
@@ -317,7 +316,8 @@ def inc_hk_annual():
         ]
 
     try:
-        results = cached(f"inchkannual_t{t_eff}", watermarks.quotes_end(), compute)
+        results = precomputed("inchkannual", f"t{t_eff}", ("enigma", "year"), compute,
+                              module=__name__)
     except Exception as ex:
         current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
         results = []
@@ -809,7 +809,7 @@ def inchkmonth():
           {type_filter}
     """
 
-    # Whole-table counts, as incHKannual (WEBBSITE-1S/1T): once per watermark,
+    # Whole-table counts, as incHKannual (WEBBSITE-1S/1T): once per data version,
     # and per month the series ends on.
     def compute():
         months = [
@@ -825,7 +825,8 @@ def inchkmonth():
         }
 
     try:
-        data = (cached(f"inchkmonth_t{t if t > 0 else -1}", f"{watermarks.quotes_end()}_{end_date}", compute)
+        data = (precomputed("inchkmonth", f"t{t if t > 0 else -1}", ("enigma", "month"),
+                            compute, module=__name__)
                 if cacheable else compute())
         results, inc_total, dis_total = data["months"], data["inc_total"], data["dis_total"]
 
@@ -914,7 +915,7 @@ def inchksurvive():
     params = (snapshot_date,) * 3 + ((t,) if t > 0 else ())
 
     # The same whole-table count as incHKannual. Only today's view is cached
-    # (once per watermark and day); another date is computed live.
+    # (once per data version and day); another date is computed live.
     def compute():
         return [
             {"y": int(r["y"]), "incorporated": int(r["incorporated"]),
@@ -924,8 +925,8 @@ def inchksurvive():
 
     try:
         if snapshot_date == date.today() and cacheable:
-            results = cached(f"inchksurvive_t{t if t > 0 else -1}",
-                             f"{watermarks.quotes_end()}_{snapshot_date}", compute)
+            results = precomputed("inchksurvive", f"t{t if t > 0 else -1}", ("enigma", "today"),
+                                  compute, module=__name__)
         else:
             results = compute()
 

@@ -15,61 +15,15 @@ from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_o
 from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
 
-import json
-import os
-import tempfile
-from pathlib import Path
-
-def _league_cache_dir():
-    return os.environ.get("LEAGUE_CACHE_DIR") or os.path.join(
-        os.path.expanduser("~"), ".cache", "webbsite"
-    )
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 
-def _league_cache_path():
-    """On-disk path for the cached default leagueDirsHK result, KEYED BY the current
-    data watermark.
-
-    The default table (no from-date, current to-date, min 3 positions, not hidden)
-    is constant *for a given dataset*, so it is computed at most once and served from
-    disk. Keying the filename by the quotes watermark means a daily refresh naturally
-    invalidates it — the first hit after new data recomputes once, and stale files
-    are swept in :func:`_save_league_cache`. Overridable via LEAGUE_CACHE_DIR.
-    """
-    return os.path.join(_league_cache_dir(), f"leaguedirshk_default_{watermarks.quotes_end()}.json")
-
-
-def _load_league_cache():
-    try:
-        with open(_league_cache_path(), encoding="utf-8") as f:
-            return json.load(f)
-    except (OSError, ValueError):
-        return None
-
-
-def _save_league_cache(rows):
-    """Best-effort atomic write; a failure just means the next hit recomputes.
-    Also sweeps older watermark-keyed cache files so they don't accumulate."""
-    try:
-        path = _league_cache_path()
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path))
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(rows, f)
-        os.replace(tmp, path)
-        keep = os.path.basename(path)
-        for old in Path(_league_cache_dir()).glob("leaguedirshk_default_*.json"):
-            if old.name != keep:
-                old.unlink(missing_ok=True)
-    except OSError:
-        pass
-
-
-# (field, reverse) for each leagueDirsHK sort key — mirrors order_map's SQL so
-# the cached path sorts in Python identically (PG ASC=NULLS LAST, DESC=FIRST).
+# (field, descending) for each leagueDirsHK sort key, mirroring order_map's
+# SQL; the name sorts on its database ordinal, so the cached path orders names
+# by the collation as the SQL does (PG: NULLs last ascending, first descending).
 _LEAGUE_SORT = {
     "cntdn": ("cntpos", True), "cntup": ("cntpos", False),
-    "nameup": ("name", False), "namedn": ("name", True),
+    "nameup": ("o_name", False), "namedn": ("o_name", True),
     "cagreldn": ("cagrel", True), "cagrelup": ("cagrel", False),
     "agedn": ("yob", False), "ageup": ("yob", True),
     "sexdn": ("sex", True), "sexup": ("sex", False),
@@ -77,17 +31,13 @@ _LEAGUE_SORT = {
 
 
 def _sort_league_rows(rows, sort_keys):
-    """Apply the requested sort keys (least-significant first, stable)."""
-    out = list(rows)
-    for i in (3, 2, 1):
-        spec = _LEAGUE_SORT.get(sort_keys.get(i))
-        if not spec:
-            continue
-        field, rev = spec
-        out.sort(key=lambda r, f=field: (r.get(f) is None, r.get(f)), reverse=rev)
-    return out
+    """Apply the requested sort keys s1 > s2 > s3."""
+    return sort_rows(rows, [_LEAGUE_SORT[sort_keys[i]] for i in (1, 2, 3)
+                            if sort_keys.get(i) in _LEAGUE_SORT])
 
 bp = Blueprint("dbpub_statistics", __name__)
+
+_LEAGUE_NAME = "p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '')"
 
 
 def _hkid_check_digit(id_no_cd):
@@ -3928,9 +3878,9 @@ def league_dirs_hk():
             HAVING COUNT(*) >= %s
         )
         SELECT mt.dir, dc.cntpos,
-               p.name1 || COALESCE(', ' || p.name2, '')
-                       || COALESCE(' ' || p.cname, '') AS name,
+               {_LEAGUE_NAME} AS name,
                p.yob, p.sex,
+               {ordinal(_LEAGUE_NAME, "o_name")},
                AVG(enigma.cagrel(hkl.issueid, {cagr_from}, {cagr_to_expr})) - 1 AS cagrel
         FROM merged_tenures mt
         JOIN dir_counts dc ON mt.dir = dc.dir
@@ -3955,14 +3905,17 @@ def league_dirs_hk():
         and date.fromisoformat(to_date) >= watermarks.data_end()
     )
     if is_default:
-        results = _load_league_cache()
-        if results is None:
-            results = execute_query(sql, tuple(all_params), timeout_s=50)
-            for r in results:
+        def compute():
+            rows = execute_query(sql, tuple(all_params), timeout_s=50)
+            for r in rows:
                 if r.get("cagrel") is not None:
                     r["cagrel"] = float(r["cagrel"])
-            _save_league_cache(results)
-        results = _sort_league_rows(results, sort_keys)
+            return rows
+
+        results = _sort_league_rows(
+            precomputed("leaguedirshk", "default", ("market", "enigma", "today"), compute,
+                        module=__name__),
+            sort_keys)
     else:
         # Rare custom-range/hidden variants: compute live (DB sorts).
         results = execute_query(sql, tuple(all_params), timeout_s=50)

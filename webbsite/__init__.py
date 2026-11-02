@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 _TTL_LATEST = (3600, 14400)      # 1h browser / 4h edge  — latest views / recent dates
 _TTL_SETTLED = (86400, 2592000)  # 1d / 30d              — snapshots older than ~2 weeks
 _TTL_DEEP = (604800, 31536000)   # 7d / 1y               — snapshots older than a year
+_TTL_STALE = (60, 60)            # a precomputed page served from the previous data version
 
 
 def _asof_from_args(args):
@@ -588,6 +589,10 @@ def create_app(config_class=Config):
         # data, so the shorter latest-tier TTL is correct.
         if path.endswith(".asp") or path.endswith("/"):
             ttl_browser, ttl_edge = _data_page_ttls(request.args)
+            # A precomputed page served the previous data version while another
+            # worker recomputes it (webbsite/precompute.py): keep it only briefly.
+            if g.get("cache_state") == "stale":
+                ttl_browser, ttl_edge = _TTL_STALE
             response.headers.setdefault("Cache-Control", f"public, max-age={ttl_browser}")
             response.headers["CDN-Cache-Control"] = f"max-age={ttl_edge}"
         return response
