@@ -281,7 +281,7 @@ def test_stale_page_gets_a_short_edge_ttl(monkeypatch):
 
     c = app.test_client()
     assert c.get("/_t/stale.asp").headers["CDN-Cache-Control"] == "max-age=60"
-    assert c.get("/_t/fresh.asp").headers["CDN-Cache-Control"] == "max-age=14400"
+    assert c.get("/_t/fresh.asp").headers["CDN-Cache-Control"] == "max-age=14400, stale-while-revalidate=72000"
 
 
 ROWS = [

@@ -695,7 +695,7 @@ def run():
     try:
         check("queries that succeed: the page keeps its edge TTL",
               cache_headers("/dbpub/bornyear.asp?y=1957&m=4"), (200, "public, max-age=3600",
-                                                                "max-age=14400"))
+                                                                "max-age=14400, stale-while-revalidate=72000"))
     finally:
         db_module.get_db = real_get_db
     db_module.get_db = lambda: _TimingOut()
@@ -730,7 +730,8 @@ def run():
     db_module.get_db = lambda: _Answers()
     try:
         check("the next request is cacheable again (the flag is per request)",
-              cache_headers("/dbpub/bornyear.asp?y=1957&m=4")[2], "max-age=14400")
+              cache_headers("/dbpub/bornyear.asp?y=1957&m=4")[2],
+              "max-age=14400, stale-while-revalidate=72000")
     finally:
         db_module.get_db = real_get_db
 

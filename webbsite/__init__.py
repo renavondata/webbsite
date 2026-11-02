@@ -20,10 +20,24 @@ logger = logging.getLogger(__name__)
 # that pins its upper bound to an OLD date is effectively immutable and caches long,
 # while a "latest" view (no end-date, or a recent one) caches briefly so a refresh
 # shows up within hours WITHOUT the loader ever purging Cloudflare.
-_TTL_LATEST = (3600, 14400)      # 1h browser / 4h edge  — latest views / recent dates
-_TTL_SETTLED = (86400, 2592000)  # 1d / 30d              — snapshots older than ~2 weeks
-_TTL_DEEP = (604800, 31536000)   # 7d / 1y               — snapshots older than a year
-_TTL_STALE = (60, 60)            # a precomputed page served from the previous data version
+#
+# (browser, edge, stale-while-revalidate). Once the edge TTL expires, Cloudflare
+# keeps answering with the old copy for the SWR window (cf-cache-status: UPDATING)
+# while it refetches in the background, so a visitor does not wait for a cold render.
+# The price: the first visitor to a page nobody has opened since it expired sees that
+# old copy once, so a "latest" page is at most 24 h old (4 h + 20 h), not 4 h.
+_TTL_LATEST = (3600, 14400, 72000)         # 1h browser / 4h edge / 20h SWR — latest views / recent dates
+_TTL_SETTLED = (86400, 2592000, 604800)    # 1d / 30d / 7d                  — snapshots older than ~2 weeks
+_TTL_DEEP = (604800, 31536000, 2592000)    # 7d / 1y / 30d                  — snapshots older than a year
+_TTL_STALE = (60, 60, 0)                   # a precomputed page served from the previous data version
+
+
+def _edge_cc(edge_ttl, swr=0):
+    """The CDN-Cache-Control value. SWR goes here: Cloudflare honours it in this
+    header (live probe of /_probe/swr/, deploy/README.md). must-revalidate, s-maxage
+    and no-cache would turn SWR off, so they must never be added
+    (tests/test_cache_headers.py)."""
+    return f"max-age={edge_ttl}, stale-while-revalidate={swr}" if swr else f"max-age={edge_ttl}"
 
 
 def _asof_from_args(args):
@@ -41,7 +55,7 @@ def _asof_from_args(args):
 
 
 def _data_page_ttls(args):
-    """(browser_ttl, edge_ttl) for a data page, by the age of the date it pins."""
+    """(browser_ttl, edge_ttl, swr) for a data page, by the age of the date it pins."""
     asof = _asof_from_args(args)
     if asof is None:
         return _TTL_LATEST
@@ -583,18 +597,18 @@ def create_app(config_class=Config):
 
         # Data pages (.asp or directory index). The archive is refreshed daily, so a
         # page's TTL follows the age of the date it pins: a "latest" view (no end-date
-        # or a recent one) caches only ~4h at the edge so a refresh shows up quickly
+        # or a recent one) is fresh for only ~4h at the edge so a refresh shows up quickly
         # without a purge, while a page pinned to old history caches 30d/1y. A
         # high-cardinality crawler page with no ?d= (orgdata.asp?p=…) renders refreshed
         # data, so the shorter latest-tier TTL is correct.
         if path.endswith(".asp") or path.endswith("/"):
-            ttl_browser, ttl_edge = _data_page_ttls(request.args)
+            ttl_browser, ttl_edge, swr = _data_page_ttls(request.args)
             # A precomputed page served the previous data version while another
             # worker recomputes it (webbsite/precompute.py): keep it only briefly.
             if g.get("cache_state") == "stale":
-                ttl_browser, ttl_edge = _TTL_STALE
+                ttl_browser, ttl_edge, swr = _TTL_STALE
             response.headers.setdefault("Cache-Control", f"public, max-age={ttl_browser}")
-            response.headers["CDN-Cache-Control"] = f"max-age={ttl_edge}"
+            response.headers["CDN-Cache-Control"] = _edge_cc(ttl_edge, swr)
         return response
 
     # Make today's date available to every template (the shared navbars.html

@@ -108,7 +108,8 @@ The frozen 2025-10-10 baseline is **refreshed daily** by a pull-based loader (AD
 `enigma.issuedshares` in ONE transaction, then advances the `enigma.log` watermarks
 (`MBquotesDate`/`GEMquotesDate` = quotes max; `CCASSdateDone` = min(ccass, quotes)) that
 `webbsite/watermarks.py` serves to the app. No cache purge — mutable pages sit on the
-1h/4h TTL ladder and self-heal within ≤4h.
+1h/4h TTL ladder and self-heal within 4 h, or at most 24 h on a page nobody has opened
+meanwhile (stale-while-revalidate, below).
 
 **The `webbsite_refresh` role** (loader's only credential — no DELETE/TRUNCATE/DDL):
 ```sql
@@ -209,7 +210,7 @@ for PK duplicates, the freeze guard and a manifest that does not match.
 
 **Corrections / rollback:** renavon re-exports and the loader re-applies
 (idempotent upserts). Row *retraction* is admin-only SQL by design — the loader
-role cannot DELETE. Pages self-heal within the ≤4h edge TTL; no purge needed.
+role cannot DELETE. Pages self-heal when the edge refetches them: within 4 h on a page people visit, and at most 24 h (the 20 h stale-while-revalidate window) on one they do not; no purge needed.
 
 **Local validation:** `tests/refresh/run_ladder.sh` (needs a local Postgres superuser via
 `PGHOST`/`PGUSER`) builds the fixture DB and runs the whole ladder — role-parity denials,
@@ -233,6 +234,12 @@ in-process (no gunicorn slot); a current page costs a file read.
 
 ## Edge stale-while-revalidate (verifying the header)
 
+Data pages send it in `CDN-Cache-Control` (`_TTL_*`, `_edge_cc` in
+`webbsite/__init__.py`): latest pages 4 h fresh + 20 h stale, settled 30 d + 7 d, deep
+1 y + 30 d. Probed live on 2026-11-02: `cdn`, `cc` and `cfcdn` answered `UPDATING`
+with the old body and then `HIT` with the new one; `mixed` answered `EXPIRED`. CSVs,
+static files, articles and the sitemap do not send it.
+
 Cloudflare (since 2026-02) serves an expired object instantly as `UPDATING` and
 refreshes it in the background, if the origin sent `stale-while-revalidate`.
 Its docs disagree on *which* header it reads that from once `CDN-Cache-Control`
@@ -244,13 +251,14 @@ edge TTL and a 10 min SWR window. Through the edge:
 ```bash
 H=https://webbsite.renavon.com; n=$(date +%s)
 probe() { for v in cc cdn cfcdn mixed; do printf '%-6s ' $v
-  curl -sS -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
+  curl -sS -A 'Mozilla/5.0' -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
 probe            # MISS, new bodies
 sleep 5; probe   # HIT, same bodies
 sleep 40; probe  # honoured variant: UPDATING + the OLD body; others: EXPIRED/MISS + new
 sleep 3; probe   # honoured variant: HIT + the NEW body
 ```
-Keep the same colo (`cf-ray` suffix) across calls. Always Online being on for the
+Keep the same colo (`cf-ray` suffix) across calls. Plain curl's user agent gets a
+403 from the WAF, hence `-A`. Always Online being on for the
 zone also disables SWR. The variant that answers `UPDATING` decides the header the
 data pages use (`_set_cache_headers`).
 
