@@ -12,6 +12,10 @@ A round runs ten minutes after the last one, which bounds how long a data refres
 or the midnight date roll leaves a page cold, and at once on SIGUSR1, which
 gunicorn's reload hook sends because a deploy can change the keys. Low priority:
 nobody is waiting on it, and a page that is already current costs a file read.
+
+A reload only wakes a running loop, so a change to this file, or reverting it,
+takes effect at the next service restart. If the loop dies, the next reload starts
+another; until then pages are simply computed by their first visitor.
 """
 
 from __future__ import annotations
