@@ -483,7 +483,7 @@ def mcap():
     try:
         market_caps = [
             {**m, "data": sort_rows(m["data"], sort_spec)}
-            for m in precomputed("mcap", f"{e_eff}_{t_eff}", ("market", "today"),
+            for m in precomputed("mcap", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
                                  compute, module=__name__)
         ]
     except Exception as ex:
@@ -675,7 +675,7 @@ def mcaphist():
 
     try:
         if "d" not in request.args or d == str(dt.today()):
-            caps = precomputed("mcaphist", f"{e_eff}_{t_eff}", ("market", "today"),
+            caps = precomputed("mcaphist", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
                                compute, module=__name__)
         else:
             caps = compute()
