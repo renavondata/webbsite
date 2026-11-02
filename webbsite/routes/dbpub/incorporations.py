@@ -367,21 +367,19 @@ def oldest_hk_cos():
     }
     order_by = order_by_map.get(sort_param, order_by_map["incup"])
 
-    # Build type filter
+    # Build type filter (bound, not interpolated). A type that does not exist
+    # is ignored, as before; a failed lookup is logged and flags the page.
+    ot_filter, params = "", None
     if t > 0:
         type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
         try:
             type_result = execute_query(type_sql, (t,))
-            if type_result:
-                type_name = type_result[0]["typename"]
-                title += f", {type_name}"
-                ot_filter = f"AND o.orgtype = {t}"
-            else:
-                ot_filter = ""
-        except:
-            ot_filter = ""
-    else:
-        ot_filter = ""
+        except Exception as ex:
+            current_app.logger.error(f"Error in oldestHKcos.asp type lookup: {ex}")
+            type_result = []
+        if type_result:
+            title += f", {type_result[0]['typename']}"
+            ot_filter, params = "AND o.orgtype = %s", (t,)
 
     # Query oldest companies
     sql = f"""
@@ -410,7 +408,7 @@ def oldest_hk_cos():
     """
 
     try:
-        results = execute_query(final_sql)
+        results = execute_query(final_sql, params)
     except Exception as ex:
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
@@ -495,26 +493,10 @@ def inchkcaltype():
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        # Specific month or day
-        month_start = date(y, m, 1)
-        if d > 0:
-            # Specific day
-            month_end = date(y, m, d)
-        else:
-            # End of month
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
 
-                month_end = month_end - timedelta(days=1)
-    else:
-        # Entire year
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query
     if t == 0:
@@ -625,22 +607,10 @@ def dishkcaltype():
     if (t > 0 and sort_param.startswith("typ")) or (w > 0 and sort_param.startswith("mod")):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        month_start = date(y, m, 1)
-        if d > 0:
-            month_end = date(y, m, d)
-        else:
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
 
-                month_end = month_end - timedelta(days=1)
-    else:
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query based on type and method filters
     if t == 0 and w == 0:
@@ -1306,6 +1276,8 @@ def incukcaltype():
     d = get_int("d", 0)
     t = get_int("t", 0)
     dom = get_int("dom", 116)  # default: England & Wales
+    if dom not in {x["id"] for x in UK_DOMICILES}:
+        dom = 116  # the page is UK-only; any other code rendered an unnamed list
     sort_param = get_str("sort", "namup")
 
     # Validate year range
@@ -1333,21 +1305,10 @@ def incukcaltype():
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        month_start = date(y, m, 1)
-        if d > 0:
-            month_end = date(y, m, d)
-        else:
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
-                month_end = month_end - timedelta(days=1)
-    else:
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
+
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query based on type filter
     if t == 0:
