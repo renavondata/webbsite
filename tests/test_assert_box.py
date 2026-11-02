@@ -94,6 +94,12 @@ def run():
             check(f"db build running when ActiveState={state!r}", ab.db_build_active(), want)
     finally:
         ab.subprocess.run = real_run
+    try:
+        for state, want in [("not-found", False), ("loaded", True), ("", True)]:
+            ab.subprocess.run = lambda *a, s=state, **k: SimpleNamespace(stdout=s + "\n", returncode=0)
+            check(f"db builder installed when LoadState={state!r}", ab.db_builder_installed(), want)
+    finally:
+        ab.subprocess.run = real_run
     root = ab.DERIVED_DIR.parent.parent
     check("oneshot guards read ActiveState, not is-active",
           [f for f in ("scripts/db_build.sh", "deploy/converge.sh")
