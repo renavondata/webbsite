@@ -37,7 +37,10 @@ def _row(i):
         "typeshort": "O", "typelong": "Ord", "typename": "t", "incid": str(i), "o_incid": i,
         "incdate": date(1900, 1, i), "disdate": None, "o_sc": i, "inepropn": Decimal(i), "fempropn": Decimal(1),
         "ine": i, "startdate": date(2003, 1, i), "enddate": None, "aro": i, "bro": i, "cro": 0,
-        "actname": "Dealing", "dismodetxt": "Dissolved", "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
+        "actname": "Dealing", "dismodetxt": "Dissolved", "cp5": Decimal("0.5"), "cp10": Decimal("0.6"), "cp10ip": None,
+        "stake": Decimal("0.1"), "stockname": f"s{i}:O", "ncipcnt": i, "cipcnt": i, "ipcnt": 2 * i,
+        "ncipstake": Decimal("0.1"), "cipstake": Decimal("0.1"), "ipstake": Decimal("0.2"), "vln": None,
+        "lastdate": date(2024, 6, 3), "max_date": date(2024, 6, 3), "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
         # ordinals
         "o_name": i, "o_code": i, "o_type": 1, "o_old": i, "o_new": i, "o_en": i,
         "o_cn": 1, "o_region": 1, "o_adm": i, "o_o": i, "o_p": i, "o_role": 1,
@@ -95,6 +98,8 @@ PAGES = {
     "/dbpub/oldestHKcos.asp": ["", "a=1", "t=28"],
     "/dbpub/boardcomp.asp": [""],
     "/dbpub/SFClicount.asp": ["", "a=1"],
+    "/ccass/cconc.asp": ["", "etf=1", "d=2024-06-03"],
+    "/ccass/ipstakes.asp": ["", "d=2024-06-03"],
 }
 
 
@@ -111,6 +116,7 @@ def client(tmp_path_factory):
     mp.setattr("webbsite.watermarks.execute_scalar", lambda *a, **k: "2025-10-10")
     for mod in ("statistics", "solicitors", "listings", "market_data", "incorporations", "sfc"):
         mp.setattr(f"webbsite.routes.dbpub.{mod}.execute_query", fake_query)
+    mp.setattr("webbsite.routes.ccass.execute_query", fake_query)
     yield app.test_client()
     mp.undo()
 
