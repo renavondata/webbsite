@@ -37,7 +37,7 @@ def _row(i):
         "typeshort": "O", "typelong": "Ord", "typename": "t", "incid": str(i), "o_incid": i,
         "incdate": date(1900, 1, i), "disdate": None, "o_sc": i, "inepropn": Decimal(i), "fempropn": Decimal(1),
         "ine": i, "startdate": date(2003, 1, i), "enddate": None, "aro": i, "bro": i, "cro": 0,
-        "actname": "Dealing", "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
+        "actname": "Dealing", "dismodetxt": "Dissolved", "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
         # ordinals
         "o_name": i, "o_code": i, "o_type": 1, "o_old": i, "o_new": i, "o_en": i,
         "o_cn": 1, "o_region": 1, "o_adm": i, "o_o": i, "o_p": i, "o_role": 1,
@@ -233,7 +233,7 @@ def test_unknown_oldest_type_shows_the_unfiltered_list_from_its_copy(client):
     ("/dbpub/incUKcaltype.asp", "incukcaltype", "y=2020&dom=116", "y=2020&dom=112"),
     ("/dbpub/incHKcaltype.asp", "inchkcaltype", "y=2020", "y=2019"),
     ("/dbpub/SFClicount.asp", "sfclicount", "a=1", "a=2"),
-    ("/dbpub/oldestHKcos.asp", "oldesthkcos", "a=1", "t=28"),
+    ("/dbpub/oldestHKcos.asp", "oldesthkcos", "a=1", "a=1&t=19"),
 ])
 def test_each_selection_has_its_own_copy(client, path, page, first, second):
     """A parameter left out of the key would serve one selection's rows for another."""
