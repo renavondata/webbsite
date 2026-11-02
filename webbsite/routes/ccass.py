@@ -9,6 +9,7 @@ from datetime import datetime, date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_str, get_bool, ms_date, get_date_or_default
 from webbsite import watermarks
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("ccass", __name__)
 
@@ -207,11 +208,13 @@ def cconc():
     sqletf = "" if etf else " AND o.orgType<>4"
 
     # Get latest CCASS date if none specified
+    d_is_settled = True  # d is a date with data, so its list is worth keeping
     if not d:
         d = watermarks.ccass_done()
     else:
         # If date is specified but no data exists for that date,
         # adjust to the last date with data (ASP behavior for holidays)
+        d_is_settled = False
         try:
             result = execute_query(
                 """SELECT MAX(atDate) as lastDate FROM ccass.dailylog
@@ -220,65 +223,77 @@ def cconc():
             )
             if result and result[0]["lastdate"]:
                 d = str(result[0]["lastdate"])
+                d_is_settled = True
         except Exception as ex:
             from flask import current_app
             current_app.logger.warning(f"Could not adjust CCASS date: {ex}")
 
-    # Determine sort order
+    # Sorted per request from one compute; text sorts on database ordinals.
     sort_orders = {
-        "nameup": "Name1",
-        "namedn": "Name1 DESC",
-        "cp5up": "cp5",
-        "cp5dn": "cp5 DESC",
-        "cp10up": "cp10",
-        "cp10dn": "cp10 DESC",
-        "cp10ipdn": "cp10ip DESC",
-        "cp10ipup": "cp10ip",
-        "stakdn": "stake DESC",
-        "stakup": "stake",
-        "scup": "stockCode",
-        "scdn": "stockCode DESC",
+        "nameup": [("o_name", False)],
+        "namedn": [("o_name", True)],
+        "cp5up": [("cp5", False)],
+        "cp5dn": [("cp5", True)],
+        "cp10up": [("cp10", False)],
+        "cp10dn": [("cp10", True)],
+        "cp10ipdn": [("cp10ip", True)],
+        "cp10ipup": [("cp10ip", False)],
+        "stakdn": [("stake", True)],
+        "stakup": [("stake", False)],
+        "scup": [("o_code", False)],
+        "scdn": [("o_code", True)],
     }
-    ob = sort_orders.get(sort_param, "cp5 DESC")
+    sort_spec = sort_orders.get(sort_param, sort_orders["cp5dn"])
     if sort_param not in sort_orders:
         sort_param = "cp5dn"
 
-    # Query concentration data from dailylog
-    # Note: Need to join with issuedshares to get outstanding shares as of snapshot date
-    try:
-        concentrations = execute_query(
+    # Each stock's share count as of d is one index probe. MAX(atDate) GROUP BY issueID
+    # read all of issuedshares for it, 600k rows, on every date of this page.
+    def compute():
+        return execute_query(
             f"""
-            SELECT
-                d.issueID,
-                o.personID,
-                o.name1,
-                st.typeShort,
-                CAST(d.c5 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp5,
-                CAST(d.c10 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp10,
-                (SELECT stockCode
-                 FROM enigma.stocklistings
-                 WHERE issueid = d.issueID AND delistdate IS NULL
-                 ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
-                CAST(d.c10 + d.NCIPhldg AS NUMERIC) / NULLIF(d.CIPhldg + d.IntermedHldg + d.NCIPHldg, 0) AS cp10ip,
-                CAST(d.CIPhldg + d.IntermedHldg + d.NCIPHldg AS NUMERIC) / NULLIF(iss.outstanding, 0) AS stake
-            FROM ccass.dailylog d
-            JOIN enigma.issue i ON d.issueID = i.id1
-            JOIN enigma.organisations o ON i.issuer = o.personID
-            JOIN enigma.secTypes st ON i.typeID = st.typeID
-            JOIN (
-                SELECT issueID, MAX(atDate) AS maxDate
-                FROM enigma.issuedshares
-                WHERE atDate <= %s
-                GROUP BY issueID
-            ) t3 ON d.issueID = t3.issueID
-            JOIN enigma.issuedshares iss ON t3.issueID = iss.issueID AND t3.maxDate = iss.atDate
-            WHERE d.atDate = %s{sqletf}
-              AND d.c5 > 0
-              AND d.CIPhldg + d.intermedhldg > 0
-            ORDER BY {ob}
+            SELECT t.*,
+                   {ordinal("t.name1", "o_name")},
+                   {ordinal("t.stockcode", "o_code")}
+            FROM (
+                SELECT
+                    d.issueID,
+                    o.personID,
+                    o.name1,
+                    st.typeShort,
+                    CAST(d.c5 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp5,
+                    CAST(d.c10 AS NUMERIC) / NULLIF(d.CIPhldg + d.intermedhldg, 0) AS cp10,
+                    (SELECT stockCode
+                     FROM enigma.stocklistings
+                     WHERE issueid = d.issueID AND delistdate IS NULL
+                     ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
+                    CAST(d.c10 + d.NCIPhldg AS NUMERIC) / NULLIF(d.CIPhldg + d.IntermedHldg + d.NCIPHldg, 0) AS cp10ip,
+                    CAST(d.CIPhldg + d.IntermedHldg + d.NCIPHldg AS NUMERIC) / NULLIF(iss.outstanding, 0) AS stake
+                FROM ccass.dailylog d
+                JOIN enigma.issue i ON d.issueID = i.id1
+                JOIN enigma.organisations o ON i.issuer = o.personID
+                JOIN enigma.secTypes st ON i.typeID = st.typeID
+                CROSS JOIN LATERAL (
+                    SELECT s.outstanding
+                    FROM enigma.issuedshares s
+                    WHERE s.issueID = d.issueID AND s.atDate <= %s
+                    ORDER BY s.atDate DESC
+                    LIMIT 1
+                ) iss
+                WHERE d.atDate = %s{sqletf}
+                  AND d.c5 > 0
+                  AND d.CIPhldg + d.intermedhldg > 0
+            ) t
+            ORDER BY t.cp5 DESC
         """,
             (d, d),
         )
+
+    try:
+        rows = (precomputed("cconc", f"{d}_etf{int(bool(etf))}", ("market", "enigma"), compute,
+                            module=__name__)
+                if d_is_settled else compute())
+        concentrations = sort_rows(rows, sort_spec)
     except Exception as ex:
         from flask import current_app
 
@@ -330,6 +345,7 @@ def ipstakes():
             d = watermarks.ccass_done()
 
     # Get max settlement date <= requested date
+    d_is_settled = False  # d is a settlement date, so its list is worth keeping
     try:
         result = execute_query(
             """
@@ -341,72 +357,89 @@ def ipstakes():
         )
         if result and result[0]['max_date']:
             d = ms_date(result[0]['max_date'])
+            d_is_settled = True
     except Exception as ex:
         from flask import current_app
 
         current_app.logger.error(f"Error getting settlement date: {ex}")
 
-    # Sort order mapping
+    # Sorted per request from one compute; text sorts on database ordinals.
+    def by(field):
+        return ([(field, False), ("o_name", False)], [(field, True), ("o_name", False)])
+
     sort_orders = {
-        "nipcup": "NCIPcnt, stockName",
-        "nipcdn": "NCIPcnt DESC, stockName",
-        "cipcup": "CIPcnt, stockName",
-        "cipcdn": "CIPcnt DESC, stockName",
-        "ipcup": "IPcnt, stockName",
-        "ipcdn": "IPcnt DESC, stockName",
-        "nipsup": "NCIPstake, stockName",
-        "nipsdn": "NCIPstake DESC, stockName",
-        "cipsup": "CIPstake, stockName",
-        "cipsdn": "CIPstake DESC, stockName",
-        "ipsup": "IPstake",
-        "ipsdn": "IPstake DESC",
-        "nameup": "stockName",
-        "namedn": "stockName DESC",
-        "codeup": "stockCode",
-        "codedn": "stockCode DESC",
-        "vlndn": "vln DESC, stockName",
-        "vlnup": "vln, stockName",
+        "nipcup": by("ncipcnt")[0],
+        "nipcdn": by("ncipcnt")[1],
+        "cipcup": by("cipcnt")[0],
+        "cipcdn": by("cipcnt")[1],
+        "ipcup": by("ipcnt")[0],
+        "ipcdn": by("ipcnt")[1],
+        "nipsup": by("ncipstake")[0],
+        "nipsdn": by("ncipstake")[1],
+        "cipsup": by("cipstake")[0],
+        "cipsdn": by("cipstake")[1],
+        "ipsup": [("ipstake", False)],
+        "ipsdn": [("ipstake", True)],
+        "nameup": [("o_name", False)],
+        "namedn": [("o_name", True)],
+        "codeup": [("o_code", False)],
+        "codedn": [("o_code", True)],
+        "vlndn": by("vln")[1],
+        "vlnup": by("vln")[0],
     }
-    ob = sort_orders.get(sort_param, "IPstake DESC, stockName")
+    sort_spec = sort_orders.get(sort_param, by("ipstake")[1])
     if sort_param not in sort_orders:
         sort_param = "ipsdn"
 
-    # Query IP stakes
-    try:
-        stakes_result = execute_query(
+    # Each stock's share count as of d is one index probe, as in cconc.
+    def compute():
+        return execute_query(
             f"""
-            SELECT o.Name1 || ':' || st.typeshort AS stockName,
-                   i.id1 AS issueID,
-                   (SELECT stockCode FROM enigma.stocklistings
-                    WHERE issueid = i.id1 AND delistdate IS NULL
-                    ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
-                   dl.NCIPcnt,
-                   dl.CIPcnt,
-                   dl.NCIPcnt + dl.CIPcnt AS IPcnt,
-                   dl.NCIPhldg / s.outstanding AS NCIPstake,
-                   dl.CIPhldg / s.outstanding AS CIPstake,
-                   (dl.NCIPhldg + dl.CIPhldg) / s.outstanding AS IPstake,
-                   CASE WHEN q.susp THEN
-                       (SELECT closing FROM ccass.quotes
-                        WHERE atDate <= %s AND issueid = dl.issueID AND closing <> 0
-                        ORDER BY atDate DESC LIMIT 1)
-                   ELSE q.closing
-                   END * (dl.NCIPhldg + dl.CIPhldg) / 1000000 AS vln
-            FROM ccass.dailylog dl
-            JOIN enigma.issue i ON i.id1 = dl.issueID
-            JOIN ccass.quotes q ON q.issueID = dl.issueID AND q.atDate = dl.atDate
-            JOIN enigma.organisations o ON i.issuer = o.personid
-            JOIN enigma.issuedshares s ON s.issueID = dl.issueID
-            JOIN enigma.secTypes st ON st.typeID = i.typeID
-            JOIN (SELECT issueID, MAX(atDate) AS MaxIssueDate
-                  FROM enigma.issuedshares
-                  WHERE atDate <= %s
-                  GROUP BY issueID) t4 ON s.issueID = t4.issueID AND s.atDate = t4.MaxIssueDate
-            WHERE dl.atDate = %s
-            ORDER BY {ob}
+            SELECT t.*,
+                   {ordinal("t.stockname", "o_name")},
+                   {ordinal("t.stockcode", "o_code")}
+            FROM (
+                SELECT o.Name1 || ':' || st.typeshort AS stockName,
+                       i.id1 AS issueID,
+                       (SELECT stockCode FROM enigma.stocklistings
+                        WHERE issueid = i.id1 AND delistdate IS NULL
+                        ORDER BY FirstTradeDate DESC LIMIT 1) AS stockCode,
+                       dl.NCIPcnt,
+                       dl.CIPcnt,
+                       dl.NCIPcnt + dl.CIPcnt AS IPcnt,
+                       dl.NCIPhldg / s.outstanding AS NCIPstake,
+                       dl.CIPhldg / s.outstanding AS CIPstake,
+                       (dl.NCIPhldg + dl.CIPhldg) / s.outstanding AS IPstake,
+                       CASE WHEN q.susp THEN
+                           (SELECT closing FROM ccass.quotes
+                            WHERE atDate <= %s AND issueid = dl.issueID AND closing <> 0
+                            ORDER BY atDate DESC LIMIT 1)
+                       ELSE q.closing
+                       END * (dl.NCIPhldg + dl.CIPhldg) / 1000000 AS vln
+                FROM ccass.dailylog dl
+                JOIN enigma.issue i ON i.id1 = dl.issueID
+                JOIN ccass.quotes q ON q.issueID = dl.issueID AND q.atDate = dl.atDate
+                JOIN enigma.organisations o ON i.issuer = o.personid
+                JOIN enigma.secTypes st ON st.typeID = i.typeID
+                CROSS JOIN LATERAL (
+                    SELECT i2.outstanding
+                    FROM enigma.issuedshares i2
+                    WHERE i2.issueID = dl.issueID AND i2.atDate <= %s
+                    ORDER BY i2.atDate DESC
+                    LIMIT 1
+                ) s
+                WHERE dl.atDate = %s
+            ) t
+            ORDER BY t.ipstake DESC, t.stockname
         """,
             (d, d, d),
         )
+
+    # Query IP stakes
+    try:
+        rows = (precomputed("ipstakes", str(d), ("market", "enigma"), compute, module=__name__)
+                if d_is_settled else compute())
+        stakes_result = sort_rows(rows, sort_spec)
 
         stakes = []
         for row in stakes_result:

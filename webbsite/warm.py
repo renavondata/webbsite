@@ -57,6 +57,8 @@ def warm_urls() -> list[str]:
         "/dbpub/boardcomp.asp",
         "/dbpub/INEDHKDistnCos.asp",
         "/dbpub/SFClicount.asp",
+        "/ccass/cconc.asp",
+        "/ccass/ipstakes.asp",
     ]
 
 
