@@ -37,9 +37,11 @@ Usage:
     ROUTE_TIMINGS_DIR=dir write every request's timing to dir/YYYY-MM-DD.tsv
 
 Every request is timed (wall clock, plus the app's Server-Timing split). A 200
-whose Server-Timing says `dberr` is a FAIL: a query failed and the route
-rendered a page anyway -- the empty-table-with-a-200 failure mode, caught
-directly instead of only through row counts.
+whose Server-Timing says `dberr`, and says so again when fetched alone, is a
+FAIL: a query failed and the route rendered a page anyway -- the
+empty-table-with-a-200 failure mode, caught directly instead of only through
+row counts. (Alone, because the sweep's 6-way load can time out a page that
+answers in a second; a broken query fails every time, contention does not.)
 
 Exit code 0 = all checks passed; 1 = at least one failure.
 """
@@ -297,9 +299,22 @@ def report_timings(samples, remeasure=None, mode="report", out_dir=None, today=N
     if not timed:
         return failures
 
-    # A 200 rendered after a failed query: the route swallowed the error.
-    swallowed = sorted({s[1] for s in timed if s[2] == 200 and s[4].get("dberr")})
+    deadline = time.monotonic() + REMEASURE_SECONDS
+
+    def again(url):
+        """A sequential re-fetch while time remains, else None."""
+        return remeasure(url) if remeasure and time.monotonic() < deadline else None
+
+    # A 200 rendered after a failed query: the route swallowed the error. The
+    # URL's latest sample decides (the sort sweep re-fetches what it failed),
+    # and a failure seen only under the sweep's load must recur alone.
+    latest = {s[1]: s for s in timed}
+    swallowed = sorted(u for u, s in latest.items() if s[2] == 200 and s[4].get("dberr"))
     for url in swallowed:
+        retry = again(url)
+        if retry and retry[2] == 200 and not retry[4].get("dberr"):
+            print(f"INFO:  query failed under load, clean alone: {url}")
+            continue
         failures.append(f"DBERR {url}: 200 rendered after a failed query")
         print(f"  FAIL  {url}  (200 rendered after a failed query: Server-Timing dberr)")
 
@@ -328,8 +343,8 @@ def report_timings(samples, remeasure=None, mode="report", out_dir=None, today=N
     print(f"INFO: budget ({mode}): {len(over)} of {len(first)} URLs over on first fetch")
     for s in over[:REMEASURE_AT_MOST]:
         path = urlsplit(s[1]).path
-        again = remeasure(s[1]) if remeasure else None
-        warm = page_ms(again) if again and again[2] == 200 else page_ms(s)
+        retry = again(s[1])
+        warm = page_ms(retry) if retry and retry[2] == 200 else page_ms(s)
         why = perf_budget.verdict(path, warm)
         label = f"{page_ms(s):.0f} ms cold, {warm:.0f} ms warm"
         if why and mode == "enforce":
@@ -559,8 +574,11 @@ def check_sorts():
 CONFIRM_AT_MOST = 20
 
 # Over-budget URLs re-measured sequentially (warm) per run; the rest are only
-# reported. Bounded so a bad day cannot push the run past assert_box's timeout.
+# reported. A bad day must not push the run past assert_box's timeout, and one
+# re-fetch can take 2 x TIMEOUT, so the count alone is no bound: re-fetching
+# (query failures and budget alike) also stops REMEASURE_SECONDS into the report.
 REMEASURE_AT_MOST = 40
+REMEASURE_SECONDS = 300
 
 
 def base_problem(code, rows):

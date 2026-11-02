@@ -92,21 +92,46 @@ def run():
     broken = "http://x/dbpub/c.asp"
     samples = [sample(fast, 50), sample(slow, 900), sample(broken, 30, dberr=True)]
 
-    got = car.report_timings(samples, remeasure=lambda u: sample(u, 900), mode="report")
+    def still_broken(ms):
+        return lambda u: sample(u, ms, dberr=u == broken)
+
+    got = car.report_timings(samples, remeasure=still_broken(900), mode="report")
     check("report mode: only the swallowed failure fails",
           [f.split(": ")[0] for f in got], [f"DBERR {broken}"])
 
-    got = car.report_timings(samples, remeasure=lambda u: sample(u, 900), mode="enforce")
+    got = car.report_timings(samples, remeasure=still_broken(900), mode="enforce")
     check("enforce: still slow warm fails",
           sorted(f.split(": ")[0] for f in got), sorted([f"DBERR {broken}", f"BUDGET {slow}"]))
 
-    got = car.report_timings(samples, remeasure=lambda u: sample(u, 100), mode="enforce")
+    got = car.report_timings(samples, remeasure=still_broken(100), mode="enforce")
     check("enforce: fast when warm passes", [f for f in got if f.startswith("BUDGET")], [])
+
+    check("dberr under load, clean alone: not a failure",
+          car.report_timings([sample(broken, 8000, dberr=True)],
+                             remeasure=lambda u: sample(u, 900), mode="report"), [])
+    check("dberr, then clean on the sweep's own re-fetch: not a failure, no extra fetch",
+          car.report_timings([sample(broken, 30, dberr=True), sample(broken, 30)],
+                             remeasure=lambda u: 1 / 0, mode="report"), [])
+    check("clean, then dberr last: the latest sample decides",
+          [f.split(": ")[0] for f in car.report_timings(
+              [sample(broken, 30), sample(broken, 30, dberr=True)],
+              remeasure=still_broken(30), mode="report")], [f"DBERR {broken}"])
+
+    fetched = []
+    saved_s = car.REMEASURE_SECONDS
+    try:
+        car.REMEASURE_SECONDS = 0
+        got = car.report_timings(samples, remeasure=lambda u: fetched.append(u) or sample(u, 100),
+                                 mode="report")
+        check("past the deadline: nothing re-fetched, and dberr still fails",
+              (fetched, [f.split(": ")[0] for f in got]), ([], [f"DBERR {broken}"]))
+    finally:
+        car.REMEASURE_SECONDS = saved_s
 
     saved = dict(pb.KNOWN_OVER_BUDGET)
     try:
         pb.KNOWN_OVER_BUDGET["/dbpub/b.asp"] = (1000, "test")
-        got = car.report_timings(samples, remeasure=lambda u: sample(u, 900), mode="enforce")
+        got = car.report_timings(samples, remeasure=still_broken(900), mode="enforce")
         check("enforce: known-slow under its ceiling passes",
               [f for f in got if f.startswith("BUDGET")], [])
     finally:
