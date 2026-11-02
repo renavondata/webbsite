@@ -82,6 +82,7 @@ def test_unreadable_version_computes_live_and_saves_nothing(cache):
 
 @pytest.mark.parametrize("page,variant", [
     ("p", "../x"), ("p", "a b"), ("p", "x" * 81), ("p", ""), ("../p", "v"), ("p", "a.b"),
+    ("p", "abc\n"), ("abc\n", "v"),
 ])
 def test_junk_slugs_create_no_files(cache, page, variant):
     root, _ = cache
@@ -284,3 +285,13 @@ def test_ordinal():
     for bad in ("o-name", "x; drop", "Name", ""):
         with pytest.raises(ValueError):
             ordinal("o.name1", bad)
+
+
+def test_contained_refuses_paths_outside_root(tmp_path):
+    root = str(tmp_path)
+    assert precompute._contained(root, "p", "v.pkl") == tmp_path.resolve() / "p" / "v.pkl"
+    assert precompute._contained(root, "..", "x") is None
+    assert precompute._contained(root, "/etc/passwd") is None
+    # A sibling sharing the root as a string prefix is still outside it.
+    assert precompute._contained(root, f"../{tmp_path.name}-sibling") is None
+    assert precompute._contained(root) is None

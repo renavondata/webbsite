@@ -52,7 +52,7 @@ from flask import g, has_app_context
 from webbsite import watermarks
 
 FORMAT = "pc1"
-SLUG = re.compile(r"^[A-Za-z0-9_-]{1,80}$")
+SLUG = re.compile(r"[A-Za-z0-9_-]{1,80}")
 GRACE_S = 900  # a superseded version lives this long after its replacement
 WAIT_S = 120  # how long to wait for another process's compute before doing it
 POLL_S = 0.05
@@ -105,6 +105,17 @@ def digest(page, variant, versions, fingerprint) -> str:
 def _set_state(state):
     if has_app_context():
         g.cache_state = state
+
+
+def _contained(root: str, *parts: str) -> Path | None:
+    """root/parts, or None if it would land outside root.
+
+    The slug check already rules out separators and dots; this is the check
+    that holds even if a slug rule is ever loosened.
+    """
+    base = os.path.realpath(root)
+    full = os.path.realpath(os.path.join(base, *parts))
+    return Path(full) if full.startswith(base + os.sep) else None
 
 
 def _load(path: Path):
@@ -193,7 +204,7 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
     not mutate what is returned (a hit returns a fresh unpickled copy, but a
     live compute returns compute()'s own object).
     """
-    if not (SLUG.match(page) and SLUG.match(variant)):
+    if not (SLUG.fullmatch(page) and SLUG.fullmatch(variant)):
         _set_state("bypass")
         return compute()
     versions = [SOURCES[s]() for s in sources]
@@ -201,8 +212,14 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
         _set_state("bypass")
         return compute()
 
-    page_dir = cache_root() / page
-    path = page_dir / f"{variant}.{digest(page, variant, versions, code_fingerprint(module, files))}.pkl"
+    version = digest(page, variant, versions, code_fingerprint(module, files))
+    root = str(cache_root())
+    page_dir = _contained(root, page)
+    path = _contained(root, page, f"{variant}.{version}.pkl")
+    lock_path = _contained(root, page, f"{variant}.lock")
+    if page_dir is None or path is None or lock_path is None:
+        _set_state("bypass")
+        return compute()
     hit = _load(path)
     if hit is not None:
         _set_state("hit")
@@ -210,7 +227,7 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
 
     try:
         page_dir.mkdir(parents=True, exist_ok=True)
-        lock = open(page_dir / f"{variant}.lock", "a+b")
+        lock = open(lock_path, "a+b")
     except OSError:
         _set_state("bypass")
         return compute()
