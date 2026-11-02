@@ -533,12 +533,17 @@ CHOLDER_KEPT = 2000
 def _holdings_sources(d):
     """What a participant's list on date d depends on.
 
-    A date old enough for the edge to keep it a month (webbsite/__init__.py) is
-    treated as settled here too: it survives the daily refresh, which only writes
-    recent dates. Newer dates are recomputed for each data version.
+    A date more than 14 days behind the last CCASS load has its list kept across
+    daily refreshes, but only until the month rolls: the loader can still rewrite
+    old dates, so a late correction shows within about a month, as at the edge.
+    Age counts from the load and not from today, or a stalled feed would pin the
+    partial lists of dates it has not caught up on.
     """
-    age_days = (date.today() - date.fromisoformat(str(d)[:10])).days
-    return ("enigma",) if age_days > 14 else ("market", "enigma")
+    done = watermarks.ccass_done()
+    if not done:
+        return ("market", "enigma")
+    behind_days = (date.fromisoformat(str(done)[:10]) - date.fromisoformat(str(d)[:10])).days
+    return ("month", "enigma") if behind_days > 14 else ("market", "enigma")
 
 
 @bp.route("/cholder.asp")

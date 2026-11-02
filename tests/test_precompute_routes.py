@@ -273,14 +273,20 @@ def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
     latest = "/ccass/cholder.asp?part=31"
     # The stub calendar answers 2024-06-03 for every date, so ask for the sources
     # of a recent date through the function the route uses.
-    from datetime import timedelta
-
     from webbsite.routes.ccass import _holdings_sources
 
-    today = date.today()
-    assert _holdings_sources(str(today)) == ("market", "enigma")
-    assert _holdings_sources(str(today - timedelta(days=14))) == ("market", "enigma")
-    assert _holdings_sources(str(today - timedelta(days=15))) == ("enigma",)
+    done = "2025-10-10"
+    # Stubbed here: the real one memoises whatever an earlier test's stub answered.
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
+    assert _holdings_sources(done) == ("market", "enigma")
+    assert _holdings_sources("2025-09-26") == ("market", "enigma")
+    assert _holdings_sources("2025-09-25") == ("month", "enigma")
+    # A stalled feed: dates beyond the load stay tied to the data version.
+    assert _holdings_sources("2026-01-01") == ("market", "enigma")
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: None)
+    assert _holdings_sources("2024-06-03") == ("market", "enigma"), "no watermark, nothing pinned"
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
+    monkeypatch.setitem(precompute.SOURCES, "month", lambda: "2026-11")
 
     assert _cholder_computes(client, old) == 1
     assert _cholder_computes(client, old) == 0
@@ -289,6 +295,8 @@ def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
     assert _cholder_computes(client, old) == 0, "an old date recomputed after a refresh"
     monkeypatch.setitem(precompute.SOURCES, "enigma", lambda: "e2")
     assert _cholder_computes(client, old) == 1, "old dates still follow enigma data"
+    monkeypatch.setitem(precompute.SOURCES, "month", lambda: "2026-12")
+    assert _cholder_computes(client, old) == 1, "a kept list expires when the month rolls"
 
 
 def test_cholder_sort_reorders_the_kept_rows(client):
