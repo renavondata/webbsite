@@ -330,7 +330,10 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
                 except OSError:
                     pass
                 raise
-            err_path.unlink(missing_ok=True)
+            try:
+                err_path.unlink(missing_ok=True)
+            except OSError:
+                pass  # a marker left behind only matters to a waiter, and has a time on it
             _save(path, value)
             sweep(page_dir, max_entries)
             _set_state("miss")
