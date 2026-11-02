@@ -172,10 +172,10 @@ def pick_drivers(lexemes, mandatory, branches):
     return [must[0]] if must is not None else []
 
 
-# A given name such as "jayne" is ~35k rows on ~31k heap pages of enigma.people:
-# cold, that is random I/O past the 8 s default (WEBBSITE-3C). The token table
-# reads far less, but two common words that rarely coincide still scan the
-# rarer one's whole run, so both paths keep the heavy-query budget.
+# The queries on enigma.people itself: a given name such as "jayne" is ~35k rows
+# on ~31k heap pages, cold random I/O past the 8 s default (WEBBSITE-3C). The token
+# table's query keeps that default: its rows are contiguous, so even two common
+# words that rarely coincide read one run sequentially.
 PEOPLE_SEARCH_TIMEOUT_S = 25
 
 
@@ -221,7 +221,7 @@ def _search_people_tokens(where, params, fname_words, forename_words, now_year):
            f" FROM ({' UNION '.join([branch] * len(drivers))}) s"
            f" ORDER BY name1, name2, personid LIMIT 500")
     bound = tuple(v for drv in drivers for v in (drv, *params))
-    return execute_query(sql, bound, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
+    return execute_query(sql, bound)
 
 
 @bp.route("/searchpeople.asp", methods=["GET", "POST"])

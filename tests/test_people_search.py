@@ -152,8 +152,8 @@ def run():
         stub = Stub(counts={"chan": 50})
         search.execute_query = stub
         client.get("/dbpub/searchpeople.asp?n1=Chan")
-        check("route: the token query keeps the heavy-query budget",
-              [t for sql, _, t in stub.calls if "people_search" in sql and "token =" in sql], [25])
+        check("route: the token query runs on the default budget",
+              [t for sql, _, t in stub.calls if "people_search" in sql and "token =" in sql], [None])
 
         stub = Stub(counts={"tai": 7, "man": 9, "taiman": 2})
         search.execute_query = stub
