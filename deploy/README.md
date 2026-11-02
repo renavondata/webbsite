@@ -212,6 +212,20 @@ dry-run, real load, idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-fre
 each exiting 1 with nothing committed. CI runs the same script against a Postgres 17 service
 container on every push. (A real 3.9M-row feed loaded in 43s on 2026-07-19.)
 
+## Precomputed pages and warming
+A few whole-market pages (`listed`, `incHK*`, `shortsum`, `leagueDirsHK`) are computed
+once per data version and served from `~/.cache/webbsite/pc/` (`webbsite/precompute.py`;
+the module docstring has the key and the rules). `webbsite-warm.service` fills that
+cache: the refresh loader starts it on success (`OnSuccess=`), and
+`webbsite-warm.timer` runs it every 10 minutes, so a deploy, the midnight date roll
+or a wiped cache is refilled within minutes, not by a visitor. It runs the app
+in-process (no gunicorn slot); a current page costs a file read.
+
+- Progress: `journalctl -u webbsite-warm -n 40` (one line per page: status, ms,
+  Server-Timing; the last line counts failures).
+- The cache is disposable: deleting `~/.cache/webbsite/pc/` costs one recompute per page,
+  done by the next warm run or by the first visitor, whichever comes first.
+
 ## Edge stale-while-revalidate (verifying the header)
 
 Cloudflare (since 2026-02) serves an expired object instantly as `UPDATING` and
