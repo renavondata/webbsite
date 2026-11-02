@@ -2,11 +2,15 @@
 Search routes - Direct port from searchorgs.asp and searchpeople.asp
 """
 
+import logging
+
 from flask import Blueprint, render_template, request
-from webbsite.db import execute_query
+
+from webbsite.db import DatabaseError, QueryTimeoutError, execute_query
 from webbsite.asp_helpers import rem_space, get_str, get_bool, ts_words, escape_like
 
 bp = Blueprint("search", __name__)
+logger = logging.getLogger(__name__)
 
 
 @bp.route("/searchorgs.asp", methods=["GET", "POST"])
@@ -121,6 +125,105 @@ def search_orgs():
     )
 
 
+def search_groups(fname_words, forename_words):
+    """(mandatory words, alternative branches) of the tsquery search_people builds.
+
+    Every family-name word is required. Given names are required too, except
+    that the last two are matched as ("a" & "b") | "ab" -- two branches, either
+    of which may match. Pure: the shape mirrors the tsquery assembly below.
+    """
+    if len(forename_words) <= 1:
+        return list(fname_words) + list(forename_words), None
+    a, b = forename_words[-2:]
+    return list(fname_words) + list(forename_words[:-2]), ([a, b], [a + b])
+
+
+def pick_drivers(lexemes, mandatory, branches):
+    """Lexemes whose people_search rows include every person the tsquery matches.
+
+    lexemes: word -> [(lexeme, people count)], from to_tsvector('simple', word)
+    and enigma.people_tokfreq. One word can yield several lexemes (a_b is the
+    phrase 'a' <-> 'b'), all of them required; a word with none (only
+    underscores) drops out of the tsquery, so it constrains nothing.
+
+    Two covers are valid: every match contains every mandatory lexeme, so the
+    rarest one alone; and every match contains one branch's lexemes, so the
+    rarest of each branch together. The cheaper (fewer rows) wins: "chan tai
+    man" reads tai + taiman, not all of chan. A required lexeme nobody has, or
+    branches nobody can satisfy, means nothing can match: [] (no query). Pure.
+    """
+    def rarest(words):
+        found = [ln for w in words for ln in lexemes.get(w, [])]
+        return min(found, key=lambda ln: (ln[1], ln[0])) if found else None
+
+    must = rarest(mandatory)
+    if must is not None and must[1] == 0:
+        return []
+    if branches:
+        tops = [rarest(b) for b in branches]
+        # A branch with no lexemes means both have none (ab is a + b): the OR
+        # dropped out of the tsquery and constrains nothing.
+        if all(t is not None for t in tops):
+            live = [t for t in tops if t[1] > 0]
+            if not live:
+                return []
+            if must is None or sum(t[1] for t in live) < must[1]:
+                return [t[0] for t in live]
+    return [must[0]] if must is not None else []
+
+
+# The queries on enigma.people itself: a given name such as "jayne" is ~35k rows
+# on ~31k heap pages, cold random I/O past the 8 s default (WEBBSITE-3C). The token
+# table's query keeps that default: its rows are contiguous, so even two common
+# words that rarely coincide read one run sequentially.
+PEOPLE_SEARCH_TIMEOUT_S = 25
+
+
+def _search_people_tokens(where, params, fname_words, forename_words, now_year):
+    """The first 500 people the full-text WHERE clause matches, by name, read
+    from enigma.people_search (database/derived/people_search.sql) instead of
+    enigma.people. None when that table is not ready (missing, or empty after a
+    restore until webbsite-db-build refills it): the caller falls back.
+
+    people_search holds one row per (lexeme, person) in (token, name1, name2,
+    personid) order, so "people with lexeme X, by name, first 500" reads a few
+    contiguous pages however common X is -- where the GIN query on people had to
+    fetch and sort all of X's matches (628k for "john") first (WEBBSITE-3C).
+    The page's own WHERE clause still filters each driver's rows, so the result
+    is exactly the old query's.
+    """
+    ready = execute_query(
+        "SELECT to_regclass('enigma.people_search') IS NOT NULL"
+        " AND to_regclass('enigma.people_tokfreq') IS NOT NULL AS ok")
+    if not ready or not ready[0]["ok"]:
+        return None
+    mandatory, branches = search_groups(fname_words, forename_words)
+    words = sorted({w for w in mandatory + [w for b in branches or () for w in b]})
+    rows = execute_query(
+        "SELECT w.word, l.lex, COALESCE(f.n, 0) AS n,"
+        "       (SELECT EXISTS (SELECT 1 FROM enigma.people_tokfreq)) AS ready"
+        " FROM unnest(CAST(%s AS text[])) AS w(word)"
+        " CROSS JOIN LATERAL unnest(tsvector_to_array(to_tsvector('simple', w.word))) AS l(lex)"
+        " LEFT JOIN enigma.people_tokfreq f ON f.token = l.lex",
+        (words,))
+    if rows and not rows[0]["ready"]:
+        return None
+    lexemes = {}
+    for r in rows:
+        lexemes.setdefault(r["word"], []).append((r["lex"], r["n"]))
+    drivers = pick_drivers(lexemes, mandatory, branches)
+    if not drivers:
+        return []
+    branch = (f"(SELECT personid, name1, name2, cname, yob, mob, dob"
+              f" FROM enigma.people_search WHERE token = %s AND {where}"
+              f" ORDER BY name1, name2, personid LIMIT 500)")
+    sql = (f"SELECT personID, name1, name2, cName, YOB, MOB, DOB, {int(now_year)} - YOB AS est_age"
+           f" FROM ({' UNION '.join([branch] * len(drivers))}) s"
+           f" ORDER BY name1, name2, personid LIMIT 500")
+    bound = tuple(v for drv in drivers for v in (drv, *params))
+    return execute_query(sql, bound)
+
+
 @bp.route("/searchpeople.asp", methods=["GET", "POST"])
 def search_people():
     """Search people - port of searchpeople.asp"""
@@ -147,6 +250,7 @@ def search_people():
     now_year = datetime.now().year
     current_results = []
     alias_results = []
+    fulltext_words = None  # (family-name words, given-name words) in full-text mode
 
     if n1 or n2:
         # Bound values in placeholder order, shared by the current-names and
@@ -174,6 +278,7 @@ def search_people():
             # assembled tsquery is always valid and is passed as a bound param.
             fname_words = ts_words(n1) if n1 else []
             forename_words = ts_words(n2) if n2 else []
+            fulltext_words = (fname_words, forename_words)
 
             # Build family name search term
             fname = " & ".join(f'"{w}"' for w in fname_words)
@@ -205,6 +310,12 @@ def search_people():
                     where_current += " AND to_tsvector('simple', dn2) @@ to_tsquery('simple', %s)"
                     where_alias += " AND to_tsvector('simple', a.dn2) @@ to_tsquery('simple', %s)"
                     params.append(forename)
+                if not fname and not forename:
+                    # Input sanitised to nothing: no match, as in combined mode
+                    # below. "1=1" here listed the first 500 of all 14.5M
+                    # people, by a full sort that hit the statement timeout.
+                    where_current = "1=0"
+                    where_alias = "1=0"
             else:
                 # Match across both fields
                 combined = fname
@@ -220,23 +331,30 @@ def search_people():
                     where_alias = "1=0"
 
         people_params = tuple(params) or None
-        # Both queries must fetch every match before ORDER BY ... LIMIT 500,
-        # and enigma.people is 14.5M rows (UK officers included): a common
-        # given name such as "jayne" is ~35k rows on ~31k heap pages. Warm,
-        # that is milliseconds; cold, it is random I/O past the 8 s default
-        # (WEBBSITE-3C), so the search gets the heavy-query budget.
-        search_timeout_s = 25
 
-        # Query current names
-        sql = f"""
-            SELECT personID, name1, name2, cName, YOB, MOB, DOB,
-                   {now_year} - YOB AS est_age
-            FROM enigma.people p
-            WHERE {where_current}
-            ORDER BY name1, name2
-            LIMIT 500
-        """
-        current_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
+        # Query current names: from the name-ordered token table when it is
+        # ready, else (a fresh restore, until it is rebuilt) from people itself.
+        current_results = None
+        if fulltext_words is not None and where_current != "1=0":
+            try:
+                current_results = _search_people_tokens(
+                    where_current, params, *fulltext_words, now_year)
+            except QueryTimeoutError:
+                raise  # the GIN path would only spend another budget timing out
+            except DatabaseError:
+                # The table is an optimisation: a problem with it (a swap's
+                # race, a permissions slip) must not take search down.
+                logger.exception("people_search failed; falling back to enigma.people")
+        if current_results is None:
+            sql = f"""
+                SELECT personID, name1, name2, cName, YOB, MOB, DOB,
+                       {now_year} - YOB AS est_age
+                FROM enigma.people p
+                WHERE {where_current}
+                ORDER BY name1, name2
+                LIMIT 500
+            """
+            current_results = execute_query(sql, people_params, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
 
         # Format birth dates for display
         for row in current_results:
@@ -263,7 +381,7 @@ def search_people():
             ORDER BY a.n1, a.n2
             LIMIT 500
         """
-        alias_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
+        alias_results = execute_query(sql, people_params, timeout_s=PEOPLE_SEARCH_TIMEOUT_S)
 
         # Format birth dates for alias results
         for row in alias_results:
