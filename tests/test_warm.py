@@ -25,7 +25,8 @@ def requested(monkeypatch, tmp_path):
         seen.append((page, variant))
         raise RuntimeError("recorded")  # the routes catch it and render empty
 
-    for mod in ("listings", "incorporations", "short_selling", "statistics", "solicitors"):
+    for mod in ("listings", "incorporations", "short_selling", "statistics", "solicitors",
+                "market_data"):
         monkeypatch.setattr(f"webbsite.routes.dbpub.{mod}.precomputed", record)
     monkeypatch.setattr("webbsite.routes.sitemap.precomputed", record)
     return seen
@@ -46,7 +47,7 @@ def test_every_precomputed_variant_is_warmed(requested):
                  ("namechangehk", "all"), ("namechangehklisted", "all"),
                  ("prhdistricts", "all"), ("hkflightscan", "a"), ("hkflightscan", "d"),
                  *[("hksols", f"p{p}") for p in range(6)], ("hksolsmoves", "all"),
-                 ("sitemap", "companies")]:
+                 ("sitemap", "companies"), ("mcap", "a_s"), ("mcaphist", "m_w")]:
         assert pair in got, pair
 
 

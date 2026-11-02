@@ -49,6 +49,14 @@ def _row(i):
         "datechanged": date(2025, 1, i), "d": date(2025, 1, i), "reldate": date(2025, 1, i),
         "firsttradedate": date(1990, 1, i), "admhk": f"2000-01-0{i}", "appt": "2001",
         "res": None,
+        # director snapshots, market caps, pay leagues, advisers
+        "numseats": i, "ined": 1, "o_sex": 1, "dirs": i, "seats": 2 * i, "female": 1,
+        "femseats": 1, "neds": 1, "ineds": 1, "lotval": n * 100, "closing": n,
+        "outstanding": n * 1000, "mcap": n * 1000, "sc": i, "td": date(2025, 10, i),
+        "os": n * 1000, "totsh": n * 1000, "pendmcap": n * 1000, "pricedate": None,
+        "fee": i, "sal": i, "bon": 0, "ret": 0, "sha": 0, "tot": 2 * i, "sehkcurr": 0,
+        "currency": "HKD", "rolelong": "Auditor", "onetime": False, "count": 0,
+        "roleid": 0, "issuer": i, "i": i, "lot": 1000,
     }
 
 
@@ -70,6 +78,14 @@ PAGES = {
     "/dbpub/hksols.asp": ["p=0", "p=2"],
     "/dbpub/HKsolsmoves.asp": [""],
     "/dbpub/listed.asp": ["e=m&t=s"],
+    "/dbpub/dirsHKPerPerson.asp": [""],
+    "/dbpub/DirsHKAgeDistn.asp": [""],
+    "/dbpub/HKdirsTypeSex.asp": [""],
+    "/dbpub/mcap.asp": ["e=a&t=s"],
+    "/dbpub/mcaphist.asp": ["e=a&t=s", "e=a&t=s&p=1"],
+    "/dbpub/payleague.asp": ["", "i=1"],
+    "/dbpub/payleagueorg.asp": [""],
+    "/dbpub/advbyrole.asp": [""],
 }
 
 
@@ -84,7 +100,7 @@ def client(tmp_path_factory):
     app = create_app()
     mp.setattr(db, "execute_query", fake_query)
     mp.setattr("webbsite.watermarks.execute_scalar", lambda *a, **k: "2025-10-10")
-    for mod in ("statistics", "solicitors", "listings"):
+    for mod in ("statistics", "solicitors", "listings", "market_data"):
         mp.setattr(f"webbsite.routes.dbpub.{mod}.execute_query", fake_query)
     yield app.test_client()
     mp.undo()
@@ -98,7 +114,7 @@ def sorts_for(path):
 @pytest.mark.parametrize("path", sorted(PAGES))
 def test_every_sort_renders_from_one_compute(client, path, caplog):
     sorts = sorts_for(path)
-    assert sorts != [None] or path in ("/dbpub/prhdistricts.asp",), path
+    assert sorts != [None] or path in ("/dbpub/HKdirsTypeSex.asp",), path
     for extra in PAGES[path]:
         base = f"{path}?{extra}" if extra else path
         client.get(base)  # computes once

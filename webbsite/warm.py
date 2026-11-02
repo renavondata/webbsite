@@ -41,6 +41,14 @@ def warm_urls() -> list[str]:
         *[f"/dbpub/hksols.asp?p={p}" for p in range(6)],
         "/dbpub/HKsolsmoves.asp",
         "/sitemap.xml",  # every child sitemap's list
+        "/dbpub/dirsHKPerPerson.asp",
+        "/dbpub/DirsHKAgeDistn.asp",
+        "/dbpub/HKdirsTypeSex.asp",
+        *[f"/dbpub/mcap.asp?e={e}&t={t}" for e in "mgsrca" for t in "swh"],
+        *[f"/dbpub/mcaphist.asp?e={e}&t={t}" for e in "mgsrca" for t in "swh"],
+        "/dbpub/payleague.asp",
+        "/dbpub/payleagueorg.asp",
+        "/dbpub/advbyrole.asp",
     ]
 
 
