@@ -62,8 +62,10 @@ def data_end() -> date:
 
 
 # The keys the daily refresh loader advances (scripts/refresh/refresh.py
-# LOG_*). They version market data; every OTHER enigma.log row versions the
-# enigma tables (organisations, people, directorships, ...).
+# LOG_*). They version market data -- the ccass tables AND enigma.issuedshares,
+# which the loader also writes; every OTHER enigma.log row versions the rest of
+# the enigma tables (organisations, people, directorships, ...). A page that
+# reads issuedshares is "market" data, whatever its schema says.
 LOADER_KEYS = ("CCASSdateDone", "MBquotesDate", "GEMquotesDate")
 _enigma_cache: list = []  # [(version, monotonic fetched-at)]
 

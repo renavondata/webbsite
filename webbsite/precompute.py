@@ -12,9 +12,10 @@ Key: ``<cache>/pc/<page>/<variant>.<digest>.pkl``. The digest covers:
 
 - FORMAT (bump it to drop every entry when the payload layout changes);
 - the code: the calling module's source, this file's, and any ``files=``;
-- one version per source: ``market`` (the loader's MB/GEM/CCASS watermarks),
-  ``enigma`` (every other enigma.log row; see watermarks.enigma_version for
-  the contract writers follow), ``today``, ``month``, ``year``.
+- one version per source: ``market`` (the loader's MB/GEM/CCASS watermarks:
+  the ccass tables and enigma.issuedshares), ``enigma`` (every other
+  enigma.log row: the rest of enigma; see watermarks.enigma_version for the
+  contract writers follow), ``today``, ``month``, ``year``.
 
 A source whose version cannot be read means "compute live, save nothing".
 
