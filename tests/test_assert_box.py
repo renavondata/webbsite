@@ -60,7 +60,7 @@ def run():
     check("parse_index_names", idx, ["a_b", "c"])
     check("parse_index_names: CONCURRENTLY",
           ab.parse_index_names("CREATE INDEX CONCURRENTLY IF NOT EXISTS d ON t (z);"), ["d"])
-    check("real indexes.sql names 24", len(ab.parse_index_names(ab.INDEXES_SQL.read_text())), 24)
+    check("real indexes.sql names 29", len(ab.parse_index_names(ab.INDEXES_SQL.read_text())), 29)
 
     fns = ab.parse_functions(ab.FUNCTIONS_SQL.read_text())
     check("functions.sql declares the three return calculations",
@@ -92,6 +92,12 @@ def run():
                             ("failed", False), ("", False)]:
             ab.subprocess.run = lambda *a, s=state, **k: SimpleNamespace(stdout=s + "\n", returncode=0)
             check(f"db build running when ActiveState={state!r}", ab.db_build_active(), want)
+    finally:
+        ab.subprocess.run = real_run
+    try:
+        for state, want in [("not-found", False), ("loaded", True), ("", True)]:
+            ab.subprocess.run = lambda *a, s=state, **k: SimpleNamespace(stdout=s + "\n", returncode=0)
+            check(f"db builder installed when LoadState={state!r}", ab.db_builder_installed(), want)
     finally:
         ab.subprocess.run = real_run
     root = ab.DERIVED_DIR.parent.parent

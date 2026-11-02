@@ -50,8 +50,13 @@ deploy/
   backup-producer.sh                      # pg_dump to stdout for site-deploy's backup timer
   README.md
 ```
-Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
-Caddyfile on every tick. `.github/workflows/tests.yml` is the merge gate (lint, DB-free unit checks,
+> **Since the 2026-10-12 cutover (renavon-monorepo#2171) nothing runs `converge.sh`, and this
+> directory is not what the box runs.** Renavon's private `deploy/sites/webbsite/` holds the live
+> copies, and its `[converge] units` list decides what is installed. Text below that says converge
+> applies something describes the old setup, and a change to a unit here needs a renavon issue to
+> take effect (open: renavon-monorepo#2717, the db-build and warm units).
+
+`.github/workflows/tests.yml` is the merge gate (lint, DB-free unit checks,
 a planted-failure self-proof, shellcheck, a converge dry-run, `caddy validate`, the loader ladder
 against a real Postgres) and fast-forwards `ci-green` on a passing `master` run; the box follows
 that ref once site-deploy's `deploy_ref` knob lands (see `site.toml`).
