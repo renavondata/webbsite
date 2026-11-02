@@ -152,8 +152,11 @@ def backup_excludes(script: str) -> set[str]:
 
 
 def db_build_active() -> bool:
-    return subprocess.run(["systemctl", "is-active", "--quiet", "webbsite-db-build.service"],
-                          check=False).returncode == 0
+    """A running oneshot is "activating", which is-active's exit code calls inactive."""
+    state = subprocess.run(["systemctl", "show", "-p", "ActiveState", "--value",
+                            "webbsite-db-build.service"],
+                           check=False, capture_output=True, text=True).stdout.strip()
+    return state in ("active", "activating")
 
 
 def parse_functions(sql: str) -> dict[str, str]:

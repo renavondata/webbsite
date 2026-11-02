@@ -245,7 +245,8 @@ fi
 # so a refused build (e.g. the disk preflight) cannot re-trigger every tick.
 DB_BUILD_FAILED=/var/lib/webbsite-db-build/failed
 if [ -x "$DB_BUILD" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ] \
-        && ! systemctl is-active --quiet webbsite-db-build.service; then
+        && ! case "$(systemctl show -p ActiveState --value webbsite-db-build.service 2>/dev/null)" in
+                 active|activating) true ;; *) false ;; esac; then
     recent_failure=0
     if [ -f "$DB_BUILD_FAILED" ] \
             && [ $(( $(date -u +%s) - $(cat "$DB_BUILD_FAILED" 2>/dev/null || echo 0) )) -lt 21600 ]; then

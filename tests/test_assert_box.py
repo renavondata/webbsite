@@ -10,7 +10,9 @@ over the monitoring instance's check list. Everything I/O-shaped stays in the sc
 """
 
 import os
+import re
 import sys
+from types import SimpleNamespace
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -83,6 +85,19 @@ def run():
     excluded = {t for h in hdrs.values() if h["exclude_data"] for t in h["tables"]}
     check("backup-producer.sh excludes exactly the exclude-data derived tables",
           ab.backup_excludes(ab.BACKUP_PRODUCER.read_text()), excluded)
+    # A running oneshot is "activating": is-active's exit code would call it idle.
+    real_run = ab.subprocess.run
+    try:
+        for state, want in [("activating", True), ("active", True), ("inactive", False),
+                            ("failed", False), ("", False)]:
+            ab.subprocess.run = lambda *a, s=state, **k: SimpleNamespace(stdout=s + "\n", returncode=0)
+            check(f"db build running when ActiveState={state!r}", ab.db_build_active(), want)
+    finally:
+        ab.subprocess.run = real_run
+    root = ab.DERIVED_DIR.parent.parent
+    check("oneshot guards read ActiveState, not is-active",
+          [f for f in ("scripts/db_build.sh", "deploy/converge.sh")
+           if re.search(r"is-active[^\n]*webbsite-(refresh|db-build)", (root / f).read_text())], [])
     stamp = ab.derived_stamp("abc", "42")
     check("derived: fresh when the comment carries the stamp",
           ab.derived_problem("t", "present", stamp + "built=2026-11-01T00:00:00Z", stamp), None)

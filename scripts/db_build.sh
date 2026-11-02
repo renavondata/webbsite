@@ -72,7 +72,11 @@ if [ "${1:-}" = "--needed" ]; then
     exit $?
 fi
 
-if command -v systemctl >/dev/null 2>&1 && systemctl is-active --quiet webbsite-refresh.service; then
+# ActiveState, not is-active: a running oneshot is "activating", and is-active
+# exits 3 for that, so it never saw the loader running.
+if command -v systemctl >/dev/null 2>&1 \
+        && case "$(systemctl show -p ActiveState --value webbsite-refresh.service 2>/dev/null)" in
+               active|activating) true ;; *) false ;; esac; then
     log "the refresh loader is running; leaving this to a later tick"
     exit 0
 fi
