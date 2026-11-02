@@ -159,6 +159,15 @@ def db_build_active() -> bool:
     return state in ("active", "activating")
 
 
+def db_builder_installed() -> bool:
+    """Is there a webbsite-db-build unit here? There isn't until renavon-monorepo#2717:
+    since the #2171 cutover the units come from renavon's deploy tree, not deploy/ here."""
+    state = subprocess.run(["systemctl", "show", "-p", "LoadState", "--value",
+                            "webbsite-db-build.service"],
+                           check=False, capture_output=True, text=True).stdout.strip()
+    return state != "not-found"
+
+
 def parse_functions(sql: str) -> dict[str, str]:
     """name -> declared definition, one per CREATE OR REPLACE FUNCTION block."""
     blocks = re.finditer(r"CREATE OR REPLACE FUNCTION enigma\.(\w+)\(.*?\$function\$;", sql, re.S)
@@ -287,6 +296,10 @@ def assert_postgres(rep: Report):
         invalid = [n for n in names if valid.get(n) is False]
         if (missing or invalid) and db_build_active():
             rep.ok(f"indexes: building ({', '.join(missing + invalid)}) -- webbsite-db-build is running")
+        elif missing and not db_builder_installed():
+            # Nothing here can build them, so this is a known gap and not a daily page.
+            rep.ok(f"indexes: not built ({', '.join(missing)}): no webbsite-db-build on this "
+                   "box yet (renavon-monorepo#2717)")
         elif missing:
             rep.fail(f"indexes missing ({len(missing)}/{len(names)}): {', '.join(missing)} -- "
                      "webbsite-db-build builds them (converge starts it); see its journal")
@@ -360,6 +373,9 @@ def assert_derived(rep: Report):
     conn.close()
     if problems and db_build_active():
         rep.ok(f"derived: building ({'; '.join(problems)}) -- webbsite-db-build is running")
+    elif problems and not db_builder_installed():
+        rep.ok(f"derived: not built ({'; '.join(problems)}): no webbsite-db-build on this box "
+               "yet (renavon-monorepo#2717); search uses its fallback")
     elif problems:
         rep.fail(f"derived: {'; '.join(problems)} -- webbsite-db-build rebuilds them "
                  "(converge starts it); see its journal")

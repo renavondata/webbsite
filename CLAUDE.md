@@ -36,12 +36,14 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
 - **Deploy:** pushing to `master` *is* the deploy (a `site-deploy` timer fast-forwards, runs
   `uv sync`, **converges `deploy/` onto the box**, reloads the service, health-gates the reload, and
   purges the Cloudflare edge cache). Knobs live in `deploy/site.toml`, reviewable in a PR.
-- **Convergence:** `deploy/` is applied, not merely documented — `deploy/converge.sh` installs the
-  tracked systemd units (including a Caddy drop-in) and the Caddyfile on every tick, so a hand-edit
-  on the box is reverted within ~2 minutes. It runs as root, so **merge access to this repo is root
-  on the droplet.** See `deploy/README.md`, ADR 002 and ADR 003 (which repo owns what:
-  webbsite = the app and its declarations, site-deploy = the deploy and the host, renavon = identity
-  and routing; `docs/operations/non-derivable-state.md` lists what is not a function of git).
+- **Convergence:** since the 2026-10-12 cutover (renavon-monorepo#2171) **`deploy/` here is not what
+  the box runs.** `deploy/converge.sh` no longer runs. Renavon's private tree
+  (`deploy/sites/webbsite/`, seeded from this `deploy/`) holds the units, Caddyfile, backup producer
+  and refresh loader, and its `[converge] units` list decides what is installed. So a new or changed
+  unit here does nothing until renavon adopts it: file an issue there (we never edit that repo). What
+  a merge here still does on the box: update the app (`uv sync`, reload, edge purge, from `ci-green`)
+  and run `scripts/apply_schema.sh` from root's own export of the commit. ADR 002 and ADR 003 predate
+  this; `docs/operations/non-derivable-state.md` lists what is not a function of git.
 - **Monitoring:** the daily refresh loader pings a dead-man check when `HC_URL` is set; an external
   uptime probe is pending (renavon-monorepo#1612). `/health` is liveness, `/health?deep=1` is
   readiness (touches Postgres + the refresh watermark). Errors go to Sentry when `SENTRY_DSN` is
