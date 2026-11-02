@@ -273,6 +273,12 @@ def test_sort_rows_does_not_mutate():
     assert rows == ROWS
 
 
+def test_sort_rows_rejects_an_unknown_field():
+    with pytest.raises(KeyError):
+        sort_rows(ROWS, [("nmae", False)])
+    assert sort_rows([], [("anything", False)]) == []
+
+
 def test_ordinal():
     assert ordinal("o.name1", "o_name") == "dense_rank() OVER (ORDER BY o.name1) AS o_name"
     for bad in ("o-name", "x; drop", "Name", ""):

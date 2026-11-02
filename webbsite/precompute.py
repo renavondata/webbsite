@@ -262,6 +262,9 @@ def sort_rows(rows, spec):
     """
     out = list(rows)
     for field, desc, *nulls in reversed(spec):
+        if out and field not in out[0]:
+            # A misspelt field would otherwise sort nothing, silently.
+            raise KeyError(f"sort field {field!r} not in rows")
         nulls_first = (nulls[0] == "first") if nulls else desc
         present = [r for r in out if r.get(field) is not None]
         absent = [r for r in out if r.get(field) is None]
