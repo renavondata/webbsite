@@ -3,7 +3,10 @@
 enigma.getadjust, enigma.splitadj and enigma.outstanding cannot be inlined by Postgres
 (a scalar SQL function containing a subquery never is), so a page calling them once per
 row pays for a function call on every row: 40 us each, 190 ms for one stock's 4,500
-dates. Written in the query, the same lookups cost a third of that.
+dates. Written in the query, the same lookups cost far less.
+
+Selecting a lookup as a column of a LATERAL subquery and using it several times needs
+OFFSET 0 on that subquery: Postgres otherwise flattens it, repeating the lookup per use.
 
 Each returns the function's exact value (compared on prod across 75,360 issue/date
 pairs). Arguments are SQL text, so they must be a column reference or %s, and are

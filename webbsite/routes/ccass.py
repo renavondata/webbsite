@@ -1384,9 +1384,11 @@ def chistory():
                             CROSS JOIN LATERAL (
                                 SELECT {cum_adjust("%s", "q.atDate")} AS onHolding,
                                        {cum_adjust("%s", "CURRENT_DATE")} AS onToday
+                                OFFSET 0  -- keeps each lookup once per row, not once per use
                             ) cum
                             WHERE q.issueID = %s AND NOT c.deferred
                               AND c.settleDate >= '2007-06-26'
+                            OFFSET 0
                         ) AS t1
                         ORDER BY atDate
                     """
@@ -1427,9 +1429,11 @@ def chistory():
                                 SELECT {cum_adjust("%s", "c.tradeDate")} AS onTrade,
                                        {cum_adjust("%s", "c.settleDate")} AS onSettle,
                                        {cum_adjust("%s", "CURRENT_DATE")} AS onToday
+                                OFFSET 0  -- keeps each lookup once per row, not once per use
                             ) cum
                             WHERE q.issueID = %s AND NOT c.deferred
                               AND c.settleDate >= '2007-06-26'
+                            OFFSET 0
                         ) AS t1
                         ORDER BY tradeDate
                     """
