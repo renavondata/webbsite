@@ -46,7 +46,7 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py tests/test_people_search.py tests/test_param_validation.py tests/test_server_timing.py tests/test_perf_budget.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py tests/test_people_search.py tests/test_param_validation.py tests/test_server_timing.py tests/test_perf_budget.py tests/test_precompute.py tests/test_warm.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.
@@ -172,6 +172,16 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
         run: tests/test_derived.sh
+
+      # webbsite/precompute.py: Python sorting over dense_rank() ordinals gives
+      # exactly SQL's ORDER BY (collation, NULLs, ties). Self-proving: raw-text
+      # sorting must first disagree with the database.
+      - name: precompute sort order
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: uv run python tests/test_precompute_pg.py
 
       # searchpeople.asp on enigma.people_search returns exactly what the old
       # GIN query on people does: ~25 searches, ids in order, with self-proofs.
