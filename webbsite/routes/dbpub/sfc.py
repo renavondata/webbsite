@@ -454,24 +454,17 @@ def sfc_licount():
     Tables used: enigma.licrec, enigma.olicrec, enigma.organisations
     """
 
-    # Get dates
-    da = request.args.get("da", str(date.today()))
-    try:
-        date_a = date.fromisoformat(da)
-        default_db = date_a - timedelta(days=365)
-    except:
-        date_a = date.today()
-        default_db = date_a - timedelta(days=365)
-
-    db = request.args.get("db", str(max(date(2003, 4, 1), default_db)))
-
-    # Ensure db <= da
-    try:
-        date_b = date.fromisoformat(db)
-        if date_b > date_a:
-            db, da = da, db
-    except:
-        pass
+    # Get dates. Both are validated: an unparseable db used to reach the SQL
+    # raw, fail the cast there, and render an empty page.
+    date_a = date.fromisoformat(get_date_or_default("da", date.today().isoformat()))
+    year_ago = timedelta(days=365)
+    first_data = date(2003, 4, 1)
+    # Compared this way round: date_a - year_ago overflows on a year-1 date.
+    default_b = first_data if date_a - first_data <= year_ago else date_a - year_ago
+    date_b = date.fromisoformat(get_date_or_default("db", default_b.isoformat()))
+    if date_b > date_a:
+        date_a, date_b = date_b, date_a
+    da, db = date_a.isoformat(), date_b.isoformat()
 
     act = get_int("a", 0)
     sort_param = request.args.get("sort", "acntdn")
