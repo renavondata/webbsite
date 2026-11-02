@@ -46,7 +46,7 @@ jobs:
         run: uv run ruff check .
 
       - name: unit checks (no database)
-        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py tests/test_precompute.py tests/test_warm.py tests/test_precompute_routes.py tests/test_param_validation.py tests/test_server_timing.py tests/test_perf_budget.py tests/test_people_search.py
+        run: uv run pytest -q tests/test_health.py tests/test_cache_headers.py tests/test_sqlfrag.py tests/test_app_hardening.py tests/test_assert_box.py tests/test_freshness.py tests/test_sentry_regressions.py tests/test_pgq.py tests/test_sort_fixtures.py tests/test_ctr_render.py tests/test_overlay.py tests/test_render_parity.py tests/test_crhk_banner.py tests/test_precompute.py tests/test_warm.py tests/test_precompute_routes.py tests/test_param_validation.py tests/test_server_timing.py tests/test_perf_budget.py tests/test_people_search.py
 
       # A gate that has never failed a planted defect is decoration. Run the
       # same harness with a check forced to fail and require a red result.
@@ -62,7 +62,7 @@ jobs:
       - name: shellcheck deploy/ and the schema apply
         run: |
           sudo apt-get install -y -q shellcheck >/dev/null
-          shellcheck -S warning deploy/*.sh scripts/apply_schema.sh tests/test_apply_schema.sh scripts/build_derived.sh scripts/db_build.sh tests/test_derived.sh
+          shellcheck -S warning deploy/*.sh scripts/apply_schema.sh tests/test_apply_schema.sh tests/test_sqlfrag.sh scripts/build_derived.sh scripts/db_build.sh tests/test_derived.sh
 
       # converge.sh runs as root on the box; prove it parses and that its
       # allowlist resolves before it ever gets there. Dry-run needs no root.
@@ -144,6 +144,15 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
         run: tests/test_return_functions.sh
+
+      # webbsite/sqlfrag.py: every value exactly the function's, NULLs included.
+      # Self-proving -- a planted wrong fragment must be counted first.
+      - name: SQL fragments
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: tests/test_sqlfrag.sh
 
       # database/schema/views.sql: hklistedordsever takes a join predicate.
       # Self-proving -- it first requires the old DISTINCT view NOT to.
