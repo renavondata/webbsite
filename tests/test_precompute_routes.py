@@ -34,7 +34,10 @@ def _row(i):
         "name": f"n{i}", "name1": f"n{i}", "cname": "c", "oname": f"o{i}",
         "pname": f"p{i}", "oldname": f"old{i}", "oldcname": None, "en": f"e{i}",
         "cn": "c", "region": "r", "lstxt": "Partner", "stockcode": f"{i:04d}",
-        "typeshort": "O", "typelong": "Ord", "typename": "t",
+        "typeshort": "O", "typelong": "Ord", "typename": "t", "incid": str(i), "o_incid": i,
+        "incdate": date(1900, 1, i), "disdate": None, "o_sc": i, "inepropn": Decimal(i), "fempropn": Decimal(1),
+        "ine": i, "startdate": date(2003, 1, i), "enddate": None, "aro": i, "bro": i, "cro": 0,
+        "actname": "Dealing", "dismodetxt": "Dissolved", "acnt": 2 * i, "bcnt": 2 * i, "ccnt": 0, "arep": i, "brep": i, "crep": 0, "arat": 0, "brat": 0,
         # ordinals
         "o_name": i, "o_code": i, "o_type": 1, "o_old": i, "o_new": i, "o_en": i,
         "o_cn": 1, "o_region": 1, "o_adm": i, "o_o": i, "o_p": i, "o_role": 1,
@@ -61,11 +64,14 @@ def _row(i):
 
 
 ROWS = [_row(i) for i in (1, 2, 3)]
+UNKNOWN_ID = 777777
 calls = []
 
 
 def fake_query(sql, params=None, timeout_s=None):
     calls.append(sql)
+    if params and UNKNOWN_ID in params:  # an organisation type or activity that does not exist
+        return []
     return [dict(r) for r in ROWS]
 
 
@@ -86,6 +92,9 @@ PAGES = {
     "/dbpub/payleague.asp": ["", "i=1"],
     "/dbpub/payleagueorg.asp": [""],
     "/dbpub/advbyrole.asp": [""],
+    "/dbpub/oldestHKcos.asp": ["", "a=1", "t=28"],
+    "/dbpub/boardcomp.asp": [""],
+    "/dbpub/SFClicount.asp": ["", "a=1"],
 }
 
 
@@ -100,7 +109,7 @@ def client(tmp_path_factory):
     app = create_app()
     mp.setattr(db, "execute_query", fake_query)
     mp.setattr("webbsite.watermarks.execute_scalar", lambda *a, **k: "2025-10-10")
-    for mod in ("statistics", "solicitors", "listings", "market_data"):
+    for mod in ("statistics", "solicitors", "listings", "market_data", "incorporations", "sfc"):
         mp.setattr(f"webbsite.routes.dbpub.{mod}.execute_query", fake_query)
     yield app.test_client()
     mp.undo()
@@ -132,3 +141,103 @@ def test_every_sort_renders_from_one_compute(client, path, caplog):
             assert errors == [], (url, errors)
         heavy = [c for c in calls if "dense_rank" in c or "enigma.ess" in c]
         assert heavy == [], (base, "a sort recomputed")
+
+
+CALENDARS = ("/dbpub/incHKcaltype.asp", "/dbpub/disHKcaltype.asp", "/dbpub/incUKcaltype.asp")
+
+
+@pytest.mark.parametrize("path", CALENDARS)
+def test_calendar_whole_year_is_cached_per_sort_and_months_stay_live(client, path, tmp_path):
+    def queries(url):
+        calls.clear()
+        r = client.get(url)
+        assert r.status_code == 200, url
+        return len(calls)
+
+    year = f"{path}?y=2023"
+    assert queries(year) > 0, "first hit computes"
+    assert queries(year) == 0, "second hit is from disk"
+    # A capped list holds different rows under each sort, so each sort is its own
+    # query, and asks SQL for that order.
+    assert queries(f"{year}&sort=namdn") > 0
+    assert any("DESC" in c for c in calls), "a sort reached the SQL"
+    assert queries(f"{year}&sort=namdn") == 0
+    # A junk sort is the default, and creates no file of its own.
+    assert queries(f"{year}&sort=junk") == 0
+    # A different selection is a different list.
+    assert queries(f"{year}&t=28") > 0
+    # Months and days are not kept.
+    assert queries(f"{year}&m=5") > 0
+    assert queries(f"{year}&m=5") > 0
+    assert queries(f"{year}&m=5&d=3") > 0
+    assert queries(f"{year}&m=5&d=3") > 0
+
+
+def _queries(client, url):
+    calls.clear()
+    assert client.get(url).status_code == 200, url
+    return len(calls)
+
+
+def _files(page):
+    root = precompute.cache_root() / page
+    return sorted(p.name.split(".")[0] for p in root.glob("*.pkl"))
+
+
+def test_sfc_explicit_dates_never_fill_the_default_copy(client):
+    """?da=<old>&db=<today> swaps into da=today: it must not be saved as the default."""
+    from datetime import date, timedelta
+
+    today = date.today()
+    for q in (f"da=2003-04-01&db={today}", f"da={today}&db=2003-04-01",
+              f"da={today}&db={today - timedelta(days=30)}", f"db={today - timedelta(days=30)}"):
+        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, q
+        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, (q, "kept")
+        assert "a7" not in _files("sfclicount"), q
+    # The explicit spelling of the default dates may share the default's copy.
+    client.get("/dbpub/SFClicount.asp?a=7")
+    assert "a7" in _files("sfclicount")
+    default_b = today - timedelta(days=365)
+    assert _queries(client, f"/dbpub/SFClicount.asp?a=7&da={today}&db={default_b}") <= 1
+
+
+def test_ids_that_do_not_exist_write_no_files(client):
+    before = {page: _files(page) for page in
+              ("oldesthkcos", "sfclicount", "inchkcaltype", "dishkcaltype", "incukcaltype")}
+    for url in (f"/dbpub/oldestHKcos.asp?t={UNKNOWN_ID}",
+                f"/dbpub/SFClicount.asp?a={UNKNOWN_ID}",
+                "/dbpub/SFClicount.asp?a=-5",
+                f"/dbpub/incHKcaltype.asp?y=2021&t={UNKNOWN_ID}",
+                "/dbpub/incHKcaltype.asp?y=2021&t=-1",
+                f"/dbpub/disHKcaltype.asp?y=2021&t={UNKNOWN_ID}",
+                f"/dbpub/disHKcaltype.asp?y=2021&w={UNKNOWN_ID}",
+                f"/dbpub/incUKcaltype.asp?y=2021&t={UNKNOWN_ID}"):
+        assert client.get(url).status_code == 200, url
+    after = {page: _files(page) for page in before}
+    new = {page: set(after[page]) - set(before[page]) for page in before}
+    # An unknown type is ignored on oldestHKcos, so it may fill the unfiltered copy.
+    assert new["oldesthkcos"] <= {"a0_t0"}, new
+    assert not any(new[p] for p in new if p != "oldesthkcos"), new
+
+
+def test_unknown_oldest_type_shows_the_unfiltered_list_from_its_copy(client):
+    client.get("/dbpub/oldestHKcos.asp")
+    calls.clear()
+    assert client.get(f"/dbpub/oldestHKcos.asp?t={UNKNOWN_ID}").status_code == 200
+    assert not any("LIMIT" in c for c in calls), "the main query ran again"
+
+
+@pytest.mark.parametrize("path, page, first, second", [
+    ("/dbpub/disHKcaltype.asp", "dishkcaltype", "y=2020&w=2", "y=2020&w=3"),
+    ("/dbpub/disHKcaltype.asp", "dishkcaltype", "y=2020&t=28", "y=2020&t=19"),
+    ("/dbpub/incUKcaltype.asp", "incukcaltype", "y=2020&dom=116", "y=2020&dom=112"),
+    ("/dbpub/incHKcaltype.asp", "inchkcaltype", "y=2020", "y=2019"),
+    ("/dbpub/SFClicount.asp", "sfclicount", "a=1", "a=2"),
+    ("/dbpub/oldestHKcos.asp", "oldesthkcos", "a=1", "a=1&t=19"),
+])
+def test_each_selection_has_its_own_copy(client, path, page, first, second):
+    """A parameter left out of the key would serve one selection's rows for another."""
+    client.get(f"{path}?{first}")
+    files = set(_files(page))
+    assert _queries(client, f"{path}?{second}") > 0, "served from the other selection's file"
+    assert len(set(_files(page)) - files) == 1

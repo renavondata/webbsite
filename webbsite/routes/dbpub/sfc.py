@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from datetime import date, timedelta
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_date_or_default
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_sfc", __name__)
 
@@ -439,91 +440,21 @@ def sfc_changes():
     )
 
 
-@bp.route("/SFClicount.asp")
-def sfc_licount():
-    """
-    SFC licensee count league table - port of SFClicount.asp
-    Shows SFC licensee counts per firm at two dates (start and end) with changes
-
-    Query params:
-    - da: end date (defaults to today)
-    - db: start date (defaults to 1 year before end date)
-    - a: activity type (0 = all activities)
-    - sort: sorting column
-
-    Tables used: enigma.licrec, enigma.olicrec, enigma.organisations
-    """
-
-    # Get dates. Both are validated: an unparseable db used to reach the SQL
-    # raw, fail the cast there, and render an empty page.
-    date_a = date.fromisoformat(get_date_or_default("da", date.today().isoformat()))
-    year_ago = timedelta(days=365)
+def _licount_default_start(end):
+    """The page's start date for an end date: a year earlier, or the first data."""
     first_data = date(2003, 4, 1)
-    # Compared this way round: date_a - year_ago overflows on a year-1 date.
-    default_b = first_data if date_a - first_data <= year_ago else date_a - year_ago
-    date_b = date.fromisoformat(get_date_or_default("db", default_b.isoformat()))
-    if date_b > date_a:
-        date_a, date_b = date_b, date_a
-    da, db = date_a.isoformat(), date_b.isoformat()
+    year_ago = timedelta(days=365)
+    # Compared this way round: end - year_ago overflows on a year-1 date.
+    return first_data if end - first_data <= year_ago else end - year_ago
 
-    act = get_int("a", 0)
-    sort_param = request.args.get("sort", "acntdn")
 
-    # Get activity name
-    act_name = "All activities"
-    if act > 0:
-        try:
-            result = execute_query(
-                """
-                SELECT actName FROM enigma.activity WHERE ID = %s
-            """,
-                (act,),
-            )
-            if result:
-                act_name = result[0]["actname"]
-        except:
-            pass
-
-    # Build sort order
-    sort_map = {
-        "namup": "name",
-        "namdn": "name DESC",
-        "arepup": "arep,name",
-        "arepdn": "arep DESC,name",
-        "aroup": "aRO,name",
-        "arodn": "aRO DESC,name",
-        "acntup": "acnt,name",
-        "acntdn": "acnt DESC,name",
-        "brepup": "brep,name",
-        "brepdn": "brep DESC,name",
-        "broup": "bRO,name",
-        "brodn": "bRO DESC,name",
-        "bcntup": "bcnt,name",
-        "bcntdn": "bcnt DESC,name",
-        "crepup": "crep,name",
-        "crepdn": "crep DESC,name",
-        "croup": "cRO,name",
-        "crodn": "cRO DESC,name",
-        "ccntup": "ccnt,name",
-        "ccntdn": "ccnt DESC,name",
-        "aratup": "arat,name",
-        "aratdn": "arat DESC,name",
-        "bratup": "brat,name",
-        "bratdn": "brat DESC,name",
-        "sddn": "startDate DESC,name",
-        "sdup": "startDate,name",
-        "eddn": "endDate DESC,name",
-        "edup": "endDate,name",
-    }
-    ob = sort_map.get(sort_param, "acnt DESC,name")
-
-    # Query stats
-    stats = []
-    try:
-        if act == 0:
-            # All activities
-            sql = f"""
+def _licount_rows(act, da, db):
+    """SFClicount.asp's rows between two dates, all activities (act 0) or one."""
+    if act == 0:
+        return execute_query(
+            f"""
                 SELECT t.orgid, o.name1 AS name, t.startDate, t.endDate,
+                       {ordinal("o.name1", "o_name")},
                        t.bRO, t.bcnt - t.bRO AS brep, t.bcnt,
                        t.aRO, t.acnt - t.aRO AS arep, t.acnt,
                        CASE WHEN t.acnt > 0 THEN 1 - t.aRO / NULLIF(t.acnt, 0) ELSE NULL END AS arat,
@@ -563,13 +494,14 @@ def sfc_licount():
                 ) t
                 JOIN enigma.organisations o ON o.personid = t.orgid
                 WHERE t.acnt + t.bcnt > 0
-                ORDER BY {ob}
-            """
-            stats = execute_query(sql, (db, da, db, db, da, da))
-        else:
-            # Specific activity
-            sql = f"""
+                ORDER BY t.acnt DESC, o.name1
+            """,
+            (db, da, db, db, da, da),
+        )
+    return execute_query(
+        f"""
                 SELECT t.orgid, o.name1 AS name, t.startDate, t.endDate,
+                       {ordinal("o.name1", "o_name")},
                        t.bRO, t.brep, t.bcnt, t.aRO, t.arep, t.acnt,
                        t.arat, t.brat, t.acnt - t.bcnt AS ccnt,
                        t.aRO - t.bRO AS cRO, t.arep - t.brep AS crep
@@ -602,12 +534,82 @@ def sfc_licount():
                 ) t
                 JOIN enigma.organisations o ON t.orgid = o.personid
                 WHERE t.acnt + t.bcnt > 0
-                ORDER BY {ob}
-            """
-            stats = execute_query(sql, (db, db, act, da, da, act, act, db, da))
+                ORDER BY t.acnt DESC, o.name1
+            """,
+        (db, db, act, da, da, act, act, db, da),
+    )
 
+
+@bp.route("/SFClicount.asp")
+def sfc_licount():
+    """
+    SFC licensee count league table - port of SFClicount.asp
+    Shows SFC licensee counts per firm at two dates (start and end) with changes
+
+    Query params:
+    - da: end date (defaults to today)
+    - db: start date (defaults to 1 year before end date)
+    - a: activity type (0 = all activities)
+    - sort: sorting column
+
+    Tables used: enigma.licrec, enigma.olicrec, enigma.organisations
+    """
+
+    # Get dates. Both are validated: an unparseable db used to reach the SQL
+    # raw, fail the cast there, and render an empty page.
+    date_a = date.fromisoformat(get_date_or_default("da", date.today().isoformat()))
+    date_b = date.fromisoformat(get_date_or_default("db", _licount_default_start(date_a).isoformat()))
+    if date_b > date_a:
+        date_a, date_b = date_b, date_a
+    da, db = date_a.isoformat(), date_b.isoformat()
+
+    act = get_int("a", 0)
+    sort_param = request.args.get("sort", "acntdn")
+
+    # Sorted per request from one compute; names sort on a database ordinal.
+    def by(field):
+        return ([(field, False), ("o_name", False)], [(field, True), ("o_name", False)])
+
+    sort_map = {
+        "namup": [("o_name", False)],
+        "namdn": [("o_name", True)],
+        "arepup": by("arep")[0], "arepdn": by("arep")[1],
+        "aroup": by("aro")[0], "arodn": by("aro")[1],
+        "acntup": by("acnt")[0], "acntdn": by("acnt")[1],
+        "brepup": by("brep")[0], "brepdn": by("brep")[1],
+        "broup": by("bro")[0], "brodn": by("bro")[1],
+        "bcntup": by("bcnt")[0], "bcntdn": by("bcnt")[1],
+        "crepup": by("crep")[0], "crepdn": by("crep")[1],
+        "croup": by("cro")[0], "crodn": by("cro")[1],
+        "ccntup": by("ccnt")[0], "ccntdn": by("ccnt")[1],
+        "aratup": by("arat")[0], "aratdn": by("arat")[1],
+        "bratup": by("brat")[0], "bratdn": by("brat")[1],
+        "sdup": by("startdate")[0], "sddn": by("startdate")[1],
+        "edup": by("enddate")[0], "eddn": by("enddate")[1],
+    }
+    sort_spec = sort_map.get(sort_param, sort_map["acntdn"])
+
+    def compute():
+        return _licount_rows(act, da, db)
+
+    # The page's default dates are kept for the day, per real activity; anything else
+    # is live. Judged on the dates after the swap above: ?da=<old>&db=<today> ends up
+    # with today as its end date, but it is not the default page.
+    stats, act_name = [], "All activities"
+    try:
+        known = act == 0
+        if act > 0:
+            result = execute_query("SELECT actName FROM enigma.activity WHERE ID = %s", (act,))
+            if result:
+                act_name, known = result[0]["actname"], True
+        if known and date_a == date.today() and date_b == _licount_default_start(date_a):
+            rows = precomputed("sfclicount", f"a{act}", ("enigma", "today"), compute,
+                               module=__name__, max_entries=200)
+        else:
+            rows = compute()
+        stats = sort_rows(rows, sort_spec)
     except Exception as ex:
-        current_app.logger.error(f"Error querying SFC licount: {ex}")
+        current_app.logger.error(f"Error querying SFC licount: {ex}", exc_info=True)
 
     # Compute sums for averages (cleaner than Jinja2 namespace)
     numa = numb = sumaRO = sumarep = sumbRO = sumbrep = 0

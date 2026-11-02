@@ -3389,25 +3389,23 @@ def boardcomp():
 
     # Get sort parameter
     sort_param = get_str("sort", "dirdn")
+    # Sorted per request from one compute; text sorts on database ordinals.
+    def by(field):
+        return ([(field, True), ("o_name", False)], [(field, False), ("o_name", False)])
+
     order_by_map = {
-        "inpdn": "inepropn DESC, name",
-        "inpup": "inepropn, name",
-        "fmpdn": "fempropn DESC, name",
-        "fmpup": "fempropn, name",
-        "agedn": "age DESC, name",
-        "ageup": "age, name",
-        "inedn": "ine DESC, name",
-        "ineup": "ine, name",
-        "femdn": "female DESC, name",
-        "femup": "female, name",
-        "dirdn": "dirs DESC, name",
-        "dirup": "dirs, name",
-        "namup": "name",
-        "namdn": "name DESC",
-        "stkup": "sc",
-        "stkdn": "sc DESC",
+        "inpdn": by("inepropn")[0], "inpup": by("inepropn")[1],
+        "fmpdn": by("fempropn")[0], "fmpup": by("fempropn")[1],
+        "agedn": by("age")[0], "ageup": by("age")[1],
+        "inedn": by("ine")[0], "ineup": by("ine")[1],
+        "femdn": by("female")[0], "femup": by("female")[1],
+        "dirdn": by("dirs")[0], "dirup": by("dirs")[1],
+        "namup": [("o_name", False)],
+        "namdn": [("o_name", True)],
+        "stkup": [("o_sc", False)],
+        "stkdn": [("o_sc", True)],
     }
-    order_by = order_by_map.get(sort_param, order_by_map["dirdn"])
+    sort_spec = order_by_map.get(sort_param, order_by_map["dirdn"])
 
     # Query board composition - direct port from hkbdanalsnap stored procedure
     sql = f"""
@@ -3420,7 +3418,9 @@ def boardcomp():
             CASE WHEN avg_yob IS NOT NULL THEN EXTRACT(YEAR FROM CAST(%s AS date)) - avg_yob END as age,
             sc,
             ine::numeric / NULLIF(dirs, 0) as inepropn,
-            female::numeric / NULLIF(dirs, 0) as fempropn
+            female::numeric / NULLIF(dirs, 0) as fempropn,
+            {ordinal("name", "o_name")},
+            {ordinal("sc", "o_sc")}
         FROM (
             SELECT
                 t2.issuer,
@@ -3463,13 +3463,16 @@ def boardcomp():
             WHERE pn.rank = 1 OR d.director IS NULL
             GROUP BY t2.issuer, t2.name, t2.sc
         ) t4
-        ORDER BY {order_by}
+        ORDER BY dirs DESC, name
     """
 
+    # Whole market, 0.6-4.2 s warm; it hit the 8 s default under load
+    # (WEBBSITE-2V). Today's board is kept for the day, other dates are live.
+    def compute():
+        return execute_query(sql, (d, d, d, d, d, d, d), timeout_s=25)
+
     try:
-        # Whole market, 0.6-4.2 s warm; it hit the 8 s default under load
-        # (WEBBSITE-2V).
-        results = execute_query(sql, (d, d, d, d, d, d, d), timeout_s=25)
+        results = sort_rows(_today_or_live("boardcomp", d, compute), sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error in boardcomp.asp: {ex}", exc_info=True)
         results = []
@@ -6415,8 +6418,8 @@ def inedhkdstncos():
         ORDER BY numseats DESC
     """
 
-    try:
-        results = execute_query(sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
+    def compute():
+        rows = execute_query(sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date))
 
         # Get total listed company count at the snapshot date
         # Matches listcoCntAtDate() function logic
@@ -6430,7 +6433,11 @@ def inedhkdstncos():
               AND (delistdate IS NULL OR delistdate > %s)
         """
         count_result = execute_query(count_sql, (snapshot_date, snapshot_date))
-        total_cos = count_result[0]["cnt"] if count_result else 0
+        return {"rows": rows, "total": count_result[0]["cnt"] if count_result else 0}
+
+    try:
+        data = _today_or_live("inedhkdstncos", snapshot_date, compute)
+        results, total_cos = data["rows"], data["total"]
     except Exception as ex:
         current_app.logger.error(f"Error in INEDHKDistnCos.asp: {ex}", exc_info=True)
         results = []
