@@ -81,7 +81,25 @@ ROBOTS_DISALLOW = (
     "/ccass/ipstakes.asp",
     "/CSV.asp", "/dbpub/CSV.asp", "/dbpub/pricesCSV.asp", "/dbpub/govacCSV.asp",
     "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/", "/contact/",
+    "/_probe/",
 )
+
+# /_probe/swr/<variant>: which header does Cloudflare honour stale-while-revalidate
+# in? Its docs say "in the Cache-Control header" (revalidation page) but also that
+# Cache-Control "does not affect caching decisions" once CDN-Cache-Control is
+# present (CDN-Cache-Control page) -- which is how every data page here is sent.
+# Each variant returns a timestamp body with a 30 s edge TTL and a 10 min SWR
+# window in one place; curl it through the edge (deploy/README.md "Edge
+# stale-while-revalidate") and see which one answers UPDATING with the old body.
+SWR_PROBE_HEADERS = {
+    "cc":    {"Cache-Control": "public, max-age=30, stale-while-revalidate=600"},
+    "cdn":   {"Cache-Control": "public, max-age=5",
+              "CDN-Cache-Control": "max-age=30, stale-while-revalidate=600"},
+    "cfcdn": {"Cache-Control": "public, max-age=5",
+              "Cloudflare-CDN-Cache-Control": "max-age=30, stale-while-revalidate=600"},
+    "mixed": {"Cache-Control": "public, max-age=5, stale-while-revalidate=600",
+              "CDN-Cache-Control": "max-age=30"},
+}
 
 
 class _LiveStderrHandler(logging.StreamHandler):
@@ -382,6 +400,14 @@ def create_app(config_class=Config):
     # render a page (the pattern used elsewhere in the fleet): the heavy pages
     # here cost hundreds of ms, and a 5-minute probe that adds load to a box
     # whose failure mode IS load would be a monitor that causes outages.
+    @app.route("/_probe/swr/<variant>")
+    def swr_probe(variant):
+        """No database, no template: a timestamp under one header variant."""
+        headers = SWR_PROBE_HEADERS.get(variant)
+        if headers is None:
+            return Response("unknown variant\n", status=404, mimetype="text/plain")
+        return Response(f"{time.time():.3f}\n", mimetype="text/plain", headers=headers)
+
     @app.route("/health")
     def health():
         if request.args.get("deep", "") not in ("1", "true", "True", "yes"):
@@ -452,8 +478,12 @@ def create_app(config_class=Config):
             sentry_sdk.set_tag("request_id", g.request_id)
             # The 04:30 route check (tests/check_all_routes.py): its timeouts are
             # real signal, but under its own 6-way load, so say so.
-            if request.headers.get("User-Agent", "").startswith("webbsite-route-check/"):
+            ua = request.headers.get("User-Agent", "")
+            if ua.startswith("webbsite-route-check/"):
                 sentry_sdk.set_tag("synthetic", "route-check")
+            elif ua.startswith("webbsite-warm/"):
+                # The cache warmer: deliberate cold computes, not visitor latency.
+                sentry_sdk.set_tag("synthetic", "warm")
 
     @app.after_request
     def _echo_request_id(response):
@@ -461,6 +491,12 @@ def create_app(config_class=Config):
         if rid:
             response.headers["X-Request-Id"] = rid
         return response
+
+    # Server-Timing on every response (webbsite/timing.py). Registered this early
+    # so it runs after the cache-header and slow-log hooks and times them too.
+    from webbsite import timing
+
+    timing.init_app(app)
 
     # Block aggressive crawlers at the origin (defense-in-depth; CF WAF is primary)
     @app.before_request
@@ -485,6 +521,7 @@ def create_app(config_class=Config):
     @app.before_request
     def _start_timer():
         g._request_start = time.monotonic()
+        timing.start_request()
 
     @app.after_request
     def _log_slow_requests(response):

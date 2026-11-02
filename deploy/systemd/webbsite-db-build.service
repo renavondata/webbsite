@@ -1,0 +1,26 @@
+# Build what the database is missing of what git declares: the indexes in
+# database/schema/indexes.sql and the derived tables in database/derived/
+# (scripts/db_build.sh). Started by deploy/converge.sh whenever
+# `db_build.sh --needed` says something is missing, invalid or stale, so a fresh
+# box restored from the dump converges unaided, and merging an index or a
+# derived table IS its deploy. Never started by hand: the box is cattle.
+#
+# Root: it reads the repo and runs psql as postgres (peer auth). Builds run
+# beside live traffic (CONCURRENTLY / build-and-swap), so nothing blocks; but
+# Nice/IOSchedulingClass below only lower the psql client -- the work itself runs
+# in a Postgres backend at normal priority. Merge a large build at a quiet hour.
+[Unit]
+Description=Webb-site database builds (indexes, derived tables)
+After=postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/webbsite
+StateDirectory=webbsite-db-build
+ExecStart=/srv/webbsite/scripts/db_build.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=4h
+StandardOutput=journal
+StandardError=journal

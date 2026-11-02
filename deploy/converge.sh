@@ -51,6 +51,7 @@ deploy/systemd/webbsite-refresh.timer            /etc/systemd/system/webbsite-re
 deploy/systemd/webbsite-refresh-failed.service   /etc/systemd/system/webbsite-refresh-failed.service
 deploy/systemd/webbsite-invariants.service       /etc/systemd/system/webbsite-invariants.service
 deploy/systemd/webbsite-invariants.timer         /etc/systemd/system/webbsite-invariants.timer
+deploy/systemd/webbsite-db-build.service         /etc/systemd/system/webbsite-db-build.service
 deploy/systemd/caddy.service.d/override.conf     /etc/systemd/system/caddy.service.d/override.conf
 deploy/systemd/site-backup@webbsite.timer.d/schedule.conf /etc/systemd/system/site-backup@webbsite.timer.d/schedule.conf
 "
@@ -121,6 +122,8 @@ SCHEMA_APPLY="$REPO/scripts/apply_schema.sh"
 [ -f "$SCHEMA_APPLY" ] || log "missing in repo, skipped: scripts/apply_schema.sh"
 [ -f "$REPO/database/schema/functions.sql" ] || log "missing in repo, skipped: database/schema/functions.sql"
 [ -f "$REPO/database/schema/views.sql" ] || log "missing in repo, skipped: database/schema/views.sql"
+DB_BUILD="$REPO/scripts/db_build.sh"
+[ -f "$DB_BUILD" ] || log "missing in repo, skipped: scripts/db_build.sh"
 if [ -f "$PG_SRC" ] && [ -d "$PG_DIR" ] && ! cmp -s "$PG_SRC" "$PG_DST" 2>/dev/null; then
     if [ -n "$DRY" ]; then
         log "would install deploy/postgresql/conf.d/webbsite.conf -> $PG_DST"
@@ -232,6 +235,27 @@ if [ -f "$SCHEMA_APPLY" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ]; then
     if ! runuser -u postgres -- env DB=enigma QUIET=1 UNREACHABLE_OK=1 LOG_PREFIX="converge: postgres" \
             bash "$SCHEMA_APPLY"; then
         rc=1
+    fi
+fi
+
+# Indexes and derived tables: when anything git declares is missing, invalid or
+# stale, start the build unit (scripts/db_build.sh) and return -- builds take
+# minutes to an hour and a tick must stay fast. A fresh restore converges here
+# with no hand step. A failed build leaves a marker and is not retried for 6 h,
+# so a refused build (e.g. the disk preflight) cannot re-trigger every tick.
+DB_BUILD_FAILED=/var/lib/webbsite-db-build/failed
+if [ -x "$DB_BUILD" ] && id postgres >/dev/null 2>&1 && [ -z "$DRY" ] \
+        && ! case "$(systemctl show -p ActiveState --value webbsite-db-build.service 2>/dev/null)" in
+                 active|activating) true ;; *) false ;; esac; then
+    recent_failure=0
+    if [ -f "$DB_BUILD_FAILED" ] \
+            && [ $(( $(date -u +%s) - $(cat "$DB_BUILD_FAILED" 2>/dev/null || echo 0) )) -lt 21600 ]; then
+        recent_failure=1
+    fi
+    if [ "$recent_failure" = 0 ] && "$DB_BUILD" --needed 2>/dev/null; then
+        systemctl start --no-block webbsite-db-build.service \
+            && log "started webbsite-db-build (indexes or derived tables missing/stale)" \
+            || { log "could not start webbsite-db-build"; rc=1; }
     fi
 fi
 

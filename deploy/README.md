@@ -212,6 +212,29 @@ dry-run, real load, idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-fre
 each exiting 1 with nothing committed. CI runs the same script against a Postgres 17 service
 container on every push. (A real 3.9M-row feed loaded in 43s on 2026-07-19.)
 
+## Edge stale-while-revalidate (verifying the header)
+
+Cloudflare (since 2026-02) serves an expired object instantly as `UPDATING` and
+refreshes it in the background, if the origin sent `stale-while-revalidate`.
+Its docs disagree on *which* header it reads that from once `CDN-Cache-Control`
+is present, so `/_probe/swr/<variant>` (no DB, a timestamp body; robots-disallowed)
+offers four: `cc` (in `Cache-Control`), `cdn` (in `CDN-Cache-Control`, the
+target), `cfcdn` (in `Cloudflare-CDN-Cache-Control`) and `mixed`. Each has a 30 s
+edge TTL and a 10 min SWR window. Through the edge:
+
+```bash
+H=https://webbsite.renavon.com; n=$(date +%s)
+probe() { for v in cc cdn cfcdn mixed; do printf '%-6s ' $v
+  curl -sS -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
+probe            # MISS, new bodies
+sleep 5; probe   # HIT, same bodies
+sleep 40; probe  # honoured variant: UPDATING + the OLD body; others: EXPIRED/MISS + new
+sleep 3; probe   # honoured variant: HIT + the NEW body
+```
+Keep the same colo (`cf-ray` suffix) across calls. Always Online being on for the
+zone also disables SWR. The variant that answers `UPDATING` decides the header the
+data pages use (`_set_cache_headers`).
+
 ## Rebuild the data (rare)
 To reload the **frozen baseline**, restore the `pg_dump` archive
 held in Cloudflare R2 (or rebuild from the canonical Google Drive release):
@@ -239,10 +262,17 @@ performs -- a pending restart. `shared_buffers` and `shared_preload_libraries` n
 ```bash
 sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC refresh
 ```
-`database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
-any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`). It is too
-slow to rebuild on a tick, so it stays a manual post-restore step that the invariants job
-checks for.
+`database/schema/indexes.sql` (the app's performance indexes) and `database/derived/*.sql`
+(derived tables such as `enigma.people_search`) are **built automatically**: every converge
+tick asks `scripts/db_build.sh --needed`, and when an index is missing or INVALID or a
+derived table is missing, empty or stale, it starts `webbsite-db-build.service`, which
+builds them beside live traffic (indexes `CONCURRENTLY`, derived tables into `_new` and
+swapped, with a disk preflight). So after a restore there is nothing to run by hand: the
+box is cattle. Merging an index or a derived table *is* its deploy. A failed build leaves
+`/var/lib/webbsite-db-build/failed` and is retried after 6 h; its journal says why
+(`journalctl -u webbsite-db-build`). The invariants job reports these as "building" while
+the unit runs and FAILs only if it is not running. Derived tables' rows are left out of the
+backup (`deploy/backup-producer.sh`); a restore brings them back empty and they rebuild.
 
 `database/schema/functions.sql` is the return calculations (`enigma.totret` / `cagret` /
 `cagrel`). These are `CREATE OR REPLACE` and instant, so unlike the indexes **converge

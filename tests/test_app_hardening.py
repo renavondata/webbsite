@@ -100,6 +100,18 @@ def run():
     resp = client.get("/health", headers={"User-Agent": "Mozilla/5.0 (compatible; SemrushBot/7)"})
     check("request id: present on a bot 403", len(resp.headers.get("X-Request-Id", "")), 32)
 
+    # 6. SWR probe: each variant's headers reach the edge exactly as declared --
+    # the cache-header hook must not rewrite them, or the probe tests nothing.
+    from webbsite import SWR_PROBE_HEADERS
+    for variant, want in SWR_PROBE_HEADERS.items():
+        resp = client.get(f"/_probe/swr/{variant}")
+        got = {k: resp.headers.get(k) for k in
+               ("Cache-Control", "CDN-Cache-Control", "Cloudflare-CDN-Cache-Control")
+               if resp.headers.get(k) is not None}
+        check(f"swr probe {variant}: headers as declared", (resp.status_code, got), (200, want))
+    check("swr probe: unknown variant 404", client.get("/_probe/swr/x").status_code, 404)
+    check("swr probe: Disallowed in robots", b"Disallow: /_probe/" in client.get("/robots.txt").data, True)
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:
