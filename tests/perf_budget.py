@@ -32,7 +32,10 @@ KNOWN_OVER_BUDGET_PINNED = 0
 # Every `timeout_s=` override in webbsite/routes is a page that needed more than
 # the 8 s default. The count may only fall as pages are fixed. 24 = the 22 on
 # master plus searchpeople.asp's two (PR #85).
-TIMEOUT_S_SITES_PINNED = 24
+# 24 -> 32 (#95): eight queries gained a budget by moving into a precomputed()
+# compute, which runs once per data version, normally in the warm job and not in
+# front of a visitor. The count still only falls from here.
+TIMEOUT_S_SITES_PINNED = 32
 
 
 def parse_server_timing(header):

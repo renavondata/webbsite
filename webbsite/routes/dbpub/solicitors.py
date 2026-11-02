@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_date_or_default
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_solicitors", __name__)
 
@@ -176,28 +177,30 @@ def hk_sols_moves():
 
     sort_param = request.args.get("sort", "orgup")
 
-    # Build sort order
+    # Sorts mirror the ASP's ORDER BY; names sort on database ordinals.
     sort_map = {
-        "orgup": "oName,pName,LSrole DESC",
-        "orgdn": "oName DESC,pName,LSrole DESC",
-        "solup": "pName,oName,LSrole DESC",
-        "soldn": "pName DESC,oName,LSrole DESC",
-        "datdn": "relDate DESC,pName,oName",
-        "datup": "relDate,pName,oName",
+        "orgup": [("o_o", False), ("o_p", False), ("lsrole", True)],
+        "orgdn": [("o_o", True), ("o_p", False), ("lsrole", True)],
+        "solup": [("o_p", False), ("o_o", False), ("lsrole", True)],
+        "soldn": [("o_p", True), ("o_o", False), ("lsrole", True)],
+        "datdn": [("reldate", True), ("o_p", False), ("o_o", False)],
+        "datup": [("reldate", False), ("o_p", False), ("o_o", False)],
     }
-    ob = sort_map.get(sort_param, "oName,pName,LSrole DESC")
+    sort_spec = sort_map.get(sort_param, sort_map["orgup"])
+    pname = """CONCAT(COALESCE(p.name1,''),
+                       CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
+                       CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END)"""
 
     # Query recent moves
     moves = []
     try:
-        moves = execute_query(
-            f"""
+        sql = f"""
             SELECT DISTINCT
                 d.company AS orgID, d.director AS pID,
-                CONCAT(COALESCE(p.name1,''),
-                       CASE WHEN p.name2 IS NOT NULL THEN CONCAT(', ', p.name2) ELSE '' END,
-                       CASE WHEN p.cName IS NOT NULL THEN CONCAT(' ', p.cName) ELSE '' END) AS pName,
+                {pname} AS pName,
                 o.name1 AS oName,
+                {ordinal(pname, "o_p")},
+                {ordinal("o.name1", "o_o")},
                 enigma.MSdateAcc(d.apptDate, d.apptAcc) AS appt,
                 enigma.MSdateAcc(d.resDate, d.resAcc) AS res,
                 lr.LStxt,
@@ -232,9 +235,13 @@ def hk_sols_moves():
                           CURRENT_DATE
                       )) - INTERVAL '30 days'
                   )
-            ORDER BY {ob}
         """
-        )
+        # Two scans of every Law Society directorship (2 s cold): once per
+        # data version and day, sorted per request.
+        moves = sort_rows(
+            precomputed("hksolsmoves", "all", ("enigma", "today"),
+                        lambda: execute_query(sql, timeout_s=30), module=__name__),
+            sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error querying HK sols moves: {ex}")
 
