@@ -61,6 +61,9 @@ Pins:
      never cached.
  20. a junk ?d= / ?d1= (a probe, a bare number) falls back to the default on
      every route that read the date raw (WEBBSITE-30, 31, 32).
+ 21. searchpeople.asp's fallback full-text queries (no enigma.people_search
+     yet) get the 25 s budget: a common name ("jayne": ~35k of 14.5M people
+     rows) is cold random I/O past 8 s (WEBBSITE-3C).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -358,6 +361,16 @@ def run():
         check("searchpeople exact, no n2: IS NULL and one param",
               [("dn2 IS NULL" in s, p) for s, p in bound], [(True, ("Chan",))] * 2)
         bound.clear()
+        # 21. full-text people search: when the token table is not there (a
+        # fresh restore, before webbsite-db-build refills it) the search falls
+        # back to people itself, and both of those queries carry the 25 s budget.
+        budgets = []
+        search.execute_query = lambda sql, params=None, timeout_s=None: budgets.append(
+            (params, timeout_s)) or []
+        client.get("/dbpub/searchpeople.asp?n1=jayne")
+        check("searchpeople fallback: both people queries get timeout_s=25",
+              budgets[1:], [(('"jayne"',), 25)] * 2)
+        search.execute_query = rec_bound
         client.get("/dbpub/indexhk.asp?p=B")
         check("indexhk: letter bound as a LIKE prefix",
               [("LIKE %s" in s, p) for s, p in bound], [(True, ("B%",))] * 2)
@@ -1097,9 +1110,9 @@ def run():
     finally:
         db_module._engine = real_engine
 
-    # 16. Whole-market pages from the disk cache (WEBBSITE-1R/1S/1T, 21).
+    # 16. Whole-market pages precomputed per data version (WEBBSITE-1R/1S/1T, 21).
     import tempfile
-    from webbsite import watermarks as wm
+    from webbsite import precompute
     from webbsite.routes.dbpub import incorporations, listings
 
     heavy = []
@@ -1121,16 +1134,23 @@ def run():
         if "enigma.totret" in sql:
             return [{"stockcode": "0005", "issueid": 1, "typeshort": "O", "typelong": "Ord",
                      "name1": "HSBC", "personid": 2, "firsttradedate": date(1991, 1, 2),
-                     "totret": 0.5, "cagret": 0.1, "cagrel": None}]
+                     "totret": 0.5, "cagret": 0.1, "cagrel": None,
+                     "o_name": 1, "o_code": 1, "o_type": 1}]
         return [{"year": 2000, "incorporated": 7, "dissolved": 2}]
 
     fail = [False]
-    real_inc, real_lst, real_qe = incorporations.execute_query, listings.execute_query, wm.quotes_end
+    real_inc, real_lst = incorporations.execute_query, listings.execute_query
+    real_sources = dict(precompute.SOURCES)
+    version = ["v1"]
     old_dir = os.environ.get("WEBBSITE_CACHE_DIR")
     tmp = tempfile.mkdtemp()
     os.environ["WEBBSITE_CACHE_DIR"] = tmp
     incorporations.execute_query = listings.execute_query = rec_market
-    wm.quotes_end = lambda: "2026-09-22"
+    precompute.SOURCES.update(market=lambda: version[0], enigma=lambda: version[0])
+
+    def files_under(root):
+        return {os.path.relpath(os.path.join(d, f), root)
+                for d, _, fs in os.walk(root) for f in fs}
     try:
         for url in ("/dbpub/incHKannual.asp", "/dbpub/incHKmonth.asp",
                     "/dbpub/incHKsurvive.asp", "/dbpub/listed.asp?sort=cagretdn"):
@@ -1146,11 +1166,11 @@ def run():
         client.get("/dbpub/incHKannual.asp?t=1")
         check("cache: a type variant has its own entry", len(heavy) > 0, True)
         client.get("/dbpub/listed.asp")  # the default entries exist first
-        files_before = set(os.listdir(tmp))
+        files_before = files_under(tmp)
         client.get("/dbpub/incHKannual.asp?t=987654")
         client.get("/dbpub/listed.asp?sort=junk&e=zz&t=qq")
         check("cache: junk parameters reuse the default entries, no new files",
-              set(os.listdir(tmp)) - files_before, set())
+              files_under(tmp) - files_before, set())
         # An unknown type filters as given (zeros, as master did) and runs live.
         heavy.clear()
         seen_params = []
@@ -1166,14 +1186,14 @@ def run():
         incorporations.execute_query = real_rec
         check("cache: an unknown type is filtered as given, never cached",
               (any(p and 987654 in p for p in seen_params), len(heavy),
-               set(os.listdir(tmp)) - files_before), (True, 4, set()))
+               files_under(tmp) - files_before), (True, 4, set()))
         heavy.clear()
         client.get("/dbpub/listed.asp?d=2020-01-01")
         client.get("/dbpub/listed.asp?d=2020-01-01")
         check("cache: a pinned date is never cached", len(heavy), 2)
         fail[0] = True
         heavy.clear()
-        wm.quotes_end = lambda: "2026-09-23"  # a new watermark: recompute
+        version[0] = "v2"  # a new data version: recompute
         client.get("/dbpub/incHKannual.asp")
         client.get("/dbpub/incHKannual.asp")
         check("cache: a failed compute saves nothing (the next request retries)",
@@ -1181,12 +1201,15 @@ def run():
         fail[0] = False
         heavy.clear()
         client.get("/dbpub/incHKannual.asp")
-        check("cache: a new watermark recomputes once, then serves from disk",
-              (len(heavy) > 0, [f for f in os.listdir(tmp) if f.startswith("inchkannual_t0_")]),
-              (True, ["inchkannual_t0_2026-09-23.json"]))
+        n_new = len(heavy)
+        client.get("/dbpub/incHKannual.asp")
+        check("cache: a new data version recomputes once, then serves from disk",
+              (n_new > 0, len(heavy) == n_new,
+               len([f for f in files_under(tmp) if f.startswith("pc/inchkannual/t0.") and f.endswith(".pkl")])),
+              (True, True, 2))  # the superseded version is kept for its grace period
     finally:
         incorporations.execute_query, listings.execute_query = real_inc, real_lst
-        wm.quotes_end = real_qe
+        precompute.SOURCES.update(real_sources)
         if old_dir is None:
             os.environ.pop("WEBBSITE_CACHE_DIR", None)
         else:

@@ -7,8 +7,7 @@ from datetime import date
 import calendar
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str
-from webbsite import watermarks
-from webbsite.diskcache import cached
+from webbsite.precompute import precomputed
 
 bp = Blueprint("dbpub_incorporations", __name__)
 
@@ -308,7 +307,7 @@ def inc_hk_annual():
 
     # Every HK company, counted twice: ~5 GB read cold, so it timed out at 8 s
     # (WEBBSITE-1R). The counts only change with the data, so compute them once
-    # per watermark and serve from disk (webbsite/diskcache.py).
+    # per data version and serve from disk (webbsite/precompute.py).
     def compute():
         return [
             {"year": int(r["year"]), "incorporated": int(r["incorporated"]),
@@ -317,7 +316,8 @@ def inc_hk_annual():
         ]
 
     try:
-        results = cached(f"inchkannual_t{t_eff}", watermarks.quotes_end(), compute)
+        results = precomputed("inchkannual", f"t{t_eff}", ("enigma", "year"), compute,
+                              module=__name__)
     except Exception as ex:
         current_app.logger.error(f"Error in incHKannual.asp: {ex}", exc_info=True)
         results = []
@@ -367,21 +367,19 @@ def oldest_hk_cos():
     }
     order_by = order_by_map.get(sort_param, order_by_map["incup"])
 
-    # Build type filter
+    # Build type filter (bound, not interpolated). A type that does not exist
+    # is ignored, as before; a failed lookup is logged and flags the page.
+    ot_filter, params = "", None
     if t > 0:
         type_sql = "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s"
         try:
             type_result = execute_query(type_sql, (t,))
-            if type_result:
-                type_name = type_result[0]["typename"]
-                title += f", {type_name}"
-                ot_filter = f"AND o.orgtype = {t}"
-            else:
-                ot_filter = ""
-        except:
-            ot_filter = ""
-    else:
-        ot_filter = ""
+        except Exception as ex:
+            current_app.logger.error(f"Error in oldestHKcos.asp type lookup: {ex}")
+            type_result = []
+        if type_result:
+            title += f", {type_result[0]['typename']}"
+            ot_filter, params = "AND o.orgtype = %s", (t,)
 
     # Query oldest companies
     sql = f"""
@@ -410,7 +408,7 @@ def oldest_hk_cos():
     """
 
     try:
-        results = execute_query(final_sql)
+        results = execute_query(final_sql, params)
     except Exception as ex:
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
@@ -495,26 +493,10 @@ def inchkcaltype():
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        # Specific month or day
-        month_start = date(y, m, 1)
-        if d > 0:
-            # Specific day
-            month_end = date(y, m, d)
-        else:
-            # End of month
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
 
-                month_end = month_end - timedelta(days=1)
-    else:
-        # Entire year
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query
     if t == 0:
@@ -625,22 +607,10 @@ def dishkcaltype():
     if (t > 0 and sort_param.startswith("typ")) or (w > 0 and sort_param.startswith("mod")):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        month_start = date(y, m, 1)
-        if d > 0:
-            month_end = date(y, m, d)
-        else:
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
 
-                month_end = month_end - timedelta(days=1)
-    else:
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query based on type and method filters
     if t == 0 and w == 0:
@@ -839,7 +809,7 @@ def inchkmonth():
           {type_filter}
     """
 
-    # Whole-table counts, as incHKannual (WEBBSITE-1S/1T): once per watermark,
+    # Whole-table counts, as incHKannual (WEBBSITE-1S/1T): once per data version,
     # and per month the series ends on.
     def compute():
         months = [
@@ -855,7 +825,8 @@ def inchkmonth():
         }
 
     try:
-        data = (cached(f"inchkmonth_t{t if t > 0 else -1}", f"{watermarks.quotes_end()}_{end_date}", compute)
+        data = (precomputed("inchkmonth", f"t{t if t > 0 else -1}", ("enigma", "month"),
+                            compute, module=__name__)
                 if cacheable else compute())
         results, inc_total, dis_total = data["months"], data["inc_total"], data["dis_total"]
 
@@ -944,7 +915,7 @@ def inchksurvive():
     params = (snapshot_date,) * 3 + ((t,) if t > 0 else ())
 
     # The same whole-table count as incHKannual. Only today's view is cached
-    # (once per watermark and day); another date is computed live.
+    # (once per data version and day); another date is computed live.
     def compute():
         return [
             {"y": int(r["y"]), "incorporated": int(r["incorporated"]),
@@ -954,8 +925,8 @@ def inchksurvive():
 
     try:
         if snapshot_date == date.today() and cacheable:
-            results = cached(f"inchksurvive_t{t if t > 0 else -1}",
-                             f"{watermarks.quotes_end()}_{snapshot_date}", compute)
+            results = precomputed("inchksurvive", f"t{t if t > 0 else -1}", ("enigma", "today"),
+                                  compute, module=__name__)
         else:
             results = compute()
 
@@ -1306,6 +1277,8 @@ def incukcaltype():
     d = get_int("d", 0)
     t = get_int("t", 0)
     dom = get_int("dom", 116)  # default: England & Wales
+    if dom not in {x["id"] for x in UK_DOMICILES}:
+        dom = 116  # the page is UK-only; any other code rendered an unnamed list
     sort_param = get_str("sort", "namup")
 
     # Validate year range
@@ -1333,21 +1306,10 @@ def incukcaltype():
     if t > 0 and sort_param.startswith("typ"):
         order_by = "o.name1"
 
-    # Build date range
-    if m > 0:
-        month_start = date(y, m, 1)
-        if d > 0:
-            month_end = date(y, m, d)
-        else:
-            if m == 12:
-                month_end = date(y, 12, 31)
-            else:
-                month_end = date(y, m + 1, 1)
-                from datetime import timedelta
-                month_end = month_end - timedelta(days=1)
-    else:
-        month_start = date(y, 1, 1)
-        month_end = date(y, 12, 31)
+    # Date range as the ASP read y/m/d: m and d clamped, a day is one day.
+    from webbsite.asp_helpers import calendar_range
+
+    m, d, month_start, month_end = calendar_range(y, m, d)
 
     # Build query based on type filter
     if t == 0:
