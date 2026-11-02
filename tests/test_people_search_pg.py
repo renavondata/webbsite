@@ -128,6 +128,14 @@ def run():
         search.pick_drivers = real_pick
         check("self-proof: a wrong driver changes the result", broken != listed(client, "Chan", "", 0), True)
 
+        # 2b. a table that is there but fails (through the real execute_query,
+        # whose exception types are what the route must catch): same rows, no 500.
+        want = listed(client, "Chan", "Tai Man", 0)
+        psql("ALTER TABLE enigma.people_search RENAME COLUMN token TO tok;")
+        check("a failing token table falls back to the same rows",
+              listed(client, "Chan", "Tai Man", 0), want)
+        psql("ALTER TABLE enigma.people_search RENAME COLUMN tok TO token;")
+
         # 3. identical with and without the token table
         with_tokens = {s: listed(client, *s) for s in SEARCHES}
         psql("ALTER TABLE enigma.people_search RENAME TO people_search_off;")

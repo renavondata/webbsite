@@ -27,8 +27,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
 
 from webbsite import create_app  # noqa: E402
+from webbsite.db import DatabaseError, QueryTimeoutError  # noqa: E402
 from webbsite.routes import search  # noqa: E402
-from sqlalchemy.exc import OperationalError  # noqa: E402
 
 _failures: list[str] = []
 
@@ -134,11 +134,19 @@ def run():
         real_tokens = search._search_people_tokens
 
         def broken(*a):
-            raise OperationalError("SELECT", {}, Exception("permission denied"))
+            raise DatabaseError("permission denied")
 
         search._search_people_tokens = broken
         check("route: a failing token table falls back to people, not a 500",
               (client.get("/dbpub/searchpeople.asp?n1=Chan").status_code, logged), (200, [25, 25]))
+
+        def timed_out(*a):
+            raise QueryTimeoutError("statement timeout")
+
+        logged.clear()
+        search._search_people_tokens = timed_out
+        check("route: a token-table timeout does not spend another 25 s",
+              (client.get("/dbpub/searchpeople.asp?n1=Chan").status_code, logged), (504, []))
         search._search_people_tokens = real_tokens
 
         stub = Stub(counts={"chan": 50})

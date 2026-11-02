@@ -5,9 +5,8 @@ Search routes - Direct port from searchorgs.asp and searchpeople.asp
 import logging
 
 from flask import Blueprint, render_template, request
-from sqlalchemy.exc import SQLAlchemyError
 
-from webbsite.db import execute_query
+from webbsite.db import DatabaseError, QueryTimeoutError, execute_query
 from webbsite.asp_helpers import rem_space, get_str, get_bool, ts_words, escape_like
 
 bp = Blueprint("search", __name__)
@@ -340,7 +339,9 @@ def search_people():
             try:
                 current_results = _search_people_tokens(
                     where_current, params, *fulltext_words, now_year)
-            except SQLAlchemyError:
+            except QueryTimeoutError:
+                raise  # the GIN path would only spend another budget timing out
+            except DatabaseError:
                 # The table is an optimisation: a problem with it (a swap's
                 # race, a permissions slip) must not take search down.
                 logger.exception("people_search failed; falling back to enigma.people")
