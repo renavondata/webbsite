@@ -33,9 +33,10 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
 - **CI:** `.github/workflows/tests.yml` gates every PR and push (ruff, DB-free unit checks, a
   planted-failure self-proof, shellcheck, converge dry-run, `caddy validate`, the refresh loader
   ladder against Postgres 17) and fast-forwards `ci-green` on a green `master`.
-- **Deploy:** pushing to `master` *is* the deploy (a `site-deploy` timer fast-forwards, runs
-  `uv sync`, **converges `deploy/` onto the box**, reloads the service, health-gates the reload, and
-  purges the Cloudflare edge cache). Knobs live in `deploy/site.toml`, reviewable in a PR.
+- **Deploy:** a green `master` *is* the deploy: within ~2 minutes of `ci-green` moving, renavon's
+  `dataguru-site@webbsite` timer updates the app, runs `uv sync` and `scripts/apply_schema.sh`, reloads
+  the service, health-gates the reload, and purges the Cloudflare edge cache. Its knobs live in
+  renavon's `deploy/sites/webbsite/site.toml`; `deploy/site.toml` here is no longer read.
 - **Convergence:** since the 2026-10-12 cutover (renavon-monorepo#2171) **`deploy/` here is not what
   the box runs.** `deploy/converge.sh` no longer runs. Renavon's private tree
   (`deploy/sites/webbsite/`, seeded from this `deploy/`) holds the units, Caddyfile, backup producer
