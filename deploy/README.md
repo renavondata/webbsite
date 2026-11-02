@@ -212,6 +212,29 @@ dry-run, real load, idempotent no-op rerun, `--poison`/`--bad-counts`/`--pre-fre
 each exiting 1 with nothing committed. CI runs the same script against a Postgres 17 service
 container on every push. (A real 3.9M-row feed loaded in 43s on 2026-07-19.)
 
+## Edge stale-while-revalidate (verifying the header)
+
+Cloudflare (since 2026-02) serves an expired object instantly as `UPDATING` and
+refreshes it in the background, if the origin sent `stale-while-revalidate`.
+Its docs disagree on *which* header it reads that from once `CDN-Cache-Control`
+is present, so `/_probe/swr/<variant>` (no DB, a timestamp body; robots-disallowed)
+offers four: `cc` (in `Cache-Control`), `cdn` (in `CDN-Cache-Control`, the
+target), `cfcdn` (in `Cloudflare-CDN-Cache-Control`) and `mixed`. Each has a 30 s
+edge TTL and a 10 min SWR window. Through the edge:
+
+```bash
+H=https://webbsite.renavon.com; n=$(date +%s)
+probe() { for v in cc cdn cfcdn mixed; do printf '%-6s ' $v
+  curl -sS -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
+probe            # MISS, new bodies
+sleep 5; probe   # HIT, same bodies
+sleep 40; probe  # honoured variant: UPDATING + the OLD body; others: EXPIRED/MISS + new
+sleep 3; probe   # honoured variant: HIT + the NEW body
+```
+Keep the same colo (`cf-ray` suffix) across calls. Always Online being on for the
+zone also disables SWR. The variant that answers `UPDATING` decides the header the
+data pages use (`_set_cache_headers`).
+
 ## Rebuild the data (rare)
 To reload the **frozen baseline**, restore the `pg_dump` archive
 held in Cloudflare R2 (or rebuild from the canonical Google Drive release):
