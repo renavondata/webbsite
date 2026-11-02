@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite import watermarks
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_market_data", __name__)
 
@@ -400,39 +401,43 @@ def mcap():
     t_str, t_suffix = type_filters.get(t, ("NOT IN (1, 2, 5, 40, 41, 46)", " shares"))
     title = f"Market values of {title}{t_suffix}"
 
-    # Sort mapping
+    e_eff = e if e in exchange_filters else "a"
+    t_eff = t if t in type_filters else "s"
+
+    # Sorts mirror the ASP's ORDER BY; text sorts on database ordinals.
     sort_map = {
-        "namedn": "name DESC",
-        "nameup": "name",
-        "codeup": "stockCode",
-        "codedn": "stockCode DESC",
-        "typeup": "typeShort, name",
-        "typedn": "typeShort DESC, name",
-        "lotup": "lot, name",
-        "lotdn": "lot DESC, name",
-        "ltvup": "lotVal, name",
-        "ltvdn": "lotVal DESC, name",
-        "prcdn": "closing DESC, name",
-        "prcup": "closing, name",
-        "issdn": "outstanding DESC, name",
-        "issup": "outstanding, name",
-        "mcpup": "mcap, name",
-        "mcapdn": "mcap DESC, name",
+        "namedn": [("o_name", True)],
+        "nameup": [("o_name", False)],
+        "codeup": [("o_code", False)],
+        "codedn": [("o_code", True)],
+        "typeup": [("o_type", False), ("o_name", False)],
+        "typedn": [("o_type", True), ("o_name", False)],
+        "lotup": [("lot", False), ("o_name", False)],
+        "lotdn": [("lot", True), ("o_name", False)],
+        "ltvup": [("lotval", False), ("o_name", False)],
+        "ltvdn": [("lotval", True), ("o_name", False)],
+        "prcdn": [("closing", True), ("o_name", False)],
+        "prcup": [("closing", False), ("o_name", False)],
+        "issdn": [("outstanding", True), ("o_name", False)],
+        "issup": [("outstanding", False), ("o_name", False)],
+        "mcpup": [("mcap", False), ("o_name", False)],
+        "mcapdn": [("mcap", True), ("o_name", False)],
     }
-    ob = sort_map.get(sort_param, "mcap DESC, name")
+    sort_spec = sort_map.get(sort_param, sort_map["mcapdn"])
 
     # Currency codes
     currencies = ["HKD", "CNY", "USD"]
-    market_caps = []
 
-    try:
+    # Every listed stock's as-of shares outstanding (1.7 s): each validated e/t
+    # once per data version and day, sorted per request.
+    def compute():
+        out = []
         for curr_idx in range(3):
             if curr_idx == 0:
                 curr_filter = "(i.SEHKcurr IS NULL OR i.SEHKcurr = 0)"
             else:
                 curr_filter = f"i.SEHKcurr = {curr_idx}"
 
-            # Query market caps for this currency
             curr_data = execute_query(
                 f"""
                 SELECT COALESCE(h.nomprice, 0) AS closing,
@@ -445,7 +450,10 @@ def mcap():
                        LPAD(sl.stockCode::TEXT, 5, '0') AS stockCode,
                        COALESCE(os.outstanding, 0) AS outstanding,
                        COALESCE(h.nomprice * os.outstanding, 0) AS mcap,
-                       COALESCE(h.nomprice * h.boardlot, 0) AS lotVal
+                       COALESCE(h.nomprice * h.boardlot, 0) AS lotVal,
+                       {ordinal("o.name1", "o_name")},
+                       {ordinal("LPAD(sl.stockCode::TEXT, 5, '0')", "o_code")},
+                       {ordinal("st.typeShort", "o_type")}
                 FROM enigma.stockListings sl
                 JOIN enigma.issue i ON sl.issueid = i.ID1
                 JOIN enigma.organisations o ON i.issuer = o.personid
@@ -462,18 +470,22 @@ def mcap():
                 WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= CURRENT_DATE)
                   AND (sl.DelistDate IS NULL OR sl.DelistDate > CURRENT_DATE)
                   AND NOT sl."2ndCtr"
-                  AND sl.StockExID {e_str}
-                  AND i.typeID {t_str}
+                  AND sl.StockExID {exchange_filters[e_eff][0]}
+                  AND i.typeID {type_filters[t_eff][0]}
                   AND {curr_filter}
-                ORDER BY {ob}
-            """
+            """,
+                timeout_s=30,
             )
-
             if curr_data:
-                market_caps.append(
-                    {"currency": currencies[curr_idx], "data": curr_data}
-                )
+                out.append({"currency": currencies[curr_idx], "data": curr_data})
+        return out
 
+    try:
+        market_caps = [
+            {**m, "data": sort_rows(m["data"], sort_spec)}
+            for m in precomputed("mcap", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
+                                 compute, module=__name__)
+        ]
     except Exception as ex:
         current_app.logger.error(f"Error querying market caps: {ex}")
         market_caps = []
@@ -543,33 +555,37 @@ def mcaphist():
         mcap_field = "pendMcap"
         os_field = "totsh"
 
+    mcap_field = mcap_field.lower()
+    # Sorts mirror the ASP's ORDER BY; text sorts on database ordinals.
     sort_map = {
-        "namedn": "name DESC",
-        "nameup": "name",
-        "codeup": "sc",
-        "codedn": "sc DESC",
-        "typeup": "typeShort, name",
-        "typedn": "typeShort DESC, name",
-        "datedn": "td DESC, name",
-        "dateup": "td, name",
-        "lotup": "lot, name",
-        "lotdn": "lot DESC, name",
-        "ltvup": "lotVal, name",
-        "ltvdn": "lotVal DESC, name",
-        "prcdn": "closing DESC, name",
-        "prcup": "closing, name",
-        "issdn": f"{os_field} DESC, name",
-        "issup": f"{os_field}, name",
-        "mcpup": f"{mcap_field}, name",
-        "mcapdn": f"{mcap_field} DESC, name",
+        "namedn": [("o_name", True)],
+        "nameup": [("o_name", False)],
+        "codeup": [("o_code", False)],
+        "codedn": [("o_code", True)],
+        "typeup": [("o_type", False), ("o_name", False)],
+        "typedn": [("o_type", True), ("o_name", False)],
+        "datedn": [("td", True), ("o_name", False)],
+        "dateup": [("td", False), ("o_name", False)],
+        "lotup": [("lot", False), ("o_name", False)],
+        "lotdn": [("lot", True), ("o_name", False)],
+        "ltvup": [("lotval", False), ("o_name", False)],
+        "ltvdn": [("lotval", True), ("o_name", False)],
+        "prcdn": [("closing", True), ("o_name", False)],
+        "prcup": [("closing", False), ("o_name", False)],
+        "issdn": [(os_field, True), ("o_name", False)],
+        "issup": [(os_field, False), ("o_name", False)],
+        "mcpup": [(mcap_field, False), ("o_name", False)],
+        "mcapdn": [(mcap_field, True), ("o_name", False)],
     }
-    ob = sort_map.get(sort_param, f"{mcap_field} DESC, name")
+    sort_spec = sort_map.get(sort_param, sort_map["mcapdn"])
+    e_eff = e if e in exchange_filters else "a"
+    t_eff = t if t in type_filters else "s"
 
-    # Get list of distinct currencies used
-    currencies_list = []
-    market_caps = []
-
-    try:
+    # Every listed stock's last quote and shares outstanding at d. Today's view
+    # of each validated e/t (p only picks a column) is computed once per data
+    # version and day; another date is computed live. Sorted per request.
+    def compute():
+        market_caps = []
         # Get currencies in use on this date
         currencies_list = execute_query(
             f"""
@@ -579,8 +595,8 @@ def mcaphist():
             JOIN enigma.currencies c ON i.SEHKcurr = c.id
             WHERE (sl.FirstTradeDate IS NULL OR sl.FirstTradeDate <= %s)
               AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
-              AND sl.StockExID {e_str}
-              AND i.typeID {t_str}
+              AND sl.StockExID {exchange_filters[e_eff][0]}
+              AND i.typeID {type_filters[t_eff][0]}
               AND NOT sl."2ndCtr"
             ORDER BY i.SEHKcurr
         """,
@@ -606,7 +622,10 @@ def mcaphist():
                        COALESCE(t2.closing * (t2.os + t2.pendsh) / 1000000.0, 0) AS pendMcap,
                        o.name1 AS name,
                        COALESCE(t2.lot, 0) AS lot,
-                       COALESCE(t2.closing * t2.lot, 0) AS lotVal
+                       COALESCE(t2.closing * t2.lot, 0) AS lotVal,
+                       {ordinal("o.name1", "o_name")},
+                       {ordinal("t2.sc", "o_code")},
+                       {ordinal("st.typeShort", "o_type")}
                 FROM (
                     SELECT t1.sc, t1.i, t1.typeID, t1.p, t1.td,
                            COALESCE(os.outstanding, 0) AS os,
@@ -629,8 +648,8 @@ def mcaphist():
                           AND (sl.DelistDate IS NULL OR sl.DelistDate > %s)
                           AND NOT sl."2ndCtr"
                           AND {curr_filter}
-                          AND sl.StockExID {e_str}
-                          AND i.typeID {t_str}
+                          AND sl.StockExID {exchange_filters[e_eff][0]}
+                          AND i.typeID {type_filters[t_eff][0]}
                     ) t1
                     LEFT JOIN LATERAL (
                         SELECT outstanding
@@ -644,14 +663,23 @@ def mcaphist():
                 ) t2
                 JOIN enigma.organisations o ON t2.p = o.personid
                 JOIN enigma.secTypes st ON t2.typeID = st.typeID
-                ORDER BY {ob}
             """,
                 (d, d, d, d),
+                timeout_s=30,
             )
 
             if curr_data:
                 market_caps.append({"currency": currency, "data": curr_data})
 
+        return market_caps
+
+    try:
+        if "d" not in request.args or d == str(dt.today()):
+            caps = precomputed("mcaphist", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
+                               compute, module=__name__)
+        else:
+            caps = compute()
+        market_caps = [{**m, "data": sort_rows(m["data"], sort_spec)} for m in caps]
     except Exception as ex:
         current_app.logger.error(f"Error querying historical market caps: {ex}")
         market_caps = []

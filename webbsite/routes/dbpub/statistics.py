@@ -35,6 +35,15 @@ def _sort_league_rows(rows, sort_keys):
     return sort_rows(rows, [_LEAGUE_SORT[sort_keys[i]] for i in (1, 2, 3)
                             if sort_keys.get(i) in _LEAGUE_SORT])
 
+def _today_or_live(page, d, compute):
+    """A snapshot-at-d page: today's view (the default, and what crawlers and
+    visitors overwhelmingly ask for) is precomputed once per data version and
+    day; any other date is computed live."""
+    if d == date.today():
+        return precomputed(page, "today", ("enigma", "today"), compute, module=__name__)
+    return compute()
+
+
 bp = Blueprint("dbpub_statistics", __name__)
 
 _LEAGUE_NAME = "p.name1 || COALESCE(', ' || p.name2, '') || COALESCE(' ' || p.cname, '')"
@@ -646,11 +655,11 @@ def dirs_hk_age_distn():
 
     # Get sort parameter
     sort_param = get_str("sort", "YOBup")
-    order_by_map = {"YOBdn": "YOB DESC", "YOBup": "YOB"}
-    order_by = order_by_map.get(sort_param, order_by_map["YOBup"])
+    order_by_map = {"YOBdn": [("yob", True)], "YOBup": [("yob", False)]}
+    sort_spec = order_by_map.get(sort_param, order_by_map["YOBup"])
 
     # Port of HKdirsAgeDistn stored procedure
-    sql = f"""
+    sql = """
         SELECT
             YOB,
             COUNT(director) AS dirs,
@@ -681,11 +690,13 @@ def dirs_hk_age_distn():
             GROUP BY director, YOB, sex
         ) AS t3
         GROUP BY YOB
-        ORDER BY {order_by}
     """
 
     try:
-        distribution = execute_query(sql, (d_str, d_str, d_str, d_str))
+        # Sorted before the running totals below, which follow the row order.
+        distribution = sort_rows(_today_or_live(
+            "dirshkagedistn", d,
+            lambda: execute_query(sql, (d_str,) * 4, timeout_s=30)), sort_spec)
 
         # Calculate cumulative values and age statistics
         cum_seats = 0
@@ -856,7 +867,8 @@ def hk_dirs_type_sex():
     """
 
     try:
-        results = execute_query(sql, (d_str, d_str, d_str, d_str))
+        results = _today_or_live(
+            "hkdirstypesex", d, lambda: execute_query(sql, (d_str,) * 4, timeout_s=30))
 
         # Organize results by sex
         data = {"F": {}, "M": {}, "U": {}}
@@ -1060,7 +1072,6 @@ def payleague():
         UNION SELECT 0, 'HKD'
         ORDER BY currency
     """
-    currencies = execute_query(curr_query)
 
     # Count companies with missing pay data
     todo_query = """
@@ -1071,27 +1082,25 @@ def payleague():
           AND NOT d.pay
           AND EXTRACT(YEAR FROM p.d) = %s
     """
-    todo_count = execute_query(todo_query, (year,))
-    todo = todo_count[0]["count"] if todo_count else 0
 
     # Sort mapping
     sort_map = {
-        "feedn": "fee DESC, name",
-        "feeup": "fee, name",
-        "saldn": "sal DESC, name",
-        "salup": "sal, name",
-        "bondn": "bon DESC, name",
-        "bonup": "bon, name",
-        "retdn": "ret DESC, name",
-        "retup": "ret, name",
-        "shadn": "sha DESC, name",
-        "shaup": "sha, name",
-        "totdn": "tot DESC, name",
-        "totup": "tot, name",
-        "cntdn": "c DESC, name",
-        "cntup": "c, name",
+        "feedn": [("fee", True), ("o_name", False)],
+        "feeup": [("fee", False), ("o_name", False)],
+        "saldn": [("sal", True), ("o_name", False)],
+        "salup": [("sal", False), ("o_name", False)],
+        "bondn": [("bon", True), ("o_name", False)],
+        "bonup": [("bon", False), ("o_name", False)],
+        "retdn": [("ret", True), ("o_name", False)],
+        "retup": [("ret", False), ("o_name", False)],
+        "shadn": [("sha", True), ("o_name", False)],
+        "shaup": [("sha", False), ("o_name", False)],
+        "totdn": [("tot", True), ("o_name", False)],
+        "totup": [("tot", False), ("o_name", False)],
+        "cntdn": [("c", True), ("o_name", False)],
+        "cntup": [("c", False), ("o_name", False)],
     }
-    order_by = sort_map.get(sort_param, "tot DESC, name")
+    sort_spec = sort_map.get(sort_param, sort_map["totdn"])
 
     # Total calculation - optionally exclude share-based
     total_calc = "total - COALESCE(share, 0)" if exclude_share else "total"
@@ -1103,6 +1112,7 @@ def payleague():
             SELECT
                 pplid,
                 CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, '')) as name,
+                {ordinal("CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, ''))", "o_name")},
                 COALESCE(ROUND(SUM(f * fee)::numeric)::integer, 0) as fee,
                 COALESCE(ROUND(SUM(f * sal)::numeric)::integer, 0) as sal,
                 COALESCE(ROUND(SUM(f * bon)::numeric)::integer, 0) as bon,
@@ -1144,8 +1154,6 @@ def payleague():
             JOIN enigma.people pl ON t.pplid = pl.personid
             WHERE stat = 3 AND d.pay
             GROUP BY pplid, name
-            ORDER BY {order_by}
-            LIMIT {LIMIT}
         """
         params = (year, currency)
     else:
@@ -1154,6 +1162,7 @@ def payleague():
             SELECT
                 pplid,
                 CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, '')) as name,
+                {ordinal("CONCAT(name1, COALESCE(', ' || name2, ''), COALESCE(' ' || cname, ''))", "o_name")},
                 COALESCE(ROUND(SUM(f * fees)::numeric)::integer, 0) as fee,
                 COALESCE(ROUND(SUM(f * salary)::numeric)::integer, 0) as sal,
                 COALESCE(ROUND(SUM(f * bonus)::numeric)::integer, 0) as bon,
@@ -1173,16 +1182,31 @@ def payleague():
               AND p.prank = 1
               AND d.pay
             GROUP BY pplid, name
-            ORDER BY {order_by}
-            LIMIT {LIMIT}
         """
         params = (currency, year)
 
+    # The whole year's league (no LIMIT), once per data version: sorting it
+    # in Python and keeping the first LIMIT rows is what ORDER BY .. LIMIT
+    # returned. Junk currencies (no rows anyway) are never saved.
+    def compute():
+        currencies = execute_query(curr_query)
+        todo_count = execute_query(todo_query, (year,))
+        return {"currencies": currencies,
+                "todo": todo_count[0]["count"] if todo_count else 0,
+                "rows": execute_query(sql, params, timeout_s=30)}
+
     try:
-        league = execute_query(sql, params)
+        variant = f"y{year}_c{currency}_i{int(ined_only)}_s{int(exclude_share)}"
+        if 0 <= currency <= 99:
+            data = precomputed("payleague", variant, ("enigma",), compute,
+                               module=__name__, max_entries=400)
+        else:
+            data = compute()
+        currencies, todo = data["currencies"], data["todo"]
+        league = sort_rows(data["rows"], sort_spec)[:LIMIT]
     except Exception as ex:
         current_app.logger.error(f"Error in payleague.asp: {ex}", exc_info=True)
-        league = []
+        currencies, todo, league = [], 0, []
 
     return render_template(
         "dbpub/payleague.html",
@@ -1232,7 +1256,6 @@ def payleague_org():
         UNION SELECT 0, 'HKD'
         ORDER BY currency
     """
-    currencies = execute_query(curr_query)
 
     # Count companies with missing pay data
     todo_query = """
@@ -1243,25 +1266,23 @@ def payleague_org():
           AND NOT d.pay
           AND EXTRACT(YEAR FROM p.d) = %s
     """
-    todo_count = execute_query(todo_query, (year,))
-    todo = todo_count[0]["count"] if todo_count else 0
 
     # Sort mapping
     sort_map = {
-        "feedn": "fee DESC, name",
-        "feeup": "fee, name",
-        "saldn": "sal DESC, name",
-        "salup": "sal, name",
-        "bondn": "bon DESC, name",
-        "bonup": "bon, name",
-        "retdn": "ret DESC, name",
-        "retup": "ret, name",
-        "shadn": "sha DESC, name",
-        "shaup": "sha, name",
-        "totdn": "tot DESC, name",
-        "totup": "tot, name",
+        "feedn": [("fee", True), ("o_name", False)],
+        "feeup": [("fee", False), ("o_name", False)],
+        "saldn": [("sal", True), ("o_name", False)],
+        "salup": [("sal", False), ("o_name", False)],
+        "bondn": [("bon", True), ("o_name", False)],
+        "bonup": [("bon", False), ("o_name", False)],
+        "retdn": [("ret", True), ("o_name", False)],
+        "retup": [("ret", False), ("o_name", False)],
+        "shadn": [("sha", True), ("o_name", False)],
+        "shaup": [("sha", False), ("o_name", False)],
+        "totdn": [("tot", True), ("o_name", False)],
+        "totup": [("tot", False), ("o_name", False)],
     }
-    order_by = sort_map.get(sort_param, "tot DESC, name")
+    sort_spec = sort_map.get(sort_param, sort_map["totdn"])
 
     # Total calculation - optionally exclude share-based
     total_calc = "total - COALESCE(share, 0)" if exclude_share else "total"
@@ -1273,6 +1294,7 @@ def payleague_org():
             SELECT
                 t.orgid,
                 name1 as name,
+                {ordinal('name1', "o_name")},
                 COALESCE(ROUND(SUM(f * fee)::numeric)::integer, 0) as fee,
                 COALESCE(ROUND(SUM(f * sal)::numeric)::integer, 0) as sal,
                 COALESCE(ROUND(SUM(f * bon)::numeric)::integer, 0) as bon,
@@ -1314,8 +1336,6 @@ def payleague_org():
             JOIN enigma.organisations o ON t.orgid = o.personid
             WHERE stat = 3 AND d.pay
             GROUP BY t.orgid, name, t.d
-            ORDER BY {order_by}
-            LIMIT {LIMIT}
         """
         params = (year, currency)
     else:
@@ -1324,6 +1344,7 @@ def payleague_org():
             SELECT
                 p.orgid,
                 name1 as name,
+                {ordinal('name1', "o_name")},
                 COALESCE(ROUND(SUM(f * fees)::numeric)::integer, 0) as fee,
                 COALESCE(ROUND(SUM(f * salary)::numeric)::integer, 0) as sal,
                 COALESCE(ROUND(SUM(f * bonus)::numeric)::integer, 0) as bon,
@@ -1343,16 +1364,31 @@ def payleague_org():
               AND p.prank = 1
               AND d.pay
             GROUP BY p.orgid, name, p.d
-            ORDER BY {order_by}
-            LIMIT {LIMIT}
         """
         params = (currency, year)
 
+    # The whole year's league (no LIMIT), once per data version: sorting it
+    # in Python and keeping the first LIMIT rows is what ORDER BY .. LIMIT
+    # returned. Junk currencies (no rows anyway) are never saved.
+    def compute():
+        currencies = execute_query(curr_query)
+        todo_count = execute_query(todo_query, (year,))
+        return {"currencies": currencies,
+                "todo": todo_count[0]["count"] if todo_count else 0,
+                "rows": execute_query(sql, params, timeout_s=30)}
+
     try:
-        league = execute_query(sql, params)
+        variant = f"y{year}_c{currency}_i{int(ined_only)}_s{int(exclude_share)}"
+        if 0 <= currency <= 99:
+            data = precomputed("payleagueorg", variant, ("enigma",), compute,
+                               module=__name__, max_entries=400)
+        else:
+            data = compute()
+        currencies, todo = data["currencies"], data["todo"]
+        league = sort_rows(data["rows"], sort_spec)[:LIMIT]
     except Exception as ex:
         current_app.logger.error(f"Error in payleagueorg.asp: {ex}", exc_info=True)
-        league = []
+        currencies, todo, league = [], 0, []
 
     return render_template(
         "dbpub/payleague_org.html",
@@ -2728,10 +2764,12 @@ def advbyrole():
     # Get role information
     role_name = "Auditor"
     one_time = False
+    role_known = False
     try:
         role_result = execute_query(
             "SELECT rolelong, onetime FROM enigma.roles WHERE roleid = %s", (r,)
         )
+        role_known = bool(role_result)
         if role_result:
             role_name = role_result[0]["rolelong"]
             one_time = role_result[0]["onetime"]
@@ -2739,27 +2777,30 @@ def advbyrole():
         r = 0  # Default to auditor
 
     # Build sort order
+    # Sorts mirror the ASP's ORDER BY; the name sorts on its database ordinal.
     sort_orders = {
-        "nameup": "name1",
-        "namedn": "name1 DESC",
-        "cntup": "cntPos, name1",
-        "cntdn": "cntPos DESC, name1 DESC",
-        "cagretup": "CAGret, name1",
-        "cagretdn": "CAGret DESC, name1",
-        "cagrelup": "CAGrel, name1",
-        "cagreldn": "CAGrel DESC, name1",
+        "nameup": [("o_name", False)],
+        "namedn": [("o_name", True)],
+        "cntup": [("cntpos", False), ("o_name", False)],
+        "cntdn": [("cntpos", True), ("o_name", True)],
+        "cagretup": [("cagret", False), ("o_name", False)],
+        "cagretdn": [("cagret", True), ("o_name", False)],
+        "cagrelup": [("cagrel", False), ("o_name", False)],
+        "cagreldn": [("cagrel", True), ("o_name", False)],
     }
-    ob = sort_orders.get(sort_param, "cntPos DESC, CAGret DESC")
+    sort_spec = sort_orders.get(sort_param, [("cntpos", True), ("cagret", True)])
     if sort_param not in sort_orders:
         sort_param = "cntdn"
 
-    # Build SQL based on role type
-    results = []
-    try:
+    # Return functions per appointment over every listed issue (2 s): the
+    # default period of each known role is computed once per data version and
+    # sorted per request; a custom period or y is computed live.
+    def compute():
         if one_time:
             # One-time roles: appointments in the period
             sql = f"""
                 SELECT o.personid, o.name1,
+                       {ordinal("o.name1", "o_name")},
                        COUNT(a.company) AS cntPos,
                        AVG(enigma.cagretdays(i.ID1, a.addDate, {days})) - 1 AS CAGret,
                        AVG(enigma.cagreldays(i.ID1, a.addDate, {days})) - 1 AS CAGrel
@@ -2776,13 +2817,13 @@ def advbyrole():
                   AND a.adddate > %s
                   AND a.adddate <= %s
                 GROUP BY o.personid, o.name1
-                ORDER BY {ob}
             """
-            results = execute_query(sql, (from_date, r, from_date, to_date), timeout_s=25)
+            return execute_query(sql, (from_date, r, from_date, to_date), timeout_s=25)
         else:
             # Continuing roles: serving during the period
             sql = f"""
                 SELECT o.personid, o.name1,
+                       {ordinal("o.name1", "o_name")},
                        COUNT(a.company) AS cntPos,
                        AVG(enigma.CAGret(i.ID1, %s, LEAST(%s, COALESCE(a.remdate, %s)))) - 1 AS CAGret,
                        AVG(enigma.CAGrel(i.ID1, %s, LEAST(%s, COALESCE(a.remdate, %s)))) - 1 AS CAGrel
@@ -2800,15 +2841,23 @@ def advbyrole():
                   AND (a.adddate IS NULL OR a.adddate <= %s)
                   AND (a.remdate IS NULL OR a.remdate > %s)
                 GROUP BY o.personid, o.name1
-                ORDER BY {ob}
             """
             # Two PL/pgSQL return functions per appointment: up to 6 s warm,
             # and it hit the 8 s default (WEBBSITE-2H).
-            results = execute_query(
+            return execute_query(
                 sql, (from_date, to_date, to_date, from_date, to_date, to_date,
                       from_date, from_date, r, from_date, from_date),
                 timeout_s=25,
             )
+
+    defaults = (from_year == now_year - 1 and to_year == now_year and days == 365)
+    try:
+        if defaults and role_known:
+            rows = precomputed("advbyrole", f"r{r}_{from_year}_{to_year}", ("market", "enigma",),
+                               compute, module=__name__)
+        else:
+            rows = compute()
+        results = sort_rows(rows, sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error in advbyrole.asp: {ex}", exc_info=True)
         results = []
@@ -4298,29 +4347,33 @@ def dirs_hk_per_person():
 
     # Get sort parameter
     sort_param = get_str("sort", "cntdn")
+    # Sorts mirror the ASP's ORDER BY; text sorts on database ordinals.
     order_by_map = {
-        "cntdn": "numSeats DESC, name",
-        "cntup": "numSeats, YOB, name",
-        "inedn": "INED DESC, name",
-        "ineup": "INED, YOB, name",
-        "namup": "name",
-        "namdn": "name DESC",
-        "sexno": "sex, numSeats DESC, name",
-        "sexna": "sex, name",
-        "agedn": "YOB, numSeats DESC, name",
-        "ageup": "YOB DESC, name",
+        "cntdn": [("numseats", True), ("o_name", False)],
+        "cntup": [("numseats", False), ("yob", False), ("o_name", False)],
+        "inedn": [("ined", True), ("o_name", False)],
+        "ineup": [("ined", False), ("yob", False), ("o_name", False)],
+        "namup": [("o_name", False)],
+        "namdn": [("o_name", True)],
+        "sexno": [("o_sex", False), ("numseats", True), ("o_name", False)],
+        "sexna": [("o_sex", False), ("o_name", False)],
+        "agedn": [("yob", False), ("numseats", True), ("o_name", False)],
+        "ageup": [("yob", True), ("o_name", False)],
     }
-    order_by = order_by_map.get(sort_param, order_by_map["cntdn"])
+    sort_spec = order_by_map.get(sort_param, order_by_map["cntdn"])
+    name = "name1 || COALESCE(', ' || name2, '') || COALESCE(' ' || cName, '')"
 
     # Port of HKdirsPerPerson stored procedure - inline SQL for PostgreSQL
     sql = f"""
         SELECT
             director,
-            name1 || COALESCE(', ' || name2, '') || COALESCE(' ' || cName, '') AS name,
+            {name} AS name,
             COUNT(company) AS numSeats,
             SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS INED,
             YOB,
-            sex
+            sex,
+            {ordinal(name, "o_name")},
+            {ordinal("sex", "o_sex")}
         FROM (
             SELECT DISTINCT issuer
             FROM enigma.issue
@@ -4337,11 +4390,12 @@ def dirs_hk_per_person():
           AND (apptdate IS NULL OR apptdate <= %s)
           AND (resdate IS NULL OR resdate > %s)
         GROUP BY director, name1, name2, cName, YOB, sex
-        ORDER BY {order_by}
     """
 
     try:
-        directors = execute_query(sql, (d_str, d_str, d_str, d_str))
+        directors = sort_rows(_today_or_live(
+            "dirshkperperson", d,
+            lambda: execute_query(sql, (d_str,) * 4, timeout_s=30)), sort_spec)
 
         # Build sort links using sl() helper
         base_url = f"/dbpub/dirsHKPerPerson.asp?d={d_str}"
