@@ -108,7 +108,8 @@ The frozen 2025-10-10 baseline is **refreshed daily** by a pull-based loader (AD
 `enigma.issuedshares` in ONE transaction, then advances the `enigma.log` watermarks
 (`MBquotesDate`/`GEMquotesDate` = quotes max; `CCASSdateDone` = min(ccass, quotes)) that
 `webbsite/watermarks.py` serves to the app. No cache purge — mutable pages sit on the
-1h/4h TTL ladder and self-heal within ≤4h.
+1h/4h TTL ladder and self-heal within 4 h, or at most 24 h on a page nobody has opened
+meanwhile (stale-while-revalidate, below).
 
 **The `webbsite_refresh` role** (loader's only credential — no DELETE/TRUNCATE/DDL):
 ```sql

@@ -36,7 +36,8 @@ uv script, systemd timer 02:45/06:45 UTC):
   renavon re-export + idempotent re-apply; row retraction is admin-only SQL.
 - **Short edge TTLs instead of purges.** The freshness rework (webbsite #25)
   put mutable "latest" views on a 1h/4h TTL ladder keyed off `enigma.log`
-  watermarks, so a load becomes visible within ≤4h with no cache purge and no
+  watermarks, so a load becomes visible within 4 h (at most 24 h on a rarely visited page
+  since stale-while-revalidate, 2026-11) with no cache purge and no
   coupling between the loader and Cloudflare.
 
 ## Alternatives rejected
@@ -58,8 +59,9 @@ uv script, systemd timer 02:45/06:45 UTC):
 ## Consequences
 
 - The site's freshness lag is bounded by feed-publish (22:00 UTC) + load
-  (02:45 UTC) + edge TTL (≤4h): fresh data is user-visible by ~07:00 UTC
-  worst-case, no purges involved.
+  (02:45 UTC) + edge TTL (4 h): fresh data is user-visible by ~07:00 UTC on a visited
+  page; a page first reopened later may show one older copy (24 h at most) while the
+  edge refetches. No purges involved.
 - `issuedshares` rows for post-freeze listings (renavon-minted issueids ≥9e6)
   quarantine until `enigma.issue` itself is refreshed — a documented gap, not
   an error; the dailylog/holdings paths carry those securities meanwhile.
