@@ -220,6 +220,12 @@ def search_people():
                     where_alias = "1=0"
 
         people_params = tuple(params) or None
+        # Both queries must fetch every match before ORDER BY ... LIMIT 500,
+        # and enigma.people is 14.5M rows (UK officers included): a common
+        # given name such as "jayne" is ~35k rows on ~31k heap pages. Warm,
+        # that is milliseconds; cold, it is random I/O past the 8 s default
+        # (WEBBSITE-3C), so the search gets the heavy-query budget.
+        search_timeout_s = 25
 
         # Query current names
         sql = f"""
@@ -230,7 +236,7 @@ def search_people():
             ORDER BY name1, name2
             LIMIT 500
         """
-        current_results = execute_query(sql, people_params)
+        current_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
 
         # Format birth dates for display
         for row in current_results:
@@ -257,7 +263,7 @@ def search_people():
             ORDER BY a.n1, a.n2
             LIMIT 500
         """
-        alias_results = execute_query(sql, people_params)
+        alias_results = execute_query(sql, people_params, timeout_s=search_timeout_s)
 
         # Format birth dates for alias results
         for row in alias_results:
