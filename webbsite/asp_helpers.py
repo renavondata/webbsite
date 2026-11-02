@@ -24,9 +24,47 @@ CANONICAL_DROP_PARAMS = frozenset({"sort", "so", "s2", "hide", "h", "x", "n"})
 # in the global list, which made every month page (incHKcaltype.asp?y=2023&m=5,
 # bornyear.asp?y=1957&m=4) and every frequency or from-date variant (hpw.asp?f=m,
 # advbyrole.asp?f=2020) canonicalise to a different page, and so drop out of the
-# index. Only str.asp's `f` (show directors' dealings) is a pure view toggle.
+# index. Two pages use them as pure view toggles: str.asp's `f` (show directors'
+# dealings) and natperson.asp's `m` (family tree depth).
 CANONICAL_DROP_PARAMS_BY_PATH = {
     "/dbpub/str.asp": frozenset({"f"}),
+    "/dbpub/natperson.asp": frozenset({"m"}),
+}
+# ...and a page's own default is the same page as leaving the param out: hpw.asp
+# links ?i=1&f=w from every page, which must not be a second URL for ?i=1. Fixed
+# defaults only: one computed per request (a month from the data, last year) can
+# change, so it stays in the canonical. A value here must match the route's.
+_M0 = {"m": "0"}
+_F0 = {"f": "0"}
+_F1 = {"f": "1"}
+CANONICAL_DEFAULTS_BY_PATH = {
+    "/dbpub/" + page: defaults
+    for page, defaults in {
+        "buybacks.asp": {"f": "d"},
+        "disFcal.asp": _M0,
+        "disHKcaltype.asp": _M0,
+        "hkpax.asp": _F0,
+        "hpw.asp": {"f": "w"},
+        "incFcal.asp": _M0,
+        "incHKcaltype.asp": _M0,
+        "incUKcaltype.asp": _M0,
+        "judgments.asp": _M0,
+        "landreg.asp": _F0,
+        "leagueDirsHK.asp": {"m": "3"},
+        "lrvaluecats.asp": _F0,
+        "SFChistfirm.asp": {"f": "y"},
+        "tuntraff.asp": _F1,
+        "vebrandhist.asp": _F1,
+        "vedet.asp": {"f": "1", "m": "0"},
+        "veengine.asp": _F1,
+        "veFR.asp": _M0,
+        "veFRtype.asp": _M0,
+        "veFRtypehist.asp": _F1,
+        "vefuelhist.asp": _F1,
+        "veJourneyhist.asp": _F1,
+        "veJourneys.asp": _M0,
+        "yearendcos.asp": {"m": "12"},
+    }.items()
 }
 
 
@@ -47,10 +85,11 @@ def ts_words(text: str) -> list[str]:
 def canonical_query() -> str:
     """Query string for rel=canonical, with presentation-only params removed."""
     drop = CANONICAL_DROP_PARAMS | CANONICAL_DROP_PARAMS_BY_PATH.get(request.path, frozenset())
+    defaults = CANONICAL_DEFAULTS_BY_PATH.get(request.path, {})
     kept = [
         (k, v)
         for k, v in request.args.items(multi=True)
-        if k.lower() not in drop
+        if k.lower() not in drop and defaults.get(k.lower()) != v
     ]
     return urlencode(kept)
 
@@ -477,8 +516,8 @@ def get_date_or_default(name, default=None):
         else:
             return default if default else ""
 
-        # Return as YYYY-MM-DD string
-        return parsed.strftime("%Y-%m-%d")
+        # Return as YYYY-MM-DD string (isoformat: strftime's %Y doesn't pad year 999)
+        return parsed.isoformat()[:10]
     except (ValueError, AttributeError):
         return default if default else ""
 

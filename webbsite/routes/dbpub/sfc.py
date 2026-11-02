@@ -457,8 +457,11 @@ def sfc_licount():
     # Get dates. Both are validated: an unparseable db used to reach the SQL
     # raw, fail the cast there, and render an empty page.
     date_a = date.fromisoformat(get_date_or_default("da", date.today().isoformat()))
-    date_b = date.fromisoformat(get_date_or_default(
-        "db", max(date(2003, 4, 1), date_a - timedelta(days=365)).isoformat()))
+    year_ago = timedelta(days=365)
+    first_data = date(2003, 4, 1)
+    # Compared this way round: date_a - year_ago overflows on a year-1 date.
+    default_b = first_data if date_a - first_data <= year_ago else date_a - year_ago
+    date_b = date.fromisoformat(get_date_or_default("db", default_b.isoformat()))
     if date_b > date_a:
         date_a, date_b = date_b, date_a
     da, db = date_a.isoformat(), date_b.isoformat()

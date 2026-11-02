@@ -30,6 +30,7 @@ os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
 
 from webbsite import create_app  # noqa: E402
 from webbsite import db as db_module  # noqa: E402
+from webbsite import asp_helpers  # noqa: E402
 from webbsite.asp_helpers import calendar_range, canonical_query, int_range  # noqa: E402
 from webbsite.routes.dbpub import incorporations, sfc, statistics  # noqa: E402
 
@@ -153,9 +154,27 @@ def run():
         ("/dbpub/bornyear.asp?y=1957&m=4", "y=1957&m=4"),
         ("/dbpub/hpw.asp?i=1088&f=m&sort=datedn", "i=1088&f=m"),
         ("/dbpub/str.asp?i=1088&f=1", "i=1088"),
+        # A page's own default is the same page as leaving it out...
+        ("/dbpub/hpw.asp?i=1088&f=w", "i=1088"),
+        ("/dbpub/incHKcaltype.asp?y=2023&m=0", "y=2023"),
+        # ...but only on that page: f=w means nothing to str.asp's neighbours.
+        ("/dbpub/prhunits.asp?f=w", "f=w"),
+        # Family tree depth is a view of one person, not a page of its own.
+        ("/dbpub/natperson.asp?p=1&m=3", "p=1"),
     ]:
         with app.test_request_context(url):
             check(f"canonical: {url}", canonical_query(), want)
+    rules = {r.rule for r in app.url_map.iter_rules()}
+    check("canonical tables name real routes",
+          sorted((set(asp_helpers.CANONICAL_DEFAULTS_BY_PATH)
+                  | set(asp_helpers.CANONICAL_DROP_PARAMS_BY_PATH)) - rules), [])
+
+    # 7. very old dates: 200, on the route that parses the helper's result --------------
+    for q in ("da=0999-06-01", "db=0999-06-01", "da=0001-01-01", "db=0001-01-01"):
+        check(f"SFClicount {q}", client.get(f"/dbpub/SFClicount.asp?{q}").status_code, 200)
+    with app.test_request_context("/?d=0999-06-01"):
+        check("get_date_or_default pads the year",
+              asp_helpers.get_date_or_default("d"), "0999-06-01")
 
     if _failures:
         print("\nFAILED:")
