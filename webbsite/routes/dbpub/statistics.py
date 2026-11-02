@@ -16,6 +16,7 @@ from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
 
 from webbsite.precompute import ordinal, precomputed, sort_rows
+from webbsite.sqlfrag import cum_adjust
 
 
 # (field, descending) for each leagueDirsHK sort key, mirroring order_map's
@@ -8699,9 +8700,8 @@ def orgdata():
 def _period_quote_query(issue_id, freq, wd, current_adj, order_by):
     """Build the (query, params) for daily/weekly/monthly/yearly adjusted quotes.
 
-    Shared by hpw.asp (HTML) and pricesCSV.asp logic. Replicates the original
-    ccass.weekq/monthq/yearq/dailyq stored procs inline (those weren't migrated
-    to PG); adjusted prices use enigma.getadjust(). `order_by` is a pre-validated
+    Used by hpw.asp. Replicates the original ccass.weekq/monthq/yearq/dailyq stored
+    procs inline (those weren't migrated to PG). `order_by` is a pre-validated
     ORDER BY fragment over the output aliases. Columns (in order): atdate,
     settledate, susp, days, closing, bid, ask, turn, adjclose, adjbid, adjask,
     adjlow, adjhigh, adjvol, adjvwap.
@@ -8719,35 +8719,40 @@ def _period_quote_query(issue_id, freq, wd, current_adj, order_by):
                "EXTRACT(WEEK FROM q.atDate + INTERVAL '%s days')")
         extra_params = (off, off)
 
+    # One adjustment lookup per day, where three function calls per day and three per
+    # period took most of a long-listed stock's time (sqlfrag). A CTE used twice is
+    # materialised, so it is not repeated.
     query = f"""
-        WITH agg AS (
+        WITH days AS (
+            SELECT q.atDate, q.low, q.high, q.vol, q.turn, q.susp, q.closing, q.bid, q.ask,
+                   {cum_adjust("%s", "q.atDate")} AS cum
+            FROM ccass.quotes q
+            WHERE q.issueid = %s
+        ),
+        agg AS (
             SELECT MAX(q.atDate) AS atdate,
-                   MIN(CASE WHEN q.low > 0 THEN q.low * (%s / enigma.getadjust(%s, q.atDate)) END) AS adjlow,
-                   MAX(q.high * (%s / enigma.getadjust(%s, q.atDate))) AS adjhigh,
-                   SUM(q.vol / (%s / enigma.getadjust(%s, q.atDate))) AS adjvol,
+                   MIN(CASE WHEN q.low > 0 THEN q.low * (%s / q.cum) END) AS adjlow,
+                   MAX(q.high * (%s / q.cum)) AS adjhigh,
+                   SUM(q.vol / (%s / q.cum)) AS adjvol,
                    SUM(q.turn) AS turn,
                    SUM(CAST(q.susp AS INTEGER)) AS susp,
                    COUNT(*) AS days
-            FROM ccass.quotes q
-            WHERE q.issueid = %s
+            FROM days q
             GROUP BY {grp}
         )
         SELECT agg.atdate, c.settleDate AS settledate, agg.susp, agg.days,
                q.closing, q.bid, q.ask, agg.turn,
-               q.closing * (%s / enigma.getadjust(%s, agg.atdate)) AS adjclose,
-               q.bid * (%s / enigma.getadjust(%s, agg.atdate)) AS adjbid,
-               q.ask * (%s / enigma.getadjust(%s, agg.atdate)) AS adjask,
+               q.closing * (%s / q.cum) AS adjclose,
+               q.bid * (%s / q.cum) AS adjbid,
+               q.ask * (%s / q.cum) AS adjask,
                agg.adjlow, agg.adjhigh, agg.adjvol,
                CASE WHEN agg.adjvol <> 0 THEN agg.turn / agg.adjvol ELSE 0 END AS adjvwap
         FROM agg
-        JOIN ccass.quotes q ON agg.atdate = q.atDate AND q.issueid = %s
+        JOIN days q ON agg.atdate = q.atDate
         JOIN ccass.calendar c ON agg.atdate = c.tradeDate
         ORDER BY {order_by}
     """
-    params = (
-        a, i, a, i, a, i, i, *extra_params,
-        a, i, a, i, a, i, i,
-    )
+    params = (i, i, a, a, a, *extra_params, a, a, a)
     return query, params
 
 
