@@ -2,8 +2,8 @@
 
 Requests every precomputed page variant once, in-process through Flask's test
 client: no gunicorn slot is used, and a page that is already current costs a
-file read. Run by webbsite-warm.service after each successful data refresh and
-every 10 minutes (deploys, the midnight date roll, a wiped cache).
+file read. Run by scripts/warm_loop.py every 10 minutes and after each deploy
+(data refreshes, the midnight date roll, a wiped cache).
 
     python -m webbsite.warm            # exit 1 if any page failed
 

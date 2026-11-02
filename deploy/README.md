@@ -221,16 +221,17 @@ container on every push. (A real 3.9M-row feed loaded in 43s on 2026-07-19.)
 ## Precomputed pages and warming
 A few whole-market pages (`listed`, `incHK*`, `shortsum`, `leagueDirsHK`) are computed
 once per data version and served from `~/.cache/webbsite/pc/` (`webbsite/precompute.py`;
-the module docstring has the key and the rules). `webbsite-warm.service` fills that
-cache: the refresh loader starts it on success (`OnSuccess=`), and
-`webbsite-warm.timer` runs it every 10 minutes, so a deploy, the midnight date roll
-or a wiped cache is refilled within minutes, not by a visitor. It runs the app
-in-process (no gunicorn slot); a current page costs a file read.
+the module docstring has the key and the rules). `scripts/warm_loop.py` fills that cache
+from inside `webbsite.service`: `gunicorn.conf.py` starts it, a reload wakes it, and it
+otherwise runs a round every 10 minutes, so a deploy, a data refresh, the midnight date
+roll or a wiped cache is refilled within minutes, not by a visitor. A round runs the app
+in-process (no gunicorn slot) at low priority. On the box in Nov 2026 an all-cold round
+took 102 s for 114 pages at 137 MB, and an all-current one 6 s. `WEBBSITE_WARM=0` turns it off.
 
-- Progress: `journalctl -u webbsite-warm -n 40` (one line per page: status, ms,
-  Server-Timing; the last line counts failures).
+- Progress: `journalctl -u webbsite | grep 'warm: '` (failures, pages that took over a
+  second, and a summary line for each round).
 - The cache is disposable: deleting `~/.cache/webbsite/pc/` costs one recompute per page,
-  done by the next warm run or by the first visitor, whichever comes first.
+  done by the next warm round or by the first visitor, whichever comes first.
 
 ## Edge stale-while-revalidate (verifying the header)
 

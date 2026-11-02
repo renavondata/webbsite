@@ -4,6 +4,9 @@ Optimized for production with database connection pooling
 """
 
 import os
+import signal
+import subprocess
+import sys
 
 # Server socket
 bind = f"0.0.0.0:{os.environ.get('PORT', '10000')}"
@@ -74,14 +77,38 @@ def on_starting(server):
     server.log.info("Starting Gunicorn server")
 
 
+def _ensure_warm_loop(server):
+    """Keep one scripts/warm_loop.py running, and wake it if it already is.
+
+    The handle lives on the arbiter because a reload re-executes this file but
+    keeps the arbiter. Hooks run in the master, so nothing here may raise.
+    WEBBSITE_WARM=0 turns it off; so does having no database (a local run).
+    """
+    if os.environ.get("WEBBSITE_WARM") == "0" or not os.environ.get("DATABASE_URL"):
+        return
+    try:
+        running = getattr(server, "_warm_loop", None)
+        if running is not None and running.poll() is None:
+            running.send_signal(signal.SIGUSR1)
+        else:
+            root = os.path.dirname(os.path.abspath(__file__))
+            server._warm_loop = subprocess.Popen(
+                [sys.executable, os.path.join(root, "scripts", "warm_loop.py")], cwd=root
+            )
+    except Exception as e:
+        server.log.error(f"Warm loop not started: {e}")
+
+
 def on_reload(server):
     """Called to recycle workers during a reload via SIGHUP."""
     server.log.info("Reloading Gunicorn server")
+    _ensure_warm_loop(server)
 
 
 def when_ready(server):
     """Called just after the server is started."""
     server.log.info(f"Gunicorn server ready. Workers: {workers}, Threads: {threads}, Timeout: {timeout}s")
+    _ensure_warm_loop(server)
 
 
 def post_fork(server, worker):
