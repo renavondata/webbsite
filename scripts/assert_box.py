@@ -7,6 +7,9 @@ Asserts the things a test suite cannot see and a deploy does not check:
   restart    no Postgres setting is waiting for a restart
   extension  pg_stat_statements is installed (the conf loads it; a restart makes it real)
   indexes    every index database/schema/indexes.sql names exists
+  derived    every derived table database/derived/ declares exists, is non-empty
+             and was built from the current file and source (its COMMENT stamp)
+             -- missing ones are "building" while webbsite-db-build runs
   functions  every function database/schema/functions.sql declares has that body
              live (they are CREATE OR REPLACE, so a restore silently reverts them)
   disk       the root filesystem is under 80% (the 72 GB database has to fit)
@@ -52,6 +55,8 @@ PG_CONF = ROOT / "deploy" / "postgresql" / "conf.d" / "webbsite.conf"
 INDEXES_SQL = ROOT / "database" / "schema" / "indexes.sql"
 FUNCTIONS_SQL = ROOT / "database" / "schema" / "functions.sql"
 CHECKS_TXT = ROOT / "deploy" / "checks.txt"
+DERIVED_DIR = ROOT / "database" / "derived"
+BACKUP_PRODUCER = ROOT / "deploy" / "backup-producer.sh"
 ENV_CHECK = ROOT / "deploy" / "env-check.sh"
 ROUTE_CHECK = ROOT / "tests" / "check_all_routes.py"
 BACKUP_ENV = Path("/etc/webbsite/backup-env")
@@ -113,6 +118,54 @@ def parse_conf(text: str) -> dict[str, str]:
 
 def parse_index_names(sql: str) -> list[str]:
     return re.findall(r"CREATE\s+INDEX\s+(?:CONCURRENTLY\s+)?IF\s+NOT\s+EXISTS\s+(\w+)", sql, re.I)
+
+
+def parse_derived_header(sql: str) -> dict:
+    """The header of a database/derived/*.sql file (see scripts/build_derived.sh)."""
+    def field(key):
+        m = re.search(rf"^-- {key}: (.*)$", sql, re.M)
+        return m.group(1).strip() if m else ""
+    return {
+        "tables": field("derived-tables").split(),
+        "fingerprint": field("fingerprint"),
+        "size_gb": float(field("size-gb") or 0),
+        "exclude_data": field("backup") == "exclude-data",
+    }
+
+
+def derived_stamp(sha: str, fingerprint: str) -> str:
+    """The COMMENT prefix build_derived.sh writes on a table it built."""
+    return f"derived sha256={sha} fingerprint={fingerprint} "
+
+
+def derived_problem(table: str, state: str, comment: str | None, stamp: str) -> str | None:
+    """Why a derived table is not fresh, or None. state: missing | empty | present."""
+    if state != "present":
+        return f"{table} {state}"
+    if not (comment or "").startswith(stamp):
+        return f"{table} stale (built from another file version or source)"
+    return None
+
+
+def backup_excludes(script: str) -> set[str]:
+    return set(re.findall(r"--exclude-table-data=([\w.]+)", script))
+
+
+def db_build_active() -> bool:
+    """A running oneshot is "activating", which is-active's exit code calls inactive."""
+    state = subprocess.run(["systemctl", "show", "-p", "ActiveState", "--value",
+                            "webbsite-db-build.service"],
+                           check=False, capture_output=True, text=True).stdout.strip()
+    return state in ("active", "activating")
+
+
+def db_builder_installed() -> bool:
+    """Is there a webbsite-db-build unit here? There isn't until renavon-monorepo#2717:
+    since the #2171 cutover the units come from renavon's deploy tree, not deploy/ here."""
+    state = subprocess.run(["systemctl", "show", "-p", "LoadState", "--value",
+                            "webbsite-db-build.service"],
+                           check=False, capture_output=True, text=True).stdout.strip()
+    return state != "not-found"
 
 
 def parse_functions(sql: str) -> dict[str, str]:
@@ -241,11 +294,18 @@ def assert_postgres(rep: Report):
         valid = dict(cur.fetchall())
         missing = [n for n in names if n not in valid]
         invalid = [n for n in names if valid.get(n) is False]
-        if missing:
-            rep.fail(f"indexes missing ({len(missing)}/{len(names)}): {', '.join(missing)} -- apply database/schema/indexes.sql")
-        if invalid:
+        if (missing or invalid) and db_build_active():
+            rep.ok(f"indexes: building ({', '.join(missing + invalid)}) -- webbsite-db-build is running")
+        elif missing and not db_builder_installed():
+            # Nothing here can build them, so this is a known gap and not a daily page.
+            rep.ok(f"indexes: not built ({', '.join(missing)}): no webbsite-db-build on this "
+                   "box yet (renavon-monorepo#2717)")
+        elif missing:
+            rep.fail(f"indexes missing ({len(missing)}/{len(names)}): {', '.join(missing)} -- "
+                     "webbsite-db-build builds them (converge starts it); see its journal")
+        if invalid and not db_build_active():
             rep.fail(f"indexes invalid (a failed concurrent build): {', '.join(invalid)} -- "
-                     "DROP INDEX CONCURRENTLY each, then apply database/schema/indexes.sql")
+                     "webbsite-db-build drops and rebuilds them; see its journal")
         if not missing and not invalid:
             rep.ok(f"indexes: all {len(names)} from database/schema/indexes.sql present and valid")
         # functions -- the return calculations guard their divisors (a zero close
@@ -272,6 +332,55 @@ def assert_postgres(rep: Report):
         else:
             rep.ok(f"functions: all {len(declared)} from database/schema/functions.sql match")
     conn.close()
+
+
+def assert_derived(rep: Report):
+    import hashlib
+
+    files = sorted(DERIVED_DIR.glob("*.sql"))
+    if not files:
+        rep.ok("derived: none declared")
+        return
+    try:
+        conn = _db()
+    except Exception as e:  # noqa: BLE001
+        rep.blind(f"derived: cannot connect ({type(e).__name__})")
+        return
+    if conn is None:
+        rep.blind("derived: DATABASE_URL unset")
+        return
+    problems, fresh = [], []
+    with conn, conn.cursor() as cur:
+        for f in files:
+            text = f.read_text()
+            hdr = parse_derived_header(text)
+            cur.execute(hdr["fingerprint"])
+            stamp = derived_stamp(hashlib.sha256(f.read_bytes()).hexdigest(), str(cur.fetchone()[0]))
+            for t in hdr["tables"]:
+                cur.execute("SELECT to_regclass(%s) IS NOT NULL", (t,))
+                if not cur.fetchone()[0]:
+                    state, comment = "missing", None
+                else:
+                    cur.execute(f"SELECT EXISTS (SELECT 1 FROM {t})")  # t: from a tracked file
+                    state = "present" if cur.fetchone()[0] else "empty"
+                    cur.execute("SELECT obj_description(%s::regclass, 'pg_class')", (t,))
+                    comment = cur.fetchone()[0]
+                why = derived_problem(t, state, comment, stamp)
+                (problems.append(why) if why else fresh.append(t))
+                cur.execute("SELECT to_regclass(%s) IS NOT NULL", (t + "_new",))
+                if cur.fetchone()[0] and not db_build_active():
+                    problems.append(f"{t}_new left over from a crashed build (disk wasted)")
+    conn.close()
+    if problems and db_build_active():
+        rep.ok(f"derived: building ({'; '.join(problems)}) -- webbsite-db-build is running")
+    elif problems and not db_builder_installed():
+        rep.ok(f"derived: not built ({'; '.join(problems)}): no webbsite-db-build on this box "
+               "yet (renavon-monorepo#2717); search uses its fallback")
+    elif problems:
+        rep.fail(f"derived: {'; '.join(problems)} -- webbsite-db-build rebuilds them "
+                 "(converge starts it); see its journal")
+    else:
+        rep.ok(f"derived: all {len(fresh)} tables fresh ({', '.join(fresh)})")
 
 
 def assert_disk(rep: Report):
@@ -355,7 +464,8 @@ def ping(rc: int, body: str) -> None:
 
 def main() -> int:
     rep = Report()
-    for fn in (assert_postgres, assert_disk, assert_env, assert_backup, assert_routes, assert_checks):
+    for fn in (assert_postgres, assert_derived, assert_disk, assert_env, assert_backup,
+               assert_routes, assert_checks):
         try:
             fn(rep)
         except Exception as e:  # noqa: BLE001 -- one broken assertion must not hide the rest

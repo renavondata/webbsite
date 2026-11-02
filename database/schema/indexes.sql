@@ -86,3 +86,30 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_organisations_domicile_incdate
 -- range on disdate implies it is not null.
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_organisations_domicile_disdate
   ON enigma.organisations (domicile, disdate) WHERE disdate IS NOT NULL;
+
+-- Added 2026-11 (latency programme; docs/perf/baseline-2026-11.md). Prod runs
+-- PostgreSQL 17, which has no btree skip scan: a filter on the second column
+-- of a primary key reads the whole index. Each was confirmed with EXPLAIN
+-- (ANALYZE, BUFFERS) on prod first. CONCURRENTLY, so the automatic build
+-- (scripts/db_build.sh, started by converge) never blocks the refresh loader's
+-- writes to these tables.
+--
+-- ccass.dailylog "latest CCASS date <= d" (routes/ccass.py, every dated CCASS
+-- page): MAX(atdate) read the whole (issueid, atdate) PK, 32k pages.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_dailylog_atdate
+  ON ccass.dailylog (atdate);
+-- ccass.bigchanges by participant (bigchangespart.asp): the PK leads with
+-- atdate, so WHERE partid = %s walked all of it (9.7k buffers).
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_bigchanges_partid_atdate
+  ON ccass.bigchanges (partid, atdate);
+-- enigma.flights by airline / flight number (HKflighthist.asp): a seq scan of
+-- 15.5k pages for an airline; a rare flight number scans the whole
+-- (sched, flightno, arrival) index.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_flights_airline_flightno
+  ON enigma.flights (airline, flightno);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_flights_flightno
+  ON enigma.flights (flightno);
+-- enigma.prhflat "flats seen in the latest crawl" (every prh*.asp page):
+-- MAX(lastseen) was a seq scan of 10.5k pages.
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_prhflat_lastseen
+  ON enigma.prhflat (lastseen);

@@ -50,8 +50,13 @@ deploy/
   backup-producer.sh                      # pg_dump to stdout for site-deploy's backup timer
   README.md
 ```
-Everything under `deploy/` is *applied*, not documented: `converge.sh` installs the units and the
-Caddyfile on every tick. `.github/workflows/tests.yml` is the merge gate (lint, DB-free unit checks,
+> **Since the 2026-10-12 cutover (renavon-monorepo#2171) nothing runs `converge.sh`, and this
+> directory is not what the box runs.** Renavon's private `deploy/sites/webbsite/` holds the live
+> copies, and its `[converge] units` list decides what is installed. Text below that says converge
+> applies something describes the old setup, and a change to a unit here needs a renavon issue to
+> take effect (open: renavon-monorepo#2717, the db-build and warm units).
+
+`.github/workflows/tests.yml` is the merge gate (lint, DB-free unit checks,
 a planted-failure self-proof, shellcheck, a converge dry-run, `caddy validate`, the loader ladder
 against a real Postgres) and fast-forwards `ci-green` on a passing `master` run; the box follows
 that ref once site-deploy's `deploy_ref` knob lands (see `site.toml`).
@@ -226,6 +231,29 @@ in-process (no gunicorn slot); a current page costs a file read.
 - The cache is disposable: deleting `~/.cache/webbsite/pc/` costs one recompute per page,
   done by the next warm run or by the first visitor, whichever comes first.
 
+## Edge stale-while-revalidate (verifying the header)
+
+Cloudflare (since 2026-02) serves an expired object instantly as `UPDATING` and
+refreshes it in the background, if the origin sent `stale-while-revalidate`.
+Its docs disagree on *which* header it reads that from once `CDN-Cache-Control`
+is present, so `/_probe/swr/<variant>` (no DB, a timestamp body; robots-disallowed)
+offers four: `cc` (in `Cache-Control`), `cdn` (in `CDN-Cache-Control`, the
+target), `cfcdn` (in `Cloudflare-CDN-Cache-Control`) and `mixed`. Each has a 30 s
+edge TTL and a 10 min SWR window. Through the edge:
+
+```bash
+H=https://webbsite.renavon.com; n=$(date +%s)
+probe() { for v in cc cdn cfcdn mixed; do printf '%-6s ' $v
+  curl -sS -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
+probe            # MISS, new bodies
+sleep 5; probe   # HIT, same bodies
+sleep 40; probe  # honoured variant: UPDATING + the OLD body; others: EXPIRED/MISS + new
+sleep 3; probe   # honoured variant: HIT + the NEW body
+```
+Keep the same colo (`cf-ray` suffix) across calls. Always Online being on for the
+zone also disables SWR. The variant that answers `UPDATING` decides the header the
+data pages use (`_set_cache_headers`).
+
 ## Rebuild the data (rare)
 To reload the **frozen baseline**, restore the `pg_dump` archive
 held in Cloudflare R2 (or rebuild from the canonical Google Drive release):
@@ -253,10 +281,17 @@ performs -- a pending restart. `shared_buffers` and `shared_preload_libraries` n
 ```bash
 sudo systemctl restart postgresql@17-main     # ~5 s; do it after the 02:45 UTC refresh
 ```
-`database/schema/indexes.sql` is the app's performance indexes, idempotent; apply after
-any restore (`sudo -u postgres psql -d enigma -f database/schema/indexes.sql`). It is too
-slow to rebuild on a tick, so it stays a manual post-restore step that the invariants job
-checks for.
+`database/schema/indexes.sql` (the app's performance indexes) and `database/derived/*.sql`
+(derived tables such as `enigma.people_search`) are **built automatically**: every converge
+tick asks `scripts/db_build.sh --needed`, and when an index is missing or INVALID or a
+derived table is missing, empty or stale, it starts `webbsite-db-build.service`, which
+builds them beside live traffic (indexes `CONCURRENTLY`, derived tables into `_new` and
+swapped, with a disk preflight). So after a restore there is nothing to run by hand: the
+box is cattle. Merging an index or a derived table *is* its deploy. A failed build leaves
+`/var/lib/webbsite-db-build/failed` and is retried after 6 h; its journal says why
+(`journalctl -u webbsite-db-build`). The invariants job reports these as "building" while
+the unit runs and FAILs only if it is not running. Derived tables' rows are left out of the
+backup (`deploy/backup-producer.sh`); a restore brings them back empty and they rebuild.
 
 `database/schema/functions.sql` is the return calculations (`enigma.totret` / `cagret` /
 `cagrel`). These are `CREATE OR REPLACE` and instant, so unlike the indexes **converge

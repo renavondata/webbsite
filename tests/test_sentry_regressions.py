@@ -61,6 +61,9 @@ Pins:
      never cached.
  20. a junk ?d= / ?d1= (a probe, a bare number) falls back to the default on
      every route that read the date raw (WEBBSITE-30, 31, 32).
+ 21. searchpeople.asp's fallback full-text queries (no enigma.people_search
+     yet) get the 25 s budget: a common name ("jayne": ~35k of 14.5M people
+     rows) is cold random I/O past 8 s (WEBBSITE-3C).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -358,6 +361,16 @@ def run():
         check("searchpeople exact, no n2: IS NULL and one param",
               [("dn2 IS NULL" in s, p) for s, p in bound], [(True, ("Chan",))] * 2)
         bound.clear()
+        # 21. full-text people search: when the token table is not there (a
+        # fresh restore, before webbsite-db-build refills it) the search falls
+        # back to people itself, and both of those queries carry the 25 s budget.
+        budgets = []
+        search.execute_query = lambda sql, params=None, timeout_s=None: budgets.append(
+            (params, timeout_s)) or []
+        client.get("/dbpub/searchpeople.asp?n1=jayne")
+        check("searchpeople fallback: both people queries get timeout_s=25",
+              budgets[1:], [(('"jayne"',), 25)] * 2)
+        search.execute_query = rec_bound
         client.get("/dbpub/indexhk.asp?p=B")
         check("indexhk: letter bound as a LIKE prefix",
               [("LIKE %s" in s, p) for s, p in bound], [(True, ("B%",))] * 2)

@@ -3378,15 +3378,14 @@ def boardcomp():
 
     # Get snapshot date
     d_str = get_str("d", "")
-    if d_str:
-        try:
-            d = date.fromisoformat(d_str)
-        except ValueError:
-            d = date.today()
-            d_str = d.isoformat()
-    else:
+    try:
+        d = date.fromisoformat(d_str) if d_str else date.today()
+    except ValueError:
         d = date.today()
-        d_str = d.isoformat()
+    # Clamped like dirsHKPerPerson.asp: there is no board data before 1990, and
+    # a future date is today's board.
+    d = min(max(d, date(1990, 1, 1)), date.today())
+    d_str = d.isoformat()
 
     # Get sort parameter
     sort_param = get_str("sort", "dirdn")
@@ -6386,6 +6385,7 @@ def inedhkdstncos():
         snapshot_date = date.fromisoformat(d_str)
     except ValueError:
         snapshot_date = date.today()
+    snapshot_date = min(max(snapshot_date, date(1990, 1, 1)), date.today())
 
     # Query distribution of INEDs
     # Replicates MySQL stored procedure HKinedDistnCos
