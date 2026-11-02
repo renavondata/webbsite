@@ -59,3 +59,41 @@ def quotes_end() -> str:
 def data_end() -> date:
     """Latest quotes date as a ``date`` (the market-data upper bound)."""
     return date.fromisoformat(quotes_end())
+
+
+# The keys the daily refresh loader advances (scripts/refresh/refresh.py
+# LOG_*). They version market data; every OTHER enigma.log row versions the
+# enigma tables (organisations, people, directorships, ...).
+LOADER_KEYS = ("CCASSdateDone", "MBquotesDate", "GEMquotesDate")
+_enigma_cache: list = []  # [(version, monotonic fetched-at)]
+
+
+def enigma_version() -> str | None:
+    """A digest of every ``enigma.log`` row the loader does not own.
+
+    Contract for anything that writes the enigma tables (today nothing does;
+    the renavon revival will): advance an ``enigma.log`` key in the same
+    transaction, or pages precomputed from enigma data keep serving the old
+    result. None when the query fails, so a caller computes live instead of
+    caching under a version it could not read. Memoised like :func:`log_val`.
+    """
+    import hashlib
+
+    from webbsite.db import execute_query
+
+    if _enigma_cache and time.monotonic() - _enigma_cache[0][1] < _TTL:
+        return _enigma_cache[0][0]
+    try:
+        rows = execute_query(
+            "SELECT name, val FROM enigma.log WHERE name <> ALL(CAST(%s AS text[])) "
+            "ORDER BY name",
+            (list(LOADER_KEYS),),
+        )
+    except Exception:
+        return _enigma_cache[0][0] if _enigma_cache else None
+    h = hashlib.sha256()
+    for r in rows:
+        h.update(f"{r['name']}\x00{r['val']}\x01".encode())
+    version = h.hexdigest()[:16]
+    _enigma_cache[:] = [(version, time.monotonic())]
+    return version

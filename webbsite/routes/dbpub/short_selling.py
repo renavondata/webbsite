@@ -7,8 +7,7 @@ from datetime import date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_date_or_default
 from webbsite.routes.dbpub._navctx import stock_nav
-from webbsite.diskcache import load_json_keyed, save_json_keyed
-from webbsite import watermarks
+from webbsite.precompute import precomputed
 
 bp = Blueprint("dbpub_short_selling", __name__)
 
@@ -113,54 +112,54 @@ def shortsum():
     # and closing-price lookup. Doing those as repeated correlated subqueries
     # inside the aggregate timed out at 8s; instead resolve each row's market
     # cap ONCE via LATERAL joins (the pattern shortdate uses), then GROUP BY date.
-    cache_key = watermarks.quotes_end()
-    summaries = load_json_keyed("shortsum", cache_key)
-    if summaries is None:
-        try:
-            raw = execute_query(
-                """
-                SELECT t.atDate,
-                       EXTRACT(EPOCH FROM t.atDate)::BIGINT * 1000 AS timestamp,
-                       COUNT(*) AS cnt,
-                       SUM(t.value) / 1000000000.0 AS sumVal,
-                       SUM(t.mcap) / 1000000000.0 AS sumCap,
-                       CASE WHEN SUM(t.mcap) > 0
-                            THEN SUM(t.value) / SUM(t.mcap) ELSE 0 END AS stake
-                FROM (
-                    SELECT s.atDate, s.value,
-                           COALESCE(os.outstanding, 0) * COALESCE(q.closing, 0) AS mcap
-                    FROM enigma.sfcshort s
-                    LEFT JOIN LATERAL (
-                        SELECT outstanding FROM enigma.issuedshares
-                        WHERE issueid = s.issueid AND atDate <= s.atDate
-                        ORDER BY atDate DESC LIMIT 1
-                    ) os ON TRUE
-                    LEFT JOIN LATERAL (
-                        SELECT closing FROM ccass.quotes
-                        WHERE issueid = s.issueid AND atDate <= s.atDate
-                        ORDER BY atDate DESC LIMIT 1
-                    ) q ON TRUE
-                ) t
-                GROUP BY t.atDate
-                ORDER BY t.atDate DESC
-            """,
-                timeout_s=30,
-            )
-            summaries = [
-                {
-                    "datestr": r["atdate"].strftime("%Y-%m-%d") if r["atdate"] else "",
-                    "timestamp": int(r["timestamp"]) if r["timestamp"] is not None else 0,
-                    "cnt": int(r["cnt"]) if r["cnt"] is not None else 0,
-                    "sumval": float(r["sumval"]) if r["sumval"] is not None else 0.0,
-                    "sumcap": float(r["sumcap"]) if r["sumcap"] is not None else 0.0,
-                    "stake": float(r["stake"]) if r["stake"] is not None else 0.0,
-                }
-                for r in raw
-            ]
-            save_json_keyed("shortsum", cache_key, summaries)
-        except Exception as e:
-            current_app.logger.error(f"Error querying short summary: {e}")
-            summaries = []
+    def compute():
+        raw = execute_query(
+            """
+            SELECT t.atDate,
+                   EXTRACT(EPOCH FROM t.atDate)::BIGINT * 1000 AS timestamp,
+                   COUNT(*) AS cnt,
+                   SUM(t.value) / 1000000000.0 AS sumVal,
+                   SUM(t.mcap) / 1000000000.0 AS sumCap,
+                   CASE WHEN SUM(t.mcap) > 0
+                        THEN SUM(t.value) / SUM(t.mcap) ELSE 0 END AS stake
+            FROM (
+                SELECT s.atDate, s.value,
+                       COALESCE(os.outstanding, 0) * COALESCE(q.closing, 0) AS mcap
+                FROM enigma.sfcshort s
+                LEFT JOIN LATERAL (
+                    SELECT outstanding FROM enigma.issuedshares
+                    WHERE issueid = s.issueid AND atDate <= s.atDate
+                    ORDER BY atDate DESC LIMIT 1
+                ) os ON TRUE
+                LEFT JOIN LATERAL (
+                    SELECT closing FROM ccass.quotes
+                    WHERE issueid = s.issueid AND atDate <= s.atDate
+                    ORDER BY atDate DESC LIMIT 1
+                ) q ON TRUE
+            ) t
+            GROUP BY t.atDate
+            ORDER BY t.atDate DESC
+        """,
+            timeout_s=30,
+        )
+        summaries = [
+            {
+                "datestr": r["atdate"].strftime("%Y-%m-%d") if r["atdate"] else "",
+                "timestamp": int(r["timestamp"]) if r["timestamp"] is not None else 0,
+                "cnt": int(r["cnt"]) if r["cnt"] is not None else 0,
+                "sumval": float(r["sumval"]) if r["sumval"] is not None else 0.0,
+                "sumcap": float(r["sumcap"]) if r["sumcap"] is not None else 0.0,
+                "stake": float(r["stake"]) if r["stake"] is not None else 0.0,
+            }
+            for r in raw
+        ]
+        return summaries
+
+    try:
+        summaries = precomputed("shortsum", "all", ("market",), compute, module=__name__)
+    except Exception as e:
+        current_app.logger.error(f"Error querying short summary: {e}")
+        summaries = []
 
     return render_template("dbpub/shortsum.html", summaries=summaries)
 

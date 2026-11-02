@@ -6,8 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from datetime import date
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_date_or_default
-from webbsite import watermarks
-from webbsite.diskcache import cached
+from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_listings", __name__)
 
@@ -53,28 +52,27 @@ def listed():
         t, " shares"
     )
 
-    # Build ORDER BY clause based on sort parameter (lowercase for PostgreSQL)
-    # Note: PostgreSQL defaults differ from MySQL for NULL sorting:
-    # - MySQL: ASC=NULLS FIRST, DESC=NULLS LAST
-    # - PostgreSQL: ASC=NULLS LAST, DESC=NULLS FIRST
-    # We explicitly specify NULLS FIRST/LAST to match MySQL behavior
-    order_by_map = {
-        "namedn": "o.name1 DESC",
-        "codeup": "sl.stockcode",
-        "codedn": "sl.stockcode DESC",
-        "typeup": "st.typeshort, o.name1",
-        "typedn": "st.typeshort DESC, o.name1",
-        "datedn": "sl.firsttradedate DESC, o.name1",
-        "dateup": "sl.firsttradedate, o.name1",
-        "totrdn": "totret DESC NULLS LAST, sl.firsttradedate",
-        "totrup": "totret NULLS FIRST, sl.firsttradedate DESC",
-        "cagretdn": "cagret DESC NULLS LAST, sl.firsttradedate",
-        "cagretup": "cagret NULLS FIRST, sl.firsttradedate DESC",
-        "cagreldn": "cagrel DESC NULLS LAST, sl.firsttradedate",
-        "cagrelup": "cagrel NULLS FIRST, sl.firsttradedate DESC",
-        "nameup": "o.name1, sl.stockcode",  # default
+    # Each sort is (field, descending[, nulls]) over the rows' own columns,
+    # mirroring the ASP's ORDER BY: text sorts on database ordinals (o_*), so
+    # the order is the collation's; NULL returns go where the ASP put them
+    # (MySQL: first ascending, last descending).
+    sort_map = {
+        "namedn": [("o_name", True)],
+        "codeup": [("o_code", False)],
+        "codedn": [("o_code", True)],
+        "typeup": [("o_type", False), ("o_name", False)],
+        "typedn": [("o_type", True), ("o_name", False)],
+        "datedn": [("FirstTradeDate", True), ("o_name", False)],
+        "dateup": [("FirstTradeDate", False), ("o_name", False)],
+        "totrdn": [("totret_n", True, "last"), ("FirstTradeDate", False)],
+        "totrup": [("totret_n", False, "first"), ("FirstTradeDate", True)],
+        "cagretdn": [("cagret_n", True, "last"), ("FirstTradeDate", False)],
+        "cagretup": [("cagret_n", False, "first"), ("FirstTradeDate", True)],
+        "cagreldn": [("cagrel_n", True, "last"), ("FirstTradeDate", False)],
+        "cagrelup": [("cagrel_n", False, "first"), ("FirstTradeDate", True)],
+        "nameup": [("o_name", False), ("o_code", False)],  # default
     }
-    order_by = order_by_map.get(sort_param, order_by_map["nameup"])
+    sort_spec = sort_map.get(sort_param, sort_map["nameup"])
 
     # Build exchange filter (lowercase for PostgreSQL)
     exchange_filters = {
@@ -85,7 +83,7 @@ def listed():
         "c": "sl.stockexid = 38",  # CIS
         "a": "sl.stockexid IN (1, 20, 22)",  # All HK
     }
-    exchange_filter = exchange_filters.get(e, exchange_filters["a"])
+    e_eff = e if e in exchange_filters else "a"
 
     # Build security type filter (lowercase for PostgreSQL)
     type_filters = {
@@ -94,7 +92,7 @@ def listed():
         "h": "i.typeid = 6",  # H-shares
         "s": "i.typeid NOT IN (1, 2, 40, 41, 46)",  # Regular shares/units
     }
-    type_filter = type_filters.get(t, type_filters["s"])
+    t_eff = t if t in type_filters else "s"
 
     # Query for listed stocks with total returns calculations
     sql = f"""
@@ -106,6 +104,9 @@ def listed():
             o.name1,
             o.personid,
             sl.firsttradedate,
+            {ordinal("o.name1", "o_name")},
+            {ordinal("sl.stockcode", "o_code")},
+            {ordinal("st.typeshort", "o_type")},
             enigma.totret(sl.issueid, sl.firsttradedate, %s) - 1 AS totret,
             enigma.cagret(sl.issueid, sl.firsttradedate, %s) - 1 AS cagret,
             enigma.cagrel(sl.issueid, sl.firsttradedate, %s) - 1 AS cagrel
@@ -116,51 +117,49 @@ def listed():
         WHERE (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
           AND (sl.delistdate IS NULL OR sl.delistdate > %s)
           AND sl."2ndCtr" = FALSE
-          AND {exchange_filter}
-          AND {type_filter}
-        ORDER BY {order_by}
+          AND {exchange_filters[e_eff]}
+          AND {type_filters[t_eff]}
     """
 
     # Three return functions per listing (each ~10 quote lookups) over every
-    # listed stock timed out cold at 8 s (WEBBSITE-21). Today's view -- each
-    # validated e/t/sort variant -- is computed once per watermark and day and
-    # served from disk; a pinned ?d= is computed live.
-    def compute():
-        stocks = []
-        for row in execute_query(sql, (d, d, d, d, d), timeout_s=30):
-            # Format return percentages (NULL becomes empty string, values multiplied by 100 and formatted to 2 decimals)
-            totret = "" if row["totret"] is None else f"{row['totret'] * 100:.2f}"
-            cagret = "" if row["cagret"] is None else f"{row['cagret'] * 100:.2f}"
-            cagrel = "" if row["cagrel"] is None else f"{row['cagrel'] * 100:.2f}"
+    # listed stock timed out cold at 8 s (WEBBSITE-21). Today's view of each
+    # validated e/t is computed once per data version and day, then sorted in
+    # Python per request; a pinned ?d= is computed live.
+    def pct(v):
+        return "" if v is None else f"{v * 100:.2f}"
 
-            stocks.append(
-                {
-                    "StockCode": row["stockcode"],
-                    "issueID": row["issueid"],
-                    "typeShort": row["typeshort"],
-                    "typeLong": row["typelong"],
-                    "Name1": row["name1"],
-                    "PersonID": row["personid"],
-                    # As text, as the template prints the date (JSON-safe).
-                    "FirstTradeDate": None if row["firsttradedate"] is None
-                    else str(row["firsttradedate"]),
-                    "totRet": totret,
-                    "CAGret": cagret,
-                    "CAGrel": cagrel,
-                }
-            )
-        return stocks
+    def compute():
+        return [
+            {
+                "StockCode": row["stockcode"],
+                "issueID": row["issueid"],
+                "typeShort": row["typeshort"],
+                "typeLong": row["typelong"],
+                "Name1": row["name1"],
+                "PersonID": row["personid"],
+                # As text, as the template prints the date (ISO sorts as dates).
+                "FirstTradeDate": None if row["firsttradedate"] is None
+                else str(row["firsttradedate"]),
+                "totRet": pct(row["totret"]),
+                "CAGret": pct(row["cagret"]),
+                "CAGrel": pct(row["cagrel"]),
+                "totret_n": row["totret"],
+                "cagret_n": row["cagret"],
+                "cagrel_n": row["cagrel"],
+                "o_name": row["o_name"],
+                "o_code": row["o_code"],
+                "o_type": row["o_type"],
+            }
+            for row in execute_query(sql, (d, d, d, d, d), timeout_s=30)
+        ]
 
     try:
         if "d" not in request.args:
-            variant = "_".join((
-                e if e in exchange_filters else "a",
-                t if t in type_filters else "s",
-                sort_param if sort_param in order_by_map else "nameup",
-            ))
-            stocks = cached(f"listed_{variant}", f"{watermarks.quotes_end()}_{d}", compute)
+            rows = precomputed("listed", f"{e_eff}_{t_eff}", ("market", "today"),
+                               compute, module=__name__)
         else:
-            stocks = compute()
+            rows = compute()
+        stocks = sort_rows(rows, sort_spec)
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True
         current_app.logger.error(
