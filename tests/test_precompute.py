@@ -341,3 +341,51 @@ def test_contained_refuses_paths_outside_root(tmp_path):
     # A sibling sharing the root as a string prefix is still outside it.
     assert precompute._contained(root, f"../{tmp_path.name}-sibling") is None
     assert precompute._contained(root) is None
+
+
+def test_waiters_share_a_failure_instead_of_queueing_to_repeat_it(cache):
+    """N requests on a page that keeps timing out must not run N timeouts in a row:
+    at the 8 s statement timeout that held slots for minutes, with 24 slots in all."""
+    started, release = threading.Event(), threading.Event()
+    calls, failed = [], []
+
+    def boom():
+        calls.append(1)
+        started.set()
+        release.wait(5)
+        raise TimeoutError("statement timeout")
+
+    def request():
+        try:
+            precomputed("p", "failing", ("market",), boom, module=MOD)
+        except Exception as ex:
+            failed.append(type(ex))
+
+    holder = threading.Thread(target=request)
+    holder.start()
+    assert started.wait(5)
+    waiters = [threading.Thread(target=request) for _ in range(8)]
+    for t in waiters:
+        t.start()
+    time.sleep(0.3)  # all waiting on the lock
+    release.set()
+    for t in (holder, *waiters):
+        t.join(5)
+    assert len(calls) == 1, "a waiter repeated the failed compute"
+    assert len(failed) == 9
+    assert failed.count(TimeoutError) == 1 and failed.count(precompute.ComputeFailed) == 8
+
+    # The next request, which was not waiting, tries again, and success sticks.
+    assert precomputed("p", "failing", ("market",), lambda: "ok", module=MOD) == "ok"
+    assert precomputed("p", "failing", ("market",), boom, module=MOD) == "ok"
+
+
+def test_a_waiter_given_a_failure_flags_its_page_uncacheable(cache):
+    """Routes catch the exception and render an empty table: it must not be edge-cached."""
+    from flask import Flask, g
+
+    app = Flask(__name__)
+    with app.app_context():
+        with pytest.raises(precompute.ComputeFailed):
+            precompute._raise_shared_failure()
+        assert g.get("db_failed") is True

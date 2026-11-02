@@ -34,7 +34,10 @@ computes, the others serve the previous data version if the same code wrote
 one (marked ``stale``: the edge keeps it for 60 s, see webbsite/__init__.py),
 else wait: another release's payload may have another shape.
 A superseded version is deleted 15 minutes after its replacement is written.
-A failing compute saves nothing and raises, so the next request retries.
+A failing compute saves nothing and raises, so the next request retries. Requests
+already waiting on it get :class:`ComputeFailed` instead of repeating it in turn: a
+page timing out at 8 s would otherwise hold slots for minutes, one timeout after
+another, and there are only 24 slots.
 
 Payloads are pickled (protocol 5), so Decimal, date and None survive exactly.
 The files are written and read only by the app's own user.
@@ -56,6 +59,7 @@ from pathlib import Path
 from flask import g, has_app_context
 
 from webbsite import watermarks
+from webbsite.db import _mark_failed
 
 FORMAT = "pc1"
 SLUG = re.compile(r"[A-Za-z0-9_-]{1,80}")
@@ -224,6 +228,27 @@ def sweep(page_dir: Path, max_entries: int, now: float | None = None) -> None:
             pass
 
 
+class ComputeFailed(RuntimeError):
+    """The compute this request was waiting for failed."""
+
+
+def _raise_shared_failure():
+    """Fail a waiter like the compute it waited on: routes catch this and render an
+    empty table, which must not be cached at the edge."""
+    error = ComputeFailed("the compute this request was waiting for failed")
+    if has_app_context():
+        _mark_failed(error)
+    _set_state("bypass")
+    raise error
+
+
+def _failed_since(err_path: Path, moment: float) -> bool:
+    try:
+        return err_path.stat().st_mtime >= moment
+    except OSError:
+        return False
+
+
 def precomputed(page, variant, sources, compute, *, module, files=(),
                 max_entries=64):
     """compute() once per data version of (page, variant); see the module doc.
@@ -247,7 +272,8 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
     page_dir = _contained(root, page)
     path = _contained(root, page, f"{variant}.{version}.pkl")
     lock_path = _contained(root, page, f"{variant}.lock")
-    if page_dir is None or path is None or lock_path is None:
+    err_path = _contained(root, page, f"{variant}.err")
+    if page_dir is None or path is None or lock_path is None or err_path is None:
         _set_state("bypass")
         return compute()
     hit = _load(path)
@@ -262,6 +288,7 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
         _set_state("bypass")
         return compute()
     with lock:
+        arrived = time.time()
         deadline = time.monotonic() + WAIT_S
         while True:
             try:
@@ -288,7 +315,17 @@ def precomputed(page, variant, sources, compute, *, module, files=(),
             if hit is not None:
                 _set_state("hit")
                 return hit
-            value = compute()
+            if _failed_since(err_path, arrived):
+                _raise_shared_failure()
+            try:
+                value = compute()
+            except Exception:
+                try:
+                    err_path.touch()
+                except OSError:
+                    pass
+                raise
+            err_path.unlink(missing_ok=True)
             _save(path, value)
             sweep(page_dir, max_entries)
             _set_state("miss")
