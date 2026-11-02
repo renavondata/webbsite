@@ -440,6 +440,14 @@ def sfc_changes():
     )
 
 
+def _licount_default_start(end):
+    """The page's start date for an end date: a year earlier, or the first data."""
+    first_data = date(2003, 4, 1)
+    year_ago = timedelta(days=365)
+    # Compared this way round: end - year_ago overflows on a year-1 date.
+    return first_data if end - first_data <= year_ago else end - year_ago
+
+
 def _licount_rows(act, da, db):
     """SFClicount.asp's rows between two dates, all activities (act 0) or one."""
     if act == 0:
@@ -550,11 +558,7 @@ def sfc_licount():
     # Get dates. Both are validated: an unparseable db used to reach the SQL
     # raw, fail the cast there, and render an empty page.
     date_a = date.fromisoformat(get_date_or_default("da", date.today().isoformat()))
-    year_ago = timedelta(days=365)
-    first_data = date(2003, 4, 1)
-    # Compared this way round: date_a - year_ago overflows on a year-1 date.
-    default_b = first_data if date_a - first_data <= year_ago else date_a - year_ago
-    date_b = date.fromisoformat(get_date_or_default("db", default_b.isoformat()))
+    date_b = date.fromisoformat(get_date_or_default("db", _licount_default_start(date_a).isoformat()))
     if date_b > date_a:
         date_a, date_b = date_b, date_a
     da, db = date_a.isoformat(), date_b.isoformat()
@@ -586,22 +590,24 @@ def sfc_licount():
     sort_spec = sort_map.get(sort_param, sort_map["acntdn"])
 
     def compute():
-        name = "All activities"
+        return _licount_rows(act, da, db)
+
+    # The page's default dates are kept for the day, per real activity; anything else
+    # is live. Judged on the dates after the swap above: ?da=<old>&db=<today> ends up
+    # with today as its end date, but it is not the default page.
+    stats, act_name = [], "All activities"
+    try:
+        known = act == 0
         if act > 0:
             result = execute_query("SELECT actName FROM enigma.activity WHERE ID = %s", (act,))
             if result:
-                name = result[0]["actname"]
-        return {"act_name": name, "stats": _licount_rows(act, da, db)}
-
-    # The page's default dates are kept for the day, per activity; other dates are live.
-    stats, act_name = [], "All activities"
-    try:
-        if date_a == date.today() and date_b == default_b:
-            data = precomputed("sfclicount", f"a{act}", ("enigma", "today"), compute,
+                act_name, known = result[0]["actname"], True
+        if known and date_a == date.today() and date_b == _licount_default_start(date_a):
+            rows = precomputed("sfclicount", f"a{act}", ("enigma", "today"), compute,
                                module=__name__, max_entries=200)
         else:
-            data = compute()
-        act_name, stats = data["act_name"], sort_rows(data["stats"], sort_spec)
+            rows = compute()
+        stats = sort_rows(rows, sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error querying SFC licount: {ex}", exc_info=True)
 

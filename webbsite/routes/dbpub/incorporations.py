@@ -367,18 +367,25 @@ def oldest_hk_cos():
     }
     sort_spec = sort_map.get(sort_param, sort_map["incup"])
 
-    # The 5000 oldest companies: chosen by incdate whatever the sort, so one list
-    # serves every sort. Once per data version; the type's name rides along. A type
-    # that does not exist is ignored, as before.
-    def compute():
-        type_label, ot_filter, params = None, "", None
-        if t > 0:
+    # A type that does not exist is ignored, as before: it shares the unfiltered copy,
+    # so made-up types cannot write files. A failed lookup is logged and flags the page.
+    t_real = 0
+    if t > 0:
+        try:
             type_result = execute_query(
                 "SELECT typename FROM enigma.orgtypes WHERE orgtype = %s", (t,))
-            if type_result:
-                type_label = type_result[0]["typename"]
-                ot_filter, params = "AND o.orgtype = %s", (t,)
-        rows = execute_query(
+        except Exception as ex:
+            current_app.logger.error(f"Error in oldestHKcos.asp type lookup: {ex}")
+            type_result = []
+        if type_result:
+            title += f", {type_result[0]['typename']}"
+            t_real = t
+
+    # The 5000 oldest companies: chosen by incdate whatever the sort, so one list
+    # serves every sort. Once per data version.
+    def compute():
+        ot_filter, params = ("AND o.orgtype = %s", (t_real,)) if t_real else ("", None)
+        return execute_query(
             f"""
             SELECT oldest.*,
                    {ordinal("name", "o_name")},
@@ -406,14 +413,11 @@ def oldest_hk_cos():
             """,
             params,
         )
-        return {"type_label": type_label, "rows": rows}
 
     try:
-        data = precomputed("oldesthkcos", f"a{int(bool(a))}_t{max(t, 0)}", ("enigma",), compute,
+        rows = precomputed("oldesthkcos", f"a{int(bool(a))}_t{t_real}", ("enigma",), compute,
                            module=__name__, max_entries=200)
-        if data["type_label"]:
-            title += f", {data['type_label']}"
-        results = sort_rows(data["rows"], sort_spec)
+        results = sort_rows(rows, sort_spec)
     except Exception as ex:
         current_app.logger.error(f"Error in oldestHKcos.asp: {ex}", exc_info=True)
         results = []
@@ -458,22 +462,25 @@ def _orgs_cte(date_col, hk=True):
             )"""
 
 
-def _whole_year_or_live(page, m, d, key, compute):
+def _whole_year_or_live(page, m, d, key, compute, keep):
     """A calendar page's whole-year view, once per data version; months and days live.
 
     A year is the slow one (England & Wales 2023: ~820k companies sorted before the
     LIMIT, 2 s). A month or a day is fast with the domicile/date indexes, and there
     are far too many of them to be worth keeping. The list is capped at 5000 rows, so
     the sort decides which rows it holds: each sort is its own file, built by the same
-    SQL as before. key: the parameters that select the rows.
+    SQL as before. key: the parameters that select the rows. keep: they are choices the
+    page offers, so a made-up type cannot write a file.
     """
-    if m == 0 and d == 0:
+    if keep and m == 0 and d == 0:
         return precomputed(page, "_".join(str(k) for k in key), ("enigma",), compute,
                            module=__name__, max_entries=400)
     return compute()
 
 
 _HK_ORGTYPES = (1, 2, 9, 15, 19, 21, 22, 23, 26, 28, 35, 42, 43)
+_UK_ORGTYPES = (7, 9, 19, 20, 21, 23, 25, 26, 35, 37, 38, 41)
+_DISMODES = (1, 2, 3, 4, 5, 8, 9, 10, 18)
 
 
 def _orgtype_names(ids):
@@ -571,7 +578,8 @@ def inchkcaltype():
         }
 
     try:
-        data = _whole_year_or_live("inchkcaltype", m, d, (y, t, sort_key), compute)
+        data = _whole_year_or_live("inchkcaltype", m, d, (y, t, sort_key), compute,
+                                   keep=t in (0, *_HK_ORGTYPES))
         results, typename, orgtypes_list = data["results"], data["typename"], data["orgtypes"]
     except Exception as ex:
         current_app.logger.error(f"Error in incHKcaltype.asp: {ex}", exc_info=True)
@@ -720,13 +728,14 @@ def dishkcaltype():
             "dismodes": execute_query("""
                 SELECT id, dismodetxt
                 FROM enigma.dismodes
-                WHERE id IN (1,2,3,4,5,8,9,10,18)
+                WHERE id = ANY(CAST(%s AS int[]))
                 ORDER BY dismodetxt
-            """),
+            """, (list(_DISMODES),)),
         }
 
     try:
-        data = _whole_year_or_live("dishkcaltype", m, d, (y, t, w, sort_key), compute)
+        data = _whole_year_or_live("dishkcaltype", m, d, (y, t, w, sort_key), compute,
+                                   keep=t in (0, *_HK_ORGTYPES) and w in (0, *_DISMODES))
         results, typename, methodname = data["results"], data["typename"], data["methodname"]
         orgtypes_list, dismodes_list = data["orgtypes"], data["dismodes"]
     except Exception as ex:
@@ -1368,11 +1377,12 @@ def incukcaltype():
             "results": execute_query(sql, params, timeout_s=30),
             "typename": _typename(t),
             # UK-specific org types
-            "orgtypes": _orgtype_names((7, 9, 19, 20, 21, 23, 25, 26, 35, 37, 38, 41)),
+            "orgtypes": _orgtype_names(_UK_ORGTYPES),
         }
 
     try:
-        data = _whole_year_or_live("incukcaltype", m, d, (y, dom, t, sort_key), compute)
+        data = _whole_year_or_live("incukcaltype", m, d, (y, dom, t, sort_key), compute,
+                                   keep=t in (0, *_UK_ORGTYPES))
         results, typename, orgtypes_list = data["results"], data["typename"], data["orgtypes"]
     except Exception as ex:
         current_app.logger.error(f"Error in incUKcaltype.asp: {ex}", exc_info=True)

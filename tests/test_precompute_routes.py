@@ -64,11 +64,14 @@ def _row(i):
 
 
 ROWS = [_row(i) for i in (1, 2, 3)]
+UNKNOWN_ID = 777777
 calls = []
 
 
 def fake_query(sql, params=None, timeout_s=None):
     calls.append(sql)
+    if params and UNKNOWN_ID in params:  # an organisation type or activity that does not exist
+        return []
     return [dict(r) for r in ROWS]
 
 
@@ -168,3 +171,57 @@ def test_calendar_whole_year_is_cached_per_sort_and_months_stay_live(client, pat
     assert queries(f"{year}&m=5") > 0
     assert queries(f"{year}&m=5&d=3") > 0
     assert queries(f"{year}&m=5&d=3") > 0
+
+
+def _queries(client, url):
+    calls.clear()
+    assert client.get(url).status_code == 200, url
+    return len(calls)
+
+
+def _files(page):
+    root = precompute.cache_root() / page
+    return sorted(p.name.split(".")[0] for p in root.glob("*.pkl"))
+
+
+def test_sfc_explicit_dates_never_fill_the_default_copy(client):
+    """?da=<old>&db=<today> swaps into da=today: it must not be saved as the default."""
+    from datetime import date, timedelta
+
+    today = date.today()
+    for q in (f"da=2003-04-01&db={today}", f"da={today}&db=2003-04-01",
+              f"da={today}&db={today - timedelta(days=30)}", f"db={today - timedelta(days=30)}"):
+        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, q
+        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, (q, "kept")
+        assert "a7" not in _files("sfclicount"), q
+    # The explicit spelling of the default dates may share the default's copy.
+    client.get("/dbpub/SFClicount.asp?a=7")
+    assert "a7" in _files("sfclicount")
+    default_b = today - timedelta(days=365)
+    assert _queries(client, f"/dbpub/SFClicount.asp?a=7&da={today}&db={default_b}") <= 1
+
+
+def test_ids_that_do_not_exist_write_no_files(client):
+    before = {page: _files(page) for page in
+              ("oldesthkcos", "sfclicount", "inchkcaltype", "dishkcaltype", "incukcaltype")}
+    for url in (f"/dbpub/oldestHKcos.asp?t={UNKNOWN_ID}",
+                f"/dbpub/SFClicount.asp?a={UNKNOWN_ID}",
+                "/dbpub/SFClicount.asp?a=-5",
+                f"/dbpub/incHKcaltype.asp?y=2021&t={UNKNOWN_ID}",
+                "/dbpub/incHKcaltype.asp?y=2021&t=-1",
+                f"/dbpub/disHKcaltype.asp?y=2021&t={UNKNOWN_ID}",
+                f"/dbpub/disHKcaltype.asp?y=2021&w={UNKNOWN_ID}",
+                f"/dbpub/incUKcaltype.asp?y=2021&t={UNKNOWN_ID}"):
+        assert client.get(url).status_code == 200, url
+    after = {page: _files(page) for page in before}
+    new = {page: set(after[page]) - set(before[page]) for page in before}
+    # An unknown type is ignored on oldestHKcos, so it may fill the unfiltered copy.
+    assert new["oldesthkcos"] <= {"a0_t0"}, new
+    assert not any(new[p] for p in new if p != "oldesthkcos"), new
+
+
+def test_unknown_oldest_type_shows_the_unfiltered_list_from_its_copy(client):
+    client.get("/dbpub/oldestHKcos.asp")
+    calls.clear()
+    assert client.get(f"/dbpub/oldestHKcos.asp?t={UNKNOWN_ID}").status_code == 200
+    assert not any("LIMIT" in c for c in calls), "the main query ran again"
