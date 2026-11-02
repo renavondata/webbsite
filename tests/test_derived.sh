@@ -54,7 +54,12 @@ INSERT INTO enigma.people VALUES
     (4, 'Lee', NULL, NULL, NULL, NULL, NULL, 'Lee', NULL),
     (5, 'Wong', 'Xiao-Ping', NULL, NULL, NULL, NULL, 'Wong', 'Xiao-Ping');
 SQL
-echo "CREATE INDEX IF NOT EXISTS idx_people_dn1_test ON enigma.people (dn1);" > "$INDEXES_SQL"
+# Both declared forms: plain, and CONCURRENTLY (which psql must run outside a
+# transaction block -- the form every index added since 2026-11 uses).
+cat > "$INDEXES_SQL" <<'SQL'
+CREATE INDEX IF NOT EXISTS idx_people_dn1_test ON enigma.people (dn1);
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_people_yob_test ON enigma.people (yob);
+SQL
 
 step "1. self-proof: a fresh database needs everything"
 [ "$(rc_of "$BD" --check people_search)" = 1 ] || fail "--check did not report a missing table"
@@ -65,8 +70,8 @@ step "2. db_build.sh builds from scratch, then nothing is needed"
 "$DBB" || fail "db_build.sh failed"
 [ "$(rc_of "$BD" --check people_search)" = 0 ] || fail "not fresh after the build"
 [ "$(rc_of "$DBB" --needed)" = 1 ] || fail "db_build --needed still asks for a build"
-[ "$(q "SELECT count(*) FROM pg_indexes WHERE indexname = 'idx_people_dn1_test'")" = 1 ] \
-    || fail "the declared index was not built"
+[ "$(q "SELECT count(*) FROM pg_indexes WHERE indexname IN ('idx_people_dn1_test', 'idx_people_yob_test')")" = 2 ] \
+    || fail "the declared indexes were not built"
 [ ! -e "$STATE_DIR/failed" ] || fail "a successful run left a failure marker"
 
 step "3. contents"
