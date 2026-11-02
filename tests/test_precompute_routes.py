@@ -63,6 +63,9 @@ def _row(i):
         "fee": i, "sal": i, "bon": 0, "ret": 0, "sha": 0, "tot": 2 * i, "sehkcurr": 0,
         "currency": "HKD", "rolelong": "Auditor", "onetime": False, "count": 0,
         "roleid": 0, "issuer": i, "i": i, "lot": 1000,
+        # one participant's holdings
+        "max": date(2024, 6, 3), "partname": "p", "ccassid": "C1", "holding": n * 100,
+        "atdate": date(2024, 6, i), "lastcode": f"{i:04d}", "valn": n * 500, "susp": False,
     }
 
 
@@ -100,6 +103,7 @@ PAGES = {
     "/dbpub/SFClicount.asp": ["", "a=1"],
     "/ccass/cconc.asp": ["", "etf=1", "d=2024-06-03"],
     "/ccass/ipstakes.asp": ["", "d=2024-06-03"],
+    "/ccass/cholder.asp": ["part=7", "part=7&z=1", "part=7&d=2024-06-03"],
 }
 
 
@@ -247,3 +251,52 @@ def test_each_selection_has_its_own_copy(client, path, page, first, second):
     files = set(_files(page))
     assert _queries(client, f"{path}?{second}") > 0, "served from the other selection's file"
     assert len(set(_files(page)) - files) == 1
+
+
+def _cholder_computes(client, url):
+    """How many of the request's queries were the holdings query itself."""
+    calls.clear()
+    assert client.get(url).status_code == 200, url
+    return sum("dense_rank" in c for c in calls)
+
+
+def test_cholder_keeps_real_participants_only(client):
+    before = _files("cholder")
+    url = f"/ccass/cholder.asp?part={UNKNOWN_ID}"
+    assert _cholder_computes(client, url) == 1
+    assert _cholder_computes(client, url) == 1, "an unknown participant is not kept"
+    assert _files("cholder") == before, "an unknown participant wrote a file"
+
+
+def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
+    old = "/ccass/cholder.asp?part=31&d=2024-06-03"
+    latest = "/ccass/cholder.asp?part=31"
+    # The stub calendar answers 2024-06-03 for every date, so ask for the sources
+    # of a recent date through the function the route uses.
+    from datetime import timedelta
+
+    from webbsite.routes.ccass import _holdings_sources
+
+    today = date.today()
+    assert _holdings_sources(str(today)) == ("market", "enigma")
+    assert _holdings_sources(str(today - timedelta(days=14))) == ("market", "enigma")
+    assert _holdings_sources(str(today - timedelta(days=15))) == ("enigma",)
+
+    assert _cholder_computes(client, old) == 1
+    assert _cholder_computes(client, old) == 0
+    assert _cholder_computes(client, latest) == 0, "same settled date, same list"
+    monkeypatch.setitem(precompute.SOURCES, "market", lambda: "m2")
+    assert _cholder_computes(client, old) == 0, "an old date recomputed after a refresh"
+    monkeypatch.setitem(precompute.SOURCES, "enigma", lambda: "e2")
+    assert _cholder_computes(client, old) == 1, "old dates still follow enigma data"
+
+
+def test_cholder_sort_reorders_the_kept_rows(client):
+    def names(sort):
+        html = client.get(f"/ccass/cholder.asp?part=41&sort={sort}").get_data(as_text=True)
+        return re.findall(r">(n[123])</a>", html)
+
+    assert names("holddn") == ["n3", "n2", "n1"]
+    assert names("holdup") == ["n1", "n2", "n3"]
+    assert names("namedn") == ["n3", "n2", "n1"]
+    assert names("datedn") == ["n3", "n2", "n1"]
