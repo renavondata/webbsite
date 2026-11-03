@@ -1191,7 +1191,9 @@ def run():
         heavy.clear()
         client.get("/dbpub/listed.asp?d=2020-01-01")
         client.get("/dbpub/listed.asp?d=2020-01-01")
-        check("cache: a pinned date is never cached", len(heavy), 2)
+        check("cache: a pinned date computes once, under its own capped page",
+              (len(heavy), any("listeddated" in f for f in map(str, files_under(tmp)))),
+              (1, True))
         fail[0] = True
         heavy.clear()
         version[0] = "v2"  # a new data version: recompute

@@ -592,9 +592,11 @@ def sfc_licount():
     def compute():
         return _licount_rows(act, da, db)
 
-    # The page's default dates are kept for the day, per real activity; anything else
-    # is live. Judged on the dates after the swap above: ?da=<old>&db=<today> ends up
-    # with today as its end date, but it is not the default page.
+    # Kept for the day, per real activity: the default dates under one name, any other
+    # pair under its own page, so dated copies never evict the default's (a crawler's
+    # stale ?da=yesterday is the slow case, WEBBSITE-3F). Judged on the dates after the
+    # swap above: ?da=<old>&db=<today> ends up with today as its end date, but it is
+    # not the default page.
     stats, act_name = [], "All activities"
     try:
         known = act == 0
@@ -605,6 +607,9 @@ def sfc_licount():
         if known and date_a == date.today() and date_b == _licount_default_start(date_a):
             rows = precomputed("sfclicount", f"a{act}", ("enigma", "today"), compute,
                                module=__name__, max_entries=200)
+        elif known:
+            rows = precomputed("sfclicountdated", f"a{act}_{da}_{db}", ("enigma", "today"),
+                               compute, module=__name__, max_entries=200)
         else:
             rows = compute()
         stats = sort_rows(rows, sort_spec)
