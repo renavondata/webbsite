@@ -11,6 +11,10 @@ from webbsite.precompute import ordinal, precomputed, sort_rows
 bp = Blueprint("dbpub_listings", __name__)
 
 
+# At most ~0.5 MB each, and all of them expire daily.
+LISTED_DATED_KEPT = 200
+
+
 @bp.route("/listed.asp")
 def listed():
     """
@@ -29,7 +33,8 @@ def listed():
     sort_param = request.args.get("sort", "nameup")
     e = request.args.get("e", "a")
     t = request.args.get("t", "s")
-    d = get_date_or_default("d", str(date.today()))
+    today = str(date.today())
+    d = get_date_or_default("d", today)
 
     # Build title based on filters
     exchange_titles = {
@@ -124,7 +129,10 @@ def listed():
     # Three return functions per listing (each ~10 quote lookups) over every
     # listed stock timed out cold at 8 s (WEBBSITE-21). Today's view of each
     # validated e/t is computed once per data version and day, then sorted in
-    # Python per request; a pinned ?d= is computed live.
+    # Python per request. A pinned ?d= gets its own copy for the day: bots walk the
+    # sort links of a dated page, each one a full compute (WEBBSITE-21 again). Today
+    # is in its version because a load can rewrite rows without moving a watermark.
+    # Its own page, so dated copies never evict the warmed ones.
     def pct(v):
         return "" if v is None else f"{v * 100:.2f}"
 
@@ -154,11 +162,12 @@ def listed():
         ]
 
     try:
-        if "d" not in request.args:
+        if d == today:
             rows = precomputed("listed", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
                                compute, module=__name__)
         else:
-            rows = compute()
+            rows = precomputed("listeddated", f"{e_eff}_{t_eff}_{d}", ("market", "enigma", "today"),
+                               compute, module=__name__, max_entries=LISTED_DATED_KEPT)
         stocks = sort_rows(rows, sort_spec)
     except Exception as ex:
         # Error already logged by db.py - will show in browser if DEBUG=True

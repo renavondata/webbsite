@@ -156,7 +156,7 @@ def shortsum():
         return summaries
 
     try:
-        summaries = precomputed("shortsum", "all", ("market", "enigma"), compute, module=__name__)
+        summaries = precomputed("shortsum", "all", ("market", "enigma", "today"), compute, module=__name__)
     except Exception as e:
         current_app.logger.error(f"Error querying short summary: {e}")
         summaries = []

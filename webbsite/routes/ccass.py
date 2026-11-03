@@ -291,7 +291,7 @@ def cconc():
         )
 
     try:
-        rows = (precomputed("cconc", f"{d}_etf{int(bool(etf))}", ("market", "enigma"), compute,
+        rows = (precomputed("cconc", f"{d}_etf{int(bool(etf))}", ("market", "enigma", "today"), compute,
                             module=__name__)
                 if d_is_settled else compute())
         concentrations = sort_rows(rows, sort_spec)
@@ -438,7 +438,7 @@ def ipstakes():
 
     # Query IP stakes
     try:
-        rows = (precomputed("ipstakes", str(d), ("market", "enigma"), compute, module=__name__)
+        rows = (precomputed("ipstakes", str(d), ("market", "enigma", "today"), compute, module=__name__)
                 if d_is_settled else compute())
         stakes_result = sort_rows(rows, sort_spec)
 
@@ -537,13 +537,14 @@ def _holdings_sources(d):
     daily refreshes, but only until the month rolls: the loader can still rewrite
     old dates, so a late correction shows within about a month, as at the edge.
     Age counts from the load and not from today, or a stalled feed would pin the
-    partial lists of dates it has not caught up on.
+    partial lists of dates it has not caught up on. Recent dates also expire daily:
+    a load can rewrite rows without moving a watermark.
     """
     done = watermarks.ccass_done()
     if not done:
-        return ("market", "enigma")
+        return ("market", "enigma", "today")
     behind_days = (date.fromisoformat(str(done)[:10]) - date.fromisoformat(str(d)[:10])).days
-    return ("month", "enigma") if behind_days > 14 else ("market", "enigma")
+    return ("month", "enigma") if behind_days > 14 else ("market", "enigma", "today")
 
 
 @bp.route("/cholder.asp")

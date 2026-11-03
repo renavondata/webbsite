@@ -421,3 +421,23 @@ def test_a_failure_only_counts_for_its_own_version_and_a_sane_time(tmp_path):
     assert not precompute._failed_since(_marker(tmp_path, "v1", age=-60), "v1", now - 5), "before arrival"
     assert not precompute._failed_since(_marker(tmp_path, "v1", age=3600), "v1", now - 5), "future"
     assert not precompute._failed_since(tmp_path / "absent.err", "v1", now), "no marker"
+
+
+def test_sweep_clears_what_only_failed_computes_left(cache):
+    root, _ = cache
+
+    def fail():
+        raise RuntimeError("stall")
+
+    with pytest.raises(RuntimeError):
+        precomputed("p", "failed", ("market",), fail, module=MOD)
+    precomputed("p", "kept", ("market",), lambda: [1], module=MOD)
+    leftovers = {"failed.lock", "failed.err"}
+    assert leftovers <= {f.name for f in (root / "p").iterdir()}
+    sweep(root / "p", max_entries=64, now=time.time() + precompute.GRACE_S - 5)
+    assert leftovers <= {f.name for f in (root / "p").iterdir()}, "kept inside the grace"
+    sweep(root / "p", max_entries=64, now=time.time() + precompute.GRACE_S + 5)
+    names = {f.name for f in (root / "p").iterdir()}
+    assert not leftovers & names
+    assert "kept.lock" in names, "a live variant keeps its lock"
+    assert precomputed("p", "failed", ("market",), lambda: [2], module=MOD) == [2]

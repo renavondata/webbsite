@@ -89,7 +89,7 @@ PAGES = {
     "/dbpub/HKflightscan.asp": ["ad=a", "ad=d"],
     "/dbpub/hksols.asp": ["p=0", "p=2"],
     "/dbpub/HKsolsmoves.asp": [""],
-    "/dbpub/listed.asp": ["e=m&t=s"],
+    "/dbpub/listed.asp": ["e=m&t=s", "e=m&t=s&d=2024-06-03"],
     "/dbpub/dirsHKPerPerson.asp": [""],
     "/dbpub/DirsHKAgeDistn.asp": [""],
     "/dbpub/HKdirsTypeSex.asp": [""],
@@ -100,7 +100,7 @@ PAGES = {
     "/dbpub/advbyrole.asp": [""],
     "/dbpub/oldestHKcos.asp": ["", "a=1", "t=28"],
     "/dbpub/boardcomp.asp": [""],
-    "/dbpub/SFClicount.asp": ["", "a=1"],
+    "/dbpub/SFClicount.asp": ["", "a=1", "da=2024-06-03&db=2023-06-03"],
     "/ccass/cconc.asp": ["", "etf=1", "d=2024-06-03"],
     "/ccass/ipstakes.asp": ["", "d=2024-06-03"],
     "/ccass/cholder.asp": ["part=7", "part=7&z=1", "part=7&d=2024-06-03"],
@@ -201,14 +201,88 @@ def test_sfc_explicit_dates_never_fill_the_default_copy(client):
     today = date.today()
     for q in (f"da=2003-04-01&db={today}", f"da={today}&db=2003-04-01",
               f"da={today}&db={today - timedelta(days=30)}", f"db={today - timedelta(days=30)}"):
-        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, q
-        assert _queries(client, f"/dbpub/SFClicount.asp?a=7&{q}") > 0, (q, "kept")
+        client.get(f"/dbpub/SFClicount.asp?a=7&{q}")
         assert "a7" not in _files("sfclicount"), q
     # The explicit spelling of the default dates may share the default's copy.
     client.get("/dbpub/SFClicount.asp?a=7")
     assert "a7" in _files("sfclicount")
     default_b = today - timedelta(days=365)
     assert _queries(client, f"/dbpub/SFClicount.asp?a=7&da={today}&db={default_b}") <= 1
+
+
+def _dense_rank_computes(client, url):
+    calls.clear()
+    assert client.get(url).status_code == 200, url
+    return sum("dense_rank" in c for c in calls)
+
+
+def test_listed_pinned_dates_keep_their_own_copy(client, monkeypatch):
+    old = "/dbpub/listed.asp?e=g&t=s&d=2021-12-31"
+    assert _dense_rank_computes(client, old) == 1
+    assert _dense_rank_computes(client, old) == 0
+    assert _dense_rank_computes(client, old + "&sort=namedn") == 0, "a sort link recomputed"
+    assert _dense_rank_computes(client, "/dbpub/listed.asp?e=g&t=s&d=2021-12-30") == 1
+    assert _dense_rank_computes(client, "/dbpub/listed.asp?e=r&t=s&d=2021-12-31") == 1
+    assert "g_s_2021-12-31" in _files("listeddated")
+    assert not any("2021" in f for f in _files("listed")), "dated copy under the warmed page"
+    monkeypatch.setitem(precompute.SOURCES, "market", lambda: "m2")
+    assert _dense_rank_computes(client, old) == 1, "a data refresh must supersede it"
+    # A load that rewrites rows without moving a watermark changes no version: a day
+    # is the longest such a copy may stand.
+    monkeypatch.setitem(precompute.SOURCES, "today", lambda: "tomorrow")
+    assert _dense_rank_computes(client, old) == 1, "a dated copy outlived its day"
+
+
+def test_listed_today_and_junk_dates_share_the_default_copy(client):
+    from datetime import date
+
+    before = _files("listeddated")
+    assert _dense_rank_computes(client, "/dbpub/listed.asp?e=s&t=s") == 1
+    assert _dense_rank_computes(client, f"/dbpub/listed.asp?e=s&t=s&d={date.today()}") == 0
+    assert _dense_rank_computes(client, "/dbpub/listed.asp?e=s&t=s&d=notadate") == 0
+    assert _files("listeddated") == before, "no dated copy for today or junk"
+
+
+def test_sfc_explicit_dates_keep_their_own_copy(client, monkeypatch):
+    url = "/dbpub/SFClicount.asp?da=2022-06-30&db=2021-06-30"
+    assert _dense_rank_computes(client, url) == 1
+    assert _dense_rank_computes(client, url) == 0
+    assert _dense_rank_computes(client, url + "&sort=crodn") == 0, "a sort link recomputed"
+    swapped = "/dbpub/SFClicount.asp?da=2021-06-30&db=2022-06-30"
+    assert _dense_rank_computes(client, swapped) == 0, "the same period, spelt backwards"
+    assert "a0_2022-06-30_2021-06-30" in _files("sfclicountdated")
+    monkeypatch.setitem(precompute.SOURCES, "today", lambda: "tomorrow")
+    assert _dense_rank_computes(client, url) == 1, "kept for the day, like the default"
+
+
+def test_sfc_unknown_activity_with_dates_writes_no_files(client):
+    before = _files("sfclicountdated")
+    url = f"/dbpub/SFClicount.asp?a={UNKNOWN_ID}&da=2022-06-30&db=2021-06-30"
+    assert client.get(url).status_code == 200
+    assert _files("sfclicountdated") == before
+
+
+@pytest.mark.parametrize("module, url", [
+    ("webbsite.routes.ccass", "/ccass/cconc.asp?d=2024-06-03"),
+    ("webbsite.routes.ccass", "/ccass/ipstakes.asp?d=2024-06-03"),
+    ("webbsite.routes.ccass", "/ccass/cholder.asp?part=51"),
+    ("webbsite.routes.dbpub.short_selling", "/dbpub/shortsum.asp"),
+    ("webbsite.routes.dbpub.statistics", "/dbpub/advbyrole.asp"),
+])
+def test_market_pages_expire_daily(client, monkeypatch, module, url):
+    """A load can rewrite rows without moving a watermark, so `market` alone could
+    keep a copy indefinitely if the feed then stopped."""
+    seen = []
+
+    def spy(page, variant, sources, compute, **kw):
+        seen.append(sources)
+        return []
+
+    monkeypatch.setattr(f"{module}.precomputed", spy)
+    # Recent, for cholder: the stub calendar answers this date.
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    assert client.get(url).status_code == 200, url
+    assert seen and all("today" in s for s in seen), (url, seen)
 
 
 def test_ids_that_do_not_exist_write_no_files(client):
@@ -278,13 +352,13 @@ def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
     done = "2025-10-10"
     # Stubbed here: the real one memoises whatever an earlier test's stub answered.
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
-    assert _holdings_sources(done) == ("market", "enigma")
-    assert _holdings_sources("2025-09-26") == ("market", "enigma")
+    assert _holdings_sources(done) == ("market", "enigma", "today")
+    assert _holdings_sources("2025-09-26") == ("market", "enigma", "today")
     assert _holdings_sources("2025-09-25") == ("month", "enigma")
     # A stalled feed: dates beyond the load stay tied to the data version.
-    assert _holdings_sources("2026-01-01") == ("market", "enigma")
+    assert _holdings_sources("2026-01-01") == ("market", "enigma", "today")
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: None)
-    assert _holdings_sources("2024-06-03") == ("market", "enigma"), "no watermark, nothing pinned"
+    assert _holdings_sources("2024-06-03") == ("market", "enigma", "today"), "no watermark, nothing pinned"
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
     monkeypatch.setitem(precompute.SOURCES, "month", lambda: "2026-11")
 
