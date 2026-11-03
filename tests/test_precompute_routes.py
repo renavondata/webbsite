@@ -267,6 +267,7 @@ def test_sfc_unknown_activity_with_dates_writes_no_files(client):
     ("webbsite.routes.ccass", "/ccass/ipstakes.asp?d=2024-06-03"),
     ("webbsite.routes.ccass", "/ccass/cholder.asp?part=51"),
     ("webbsite.routes.dbpub.short_selling", "/dbpub/shortsum.asp"),
+    ("webbsite.routes.dbpub.statistics", "/dbpub/advbyrole.asp"),
 ])
 def test_market_pages_expire_daily(client, monkeypatch, module, url):
     """A load can rewrite rows without moving a watermark, so `market` alone could
