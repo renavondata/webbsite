@@ -30,10 +30,9 @@ timeout = 60  # Most queries are fast (8s DB statement_timeout); a few heavy,
               # deterministic, edge-cached analytical pages (e.g. leagueDirsHK's
               # ~23k cagrel() calls) need a cold-compute headroom under 60s.
 graceful_timeout = 15  # Give workers 15s to finish in-flight requests during restart
-# No keep-alive to Caddy: it pools idle connections, and when a worker recycles
-# (max_requests below) it closes the ones it holds, so a request Caddy has just
-# written on one becomes a 502. All 44 such 502s on 2026-11-01..03 fell within
-# 0.5 s of a worker exit. Loopback connects cost next to nothing.
+# No keep-alive to Caddy: a retiring worker closes the idle connections it holds,
+# so a request Caddy has just written on one becomes a 502. See pre_request below
+# for the other half of this.
 keepalive = 0
 
 # Restart workers after this many requests (helps prevent memory leaks)
@@ -131,6 +130,31 @@ def post_fork(server, worker):
     except Exception as e:
         server.log.error(f"Worker {worker.pid}: failed to dispose engine: {e}")
     server.log.info(f"Worker spawned (pid: {worker.pid}) - fresh connection pool")
+
+
+def pre_request(worker, req):
+    """Stop a worker accepting before max_requests retires it.
+
+    Stock gthread sets alive=False in the request thread, while the main loop sits
+    in select(1.0) with the listener still registered. It can accept a new connection,
+    then leave the loop and reset it at exit, which Caddy returns as a 502. All 44 such
+    502s on 2026-11-01..03 fell within 0.5 s of a worker exit. alive is set here too,
+    so a request that fails before gunicorn counts it can't leave a worker that
+    answers heartbeats and accepts nothing. Private attributes, pinned by uv.lock and
+    tests/test_gunicorn_recycle.py; without them the worker recycles as stock does.
+    """
+    if worker.nr + 1 < worker.max_requests:
+        return
+    try:
+        with worker._lock:
+            for sock in worker.sockets:
+                try:
+                    worker.poller.unregister(sock)
+                except (KeyError, ValueError, OSError):
+                    pass  # another thread got here first, or the loop has already closed it
+    except AttributeError:
+        return
+    worker.alive = False
 
 
 def worker_int(worker):
