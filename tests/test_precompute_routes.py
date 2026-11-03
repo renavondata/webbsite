@@ -62,7 +62,7 @@ def _row(i):
         "os": n * 1000, "totsh": n * 1000, "pendmcap": n * 1000, "pricedate": None,
         "fee": i, "sal": i, "bon": 0, "ret": 0, "sha": 0, "tot": 2 * i, "sehkcurr": 0,
         "currency": "HKD", "rolelong": "Auditor", "onetime": False, "count": 0,
-        "roleid": 0, "issuer": i, "i": i, "lot": 1000,
+        "roleid": 0, "issuer": i, "i": i, "lot": 1000, "partid": i,
         # one participant's holdings
         "max": date(2024, 6, 3), "partname": "p", "ccassid": "C1", "holding": n * 100,
         "atdate": date(2024, 6, i), "lastcode": f"{i:04d}", "valn": n * 500, "susp": False,
@@ -340,6 +340,95 @@ def test_cholder_keeps_real_participants_only(client):
     assert _cholder_computes(client, url) == 1
     assert _cholder_computes(client, url) == 1, "an unknown participant is not kept"
     assert _files("cholder") == before, "an unknown participant wrote a file"
+
+
+def test_warming_fills_what_the_page_reads(client, monkeypatch):
+    from webbsite import warm
+
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    app = client.application
+    calls.clear()
+    assert warm.warm_cholder(app) == (3, 0)
+    assert sum("dense_rank" in c for c in calls) == 3
+    for part in (1, 2, 3):
+        assert _cholder_computes(client, f"/ccass/cholder.asp?part={part}") == 0, part
+    calls.clear()
+    assert warm.warm_cholder(app) == (3, 0)
+    assert not any("dense_rank" in c for c in calls), "a current list recomputed"
+
+
+def test_warming_counts_failures_and_carries_on(client, monkeypatch, capsys):
+    from webbsite import warm
+
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+
+    def fail_one(part, d, z):
+        if part == 2:
+            raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail_one)
+    assert warm.warm_cholder(client.application) == (2, 1)
+    assert "FAIL /ccass/cholder.asp?part=2" in capsys.readouterr().out
+
+    def no_list():
+        raise RuntimeError("database away")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", no_list)
+    assert warm.warm_cholder(client.application) == (0, 1)
+
+
+def test_warming_stops_when_lists_keep_failing(client, monkeypatch):
+    from webbsite import warm
+
+    tried = []
+
+    def fail(part, d, z):
+        tried.append(part)
+        raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", lambda: ("2024-06-03", list(range(50))))
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail)
+    assert warm.warm_cholder(client.application) == (0, warm.STOP_AFTER)
+    assert len(tried) == warm.STOP_AFTER
+
+
+def test_warming_a_failure_reaches_sentry_tagged_synthetic(client, monkeypatch):
+    import logging
+
+    import sentry_sdk
+
+    from webbsite import warm
+
+    events = []
+
+    def keep(event, hint):
+        events.append(event)
+
+    def fail(part, d, z):
+        logging.getLogger("webbsite.db").error("timed out")
+        raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", lambda: ("2024-06-03", [1]))
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail)
+    sentry_sdk.init(dsn="http://k@127.0.0.1:1/1", before_send=keep, default_integrations=True)
+    try:
+        warm.warm_cholder(client.application)
+    finally:
+        sentry_sdk.init()
+    assert events, "no event captured"
+    assert all(e.get("tags", {}).get("synthetic") == "warm" for e in events), events
+
+
+def test_lists_kept_for_a_month_are_not_crowded_out_by_warming(client, monkeypatch):
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2025-10-10")
+    assert _cholder_computes(client, "/ccass/cholder.asp?part=41&d=2024-06-03") == 1
+    assert any(f.startswith("p41_") for f in _files("cholderkept"))
+    assert not any(f.startswith("p41_") for f in _files("cholder"))
+    # A recent date, which is what warming writes, goes in the other page.
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    assert _cholder_computes(client, "/ccass/cholder.asp?part=42") == 1
+    assert any(f.startswith("p42_") for f in _files("cholder"))
+    assert not any(f.startswith("p42_") for f in _files("cholderkept"))
 
 
 def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):

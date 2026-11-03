@@ -525,8 +525,8 @@ def cparticipants():
     )
 
 
-# Holdings lists kept on disk across all participants and dates: a few hundred
-# MB at worst, and evicting one only costs its next visitor a compute.
+# Holdings lists kept on disk per page, across all participants and dates: a few
+# hundred MB at worst, and evicting one only costs its next visitor a compute.
 CHOLDER_KEPT = 2000
 
 
@@ -545,6 +545,118 @@ def _holdings_sources(d):
         return ("market", "enigma", "today")
     behind_days = (date.fromisoformat(str(done)[:10]) - date.fromisoformat(str(d)[:10])).days
     return ("month", "enigma") if behind_days > 14 else ("market", "enigma", "today")
+
+
+def _settled_on_or_before(d):
+    """The latest settlement date on or before d, or None if there is none."""
+    result = execute_query(
+        """
+        SELECT MAX(settleDate)
+        FROM ccass.calendar
+        WHERE settleDate <= %s
+    """,
+        (d,),
+    )
+    return ms_date(result[0]["max"]) if result and result[0]["max"] else None
+
+
+def _cholder_rows(part, d, z):
+    """One participant's holdings on settlement date d (with former ones if z)."""
+    # The parthold table only records CHANGES - not every day's holdings.
+    # We need the latest holding for each issue where atDate <= d.
+    holding_filter = "" if z else "AND ph.holding <> 0"
+    sql = f"""
+        SELECT t.*,
+               {ordinal("t.name1", "o_name")},
+               {ordinal("t.lastcode", "o_code")}
+        FROM (
+            SELECT ph.issueID, ph.holding, ph.atDate,
+                   o.name1, o.personID,
+                   st.typeShort,
+                   (SELECT sl.stockCode
+                    FROM enigma.stocklistings sl
+                    WHERE sl.issueID = ph.issueID
+                      AND sl.delistdate IS NULL
+                    ORDER BY sl.firsttradedate DESC
+                    LIMIT 1) AS lastCode,
+                   CASE WHEN ph.holding > 0 AND COALESCE(os.outstanding, 0) > 0
+                        THEN CAST(ph.holding AS FLOAT) / os.outstanding
+                        ELSE 0
+                   END AS stake,
+                   CASE WHEN COALESCE(q.closing, 0) > 0
+                        THEN ph.holding * q.closing
+                        ELSE 0
+                   END AS valn,
+                   CASE WHEN COALESCE(q.susp, FALSE) = TRUE OR COALESCE(sl2."2ndCtr", FALSE) = TRUE
+                        THEN TRUE
+                        ELSE FALSE
+                   END AS susp
+            FROM {_LATEST_PARTHOLD} ph
+            JOIN enigma.issue i ON ph.issueID = i.id1
+            JOIN enigma.organisations o ON i.issuer = o.personID
+            JOIN enigma.secTypes st ON i.typeID = st.typeID
+            LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
+                AND os.atDate = (
+                    SELECT MAX(os2.atDate)
+                    FROM enigma.issuedshares os2
+                    WHERE os2.issueID = ph.issueID AND os2.atDate <= %s
+                )
+            LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
+                AND q.atDate = (
+                    SELECT MAX(q2.atDate)
+                    FROM ccass.quotes q2
+                    WHERE q2.issueID = ph.issueID AND q2.atDate <= %s
+                )
+            LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
+                AND %s >= sl2.firsttradedate
+                AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
+            WHERE TRUE
+              {holding_filter}
+        ) t
+        ORDER BY t.stake DESC, t.name1
+    """
+    # timeout_s: a large custodian (e.g. part=1243) walks ~3.5M parthold
+    # rows; deterministic and edge-cached, like the other heavy reports.
+    return execute_query(sql, (part, part, part, d, d, d, d, d), timeout_s=25)
+
+
+def kept_cholder_rows(part, d, z):
+    """_cholder_rows, kept per data version; d must be a settlement date and part real.
+
+    A cold big custodian takes 2.5 s, nearly all of it disk reads, so each participant
+    and date is computed once however many sorts are asked for.
+
+    Lists kept for a month have a page of their own: warming writes about 600 lists
+    each trading day, which would otherwise push them past the cap in days.
+    """
+    sources = _holdings_sources(d)
+    page = "cholderkept" if "month" in sources else "cholder"
+    return precomputed(page, f"p{part}_{d}_z{int(bool(z))}", sources,
+                       lambda: _cholder_rows(part, d, z),
+                       module=__name__, max_entries=CHOLDER_KEPT)
+
+
+def cholder_warm_list():
+    """(latest settlement date, participants that moved in the year before it).
+
+    Crawlers ask for each participant's default page in turn, so most requests are the
+    first for that participant that day. About 600 of the 1,745 are still active.
+    """
+    d = _settled_on_or_before(watermarks.ccass_done())
+    if not d:
+        return None, []
+    rows = execute_query(
+        """
+        SELECT p.partID
+        FROM ccass.participants p
+        WHERE EXISTS (SELECT 1 FROM ccass.parthold ph
+                      WHERE ph.partID = p.partID
+                        AND ph.atDate > CAST(%s AS date) - INTERVAL '1 year')
+        ORDER BY p.partID
+    """,
+        (d,),
+    )
+    return d, [r["partid"] for r in rows]
 
 
 @bp.route("/cholder.asp")
@@ -578,16 +690,9 @@ def cholder():
     # Get max settlement date <= requested date
     d_is_settled = False  # d is a settlement date, so its list is worth keeping
     try:
-        result = execute_query(
-            """
-            SELECT MAX(settleDate)
-            FROM ccass.calendar
-            WHERE settleDate <= %s
-        """,
-            (d,),
-        )
-        if result and result[0]["max"]:
-            d = ms_date(result[0]["max"])
+        settled = _settled_on_or_before(d)
+        if settled:
+            d = settled
             d_is_settled = True
     except Exception as ex:
         current_app.logger.error(f"Error getting settlement date for cholder: {ex}")
@@ -647,77 +752,13 @@ def cholder():
     if sort_param not in sort_orders:
         sort_param = "stakdn"
 
-    # Build WHERE clause for zero holdings filter
-    holding_filter = "" if z else "AND ph.holding <> 0"
-
     # Query holdings
-    # The parthold table only records CHANGES - not every day's holdings.
-    # We need the latest holding for each issue where atDate <= d
-    # (using DISTINCT ON to get the most recent record per issue).
     holdings = []
     if part > 0:
-        # A cold big custodian takes 2.5 s, nearly all of it disk reads, so each
-        # participant and date is computed once however many sorts are asked for.
-        def compute():
-            sql = f"""
-                SELECT t.*,
-                       {ordinal("t.name1", "o_name")},
-                       {ordinal("t.lastcode", "o_code")}
-                FROM (
-                    SELECT ph.issueID, ph.holding, ph.atDate,
-                           o.name1, o.personID,
-                           st.typeShort,
-                           (SELECT sl.stockCode
-                            FROM enigma.stocklistings sl
-                            WHERE sl.issueID = ph.issueID
-                              AND sl.delistdate IS NULL
-                            ORDER BY sl.firsttradedate DESC
-                            LIMIT 1) AS lastCode,
-                           CASE WHEN ph.holding > 0 AND COALESCE(os.outstanding, 0) > 0
-                                THEN CAST(ph.holding AS FLOAT) / os.outstanding
-                                ELSE 0
-                           END AS stake,
-                           CASE WHEN COALESCE(q.closing, 0) > 0
-                                THEN ph.holding * q.closing
-                                ELSE 0
-                           END AS valn,
-                           CASE WHEN COALESCE(q.susp, FALSE) = TRUE OR COALESCE(sl2."2ndCtr", FALSE) = TRUE
-                                THEN TRUE
-                                ELSE FALSE
-                           END AS susp
-                    FROM {_LATEST_PARTHOLD} ph
-                    JOIN enigma.issue i ON ph.issueID = i.id1
-                    JOIN enigma.organisations o ON i.issuer = o.personID
-                    JOIN enigma.secTypes st ON i.typeID = st.typeID
-                    LEFT JOIN enigma.issuedshares os ON ph.issueID = os.issueID
-                        AND os.atDate = (
-                            SELECT MAX(os2.atDate)
-                            FROM enigma.issuedshares os2
-                            WHERE os2.issueID = ph.issueID AND os2.atDate <= %s
-                        )
-                    LEFT JOIN ccass.quotes q ON ph.issueID = q.issueID
-                        AND q.atDate = (
-                            SELECT MAX(q2.atDate)
-                            FROM ccass.quotes q2
-                            WHERE q2.issueID = ph.issueID AND q2.atDate <= %s
-                        )
-                    LEFT JOIN enigma.stocklistings sl2 ON ph.issueID = sl2.issueID
-                        AND %s >= sl2.firsttradedate
-                        AND (sl2.delistdate IS NULL OR %s < sl2.delistdate)
-                    WHERE TRUE
-                      {holding_filter}
-                ) t
-                ORDER BY t.stake DESC, t.name1
-            """
-            # timeout_s: a large custodian (e.g. part=1243) walks ~3.5M parthold
-            # rows; deterministic and edge-cached, like the other heavy reports.
-            return execute_query(sql, (part, part, part, d, d, d, d, d), timeout_s=25)
-
         try:
             results = (
-                precomputed("cholder", f"p{part}_{d}_z{int(bool(z))}", _holdings_sources(d),
-                            compute, module=__name__, max_entries=CHOLDER_KEPT)
-                if d_is_settled and part_exists else compute()
+                kept_cholder_rows(part, d, z)
+                if d_is_settled and part_exists else _cholder_rows(part, d, z)
             )
             results = sort_rows(results, sort_spec)
 
