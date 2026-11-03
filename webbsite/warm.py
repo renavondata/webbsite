@@ -23,6 +23,7 @@ import time
 
 # The orgtypes the incorporation pages offer in their dropdown.
 INC_TYPES = (1, 19, 21, 26, 28)
+STOP_AFTER = 5  # holdings lists failing in a row before a round gives up on them
 
 
 def warm_urls() -> list[str]:
@@ -71,7 +72,20 @@ def failed(response) -> bool:
 
 
 def warm_cholder(app) -> tuple[int, int]:
-    """Every active participant's default list; returns (warmed, failed)."""
+    """Every active participant's default list; returns (warmed, failed).
+
+    Gives up after STOP_AFTER failures in a row: the database is away or the disk has
+    stalled, and more 25 s timeouts would only add load until the round is killed.
+    """
+    import sentry_sdk
+
+    # These calls skip the before_request hook that tags the warm pages.
+    with sentry_sdk.isolation_scope() as scope:
+        scope.set_tag("synthetic", "warm")
+        return _warm_cholder(app)
+
+
+def _warm_cholder(app) -> tuple[int, int]:
     from webbsite.routes.ccass import cholder_warm_list, kept_cholder_rows
 
     try:
@@ -80,18 +94,25 @@ def warm_cholder(app) -> tuple[int, int]:
     except Exception as ex:
         print(f"FAIL cholder list: {ex}", flush=True)
         return 0, 1
-    failed_n = 0
+    warmed = failed_n = in_a_row = 0
     for part in parts:
         url = f"/ccass/cholder.asp?part={part}"
         t0 = time.monotonic()
         try:
             with app.test_request_context():  # one connection and failure flag per list
                 kept_cholder_rows(part, d, False)
+            warmed += 1
+            in_a_row = 0
             print(f"ok 200 {(time.monotonic() - t0) * 1000:8.0f} ms  {url}", flush=True)
         except Exception as ex:
             failed_n += 1
+            in_a_row += 1
             print(f"FAIL {url}: {ex}", flush=True)
-    return len(parts) - failed_n, failed_n
+            if in_a_row >= STOP_AFTER:
+                print(f"FAIL cholder lists: stopped after {STOP_AFTER} failures in a row",
+                      flush=True)
+                break
+    return warmed, failed_n
 
 
 def main(urls=None, app=None) -> int:

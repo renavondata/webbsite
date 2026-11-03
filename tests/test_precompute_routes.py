@@ -377,6 +377,60 @@ def test_warming_counts_failures_and_carries_on(client, monkeypatch, capsys):
     assert warm.warm_cholder(client.application) == (0, 1)
 
 
+def test_warming_stops_when_lists_keep_failing(client, monkeypatch):
+    from webbsite import warm
+
+    tried = []
+
+    def fail(part, d, z):
+        tried.append(part)
+        raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", lambda: ("2024-06-03", list(range(50))))
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail)
+    assert warm.warm_cholder(client.application) == (0, warm.STOP_AFTER)
+    assert len(tried) == warm.STOP_AFTER
+
+
+def test_warming_a_failure_reaches_sentry_tagged_synthetic(client, monkeypatch):
+    import logging
+
+    import sentry_sdk
+
+    from webbsite import warm
+
+    events = []
+
+    def keep(event, hint):
+        events.append(event)
+
+    def fail(part, d, z):
+        logging.getLogger("webbsite.db").error("timed out")
+        raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", lambda: ("2024-06-03", [1]))
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail)
+    sentry_sdk.init(dsn="http://k@127.0.0.1:1/1", before_send=keep, default_integrations=True)
+    try:
+        warm.warm_cholder(client.application)
+    finally:
+        sentry_sdk.init()
+    assert events, "no event captured"
+    assert all(e.get("tags", {}).get("synthetic") == "warm" for e in events), events
+
+
+def test_lists_kept_for_a_month_are_not_crowded_out_by_warming(client, monkeypatch):
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2025-10-10")
+    assert _cholder_computes(client, "/ccass/cholder.asp?part=41&d=2024-06-03") == 1
+    assert any(f.startswith("p41_") for f in _files("cholderkept"))
+    assert not any(f.startswith("p41_") for f in _files("cholder"))
+    # A recent date, which is what warming writes, goes in the other page.
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    assert _cholder_computes(client, "/ccass/cholder.asp?part=42") == 1
+    assert any(f.startswith("p42_") for f in _files("cholder"))
+    assert not any(f.startswith("p42_") for f in _files("cholderkept"))
+
+
 def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
     old = "/ccass/cholder.asp?part=31&d=2024-06-03"
     latest = "/ccass/cholder.asp?part=31"

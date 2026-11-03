@@ -525,8 +525,8 @@ def cparticipants():
     )
 
 
-# Holdings lists kept on disk across all participants and dates: a few hundred
-# MB at worst, and evicting one only costs its next visitor a compute.
+# Holdings lists kept on disk per page, across all participants and dates: a few
+# hundred MB at worst, and evicting one only costs its next visitor a compute.
 CHOLDER_KEPT = 2000
 
 
@@ -625,8 +625,13 @@ def kept_cholder_rows(part, d, z):
 
     A cold big custodian takes 2.5 s, nearly all of it disk reads, so each participant
     and date is computed once however many sorts are asked for.
+
+    Lists kept for a month have a page of their own: warming writes about 600 lists
+    each trading day, which would otherwise push them past the cap in days.
     """
-    return precomputed("cholder", f"p{part}_{d}_z{int(bool(z))}", _holdings_sources(d),
+    sources = _holdings_sources(d)
+    page = "cholderkept" if "month" in sources else "cholder"
+    return precomputed(page, f"p{part}_{d}_z{int(bool(z))}", sources,
                        lambda: _cholder_rows(part, d, z),
                        module=__name__, max_entries=CHOLDER_KEPT)
 
