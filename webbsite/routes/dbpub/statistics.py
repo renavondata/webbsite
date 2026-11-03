@@ -4323,6 +4323,7 @@ def hk_stocks_by_board_lot():
 
 # 17,000 rows take 340 ms to render on every request; 500 take about 15 ms.
 DIRECTORS_PER_PAGE = 500
+DIRECTOR_DATES_KEPT = 50  # a dated list is about 1 MB on disk
 
 
 @bp.route("/dirsHKPerPerson.asp")
@@ -4403,9 +4404,16 @@ def dirs_hk_per_person():
     """
 
     try:
-        directors = sort_rows(_today_or_live(
-            "dirshkperperson", d,
-            lambda: execute_query(sql, (d_str,) * 4, timeout_s=30)), sort_spec)
+        def compute():
+            return execute_query(sql, (d_str,) * 4, timeout_s=30)
+
+        # Each page of a date reads the whole list, so another date is kept too: 35
+        # pages must not mean 35 runs of a query taking 400 ms to 3 s.
+        directors = sort_rows(
+            _today_or_live("dirshkperperson", d, compute) if d == date.today() else
+            precomputed("dirshkperpersondated", d_str, ("enigma", "today"), compute,
+                        module=__name__, max_entries=DIRECTOR_DATES_KEPT),
+            sort_spec)
         page = current_page(directors, DIRECTORS_PER_PAGE)
 
         # Build sort links using sl() helper

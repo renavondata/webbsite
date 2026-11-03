@@ -5,6 +5,7 @@ Direct ports to maintain compatibility with ASP logic
 
 from datetime import datetime, date
 from urllib.parse import urlencode
+from webbsite.pagination import page_number
 from flask import request
 from markupsafe import Markup
 import re
@@ -89,17 +90,13 @@ def canonical_query() -> str:
     kept = [
         (k, v)
         for k, v in request.args.items(multi=True)
-        if k.lower() not in drop and defaults.get(k.lower()) != v
-        and (k != "page" or _page_is_its_own_url(v))
+        if k != "page" and k.lower() not in drop and defaults.get(k.lower()) != v
     ]
+    # The value the route read, whatever follows it: only page 2 onwards unsorted is
+    # content; page 1, a sorted page and page=all are not.
+    if "sort" not in request.args and (page_number(request.args.get("page")) or 1) > 1:
+        kept.append(("page", request.args["page"]))
     return urlencode(kept)
-
-
-def _page_is_its_own_url(value) -> bool:
-    """Page 2 onwards unsorted is content; page 1, a sorted page and page=all are not."""
-    from webbsite.pagination import page_number
-
-    return (page_number(value) or 1) > 1 and "sort" not in request.args
 
 
 # ===== REQUEST PARAMETER HELPERS =====

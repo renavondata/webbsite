@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 os.environ.setdefault("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
 
+from webbsite import precompute  # noqa: E402
 from webbsite.pagination import page_number, paginate  # noqa: E402
 
 N = 1203
@@ -133,6 +134,33 @@ def test_canonical_keeps_page_only_above_one_and_unsorted(client):
     assert _canonical(_body(client, "?page=1")) == URL
     assert _canonical(_body(client, "?page=junk")) == URL
     assert _canonical(_body(client, "?page=2&sort=namup")) == URL
+
+
+def test_canonical_reads_the_page_the_route_read(client):
+    assert _canonical(_body(client, "?page=1&page=2")) == URL
+    assert _canonical(_body(client, "?page=all&page=2")) == URL
+    assert _canonical(_body(client, "?page=2&page=3")) == f"{URL}?page=2"
+    assert _names(_body(client, "?page=2&page=3"))[0] == "n00500"
+
+
+def test_every_page_of_a_date_comes_from_one_compute(client, monkeypatch):
+    runs = []
+
+    def spy(*a, **k):
+        runs.append(1)
+        return [{"director": i, "name": f"n{i:05d}", "numseats": 1, "ined": 0, "yob": 1960,
+                 "sex": "M", "o_name": i, "o_sex": 1} for i in range(N)]
+
+    monkeypatch.setattr("webbsite.routes.dbpub.statistics.execute_query", spy)
+    monkeypatch.setitem(precompute.SOURCES, "enigma", lambda: "e1")
+    for query in ("?d=2020-01-01", "?d=2020-01-01&page=2", "?d=2020-01-01&page=3&sort=namdn"):
+        _body(client, query)
+    assert len(runs) == 1
+    today = date.today().isoformat()
+    assert not list((precompute.cache_root() / "dirshkperpersondated").glob(f"{today}*"))
+    _body(client, f"?d={today}")
+    assert not list((precompute.cache_root() / "dirshkperpersondated").glob(f"{today}*")), \
+        "today's view is the warmed copy, not a dated one"
 
 
 def test_head_links_and_robots(client):
