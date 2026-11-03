@@ -11,7 +11,7 @@ from webbsite.precompute import ordinal, precomputed, sort_rows
 bp = Blueprint("dbpub_listings", __name__)
 
 
-# At most ~0.5 MB each, and a data refresh supersedes them all.
+# At most ~0.5 MB each, and all of them expire daily.
 LISTED_DATED_KEPT = 200
 
 
@@ -129,9 +129,10 @@ def listed():
     # Three return functions per listing (each ~10 quote lookups) over every
     # listed stock timed out cold at 8 s (WEBBSITE-21). Today's view of each
     # validated e/t is computed once per data version and day, then sorted in
-    # Python per request. A pinned ?d= gets its own copy for as long as the data
-    # stands: bots walk the sort links of a dated page, each one a full compute
-    # (WEBBSITE-21 again). Its own page, so dated copies never evict the warmed ones.
+    # Python per request. A pinned ?d= gets its own copy for the day: bots walk the
+    # sort links of a dated page, each one a full compute (WEBBSITE-21 again). Today
+    # is in its version because a load can rewrite rows without moving a watermark.
+    # Its own page, so dated copies never evict the warmed ones.
     def pct(v):
         return "" if v is None else f"{v * 100:.2f}"
 
@@ -165,7 +166,7 @@ def listed():
             rows = precomputed("listed", f"{e_eff}_{t_eff}", ("market", "enigma", "today"),
                                compute, module=__name__)
         else:
-            rows = precomputed("listeddated", f"{e_eff}_{t_eff}_{d}", ("market", "enigma"),
+            rows = precomputed("listeddated", f"{e_eff}_{t_eff}_{d}", ("market", "enigma", "today"),
                                compute, module=__name__, max_entries=LISTED_DATED_KEPT)
         stocks = sort_rows(rows, sort_spec)
     except Exception as ex:

@@ -227,6 +227,10 @@ def test_listed_pinned_dates_keep_their_own_copy(client, monkeypatch):
     assert not any("2021" in f for f in _files("listed")), "dated copy under the warmed page"
     monkeypatch.setitem(precompute.SOURCES, "market", lambda: "m2")
     assert _dense_rank_computes(client, old) == 1, "a data refresh must supersede it"
+    # A load that rewrites rows without moving a watermark changes no version: a day
+    # is the longest such a copy may stand.
+    monkeypatch.setitem(precompute.SOURCES, "today", lambda: "tomorrow")
+    assert _dense_rank_computes(client, old) == 1, "a dated copy outlived its day"
 
 
 def test_listed_today_and_junk_dates_share_the_default_copy(client):
