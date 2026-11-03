@@ -62,7 +62,7 @@ def _row(i):
         "os": n * 1000, "totsh": n * 1000, "pendmcap": n * 1000, "pricedate": None,
         "fee": i, "sal": i, "bon": 0, "ret": 0, "sha": 0, "tot": 2 * i, "sehkcurr": 0,
         "currency": "HKD", "rolelong": "Auditor", "onetime": False, "count": 0,
-        "roleid": 0, "issuer": i, "i": i, "lot": 1000,
+        "roleid": 0, "issuer": i, "i": i, "lot": 1000, "partid": i,
         # one participant's holdings
         "max": date(2024, 6, 3), "partname": "p", "ccassid": "C1", "holding": n * 100,
         "atdate": date(2024, 6, i), "lastcode": f"{i:04d}", "valn": n * 500, "susp": False,
@@ -340,6 +340,41 @@ def test_cholder_keeps_real_participants_only(client):
     assert _cholder_computes(client, url) == 1
     assert _cholder_computes(client, url) == 1, "an unknown participant is not kept"
     assert _files("cholder") == before, "an unknown participant wrote a file"
+
+
+def test_warming_fills_what_the_page_reads(client, monkeypatch):
+    from webbsite import warm
+
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    app = client.application
+    calls.clear()
+    assert warm.warm_cholder(app) == (3, 0)
+    assert sum("dense_rank" in c for c in calls) == 3
+    for part in (1, 2, 3):
+        assert _cholder_computes(client, f"/ccass/cholder.asp?part={part}") == 0, part
+    calls.clear()
+    assert warm.warm_cholder(app) == (3, 0)
+    assert not any("dense_rank" in c for c in calls), "a current list recomputed"
+
+
+def test_warming_counts_failures_and_carries_on(client, monkeypatch, capsys):
+    from webbsite import warm
+
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+
+    def fail_one(part, d, z):
+        if part == 2:
+            raise RuntimeError("timed out")
+
+    monkeypatch.setattr("webbsite.routes.ccass.kept_cholder_rows", fail_one)
+    assert warm.warm_cholder(client.application) == (2, 1)
+    assert "FAIL /ccass/cholder.asp?part=2" in capsys.readouterr().out
+
+    def no_list():
+        raise RuntimeError("database away")
+
+    monkeypatch.setattr("webbsite.routes.ccass.cholder_warm_list", no_list)
+    assert warm.warm_cholder(client.application) == (0, 1)
 
 
 def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):

@@ -10,6 +10,10 @@ file read. Run by scripts/warm_loop.py every 10 minutes and after each deploy
 A page counts as failed when it is not a 200 or it rendered after a caught
 database error (the app marks those ``no-store``). Sequential on purpose: the
 heavy pages compete for the same disk, and nobody is waiting on this.
+
+Participant holdings lists are warmed by calling the kept compute directly and not
+through the page: there are about 600, and rendering them all every round would cost
+far more than the file reads that a round of already current lists comes to.
 """
 
 from __future__ import annotations
@@ -66,12 +70,37 @@ def failed(response) -> bool:
     return response.status_code != 200 or "no-store" in response.headers.get("Cache-Control", "")
 
 
+def warm_cholder(app) -> tuple[int, int]:
+    """Every active participant's default list; returns (warmed, failed)."""
+    from webbsite.routes.ccass import cholder_warm_list, kept_cholder_rows
+
+    try:
+        with app.test_request_context():
+            d, parts = cholder_warm_list()
+    except Exception as ex:
+        print(f"FAIL cholder list: {ex}", flush=True)
+        return 0, 1
+    failed_n = 0
+    for part in parts:
+        url = f"/ccass/cholder.asp?part={part}"
+        t0 = time.monotonic()
+        try:
+            with app.test_request_context():  # one connection and failure flag per list
+                kept_cholder_rows(part, d, False)
+            print(f"ok 200 {(time.monotonic() - t0) * 1000:8.0f} ms  {url}", flush=True)
+        except Exception as ex:
+            failed_n += 1
+            print(f"FAIL {url}: {ex}", flush=True)
+    return len(parts) - failed_n, failed_n
+
+
 def main(urls=None, app=None) -> int:
     if app is None:
         from webbsite import create_app
 
         app = create_app()
     client = app.test_client()
+    warm_lists = urls is None
     urls = urls or warm_urls()
     failures = []
     started = time.monotonic()
@@ -84,10 +113,11 @@ def main(urls=None, app=None) -> int:
               f"{r.headers.get('Server-Timing', '')}", flush=True)
         if status == "FAIL":
             failures.append(url)
+    lists_ok, lists_failed = warm_cholder(app) if warm_lists else (0, 0)
     total = time.monotonic() - started
-    print(f"warmed {len(urls) - len(failures)} pages in {total:.1f} s; "
-          f"{len(failures)} failed", flush=True)
-    return 1 if failures else 0
+    print(f"warmed {len(urls) - len(failures)} pages and {lists_ok} lists in {total:.1f} s; "
+          f"{len(failures) + lists_failed} failed", flush=True)
+    return 1 if failures or lists_failed else 0
 
 
 if __name__ == "__main__":
