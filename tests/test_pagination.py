@@ -170,3 +170,25 @@ def test_head_links_and_robots(client):
     robots = client.get("/robots.txt").get_data(as_text=True)
     for rule in ("/*page=all", "/*sort=*page=", "/*page=*sort="):
         assert f"Disallow: {rule}\n" in robots
+
+
+def test_sfc_average_covers_every_firm_not_one_page(monkeypatch, tmp_path):
+    monkeypatch.setenv("WEBBSITE_CACHE_DIR", str(tmp_path))
+    from webbsite import create_app
+
+    def row(i):
+        return {"orgid": i, "name": f"n{i:05d}", "o_name": i, "aro": 2 if i < 500 else 4, "arep": 0,
+                "acnt": 1, "bro": 0, "brep": 0, "bcnt": 0, "cro": 0, "crep": 0, "ccnt": 0,
+                "arat": None, "brat": None, "startdate": None, "enddate": None}
+
+    monkeypatch.setattr("webbsite.routes.dbpub.sfc.precomputed",
+                        lambda *a, **k: [row(i) for i in range(N)])
+    r = create_app().test_client().get("/dbpub/SFClicount.asp")
+    body = r.get_data(as_text=True)
+    assert r.status_code == 200
+    assert len(re.findall(r">n\d{5}<", body)) == 500
+    # 500 firms at 2 and 703 at 4 average 3.17; the first page alone would say 2.00.
+    assert f"{(500 * 2 + (N - 500) * 4) / N:.2f}" in body.split('class="total"')[1]
+    assert f'data-total-rows="{N}"' in body
+    assert '<td class="colHide1">501</td>' in create_app().test_client().get(
+        "/dbpub/SFClicount.asp?page=2").get_data(as_text=True)

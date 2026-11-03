@@ -652,6 +652,7 @@ def sort_links(body, page_path):
 # Paginated pages (webbsite/pagination.py): path, base query, page size, a sort.
 PAGINATED = [
     ("/dbpub/dirsHKPerPerson.asp", {}, 500, "namup"),
+    ("/dbpub/SFClicount.asp", {}, 500, "namup"),
 ]
 TOTAL_ROWS = re.compile(r'data-total-rows="(\d+)"')
 
