@@ -166,10 +166,12 @@ def _stop_accepting(worker) -> bool:
 def post_worker_init(worker):
     """A reload or stop must not reset connections either.
 
-    Each worker told to go by SIGTERM reset about one connection per reload under
-    traffic (15 in 15 reloads against stock's handler, 0 with this; two 502s on the
-    2026-11-03 12:53 deploy). worker._lock is reentrant, so the handler can't deadlock
-    against the main thread it interrupts.
+    The stock handler only clears alive, and epoll resumes with the listener still
+    registered: the next connection is accepted, the loop exits without serving it, and
+    exit resets it. Two 502s on the 2026-11-03 12:53 deploy; 15 resets in 15 reloads
+    locally, 0 with this. A SIGTERM landing just after select returns can still lose one.
+    worker._lock is reentrant, so the handler can't deadlock against the main thread it
+    interrupts. signal.signal resets siginterrupt, so gunicorn's setting is restored.
     """
     stock = worker.handle_exit
 
@@ -178,6 +180,7 @@ def post_worker_init(worker):
         stock(sig, frame)
 
     signal.signal(signal.SIGTERM, stop_then_exit)
+    signal.siginterrupt(signal.SIGTERM, False)
 
 
 def worker_int(worker):

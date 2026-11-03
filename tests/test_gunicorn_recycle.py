@@ -176,6 +176,20 @@ def test_reloading_resets_no_connections(tmp_path):
     assert "Error handling request" not in text, text[-800:]
 
 
+def test_sigterm_keeps_gunicorns_restart_setting():
+    conf = runpy.run_path(str(CONF))
+    before = signal.getsignal(signal.SIGTERM)
+    seen = []
+    real = signal.siginterrupt
+    try:
+        signal.siginterrupt = lambda sig, flag: (seen.append((sig, flag)), real(sig, flag))
+        conf["post_worker_init"](SimpleNamespace(handle_exit=lambda *a: None))
+    finally:
+        signal.siginterrupt = real
+        signal.signal(signal.SIGTERM, before)
+    assert seen == [(signal.SIGTERM, False)]
+
+
 def _worker(nr, max_requests, **kw):
     return SimpleNamespace(nr=nr, max_requests=max_requests, alive=True, **kw)
 
