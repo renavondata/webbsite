@@ -206,6 +206,15 @@ def sweep(page_dir: Path, max_entries: int, now: float | None = None) -> None:
                 groups.setdefault(p.name.split(".", 1)[0], []).append(p)
         except OSError:
             pass
+    # A variant whose computes only ever failed has no .pkl, so the cap below never
+    # sees its .lock and .err: a stall over many distinct dates would leave them.
+    for p in files:
+        try:
+            if (p.suffix in (".lock", ".err") and p.stem not in groups
+                    and now - p.stat().st_mtime > GRACE_S):
+                p.unlink(missing_ok=True)
+        except OSError:
+            pass
     newest = []
     for paths in groups.values():
         try:

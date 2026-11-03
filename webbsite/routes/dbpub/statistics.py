@@ -2854,7 +2854,7 @@ def advbyrole():
     defaults = (from_year == now_year - 1 and to_year == now_year and days == 365)
     try:
         if defaults and role_known:
-            rows = precomputed("advbyrole", f"r{r}_{from_year}_{to_year}", ("market", "enigma",),
+            rows = precomputed("advbyrole", f"r{r}_{from_year}_{to_year}", ("market", "enigma", "today"),
                                compute, module=__name__)
         else:
             rows = compute()

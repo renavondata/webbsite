@@ -262,6 +262,29 @@ def test_sfc_unknown_activity_with_dates_writes_no_files(client):
     assert _files("sfclicountdated") == before
 
 
+@pytest.mark.parametrize("module, url", [
+    ("webbsite.routes.ccass", "/ccass/cconc.asp?d=2024-06-03"),
+    ("webbsite.routes.ccass", "/ccass/ipstakes.asp?d=2024-06-03"),
+    ("webbsite.routes.ccass", "/ccass/cholder.asp?part=51"),
+    ("webbsite.routes.dbpub.short_selling", "/dbpub/shortsum.asp"),
+    ("webbsite.routes.dbpub.statistics", "/dbpub/advbyrole.asp"),
+])
+def test_market_pages_expire_daily(client, monkeypatch, module, url):
+    """A load can rewrite rows without moving a watermark, so `market` alone could
+    keep a copy indefinitely if the feed then stopped."""
+    seen = []
+
+    def spy(page, variant, sources, compute, **kw):
+        seen.append(sources)
+        return []
+
+    monkeypatch.setattr(f"{module}.precomputed", spy)
+    # Recent, for cholder: the stub calendar answers this date.
+    monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: "2024-06-03")
+    assert client.get(url).status_code == 200, url
+    assert seen and all("today" in s for s in seen), (url, seen)
+
+
 def test_ids_that_do_not_exist_write_no_files(client):
     before = {page: _files(page) for page in
               ("oldesthkcos", "sfclicount", "inchkcaltype", "dishkcaltype", "incukcaltype")}
@@ -329,13 +352,13 @@ def test_cholder_old_dates_survive_a_data_refresh(client, monkeypatch):
     done = "2025-10-10"
     # Stubbed here: the real one memoises whatever an earlier test's stub answered.
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
-    assert _holdings_sources(done) == ("market", "enigma")
-    assert _holdings_sources("2025-09-26") == ("market", "enigma")
+    assert _holdings_sources(done) == ("market", "enigma", "today")
+    assert _holdings_sources("2025-09-26") == ("market", "enigma", "today")
     assert _holdings_sources("2025-09-25") == ("month", "enigma")
     # A stalled feed: dates beyond the load stay tied to the data version.
-    assert _holdings_sources("2026-01-01") == ("market", "enigma")
+    assert _holdings_sources("2026-01-01") == ("market", "enigma", "today")
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: None)
-    assert _holdings_sources("2024-06-03") == ("market", "enigma"), "no watermark, nothing pinned"
+    assert _holdings_sources("2024-06-03") == ("market", "enigma", "today"), "no watermark, nothing pinned"
     monkeypatch.setattr("webbsite.watermarks.ccass_done", lambda: done)
     monkeypatch.setitem(precompute.SOURCES, "month", lambda: "2026-11")
 
