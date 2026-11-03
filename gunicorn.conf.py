@@ -30,7 +30,11 @@ timeout = 60  # Most queries are fast (8s DB statement_timeout); a few heavy,
               # deterministic, edge-cached analytical pages (e.g. leagueDirsHK's
               # ~23k cagrel() calls) need a cold-compute headroom under 60s.
 graceful_timeout = 15  # Give workers 15s to finish in-flight requests during restart
-keepalive = 5
+# No keep-alive to Caddy: it pools idle connections, and when a worker recycles
+# (max_requests below) it closes the ones it holds, so a request Caddy has just
+# written on one becomes a 502. All 44 such 502s on 2026-11-01..03 fell within
+# 0.5 s of a worker exit. Loopback connects cost next to nothing.
+keepalive = 0
 
 # Restart workers after this many requests (helps prevent memory leaks)
 max_requests = 1000
