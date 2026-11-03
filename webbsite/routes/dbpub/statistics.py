@@ -10,11 +10,13 @@ import io
 import re
 from urllib.parse import quote as url_quote
 from sqlalchemy import text
+from werkzeug.exceptions import HTTPException
 from webbsite.db import execute_query, execute_scalar, get_db, stream_query
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_dbl, get_date_or_default
 from webbsite import watermarks
 from webbsite.crhk import crhk_company_url
 
+from webbsite.pagination import current_page
 from webbsite.precompute import ordinal, precomputed, sort_rows
 from webbsite.sqlfrag import cum_adjust
 
@@ -4319,6 +4321,10 @@ def hk_stocks_by_board_lot():
 # HK companies incorporated per year
 
 
+# 17,000 rows take 340 ms to render on every request; 500 take about 15 ms.
+DIRECTORS_PER_PAGE = 500
+
+
 @bp.route("/dirsHKPerPerson.asp")
 def dirs_hk_per_person():
     """
@@ -4400,6 +4406,7 @@ def dirs_hk_per_person():
         directors = sort_rows(_today_or_live(
             "dirshkperperson", d,
             lambda: execute_query(sql, (d_str,) * 4, timeout_s=30)), sort_spec)
+        page = current_page(directors, DIRECTORS_PER_PAGE)
 
         # Build sort links using sl() helper
         base_url = f"/dbpub/dirsHKPerPerson.asp?d={d_str}"
@@ -4412,7 +4419,7 @@ def dirs_hk_per_person():
         }
 
         # Calculate ages
-        for director in directors:
+        for director in page.rows:
             if director["yob"]:
                 director["age"] = snap_year - director["yob"]
             else:
@@ -4421,13 +4428,15 @@ def dirs_hk_per_person():
         return render_template(
             "dbpub/dirs_hk_per_person.html",
             title=f"HK-listed directorships per person at {d_str}",
-            directors=directors,
+            page=page,
             d=d_str,
             snap_year=snap_year,
             sort=sort_param,
             sort_links=sort_links,
             mobile_alert=mobile(3),
         )
+    except HTTPException:
+        raise  # a page past the end is a 404, not a failure
     except Exception as e:
         current_app.logger.error(f"Error in dirs_hk_per_person: {e}")
         abort(500)

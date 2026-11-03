@@ -96,6 +96,7 @@ ROBOTS_DISALLOW = (
     "/CSV.asp", "/dbpub/CSV.asp", "/dbpub/pricesCSV.asp", "/dbpub/govacCSV.asp",
     "/dbeditor/", "/webbmail/", "/vote/", "/pollman/", "/mailman/", "/contact/",
     "/_probe/",
+    "/*page=all", "/*sort=*page=", "/*page=*sort=",  # webbsite/pagination.py
 )
 
 # /_probe/swr/<variant>: which header does Cloudflare honour stale-while-revalidate
@@ -638,6 +639,9 @@ def create_app(config_class=Config):
     # Expose canonical_query() to templates (base.html builds rel=canonical from it).
     from webbsite.asp_helpers import canonical_query
     app.jinja_env.globals["canonical_query"] = canonical_query
+    from webbsite.pagination import page_url
+
+    app.jinja_env.globals["page_url"] = page_url
 
     # Custom error handlers
     from webbsite.db import QueryTimeoutError

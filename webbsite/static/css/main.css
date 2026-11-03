@@ -140,6 +140,10 @@ p.revisedate {
 	position:relative;
 	top:-10px;
 }
+.pager {
+	margin: 0.5em 0;
+}
+
 .inputs {
 	margin:5px 5px 5px 0;
 	float:left;

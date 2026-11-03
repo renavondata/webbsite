@@ -1,0 +1,7 @@
+{% if page is defined %}
+{% if page.showing_all %}<meta name="robots" content="noindex">
+{% else %}
+{% if page.number > 1 %}<link rel="prev" href="{{ page_url(page.number - 1) }}">
+{% endif %}{% if page.number < page.pages %}<link rel="next" href="{{ page_url(page.number + 1) }}">
+{% endif %}{% endif %}
+{% endif %}

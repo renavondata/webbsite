@@ -649,6 +649,50 @@ def sort_links(body, page_path):
     return found
 
 
+# Paginated pages (webbsite/pagination.py): path, base query, page size, a sort.
+PAGINATED = [
+    ("/dbpub/dirsHKPerPerson.asp", {}, 500, "namup"),
+]
+TOTAL_ROWS = re.compile(r'data-total-rows="(\d+)"')
+
+
+def check_pagination():
+    """Page 2 has rows, past the end is a 404, page=all has them all, and a sort
+    changes neither the total nor the first page's length."""
+    failures = []
+    for path, query, size, sort in PAGINATED:
+        def fetch(**extra):
+            code, body = probe(url_for(path, {**query, **extra}))
+            total = TOTAL_ROWS.search(body or "")
+            return code, int(total[1]) if total else None, len(ROW.findall(body or ""))
+
+        code, total, rows = fetch()
+        problems = []
+        if code != 200 or not total:
+            problems.append(f"first page: status {code}, total {total}")
+        else:
+            header_rows = rows - min(size, total)
+            s_code, s_total, s_rows = fetch(sort=sort)
+            if (s_code, s_total, s_rows) != (200, total, rows):
+                problems.append(f"sorted: {s_code}, total {s_total}, {s_rows} rows; want {total}, {rows}")
+            if total > size:
+                p2_code, _, p2_rows = fetch(page="2")
+                if p2_code != 200 or p2_rows - header_rows != min(size, total - size):
+                    problems.append(f"page 2: status {p2_code}, {p2_rows} rows")
+            past, _, _ = fetch(page="99999")
+            if past != 404:
+                problems.append(f"past the end: status {past}")
+            a_code, _, a_rows = fetch(page="all")
+            if a_code != 200 or a_rows - header_rows != total:
+                problems.append(f"page=all: status {a_code}, {a_rows} rows, total {total}")
+        for problem in problems:
+            failures.append(f"PAGINATION {path}: {problem}")
+            print(f"  FAIL  {path}: {problem}")
+        if not problems:
+            print(f"  ok    pagination {path} ({total} rows)")
+    return failures
+
+
 def main():
     print(f"Route-health gate against {BASE_URL}\n" + "=" * 60)
     failures = []
@@ -680,6 +724,9 @@ def main():
             print(f"  FAIL  {label}  (empty marker '{must_not}')")
         else:
             print(f"  ok    {label}")
+
+    print("-" * 60)
+    failures += check_pagination()
 
     # 2.5) reconciliations vs verified siblings (correctness, not just liveness)
     print("-" * 60)

@@ -1,0 +1,11 @@
+{% if page is defined and page.pages > 1 %}
+<p class="pager">
+{% if page.showing_all %}Showing all {{ "{:,}".format(page.total) }}. <a href="{{ page_url(1) }}">Show in pages</a>
+{% else %}Showing {{ "{:,}".format(page.first) }}&ndash;{{ "{:,}".format(page.last) }} of {{ "{:,}".format(page.total) }}.
+{% if page.number > 1 %}<a rel="prev" href="{{ page_url(page.number - 1) }}">Previous</a> {% endif %}
+Page {{ page.number }} of {{ page.pages }}
+{% if page.number < page.pages %} <a rel="next" href="{{ page_url(page.number + 1) }}">Next</a>{% endif %}
+&middot; <a rel="nofollow" href="{{ page_url('all') }}">Show all</a>
+{% endif %}
+</p>
+{% endif %}

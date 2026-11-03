@@ -90,8 +90,16 @@ def canonical_query() -> str:
         (k, v)
         for k, v in request.args.items(multi=True)
         if k.lower() not in drop and defaults.get(k.lower()) != v
+        and (k != "page" or _page_is_its_own_url(v))
     ]
     return urlencode(kept)
+
+
+def _page_is_its_own_url(value) -> bool:
+    """Page 2 onwards unsorted is content; page 1, a sorted page and page=all are not."""
+    from webbsite.pagination import page_number
+
+    return (page_number(value) or 1) > 1 and "sort" not in request.args
 
 
 # ===== REQUEST PARAMETER HELPERS =====
