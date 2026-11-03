@@ -145,6 +145,12 @@ def pre_request(worker, req):
     """
     if worker.nr + 1 < worker.max_requests:
         return
+    if _stop_accepting(worker):
+        worker.alive = False
+
+
+def _stop_accepting(worker) -> bool:
+    """Take the listeners out of the worker's event loop; False if it has no such loop."""
     try:
         with worker._lock:
             for sock in worker.sockets:
@@ -152,9 +158,29 @@ def pre_request(worker, req):
                     worker.poller.unregister(sock)
                 except (KeyError, ValueError, OSError):
                     pass  # another thread got here first, or the loop has already closed it
-    except AttributeError:
-        return
-    worker.alive = False
+    except (AttributeError, TypeError):  # TypeError: no lock yet
+        return False
+    return True
+
+
+def post_worker_init(worker):
+    """A reload or stop must not reset connections either.
+
+    The stock handler only clears alive, and epoll resumes with the listener still
+    registered: the next connection is accepted, the loop exits without serving it, and
+    exit resets it. Two 502s on the 2026-11-03 12:53 deploy; 15 resets in 15 reloads
+    locally, 0 with this. A SIGTERM landing just after select returns can still lose one.
+    worker._lock is reentrant, so the handler can't deadlock against the main thread it
+    interrupts. signal.signal resets siginterrupt, so gunicorn's setting is restored.
+    """
+    stock = worker.handle_exit
+
+    def stop_then_exit(sig, frame):
+        _stop_accepting(worker)
+        stock(sig, frame)
+
+    signal.signal(signal.SIGTERM, stop_then_exit)
+    signal.siginterrupt(signal.SIGTERM, False)
 
 
 def worker_int(worker):

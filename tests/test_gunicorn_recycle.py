@@ -8,6 +8,7 @@ import os
 import random
 import runpy
 import select
+import signal
 import socket
 import subprocess
 import sys
@@ -35,6 +36,7 @@ RATE, SECONDS, MAX_REQUESTS, MIN_EXITS = 200, 25, 200, 15
 # Stock gunicorn resets about one exit in four here. Allow one rather than none: this
 # gates CI, and a loaded runner can still lose a rare race.
 MAX_RESETS = 1
+RELOADS = 6
 
 
 def _conf(port):
@@ -42,6 +44,7 @@ def _conf(port):
 import runpy
 _real = runpy.run_path({str(CONF)!r})
 pre_request = _real["pre_request"]
+post_worker_init = _real["post_worker_init"]
 keepalive = _real["keepalive"]
 worker_class = _real["worker_class"]
 threads = _real["threads"]
@@ -58,7 +61,7 @@ def _free_port():
         return s.getsockname()[1]
 
 
-def _drive(port):
+def _drive(port, rate=RATE, seconds=SECONDS):
     """Open-loop GETs through a pool that drops connections it can see are dead."""
     pool, lock, results = [], threading.Lock(), {"ok": 0, "reset": 0}
 
@@ -91,12 +94,12 @@ def _drive(port):
                 results["reset"] += 1
             conn.close()
 
-    threads, end = [], time.monotonic() + SECONDS
+    threads, end = [], time.monotonic() + seconds
     while time.monotonic() < end:
         t = threading.Thread(target=one)
         t.start()
         threads.append(t)
-        time.sleep(random.expovariate(RATE))
+        time.sleep(random.expovariate(rate))
     for t in threads:
         t.join()
     return results
@@ -132,6 +135,59 @@ def test_recycling_resets_no_connections(tmp_path):
     assert exits >= MIN_EXITS, f"too few recycles to prove anything: {exits}\n{text[-500:]}"
     assert results["reset"] <= MAX_RESETS, (results, exits)
     assert "Error handling request" not in text, text[-800:]
+
+
+def test_reloading_resets_no_connections(tmp_path):
+    """Each reload lost about one connection before post_worker_init: 15 in 15."""
+    port = _free_port()
+    (tmp_path / "recycleapp.py").write_text("import time\ntime.sleep(1)\n" + APP)
+    conf = tmp_path / "conf.py"
+    conf.write_text(_conf(port).replace(f"max_requests = {MAX_REQUESTS}", "max_requests = 100000"))
+    log = tmp_path / "g.log"
+    env = {k: v for k, v in os.environ.items() if k != "DATABASE_URL"}
+    with log.open("w") as out:
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "gunicorn", "-c", str(conf), "--chdir", str(tmp_path),
+             "recycleapp:app"],
+            stdout=out, stderr=subprocess.STDOUT, env=env, cwd=tmp_path)
+    results = {}
+    try:
+        deadline = time.monotonic() + 15
+        while True:
+            try:
+                socket.create_connection(("127.0.0.1", port), timeout=1).close()
+                break
+            except OSError:
+                assert time.monotonic() < deadline, log.read_text()
+                time.sleep(0.1)
+        time.sleep(2)
+        driver = threading.Thread(target=lambda: results.update(_drive(port, 40, RELOADS * 3 + 3)))
+        driver.start()
+        for _ in range(RELOADS):
+            time.sleep(3)
+            proc.send_signal(signal.SIGHUP)
+        driver.join()
+    finally:
+        proc.terminate()
+        proc.wait(timeout=30)
+    text = log.read_text()
+    assert text.count("Worker exiting") >= RELOADS * 3, text[-500:]
+    assert results["ok"] > 0 and results["reset"] <= MAX_RESETS, results
+    assert "Error handling request" not in text, text[-800:]
+
+
+def test_sigterm_keeps_gunicorns_restart_setting():
+    conf = runpy.run_path(str(CONF))
+    before = signal.getsignal(signal.SIGTERM)
+    seen = []
+    real = signal.siginterrupt
+    try:
+        signal.siginterrupt = lambda sig, flag: (seen.append((sig, flag)), real(sig, flag))
+        conf["post_worker_init"](SimpleNamespace(handle_exit=lambda *a: None))
+    finally:
+        signal.siginterrupt = real
+        signal.signal(signal.SIGTERM, before)
+    assert seen == [(signal.SIGTERM, False)]
 
 
 def _worker(nr, max_requests, **kw):
