@@ -205,6 +205,13 @@ retained only for parity and is deprecated in favour of parameterization.
   `sort_fixtures.SORT_PARAMS` (`tests/test_sort_fixtures.py` fails until it is).
 - Local dev DSN: `postgresql://postgres:@localhost:5432/enigma_pg`; production reads `DATABASE_URL`.
 
+### Intentional deviations from the ASP
+
+- **Pagination.** A list too long to render on each request is split into pages, by
+  the contract in `webbsite/pagination.py`; `page=all` still shows the whole table.
+  Paginated so far: `dirsHKPerPerson.asp`. List a new one in
+  `tests/check_all_routes.py` `PAGINATED`.
+
 ## Data revival
 
 Reviving collection is tracked in the **renavon-monorepo** roadmap

@@ -2,6 +2,8 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+{% block extra_head %}{% include 'includes/pager_head.html' %}{% endblock %}
+
 {% block content %}
 <h2>{{ title }}</h2>
 <p>This table shows the directors of companies with a
@@ -24,10 +26,11 @@ For a league table of average annual relative returns, <a href="/dbpub/leagueDir
     <div class="clear"></div>
 </form>
 
-<p>Number of people who are directors on the snapshot date: {{ directors|length }}</p>
+<p>Number of people who are directors on the snapshot date: {{ page.total }}</p>
 
 {{ mobile_alert|safe }}
-<table class="numtable yscroll">
+{% include 'includes/pager.html' %}
+<table class="numtable yscroll" data-total-rows="{{ page.total }}">
     <tr>
         <th class="colHide3"></th>
         <th class="left">{{ sort_links.name|safe }}</th>
@@ -36,9 +39,9 @@ For a league table of average annual relative returns, <a href="/dbpub/leagueDir
         <th>{{ sort_links.sex|safe }}</th>
         <th>{{ sort_links.age|safe }}</th>
     </tr>
-    {% for director in directors %}
+    {% for director in page.rows %}
     <tr>
-        <td class="colHide3">{{ loop.index }}</td>
+        <td class="colHide3">{{ loop.index + page.offset }}</td>
         <td class="left"><a href='/dbpub/positions.asp?p={{ director.director }}'>{{ director.name }}</a></td>
         <td>{{ director.numseats }}</td>
         <td>{{ director.ined }}</td>
@@ -47,4 +50,5 @@ For a league table of average annual relative returns, <a href="/dbpub/leagueDir
     </tr>
     {% endfor %}
 </table>
+{% include 'includes/pager.html' %}
 {% endblock %}
