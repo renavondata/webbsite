@@ -6,6 +6,7 @@ from flask import Blueprint, render_template, request, current_app
 from datetime import date, timedelta
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_str, get_date_or_default
+from webbsite.pagination import current_page
 from webbsite.precompute import ordinal, precomputed, sort_rows
 
 bp = Blueprint("dbpub_sfc", __name__)
@@ -540,6 +541,9 @@ def _licount_rows(act, da, db):
     )
 
 
+LICOUNT_PER_PAGE = 500  # 3,300 firms and 2.4 MB took 150 to 630 ms to render per request
+
+
 @bp.route("/SFClicount.asp")
 def sfc_licount():
     """
@@ -638,7 +642,7 @@ def sfc_licount():
 
     return render_template(
         "dbpub/sfc_licount.html",
-        stats=stats,
+        page=current_page(stats, LICOUNT_PER_PAGE),  # sums above cover the whole list
         sums=sums,
         da=da,
         db=db,

@@ -1,5 +1,7 @@
 {% extends "base_database.html" %}
 
+{% block extra_head %}{% include 'includes/pager_head.html' %}{% endblock %}
+
 {% block title %}SFC licensees per firm: {{ act_name }}{% endblock %}
 
 {% block content %}
@@ -47,7 +49,8 @@ SFC-licensed firms.</p>
 </form>
 
 <div class="widthAlert1"></div>
-<table class="numtable yscroll">
+{% include 'includes/pager.html' %}
+<table class="numtable yscroll" data-total-rows="{{ page.total }}">
 	<thead>
 		<tr>
 			<th class="colHide1"></th>
@@ -77,9 +80,9 @@ SFC-licensed firms.</p>
 			<th class="colHide1"><a href="?db={{ db }}&amp;da={{ da }}&amp;a={{ act }}&amp;sort={% if sort == 'eddn' %}edup{% else %}eddn{% endif %}">Licence<br>end</a></th>
 		</tr>
 	</thead>
-	{% for row in stats %}
+	{% for row in page.rows %}
 		<tr>
-			<td class="colHide1">{{ loop.index }}</td>
+			<td class="colHide1">{{ loop.index + page.offset }}</td>
 			<td class="left"><a href='SFClicensees.asp?p={{ row.orgid }}&amp;a={{ act }}&amp;h=Y&amp;sort=posdn&amp;d={{ da }}'>{{ row.name }}</a></td>
 			<td class="colHide1">{{ row.bro|int }}</td>
 			<td class="colHide1">{{ row.brep|int }}</td>
