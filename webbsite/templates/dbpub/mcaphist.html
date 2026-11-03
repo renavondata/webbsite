@@ -81,9 +81,9 @@
 				{% for row in curr_group.data %}
 				<tr>
 					<td class="left">
-						<a href="{{ url_for('dbpub_statistics.orgdata', p=row.issuer) }}">{{ row.name }}</a>
+						<a href="/dbpub/orgdata.asp?p={{ row.issuer }}">{{ row.name }}</a>
 					</td>
-					<td><a href="{{ url_for('dbpub_listings.code', code=row.stockcode) }}">{{ row.stockcode }}</a></td>
+					<td><a href="/dbpub/code.asp?code={{ row.stockcode }}">{{ row.stockcode }}</a></td>
 					<td>{{ row.typeshort }}</td>
 					<td class="right">{{ '{:.3f}'.format(row.closing) if row.closing else '-' }}</td>
 					<td class="right">{{ '{:,.0f}'.format(row.outstanding) if row.outstanding else '-' }}</td>
