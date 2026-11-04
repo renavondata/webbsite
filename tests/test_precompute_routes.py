@@ -10,8 +10,10 @@ tests/test_precompute_pg.py.
 Run:  uv run pytest -q tests/test_precompute_routes.py
 """
 
+import json
 import os
 import re
+import shutil
 import sys
 from datetime import date
 from decimal import Decimal
@@ -471,3 +473,85 @@ def test_cholder_sort_reorders_the_kept_rows(client):
     assert names("holdup") == ["n1", "n2", "n3"]
     assert names("namedn") == ["n3", "n2", "n1"]
     assert names("datedn") == ["n3", "n2", "n1"]
+
+
+# --- adviserships.asp: one kept list, sorted per request ------------------------------
+
+ADV_ROWS = [
+    {"orgid": 1, "org": "Alpha", "issueid": 10, "adddate": date(2001, 1, 1), "remdate": None,
+     "totret": None, "cagret": None, "cagrel": None, "o_org": 1},
+    {"orgid": 2, "org": "Beta", "issueid": 20, "adddate": None, "remdate": date(2010, 1, 1),
+     "totret": 0.5, "cagret": 0.1, "cagrel": 0.2, "o_org": 2},
+    {"orgid": 3, "org": "Gamma", "issueid": 30, "adddate": date(1999, 1, 1), "remdate": date(2005, 1, 1),
+     "totret": -0.25, "cagret": -0.1, "cagrel": 0.4, "o_org": 3},
+]
+
+
+@pytest.fixture
+def adviser_pages(client, monkeypatch):
+    """adviserships.asp on stub data; yields (client, the list queries it ran)."""
+    from webbsite.routes.dbpub import statistics
+
+    shutil.rmtree(precompute.cache_root() / "adviserships", ignore_errors=True)
+    lists = []
+
+    def stub(sql, params=None, **_kw):
+        if "enigma.organisations WHERE personid" in sql:
+            return [{"name1": "Adviser"}]
+        if "SELECT DISTINCT roleID" in sql:
+            return [{"roleid": 2, "rolelong": "Auditor"}]
+        if "FROM enigma.roles" in sql:
+            return [{"roleid": 2, "rolelong": "Auditor", "onetime": False}]
+        lists.append((sql, params))
+        return [dict(r) for r in ADV_ROWS]
+
+    monkeypatch.setattr(statistics, "execute_query", stub)
+    monkeypatch.setattr(statistics, "render_template",
+                        lambda _t, **ctx: json.dumps([r["org"] for r in ctx.get("adviserships", [])]))
+    return client, lists
+
+
+def _adv(client, query):
+    response = client.get(f"/dbpub/adviserships.asp?p=374&r=2{query}")
+    assert response.status_code == 200
+    return json.loads(response.get_data(as_text=True))
+
+
+def test_adviserships_every_sort_comes_from_one_compute(adviser_pages):
+    client, lists = adviser_pages
+    assert _adv(client, "") == ["Alpha", "Beta", "Gamma"]
+    assert _adv(client, "&sort=orgdn") == ["Gamma", "Beta", "Alpha"]
+    assert _adv(client, "&sort=addup") == ["Gamma", "Alpha", "Beta"]   # no date last ascending
+    assert _adv(client, "&sort=adddn") == ["Beta", "Alpha", "Gamma"]   # and first descending
+    assert _adv(client, "&sort=totdn") == ["Beta", "Gamma", "Alpha"]   # no return last, as the ASP
+    assert _adv(client, "&sort=totup") == ["Alpha", "Gamma", "Beta"]   # and first
+    assert _adv(client, "&sort=cagdn") == ["Gamma", "Beta", "Alpha"]   # the link advltsnap has always used
+    assert _adv(client, "&sort=junk") == ["Alpha", "Beta", "Gamma"]
+    assert len(lists) == 1
+
+
+def test_adviserships_hide_is_its_own_list(adviser_pages):
+    client, lists = adviser_pages
+    _adv(client, "&hide=Y")
+    _adv(client, "&hide=N")
+    assert len(lists) == 2
+    assert "CURRENT_DATE" in lists[0][0] and "CURRENT_DATE" not in lists[1][0]
+
+
+def test_adviserships_with_dates_stay_live(adviser_pages):
+    client, lists = adviser_pages
+    _adv(client, "&f=2020-01-01")
+    _adv(client, "&f=2020-01-01")
+    assert len(lists) == 2
+
+
+def test_adviserships_warm_list_fills_what_the_page_reads(adviser_pages, monkeypatch):
+    from webbsite import warm
+    from webbsite.routes.dbpub import statistics
+
+    client, lists = adviser_pages
+    monkeypatch.setattr(statistics, "adviserships_warm_list", lambda: [(374, 2, False)])
+    assert warm.warm_adviserships(client.application) == (1, 0)
+    assert len(lists) == 1
+    _adv(client, "&sort=orgdn")
+    assert len(lists) == 1

@@ -9383,6 +9383,156 @@ def pricescsv():
         return response
 
 
+# NULL placement is MySQL's, which the ASP ran on: a client with no return sorts as
+# the smallest value, last descending and first ascending.
+_ADVISERSHIP_SORTS = {
+    "orgup": [("o_org", False), ("adddate", False)],
+    "orgdn": [("o_org", True), ("adddate", False)],
+    "addup": [("adddate", False), ("o_org", False)],
+    "adddn": [("adddate", True), ("o_org", False)],
+    "remup": [("remdate", False), ("o_org", False)],
+    "remdn": [("remdate", True), ("o_org", False)],
+    "totdn": [("totret", True, "last"), ("o_org", False)],
+    "totup": [("totret", False, "first"), ("o_org", False)],
+    "cagretdn": [("cagret", True, "last"), ("o_org", False)],
+    "cagretup": [("cagret", False, "first"), ("o_org", False)],
+    "cagreldn": [("cagrel", True, "last"), ("o_org", False)],
+    "cagrelup": [("cagrel", False, "first"), ("o_org", False)],
+    # advltsnap.asp has always linked here with sort=cagdn, which the ASP never
+    # handled, so the click landed on Client order. advbyrole.asp's identical
+    # click-through sorts cagreldn; that is what it meant.
+    "cagdn": [("cagrel", True, "last"), ("o_org", False)],
+}
+ADVISERSHIPS_KEPT = 3000  # 8,400 (adviser, role) pairs exist; about 400 are asked for a day
+ADVISERSHIPS_WARM_MIN = 50  # clients, below which a cold list is quick enough
+
+
+def _adviserships_rows(person_id, role_id, one_time, hide, from_date, to_date, years, include_new):
+    """An adviser's clients in one role, with returns, in Client order."""
+    # The window each return is measured over, as the ASP built it. A one-time
+    # role (sponsor, IFA) is judged over the performance period after the
+    # appointment; a continuing one (auditor, banker) over its tenure, clipped
+    # to the chosen dates. The return functions supply the rest: no start means
+    # 3-Jan-1994 (12-Nov-1999 for the Tracker Fund comparison), no end means
+    # the last trading date.
+    if one_time:
+        window = "a.ID1, addDate, addDate + %s"
+        window_params = [round(years * 365.25)]
+    else:
+        start = "GREATEST(COALESCE(addDate, CAST(%s AS date)), CAST(%s AS date))" if from_date else "addDate"
+        end = "LEAST(COALESCE(remDate, CAST(%s AS date)), CAST(%s AS date))" if to_date else "remDate"
+        window = f"a.ID1, {start}, {end}"
+        window_params = [from_date] * 2 * bool(from_date) + [to_date] * 2 * bool(to_date)
+    # Relative returns start no earlier than 12-Nov-1999, so a one-time role
+    # appointed before then has none to show (the ASP blanked it).
+    cagrel = f"enigma.cagrel({window}) - 1"
+    if one_time:
+        cagrel = f"CASE WHEN addDate >= '1999-11-12' THEN {cagrel} END"
+
+    # Which appointments and which issues count, as the ASP decided. The two
+    # stocklistings tests stay separate because a stock can delist from GEM
+    # and relist on the Main Board.
+    where, where_params = [], []
+    delisted_after = first_traded_by = None
+    if one_time:
+        if from_date:
+            delisted_after = from_date
+            where.append("addDate >= %s")
+            where_params.append(from_date)
+        if to_date:
+            where.append("addDate <= %s")
+            where_params.append(to_date)
+    else:
+        if from_date:
+            delisted_after = from_date
+            where.append("(remDate IS NULL OR remDate > %s)")
+            where_params.append(from_date)
+            if not include_new:
+                # nothing appointed, or first traded, after the start date
+                first_traded_by = from_date
+                where.append("(addDate IS NULL OR addDate <= %s)")
+                where_params.append(from_date)
+        if to_date and (not from_date or include_new):
+            first_traded_by = to_date
+            where.append("(addDate IS NULL OR addDate <= %s)")
+            where_params.append(to_date)
+        if hide and not from_date and not to_date:
+            where.append("(remDate IS NULL OR remDate > CURRENT_DATE)")
+
+    listed = "SELECT issueid FROM enigma.stocklistings WHERE stockExID IN (1, 20, 23)"
+    issue_tests = [f"a.ID1 IN ({listed}"
+                   + (" AND (delistDate IS NULL OR delistDate > %s)" if delisted_after else "")
+                   + ")"]
+    issue_params = [delisted_after] if delisted_after else []
+    if first_traded_by:
+        issue_tests.append(
+            f"a.ID1 IN ({listed} AND (firstTradeDate IS NULL OR firstTradeDate <= %s))")
+        issue_params.append(first_traded_by)
+
+    rows = execute_query(
+        f"""
+        SELECT t.*, {ordinal("t.org", "o_org")}
+        FROM (
+            SELECT
+                company AS orgid,
+                o.name1 AS org,
+                a.ID1 AS issueid,
+                addDate,
+                remDate,
+                enigma.totret({window}) - 1 AS totret,
+                enigma.cagret({window}) - 1 AS cagret,
+                {cagrel} AS cagrel
+            FROM enigma.adviserships adv
+            JOIN enigma.organisations o ON adv.company = o.personid
+            JOIN enigma.issue a ON adv.company = a.issuer
+            WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
+              AND adv.role = %s
+              AND adv.adviser = %s
+              AND {" AND ".join(issue_tests + where)}
+        ) t
+        ORDER BY t.org, t.addDate, t.issueid
+    """,
+        tuple(window_params * 3 + [role_id, person_id] + issue_params + where_params),
+        timeout_s=25,
+    )
+    # The return links open the chart from where the measurement starts.
+    for row in rows:
+        added = row["adddate"].isoformat() if row["adddate"] else ""
+        row["from"] = added if one_time or not from_date or from_date < added else from_date
+    return rows
+
+
+def kept_adviserships(person_id, role_id, one_time, hide):
+    """The default list, kept per data version, sorted per request.
+
+    The largest take 2.5 s cold and 0.6 s warm, so the time is disk reads: rewriting
+    the return functions does not help, and one compute serves every sort. An open
+    tenure's return runs to today, so a kept list lasts a day at most. hide has no
+    effect on a one-time role, so those share one list.
+    """
+    hide = hide and not one_time
+    return precomputed(
+        "adviserships", f"p{person_id}_r{role_id}_h{int(hide)}", ("market", "enigma", "today"),
+        lambda: _adviserships_rows(person_id, role_id, one_time, hide, "", "", 1.0, False),
+        module=__name__, max_entries=ADVISERSHIPS_KEPT)
+
+
+def adviserships_warm_list():
+    """(adviser, role, one-time) for lists long enough to be slow when cold."""
+    rows = execute_query(
+        """
+        SELECT a.adviser, a.role, r.onetime
+        FROM enigma.adviserships a
+        JOIN enigma.roles r ON a.role = r.roleID
+        GROUP BY a.adviser, a.role, r.onetime
+        HAVING COUNT(*) >= %s
+        ORDER BY a.adviser, a.role
+    """,
+        (ADVISERSHIPS_WARM_MIN,),
+    )
+    return [(r["adviser"], r["role"], r["onetime"]) for r in rows]
+
+
 @bp.route("/adviserships.asp")
 def adviserships():
     """
@@ -9482,117 +9632,16 @@ def adviserships():
             role_name=None,
         )
 
-    # NULL placement is MySQL's, which the ASP ran on: a client with no return
-    # sorts as the smallest value, last descending and first ascending.
-    sort_map = {
-        "orgup": "org, addDate",
-        "orgdn": "org DESC, addDate",
-        "addup": "addDate, org",
-        "adddn": "addDate DESC, org",
-        "remup": "remDate, org",
-        "remdn": "remDate DESC, org",
-        "totdn": "totret DESC NULLS LAST, org",
-        "totup": "totret NULLS FIRST, org",
-        "cagretdn": "cagret DESC NULLS LAST, org",
-        "cagretup": "cagret NULLS FIRST, org",
-        "cagreldn": "cagrel DESC NULLS LAST, org",
-        "cagrelup": "cagrel NULLS FIRST, org",
-        # advltsnap.asp has always linked here with sort=cagdn, which the ASP
-        # never handled, so the click landed on Client order. advbyrole.asp's
-        # identical click-through sorts cagreldn; that is what it meant.
-        "cagdn": "cagrel DESC NULLS LAST, org",
-    }
-    if sort_param not in sort_map:
+    if sort_param not in _ADVISERSHIP_SORTS:
         sort_param = "orgup"  # as the ASP did, so the Client grouping applies
-    order_by = sort_map[sort_param]
+    args = (person_id, role_id, one_time, hide == "Y", from_date, to_date, years, include_new)
+    # Without dates the list is one per (adviser, role, hide) each day. A period is
+    # any two dates a visitor picks, so those stay live.
+    keep = not from_date and not to_date and (not one_time or years == 1.0)
+    rows = kept_adviserships(person_id, role_id, one_time, hide == "Y") if keep else _adviserships_rows(*args)
+    # Sorted per request from one compute; text sorts on database ordinals.
+    adviserships = sort_rows(rows, _ADVISERSHIP_SORTS[sort_param])
 
-    # The window each return is measured over, as the ASP built it. A one-time
-    # role (sponsor, IFA) is judged over the performance period after the
-    # appointment; a continuing one (auditor, banker) over its tenure, clipped
-    # to the chosen dates. The return functions supply the rest: no start means
-    # 3-Jan-1994 (12-Nov-1999 for the Tracker Fund comparison), no end means
-    # the last trading date.
-    if one_time:
-        window = "a.ID1, addDate, addDate + %s"
-        window_params = [round(years * 365.25)]
-    else:
-        start = "GREATEST(COALESCE(addDate, CAST(%s AS date)), CAST(%s AS date))" if from_date else "addDate"
-        end = "LEAST(COALESCE(remDate, CAST(%s AS date)), CAST(%s AS date))" if to_date else "remDate"
-        window = f"a.ID1, {start}, {end}"
-        window_params = [from_date] * 2 * bool(from_date) + [to_date] * 2 * bool(to_date)
-    # Relative returns start no earlier than 12-Nov-1999, so a one-time role
-    # appointed before then has none to show (the ASP blanked it).
-    cagrel = f"enigma.cagrel({window}) - 1"
-    if one_time:
-        cagrel = f"CASE WHEN addDate >= '1999-11-12' THEN {cagrel} END"
-
-    # Which appointments and which issues count, as the ASP decided. The two
-    # stocklistings tests stay separate because a stock can delist from GEM
-    # and relist on the Main Board.
-    where, where_params = [], []
-    delisted_after = first_traded_by = None
-    if one_time:
-        if from_date:
-            delisted_after = from_date
-            where.append("addDate >= %s")
-            where_params.append(from_date)
-        if to_date:
-            where.append("addDate <= %s")
-            where_params.append(to_date)
-    else:
-        if from_date:
-            delisted_after = from_date
-            where.append("(remDate IS NULL OR remDate > %s)")
-            where_params.append(from_date)
-            if not include_new:
-                # nothing appointed, or first traded, after the start date
-                first_traded_by = from_date
-                where.append("(addDate IS NULL OR addDate <= %s)")
-                where_params.append(from_date)
-        if to_date and (not from_date or include_new):
-            first_traded_by = to_date
-            where.append("(addDate IS NULL OR addDate <= %s)")
-            where_params.append(to_date)
-        if hide == "Y" and not from_date and not to_date:
-            where.append("(remDate IS NULL OR remDate > CURRENT_DATE)")
-
-    listed = "SELECT issueid FROM enigma.stocklistings WHERE stockExID IN (1, 20, 23)"
-    issue_tests = [f"a.ID1 IN ({listed}"
-                   + (" AND (delistDate IS NULL OR delistDate > %s)" if delisted_after else "")
-                   + ")"]
-    issue_params = [delisted_after] if delisted_after else []
-    if first_traded_by:
-        issue_tests.append(
-            f"a.ID1 IN ({listed} AND (firstTradeDate IS NULL OR firstTradeDate <= %s))")
-        issue_params.append(first_traded_by)
-
-    adviserships = execute_query(
-        f"""
-        SELECT
-            company AS orgid,
-            o.name1 AS org,
-            a.ID1 AS issueid,
-            addDate,
-            remDate,
-            enigma.totret({window}) - 1 AS totret,
-            enigma.cagret({window}) - 1 AS cagret,
-            {cagrel} AS cagrel
-        FROM enigma.adviserships adv
-        JOIN enigma.organisations o ON adv.company = o.personid
-        JOIN enigma.issue a ON adv.company = a.issuer
-        WHERE a.typeID IN (0, 6, 7, 8, 10, 42)
-          AND adv.role = %s
-          AND adv.adviser = %s
-          AND {" AND ".join(issue_tests + where)}
-        ORDER BY {order_by}
-    """,
-        tuple(window_params * 3 + [role_id, person_id] + issue_params + where_params),
-    )
-
-    # The return links open the chart from where the measurement starts.
-    for row in adviserships:
-        added = row["adddate"].isoformat() if row["adddate"] else ""
-        row["from"] = added if one_time or not from_date or from_date < added else from_date
     cagrets = [row["cagret"] for row in adviserships if row["cagret"] is not None]
     cagrels = [row["cagrel"] for row in adviserships if row["cagrel"] is not None]
     averages = {
