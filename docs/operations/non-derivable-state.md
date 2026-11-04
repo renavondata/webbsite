@@ -80,7 +80,7 @@ grants and the ladder proves them.
 
 ## 7. The box
 
-- **Identity:** DigitalOcean one self-hosted server (`s-4vcpu-8gb`, sfo3);
+- **Identity:** a 4 vCPU, 8 GB DigitalOcean droplet;
   Tailscale node, tagged, Tailscale SSH on; local admin `g` (NOPASSWD).
 - **Provisioned once by** `site-deploy/host/{cloud-init.yaml,provision.sh,harden.sh}`;
   **kept in step by** `site-deploy` (host layer) and `deploy/converge.sh` (this repo).

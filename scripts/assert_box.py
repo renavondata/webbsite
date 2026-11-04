@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily box invariants for <host> (run by webbsite-invariants.timer as root).
+"""Daily box invariants (run by webbsite-invariants.timer as root).
 
 Asserts the things a test suite cannot see and a deploy does not check:
 

@@ -1,4 +1,4 @@
-# Captured from the live droplet <host> (/etc/caddy/Caddyfile). Source of truth,
+# Captured from a live server (/etc/caddy/Caddyfile). Source of truth,
 # and since 2026-09 enforced as such: deploy/converge.sh installs this file on every
 # deploy tick, so an edit here reaches the box and a hand-edit on the box is reverted.
 # Terminates TLS on :443 and reverse-proxies to gunicorn on 127.0.0.1:8000.

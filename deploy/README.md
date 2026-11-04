@@ -20,7 +20,7 @@ DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + gunicorn und
 systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, not hand-edits.
 
 ## Topology
-- **Droplet:** the server, `s-4vcpu-8gb`, region `sfo3`, VPC `default-sfo3`. The origin IP and
+- **Server:** a 4 vCPU, 8 GB DigitalOcean droplet. The origin IP and
   other host-identifying details are **not** committed to this public repo (the origin sits behind
   Cloudflare + UFW); they live in the operator's private notes.
 - **App:** gunicorn (`gunicorn.conf.py`: gthread, 3×8) on `127.0.0.1:8000`, `User=webbsite`,
@@ -368,7 +368,7 @@ needs **no code change**:
    to Google/Bing Search Console.
 
 ## Bootstrap (one-time, performed 2026-05) — summary
-1. `doctl compute droplet create <host> --region sfo3 --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <default-sfo3> --ssh-keys <steel>`.
+1. `doctl compute droplet create <host> --region <region> --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <vpc-id> --ssh-keys <steel>`.
 2. Add PGDG + Caddy apt repos; `apt install postgresql-17 caddy vmtouch ufw`; install `uv` to `/usr/local/bin`.
 3. `useradd --system --shell /bin/bash --home-dir /srv/webbsite webbsite`.
 4. PostgreSQL: create role `webbsite` (login, non-super) + db `enigma` owned by it; `ALTER SYSTEM`

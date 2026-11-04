@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Make <host> a function of this repo.
+# Make the server a function of this repo.
 #
 # Run as root, either by hand or from site-deploy's per-tick hook. Idempotent and
 # silent when nothing changed, so a 2-minute cadence costs nothing.
