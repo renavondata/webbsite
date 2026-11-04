@@ -1,4 +1,7 @@
-# Deploy artefacts (droplet `webbsite-web`)
+# Deploy artefacts (one self-hosted server)
+
+> Examples below use placeholders (`webbsite.example.org`, `<bucket>`, `<zone-id>`). A deployment's
+> real values live in its private config, never in this public repository.
 
 > **Deploy knobs now live in `deploy/site.toml`, not only in `/etc/webbsite/env`.**
 > `site-deploy`'s poller reads that file every tick, and it wins over the
@@ -17,15 +20,15 @@ DigitalOcean droplet, migrated off Render. Self-hosted PostgreSQL + gunicorn und
 systemd, fronted by Caddy + Cloudflare. Tracked here so changes go through PRs, not hand-edits.
 
 ## Topology
-- **Droplet:** `webbsite-web`, `s-4vcpu-8gb`, region `sfo3`, VPC `default-sfo3`. The origin IP and
+- **Droplet:** the server, `s-4vcpu-8gb`, region `sfo3`, VPC `default-sfo3`. The origin IP and
   other host-identifying details are **not** committed to this public repo (the origin sits behind
   Cloudflare + UFW); they live in the operator's private notes.
 - **App:** gunicorn (`gunicorn.conf.py`: gthread, 3×8) on `127.0.0.1:8000`, `User=webbsite`,
   checkout at `/srv/webbsite`, env in `/etc/webbsite/env`.
 - **DB:** self-hosted PostgreSQL 17, localhost-only, role `webbsite`, database `enigma`
   (schemas `enigma` + `ccass`). The DB is a *derived artifact* — see "Rebuild the data" below.
-- **TLS/edge:** Caddy `:443` (`tls internal`) → app; Cloudflare zone `renavon.com`
-  (`webbsite.renavon.com`, proxied, SSL mode "Full").
+- **TLS/edge:** Caddy `:443` (`tls internal`) → app; Cloudflare zone
+  (`webbsite.example.org`, proxied, SSL mode "Full").
 - **Access:** SSH over **Tailscale** only; UFW denies public `:22`/`:80` and allows `:443` from
   Cloudflare IP ranges only.
 
@@ -63,7 +66,7 @@ that ref once site-deploy's `deploy_ref` knob lands (see `site.toml`).
 
 ## Deploy a code change
 
-**Deployment is automatic — pushing to `master` *is* the deploy.** `webbsite-web` runs
+**Deployment is automatic — pushing to `master` *is* the deploy.** the server runs
 `site-deploy@webbsite.timer` (the shared `site-deploy` toolkit at `/srv/site-deploy`): every ~2 min
 it polls `origin/master`, and when it advances, fast-forwards → `uv sync --frozen` → reloads the
 service → purges the Cloudflare edge cache. A merged PR is live within ~2 minutes. Watch it:
@@ -75,25 +78,24 @@ journalctl -u site-deploy@webbsite -f   # "deployed <sha> (reload)" then "cf-pur
 The auto-deploy purges Cloudflare via `site-deploy/bin/cf-purge.sh`, which needs two keys in
 `/etc/webbsite/env`:
 ```
-CF_ZONE_ID=c754c09daa8fb9cce8e4977d44cbd246   # renavon.com (in the datagurullc CF account)
+CF_ZONE_ID=<zone-id>   # the Cloudflare zone holding the site
 CF_CACHE_PURGE_TOKEN=<single-zone Cache-Purge API token>
 ```
 Without them `cf-purge.sh` is a silent no-op and pages (`cdn-cache-control: max-age=2592000`, 30d)
 keep serving stale HTML — so a sitewide change (e.g. the base-template cross-sell banner) stays
 invisible to cached visitors. Mint a least-privilege **Cache Purge** token scoped to the single
-renavon.com zone via the `cloudflare-api` recipe (renavon.com is reached through the datagurullc
-legacy key+email; never wire that global key into the box).
+zone. Never put a global API key on the box.
 
 ### Manual deploy (fallback — timer down, or to force a deploy)
 Tailscale SSH lands as `g` (sudo), so privileged steps need `sudo`:
 ```bash
-ssh webbsite-web
+ssh <host>
 sudo -u webbsite git -C /srv/webbsite pull --ff-only
 sudo -u webbsite sh -c 'cd /srv/webbsite && env HOME=/srv/webbsite /usr/local/bin/uv sync --frozen'
 sudo systemctl restart webbsite
 sleep 2
 curl -fsS http://127.0.0.1:8000/health         # {"status":"ok"}
-curl -fsS https://webbsite.renavon.com/health  # via Caddy + Cloudflare
+curl -fsS https://webbsite.example.org/health  # via Caddy + Cloudflare
 ```
 The edge purge is automatic on the next timer deploy; `site-deploy/bin/cf-purge.sh` is the tool if you need to force one.
 
@@ -102,7 +104,7 @@ The edge purge is automatic on the next timer deploy; `site-deploy/bin/cf-purge.
 The frozen 2025-10-10 baseline is **refreshed daily** by a pull-based loader (ADR
 `docs/architecture/decisions/001-pull-based-postgres-refresh.md`): the renavon
 `renavon-webbsite-refresh` cron publishes 8 Parquet exports + `_manifest.json` to
-`r2://hkdata/webbsite-refresh/` at 22:00 UTC Mon–Fri; `webbsite-refresh.timer` fires
+`r2://<bucket>/webbsite-refresh/` at 22:00 UTC Mon–Fri; `webbsite-refresh.timer` fires
 `scripts/refresh/refresh.py` at 02:45/06:45 UTC, which stages, validates, and upserts into
 `ccass.{holdings,parthold,dailylog,bigchanges,quotes,pquotes,unquotes,calendar}` +
 `enigma.issuedshares` in ONE transaction, then advances the `enigma.log` watermarks
@@ -141,14 +143,14 @@ dropping privileges):
 ```
 DATABASE_URL=postgresql://webbsite_refresh:<pw>@localhost:5432/enigma
 R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com
-R2_ACCESS_KEY_ID=...    # Object-Read-only R2 API token scoped to the hkdata bucket
+R2_ACCESS_KEY_ID=...    # Object-Read-only R2 API token scoped to the feed bucket
 R2_SECRET_ACCESS_KEY=...
-R2_BUCKET=hkdata
+R2_BUCKET=<bucket>
 R2_PREFIX=webbsite-refresh
 REFRESH_USERID=<chosen above>
 HC_URL=https://<your-healthchecks-host>/ping/<uuid>   # dead-man check for this loader (daily, grace 6h)
 ```
-The R2 token must be **Object Read only**, scoped to the `hkdata` bucket (Cloudflare
+The R2 token must be **Object Read only**, scoped to the feed bucket (Cloudflare
 dashboard → R2 → Manage API Tokens). Never reuse a write-capable key here.
 
 **Install / enable:**
@@ -250,7 +252,7 @@ target), `cfcdn` (in `Cloudflare-CDN-Cache-Control`) and `mixed`. Each has a 30 
 edge TTL and a 10 min SWR window. Through the edge:
 
 ```bash
-H=https://webbsite.renavon.com; n=$(date +%s)
+H=https://webbsite.example.org; n=$(date +%s)
 probe() { for v in cc cdn cfcdn mixed; do printf '%-6s ' $v
   curl -sS -A 'Mozilla/5.0' -D- "$H/_probe/swr/$v?n=$n" | tr -d '\r' | grep -iE '^(cf-cache-status|cf-ray):|^[0-9]' | paste -sd' '; done; }
 probe            # MISS, new bodies
@@ -275,7 +277,7 @@ systemctl reload webbsite
 
 **Fidelity baseline (ASP→Flask parity):** the only surviving crawl of the original ASP site
 (`tests/ground_truth/asp_cache/`, 254 routes — webb-site.com is gone and it is not regenerable) is
-archived alongside the pg_dump at `r2:hkdata/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst`.
+archived alongside the pg_dump at `r2:<bucket>/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst`.
 It is git-ignored, not committed. Restore it under `tests/ground_truth/` to re-run
 `tests/compare_asp_flask.py`.
 
@@ -355,18 +357,18 @@ set should stay warm.
 
 ## Move to a dedicated domain (when decided)
 The app is domain-agnostic: canonical/OG URLs, the XML sitemap, and the Google
-site-search box all derive from `CANONICAL_HOST` (and `SEARCH_DOMAIN`), which
-default to `webbsite.renavon.com`. Moving domains needs **no code change**:
+site-search box all derive from `CANONICAL_HOST` (and `SEARCH_DOMAIN`). Moving domains
+needs **no code change**:
 1. Stand up the new Cloudflare zone; point the host at the origin IP (proxied).
 2. Set `CANONICAL_HOST=<new-host>` (and optionally `SEARCH_DOMAIN`) in
    `/etc/webbsite/env`; `systemctl restart webbsite`.
-3. Add a **301** from `webbsite.renavon.com` → the new host (Cloudflare rule on
+3. Add a **301** from `webbsite.example.org` → the new host (Cloudflare rule on
    the old zone) to preserve link equity.
 4. Purge the Cloudflare cache on both zones; resubmit `https://<new-host>/sitemap.xml`
    to Google/Bing Search Console.
 
 ## Bootstrap (one-time, performed 2026-05) — summary
-1. `doctl compute droplet create webbsite-web --region sfo3 --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <default-sfo3> --ssh-keys <steel>`.
+1. `doctl compute droplet create <host> --region sfo3 --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <default-sfo3> --ssh-keys <steel>`.
 2. Add PGDG + Caddy apt repos; `apt install postgresql-17 caddy vmtouch ufw`; install `uv` to `/usr/local/bin`.
 3. `useradd --system --shell /bin/bash --home-dir /srv/webbsite webbsite`.
 4. PostgreSQL: create role `webbsite` (login, non-super) + db `enigma` owned by it; `ALTER SYSTEM`
@@ -378,10 +380,10 @@ default to `webbsite.renavon.com`. Moving domains needs **no code change**:
    `SECRET_KEY=<generated>`, `FLASK_ENV=production`, `PORT=8000`.
 7. Install `systemd/webbsite.service`; `systemctl enable --now webbsite`.
 8. Install `Caddyfile`; `systemctl restart caddy`.
-9. `tailscale up --ssh --hostname=webbsite-web`; verify tailnet SSH.
+9. `tailscale up --ssh --hostname=<host>`; verify tailnet SSH.
 10. UFW: default deny in; allow on `tailscale0`; allow `443/tcp` from Cloudflare IPv4+IPv6 ranges;
     `enable`. (No public 22/80.)
-11. Cut over: point Cloudflare `webbsite.renavon.com` at the droplet IP (proxied); purge cache.
+11. Cut over: point Cloudflare `webbsite.example.org` at the droplet IP (proxied); purge cache.
 12. Decommissioned Render (web service + Postgres deleted) after archiving a final `pg_dump` to R2,
     and removed the temporary droplet IP from Render's allowlist.
 
@@ -396,7 +398,7 @@ while every real page 521s. Probe `/health` instead: it is `no-store`, so it
 always comes from the origin.
 
 ```bash
-curl -sI https://webbsite.renavon.com/health | head -1   # origin, through the edge
+curl -sI https://webbsite.example.org/health | head -1   # origin, through the edge
 ssh <box> 'curl -s localhost:8000/health'                # the app itself
 ssh <box> 'systemctl status caddy webbsite postgresql'
 ```

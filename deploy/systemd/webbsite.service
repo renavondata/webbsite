@@ -1,4 +1,4 @@
-# Mirrors the unit on webbsite-web. Serves the frozen Webb-site archive
+# Mirrors the unit on <host>. Serves the frozen Webb-site archive
 # (gunicorn) on 127.0.0.1:8000; Caddy fronts it on :443.
 #
 # This file called itself "source of truth — keep in sync with the box" and had

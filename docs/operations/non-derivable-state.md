@@ -42,10 +42,10 @@ name exists; the daily invariants job runs it.
   Sentry is already classified by renavon's on-call triage.
 - **Restore:** create the project, copy its DSN into `env` and `refresh-env`.
 
-## 4. Cloudflare (zone `renavon.com`, datagurullc account)
+## 4. Cloudflare (the zone holding the site)
 
 - **Enumerate:** `deploy/cloudflare.json` (the rules that mention this host;
-  captured verbatim 2026-09-16), the proxied DNS record `webbsite.renavon.com`
+  captured verbatim 2026-09-16), the proxied DNS record `webbsite.example.org`
   → origin, SSL mode "Full", the plan (Free at time of writing).
 - **Record:** tokens in the keyring, each single-zone and single-purpose:
   cache purge (`CF_CACHE_PURGE_TOKEN` on the box), config (`CF_CONFIG_TOKEN`).
@@ -55,13 +55,13 @@ name exists; the daily invariants job runs it.
   recipe and scope-verified (in-scope op works, `purge_cache` denied on the
   config token).
 
-## 5. R2 (datagurullc account)
+## 5. R2 (the operator's account)
 
 | Object | What | Restore from |
 |---|---|---|
-| `hkdata/webbsite-refresh/` | the daily feed: 8 Parquet + `_manifest.json`, **overwritten daily** | renavon re-exports (`dbt build --select tag:webbsite`) |
-| `hkdata/webbsite-backup/enigma-render-final-20260524/` | the base `pg_dump -Fd` of the frozen archive | canonical Google Drive release |
-| `hkdata/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst` | the archived ASP crawl the fidelity tests compare against | not regenerable (the ASP site is gone) |
+| `<bucket>/webbsite-refresh/` | the daily feed: 8 Parquet + `_manifest.json`, **overwritten daily** | renavon re-exports (`dbt build --select tag:webbsite`) |
+| `<bucket>/webbsite-backup/enigma-render-final-20260524/` | the base `pg_dump -Fd` of the frozen archive | canonical Google Drive release |
+| `<bucket>/webbsite-backup/asp_cache-ground-truth-20260715.tar.zst` | the archived ASP crawl the fidelity tests compare against | not regenerable (the ASP site is gone) |
 | operator R2 bucket, `backups/webbsite/` | daily age-encrypted `pg_dump -Fc` (site-deploy `site-backup@`), bucket-scoped writer token, newest 7 kept | — |
 
 Read token: `webbsite-refresh-loader-readonly` (keyring `WEBBSITE_REFRESH_R2_*`).
@@ -80,7 +80,7 @@ grants and the ladder proves them.
 
 ## 7. The box
 
-- **Identity:** DigitalOcean droplet `webbsite-web` (`s-4vcpu-8gb`, sfo3);
+- **Identity:** DigitalOcean one self-hosted server (`s-4vcpu-8gb`, sfo3);
   Tailscale node, tagged, Tailscale SSH on; local admin `g` (NOPASSWD).
 - **Provisioned once by** `site-deploy/host/{cloud-init.yaml,provision.sh,harden.sh}`;
   **kept in step by** `site-deploy` (host layer) and `deploy/converge.sh` (this repo).
