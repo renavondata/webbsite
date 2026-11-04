@@ -9403,7 +9403,10 @@ _ADVISERSHIP_SORTS = {
     # click-through sorts cagreldn; that is what it meant.
     "cagdn": [("cagrel", True, "last"), ("o_org", False)],
 }
-ADVISERSHIPS_KEPT = 3000  # 8,400 (adviser, role) pairs exist; about 400 are asked for a day
+# 8,400 (adviser, role) pairs exist and about 400 are asked for a day. Eviction takes the
+# oldest written, and warming rewrites the long lists daily, so pushing one out would take
+# 2,500 other lists in a day.
+ADVISERSHIPS_KEPT = 3000
 ADVISERSHIPS_WARM_MIN = 50  # clients, below which a cold list is quick enough
 
 
@@ -9636,7 +9639,10 @@ def adviserships():
     args = (person_id, role_id, one_time, hide == "Y", from_date, to_date, years, include_new)
     # Without dates the list is one per (adviser, role, hide) each day. A period is
     # any two dates a visitor picks, so those stay live.
-    keep = not from_date and not to_date and (not one_time or years == 1.0)
+    # Only a role this adviser has: anyone can ask for any p and r, and those must not
+    # write files.
+    keep = (not from_date and not to_date and (not one_time or years == 1.0)
+            and any(row["roleid"] == role_id for row in all_roles))
     rows = kept_adviserships(person_id, role_id, one_time, hide == "Y") if keep else _adviserships_rows(*args)
     # Sorted per request from one compute; text sorts on database ordinals.
     adviserships = sort_rows(rows, _ADVISERSHIP_SORTS[sort_param])

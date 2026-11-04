@@ -477,14 +477,52 @@ def test_cholder_sort_reorders_the_kept_rows(client):
 
 # --- adviserships.asp: one kept list, sorted per request ------------------------------
 
+def _adv_row(org, rank, issue, added, removed, totret, cagret, cagrel):
+    return {"orgid": rank, "org": org, "issueid": issue, "adddate": added, "remdate": removed,
+            "totret": totret, "cagret": cagret, "cagrel": cagrel, "o_org": rank}
+
+
+# In Client order, as the query returns them. Every sort key has a NULL and at least two
+# values, and Alpha has two rows, so each sort's direction, NULL place and tie-break show.
 ADV_ROWS = [
-    {"orgid": 1, "org": "Alpha", "issueid": 10, "adddate": date(2001, 1, 1), "remdate": None,
-     "totret": None, "cagret": None, "cagrel": None, "o_org": 1},
-    {"orgid": 2, "org": "Beta", "issueid": 20, "adddate": None, "remdate": date(2010, 1, 1),
-     "totret": 0.5, "cagret": 0.1, "cagrel": 0.2, "o_org": 2},
-    {"orgid": 3, "org": "Gamma", "issueid": 30, "adddate": date(1999, 1, 1), "remdate": date(2005, 1, 1),
-     "totret": -0.25, "cagret": -0.1, "cagrel": 0.4, "o_org": 3},
+    _adv_row("Alpha", 1, 10, date(2001, 1, 1), date(2009, 1, 1), 0.3, None, 0.5),
+    _adv_row("Alpha", 1, 11, date(2003, 1, 1), None, None, 0.2, None),
+    _adv_row("Beta", 2, 20, None, date(2010, 1, 1), 0.5, 0.1, 0.2),
+    _adv_row("Gamma", 3, 30, date(1999, 1, 1), date(2005, 1, 1), -0.25, -0.1, 0.4),
 ]
+
+# Rows named by issueid, by the ORDER BY the query used before it sorted in Python.
+ADV_SORTS = {
+    "orgup": [10, 11, 20, 30],     # org, addDate
+    "orgdn": [30, 20, 10, 11],     # org DESC, addDate
+    "addup": [30, 10, 11, 20],     # addDate (NULLs last), org
+    "adddn": [20, 11, 10, 30],     # addDate DESC (NULLs first), org
+    "remup": [30, 10, 20, 11],     # remDate (NULLs last), org
+    "remdn": [11, 20, 10, 30],     # remDate DESC (NULLs first), org
+    "totdn": [20, 10, 30, 11],     # totret DESC NULLS LAST, org
+    "totup": [11, 30, 10, 20],     # totret NULLS FIRST, org
+    "cagretdn": [11, 20, 30, 10],  # cagret DESC NULLS LAST, org
+    "cagretup": [10, 30, 20, 11],  # cagret NULLS FIRST, org
+    "cagreldn": [10, 30, 20, 11],  # cagrel DESC NULLS LAST, org
+    "cagrelup": [11, 20, 30, 10],  # cagrel NULLS FIRST, org
+    "cagdn": [10, 30, 20, 11],     # what advltsnap's link meant: cagreldn
+    "junk": [10, 11, 20, 30],      # an unknown sort is Client order
+}
+
+
+# Tied on every key but org and, for one client, the date: tie-breaks and NULL dates show.
+_ADD = date(2005, 1, 1)
+ADV_TIED = [
+    _adv_row("Delta", 1, 40, _ADD, _ADD, 0.1, 0.1, 0.1),
+    _adv_row("Epsilon", 2, 50, _ADD, _ADD, 0.1, 0.1, 0.1),
+    _adv_row("Zeta", 3, 60, _ADD, _ADD, 0.1, 0.1, 0.1),
+    _adv_row("Zeta", 3, 61, None, _ADD, 0.1, 0.1, 0.1),
+]
+ADV_TIED_SORTS = {
+    "orgdn": [60, 61, 50, 40],     # org DESC, then the date (NULL last) within a client
+    "addup": [40, 50, 60, 61],     # the three equal dates in Client order, NULL last
+    "adddn": [61, 40, 50, 60],     # NULL first, then equal dates in Client order
+}
 
 
 @pytest.fixture
@@ -494,20 +532,23 @@ def adviser_pages(client, monkeypatch):
 
     shutil.rmtree(precompute.cache_root() / "adviserships", ignore_errors=True)
     lists = []
+    adviser_roles = [{"roleid": 2, "rolelong": "Auditor"}]
 
     def stub(sql, params=None, **_kw):
         if "enigma.organisations WHERE personid" in sql:
             return [{"name1": "Adviser"}]
         if "SELECT DISTINCT roleID" in sql:
-            return [{"roleid": 2, "rolelong": "Auditor"}]
+            return list(adviser_roles)
         if "FROM enigma.roles" in sql:
             return [{"roleid": 2, "rolelong": "Auditor", "onetime": False}]
         lists.append((sql, params))
-        return [dict(r) for r in ADV_ROWS]
+        return [dict(r) for r in client.adviser_rows]
 
     monkeypatch.setattr(statistics, "execute_query", stub)
     monkeypatch.setattr(statistics, "render_template",
-                        lambda _t, **ctx: json.dumps([r["org"] for r in ctx.get("adviserships", [])]))
+                        lambda _t, **ctx: json.dumps([r["issueid"] for r in ctx.get("adviserships", [])]))
+    client.adviser_roles = adviser_roles
+    client.adviser_rows = ADV_ROWS
     return client, lists
 
 
@@ -519,15 +560,35 @@ def _adv(client, query):
 
 def test_adviserships_every_sort_comes_from_one_compute(adviser_pages):
     client, lists = adviser_pages
-    assert _adv(client, "") == ["Alpha", "Beta", "Gamma"]
-    assert _adv(client, "&sort=orgdn") == ["Gamma", "Beta", "Alpha"]
-    assert _adv(client, "&sort=addup") == ["Gamma", "Alpha", "Beta"]   # no date last ascending
-    assert _adv(client, "&sort=adddn") == ["Beta", "Alpha", "Gamma"]   # and first descending
-    assert _adv(client, "&sort=totdn") == ["Beta", "Gamma", "Alpha"]   # no return last, as the ASP
-    assert _adv(client, "&sort=totup") == ["Alpha", "Gamma", "Beta"]   # and first
-    assert _adv(client, "&sort=cagdn") == ["Gamma", "Beta", "Alpha"]   # the link advltsnap has always used
-    assert _adv(client, "&sort=junk") == ["Alpha", "Beta", "Gamma"]
+    assert _adv(client, "") == ADV_SORTS["orgup"]
+    for sort, want in ADV_SORTS.items():
+        assert _adv(client, f"&sort={sort}") == want, sort
     assert len(lists) == 1
+
+
+def test_adviserships_ties_break_on_client(adviser_pages):
+    client, _ = adviser_pages
+    client.adviser_rows = ADV_TIED
+    for sort in ("orgup", "remup", "remdn", "totdn", "totup", "cagretdn", "cagretup",
+                 "cagreldn", "cagrelup", "cagdn"):
+        assert _adv(client, f"&sort={sort}") == [40, 50, 60, 61], sort
+    for sort, want in ADV_TIED_SORTS.items():
+        assert _adv(client, f"&sort={sort}") == want, sort
+
+
+def test_adviserships_sorts_are_all_tested():
+    from webbsite.routes.dbpub import statistics
+
+    assert set(statistics._ADVISERSHIP_SORTS) | {"junk"} == set(ADV_SORTS)
+
+
+def test_adviserships_writes_nothing_for_a_role_the_adviser_lacks(adviser_pages):
+    client, lists = adviser_pages
+    client.adviser_roles.clear()
+    _adv(client, "")
+    _adv(client, "")
+    assert len(lists) == 2, "kept for an adviser without this role"
+    assert not (precompute.cache_root() / "adviserships").exists()
 
 
 def test_adviserships_hide_is_its_own_list(adviser_pages):
