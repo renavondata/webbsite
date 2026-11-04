@@ -12,7 +12,7 @@
 #
 # name | kind | timeout or schedule | grace | status | pinged by
 webbsite-refresh           | cron   | daily           | 6h    | live | webbsite-refresh.service via HC_URL (+ -failed.service on failure)
-webbsite.example.org-probe | simple | 300s            | 600s  | live | the operator's external probe runner (site.toml probe_external); no on-box probe
+webbsite.renavon.com-probe | simple | 300s            | 600s  | live | the operator's external probe runner (site.toml probe_external); no on-box probe
 webbsite-deploy            | simple | 600s            | 900s  | live | site-deploy@webbsite.service heartbeat via HEALTHCHECKS_DEPLOY_URL (env)
 webbsite-invariants        | cron   | daily 04:30 UTC | 6h    | live | webbsite-invariants.timer via HC_INVARIANTS_URL; armed 2026-09-17
 webbsite-cf-drift          | simple | 86400s          | 6h    | live | cf-drift@webbsite.timer (daily dry run) via HEALTHCHECKS_CF_DRIFT_URL (cf-env)

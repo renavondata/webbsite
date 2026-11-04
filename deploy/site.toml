@@ -76,7 +76,7 @@ converge = true
 # second on-box probe (site-probe@) for the same outage, and not to nag UNPROBED.
 # site-checks-armed@webbsite (ops-env) holds the named check to not-paused and
 # not-stale, so the check itself vanishing is still an alarm.
-probe_external = "webbsite.example.org-probe"
+probe_external = "<probe-check-name>"
 
 # site-backup@webbsite runs deploy/backup-producer.sh (a pg_dump -Fc of the ~77 GB
 # enigma database) through site-deploy's backup.sh: age-encrypt, rclone to R2, then
