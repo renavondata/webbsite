@@ -66,7 +66,7 @@ that ref once site-deploy's `deploy_ref` knob lands (see `site.toml`).
 
 ## Deploy a code change
 
-**Deployment is automatic — pushing to `master` *is* the deploy.** the server runs
+**Deployment is automatic — pushing to `master` *is* the deploy.** The server runs
 `site-deploy@webbsite.timer` (the shared `site-deploy` toolkit at `/srv/site-deploy`): every ~2 min
 it polls `origin/master`, and when it advances, fast-forwards → `uv sync --frozen` → reloads the
 service → purges the Cloudflare edge cache. A merged PR is live within ~2 minutes. Watch it:
@@ -368,7 +368,7 @@ needs **no code change**:
    to Google/Bing Search Console.
 
 ## Bootstrap (one-time, performed 2026-05) — summary
-1. `doctl compute droplet create <host> --region <region> --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <vpc-id> --ssh-keys <steel>`.
+1. `doctl compute droplet create <host> --region <region> --size s-4vcpu-8gb --image ubuntu-24-04-x64 --vpc-uuid <vpc-id> --ssh-keys <key-id>`.
 2. Add PGDG + Caddy apt repos; `apt install postgresql-17 caddy vmtouch ufw`; install `uv` to `/usr/local/bin`.
 3. `useradd --system --shell /bin/bash --home-dir /srv/webbsite webbsite`.
 4. PostgreSQL: create role `webbsite` (login, non-super) + db `enigma` owned by it; `ALTER SYSTEM`
