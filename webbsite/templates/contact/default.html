@@ -16,7 +16,7 @@
 <p>Sorry, you have already sent us {{ limit }} messages today. We suspect you are a spam-bot. Please try again tomorrow.</p>
 
 {% else %}
-<h2>Contact Renavon Hong Kong</h2>
+<h2>Contact {{ site_short_name }}</h2>
 <p>If you have any comments or suggestions on how we can improve this
 publication,
 please let us know. If you want us to blow the whistle on wrong-doing in your organisation,
@@ -26,10 +26,10 @@ investment advice. If you are looking for published reports or information on a 
 or person, try
 the <a href="/articles/">archived articles</a>, or
 key in the stock code or name in the search boxes above to search <em>
-<a href="/dbpub/">Renavon Hong Kong
+<a href="/dbpub/">{{ site_short_name }}
 Who's Who</a></em>.</p>
 
-<p>You can contact <i>Renavon Hong Kong</i> by e-mail using this form. If you give
+<p>You can contact <i>{{ site_short_name }}</i> by e-mail using this form. If you give
 us a fake or incorrect e-mail address, we will get the message but will be
 unable to reply to you.</p>
 
@@ -42,8 +42,8 @@ unable to reply to you.</p>
 
     <p>Subject: <select name="subject">
     <option value="General comment/question" {% if subject == "General comment/question" %}selected{% endif %}>General comment/question</option>
-    <option value="Add to/update Renavon Hong Kong database" {% if subject == "Add to/update Renavon Hong Kong database" %}selected{% endif %}>Add to/update Renavon Hong Kong database</option>
-    <option value="Error on Renavon Hong Kong" {% if subject == "Error on Renavon Hong Kong" %}selected{% endif %}>Error on Renavon Hong Kong</option>
+    <option value="Add to/update {{ site_short_name }} database" {% if subject == "Add to/update " ~ site_short_name ~ " database" %}selected{% endif %}>Add to/update {{ site_short_name }} database</option>
+    <option value="Error on {{ site_short_name }}" {% if subject == "Error on " ~ site_short_name %}selected{% endif %}>Error on {{ site_short_name }}</option>
     <option value="Media enquiry" {% if subject == "Media enquiry" %}selected{% endif %}>Media enquiry</option>
     <option value="Journalist seat at shareholder meeting" {% if subject == "Journalist seat at shareholder meeting" %}selected{% endif %}>Journalist seat at shareholder meeting</option>
     <option value="Suggested Opinion Poll" {% if subject == "Suggested Opinion Poll" %}selected{% endif %}>Suggested Opinion Poll</option>

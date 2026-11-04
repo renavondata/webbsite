@@ -66,7 +66,7 @@ def run():
         banner = render_template("site/banner.html")
         credit = render_template("site/footer_credit.html")
     check("overlay: site/banner.html is the overlay's", "OVERLAY BANNER" in banner, True)
-    check("overlay: site/footer_credit.html falls back to the app's", "renavon-credit" in credit, True)
+    check("overlay: site/footer_credit.html falls back to the app's", "site-credit" in credit, True)
 
     # 2. Static: same endpoint and URL; overlay file wins, app file is the fallback
     client = app.test_client()
@@ -102,14 +102,14 @@ def run():
     check("SITE_SHORT_NAME: search box", 'value="search Example"' in head, True)
     check("SITE_SHORT_NAME: database brand", "<b>Example</b>" in head, True)
     with app.test_request_context("/"):
-        check("defaults: site_name", render_template_string("{{ site_name }}"), "Renavon Hong Kong Database")
+        check("defaults: site_name", render_template_string("{{ site_name }}"), "Hong Kong Market Archive")
         check("defaults: canonical_host", render_template_string("{{ canonical_host }}"),
               app.config["CANONICAL_HOST"])
 
     # 5. Analytics: config-driven, and absent when the key is empty --------------
     with app.test_request_context("/"):
         default_head = render_template("errors/404.html")
-    check("analytics: default key rendered", "posthog.init('phc_1HRPWj8x" in default_head, True)
+    check("analytics: off by default", "posthog.init" in default_head, False)
     for key in ("", None):
         off = create_app(_config(POSTHOG_KEY=key))
         with off.test_request_context("/"):

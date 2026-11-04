@@ -29,21 +29,21 @@ class Config:
     # site-search box. Domain-agnostic by default; to move to a dedicated domain,
     # set CANONICAL_HOST (and optionally SEARCH_DOMAIN) in the environment and add
     # a 301 from the old host — no code change needed.
-    CANONICAL_HOST = os.environ.get("CANONICAL_HOST", "webbsite.renavon.com")
+    CANONICAL_HOST = os.environ.get("CANONICAL_HOST", "localhost")
     SEARCH_DOMAIN = os.environ.get("SEARCH_DOMAIN", CANONICAL_HOST)
 
     # Site identity, exposed to every template as {{ site_name }} (page titles,
     # og:site_name) and {{ site_short_name }} (headings, the search box). A
     # deployment re-brands with these two plus an overlay (WEBBSITE_OVERLAY_DIR,
     # see webbsite/overlay.py) supplying templates/site/*.html.
-    SITE_NAME = os.environ.get("SITE_NAME", "Renavon Hong Kong Database")
-    SITE_SHORT_NAME = os.environ.get("SITE_SHORT_NAME", "Renavon Hong Kong")
+    SITE_NAME = os.environ.get("SITE_NAME", "Hong Kong Market Archive")
+    SITE_SHORT_NAME = os.environ.get("SITE_SHORT_NAME", "HK Market Archive")
 
     # Click analytics (site/analytics.html): the PostHog snippet renders only
     # when POSTHOG_KEY is non-empty. A project key is public by design (it ships
     # in every page), but it routes visitors' events to whoever owns it, so an
     # operator sets their own or leaves it empty.
-    POSTHOG_KEY = os.environ.get("POSTHOG_KEY", "phc_1HRPWj8xOz5e1q7iGMicuo3qhK2MsLTN7BOPi3CIKwy")
+    POSTHOG_KEY = os.environ.get("POSTHOG_KEY", "")
     POSTHOG_HOST = os.environ.get("POSTHOG_HOST", "https://us.i.posthog.com")
 
     # Optional deployment overlay: a directory with templates/ and/or static/

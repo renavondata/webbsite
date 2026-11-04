@@ -74,7 +74,7 @@ def enigma_version() -> str | None:
     """A digest of every ``enigma.log`` row the loader does not own.
 
     Contract for anything that writes the enigma tables (today nothing does;
-    the renavon revival will): advance an ``enigma.log`` key in the same
+    a revived data feed will): advance an ``enigma.log`` key in the same
     transaction, or pages precomputed from enigma data keep serving the old
     result. None when the query fails, so a caller computes live instead of
     caching under a version it could not read. Memoised like :func:`log_val`.
