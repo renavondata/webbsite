@@ -43,12 +43,12 @@ health_match = '"ok"'
 # HTML carries a 30-day CDN-Cache-Control, so a code deploy is invisible without
 # the purge (deploy/README.md). The daily R2 -> Postgres refresh deliberately
 # does NOT purge — its TTL ladder self-heals within 4h.
-cf_zone_id = "c754c09daa8fb9cce8e4977d44cbd246"
+cf_zone_id = "<zone-id>"
 
 # Apex of the zone deploy/cloudflare.json declares rules in. site-deploy's
 # cf-converge@ (on a deploy that touches cloudflare.json) and cf-drift@ (daily)
 # refuse to run without it; the token they use lives in /etc/webbsite/cf-env.
-cf_domain = "renavon.com"
+cf_domain = "example.org"
 
 # Run deploy/converge.sh as root each tick, after `uv sync` and before the reload,
 # so the tracked units and Caddyfile ARE the box rather than a hopeful mirror of it.
@@ -71,12 +71,12 @@ cf_domain = "renavon.com"
 # root on this box. The repo is public to READ; merge is not, and that is the boundary.
 converge = true
 
-# The uptime probe is external: hc.gfrm.in's `webbsite.renavon.com-probe`, run off
+# The uptime probe is external: the operator's external health check, run off
 # the box and so closer to a visitor's view. This tells site-deploy not to arm a
 # second on-box probe (site-probe@) for the same outage, and not to nag UNPROBED.
 # site-checks-armed@webbsite (ops-env) holds the named check to not-paused and
 # not-stale, so the check itself vanishing is still an alarm.
-probe_external = "webbsite.renavon.com-probe"
+probe_external = "<probe-check-name>"
 
 # site-backup@webbsite runs deploy/backup-producer.sh (a pg_dump -Fc of the ~77 GB
 # enigma database) through site-deploy's backup.sh: age-encrypt, rclone to R2, then

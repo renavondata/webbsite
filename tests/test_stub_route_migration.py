@@ -6,7 +6,7 @@ existed. ``enigma.orgdata.asp`` rendered dbpub/orgdata.html with a context
 shaped nothing like what that template expects, so the page silently rendered
 almost empty (nav bar + rating widget + a hardcoded "Holders information
 coming soon" placeholder, no matter what personID was requested — this is
-what was reported for https://webbsite.renavon.com/dbpub/enigma.orgdata.asp?p=382).
+what was reported for https://webbsite.example.org/dbpub/enigma.orgdata.asp?p=382).
 ``enigma.positions.asp`` had already been fixed the same way. Both now just
 301-redirect to the real, fully-featured route, and every template link goes
 straight to the real endpoint instead of through the stub.

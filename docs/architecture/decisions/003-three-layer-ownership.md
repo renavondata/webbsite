@@ -52,7 +52,7 @@ site-deploy came to exist in the first place (its host layer was renavon's
 `deploy/host/`), and it is the only shape that keeps webbsite runnable by a
 mirrorer: a public repo that depends on private code is not public.
 
-**A shared zone is declared by host, not by phase.** `webbsite.renavon.com`
+**A shared zone is declared by host, not by phase.** `webbsite.example.org`
 sits on a Cloudflare zone shared with other renavon hosts. Renavon's
 reconciler treats a declared rule list as the whole phase; applied from this
 repo it would delete the other hosts' rules. So `deploy/cloudflare.json`

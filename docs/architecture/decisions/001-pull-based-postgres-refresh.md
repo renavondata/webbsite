@@ -18,7 +18,7 @@ A **pull-based loader** on the droplet (`scripts/refresh/refresh.py`, PEP 723
 uv script, systemd timer 02:45/06:45 UTC):
 
 - **The droplet pulls; renavon pushes nothing.** Renavon's scoped sync writes
-  Parquet + `_manifest.json` to `r2://hkdata/webbsite-refresh/`; the loader
+  Parquet + `_manifest.json` to `r2://<bucket>/webbsite-refresh/`; the loader
   reads with an Object-Read-only R2 token. Renavon holds no credentials to
   this host or database.
 - **Manifest-gated.** Renavon writes the manifest only after a fully clean
