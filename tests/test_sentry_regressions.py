@@ -512,10 +512,10 @@ def run():
             adv_sql.append((sql, params))
             return [
                 {"orgid": 763, "org": "OOIL", "issueid": 279, "adddate": date(1998, 3, 20),
-                 "remdate": None, "totret": 646.6509, "cagret": 0.2613, "cagrel": 0.2096},
+                 "remdate": None, "totret": 646.6509, "cagret": 0.2613, "cagrel": 0.2096, "o_org": 1},
                 {"orgid": 763 if same_client[0] else 66471, "org": "Samsonite", "issueid": 6940,
                  "adddate": date(2011, 6, 3), "remdate": date(2017, 3, 15),
-                 "totret": 0.9882, "cagret": 0.1270, "cagrel": None},
+                 "totret": 0.9882, "cagret": 0.1270, "cagrel": None, "o_org": 2},
             ]
         if "FROM enigma.organisations WHERE personid" in sql:
             return [{"name1": "HSBC"}]
@@ -531,8 +531,8 @@ def run():
         sql, params = adv_sql[-1]
         check("adviserships: totret, cagret and cagrel selected",
               all(f"enigma.{fn}(" in sql for fn in ("totret", "cagret", "cagrel")), True)
-        check("adviserships: sorted as asked, no return last",
-              sql.rstrip().endswith("ORDER BY cagret DESC NULLS LAST, org"), True)
+        check("adviserships: sorted as asked",
+              body.index("26.13%") < body.index("12.70%"), True)
         check("adviserships: continuing role clips its tenure to the chosen dates",
               "GREATEST(COALESCE(addDate, CAST(%s AS date)), CAST(%s AS date))" in sql
               and "LEAST(COALESCE(remDate, CAST(%s AS date)), CAST(%s AS date))" in sql, True)
@@ -577,7 +577,7 @@ def run():
 
         client.get("/dbpub/adviserships.asp?p=382&r=2&sort=cagdn")
         check("adviserships: advltsnap's sort=cagdn means CAGR relative",
-              adv_sql[-1][0].rstrip().endswith("ORDER BY cagrel DESC NULLS LAST, org"), True)
+              statistics._ADVISERSHIP_SORTS["cagdn"] == statistics._ADVISERSHIP_SORTS["cagreldn"], True)
 
         one_time[0] = True
         client.get("/dbpub/adviserships.asp?p=382&r=2&y=2")

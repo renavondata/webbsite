@@ -9493,7 +9493,6 @@ def _adviserships_rows(person_id, role_id, one_time, hide, from_date, to_date, y
         ORDER BY t.org, t.addDate, t.issueid
     """,
         tuple(window_params * 3 + [role_id, person_id] + issue_params + where_params),
-        timeout_s=25,
     )
     # The return links open the chart from where the measurement starts.
     for row in rows:
