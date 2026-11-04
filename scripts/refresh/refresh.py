@@ -191,7 +191,7 @@ def fetch_manifest(source: Path | None) -> dict:
         raw = (source / "_manifest.json").read_bytes()
     else:
         obj = r2_client().get_object(
-            Bucket=env("R2_BUCKET", "hkdata"),
+            Bucket=env("R2_BUCKET"),
             Key=f"{env('R2_PREFIX', 'webbsite-refresh')}/_manifest.json",
         )
         raw = obj["Body"].read()
@@ -219,7 +219,7 @@ def download_parquet(dataset: str, entry: dict, dest_dir: Path, source: Path | N
         if not dest.exists():
             raise ValidationError(f"fixture file missing: {dest}")
         return dest
-    r2_client().download_file(env("R2_BUCKET", "hkdata"), entry["key"], str(dest))
+    r2_client().download_file(env("R2_BUCKET"), entry["key"], str(dest))
     return dest
 
 
