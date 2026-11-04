@@ -30,7 +30,7 @@ def normalize_html(html: str, source: str = "asp") -> str:
     html = re.sub(r'<hr>\s*<p><a href="/webbmail/join\.asp".*?</div>\s*</body>', '</body>', html, flags=re.DOTALL)
 
     # Remove Flask Renavon credit footer
-    html = re.sub(r'<hr>\s*<p class="renavon-credit">.*?</p>', '', html, flags=re.DOTALL)
+    html = re.sub(r'<hr>\s*<p class="(?:site|renavon)-credit">.*?</p>', '', html, flags=re.DOTALL)
 
     # Remove favicon link (Flask-only)
     html = re.sub(r'<link\s+rel="icon"[^>]*>', '', html)

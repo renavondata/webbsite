@@ -1,4 +1,4 @@
-# Renavon Hong Kong Database
+# Hong Kong Market Archive
 
 ## Data Attribution
 
@@ -10,7 +10,7 @@ David Webb generously released the Webb-site database schemas and scrapers as op
 
 ## Mission
 
-Renavon Hong Kong Database preserves and provides public access to a comprehensive archive of Hong Kong financial market data spanning over 35 years. This platform promotes transparency, accountability, and independent research in Hong Kong's capital markets.
+This project preserves and provides public access to a comprehensive archive of Hong Kong financial market data spanning over 35 years. This platform promotes transparency, accountability, and independent research in Hong Kong's capital markets.
 
 Our purpose is to:
 
@@ -21,7 +21,7 @@ Our purpose is to:
 
 ## What Data is Included?
 
-The Renavon platform provides access to:
+The site provides access to:
 
 - **CCASS holdings** - Beneficial ownership data from Hong Kong's Central Clearing system (2007-present)
 - **Stock quotes and corporate actions** - Historical price data and dividends since 1994
@@ -65,7 +65,7 @@ collected the data on Windows.
 
 ### For Users
 
-**Live site**: <https://webbsite.renavon.com>
+**Running your own copy**: see [Quick start](#quick-start) below. Name, host, analytics and templates are all per-deployment settings.
 
 **Data access**:
 - Search companies and individuals
@@ -118,7 +118,7 @@ The **database structure, data compilation, and software** are released under **
 **Under the following terms:**
 - **Attribution** — Credit Webb-site.com as the original compiler, provide a link to CC-BY 4.0 license, and indicate changes made
 
-**Suggested Attribution**: "Data from Renavon Hong Kong Database, originally compiled by Webb-site.com | CC-BY 4.0"
+**Suggested Attribution**: "Data originally compiled by Webb-site.com | CC-BY 4.0"
 
 ### Disclaimer
 

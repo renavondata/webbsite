@@ -195,7 +195,7 @@ def run():
     # would let a changed body through unchecked.
     seamed = sorted(
         str(f.relative_to(TEMPLATES)) for f in TEMPLATES.rglob("*.html")
-        if not str(f.relative_to(TEMPLATES)).startswith("site/")
+        if not str(f.relative_to(TEMPLATES)).startswith(("site/", "dbeditor/", "contact/"))  # those two answer 410
         and any(m in f.read_text() for m in SEAM_MARKERS)
     )
     check("parity: >40 templates carry a seam", len(seamed) > 40, True)
@@ -210,15 +210,11 @@ def run():
     banners = [k for k in default_text if k.startswith("banner#")]
     check("overlay: every banner branch is the overlay's", all(overlay_text[k].strip() == marker for k in banners), True)
 
-    env = app.jinja_env.overlay(undefined=ChainableUndefined)
-    default_banner = _render(app, env, "site/banner.html", REQUEST_PATH)
     pages = [k for k in default_text if not k.startswith("banner#")]
-    with_banner = [k for k in pages if default_banner in default_text[k]]
+    with_banner = [k for k in pages if marker in overlay_text[k]]
     check("overlay: the banner appears on many pages", len(with_banner) > 100, True)
-    wrong = [
-        k for k in pages
-        if overlay_text[k] != default_text[k].replace(default_banner, marker)
-    ]
+    # The default banner is empty, so removing the overlay's must give the default page.
+    wrong = [k for k in pages if overlay_text[k].replace(marker, "") != default_text[k]]
     check("overlay: pages differ ONLY by the banner", wrong, [])
 
     if _failures:

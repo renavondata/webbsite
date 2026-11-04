@@ -855,8 +855,8 @@ table.l2cr td:nth-last-child(2), table.l2cr th:nth-last-child(2) {
 @media only screen and (min-width:768px) {.chart {height:384px}}
 @media only screen and (min-width:1024px) {.chart {height:512px}}
 @media only screen and (min-width:1280px) {.chart {height:640px}}
-/*Renavon credit styling in footer*/
-.renavon-credit {
+/*Credit line in the footer. The second selector serves overlays not yet on the new name.*/
+.site-credit, .renavon-credit {
 	font-size: 1.1em;
 	margin: 1em 0;
 }
