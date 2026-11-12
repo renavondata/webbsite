@@ -425,8 +425,9 @@ def _fetch_tree(person_id, sql):
 
 
 def _lineal_tree(edges, person_id, max_gen, id_key, sub_key, level, seen):
-    """The ASP's recursive tree walk, over edges prefetched one generation per
-    query (it ran one query per person, Sentry WEBBSITE-2G/2J): a person met
+    """The ASP's recursive tree walk, over edges prefetched for the whole tree
+    in one query (it ran one query per person, Sentry WEBBSITE-2G/2J; then one
+    per generation, WEBBSITE-33/34): a person met
     again is marked already_seen and not expanded (seen is shared, in walk
     order)."""
     if person_id in seen or (max_gen > 0 and level >= max_gen):
