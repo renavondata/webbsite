@@ -51,6 +51,14 @@ work will change that. Deployment (self-hosted DigitalOcean droplet, migrated of
   set (app + loader); every response carries an `X-Request-Id` minted by Caddy and echoed through
   the access logs. A Caddy OOM kill went unnoticed for five days in Sept 2026 — see "When the site
   is down" in `deploy/README.md`.
+- **Sentry triage is automatic.** `scripts/sentry_triage.py feed` (run on the operator's
+  schedule, outside this repo) resolves stale timeout/outage/perf issues, folds routes that
+  failed together into one "burst" incident, and queues one alert per incident for a
+  headless Claude Code run. That run follows `docs/operations/sentry-triage-prompt.md`:
+  diagnose, fix with a red-then-green test, merge only when CI is green (a merge deploys),
+  verify on the live site, resolve in Sentry. Its PRs carry the label `sentry-triage`.
+  What the agent may do lives in that prompt; how incidents are grouped lives in the
+  feeder, pinned by `tests/test_sentry_triage.py`.
 
 > This is a **public repository.** Operational secrets and host-identifying details (origin IP, host
 > identifiers, DB passwords, API tokens) are intentionally **not** committed here; they live in the
