@@ -3,7 +3,7 @@ People and organization lookup
 """
 
 from flask import Blueprint, render_template, request, current_app
-from webbsite.db import execute_query, fetch_generations
+from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int
 
 bp = Blueprint("dbpub_people", __name__)
@@ -365,8 +365,23 @@ def _calculate_age(yob, mob, dob, yod, mond, dod):
         return f"{diff_y} years"
 
 
+def _walk_cte(of_col, next_col):
+    """Every person reachable from %s along lineal links (relid 0), the root
+    included, in one recursive query: the whole tree's rows then come back in
+    one round trip instead of one query per generation (Sentry N+1,
+    WEBBSITE-33/34). UNION, not UNION ALL, keeps each person once, so a cycle
+    in the data ends the walk instead of looping."""
+    return f"""
+    WITH RECURSIVE walk(node) AS (
+        SELECT CAST(%s AS bigint)
+        UNION
+        SELECT r.{next_col} FROM walk w
+        JOIN enigma.relatives r ON r.relid = 0 AND r.{of_col} = w.node
+    )"""
+
+
 # Parents of each of %s (rel2 is child, rel1 is parent when relid=0).
-_PARENTS_SQL = """
+_PARENTS_SQL = _walk_cte("rel2", "rel1") + """
     SELECT
         r.rel2 as of_id,
         r.rel1 as parent_id,
@@ -379,12 +394,12 @@ _PARENTS_SQL = """
         p.yod, p.mond, p.dod
     FROM enigma.relatives r
     JOIN enigma.people p ON r.rel1 = p.personid
-    WHERE r.relid = 0 AND r.rel2 = ANY(%s)
+    WHERE r.relid = 0 AND r.rel2 IN (SELECT node FROM walk)
     ORDER BY r.rel2, p.sex DESC, p.name1, p.name2
 """
 
 # Children of each of %s (rel1 is parent, rel2 is child when relid=0).
-_CHILDREN_SQL = """
+_CHILDREN_SQL = _walk_cte("rel1", "rel2") + """
     SELECT
         r.rel1 as of_id,
         r.rel2 as child_id,
@@ -396,14 +411,23 @@ _CHILDREN_SQL = """
         p.yod, p.mond, p.dod
     FROM enigma.relatives r
     JOIN enigma.people p ON r.rel2 = p.personid
-    WHERE r.relid = 0 AND r.rel1 = ANY(%s)
+    WHERE r.relid = 0 AND r.rel1 IN (SELECT node FROM walk)
     ORDER BY r.rel1, p.yob, p.mob, p.name1, p.name2
 """
 
 
+def _fetch_tree(person_id, sql):
+    """{person: [their rows]} for the whole lineal tree from person_id, one query."""
+    edges = {}
+    for r in execute_query(sql, (person_id,)):
+        edges.setdefault(r["of_id"], []).append(r)
+    return edges
+
+
 def _lineal_tree(edges, person_id, max_gen, id_key, sub_key, level, seen):
-    """The ASP's recursive tree walk, over edges prefetched one generation per
-    query (it ran one query per person, Sentry WEBBSITE-2G/2J): a person met
+    """The ASP's recursive tree walk, over edges prefetched for the whole tree
+    in one query (it ran one query per person, Sentry WEBBSITE-2G/2J; then one
+    per generation, WEBBSITE-33/34): a person met
     again is marked already_seen and not expanded (seen is shared, in walk
     order)."""
     if person_id in seen or (max_gen > 0 and level >= max_gen):
@@ -425,7 +449,7 @@ def _lineal_tree(edges, person_id, max_gen, id_key, sub_key, level, seen):
 def _build_ascendants_tree(person_id, max_gen):
     """Ascendants (parents, grandparents) tree"""
     try:
-        edges = fetch_generations(person_id, _PARENTS_SQL, "of_id", "parent_id", max_gen or None)
+        edges = _fetch_tree(person_id, _PARENTS_SQL)
     except Exception as ex:
         current_app.logger.error(f"Error building ascendants tree: {ex}")
         return []
@@ -435,7 +459,7 @@ def _build_ascendants_tree(person_id, max_gen):
 def _build_descendants_tree(person_id, max_gen):
     """Descendants (children, grandchildren) tree"""
     try:
-        edges = fetch_generations(person_id, _CHILDREN_SQL, "of_id", "child_id", max_gen or None)
+        edges = _fetch_tree(person_id, _CHILDREN_SQL)
     except Exception as ex:
         current_app.logger.error(f"Error building descendants tree: {ex}")
         return []

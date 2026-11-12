@@ -1301,6 +1301,14 @@ def run():
         calls.append(sql)
         nodes = params[0] if params else []
         nodes = nodes if isinstance(nodes, list) else [nodes]  # per-node: one id
+        if "WITH RECURSIVE walk" in sql:  # the whole tree from one root, as SQL's UNION walks it
+            reach, todo = set(), list(nodes)
+            while todo:
+                n = todo.pop()
+                if n not in reach:
+                    reach.add(n)
+                    todo.extend(graph[n])
+            nodes = sorted(reach)
         if "enigma.relatives" in sql:
             key = "child_id" if "as child_id" in sql else "parent_id"
             return [{"of_id": n, key: c, "name": f"P{c}", "sex": "M", "yob": None, "mob": None,
@@ -1327,11 +1335,16 @@ def run():
 
             calls.clear()
             tree = people._build_descendants_tree(1, 0)
-            check("natperson descendants: one query per generation, the walk as before",
+            check("natperson descendants: one query for the whole tree, the walk as before",
                   (len(calls), [c["child_id"] for c in tree],
                    [c["already_seen"] for c in under(tree, 0, "descendants") or []],
                    [c["child_id"] for c in under(tree, 1, "descendants") or []]),
-                  (3, [2, 3], [True, False], [4]))
+                  (1, [2, 3], [True, False], [4]))
+            calls.clear()
+            tree = people._build_ascendants_tree(1, 1)
+            check("natperson ascendants m=1: one query, one level shown",
+                  (len(calls), [c["parent_id"] for c in tree],
+                   [len(c["ancestors"]) for c in tree]), (1, [2, 3], [0, 0]))
             calls.clear()
             htree = []
             corporate._build_holdings_tree(1, 0, "name", htree, {1: 0})
