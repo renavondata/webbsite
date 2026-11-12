@@ -1486,6 +1486,27 @@ def run():
     finally:
         db_module.execute_query = real_db
 
+    # chldchg.asp: an issue with no outstanding shares at d1 (old_issued 0) but
+    # some at d2 divided by zero in the NCIP change cell (WEBBSITE-3P).
+    from flask import render_template
+
+    zero_ctx = dict(
+        issue_id=1, stock_code="1", stock_name="X", person_id=1, sort="",
+        d1=date(2021, 2, 1), d2=date(2021, 3, 1), holdings_changes=[], adj=1.0,
+        issued=1000.0, issued_date=date(2021, 3, 1), old_issued=0, issued_chg=0,
+        issued_pc=0, sum_hold=100, sum_hldchg=10, nam_hldg=0, unch_hldg=0,
+        ncip_hldg=50, ncip_chg=5, ctot=150, non_ccass=850, non_ccass_chg=0,
+        intermed_cnt=1, cip_cnt=0, ncip_cnt=1, vol=0, turn=0, t1=0, t2=0,
+        hk_listings=[], current_stock_code="00001", now=date(2021, 3, 1),
+    )
+    with app.test_request_context("/ccass/chldchg.asp?i=1&d=2021-03-01"):
+        try:
+            render_template("ccass/chldchg.html", **zero_ctx)
+            outcome = "rendered"
+        except ZeroDivisionError as e:
+            outcome = f"ZeroDivisionError: {e}"
+    check("chldchg: old_issued 0 renders (WEBBSITE-3P)", outcome, "rendered")
+
     if _failures:
         print("\nFAILED:")
         for f in _failures:
