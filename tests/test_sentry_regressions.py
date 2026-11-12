@@ -1301,6 +1301,14 @@ def run():
         calls.append(sql)
         nodes = params[0] if params else []
         nodes = nodes if isinstance(nodes, list) else [nodes]  # per-node: one id
+        if "WITH RECURSIVE walk" in sql and "enigma.webholdings3" in sql:
+            # the holdings walk: every node reached at depth < params[1]
+            frontier, reach, depth = [params[0]], {params[0]}, 0
+            while frontier and depth + 1 < params[1]:
+                frontier = [c for n in frontier for c in graph[n] if c not in reach]
+                reach.update(frontier)
+                depth += 1
+            nodes = sorted(reach)
         if "enigma.relatives" in sql:
             key = "child_id" if "as child_id" in sql else "parent_id"
             return [{"of_id": n, key: c, "name": f"P{c}", "sex": "M", "yob": None, "mob": None,
@@ -1335,9 +1343,9 @@ def run():
             calls.clear()
             htree = []
             corporate._build_holdings_tree(1, 0, "name", htree, {1: 0})
-            check("holdings tree: one query per generation, cross-holdings as before",
+            check("holdings tree: one query for the whole tree, cross-holdings as before",
                   (len(calls), [(t["level"], t["holding"]["issuer"], t["is_cross_holding"]) for t in htree]),
-                  (3, [(0, 2, False), (1, 1, True), (1, 4, False), (0, 3, False), (1, 4, True)]))
+                  (1, [(0, 2, False), (1, 1, True), (1, 4, False), (0, 3, False), (1, 4, True)]))
     finally:
         db_module.execute_query, people.execute_query, corporate.execute_query = real_q
 
