@@ -1249,6 +1249,10 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10, 
                 JOIN enigma.sholdings sh ON sh.holderid = w.node AND sh.heldas = 0
                 JOIN enigma.issue i ON i.id1 = sh.issueid
                 WHERE w.depth + 1 < %s
+                  -- The view drops ever-listed issuers, so the tree never
+                  -- expands one; without this the walk fans out through every
+                  -- listed company's holders (3,861 nodes vs 730, worst case).
+                  AND NOT enigma.everlistco(i.issuer)
             )
             SELECT *,
                    CASE
