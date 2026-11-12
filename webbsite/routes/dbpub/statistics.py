@@ -7117,8 +7117,6 @@ def str_route():
                     complain_result[0]["has_data"] or person_id == 9643
                 )  # 9643 = HKEX
             except Exception as ex:
-                from flask import current_app
-
                 current_app.logger.error(f"Error building org_nav: {ex}", exc_info=True)
 
         # Get adjusted quotes using getadjust() function (ASP lines 19-36)
