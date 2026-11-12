@@ -100,6 +100,42 @@ def run():
     resp = client.get("/health", headers={"User-Agent": "Mozilla/5.0 (compatible; SemrushBot/7)"})
     check("request id: present on a bot 403", len(resp.headers.get("X-Request-Id", "")), 32)
 
+    # 5b. A crawler that ignores robots.txt is refused before any query ----------
+    # (2026-11-12: 14.6k historical portchg.asp pairs from one crawler in a day.)
+    # The stub DB refuses connections, so a 403 proves no query ran.
+    crawler = {"User-Agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; "
+                             "compatible; Claude-SearchBot/1.0; +searchbot@anthropic.com)"}
+    browser = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                             "(KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36"}
+    url = "/ccass/portchg.asp?d=2012-10-30&d1=2012-10-29&p=24"
+    resp = client.get(url, headers=crawler)
+    check("crawler: Disallowed portchg -> 403", resp.status_code, 403)
+    check("crawler: the 403 is never cached", resp.headers.get("Cache-Control"), "no-store")
+    check("crawler: no CDN TTL on the 403", resp.headers.get("CDN-Cache-Control"), None)
+    check("browser: same URL is not refused",
+          client.get(url, headers=browser).status_code != 403, True)
+    for ua in ("Googlebot/2.1 (+http://www.google.com/bot.html)", "bingbot/2.0",
+               "GoogleOther", "SomeCrawler/1", "Mozilla/5.0 (compatible; Yahoo! Slurp)"):
+        check(f"crawler: {ua!r} refused on chldchg",
+              client.get("/ccass/chldchg.asp?i=1", headers={"User-Agent": ua}).status_code, 403)
+    check("crawler: wildcard rule (?page=all) refused",
+          client.get("/dbpub/SFClicount.asp?page=all", headers=crawler).status_code, 403)
+    check("crawler: CUBOT phone is a browser",
+          client.get(url, headers={"User-Agent": "Mozilla/5.0 (Linux; Android 10; CUBOT X30)"})
+          .status_code != 403, True)
+    check("crawler: percent-encoded query still refused",
+          client.get("/dbpub/SFClicount.asp?page=%61ll", headers=crawler).status_code, 403)
+    check("link preview: Slackbot unfurls a shared Disallowed link",
+          client.get(url, headers={"User-Agent": "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)"})
+          .status_code != 403, True)
+    check("crawler: allowed page not refused",
+          client.get("/robots.txt", headers=crawler).status_code, 200)
+    from webbsite import robots_disallowed
+    check("robots_disallowed: prefix of path", robots_disallowed("/ccass/portchg.asp?p=1"), True)
+    check("robots_disallowed: other path", robots_disallowed("/ccass/cholder.asp?part=1"), False)
+    check("robots_disallowed: sort then page", robots_disallowed("/dbpub/x.asp?sort=a&page=2"), True)
+    check("robots_disallowed: sort alone", robots_disallowed("/dbpub/x.asp?sort=a"), False)
+
     # 6. SWR probe: each variant's headers reach the edge exactly as declared --
     # the cache-header hook must not rewrite them, or the probe tests nothing.
     from webbsite import SWR_PROBE_HEADERS
@@ -117,7 +153,7 @@ def run():
         for f in _failures:
             print("  " + f)
         return 1
-    print(f"\nall {len(ccass_routes) + 22} checks passed")
+    print(f"\nall {len(ccass_routes) + 40} checks passed")
     return 0
 
 

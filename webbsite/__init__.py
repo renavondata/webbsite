@@ -5,7 +5,9 @@ Direct port from Classic ASP to Flask/Jinja
 
 from flask import Flask, render_template, redirect, request, g, Response, has_app_context
 from datetime import datetime, date as _date
+import re
 import time
+from urllib.parse import unquote_plus
 import logging
 import logging.config
 import sys
@@ -98,6 +100,31 @@ ROBOTS_DISALLOW = (
     "/_probe/",
     "/*page=all", "/*sort=*page=", "/*page=*sort=",  # webbsite/pagination.py
 )
+
+# A robots rule is a prefix match on path + query, with "*" for any run of
+# characters (RFC 9309). Compiled once; used to refuse Disallowed URLs to
+# self-declared crawlers below.
+_ROBOTS_DISALLOW_RE = re.compile(
+    "|".join("(?:" + ".*".join(map(re.escape, rule.split("*"))) + ")"
+             for rule in ROBOTS_DISALLOW)
+)
+
+# A self-declared crawler: "...bot/1.0", "bingbot", "Claude-SearchBot",
+# "GoogleOther", "...crawler", "...spider". The look-behind spares the CUBOT
+# phone brand. Browsers never say any of these.
+_CRAWLER_UA_RE = re.compile(r"(?<!cu)bot\b|crawler|spider|slurp|googleother", re.I)
+# Link previewers fetch one URL a person just pasted into a chat; they are not
+# crawling, so a shared Disallowed link still unfurls.
+_LINK_PREVIEW_UA_RE = re.compile(
+    r"slackbot|twitterbot|discordbot|linkedinbot|telegrambot|whatsapp|skypeuripreview",
+    re.I,
+)
+
+
+def robots_disallowed(path_and_query: str) -> bool:
+    """True when robots.txt Disallows this URL (path plus "?query", if any)."""
+    return _ROBOTS_DISALLOW_RE.match(path_and_query) is not None
+
 
 # /_probe/swr/<variant>: which header does Cloudflare honour stale-while-revalidate
 # in? Its docs say "in the Cache-Control header" (revalidation page) but also that
@@ -519,6 +546,25 @@ def create_app(config_class=Config):
         ua = request.headers.get("User-Agent", "").lower()
         if ua and any(s in ua for s in BLOCKED_BOT_UA_SUBSTRINGS):
             return Response("Forbidden\n", status=403, mimetype="text/plain")
+
+    # A crawler that ignores robots.txt gets a 403 on a Disallowed URL before
+    # any query runs. On 2026-11-12 one crawler fetched 14.6k distinct
+    # historical portchg.asp date pairs in a day: two thirds of all database
+    # time, and the disk queue it built timed out unrelated routes. no-store:
+    # the edge keys on the URL, not the UA, so a 403 must never be cached.
+    @app.before_request
+    def _refuse_disallowed_to_crawlers():
+        ua = request.headers.get("User-Agent", "")
+        if not _CRAWLER_UA_RE.search(ua) or _LINK_PREVIEW_UA_RE.search(ua):
+            return None
+        # Decoded, as request.args sees it: "page=%61ll" is "page=all".
+        qs = unquote_plus(request.query_string.decode("latin-1"))
+        if robots_disallowed(request.path + ("?" + qs if qs else "")):
+            return Response(
+                "Disallowed by /robots.txt\n", status=403, mimetype="text/plain",
+                headers={"Cache-Control": "no-store"},
+            )
+        return None
 
     # Interactive/account features (webbmail, voting, polls, mailing lists, the
     # editor) depend on auth/write paths that don't apply to a read-only archive;
