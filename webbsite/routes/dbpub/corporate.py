@@ -4,7 +4,7 @@ Corporate structure - officers, advisers, positions, holders
 
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
-from webbsite.db import execute_query, fetch_generations
+from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
 
@@ -1226,15 +1226,34 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10, 
         tree: List to append results to
         org_tracker: Dict mapping personID -> first occurrence index (for cross-holding detection)
         max_depth: Maximum recursion depth (prevents runaway on deep ownership chains)
-        edges: holdings per holder, fetched once at the top: one query per
-            generation, not per holder (Sentry WEBBSITE-2R)
+        edges: holdings per holder, fetched once at the top in one query for
+            the whole tree (Sentry N+1: WEBBSITE-2R per holder, then
+            WEBBSITE-35 per generation)
     """
     if level >= max_depth:
         return
     if edges is None:
-        edges = fetch_generations(
-            person_id,
+        rows = execute_query(
             f"""
+            WITH RECURSIVE walk(node, depth) AS (
+                -- Every holder within the depth cap. It walks the base
+                -- tables, not the webholdings3 view (whose recursion costs more
+                -- than the per-generation queries it replaces): their edges are
+                -- a superset of the view's, so every holder the tree expands is
+                -- here, and the extra ones only add rows the tree never reads.
+                -- UNION dedupes (node, depth), so a cycle stops at the cap.
+                SELECT CAST(%s AS bigint), 0
+                UNION
+                SELECT i.issuer, w.depth + 1
+                FROM walk w
+                JOIN enigma.sholdings sh ON sh.holderid = w.node AND sh.heldas = 0
+                JOIN enigma.issue i ON i.id1 = sh.issueid
+                WHERE w.depth + 1 < %s
+                  -- The view drops ever-listed issuers, so the tree never
+                  -- expands one; without this the walk fans out through every
+                  -- listed company's holders (3,861 nodes vs 730, worst case).
+                  AND NOT enigma.everlistco(i.issuer)
+            )
             SELECT *,
                    CASE
                        WHEN shares IS NULL THEN stake
@@ -1253,14 +1272,17 @@ def _build_holdings_tree(person_id, level, ob, tree, org_tracker, max_depth=10, 
                        ELSE TO_CHAR(incdate, 'YYYY-MM-DD')
                    END AS inc
             FROM enigma.webholdings3
-            WHERE personid = ANY(%s)
+            -- An array (an InitPlan), so each holder is an index probe into
+            -- the view, as before; a semi-join made the planner build it whole.
+            WHERE personid = ANY(ARRAY(SELECT DISTINCT node FROM walk))
               AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
-            ORDER BY personid, {ob}
+            ORDER BY personid, {ob}, issue
         """,
-            "personid",
-            "issuer",
-            max_depth - level,
+            (person_id, max_depth - level),
         )
+        edges = {}
+        for r in rows:
+            edges.setdefault(r["personid"], []).append(r)
 
     for holding in edges.get(person_id, []):
         issuer_id = holding["issuer"]
