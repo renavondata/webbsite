@@ -23,7 +23,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from decimal import Decimal  # noqa: E402
 

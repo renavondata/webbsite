@@ -19,7 +19,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from flask import g, render_template_string  # noqa: E402
 from sqlalchemy import create_engine, text  # noqa: E402

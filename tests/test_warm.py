@@ -10,7 +10,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from webbsite import precompute, warm  # noqa: E402
 

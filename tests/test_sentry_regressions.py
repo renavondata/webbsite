@@ -77,12 +77,15 @@ import logging
 import os
 import re
 import sys
+import tempfile
 from urllib.parse import quote as url_quote
 from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from webbsite import create_app  # noqa: E402
 from webbsite import db as db_module  # noqa: E402
@@ -133,7 +136,7 @@ class _FailingSession:
         pass
 
 
-def run():
+def _run():
     app = create_app()
     client = app.test_client()
 
@@ -1554,6 +1557,38 @@ def run():
         return 1
     print("\nall checks passed")
     return 0
+
+
+def _forget_watermarks():
+    from webbsite import watermarks
+
+    watermarks._cache.clear()
+    watermarks._enigma_cache.clear()
+
+
+def run():
+    """_run() against an empty whole-page cache and no remembered watermarks.
+
+    Several checks stub webbsite.db.execute_query, which also answers
+    watermarks.enigma_version: the stub's empty enigma.log is a readable data
+    version, so a precomputed page saves its stubbed result. A later run that
+    finds that file (same code, same day) serves it without a query, and a check
+    on the SQL a page issues sees none. Hence a fresh cache per run, and the
+    5-minute version memo cleared on the way in and out so no other module's
+    stub decides whether this run caches.
+    """
+    old_dir = os.environ.get("WEBBSITE_CACHE_DIR")
+    with tempfile.TemporaryDirectory(prefix="webbsite-sentry-") as tmp:
+        os.environ["WEBBSITE_CACHE_DIR"] = tmp
+        _forget_watermarks()
+        try:
+            return _run()
+        finally:
+            _forget_watermarks()
+            if old_dir is None:
+                os.environ.pop("WEBBSITE_CACHE_DIR", None)
+            else:
+                os.environ["WEBBSITE_CACHE_DIR"] = old_dir
 
 
 def test_all():

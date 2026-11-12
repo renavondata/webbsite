@@ -16,6 +16,10 @@ from datetime import date
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+import hermetic  # noqa: E402
+
+hermetic.isolate()
+
 from webbsite import freshness  # noqa: E402
 
 _failures: list[str] = []

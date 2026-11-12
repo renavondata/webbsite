@@ -17,6 +17,10 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+import hermetic  # noqa: E402
+
+hermetic.isolate()
+
 from webbsite import precompute  # noqa: E402
 from webbsite.precompute import ordinal, precomputed, sort_rows, sweep  # noqa: E402
 

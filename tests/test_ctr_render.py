@@ -21,6 +21,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import hermetic  # noqa: E402
+
+hermetic.isolate()
+
 from jinja2 import Environment  # noqa: E402
 
 from webbsite.routes.dbpub.statistics import ctr_series  # noqa: E402

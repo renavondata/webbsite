@@ -33,7 +33,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 # The default config is what is pinned: no overlay, no re-branding from the environment.
 for _name in ("WEBBSITE_OVERLAY_DIR", "SITE_NAME", "SITE_SHORT_NAME", "CANONICAL_HOST", "SEARCH_DOMAIN"):
     os.environ.pop(_name, None)

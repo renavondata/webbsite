@@ -12,7 +12,9 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from webbsite import precompute  # noqa: E402
 from webbsite.pagination import page_number, paginate  # noqa: E402
