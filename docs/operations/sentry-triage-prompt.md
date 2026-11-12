@@ -94,8 +94,13 @@ PR open and say why, in the PR and in the report.
 1. Wait for the deploy: poll `git ls-remote origin ci-green` until it is your merge
    commit or a descendant, then give the box five minutes.
 2. Request the failing page on the live site (`$WEBBSITE_URL` plus the event's path and
-   query, if the event has a request URL). Expect a 200 with content in the table.
-3. Resolve the incident's Sentry issue(s) with the API call above. If they recur, Sentry
+   query, if the event has a request URL). Expect a 200 with content in the table. The
+   edge challenges curl's default user agent (a 403 with `cf-mitigated: challenge`), so
+   send a browser `User-Agent`. A challenge is "not verified at the edge", not a
+   failure: say so and rely on step 3's evidence instead. Never try to get round it.
+3. Check Sentry for events on the issue since the deploy (the latest event's timestamp).
+   None, after a real request to the page, is the evidence.
+4. Resolve the incident's Sentry issue(s) with the API call above. If they recur, Sentry
    reopens them as regressions and the feeder queues them again.
 
 ## Never
