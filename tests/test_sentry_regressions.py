@@ -64,6 +64,10 @@ Pins:
  21. searchpeople.asp's fallback full-text queries (no enigma.people_search
      yet) get the 25 s budget: a common name ("jayne": ~35k of 14.5M people
      rows) is cold random I/O past 8 s (WEBBSITE-3C).
+ 22. the warm loop's list of active CCASS participants is computed once per data
+     version, not every 10 minutes: parthold's key leads (partID, issueID), so the
+     one-year filter reads every participant's whole history, ~111k index pages,
+     past 8 s when cold (WEBBSITE-2).
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -1506,6 +1510,42 @@ def run():
         except ZeroDivisionError as e:
             outcome = f"ZeroDivisionError: {e}"
     check("chldchg: old_issued 0 renders (WEBBSITE-3P)", outcome, "rendered")
+
+    # 22. cholder warm list: kept per data version (WEBBSITE-2)
+    import tempfile
+
+    from webbsite import precompute, watermarks
+
+    warm_q = []
+
+    def warm_stub(sql, params=None, timeout_s=None):
+        if "ccass.calendar" in sql:
+            return [{"max": date(2026, 11, 6)}]
+        warm_q.append(timeout_s)
+        return [{"partid": 7}, {"partid": 9}]
+
+    real_q, real_done = ccass.execute_query, watermarks.ccass_done
+    real_sources = dict(precompute.SOURCES)
+    old_dir = os.environ.get("WEBBSITE_CACHE_DIR")
+    os.environ["WEBBSITE_CACHE_DIR"] = tempfile.mkdtemp()
+    ccass.execute_query = warm_stub
+    watermarks.ccass_done = lambda: "2026-11-06"
+    precompute.SOURCES.update(market=lambda: "v1", enigma=lambda: "v1")
+    try:
+        with app.test_request_context("/"):
+            first = ccass.cholder_warm_list()
+            second = ccass.cholder_warm_list()
+        check("cholder warm list: rows", first, ("2026-11-06", [7, 9]))
+        check("cholder warm list: a repeat is served from the cache", second, first)
+        check("cholder warm list: one query per data version (WEBBSITE-2)", len(warm_q), 1)
+    finally:
+        ccass.execute_query, watermarks.ccass_done = real_q, real_done
+        precompute.SOURCES.clear()
+        precompute.SOURCES.update(real_sources)
+        if old_dir is None:
+            os.environ.pop("WEBBSITE_CACHE_DIR", None)
+        else:
+            os.environ["WEBBSITE_CACHE_DIR"] = old_dir
 
     if _failures:
         print("\nFAILED:")

@@ -641,22 +641,31 @@ def cholder_warm_list():
 
     Crawlers ask for each participant's default page in turn, so most requests are the
     first for that participant that day. About 600 of the 1,745 are still active.
+
+    Kept per data version: parthold's key is (partID, issueID, atDate), so the date
+    filter reads each participant's whole history, ~111k index pages (1.8 s warm,
+    past 8 s when cold), and the warm loop asked for it every 10 minutes, so now and
+    then it ran cold (WEBBSITE-2). Kept, it runs about once a day.
     """
     d = _settled_on_or_before(watermarks.ccass_done())
     if not d:
         return None, []
-    rows = execute_query(
-        """
-        SELECT p.partID
-        FROM ccass.participants p
-        WHERE EXISTS (SELECT 1 FROM ccass.parthold ph
-                      WHERE ph.partID = p.partID
-                        AND ph.atDate > CAST(%s AS date) - INTERVAL '1 year')
-        ORDER BY p.partID
-    """,
-        (d,),
-    )
-    return d, [r["partid"] for r in rows]
+
+    def active():
+        rows = execute_query(
+            """
+            SELECT p.partID
+            FROM ccass.participants p
+            WHERE EXISTS (SELECT 1 FROM ccass.parthold ph
+                          WHERE ph.partID = p.partID
+                            AND ph.atDate > CAST(%s AS date) - INTERVAL '1 year')
+            ORDER BY p.partID
+        """,
+            (d,),
+        )
+        return [r["partid"] for r in rows]
+
+    return d, precomputed("cholderwarm", f"d{d}", _holdings_sources(d), active, module=__name__)
 
 
 @bp.route("/cholder.asp")
