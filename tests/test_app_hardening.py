@@ -123,6 +123,11 @@ def run():
     check("crawler: CUBOT phone is a browser",
           client.get(url, headers={"User-Agent": "Mozilla/5.0 (Linux; Android 10; CUBOT X30)"})
           .status_code != 403, True)
+    check("crawler: percent-encoded query still refused",
+          client.get("/dbpub/SFClicount.asp?page=%61ll", headers=crawler).status_code, 403)
+    check("link preview: Slackbot unfurls a shared Disallowed link",
+          client.get(url, headers={"User-Agent": "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)"})
+          .status_code != 403, True)
     check("crawler: allowed page not refused",
           client.get("/robots.txt", headers=crawler).status_code, 200)
     from webbsite import robots_disallowed
@@ -148,7 +153,7 @@ def run():
         for f in _failures:
             print("  " + f)
         return 1
-    print(f"\nall {len(ccass_routes) + 38} checks passed")
+    print(f"\nall {len(ccass_routes) + 40} checks passed")
     return 0
 
 
