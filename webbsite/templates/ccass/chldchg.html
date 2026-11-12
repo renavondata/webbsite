@@ -112,7 +112,7 @@
 					<td class="colHide3">{{ '{:,.0f}'.format(ncip_hldg) }}</td>
 					<td class="colHide3">{{ '{:,.0f}'.format(ncip_chg) }}</td>
 					<td>{{ '{:.2f}'.format(ncip_hldg * 100 / issued) if issued != 0 else '' }}</td>
-					<td><a href="{{ url_for('ccass.nciphist', i=issue_id) }}">{{ '{:.2f}'.format((ncip_hldg / issued - (ncip_hldg - ncip_chg) / old_issued) * 100) if issued != 0 else '' }}</a></td>
+					<td><a href="{{ url_for('ccass.nciphist', i=issue_id) }}">{{ '{:.2f}'.format((ncip_hldg / issued - (ncip_hldg - ncip_chg) / old_issued) * 100) if (issued != 0 and old_issued != 0) else '' }}</a></td>
 					<td class="colHide1"></td>
 				</tr>
 				<tr class="total">
