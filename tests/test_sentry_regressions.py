@@ -242,6 +242,21 @@ def run():
               len(main) == 1 and "LPAD(sl.stockcode, 8, '0')" in main[0][0], True)
         check("str.asp: stockcode bound as text", main[0][1] if main else None, ("700",))
 
+        # 3d'. str.asp: a function-local `from flask import current_app` in the
+        # org_nav except made current_app local to str_route, so a failing
+        # quotes query raised UnboundLocalError from its own handler (WEBBSITE-43).
+        def rec_str_fail(sql, params=None, timeout_s=None):
+            if "ccass.quotes" in sql:
+                raise RuntimeError("canceling statement due to statement timeout")
+            return []
+
+        db_module.execute_query = rec_str_fail
+        try:
+            check("str.asp: failing quotes query is logged, page still renders",
+                  client.get("/dbpub/str.asp?i=1").status_code, 200)
+        finally:
+            db_module.execute_query = rec
+
         # 3e. status.asp: enigma.hksols and enigma.reports do not exist
         # (WEBBSITE-1C), and one failing figure used to blank all of them.
         # Stub the watermark, or its dead-port failure ends the page before
