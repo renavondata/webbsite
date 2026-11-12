@@ -36,7 +36,9 @@ import tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 import check_all_routes  # noqa: E402
 import sort_fixtures  # noqa: E402

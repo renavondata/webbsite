@@ -22,7 +22,9 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://stub:stub@127.0.0.1:1/stub")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 from webbsite import create_app  # noqa: E402
 from webbsite import db as _db  # noqa: E402

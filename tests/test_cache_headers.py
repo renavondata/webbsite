@@ -18,7 +18,11 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from webbsite import (
+import hermetic  # noqa: E402
+
+hermetic.isolate()
+
+from webbsite import (  # noqa: E402
     _asof_from_args,
     _data_page_ttls,
     _edge_cc,
@@ -27,7 +31,7 @@ from webbsite import (
     _TTL_SETTLED,
     _TTL_STALE,
 )
-from webbsite import watermarks
+from webbsite import watermarks  # noqa: E402
 
 _failures: list[str] = []
 

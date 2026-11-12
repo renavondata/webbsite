@@ -11,6 +11,7 @@ Run:  uv run pytest -q tests/test_precompute_routes.py
 """
 
 import json
+import logging
 import os
 import re
 import shutil
@@ -21,7 +22,9 @@ from decimal import Decimal
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-os.environ.setdefault("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 import sort_fixtures  # noqa: E402
 
@@ -132,8 +135,28 @@ def sorts_for(path):
     return sorted(values.get("sort", ())) or [None]
 
 
+class _Errors(logging.Handler):
+    def __init__(self):
+        super().__init__(logging.ERROR)
+        self.messages = []
+
+    def emit(self, record):
+        self.messages.append(record.getMessage())
+
+
+@pytest.fixture
+def logged_errors():
+    """ERROR records logged during the test. Not caplog: that fixture is gone
+    under `-p no:logging`, and this check must not depend on how pytest is run."""
+    handler = _Errors()
+    root = logging.getLogger()
+    root.addHandler(handler)
+    yield handler.messages
+    root.removeHandler(handler)
+
+
 @pytest.mark.parametrize("path", sorted(PAGES))
-def test_every_sort_renders_from_one_compute(client, path, caplog):
+def test_every_sort_renders_from_one_compute(client, path, logged_errors):
     sorts = sorts_for(path)
     assert sorts != [None] or path in ("/dbpub/HKdirsTypeSex.asp",), path
     for extra in PAGES[path]:
@@ -149,8 +172,7 @@ def test_every_sort_renders_from_one_compute(client, path, caplog):
             html = r.get_data(as_text=True)
             assert not re.search(r"\bo_[a-z]+\b", html), (url, "sort ordinal on the page")
             # Several pages catch their own errors and render an empty table.
-            errors = [rec.getMessage() for rec in caplog.records if rec.levelname == "ERROR"]
-            assert errors == [], (url, errors)
+            assert logged_errors == [], (url, logged_errors)
         heavy = [c for c in calls if "dense_rank" in c or "enigma.ess" in c]
         assert heavy == [], (base, "a sort recomputed")
 

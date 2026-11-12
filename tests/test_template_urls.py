@@ -5,7 +5,6 @@ These pin the literal links to what url_for would build, so a moved route fails 
 Run:  uv run pytest -q tests/test_template_urls.py
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -14,7 +13,9 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-os.environ.setdefault("DATABASE_URL", "postgresql://x@127.0.0.1:1/x")
+import hermetic  # noqa: E402
+
+hermetic.isolate()
 
 
 @pytest.mark.parametrize("template, literal, endpoint, kwargs", [
