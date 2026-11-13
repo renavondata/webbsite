@@ -49,6 +49,7 @@ def warm_urls() -> list[str]:
         "/dbpub/dirsHKPerPerson.asp",
         "/dbpub/DirsHKAgeDistn.asp",
         "/dbpub/HKdirsTypeSex.asp",
+        "/dbpub/FDirsPerListcoHKdstn.asp",
         *[f"/dbpub/mcap.asp?e={e}&t={t}" for e in "mgsrca" for t in "swh"],
         *[f"/dbpub/mcaphist.asp?e={e}&t={t}" for e in "mgsrca" for t in "swh"],
         "/dbpub/payleague.asp",
