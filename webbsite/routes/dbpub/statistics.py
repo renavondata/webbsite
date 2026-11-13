@@ -6357,24 +6357,28 @@ def fdirsperlistcohkdstn():
         ORDER BY fdirs DESC
     """
 
-    try:
-        results = execute_query(
-            sql, (snapshot_date, snapshot_date, snapshot_date, snapshot_date)
-        )
+    # Total listed company count at snapshot date (listcoCntAtDate() logic)
+    count_sql = """
+        SELECT COUNT(DISTINCT i.issuer) AS cnt
+        FROM enigma.issue i
+        JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
+        WHERE sl.stockexid IN (1, 20)
+          AND i.typeid NOT IN (1, 2, 40, 41, 46)
+          AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+          AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+    """
 
-        # Get total listed company count at snapshot date
-        # Matches listcoCntAtDate() function logic
-        count_sql = """
-            SELECT COUNT(DISTINCT i.issuer) AS cnt
-            FROM enigma.issue i
-            JOIN enigma.stocklistings sl ON i.id1 = sl.issueid
-            WHERE sl.stockexid IN (1, 20)
-              AND i.typeid NOT IN (1, 2, 40, 41, 46)
-              AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
-              AND (sl.delistdate IS NULL OR sl.delistdate > %s)
-        """
-        count_result = execute_query(count_sql, (snapshot_date, snapshot_date))
-        total_cos = count_result[0]["cnt"] if count_result else 0
+    # Whole market: ~0.4 s with a warm buffer cache, but it hit the 8 s default
+    # once when cold (WEBBSITE-46). Today's distribution (the default) is kept for
+    # the day and warmed after a deploy (webbsite/warm.py); other dates are live.
+    def compute():
+        rows = execute_query(sql, (snapshot_date,) * 4)
+        count = execute_query(count_sql, (snapshot_date,) * 2)
+        return {"rows": rows, "total_cos": count[0]["cnt"] if count else 0}
+
+    try:
+        data = _today_or_live("fdirsperlistcohkdstn", snapshot_date, compute)
+        results, total_cos = data["rows"], data["total_cos"]
     except Exception as ex:
         current_app.logger.error(
             f"Error in FDirsPerListcoHKdstn.asp: {ex}", exc_info=True
