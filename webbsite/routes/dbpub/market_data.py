@@ -274,45 +274,57 @@ def alltotrets():
                 ELSE NULL
             END AS cagret
         FROM (
+            -- One index probe per end of the period, fetching the date and the
+            -- close together. The old shape called firstquotedate and
+            -- lastquotedate twice per issue (once for the column, once again
+            -- inside each closing-price subquery) and probed quotes twice more
+            -- for the closes: ~2.4x the buffers, and cold windows ran into the
+            -- statement timeout (WEBBSITE-3G). Same rows, same values.
             SELECT
-                t2.name1,
-                t2.typeshort,
-                t2.issueid,
-                t2.buydate,
-                t2.selldate,
-                (
-                    (SELECT closing FROM ccass.quotes WHERE issueid = t2.issueid AND atdate = t2.selldate) /
-                    (SELECT closing FROM ccass.quotes WHERE issueid = t2.issueid AND atdate = t2.buydate) *
-                    enigma.getadjust(t2.issueid, t2.buydate) /
-                    enigma.getadjust(t2.issueid, t2.selldate)
-                ) AS totret
+                o.name1,
+                st.typeshort,
+                t1.issueid,
+                b.atdate AS buydate,
+                s.atdate AS selldate,
+                s.closing / b.closing
+                    * enigma.getadjust(t1.issueid, b.atdate)
+                    / enigma.getadjust(t1.issueid, s.atdate) AS totret
             FROM (
-                SELECT
-                    o.name1,
-                    st.typeshort,
-                    t1.issueid,
-                    enigma.firstquotedate(t1.issueid, %s) AS buydate,
-                    enigma.lastquotedate(t1.issueid, %s) AS selldate
-                FROM (
-                    SELECT DISTINCT sl.issueid, i.issuer, i.typeid
-                    FROM enigma.stocklistings sl
-                    JOIN enigma.issue i ON sl.issueid = i.id1
-                    WHERE sl.stockexid IN (1, 20, 23)
-                      AND i.typeid IN (0, 6, 7, 8, 10)
-                      AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
-                      AND (sl.delistdate IS NULL OR sl.delistdate > %s)
-                ) AS t1
-                JOIN enigma.organisations o ON t1.issuer = o.personid
-                JOIN enigma.sectypes st ON t1.typeid = st.typeid
-            ) AS t2
+                SELECT DISTINCT sl.issueid, i.issuer, i.typeid
+                FROM enigma.stocklistings sl
+                JOIN enigma.issue i ON sl.issueid = i.id1
+                WHERE sl.stockexid IN (1, 20, 23)
+                  AND i.typeid IN (0, 6, 7, 8, 10)
+                  AND (sl.firsttradedate IS NULL OR sl.firsttradedate <= %s)
+                  AND (sl.delistdate IS NULL OR sl.delistdate > %s)
+            ) AS t1
+            JOIN enigma.organisations o ON t1.issuer = o.personid
+            JOIN enigma.sectypes st ON t1.typeid = st.typeid
+            -- as firstquotedate: first real close on or after d1
+            JOIN LATERAL (
+                SELECT q.atdate, q.closing
+                FROM ccass.quotes q
+                WHERE q.issueid = t1.issueid AND NOT q.noclose AND q.atdate >= %s
+                ORDER BY q.atdate
+                LIMIT 1
+            ) AS b ON true
+            -- as lastquotedate: last real close on or before d2
+            JOIN LATERAL (
+                SELECT q.atdate, q.closing
+                FROM ccass.quotes q
+                WHERE q.issueid = t1.issueid AND NOT q.noclose AND q.atdate <= %s
+                ORDER BY q.atdate DESC
+                LIMIT 1
+            ) AS s ON true
         ) AS t3
         WHERE t3.totret IS NOT NULL
         ORDER BY {order_by}
     """
 
     # Execute query with parameters
-    # Parameters: d2 (for delisted check), d1 (buyDate), d2 (sellDate), first_trade_filter, d1
-    results = execute_query(sql, (d2, d1, d2, first_trade_filter, d1))
+    # Parameters: d2 (delisted check), first_trade_filter, d1 (delist filter),
+    # d1 (buy date), d2 (sell date)
+    results = execute_query(sql, (d2, first_trade_filter, d1, d1, d2))
 
     # Format results for display
     count = 0
