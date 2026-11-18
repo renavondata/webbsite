@@ -69,6 +69,10 @@ Pins:
      version, not every 10 minutes: parthold's key leads (partID, issueID), so the
      one-year filter reads every participant's whole history, ~111k index pages,
      past 8 s when cold (WEBBSITE-2).
+ 23. alltotrets.asp finds each issue's first and last close in one quotes probe
+     apiece, not via firstquotedate()/lastquotedate() evaluated twice per issue
+     plus a closing-price subquery each (WEBBSITE-3G: cold windows timed out),
+     with d1 bound to the buy end and d2 to the sell end.
 
 The DB engine points at a port nothing listens on; routes that need rows get
 a stubbed execute_query.
@@ -1577,6 +1581,36 @@ def _run():
             os.environ.pop("WEBBSITE_CACHE_DIR", None)
         else:
             os.environ["WEBBSITE_CACHE_DIR"] = old_dir
+
+    # 23. alltotrets: one quotes probe per end of the period (WEBBSITE-3G)
+    from webbsite.routes.dbpub import market_data
+
+    atr_calls = []
+
+    def atr_stub(sql, params=None, timeout_s=None):
+        atr_calls.append((sql, params))
+        return []
+
+    real_atr, real_qe = market_data.execute_query, market_data.watermarks.quotes_end
+    market_data.execute_query = atr_stub
+    market_data.watermarks.quotes_end = lambda: "2025-10-10"
+    try:
+        resp = client.get("/dbpub/alltotrets.asp?d1=2017-10-31&d2=2017-11-30")
+        check("alltotrets: 200", resp.status_code, 200)
+        sql, params = atr_calls[-1] if atr_calls else ("", ())
+        check("alltotrets: no per-row first/lastquotedate() calls",
+              bool(re.search(r"(first|last)quotedate\(", sql, re.I)), False)
+        check("alltotrets: one LATERAL quotes probe per end", sql.count("JOIN LATERAL"), 2)
+        check("alltotrets: one bound value per placeholder", sql.count("%s"), len(params))
+        buy = sql.split("q.atdate >= %s", 1)[0].count("%s")
+        sell = sql.split("q.atdate <= %s", 1)[0].count("%s")
+        check("alltotrets: d1 bound to the buy probe, d2 to the sell probe",
+              (params[buy] if buy < len(params) else None,
+               params[sell] if sell < len(params) else None),
+              ("2017-10-31", "2017-11-30"))
+    finally:
+        market_data.execute_query = real_atr
+        market_data.watermarks.quotes_end = real_qe
 
     if _failures:
         print("\nFAILED:")
