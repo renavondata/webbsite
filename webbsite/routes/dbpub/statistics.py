@@ -570,8 +570,14 @@ def dirs_hk_distn_people():
         ORDER BY numSeats DESC
     """
 
+    # Whole market: ~0.5 s with a warm buffer cache, but it hit the 8 s default
+    # once when cold (WEBBSITE-47). Today's distribution (the default) is kept for
+    # the day and warmed after a deploy (webbsite/warm.py); other dates are live.
     try:
-        distribution = execute_query(sql, (d_str, d_str, d_str, d_str))
+        # Copy the rows: the cumulative columns below must not write into the
+        # precomputed result shared between requests.
+        distribution = [dict(row) for row in _today_or_live(
+            "dirshkdistnpeople", d, lambda: execute_query(sql, (d_str,) * 4))]
 
         # Calculate cumulative values and statistics
         cum_seats = 0

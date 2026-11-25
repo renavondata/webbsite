@@ -48,6 +48,7 @@ def warm_urls() -> list[str]:
         "/sitemap.xml",  # every child sitemap's list
         "/dbpub/dirsHKPerPerson.asp",
         "/dbpub/DirsHKAgeDistn.asp",
+        "/dbpub/DirsHKDistnPeople.asp",
         "/dbpub/HKdirsTypeSex.asp",
         "/dbpub/FDirsPerListcoHKdstn.asp",
         *[f"/dbpub/mcap.asp?e={e}&t={t}" for e in "mgsrca" for t in "swh"],
