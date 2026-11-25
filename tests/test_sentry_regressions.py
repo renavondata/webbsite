@@ -51,7 +51,8 @@ Pins:
  18. boardcomp.asp, DirsPerListcoHKdstn.asp and advbyrole.asp give their
      whole-market query the 25 s budget (WEBBSITE-2V, 2T, 2H); a connection
      lost mid-query is the outage issue too (WEBBSITE-2X, 2Y), see 15.
-     FDirsPerListcoHKdstn.asp keeps today's result for the day (WEBBSITE-46).
+     FDirsPerListcoHKdstn.asp keeps today's result for the day (WEBBSITE-46),
+     and so does DirsHKDistnPeople.asp (WEBBSITE-47).
  19. tree walks (natperson relatives, holdings) fetch one generation per
      query, SFChistfirm one query for all its dates, and orgdata's per-issue
      and navigation checks no longer run once per issue (Sentry N+1 issues).
@@ -1300,6 +1301,11 @@ def _run():
         budgets.clear()
         client.get("/dbpub/FDirsPerListcoHKdstn.asp")
         check("FDirsPerListcoHKdstn today: a repeat is served from the cache", budgets, [])
+        # WEBBSITE-47: the same for today's directorships-per-person distribution.
+        client.get("/dbpub/DirsHKDistnPeople.asp")
+        budgets.clear()
+        client.get("/dbpub/DirsHKDistnPeople.asp")
+        check("DirsHKDistnPeople today: a repeat is served from the cache", budgets, [])
     finally:
         statistics.execute_query, db_module.execute_query = real_stats, real_db
     # 19. pages that walked a tree or a date list with one query per node
