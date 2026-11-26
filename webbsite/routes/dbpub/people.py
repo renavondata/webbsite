@@ -158,13 +158,14 @@ def natperson():
         # For full recursive tree, user can click through to holdings.asp
         holdings_sql = """
             SELECT h.personid, h.issue, h.holdingdate, h.shares, h.stake, h.name, h.orgtype,
-                   h.typeshort, h.issuer, o.domicile, o.incid, o.crn,
+                   h.typeshort, h.issuer, o.domicile, o.incid, oc.crn,
                    CASE
                        WHEN h.shares IS NULL THEN h.stake
                        ELSE h.shares / enigma.outstanding(h.issue, CURRENT_DATE)
                    END AS stakecomp
             FROM enigma.webholdings3 h
             LEFT JOIN enigma.organisations o ON o.personid = h.issuer
+            LEFT JOIN enigma.oldcr oc ON oc.personid = h.issuer
             WHERE h.personid = %s
               AND (h.shares > 0 OR h.stake > 0 OR (h.shares IS NULL AND h.stake IS NULL))
             ORDER BY h.name

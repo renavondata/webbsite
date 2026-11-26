@@ -210,7 +210,8 @@ def officers():
     crhk_url = None
     try:
         org_result = execute_query(
-            "SELECT name1, domicile, incid, crn FROM enigma.organisations WHERE personid = %s",
+            "SELECT o.name1, o.domicile, o.incid, oc.crn FROM enigma.organisations o"
+            " LEFT JOIN enigma.oldcr oc ON oc.personid = o.personid WHERE o.personid = %s",
             (person_id,),
         )
         if org_result:
@@ -596,7 +597,7 @@ def positions():
             o.name1,
             o.domicile,
             o.incid,
-            o.crn,
+            oc.crn,
             h.issueid,
             apptDate,
             d.apptAcc,
@@ -622,6 +623,7 @@ def positions():
             ) END as cagr_rel
         FROM enigma.directorships d
         JOIN enigma.organisations o ON company = o.personid
+        LEFT JOIN enigma.oldcr oc ON oc.personid = o.personid
         JOIN enigma.positions p ON d.positionid = p.positionid
         JOIN enigma.rank r ON p.rank = r.rankID
         LEFT JOIN enigma.hklistedordsever h ON company = h.issuer
