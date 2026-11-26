@@ -103,7 +103,7 @@ filed on or before that date. A repository of our database and software <a href=
 		<tr{% if position.is_first_row %} class="total"{% endif %}>
 			<td class="colHide1">{{ position.row_num if position.row_num else '' }}</td>
 			<td>{% if position.is_listed and position.is_first_row %}*{% endif %}</td>
-			<td>{% if position.is_first_row %}<a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a>{% endif %}</td>
+			<td>{% if position.is_first_row %}<a href="{{ url_for('dbpub_corporate.officers', p=position.company) }}">{{ position.orgname if position.orgname else position.name1 }}</a>{% if position.crhk_url %} <small><a class="crhk" target="_blank" rel="noopener" href="{{ position.crhk_url }}" title="Companies Registry profile on crhk.guru">registry profile</a></small>{% endif %}{% endif %}</td>
 			<td><a class="info" href="#">{{ position.posshort }}<span>{{ position.poslong }}</span></a></td>
 			<td class="colHide2 nowrap">{{ position.apptdate if position.apptdate else '' }}</td>
 			<td class="nowrap">{{ position.resdate if position.resdate else '' }}</td>

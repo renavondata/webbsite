@@ -4,6 +4,7 @@ Corporate structure - officers, advisers, positions, holders
 
 from flask import Blueprint, render_template, request, current_app
 from datetime import date
+from webbsite.crhk import crhk_org_url
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int, get_bool, get_date_or_default
 from webbsite.routes.dbpub._navctx import person_nav, org_nav
@@ -205,13 +206,17 @@ def officers():
     if not person_id:
         return "PersonID required", 400
 
-    # Get organization name
+    # Get organization name, and its crhk.guru page when it is a HK company
+    crhk_url = None
     try:
         org_result = execute_query(
-            "SELECT name1 FROM enigma.organisations WHERE personid = %s", (person_id,)
+            "SELECT name1, domicile, incid, crn FROM enigma.organisations WHERE personid = %s",
+            (person_id,),
         )
         if org_result:
             org_name = org_result[0]["name1"]
+            org = dict(org_result[0])
+            crhk_url = crhk_org_url(org.get("domicile"), org.get("incid"), org.get("crn"))
         else:
             org_name = "No such organisation"
             person_id = 0  # ASP sets personID to 0 for non-existent orgs
@@ -319,6 +324,7 @@ def officers():
         "dbpub/officers.html",
         person_id=person_id,
         org_name=org_name,
+        crhk_url=crhk_url,
         officers_by_rank=officers_by_rank,
         d=d,
         hide=hide,
@@ -588,6 +594,9 @@ def positions():
             company,
             {"enigma.orgname(company, COALESCE(apptDate, resDate)) AS orgName," if n else ""}
             o.name1,
+            o.domicile,
+            o.incid,
+            o.crn,
             h.issueid,
             apptDate,
             d.apptAcc,
@@ -643,6 +652,8 @@ def positions():
                 any_returns = True
 
             grouped_positions = group_positions_by_company(positions_list, sort_param)
+            for pos in grouped_positions:
+                pos["crhk_url"] = crhk_org_url(pos.get("domicile"), pos.get("incid"), pos.get("crn"))
 
             avg_cagr = None
             avg_rel = None

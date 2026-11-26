@@ -277,7 +277,7 @@
             <td>
                 <a href="{{ url_for('dbpub_statistics.orgdata', p=holding.issuer) }}">
                     {% if holding.orgtype == 22 %}<b>{{ holding.name }}</b>{% else %}{{ holding.name }}{% endif %}{% if holding.typeshort and holding.typeshort != 'O' %}:{{ holding.typeshort }}{% endif %}
-                </a>
+                </a>{% if holding.crhk_url %} <small><a class="crhk" target="_blank" rel="noopener" href="{{ holding.crhk_url }}" title="Companies Registry profile on crhk.guru">registry profile</a></small>{% endif %}
             </td>
         </tr>
         {% endfor %}
