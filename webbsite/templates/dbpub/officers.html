@@ -11,7 +11,7 @@
 
 <h2>{{ org_name }}</h2>
 <ul class="navlist">
-	<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>
+	<li><a href="{{ url_for('dbpub_statistics.orgdata', p=person_id) }}">Key Data</a></li>{% if crhk_url %}<li><a class="crhk" target="_blank" rel="noopener" href="{{ crhk_url }}" title="Companies Registry profile on crhk.guru">registry profile</a></li>{% endif %}
 </ul>
 <div class="clear"></div>
 

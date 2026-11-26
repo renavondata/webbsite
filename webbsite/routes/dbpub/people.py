@@ -3,6 +3,7 @@ People and organization lookup
 """
 
 from flask import Blueprint, render_template, request, current_app
+from webbsite.crhk import crhk_org_url
 from webbsite.db import execute_query
 from webbsite.asp_helpers import get_int
 
@@ -156,18 +157,24 @@ def natperson():
         # Get holdings (simplified - just top-level holdings for inline display)
         # For full recursive tree, user can click through to holdings.asp
         holdings_sql = """
-            SELECT personid, issue, holdingdate, shares, stake, name, orgtype, typeshort, issuer,
+            SELECT h.personid, h.issue, h.holdingdate, h.shares, h.stake, h.name, h.orgtype,
+                   h.typeshort, h.issuer, o.domicile, o.incid, oc.crn,
                    CASE
-                       WHEN shares IS NULL THEN stake
-                       ELSE shares / enigma.outstanding(issue, CURRENT_DATE)
+                       WHEN h.shares IS NULL THEN h.stake
+                       ELSE h.shares / enigma.outstanding(h.issue, CURRENT_DATE)
                    END AS stakecomp
-            FROM enigma.webholdings3
-            WHERE personid = %s
-              AND (shares > 0 OR stake > 0 OR (shares IS NULL AND stake IS NULL))
-            ORDER BY name
+            FROM enigma.webholdings3 h
+            LEFT JOIN enigma.organisations o ON o.personid = h.issuer
+            LEFT JOIN enigma.oldcr oc ON oc.personid = h.issuer
+            WHERE h.personid = %s
+              AND (h.shares > 0 OR h.stake > 0 OR (h.shares IS NULL AND h.stake IS NULL))
+            ORDER BY h.name
             LIMIT 20
         """
-        holdings_list = [dict(row) for row in execute_query(holdings_sql, (person_id,))]
+        holdings_list = [
+            {**row, "crhk_url": crhk_org_url(row.get("domicile"), row.get("incid"), row.get("crn"))}
+            for row in (dict(r) for r in execute_query(holdings_sql, (person_id,)))
+        ]
 
         # Check for humanBar navigation tabs in a single query
         nav_sql = """

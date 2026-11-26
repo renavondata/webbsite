@@ -45,3 +45,15 @@ def crhk_company_url(raw):
     if _FOREIGN_RE.match(v):
         return f"https://crhk.guru/company/{v}"
     return None
+
+
+def crhk_org_url(domicile, incid, crn):
+    """crhk.guru's page for an organisation row, or None.
+
+    Hong Kong-domiciled organisations only (``domicile == 1``): the current
+    incorporation number, else the pre-2023 CR number, exactly as orgdata.asp's
+    banner link chooses (``routes/dbpub/statistics.py``). Every URL still comes
+    from ``crhk_company_url``'s allowlist."""
+    if domicile != 1:
+        return None
+    return crhk_company_url(incid) or crhk_company_url(crn)
